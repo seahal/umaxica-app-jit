@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   # endpoints for news
   draw :news
 
+  resources :posts, only: [:index]
+
   # mount Rswag::Ui::Engine => '/api-docs'
   # mount Rswag::Api::Engine => '/api-docs'
 end

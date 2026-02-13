@@ -153,18 +153,6 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
     assert_equal "text/plain", response.content_type
   end
 
-  test "auth/tenant_ip throttle limits GET to verification forms" do
-    # skip "Verification endpoints require authentication - not suitable for throttle testing"
-    # Verification endpoints redirect to login when unauthenticated
-    # For actual testing, either:
-    # 1. Set up authenticated session first, or
-    # 2. Test throttling on a different auth endpoint that doesn't require session
-    #
-    # with_host(ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
-    # get_with_host "/verification/emails/new?ri=jp", headers: { "Accept" => "text/html" }
-    # assert_response :success
-  end
-
   #
   # Test 4: Token refresh throttle (strictest)
   #
@@ -179,35 +167,6 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
     post_with_host "/edge/v1/token/refresh", headers: { "Accept" => "application/json" }, params: {}
     assert_response :too_many_requests
     assert_equal "application/json", response.content_type
-  end
-
-  #
-  # Test 5: API throttles
-  #
-  test "api/tenant_ip throttle limits API requests" do
-    # skip "Skipped: no /api routes defined in this app"
-    # This test template is here for when API routes exist
-    #
-    # with_host("api.example.com")
-    #
-    # get_with_host "/api/users", headers: { "Accept" => "application/json" }
-    # assert_not_equal 429, response.status
-    #
-    # get_with_host "/api/users", headers: { "Accept" => "application/json" }
-    # assert_response :too_many_requests
-  end
-
-  test "api_heavy/tenant_ip throttle limits heavy API operations" do
-    # skip "Skipped: no /api/search, /api/reports routes defined in this app"
-    # This test template is here for when heavy API routes exist
-    #
-    # with_host("api.example.com")
-    #
-    # get_with_host "/api/search", headers: { "Accept" => "application/json" }
-    # assert_not_equal 429, response.status
-    #
-    # get_with_host "/api/search", headers: { "Accept" => "application/json" }
-    # assert_response :too_many_requests
   end
 
   #

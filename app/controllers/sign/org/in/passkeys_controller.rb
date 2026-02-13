@@ -197,10 +197,7 @@ module Sign
           when :totp_required
             render json: { status: "totp_required", redirect_url: new_sign_org_in_totp_path }, status: :ok
           when :session_limit_hard_reject
-            render json: {
-              status: "session_limit_hard_reject",
-              error: result[:message],
-            }, status: (result[:http_status] || :conflict)
+            render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           when :session_limit_exceeded
             issue_session_limit_gate!(return_to: request.fullpath, flow: "in.passkeys.session")
             render json: {

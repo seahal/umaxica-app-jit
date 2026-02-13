@@ -8,6 +8,7 @@ module Sign
       module Challenge
         class PasskeysController < ApplicationController
           include Sign::Webauthn
+          include SessionLimitGate
 
           before_action :reject_logged_in_session
           before_action :ensure_pending_mfa!
@@ -93,11 +94,14 @@ module Sign
             result = finalize_mfa_login!(user)
             case result[:status]
             when :session_limit_hard_reject
-              render plain: result[:message], status: (result[:http_status] || :conflict)
+              render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
             when :restricted
               redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
             else
-              redirect_to(result[:redirect_path] || sign_app_root_path)
+              redirect_with_notice(
+                result[:redirect_path] || sign_app_configuration_path,
+                I18n.t("sign.app.in.mfa.passkey.success"),
+              )
             end
           end
         end

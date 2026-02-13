@@ -5,6 +5,7 @@ ja:
     staff_not_found: "スタッフが見つかりません。もう一度ログインしてください。"
     no_sessions_selected: "無効化するセッションを選択してください。"
     sessions_revoked: "セッションを無効化しました。ログインを続行してください。"
+    login_limit_exceeded: "ログイン上限を超えています。既存のセッションを終了してから再度お試しください。"
     edit:
       title: "セッション上限に達しました"
       description: "同時にログインできるセッション数の上限に達しています。ログインを続行するには、無効化するセッションを選択してください。"
@@ -115,6 +116,31 @@ ja:
       cancel: "キャンセル"
     default_passkey_description: "マイパスキー"
     app:
+      in:
+        session:
+          title: "セッション管理"
+          description: "同時にログインできるセッション数の上限に達しています。続行するには、少なくとも1つのアクティブなセッションを無効化してください。"
+          restricted_notice: "セッション枠を空けるまで、セッションは制限されています。セッション管理のみ可能です。"
+          restricted_write_blocked: "この操作にはアクティブなセッションが必要です。先にセッション管理を行ってください。"
+          active_sessions: "アクティブなセッション"
+          restricted_sessions: "保留中のセッション"
+          session_label: "セッション"
+          pending_session: "保留中のセッション"
+          current: "現在"
+          created_at: "作成日時"
+          last_used_at: "最終使用"
+          revoke: "無効化"
+          revoke_selected: "選択したセッションを無効化して続行"
+          cancel: "キャンセルしてログアウト"
+          cancel_confirm: "キャンセルしますか？ログアウトされます。"
+          no_sessions_selected: "少なくとも1つのセッションを選択してください。"
+          sessions_revoked: "選択したセッションを無効化しました。"
+          session_revoked: "セッションを無効化しました。"
+          promoted: "セッションが有効化されました。すべての機能が利用可能です。"
+          cancelled: "セッションをキャンセルしました。もう一度ログインしてください。"
+          login_required: "セッション管理にはログインが必要です。"
+          invalid_session: "無効なセッション参照です。"
+          cannot_revoke_current: "この方法で現在のセッションを無効化できません。キャンセルでログアウトしてください。"
       authentication:
         new:
           back: "戻る"

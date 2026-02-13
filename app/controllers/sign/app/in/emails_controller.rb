@@ -44,6 +44,9 @@ module Sign
           end
 
           process_email_authentication(normalized_address)
+
+          return render_session_limit_hard_reject if @session_limit_hard_reject
+
           record_sign_in_email_cooldown!(normalized_address)
 
           # Preserve rd parameter if provided
@@ -100,13 +103,10 @@ module Sign
             end
           else
             if result[:hard_reject]
-              respond_to do |format|
-                format.html { render plain: result[:error], status: (result[:http_status] || :conflict) }
-                format.json {
-                  render json: { error: result[:error], error_code: "session_limit_hard_reject" },
-                         status: (result[:http_status] || :conflict)
-                }
-              end
+              render_session_limit_hard_reject(
+                message: result[:error],
+                http_status: result[:http_status],
+              )
             else
               @user_email.errors.add(:pass_code, result[:error])
               respond_to do |format|
@@ -153,6 +153,15 @@ module Sign
           existing_email = find_email_with_timing_protection(normalized_address)
 
           if existing_email
+            # Pre-check session limit before sending OTP.
+            # If the user is already at the hard limit (2 active + 1 restricted),
+            # skip sending OTP and flag for the create action to handle.
+            user = existing_email.user
+            if session_limit_hard_reject_for?(user)
+              @session_limit_hard_reject = true
+              return
+            end
+
             session[:user_email_authentication_id] = existing_email.id
             session[:user_email_authentication_address] = nil
 

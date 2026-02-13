@@ -110,6 +110,8 @@ module Sign
           end
 
           user = find_user_by_identifier(@secret_form.identifier)
+          return render_session_limit_hard_reject if session_limit_hard_reject_for?(user)
+
           verification = verify_secret_for_sign_in(user: user, raw_secret: @secret_form.secret_value)
 
           if user && verification.secret
@@ -141,7 +143,7 @@ module Sign
           result = finalize_mfa_login!(user)
           case result[:status]
           when :session_limit_hard_reject
-            render plain: result[:message], status: (result[:http_status] || :conflict)
+            render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           when :restricted
             redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
           else
@@ -168,7 +170,7 @@ module Sign
           if result[:status] == :mfa_required
             redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
           elsif result[:status] == :session_limit_hard_reject
-            render plain: result[:message], status: (result[:http_status] || :conflict)
+            render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           elsif result[:restricted]
             redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
           else

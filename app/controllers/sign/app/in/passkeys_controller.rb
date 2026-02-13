@@ -50,6 +50,7 @@ module Sign
 
           user = find_active_user_by_identifier(identifier)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) unless user
+          return render_session_limit_hard_reject if session_limit_hard_reject_for?(user)
 
           passkeys = user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) if passkeys.empty?
@@ -229,10 +230,7 @@ module Sign
           when :mfa_required
             render json: { status: "mfa_required", redirect_url: result[:redirect_path] }, status: :ok
           when :session_limit_hard_reject
-            render json: {
-              status: "session_limit_hard_reject",
-              error: result[:message],
-            }, status: (result[:http_status] || :conflict)
+            render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           when :success
             # Check if session is restricted (session limit was exceeded)
             # Gate is already issued by log_in() in Auth::Base

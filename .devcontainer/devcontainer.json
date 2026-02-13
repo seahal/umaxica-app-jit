@@ -132,8 +132,7 @@
     "ghcr.io/devcontainers/features/copilot-cli:1": {},
     "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {}, 
     "ghcr.io/devcontainers-extra/features/claude-code:1": {},
-    "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
-    "ghcr.io/devcontainer-community/devcontainer-features/opencode.ai:1": {}
+    "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {}
 	},
 	"mounts": [
 		"source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind,consistency=cached",

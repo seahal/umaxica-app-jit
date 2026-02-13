@@ -271,6 +271,25 @@ module Sign::App::In
       assert_equal mismatch_body, response.body
     end
 
+    test "options returns 409 when user is at session hard_reject limit" do
+      # Create 2 active + 1 restricted to hit the hard limit
+      UserToken.where(user_id: @user.id).delete_all
+      2.times do
+        token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+        token.rotate_refresh_token!
+      end
+      restricted = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+      restricted.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+
+      post options_sign_app_in_passkeys_path(ri: "jp"),
+           params: options_params(identifier: @user_email.address),
+           as: :json
+
+      assert_response :conflict
+      json = response.parsed_body
+      assert_equal "session_limit_hard_reject", json["error_code"]
+    end
+
     test "options returns turnstile error when response token is missing" do
       Jit::Security::TurnstileVerifier.test_mode = false
       Jit::Security::TurnstileVerifier.test_response = nil

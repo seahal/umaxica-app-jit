@@ -45,6 +45,26 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
   end
 
+  test "returns 409 when user is at session hard_reject limit" do
+    _secret, raw_secret = issue_secret!(kind: UserSecretKind::PERMANENT, uses: 10)
+
+    # Create 2 active + 1 restricted to hit the hard limit
+    UserToken.where(user_id: @user.id).delete_all
+    2.times do
+      token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+    restricted = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+    restricted.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+
+    post sign_app_in_secret_url(ri: "jp"),
+         params: login_params(identifier: @raw_email, secret_value: raw_secret),
+         headers: default_headers
+
+    assert_response :conflict
+    assert_includes response.body, I18n.t("session_limit.login_limit_exceeded")
+  end
+
   test "turnstile failure returns unified authentication error" do
     CloudflareTurnstile.test_validation_response = { "success" => false }
     _secret, raw_secret = issue_secret!

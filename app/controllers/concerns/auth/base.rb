@@ -1464,7 +1464,7 @@ module Auth
       elsif result[:restricted]
         { status: :restricted, redirect_path: session_management_path }
       else
-        { status: :success, redirect_path: return_to.presence || default_after_login_path }
+        { status: :success, redirect_path: return_to.presence }
       end
     end
 

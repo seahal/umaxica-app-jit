@@ -93,6 +93,56 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil active_token1.revoked_at
   end
 
+  # Test: active (non-restricted) session users are denied access to /in/session.
+  # This page is ONLY for restricted session users (3rd login).
+  # Active session access is an unexpected scenario, so we return 403 Forbidden.
+  test "show with active session returns forbidden" do
+    active_token = UserToken.create!(
+      user: @user,
+      status: UserToken::STATUS_ACTIVE,
+      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+    active_token.rotate_refresh_token!
+    headers = as_user_headers_with_token(@user, active_token, host: @host)
+
+    get sign_app_in_session_url(ri: "jp"), headers: headers
+
+    assert_response :forbidden
+  end
+
+  test "update with active session returns forbidden" do
+    active_token = UserToken.create!(
+      user: @user,
+      status: UserToken::STATUS_ACTIVE,
+      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+    active_token.rotate_refresh_token!
+    headers = as_user_headers_with_token(@user, active_token, host: @host)
+
+    patch sign_app_in_session_url(ri: "jp"),
+          params: { revoke_refs: ["some-ref"] },
+          headers: headers
+
+    assert_response :forbidden
+  end
+
+  test "destroy with active session returns forbidden" do
+    active_token = UserToken.create!(
+      user: @user,
+      status: UserToken::STATUS_ACTIVE,
+      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+    active_token.rotate_refresh_token!
+    headers = as_user_headers_with_token(@user, active_token, host: @host)
+
+    delete sign_app_in_session_url(ri: "jp"), headers: headers
+
+    assert_response :forbidden
+  end
+
   test "restricted session expires after 15 minutes and is locked on in/session" do
     token = create_restricted_session(@user, expires_at: 15.minutes.from_now)
     headers = as_user_headers_with_token(@user, token, host: @host)

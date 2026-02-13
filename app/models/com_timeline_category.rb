@@ -16,8 +16,10 @@
 #
 # Foreign Keys
 #
-#  fk_com_timeline_categories_on_com_timeline_category_master_id  (com_timeline_category_master_id => com_timeline_category_masters.id)
-#  fk_rails_...                                                   (com_timeline_id => com_timelines.id) ON DELETE => cascade
+#  fk_com_timeline_categories_on_com_timeline_category_master_id
+#    (com_timeline_category_master_id => com_timeline_category_masters.id)
+#  fk_rails_...
+#    (com_timeline_id => com_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

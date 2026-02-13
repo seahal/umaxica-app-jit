@@ -104,6 +104,33 @@ module SessionLimitGate
     valid_gate?(session[GATE_SESSION_KEY])
   end
 
+  # Pre-checks if a resource would be hard-rejected by the session limit.
+  # Use before authentication to avoid unnecessary work (e.g., sending OTP emails,
+  # generating WebAuthn challenges, verifying secrets).
+  #
+  # @param resource [User, Staff] the resource to check
+  # @return [Boolean] true if the resource is at the hard limit
+  def session_limit_hard_reject_for?(resource)
+    return false unless resource
+
+    session_limit_state_for(resource) == :hard_reject
+  end
+
+  # Renders a hard reject response (409 Conflict) when the session limit is exceeded.
+  # Handles both HTML and JSON formats.
+  #
+  # @param message [String, nil] Custom message (defaults to SESSION_LIMIT_HARD_REJECT_MESSAGE)
+  # @param http_status [Symbol, nil] HTTP status (defaults to :conflict)
+  def render_session_limit_hard_reject(message: nil, http_status: nil)
+    msg = message || I18n.t("session_limit.login_limit_exceeded")
+    status = http_status || :conflict
+
+    respond_to do |format|
+      format.html { render plain: msg, status: status }
+      format.json { render json: { error: msg, error_code: "session_limit_hard_reject" }, status: status }
+    end
+  end
+
   private
 
   def valid_gate?(gate)

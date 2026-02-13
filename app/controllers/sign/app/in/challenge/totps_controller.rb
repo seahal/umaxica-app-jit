@@ -5,16 +5,19 @@ module Sign
     module In
       module Challenge
         class TotpsController < ApplicationController
-          TotpChallengeForm =
-            Struct.new(:token, keyword_init: true) do
-              include ActiveModel::Model
+          include SessionLimitGate
 
-              validates :token, presence: true, length: { is: 6 }
+          class TotpChallengeForm
+            include ActiveModel::Model
 
-              def self.model_name
-                ActiveModel::Name.new(self, nil, "totp_challenge_form")
-              end
+            attr_accessor :token
+
+            validates :token, presence: true, length: { is: 6 }
+
+            def self.model_name
+              ActiveModel::Name.new(self, nil, "totp_challenge_form")
             end
+          end
 
           before_action :reject_logged_in_session
           before_action :ensure_pending_mfa!
@@ -25,7 +28,9 @@ module Sign
 
           def create
             @totp_form = TotpChallengeForm.new(totp_params)
-            return render :new, status: :unprocessable_content unless @totp_form.valid?
+            unless @totp_form.valid?
+              return render :new, status: :unprocessable_content
+            end
 
             user = pending_mfa_user
             last_otp_at, totp_record = verify_totp_for(user, @totp_form.token)
@@ -66,13 +71,13 @@ module Sign
             result = finalize_mfa_login!(user)
             case result[:status]
             when :session_limit_hard_reject
-              render plain: result[:message], status: (result[:http_status] || :conflict)
+              render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
             when :restricted
               redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
             else
-              redirect_to(
-                result[:redirect_path] || sign_app_root_path,
-                notice: t("sign.app.in.mfa.totp.success"),
+              redirect_with_notice(
+                result[:redirect_path] || sign_app_configuration_path,
+                I18n.t("sign.app.in.mfa.totp.success"),
               )
             end
           end

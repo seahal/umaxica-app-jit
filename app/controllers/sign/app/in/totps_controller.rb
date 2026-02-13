@@ -5,6 +5,7 @@ module Sign
     module In
       class TotpsController < ApplicationController
         include Common::Redirect
+        include SessionLimitGate
 
         MFA_USER_SESSION_KEY = :mfa_user_id
 
@@ -53,7 +54,9 @@ module Sign
           clear_mfa_session!
           result = log_in(user, require_totp_check: false)
           if result[:status] == :session_limit_hard_reject
-            render plain: result[:message], status: (result[:http_status] || :conflict)
+            render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
+          elsif result[:restricted]
+            redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
           else
             redirect_with_notice("/", t("sign.app.authentication.totp.success"))
           end

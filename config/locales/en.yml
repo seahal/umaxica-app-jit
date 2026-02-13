@@ -11,6 +11,7 @@ en:
     staff_not_found: "Staff not found. Please log in again."
     no_sessions_selected: "Please select sessions to revoke."
     sessions_revoked: "Sessions revoked. Please continue logging in."
+    login_limit_exceeded: "Login limit exceeded. Please end an existing session and try again."
     edit:
       title: "Session Limit Reached"
       description: "You have reached the maximum number of concurrent sessions. To continue logging in, please select sessions to revoke."

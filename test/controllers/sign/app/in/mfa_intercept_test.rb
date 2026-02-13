@@ -144,12 +144,12 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
       totp_challenge_form: { token: totp_code },
     }
 
-    assert_response :unprocessable_content
+    assert_response :found
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
     # Login should now be completed
-    # assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
+    assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
     # pending_mfa should be cleared
-    # assert_nil session[:pending_mfa]
-    # assert_nil session[:mfa_user_id]
+    assert_nil session[:pending_mfa]
   end
 
   test "TOTP: invalid code shows error" do
@@ -244,18 +244,19 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # Step 3: Visit TOTP form
-    # get new_sign_app_in_challenge_totp_path(ri: "jp")
-    # assert_response :success
+    get new_sign_app_in_challenge_totp_path(ri: "jp")
+    assert_response :success
 
     # Step 4: Submit valid TOTP code
-    # totp_code = ROTP::TOTP.new(@totp.private_key).now
-    # post sign_app_in_challenge_totp_path(ri: "jp"), params: {
-    #   totp_challenge_form: { token: totp_code },
-    # }
+    totp_code = ROTP::TOTP.new(@totp.private_key).now
+    post sign_app_in_challenge_totp_path(ri: "jp"), params: {
+      totp_challenge_form: { token: totp_code },
+    }
 
-    # assert_response :found
-    # assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
-    # assert_nil session[:pending_mfa]
+    assert_response :found
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
+    assert_nil session[:pending_mfa]
   end
 
   private

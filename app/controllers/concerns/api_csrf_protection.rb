@@ -1,64 +1,47 @@
 # frozen_string_literal: true
 
-# CSRF protection for API endpoints (JSON-based)
-# Validates X-CSRF-Token header and Origin/Referer on state-changing requests
 module ApiCsrfProtection
   extend ActiveSupport::Concern
 
-  PROTECTED_METHODS = %w(POST PUT PATCH DELETE).freeze
-
   included do
-    before_action :validate_api_csrf_token,
-                  if: :should_validate_api_csrf?
+    before_action :check_csrf_origin
   end
 
   private
 
-  def should_validate_api_csrf?
-    # Only validate for API requests (JSON)
-    return false unless request.format.json?
+  def check_csrf_origin
+    # GET/HEAD requests are safe; skip origin check
+    return if request.get? || request.head?
 
-    # Only validate state-changing methods
-    PROTECTED_METHODS.include?(request.method)
+    origin = request.headers["Origin"]
+
+    # Allow blank Origin.
+    # Reason: Some clients or same-origin requests may not send the Origin header.
+    # We rely on the standard CSRF token verification (secure_compare) as the primary defense.
+    return if origin.blank?
+
+    handle_invalid_origin unless valid_csrf_origin?(origin)
   end
 
-  def validate_api_csrf_token
-    # Extract token from X-CSRF-Token header
-    token_from_header = request.headers["X-CSRF-Token"]
+  def valid_csrf_origin?(origin)
+    uri = URI.parse(origin)
+    return false unless uri.scheme.in?(%w(http https))
 
-    # Get the session CSRF token (Rails sets this automatically)
-    # For SPA requests, compare token from header with session token
-    session_token = session["_csrf_token"]
+    # Normalize hosts for comparison
+    origin_host = uri.host&.downcase
+    request_host = request.host.downcase
 
-    # Also check Origin/Referer
-    if !validate_request_origin
-      Rails.logger.warn "[CSRF] Invalid origin for API request: #{request.origin}"
-      render json: { error: "invalid_origin" }, status: :forbidden
-      return
-    end
-
-    # Validate token
-    unless token_from_header.present? &&
-        session_token.present? &&
-        ActiveSupport::SecurityUtils.secure_compare(token_from_header, session_token)
-      Rails.logger.warn "[CSRF] Invalid CSRF token for API request"
-      render json: { error: "invalid_csrf_token" }, status: :forbidden
-    end
+    # (B) Origin Check: Option 1 (Strict Match)
+    # Only allow exact match with request host.
+    # Subdomains are NOT allowed by default to prevent subdomain takeover attacks.
+    # If subdomains are needed, use an explicit allowlist instead of `end_with?`.
+    origin_host == request_host
+  rescue URI::InvalidURIError
+    false
   end
 
-  def validate_request_origin
-    # Check Origin header (preferred)
-    origin = request.origin
-    return true if origin.blank? # No origin = same-origin (browser limitation)
-
-    # Parse origin
-    origin_uri = URI.parse(origin)
-    origin_host = origin_uri.host
-
-    # Check against request host and configured allowed hosts
-    request_host = request.host
-
-    # Allow same-origin
-    origin_host == request_host || origin_host.end_with?(".#{request_host}")
+  def handle_invalid_origin
+    Rails.logger.warn "CSRF Origin Mismatch: Origin=#{request.headers["Origin"]} RequestHost=#{request.host}"
+    raise ActionController::InvalidCrossOriginRequest, "CSRF Origin Mismatch"
   end
 end

@@ -95,8 +95,17 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
   private
 
   def require_authentication_or_gate
-    # If logged in (even with restricted session), allow access
-    return if logged_in?
+    # If logged in with a restricted session, allow access (this is the intended user)
+    if logged_in? && current_session_restricted?
+      return
+    end
+
+    # If logged in with an active (non-restricted) session, deny access.
+    # This page is only for users in the restricted session state (3rd login).
+    if logged_in?
+      head :forbidden
+      return
+    end
 
     # If not logged in but has a valid gate, try to load pending user
     if session_limit_gate_valid? && session[:pending_login_user_id].present?

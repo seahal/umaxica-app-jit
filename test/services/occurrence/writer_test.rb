@@ -8,7 +8,7 @@ class OccurrenceWriterTest < ActiveSupport::TestCase
   setup do
     @previous_env = ENV["OCCURRENCE_HMAC_SECRET"]
     ENV["OCCURRENCE_HMAC_SECRET"] = "secret"
-    Occurrence::Writer.instance_variable_set(:@status_id_cache, nil)
+    Occurrence::Writer::STATUS_ID_CACHE.clear
   end
 
   teardown do
@@ -44,7 +44,8 @@ class OccurrenceWriterTest < ActiveSupport::TestCase
 
   test "writer does not call SecureRandom.uuid" do
     SecureRandom.stub(:uuid, -> { raise "uuid should not be called" }) do
-      Occurrence::Writer.log_email!(email: "test@example.com", status: :active)
+      record = Occurrence::Writer.log_email!(email: "test@example.com", status: :active)
+      assert_not_nil record
     end
   end
 

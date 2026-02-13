@@ -18,6 +18,7 @@ module Sign
       class OmniauthCallbacksController < Sign::App::ApplicationController
         include SocialAuthConcern
         include SocialCallbackGuard
+        include SessionLimitGate
 
         # Allow unauthenticated access for login intent
         # For link/reauth, auth is checked in prepare_social_auth_intent!
@@ -208,8 +209,7 @@ module Sign
 
           case status
           when :session_limit_hard_reject
-            render plain: (login_result[:message] || Auth::Base::SESSION_LIMIT_HARD_REJECT_MESSAGE),
-                   status: (login_result[:http_status] || :conflict)
+            render_session_limit_hard_reject(message: login_result[:message], http_status: login_result[:http_status])
           when :session_limit_exceeded
             Rails.logger.debug { "[OmniAuth] Session limit exceeded for user" }
             redirect_to new_sign_app_in_path,

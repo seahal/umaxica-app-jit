@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: d30278c5f1e0e22ab679fd400387cdf4b3e5784d
+  revision: 58c94cbd8081ddefadf8e1824685051f52234791
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -109,7 +109,7 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     aes_key_wrap (1.1.0)
     android_key_attestation (0.3.0)
-    annotaterb (4.21.0)
+    annotaterb (4.22.0)
       activerecord (>= 6.0.0)
       activesupport (>= 6.0.0)
     argon2 (2.3.3)
@@ -150,7 +150,7 @@ GEM
     bigdecimal (4.0.1)
     bindata (2.5.1)
     bindex (0.8.1)
-    bootsnap (1.22.0)
+    bootsnap (1.23.0)
       msgpack (~> 1.2)
     brakeman (8.0.2)
       racc
@@ -691,7 +691,7 @@ GEM
       chunky_png (~> 1.0)
       rqrcode_core (~> 2.0)
     rqrcode_core (2.1.0)
-    rubocop (1.84.1)
+    rubocop (1.84.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -778,14 +778,14 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12935)
-      sorbet-static (= 0.6.12935)
-    sorbet-runtime (0.6.12935)
-    sorbet-static (0.6.12935-aarch64-linux)
-    sorbet-static (0.6.12935-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12935)
-      sorbet (= 0.6.12935)
-      sorbet-runtime (= 0.6.12935)
+    sorbet (0.6.12940)
+      sorbet-static (= 0.6.12940)
+    sorbet-runtime (0.6.12940)
+    sorbet-static (0.6.12940-aarch64-linux)
+    sorbet-static (0.6.12940-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12940)
+      sorbet (= 0.6.12940)
+      sorbet-runtime (= 0.6.12940)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
