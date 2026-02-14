@@ -78,6 +78,11 @@ module TreeableSharedTests
   public
 
   def test_validates_id_presence_and_uniqueness
+    unless string_id_column?
+      assert true, "Skipping string-specific ID validation for integer ID column"
+      return
+    end
+
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
@@ -93,6 +98,11 @@ module TreeableSharedTests
   end
 
   def test_upcases_id_before_validation
+    unless string_id_column?
+      assert true, "Skipping upcase validation for integer ID column"
+      return
+    end
+
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
@@ -102,6 +112,11 @@ module TreeableSharedTests
   end
 
   def test_validates_id_format
+    unless string_id_column?
+      assert true, "Skipping ID format validation for integer ID column"
+      return
+    end
+
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
@@ -121,6 +136,11 @@ module TreeableSharedTests
   end
 
   def test_validates_length_of_id
+    unless string_id_column?
+      assert true, "Skipping ID length validation for integer ID column"
+      return
+    end
+
     klass = treeable_class
     ensure_root_sentinel!(klass)
 

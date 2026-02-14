@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require_relative "../../app/controllers/concerns/auth/base"
+require_relative "../../app/controllers/concerns/auth/user"
+require_relative "../../app/controllers/concerns/auth/staff"
+
 # Helpers for authentication-related test setup.
 #
 # This app supports multiple "surfaces":
@@ -96,23 +100,7 @@ module AuthHelpers
   # Parse Set-Cookie header and extract cookies for follow-up requests
   # Returns a hash of cookie names to values
   def extract_cookies_from_response
-    raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
-    lines =
-      case raw_header
-      when Array
-        raw_header
-      when String
-        raw_header.split("\n")
-      else
-        []
-      end
-
-    cookies_hash = {}
-    lines.each do |line|
-      match = line.match(/\A([^=]+)=([^;]*)/)
-      cookies_hash[match[1]] = match[2] if match
-    end
-    cookies_hash
+    response.cookies
   end
 
   # Check if response has Set-Cookie for a specific cookie name

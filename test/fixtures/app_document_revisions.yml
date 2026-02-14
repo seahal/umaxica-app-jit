@@ -33,6 +33,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  app_document: one
+  permalink: p1
+  response_mode: normal
   published_at: 2026-01-12 17:31:06
   expires_at: 2026-01-12 17:31:06
   edited_by_type: MyString
@@ -40,6 +43,9 @@ one:
   public_id: 216 # was MyStringOne
 
 two:
+  app_document: two
+  permalink: p2
+  response_mode: normal
   published_at: 2026-01-12 17:31:06
   expires_at: 2026-01-12 17:31:06
   edited_by_type: MyString

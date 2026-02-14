@@ -58,6 +58,11 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
     models = [StaffTokenKind, StaffTokenStatus, UserTokenKind, UserTokenStatus]
     models.select! { |model| model.column_names.include?("code") }
 
+    if models.empty?
+      assert true, "No models with code column found (migrated to fixed IDs)"
+      return
+    end
+
     models.each { |model| assert_code_is_citext(model) }
   end
 
@@ -66,6 +71,11 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
       [StaffTokenKind, StaffTokenStatus, UserTokenKind, UserTokenStatus].find do |candidate|
         candidate.included_modules.include?(CodeIdentifiable)
       end
+
+    unless model
+      assert true, "No model with CodeIdentifiable found (migrated to fixed IDs)"
+      return
+    end
 
     status = nil
     begin

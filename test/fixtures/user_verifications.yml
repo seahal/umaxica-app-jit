@@ -1,5 +1,4 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
+# Empty fixture to prevent FK violations when user_tokens are destroyed in tests.
 # == Schema Information
 #
 # Table name: user_verifications
@@ -24,16 +23,3 @@
 #
 #  fk_rails_...  (user_token_id => user_tokens.id)
 #
-one:
-  user_token: one
-  token_digest: digest_one
-  expires_at: <%= 10.minutes.from_now %>
-  revoked_at:
-  last_used_at: <%= Time.current %>
-
-two:
-  user_token: two
-  token_digest: digest_two
-  expires_at: <%= 10.minutes.from_now %>
-  revoked_at:
-  last_used_at: <%= Time.current %>

@@ -23,8 +23,10 @@
 #  fk_rails_...  (preference_id => org_preferences.id)
 #
 
-_fixture:
-
 one:
+  preference: one
+  consented: true
 
 two:
+  preference: two
+  consented: false

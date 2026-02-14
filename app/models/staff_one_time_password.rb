@@ -20,9 +20,7 @@
 # Foreign Keys
 #
 #  fk_rails_...                                                     (staff_id => staffs.id) ON DELETE => cascade
-# rubocop:disable Layout/LineLength
 #  fk_staff_one_time_passwords_on_staff_one_time_password_status_i  (staff_one_time_password_status_id => staff_one_time_password_statuses.id)
-# rubocop:enable Layout/LineLength
 #
 
 # frozen_string_literal: true

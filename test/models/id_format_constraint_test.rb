@@ -35,6 +35,11 @@ class IdFormatConstraintTest < ActiveSupport::TestCase
   end
 
   test "models with string IDs should enforce uppercase alphanumeric and underscore format" do
+    if @target_models.empty?
+      assert true, "No target models with string IDs found (migrated to fixed IDs)"
+      return
+    end
+
     print_target_models
 
     @target_models.each do |model|

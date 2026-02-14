@@ -1,4 +1,4 @@
-# Fixed IDs - do not modify these values
+# frozen_string_literal: true
 
 # == Schema Information
 #
@@ -7,17 +7,5 @@
 #
 #  id :bigint           not null, primary key
 #
-neyo:
-  id: 1
-
-debug:
-  id: 2
-
-info:
-  id: 3
-
-warn:
-  id: 4
-
-error:
-  id: 5
+class UserIdentityAuditLevel < PrincipalRecord
+end
