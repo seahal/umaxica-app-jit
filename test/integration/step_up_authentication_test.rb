@@ -29,61 +29,49 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
   test "GET sensitive page redirects to verification when step-up is not satisfied" do
     get new_sign_app_configuration_emails_registration_url(ri: "jp"), headers: @headers
 
-    # Step-up auth behavior changed - now allows access without verification
-    # or redirects to different location
-    if response.redirect?
-      uri = URI.parse(response.location)
-      query = Rack::Utils.parse_query(uri.query)
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
 
-      assert_equal sign_app_in_challenge_path, uri.path
-      assert_equal "configuration_email", query["scope"]
-      assert_equal "jp", query["ri"]
-    else
-      # If not redirecting, step-up requirement may have been relaxed
-      assert_response :success
-    end
+    assert_equal "/verification", uri.path
+    assert_equal "configuration_email", query["scope"]
+    assert_equal "jp", query["ri"]
   end
 
-  test "POST sensitive action returns 422 when step-up is not satisfied" do
+  test "POST sensitive action returns 401 when step-up is not satisfied" do
     post sign_app_configuration_emails_registration_url(ri: "jp"),
          params: { user_email: { address: "new@example.com" } },
          headers: @headers
 
-    # Step-up auth behavior - may return 422 or redirect
-    # depending on implementation
-    assert response.redirect? || response.status == 422
+    assert_response :unauthorized
+    assert_equal "Re-authentication required", response.body
   end
 
-  test "scope mismatch is not satisfied" do
+  test "scope mismatch redirects to verification" do
     @token.update!(last_step_up_at: 3.minutes.ago, last_step_up_scope: "withdrawal")
 
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 
-    # Step-up behavior changed - may not redirect anymore
-    if response.redirect?
-      query = Rack::Utils.parse_query(URI.parse(response.location).query)
-      assert_equal "configuration_email", query["scope"]
-    else
-      # Scope verification may have been relaxed
-      assert_response :success
-    end
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
+
+    assert_equal "/verification", uri.path
+    assert_equal "configuration_email", query["scope"]
   end
 
-  test "step-up older than 15 minutes is expired" do
+  test "step-up older than 15 minutes redirects to verification" do
     @token.update!(last_step_up_at: 15.minutes.ago, last_step_up_scope: "configuration_email")
 
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 
-    # Step-up TTL behavior changed - may not require re-verification
-    if response.redirect?
-      assert_equal I18n.t("auth.step_up.required"), flash[:alert]
-    else
-      # TTL check may have been relaxed
-      assert_response :success
-    end
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    assert_equal "/verification", uri.path
   end
 
   test "step-up within TTL and matching scope passes through" do
+    satisfy_user_verification(@token)
     @token.update!(last_step_up_at: 10.minutes.ago, last_step_up_scope: "configuration_email")
 
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
@@ -94,19 +82,17 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
   test "HEAD sensitive page redirects to verification when step-up is not satisfied" do
     head new_sign_app_configuration_emails_registration_url(ri: "jp"), headers: @headers
 
-    if response.redirect?
-      uri = URI.parse(response.location)
-      query = Rack::Utils.parse_query(uri.query)
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
 
-      assert_equal sign_app_in_challenge_path, uri.path
-      assert_equal "configuration_email", query["scope"]
-      assert_equal "jp", query["ri"]
-    else
-      assert_response :success
-    end
+    assert_equal "/verification", uri.path
+    assert_equal "configuration_email", query["scope"]
+    assert_equal "jp", query["ri"]
   end
 
   test "HEAD step-up within TTL and matching scope passes through" do
+    satisfy_user_verification(@token)
     @token.update!(last_step_up_at: 10.minutes.ago, last_step_up_scope: "configuration_email")
 
     head sign_app_configuration_emails_url(ri: "jp"), headers: @headers

@@ -77,6 +77,18 @@ module AuthHelpers
     cookies[::Auth::Base::REFRESH_COOKIE_KEY] = token
   end
 
+  def satisfy_user_verification(user_token)
+    verification, raw_token = UserVerification.issue_for_token!(token: user_token)
+    cookies[UserVerification.cookie_name] = raw_token
+    verification
+  end
+
+  def satisfy_staff_verification(staff_token)
+    verification, raw_token = StaffVerification.issue_for_token!(token: staff_token)
+    cookies[StaffVerification.cookie_name] = raw_token
+    verification
+  end
+
   # Legacy aliases for backward compatibility
   alias_method :set_user_access_cookie, :set_access_cookie
   alias_method :set_staff_access_cookie, :set_access_cookie

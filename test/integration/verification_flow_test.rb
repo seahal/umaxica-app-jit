@@ -34,7 +34,7 @@ class VerificationFlowTest < ActionDispatch::IntegrationTest
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
-    assert_match %r{/in/challenge}, response.location
+    assert_match %r{/verification}, response.location
     assert_match(/scope=configuration_email/, response.location)
     assert_match(/return_to=/, response.location)
   end
@@ -47,7 +47,7 @@ class VerificationFlowTest < ActionDispatch::IntegrationTest
     head sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
-    assert_match %r{/in/challenge}, response.location
+    assert_match %r{/verification}, response.location
     assert_match(/scope=configuration_email/, response.location)
     assert_match(/return_to=/, response.location)
   end

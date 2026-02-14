@@ -12,9 +12,9 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
       public_id: "secret_user_#{SecureRandom.hex(4)}",
     )
     @token = UserToken.create!(
-      user_id: @user.id, last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_secret",
+      user_id: @user.id,
     )
+    satisfy_user_verification(@token)
     UserEmail.create!(
       user: @user,
       address: "secret-user@example.com",
@@ -186,9 +186,9 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   test "update route stays unavailable even when secret is last method" do
     user = create_verified_user_with_email(email_address: "update_block_user@example.com")
     token = UserToken.create!(
-      user_id: user.id, last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_secret",
+      user_id: user.id,
     )
+    satisfy_user_verification(token)
     secret = UserSecret.create!(
       user: user,
       name: "Only Secret",
@@ -211,9 +211,9 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   test "destroy blocks last method" do
     user = create_verified_user_with_email(email_address: "destroy_block_user@example.com")
     token = UserToken.create!(
-      user_id: user.id, last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_secret",
+      user_id: user.id,
     )
+    satisfy_user_verification(token)
     secret = UserSecret.create!(
       user: user,
       name: "Only Secret",

@@ -3,11 +3,11 @@
 # == Schema Information
 #
 # Table name: org_contact_behavior_events
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
-class OrgContactBehaviorEvent < ActivityRecord
+class OrgContactBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
 
   NEYO = 1

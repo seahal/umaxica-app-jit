@@ -10,18 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_13_142000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "app_contact_behavior_events", force: :cascade do |t|
+  create_table "app_contact_audit_events", force: :cascade do |t|
   end
 
-  create_table "app_contact_behavior_levels", force: :cascade do |t|
+  create_table "app_contact_audit_levels", force: :cascade do |t|
   end
 
-  create_table "app_contact_behaviors", force: :cascade do |t|
+  create_table "app_contact_histories", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -38,25 +38,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_app_contact_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_app_contact_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_app_contact_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_app_contact_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_app_contact_behaviors_on_occurred_at"
-    t.index ["parent_id"], name: "index_app_contact_behaviors_on_parent_id"
-    t.index ["subject_id"], name: "index_app_contact_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_4cc6ad33bc"
-    t.check_constraint "event_id >= 0", name: "app_contact_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "app_contact_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_app_contact_histories_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_app_contact_histories_on_event_id"
+    t.index ["expires_at"], name: "index_app_contact_histories_on_expires_at"
+    t.index ["level_id"], name: "index_app_contact_histories_on_level_id"
+    t.index ["occurred_at"], name: "index_app_contact_histories_on_occurred_at"
+    t.index ["parent_id"], name: "index_app_contact_histories_on_parent_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_21d52ab3f6"
+    t.check_constraint "event_id >= 0", name: "app_contact_histories_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "app_contact_histories_level_id_non_negative_check"
   end
 
-  create_table "app_document_behavior_events", force: :cascade do |t|
+  create_table "app_document_audit_events", force: :cascade do |t|
   end
 
-  create_table "app_document_behavior_levels", force: :cascade do |t|
+  create_table "app_document_audit_levels", force: :cascade do |t|
   end
 
-  create_table "app_document_behaviors", force: :cascade do |t|
+  create_table "app_document_audits", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -71,15 +70,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_app_document_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_app_document_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_app_document_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_app_document_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_app_document_behaviors_on_occurred_at"
-    t.index ["subject_id"], name: "index_app_document_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_9aaf743787"
-    t.check_constraint "event_id >= 0", name: "app_document_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "app_document_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_app_document_audits_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_app_document_audits_on_event_id"
+    t.index ["expires_at"], name: "index_app_document_audits_on_expires_at"
+    t.index ["level_id"], name: "index_app_document_audits_on_level_id"
+    t.index ["occurred_at"], name: "index_app_document_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_app_document_audits_on_subject_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_cf1fa79ee4"
+    t.check_constraint "event_id >= 0", name: "app_document_audits_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "app_document_audits_level_id_non_negative_check"
   end
 
   create_table "app_preference_activities", force: :cascade do |t|
@@ -114,13 +113,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
   create_table "app_preference_activity_levels", force: :cascade do |t|
   end
 
-  create_table "app_timeline_behavior_events", force: :cascade do |t|
+  create_table "app_timeline_audit_events", force: :cascade do |t|
   end
 
-  create_table "app_timeline_behavior_levels", force: :cascade do |t|
+  create_table "app_timeline_audit_levels", force: :cascade do |t|
   end
 
-  create_table "app_timeline_behaviors", force: :cascade do |t|
+  create_table "app_timeline_audits", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -135,24 +134,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_app_timeline_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_app_timeline_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_app_timeline_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_app_timeline_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_app_timeline_behaviors_on_occurred_at"
-    t.index ["subject_id"], name: "index_app_timeline_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_72b011a3db"
-    t.check_constraint "event_id >= 0", name: "app_timeline_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "app_timeline_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_app_timeline_audits_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_app_timeline_audits_on_event_id"
+    t.index ["expires_at"], name: "index_app_timeline_audits_on_expires_at"
+    t.index ["level_id"], name: "index_app_timeline_audits_on_level_id"
+    t.index ["occurred_at"], name: "index_app_timeline_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_app_timeline_audits_on_subject_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_c80b4e4f83"
+    t.check_constraint "event_id >= 0", name: "app_timeline_audits_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "app_timeline_audits_level_id_non_negative_check"
   end
 
-  create_table "com_contact_behavior_events", force: :cascade do |t|
+  create_table "com_contact_audit_events", force: :cascade do |t|
   end
 
-  create_table "com_contact_behavior_levels", force: :cascade do |t|
+  create_table "com_contact_audit_levels", force: :cascade do |t|
   end
 
-  create_table "com_contact_behaviors", force: :cascade do |t|
+  create_table "com_contact_audits", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -169,25 +168,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_com_contact_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_com_contact_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_com_contact_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_com_contact_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_com_contact_behaviors_on_occurred_at"
-    t.index ["parent_id"], name: "index_com_contact_behaviors_on_parent_id"
-    t.index ["subject_id"], name: "index_com_contact_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_c1d0a622dc"
-    t.check_constraint "event_id >= 0", name: "com_contact_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "com_contact_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_com_contact_audits_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_com_contact_audits_on_event_id"
+    t.index ["expires_at"], name: "index_com_contact_audits_on_expires_at"
+    t.index ["level_id"], name: "index_com_contact_audits_on_level_id"
+    t.index ["occurred_at"], name: "index_com_contact_audits_on_occurred_at"
+    t.index ["parent_id"], name: "index_com_contact_audits_on_parent_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_1ec6aec32c"
+    t.check_constraint "event_id >= 0", name: "com_contact_audits_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "com_contact_audits_level_id_non_negative_check"
   end
 
-  create_table "com_document_behavior_events", force: :cascade do |t|
+  create_table "com_document_audit_events", force: :cascade do |t|
   end
 
-  create_table "com_document_behavior_levels", force: :cascade do |t|
+  create_table "com_document_audit_levels", force: :cascade do |t|
   end
 
-  create_table "com_document_behaviors", force: :cascade do |t|
+  create_table "com_document_audits", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -202,15 +200,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_com_document_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_com_document_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_com_document_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_com_document_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_com_document_behaviors_on_occurred_at"
-    t.index ["subject_id"], name: "index_com_document_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_6a22ab86d6"
-    t.check_constraint "event_id >= 0", name: "com_document_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "com_document_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_com_document_audits_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_com_document_audits_on_event_id"
+    t.index ["expires_at"], name: "index_com_document_audits_on_expires_at"
+    t.index ["level_id"], name: "index_com_document_audits_on_level_id"
+    t.index ["occurred_at"], name: "index_com_document_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_com_document_audits_on_subject_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_c40361e81b"
+    t.check_constraint "event_id >= 0", name: "com_document_audits_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "com_document_audits_level_id_non_negative_check"
   end
 
   create_table "com_preference_activities", force: :cascade do |t|
@@ -245,13 +243,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
   create_table "com_preference_activity_levels", force: :cascade do |t|
   end
 
-  create_table "com_timeline_behavior_events", force: :cascade do |t|
+  create_table "com_timeline_audit_events", force: :cascade do |t|
   end
 
-  create_table "com_timeline_behavior_levels", force: :cascade do |t|
+  create_table "com_timeline_audit_levels", force: :cascade do |t|
   end
 
-  create_table "com_timeline_behaviors", force: :cascade do |t|
+  create_table "com_timeline_audits", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -266,24 +264,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_com_timeline_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_com_timeline_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_com_timeline_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_com_timeline_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_com_timeline_behaviors_on_occurred_at"
-    t.index ["subject_id"], name: "index_com_timeline_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_cbca2c0dea"
-    t.check_constraint "event_id >= 0", name: "com_timeline_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "com_timeline_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_com_timeline_audits_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_com_timeline_audits_on_event_id"
+    t.index ["expires_at"], name: "index_com_timeline_audits_on_expires_at"
+    t.index ["level_id"], name: "index_com_timeline_audits_on_level_id"
+    t.index ["occurred_at"], name: "index_com_timeline_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_com_timeline_audits_on_subject_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_99ec847a5c"
+    t.check_constraint "event_id >= 0", name: "com_timeline_audits_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "com_timeline_audits_level_id_non_negative_check"
   end
 
-  create_table "org_contact_behavior_events", force: :cascade do |t|
+  create_table "org_contact_audit_events", force: :cascade do |t|
   end
 
-  create_table "org_contact_behavior_levels", force: :cascade do |t|
+  create_table "org_contact_audit_levels", force: :cascade do |t|
   end
 
-  create_table "org_contact_behaviors", force: :cascade do |t|
+  create_table "org_contact_histories", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -300,25 +298,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_org_contact_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_org_contact_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_org_contact_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_org_contact_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_org_contact_behaviors_on_occurred_at"
-    t.index ["parent_id"], name: "index_org_contact_behaviors_on_parent_id"
-    t.index ["subject_id"], name: "index_org_contact_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_cce97f7f83"
-    t.check_constraint "event_id >= 0", name: "org_contact_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "org_contact_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_org_contact_histories_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_org_contact_histories_on_event_id"
+    t.index ["expires_at"], name: "index_org_contact_histories_on_expires_at"
+    t.index ["level_id"], name: "index_org_contact_histories_on_level_id"
+    t.index ["occurred_at"], name: "index_org_contact_histories_on_occurred_at"
+    t.index ["parent_id"], name: "index_org_contact_histories_on_parent_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_3eb778d373"
+    t.check_constraint "event_id >= 0", name: "org_contact_histories_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "org_contact_histories_level_id_non_negative_check"
   end
 
-  create_table "org_document_behavior_events", force: :cascade do |t|
+  create_table "org_document_audit_events", force: :cascade do |t|
   end
 
-  create_table "org_document_behavior_levels", force: :cascade do |t|
+  create_table "org_document_audit_levels", force: :cascade do |t|
   end
 
-  create_table "org_document_behaviors", force: :cascade do |t|
+  create_table "org_document_audits", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -333,15 +330,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_org_document_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_org_document_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_org_document_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_org_document_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_org_document_behaviors_on_occurred_at"
-    t.index ["subject_id"], name: "index_org_document_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_f6fc919b48"
-    t.check_constraint "event_id >= 0", name: "org_document_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "org_document_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_org_document_audits_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_org_document_audits_on_event_id"
+    t.index ["expires_at"], name: "index_org_document_audits_on_expires_at"
+    t.index ["level_id"], name: "index_org_document_audits_on_level_id"
+    t.index ["occurred_at"], name: "index_org_document_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_org_document_audits_on_subject_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_bf53171ad0"
+    t.check_constraint "event_id >= 0", name: "org_document_audits_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "org_document_audits_level_id_non_negative_check"
   end
 
   create_table "org_preference_activities", force: :cascade do |t|
@@ -376,13 +373,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
   create_table "org_preference_activity_levels", force: :cascade do |t|
   end
 
-  create_table "org_timeline_behavior_events", force: :cascade do |t|
+  create_table "org_timeline_audit_events", force: :cascade do |t|
   end
 
-  create_table "org_timeline_behavior_levels", force: :cascade do |t|
+  create_table "org_timeline_audit_levels", force: :cascade do |t|
   end
 
-  create_table "org_timeline_behaviors", force: :cascade do |t|
+  create_table "org_timeline_audits", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
@@ -397,15 +394,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id", "occurred_at"], name: "index_org_timeline_behaviors_on_actor_id_and_occurred_at"
-    t.index ["event_id"], name: "index_org_timeline_behaviors_on_event_id"
-    t.index ["expires_at"], name: "index_org_timeline_behaviors_on_expires_at"
-    t.index ["level_id"], name: "index_org_timeline_behaviors_on_level_id"
-    t.index ["occurred_at"], name: "index_org_timeline_behaviors_on_occurred_at"
-    t.index ["subject_id"], name: "index_org_timeline_behaviors_on_subject_id"
-    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_6bcd25f20a"
-    t.check_constraint "event_id >= 0", name: "org_timeline_behaviors_event_id_non_negative_check"
-    t.check_constraint "level_id >= 0", name: "org_timeline_behaviors_level_id_non_negative_check"
+    t.index ["actor_id", "occurred_at"], name: "index_org_timeline_audits_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_org_timeline_audits_on_event_id"
+    t.index ["expires_at"], name: "index_org_timeline_audits_on_expires_at"
+    t.index ["level_id"], name: "index_org_timeline_audits_on_level_id"
+    t.index ["occurred_at"], name: "index_org_timeline_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_org_timeline_audits_on_subject_id"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_0f4341deba"
+    t.check_constraint "event_id >= 0", name: "org_timeline_audits_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "org_timeline_audits_level_id_non_negative_check"
   end
 
   create_table "staff_activities", force: :cascade do |t|
@@ -474,30 +471,30 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010002) do
   create_table "user_activity_levels", force: :cascade do |t|
   end
 
-  add_foreign_key "app_contact_behaviors", "app_contact_behavior_events", column: "event_id", validate: false
-  add_foreign_key "app_contact_behaviors", "app_contact_behavior_levels", column: "level_id", validate: false
-  add_foreign_key "app_document_behaviors", "app_document_behavior_events", column: "event_id", validate: false
-  add_foreign_key "app_document_behaviors", "app_document_behavior_levels", column: "level_id", validate: false
+  add_foreign_key "app_contact_histories", "app_contact_audit_events", column: "event_id", validate: false
+  add_foreign_key "app_contact_histories", "app_contact_audit_levels", column: "level_id", validate: false
+  add_foreign_key "app_document_audits", "app_document_audit_events", column: "event_id", validate: false
+  add_foreign_key "app_document_audits", "app_document_audit_levels", column: "level_id", validate: false
   add_foreign_key "app_preference_activities", "app_preference_activity_events", column: "event_id", validate: false
   add_foreign_key "app_preference_activities", "app_preference_activity_levels", column: "level_id", validate: false
-  add_foreign_key "app_timeline_behaviors", "app_timeline_behavior_events", column: "event_id", validate: false
-  add_foreign_key "app_timeline_behaviors", "app_timeline_behavior_levels", column: "level_id", validate: false
-  add_foreign_key "com_contact_behaviors", "com_contact_behavior_events", column: "event_id", validate: false
-  add_foreign_key "com_contact_behaviors", "com_contact_behavior_levels", column: "level_id", validate: false
-  add_foreign_key "com_document_behaviors", "com_document_behavior_events", column: "event_id", validate: false
-  add_foreign_key "com_document_behaviors", "com_document_behavior_levels", column: "level_id", validate: false
+  add_foreign_key "app_timeline_audits", "app_timeline_audit_events", column: "event_id", validate: false
+  add_foreign_key "app_timeline_audits", "app_timeline_audit_levels", column: "level_id", validate: false
+  add_foreign_key "com_contact_audits", "com_contact_audit_events", column: "event_id", validate: false
+  add_foreign_key "com_contact_audits", "com_contact_audit_levels", column: "level_id", validate: false
+  add_foreign_key "com_document_audits", "com_document_audit_events", column: "event_id", validate: false
+  add_foreign_key "com_document_audits", "com_document_audit_levels", column: "level_id", validate: false
   add_foreign_key "com_preference_activities", "com_preference_activity_events", column: "event_id", validate: false
   add_foreign_key "com_preference_activities", "com_preference_activity_levels", column: "level_id", validate: false
-  add_foreign_key "com_timeline_behaviors", "com_timeline_behavior_events", column: "event_id", validate: false
-  add_foreign_key "com_timeline_behaviors", "com_timeline_behavior_levels", column: "level_id", validate: false
-  add_foreign_key "org_contact_behaviors", "org_contact_behavior_events", column: "event_id", validate: false
-  add_foreign_key "org_contact_behaviors", "org_contact_behavior_levels", column: "level_id", validate: false
-  add_foreign_key "org_document_behaviors", "org_document_behavior_events", column: "event_id", validate: false
-  add_foreign_key "org_document_behaviors", "org_document_behavior_levels", column: "level_id", validate: false
+  add_foreign_key "com_timeline_audits", "com_timeline_audit_events", column: "event_id", validate: false
+  add_foreign_key "com_timeline_audits", "com_timeline_audit_levels", column: "level_id", validate: false
+  add_foreign_key "org_contact_histories", "org_contact_audit_events", column: "event_id", validate: false
+  add_foreign_key "org_contact_histories", "org_contact_audit_levels", column: "level_id", validate: false
+  add_foreign_key "org_document_audits", "org_document_audit_events", column: "event_id", validate: false
+  add_foreign_key "org_document_audits", "org_document_audit_levels", column: "level_id", validate: false
   add_foreign_key "org_preference_activities", "org_preference_activity_events", column: "event_id", validate: false
   add_foreign_key "org_preference_activities", "org_preference_activity_levels", column: "level_id", validate: false
-  add_foreign_key "org_timeline_behaviors", "org_timeline_behavior_events", column: "event_id", validate: false
-  add_foreign_key "org_timeline_behaviors", "org_timeline_behavior_levels", column: "level_id", validate: false
+  add_foreign_key "org_timeline_audits", "org_timeline_audit_events", column: "event_id", validate: false
+  add_foreign_key "org_timeline_audits", "org_timeline_audit_levels", column: "level_id", validate: false
   add_foreign_key "staff_activities", "staff_activity_events", column: "event_id", validate: false
   add_foreign_key "staff_activities", "staff_activity_levels", column: "level_id", validate: false
   add_foreign_key "user_activities", "user_activity_events", column: "event_id", validate: false

@@ -18,8 +18,9 @@
 #
 # Foreign Keys
 #
-#  fk_admin_notifications_on_staff_notification_id_cascade
-#    (staff_notification_id => staff_notifications.id) ON DELETE => cascade
+# rubocop:disable Layout/LineLength
+#  fk_admin_notifications_on_staff_notification_id_cascade  (staff_notification_id => staff_notifications.id) ON DELETE => cascade
+# rubocop:enable Layout/LineLength
 #
 
 class AdminNotification < NotificationRecord

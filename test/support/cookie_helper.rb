@@ -10,6 +10,10 @@ module CookieHelper
     Rails.env.production? ? "__Secure-jit_preference_access" : "jit_preference_access"
   end
 
+  def preference_device_id_cookie_name
+    preference_refresh_cookie_name.sub("jit_preference_refresh", "jit_preference_device_id")
+  end
+
   # Read a signed cookie value by key
   # @param key [Symbol, String] The cookie key to read
   # @return [String, nil] The signed cookie value or nil if not found

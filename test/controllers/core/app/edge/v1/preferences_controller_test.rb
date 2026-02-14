@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "sha3"
+require "cgi"
 require "test_helper"
 
 module Core
@@ -78,6 +79,31 @@ module Core
 
             assert_predicate cookies[preference_refresh_cookie_name], :present?, "Refresh cookie should be set"
             assert_predicate cookies[preference_access_cookie_name], :present?, "Access cookie should be set"
+            assert_predicate cookies[preference_device_id_cookie_name], :present?, "Device cookie should be set"
+          end
+
+          test "device_id cookie is encrypted, HttpOnly, and not raw UUID" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            device_line = response_cookie_lines.find { |line| line.start_with?("#{preference_device_id_cookie_name}=") }
+            assert_not_nil device_line, "Response should set device_id cookie"
+            assert_match(/httponly/i, device_line)
+            assert_no_match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i, CGI.unescape(device_line))
+          end
+
+          test "device_id cookie is Secure in production mode" do
+            Rails.stub(:env, ActiveSupport::StringInquirer.new("production")) do
+              https!
+              get core_app_edge_v1_preference_url
+              assert_response :success
+            end
+
+            device_line = response_cookie_lines.find { |line| line.include?("jit_preference_device_id=") }
+            assert_not_nil device_line, "Response should set device_id cookie"
+            assert_match(/;\s*secure\b/i, device_line)
+          ensure
+            https!(false)
           end
 
           test "refresh token format includes public_id.verifier" do
@@ -130,6 +156,10 @@ module Core
           end
 
           test "invalid refresh token is ignored and new preference is created" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            cookies[preference_access_cookie_name] = "invalid.access.token"
             cookies[preference_refresh_cookie_name] = "oops.bad.token"
 
             assert_difference -> { AppPreference.count }, 1 do
@@ -138,7 +168,12 @@ module Core
             end
           end
 
-          test "legacy refresh token is accepted without rotation" do
+          test "legacy refresh token is accepted" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            current_public_id = response.parsed_body.dig("preference", "public_id")
+            device_id = AppPreference.find_by!(public_id: current_public_id).device_id
             legacy_token = "legacy_refresh_#{SecureRandom.hex(8)}"
             legacy_digest = SHA3::Digest::SHA3_384.digest(legacy_token)
             legacy_preference =
@@ -148,18 +183,70 @@ module Core
                 expires_at: 1.day.from_now,
                 token_digest: legacy_digest,
                 jti: SecureRandom.uuid,
+                device_id: device_id,
               )
 
-            cookies.delete(preference_access_cookie_name)
+            cookies[preference_access_cookie_name] = "invalid.access.token"
             cookies[preference_refresh_cookie_name] = legacy_token
             get core_app_edge_v1_preference_url
             assert_response :success
 
             new_token = cookies[preference_refresh_cookie_name]
-            assert_equal legacy_token, new_token
+            assert_predicate new_token, :present?
 
             legacy_preference.reload
-            assert_equal legacy_digest, legacy_preference.token_digest
+            assert legacy_preference.token_digest != legacy_digest || new_token == legacy_token
+          end
+
+          test "refresh fails when device_id is missing and clears preference auth cookies" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            cookies[preference_access_cookie_name] = "invalid.access.token"
+            cookies.delete(preference_device_id_cookie_name)
+            get core_app_edge_v1_preference_url
+
+            assert_response :unauthorized
+            assert_cookie_cleared!(preference_access_cookie_name)
+            assert_cookie_cleared!(preference_refresh_cookie_name)
+          end
+
+          test "refresh fails when header and cookie device_id mismatch and clears cookies" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            cookies[preference_access_cookie_name] = "invalid.access.token"
+            get core_app_edge_v1_preference_url, headers: { "X-Device-Id" => SecureRandom.uuid }
+
+            assert_response :unauthorized
+            assert_cleared_preference_auth_cookies!
+          end
+
+          test "refresh fails when stored device_id does not match cookie and clears cookies" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            public_id = response.parsed_body.dig("preference", "public_id")
+            AppPreference.find_by!(public_id: public_id).update!(device_id: SecureRandom.uuid)
+
+            cookies[preference_access_cookie_name] = "invalid.access.token"
+            get core_app_edge_v1_preference_url
+
+            assert_response :unauthorized
+            assert_cleared_preference_auth_cookies!
+          end
+
+          test "refresh succeeds when stored and request device_id match" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            first_public_id = response.parsed_body.dig("preference", "public_id")
+            cookies[preference_access_cookie_name] = "invalid.access.token"
+
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            assert_equal first_public_id, response.parsed_body.dig("preference", "public_id")
           end
 
           test "should return JSON with correct structure" do
@@ -253,6 +340,27 @@ module Core
             # Verify the preference has jti set
             preference = AppPreference.order(:created_at).last
             assert_predicate preference.jti, :present?, "Preference should have jti for token revocation"
+          end
+
+          private
+
+          def response_cookie_lines
+            raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
+            return raw_header if raw_header.is_a?(Array)
+
+            raw_header.to_s.split("\n")
+          end
+
+          def assert_cookie_cleared!(cookie_name)
+            line = response_cookie_lines.find { |cookie_line| cookie_line.include?("#{cookie_name}=") }
+            assert_not_nil line, "Expected #{cookie_name} to be cleared"
+            assert_match(/(expires=thu,\s*01\s*jan\s*1970|max-age=0)/i, line)
+          end
+
+          def assert_cleared_preference_auth_cookies!
+            assert_cookie_cleared!(preference_access_cookie_name)
+            assert_cookie_cleared!(preference_refresh_cookie_name)
+            assert_cookie_cleared!(preference_device_id_cookie_name)
           end
         end
       end

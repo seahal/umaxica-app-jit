@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_12_120200) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_13_111815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -287,19 +287,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_120200) do
   end
 
   create_table "staff_occurrence_statuses", force: :cascade do |t|
+    t.string "name", default: "", null: false
   end
 
   create_table "staff_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
+    t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
+    t.string "event_type", default: "", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_staff_occurrences_on_body", unique: true
+    t.index ["event_type", "created_at"], name: "index_staff_occurrences_on_event_type_and_created_at"
     t.index ["expires_at"], name: "index_staff_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_staff_occurrences_on_public_id", unique: true
+    t.index ["status_id", "created_at"], name: "index_staff_occurrences_on_status_id_and_created_at"
     t.index ["status_id"], name: "index_staff_occurrences_on_status_id"
   end
 
@@ -368,19 +373,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_120200) do
   end
 
   create_table "user_occurrence_statuses", force: :cascade do |t|
+    t.string "name", default: "", null: false
   end
 
   create_table "user_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
+    t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
+    t.string "event_type", default: "", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_user_occurrences_on_body", unique: true
+    t.index ["event_type", "created_at"], name: "index_user_occurrences_on_event_type_and_created_at"
     t.index ["expires_at"], name: "index_user_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_user_occurrences_on_public_id", unique: true
+    t.index ["status_id", "created_at"], name: "index_user_occurrences_on_status_id_and_created_at"
     t.index ["status_id"], name: "index_user_occurrences_on_status_id"
   end
 

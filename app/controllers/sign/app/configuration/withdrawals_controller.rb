@@ -4,11 +4,10 @@ module Sign
   module App
     module Configuration
       class WithdrawalsController < ApplicationController
-        include ::Auth::StepUp
+        include ::Auth::VerificationEnforcer
         include Common::Redirect
 
         before_action :authenticate_user!
-        before_action -> { require_step_up!(scope: "withdrawal") }
 
         def new
           @schedule_form = Withdrawal::ScheduleForm.new(schedule_params)
@@ -128,6 +127,14 @@ module Sign
 
         def deactivate_params
           params.permit(:ack_deactivate_today)
+        end
+
+        def verification_required_action?
+          true
+        end
+
+        def verification_scope
+          "withdrawal"
         end
       end
     end

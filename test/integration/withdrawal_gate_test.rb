@@ -23,9 +23,8 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "deactivated_#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "withdrawal",
     )
+    satisfy_user_verification(@token)
 
     @headers = {
       "X-TEST-CURRENT-USER" => @deactivated_user.id.to_s,
@@ -66,9 +65,8 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "normal_#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "withdrawal",
     )
+    satisfy_user_verification(normal_token)
 
     headers = {
       "X-TEST-CURRENT-USER" => normal_user.id.to_s,

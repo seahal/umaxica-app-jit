@@ -9,11 +9,13 @@
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  device_id    :string
 #  public_id    :string           not null
 #  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
+#  index_app_preferences_on_device_id  (device_id)
 #  index_app_preferences_on_jti        (jti) UNIQUE
 #  index_app_preferences_on_public_id  (public_id) UNIQUE
 #  index_app_preferences_on_status_id  (status_id)

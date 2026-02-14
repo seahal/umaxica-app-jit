@@ -82,8 +82,11 @@ module Sign
           end
 
           session.delete(REAUTH_SESSION_KEY)
-          redirect_to sign_org_configuration_path(ri: params[:ri]),
-                      alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です")
+          safe_redirect_to(
+            sign_org_configuration_path(ri: params[:ri]),
+            fallback: "/configuration",
+            alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です"),
+          )
           false
         end
 
@@ -93,7 +96,10 @@ module Sign
           scope = rs["scope"]
 
           now = Time.current
+          verification, raw_token = StaffVerification.issue_for_token!(token: @actor_token)
           @actor_token.update!(last_step_up_at: now, last_step_up_scope: scope)
+          set_verification_cookie!(raw_token, expires_at: verification.expires_at)
+          create_audit_event!(StaffActivityEvent::STEP_UP_VERIFIED, subject: current_staff)
 
           session.delete(REAUTH_SESSION_KEY)
 
@@ -104,8 +110,11 @@ module Sign
         def require_method_available!(method_sym)
           return true if available_step_up_methods.include?(method_sym)
 
-          redirect_to sign_org_verification_path(ri: params[:ri]),
-                      alert: I18n.t("auth.step_up.method_unavailable", default: "この認証方法は利用できません")
+          safe_redirect_to(
+            sign_org_verification_path(ri: params[:ri]),
+            fallback: "/verification",
+            alert: I18n.t("auth.step_up.method_unavailable", default: "この認証方法は利用できません"),
+          )
           false
         end
 
@@ -206,6 +215,33 @@ module Sign
           result = totps.any? { |totp| ROTP::TOTP.new(totp.private_key).verify(code) }
           @verification_errors = ["確認コードが正しくありません"] unless result
           result
+        end
+
+        def set_verification_cookie!(raw_token, expires_at:)
+          cookies[StaffVerification.cookie_name] = {
+            value: raw_token,
+            expires: expires_at,
+            httponly: true,
+            secure: Rails.env.production? || request.ssl?,
+            same_site: :lax,
+            path: "/",
+          }
+        end
+
+        def create_audit_event!(event_id, subject:)
+          ActivityRecord.connected_to(role: :writing) do
+            StaffActivityEvent.find_or_create_by!(id: event_id)
+            StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NEYO)
+          end
+
+          StaffActivity.create!(
+            actor_type: "Staff",
+            actor_id: current_staff.id,
+            event_id: event_id,
+            subject_id: subject.id.to_s,
+            subject_type: subject.class.name,
+            occurred_at: Time.current,
+          )
         end
       end
     end

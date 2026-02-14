@@ -11,7 +11,11 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = create_verified_user_with_email(email_address: "passkey_config_test_user@example.com")
     @other_user = create_verified_user_with_email(email_address: "other_passkey_config_test_user@example.com")
-    @headers = as_user_headers(@user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")).freeze
+    @token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    satisfy_user_verification(@token)
+    @headers = as_user_headers(@user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")).merge(
+      "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
+    ).freeze
 
     # Mock TRUSTED_ORIGINS
     @original_trusted_origins = Webauthn.method(:trusted_origins)
@@ -243,7 +247,15 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
   test "new returns forbidden plain message when user has no verified recovery identity" do
     unverified_user = User.create!(status_id: UserStatus::NEYO, public_id: SecureRandom.hex(10))
-    headers = as_user_headers(unverified_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+    token = UserToken.create!(user: unverified_user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    satisfy_user_verification(token)
+    headers = as_user_headers(
+      unverified_user,
+      host: ENV.fetch(
+        "SIGN_SERVICE_URL",
+        "sign.app.localhost",
+      ),
+    ).merge("X-TEST-SESSION-PUBLIC-ID" => token.public_id)
 
     get new_sign_app_configuration_passkey_path(ri: "jp"), headers: headers
 
@@ -304,7 +316,11 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
   test "allows deleting last passkey when verified email exists" do
     user = create_verified_user_with_email(email_address: "passkey_rule_email_ok_#{SecureRandom.hex(4)}@example.com")
-    headers = as_user_headers(user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+    token = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    satisfy_user_verification(token)
+    headers = as_user_headers(user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")).merge(
+      "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+    )
     passkey = UserPasskey.create!(
       user: user,
       webauthn_id: "webauthn_single_#{SecureRandom.hex(6)}",
@@ -325,9 +341,8 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     user = User.create!(status_id: UserStatus::NEYO, public_id: "ups_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_passkey",
     )
+    satisfy_user_verification(token)
     headers = {
       "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"),
       "X-TEST-CURRENT-USER" => user.id.to_s,

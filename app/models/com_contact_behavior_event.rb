@@ -3,11 +3,11 @@
 # == Schema Information
 #
 # Table name: com_contact_behavior_events
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
-class ComContactBehaviorEvent < ActivityRecord
+class ComContactBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
 
   NEYO = 1

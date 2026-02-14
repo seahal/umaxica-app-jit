@@ -9,9 +9,9 @@ class Sign::App::Configuration::ChallengesControllerTest < ActionDispatch::Integ
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
     @token = UserToken.create!(
-      user_id: @user.id, last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_mfa",
+      user_id: @user.id,
     )
+    satisfy_user_verification(@token)
     @headers = {
       "X-TEST-CURRENT-USER" => @user.id,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,

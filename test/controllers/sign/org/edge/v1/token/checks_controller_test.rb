@@ -3,7 +3,7 @@
 require "test_helper"
 
 class Sign::Org::Edge::V1::Token::ChecksControllerTest < ActionDispatch::IntegrationTest
-  fixtures :staffs, :staff_tokens
+  fixtures :staffs, :staff_tokens, :users
 
   setup do
     @staff = staffs(:one)
@@ -64,6 +64,33 @@ class Sign::Org::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     assert_equal({ "authenticated" => false }, response.parsed_body)
+  end
+
+  test "GET check with user token on staff endpoint returns 401" do
+    user = users(:one)
+
+    # Create a staff token record for the session to exist
+    token_record = StaffToken.create!(staff: @staff)
+    token_record.rotate_refresh_token!
+
+    # Generate a JWT with user actor type (wrong for staff endpoint)
+    access_token = jwt_access_token_for(
+      user,
+      host: @host,
+      session_public_id: token_record.public_id,
+      resource_type: "user",
+    )
+
+    cookies[Auth::Base::ACCESS_COOKIE_KEY] = access_token
+
+    get "/edge/v1/token/check",
+        headers: { "Host" => @host, "Accept" => "application/json" },
+        as: :json
+
+    assert_response :unauthorized
+    json = response.parsed_body
+    assert_not json["authenticated"]
+    assert_equal({ "authenticated" => false }, json)
   end
 
   test "logout destroys token record so old Bearer access fails" do

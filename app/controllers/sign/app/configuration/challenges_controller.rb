@@ -4,10 +4,9 @@ module Sign
   module App
     module Configuration
       class ChallengesController < ApplicationController
-        include ::Auth::StepUp
+        include ::Auth::VerificationEnforcer
 
         before_action :authenticate_user!
-        before_action -> { require_step_up!(scope: "configuration_mfa") }, only: :update
 
         def show
           @user = current_user
@@ -32,6 +31,16 @@ module Sign
           show
           flash.now[:alert] = t("sign.app.configuration.mfa.update.failure")
           render :show, status: :unprocessable_content
+        end
+
+        private
+
+        def verification_required_action?
+          action_name == "update"
+        end
+
+        def verification_scope
+          "configuration_mfa"
         end
       end
     end

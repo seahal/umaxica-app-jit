@@ -211,9 +211,11 @@ module Preference
     private
 
     def set_preferences_cookie
+      clear_preference_refresh_failure!
       return if load_access_token_payload
 
       preference, _ = load_preference_record_from_refresh_token!(create_if_missing: true)
+      return render_preference_refresh_error! if preference_refresh_failed?
       return if preference.blank?
 
       # Rotate refresh token on access token re-issue to limit replay if leaked.
@@ -669,13 +671,42 @@ module Preference
 
       token_value = refresh_token_value
       @refresh_token_value = token_value
+      refresh_public_id = nil
+      refresh_device_id = nil
       preference =
         if token_value.present?
-          digest = refresh_token_lookup_digest(token_value)
+          refresh_public_id, refresh_verifier = parse_refresh_token(token_value)
+          digest =
+            if refresh_verifier.present?
+              digest_refresh_token(refresh_verifier)
+            else
+              refresh_token_lookup_digest(token_value)
+            end
+          refresh_device_id = extract_preference_refresh_device_id
+          if refresh_device_id.blank?
+            handle_preference_refresh_device_denied(nil, refresh_public_id)
+            return [nil, false]
+          end
+
           PreferenceRecord.connected_to(role: :writing) do
-            preference_class.includes(preference_associations_to_preload).find_by(token_digest: digest) if digest
+            relation = preference_class.includes(preference_associations_to_preload)
+            if digest
+              if refresh_public_id.present?
+                relation.find_by(public_id: refresh_public_id, token_digest: digest)
+              else
+                relation.find_by(token_digest: digest)
+              end
+            end
           end
         end
+
+      if token_value.present? &&
+          preference.present? &&
+          preference.device_id.to_s != refresh_device_id.to_s
+        @preference_refresh_device_reason = "mismatch"
+        handle_preference_refresh_device_denied(preference, refresh_public_id)
+        return [nil, false]
+      end
 
       if valid_refresh_preference?(preference)
         @preferences = preference
@@ -698,6 +729,7 @@ module Preference
           @preferences = preference_class.create!(
             expires_at: expires_at,
             jti: Jit::Security::Jwt::JtiGenerator.generate,
+            device_id: SecureRandom.uuid,
           )
 
           generated_token, verifier = generate_refresh_token(public_id: @preferences.public_id)
@@ -720,6 +752,7 @@ module Preference
 
       @refresh_token_value = generated_token
       set_refresh_token_cookie(generated_token, expires_at)
+      set_preference_device_id_cookie!(@preferences.device_id, expires_at: expires_at)
 
       @preferences
     end
@@ -754,6 +787,7 @@ module Preference
       )
 
       set_refresh_token_cookie(new_token, new_expiry)
+      set_preference_device_id_cookie!(preference.device_id, expires_at: new_expiry)
       @refresh_token_value = new_token
     end
 
@@ -769,16 +803,9 @@ module Preference
       )
       return if token.blank?
 
-      cookie_options = {
+      cookies[access_token_cookie_name] = preference_auth_cookie_options(expires_at: ACCESS_TOKEN_TTL.from_now).merge(
         value: token,
-        expires: ACCESS_TOKEN_TTL.from_now,
-        httponly: true,
-        secure: Rails.env.production?,
-        same_site: :lax,
-      }
-      domain = cookie_domain
-      cookie_options[:domain] = domain if domain.present?
-      cookies[access_token_cookie_name] = cookie_options
+      )
 
       @preference_payload = Token.decode(token, host: request.host)
     end
@@ -858,6 +885,7 @@ module Preference
 
     def ensure_preferences_record
       load_preference_record_from_refresh_token!(create_if_missing: true)
+      render_preference_refresh_error! if preference_refresh_failed?
     end
 
     def refresh_token_expiry
@@ -866,6 +894,10 @@ module Preference
 
     def refresh_token_cookie_name
       Rails.env.production? ? "__Secure-jit_preference_refresh" : "jit_preference_refresh"
+    end
+
+    def preference_device_id_cookie_name
+      refresh_token_cookie_name.sub("jit_preference_refresh", "jit_preference_device_id")
     end
 
     def refresh_token_value
@@ -885,16 +917,26 @@ module Preference
     end
 
     def set_refresh_token_cookie(token, expires_at)
-      options = {
-        value: token,
-        expires: expires_at,
-        httponly: true,
-        secure: Rails.env.production?,
-        same_site: :lax,
-      }
-      domain = cookie_domain
-      options[:domain] = domain if domain.present?
-      cookies[refresh_token_cookie_name] = options
+      cookies[refresh_token_cookie_name] = preference_auth_cookie_options(expires_at: expires_at).merge(value: token)
+    end
+
+    def set_preference_device_id_cookie!(device_id, expires_at: refresh_token_expiry)
+      cookies.encrypted[preference_device_id_cookie_name] =
+        preference_auth_cookie_options(expires_at: expires_at).merge(value: device_id)
+    end
+
+    def read_preference_device_id_cookie
+      cookies.encrypted[preference_device_id_cookie_name].to_s.presence
+    end
+
+    def clear_preference_device_id_cookie!
+      cookies.delete(preference_device_id_cookie_name, **preference_cookie_deletion_options)
+    end
+
+    def clear_preference_auth_cookies!
+      [access_token_cookie_name, refresh_token_cookie_name, preference_device_id_cookie_name].uniq.each do |cookie_name|
+        cookies.delete(cookie_name, **preference_cookie_deletion_options)
+      end
     end
 
     def access_token_cookie_name
@@ -902,6 +944,81 @@ module Preference
         "__Secure-jit_preference_access"
       else
         "jit_preference_access"
+      end
+    end
+
+    def preference_auth_cookie_options(expires_at:)
+      options = {
+        expires: expires_at,
+        httponly: true,
+        secure: Rails.env.production?,
+        same_site: :lax,
+      }
+      domain = cookie_domain
+      options[:domain] = domain if domain.present?
+      options
+    end
+
+    def preference_cookie_deletion_options
+      options = {
+        httponly: true,
+        secure: Rails.env.production?,
+        same_site: :lax,
+      }
+      domain = cookie_domain
+      options[:domain] = domain if domain.present?
+      options
+    end
+
+    def clear_preference_refresh_failure!
+      @preference_refresh_failed = false
+      @preference_refresh_device_reason = nil
+    end
+
+    def preference_refresh_failed?
+      @preference_refresh_failed
+    end
+
+    def extract_preference_refresh_device_id
+      header_device_id = request.headers["X-Device-Id"].to_s.presence
+      cookie_device_id = read_preference_device_id_cookie
+
+      if header_device_id.blank? && cookie_device_id.blank?
+        @preference_refresh_device_reason = "missing"
+        return nil
+      end
+
+      if header_device_id.present? && cookie_device_id.present? && header_device_id != cookie_device_id
+        @preference_refresh_device_reason = "mismatch"
+        return nil
+      end
+
+      header_device_id || cookie_device_id
+    end
+
+    def handle_preference_refresh_device_denied(preference, refresh_public_id)
+      clear_preference_auth_cookies!
+      @preference_refresh_failed = true
+
+      Rails.logger.warn(
+        {
+          message: "Preference refresh denied",
+          reason: @preference_refresh_device_reason || "missing",
+          preference_type: preference_class.name,
+          preference_public_id: preference&.public_id || refresh_public_id,
+          request_id: request.request_id,
+        },
+      )
+    end
+
+    def render_preference_refresh_error!
+      if request.format.json?
+        render json: {
+          error: I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
+          error_code: "invalid_refresh_token",
+        }, status: :unauthorized
+      else
+        head :unauthorized
       end
     end
 

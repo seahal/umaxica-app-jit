@@ -19,6 +19,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
       "X-TEST-CURRENT-USER" => @user.id,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
     }.freeze
+    satisfy_user_verification(@token)
     @totp = UserOneTimePassword.create!(
       user: @user,
       private_key: ROTP::Base32.random_base32,
@@ -132,6 +133,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     user = User.create!
     token = UserToken.create!(user_id: user.id)
     token.update!(created_at: 1.hour.ago)
+    satisfy_user_verification(token)
     headers = {
       "X-TEST-CURRENT-USER" => user.id,
       "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
@@ -146,6 +148,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     user = User.create!
     token = UserToken.create!(user_id: user.id)
     token.update!(created_at: 1.hour.ago)
+    satisfy_user_verification(token)
     headers = {
       "X-TEST-CURRENT-USER" => user.id,
       "X-TEST-SESSION-PUBLIC-ID" => token.public_id,

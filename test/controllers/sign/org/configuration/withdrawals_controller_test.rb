@@ -6,13 +6,18 @@ class Sign::Org::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   fixtures :staffs, :staff_statuses
 
   setup do
-    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     @staff = staffs(:one)
+    @token = StaffToken.create!(staff: @staff)
+    satisfy_staff_verification(@token)
+  end
+
+  def authenticated_headers
+    browser_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => @token.public_id)
   end
 
   test "should get show" do
-    get sign_org_configuration_withdrawal_url(ri: "jp"),
-        headers: { "Host" => @host, "X-TEST-CURRENT-STAFF" => @staff.id }
+    get sign_org_configuration_withdrawal_url(ri: "jp"), headers: authenticated_headers
     assert_response :success
   end
 end

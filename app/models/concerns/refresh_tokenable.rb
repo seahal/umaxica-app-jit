@@ -14,6 +14,7 @@ module RefreshTokenable
     before_validation :ensure_refresh_expires_at, on: :create
     before_validation :ensure_refresh_token_family_id, on: :create
     before_validation :ensure_refresh_token_generation, on: :create
+    before_validation :ensure_device_id, on: :create
     validates :refresh_token_digest, uniqueness: true, allow_nil: true
   end
 
@@ -89,5 +90,11 @@ module RefreshTokenable
 
   def ensure_refresh_token_generation
     self.refresh_token_generation ||= 0
+  end
+
+  def ensure_device_id
+    return unless has_attribute?(:device_id)
+
+    self.device_id = SecureRandom.uuid if device_id.blank?
   end
 end

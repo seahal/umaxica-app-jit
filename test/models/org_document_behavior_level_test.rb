@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: org_document_behavior_levels
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #

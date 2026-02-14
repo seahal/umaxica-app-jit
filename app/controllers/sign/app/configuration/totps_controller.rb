@@ -4,11 +4,10 @@ module Sign
   module App
     module Configuration
       class TotpsController < ApplicationController
-        include ::Auth::StepUp
+        include ::Auth::VerificationEnforcer
 
         MAX_TOTPS = 2
         before_action :authenticate_user!
-        before_action -> { require_step_up!(scope: "manage_totp") }
 
         def index
           @totps = current_user.user_one_time_passwords
@@ -117,6 +116,14 @@ module Sign
 
         def update_params
           params.expect(user_one_time_password: [:title])
+        end
+
+        def verification_required_action?
+          true
+        end
+
+        def verification_scope
+          "manage_totp"
         end
       end
     end

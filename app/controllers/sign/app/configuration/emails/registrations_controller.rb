@@ -6,10 +6,9 @@ module Sign
       module Emails
         class RegistrationsController < ::Sign::App::Configuration::ApplicationController
           include Sign::EmailRegistrationFlow
-          include ::Auth::StepUp
+          include ::Auth::VerificationEnforcer
 
           before_action :authenticate_user!
-          before_action -> { require_step_up!(scope: "configuration_email") }
 
           private
 
@@ -27,6 +26,14 @@ module Sign
 
           def after_email_registration_verified_path
             sign_app_configuration_emails_path
+          end
+
+          def verification_required_action?
+            true
+          end
+
+          def verification_scope
+            "configuration_email"
           end
         end
       end

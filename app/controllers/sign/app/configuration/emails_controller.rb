@@ -4,10 +4,9 @@ module Sign
   module App
     module Configuration
       class EmailsController < ApplicationController
-        include ::Auth::StepUp
+        include ::Auth::VerificationEnforcer
 
         before_action :authenticate_user!
-        before_action -> { require_step_up!(scope: "configuration_email") }
 
         def index
           @user_emails = current_user.user_emails
@@ -50,6 +49,14 @@ module Sign
             subject_type: subject.class.name,
             occurred_at: Time.current,
           )
+        end
+
+        def verification_required_action?
+          true
+        end
+
+        def verification_scope
+          "configuration_email"
         end
       end
     end

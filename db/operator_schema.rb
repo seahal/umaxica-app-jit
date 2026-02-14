@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_12_000003) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_13_150001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -245,6 +245,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000003) do
     t.index ["staff_identity_telephone_status_id"], name: "index_staff_telephones_on_staff_identity_telephone_status_id"
   end
 
+  create_table "staff_visibilities", force: :cascade do |t|
+  end
+
   create_table "staffs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
@@ -252,10 +255,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000003) do
     t.string "public_id", null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.bigint "visibility_id", default: 2, null: false
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
     t.index ["public_id"], name: "index_staffs_on_public_id", unique: true
     t.index ["status_id"], name: "index_staffs_on_status_id"
+    t.index ["visibility_id"], name: "index_staffs_on_visibility_id"
     t.index ["withdrawn_at"], name: "index_staffs_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
   end
 
@@ -305,5 +310,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000003) do
   add_foreign_key "staff_telephones", "staff_telephone_statuses", column: "staff_identity_telephone_status_id"
   add_foreign_key "staff_telephones", "staffs", validate: false
   add_foreign_key "staffs", "staff_statuses", column: "status_id"
+  add_foreign_key "staffs", "staff_visibilities", column: "visibility_id"
   add_foreign_key "user_workspaces", "workspaces", validate: false
 end

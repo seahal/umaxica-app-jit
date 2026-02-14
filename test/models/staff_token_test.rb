@@ -18,6 +18,7 @@
 #  status                   :string(20)       default("active"), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  device_id                :string           default(""), not null
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
@@ -27,6 +28,7 @@
 # Indexes
 #
 #  index_staff_tokens_on_compromised_at                (compromised_at)
+#  index_staff_tokens_on_device_id                     (device_id)
 #  index_staff_tokens_on_public_id                     (public_id) UNIQUE
 #  index_staff_tokens_on_refresh_expires_at            (refresh_expires_at)
 #  index_staff_tokens_on_refresh_token_digest          (refresh_token_digest) UNIQUE

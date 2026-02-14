@@ -97,11 +97,14 @@ class Auth::UserTest < ActiveSupport::TestCase
 
     access_opts = @obj.cookies.options_for(::Auth::User::ACCESS_COOKIE_KEY)
     refresh_opts = @obj.cookies.options_for(::Auth::User::REFRESH_COOKIE_KEY)
+    device_opts = @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)
 
     assert_operator access_opts[:expires], :>, 10.minutes.from_now
     assert_operator access_opts[:expires], :<, 2.hours.from_now
     assert_operator refresh_opts[:expires], :>, 29.days.from_now
     assert_operator refresh_opts[:expires], :<, 31.days.from_now
+    assert_operator device_opts[:expires], :>, 29.days.from_now
+    assert_operator device_opts[:expires], :<, 31.days.from_now
   end
 
   test "log_out clears session and current_user" do
@@ -122,6 +125,7 @@ class Auth::UserTest < ActiveSupport::TestCase
 
     assert_nil @obj.cookies[::Auth::User::ACCESS_COOKIE_KEY]
     assert_nil @obj.cookies.encrypted[::Auth::User::REFRESH_COOKIE_KEY]
+    assert_nil @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY]
   end
 
   test "log_in derives shared cookie domain from host" do
@@ -132,6 +136,7 @@ class Auth::UserTest < ActiveSupport::TestCase
 
     assert_equal ".app.localhost", @obj.cookies.options_for(::Auth::User::ACCESS_COOKIE_KEY)[:domain]
     assert_equal ".app.localhost", @obj.cookies.options_for(::Auth::User::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".app.localhost", @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)[:domain]
   end
 
   test "log_in returns tokens hash" do
@@ -142,6 +147,7 @@ class Auth::UserTest < ActiveSupport::TestCase
     assert_kind_of Hash, tokens
     assert tokens[:access_token]
     assert tokens[:refresh_token]
+    assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
     assert_equal "Bearer", tokens[:token_type]
     assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
   end

@@ -3,12 +3,12 @@
 # == Schema Information
 #
 # Table name: com_timeline_behavior_events
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
 
-class ComTimelineBehaviorEvent < ActivityRecord
+class ComTimelineBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   CREATED = 1

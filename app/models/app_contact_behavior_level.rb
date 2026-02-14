@@ -3,11 +3,11 @@
 # == Schema Information
 #
 # Table name: app_contact_behavior_levels
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
-class AppContactBehaviorLevel < ActivityRecord
+class AppContactBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
 
   NEYO = 1

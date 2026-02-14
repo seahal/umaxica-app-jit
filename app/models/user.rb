@@ -18,6 +18,7 @@
 #  updated_at            :datetime         not null
 #  public_id             :string(255)      default(""), not null
 #  status_id             :bigint           default(13), not null
+#  visibility_id         :bigint           default(2), not null
 #
 # Indexes
 #
@@ -26,12 +27,14 @@
 #  index_users_on_purged_at              (purged_at) WHERE (purged_at IS NOT NULL)
 #  index_users_on_scheduled_purge_at     (scheduled_purge_at) WHERE (scheduled_purge_at IS NOT NULL)
 #  index_users_on_status_id              (status_id)
+#  index_users_on_visibility_id          (visibility_id)
 #  index_users_on_withdrawal_started_at  (withdrawal_started_at) WHERE (withdrawal_started_at IS NOT NULL)
 #  index_users_on_withdrawn_at           (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => user_statuses.id)
+#  fk_rails_...  (visibility_id => user_visibilities.id)
 #
 
 class User < PrincipalRecord
@@ -57,6 +60,9 @@ class User < PrincipalRecord
 
   belongs_to :user_status,
              foreign_key: :status_id,
+             inverse_of: :users
+  belongs_to :visibility,
+             class_name: "UserVisibility",
              inverse_of: :users
   has_one :user_social_apple,
           dependent: :destroy,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_12_000008) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_13_121536) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -81,12 +81,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000008) do
 
   create_table "app_preferences", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "device_id"
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
     t.bigint "status_id", default: 2, null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_app_preferences_on_device_id"
     t.index ["jti"], name: "index_app_preferences_on_jti", unique: true
     t.index ["public_id"], name: "index_app_preferences_on_public_id", unique: true
     t.index ["status_id"], name: "index_app_preferences_on_status_id"
@@ -158,12 +160,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000008) do
 
   create_table "com_preferences", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "device_id"
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
     t.bigint "status_id", default: 2, null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_com_preferences_on_device_id"
     t.index ["jti"], name: "index_com_preferences_on_jti", unique: true
     t.index ["public_id"], name: "index_com_preferences_on_public_id", unique: true
     t.index ["status_id"], name: "index_com_preferences_on_status_id"
@@ -235,12 +239,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000008) do
 
   create_table "org_preferences", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "device_id"
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
     t.bigint "status_id", default: 2, null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_org_preferences_on_device_id"
     t.index ["jti"], name: "index_org_preferences_on_jti", unique: true
     t.index ["public_id"], name: "index_org_preferences_on_public_id", unique: true
     t.index ["status_id"], name: "index_org_preferences_on_status_id"

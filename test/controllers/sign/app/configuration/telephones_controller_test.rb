@@ -13,9 +13,9 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
     @user = users(:one)
     @token = UserToken.create!(
-      user_id: @user.id, last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_telephone",
+      user_id: @user.id,
     )
+    satisfy_user_verification(@token)
     @telephone = OpenStruct.new(id: "1")
   end
 
@@ -99,9 +99,9 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
   test "destroy blocks removal when last method" do
     user = User.create!(status_id: UserStatus::NEYO)
     token = UserToken.create!(
-      user_id: user.id, last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_telephone",
+      user_id: user.id,
     )
+    satisfy_user_verification(token)
     telephone = UserTelephone.create!(
       number: "+10000000002",
       user: user,
@@ -125,9 +125,8 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     user = User.create!(status_id: UserStatus::NEYO, public_id: "tel_rule_ok_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_telephone",
     )
+    satisfy_user_verification(token)
     telephone = UserTelephone.create!(
       number: "+10000000005",
       user: user,

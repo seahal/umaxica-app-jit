@@ -61,7 +61,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ### 3.2 Shared Controller Concerns
 | Concern | Key responsibilities |
 |---------|---------------------|
-| `Authn` | JWT (ES256) issuance/verification, login/logout helpers, refresh cookie handling |
+| `Auth::Base` | JWT (ES384) issuance/verification (`kid` header + keyring), login/logout helpers, refresh/device cookie handling |
 | `RateLimit` | Configures `ActiveSupport::Cache::RedisCacheStore` with Valkey to enforce per-request throttles |
 | `DefaultUrlOptions` | Reads signed preference cookie to append `lx`, `ri`, `tz` query params |
 | `PreferenceRegions` | Normalizes locale/timezone inputs, persists to session/cookies, handles errors |
@@ -94,7 +94,10 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 **Security features**:
 - `Sign::*::ApplicationController` mixes in `Authn`, `RateLimit`, `DefaultUrlOptions`, `Pundit`.
 - `authenticate_user!` ensures `logged_in?` before hitting settings endpoints.
-- JWT cookies: `Authn` writes `cookies[:access_token]` (JWT) and `cookies.encrypted[:refresh_token]` (UUID referencing `UserToken`).
+- JWT cookies: `Auth::Base` writes `jit_auth_access` (JWT) + `jit_auth_refresh` + `jit_auth_device_id` (or `__Secure-` prefixed names in production).
+- Refresh contract: `device_id` is mandatory from cookie or `X-Device-Id` header. If both are provided they must match, and must equal the token family `device_id`.
+- Refresh deny behavior: missing/mismatched `device_id` returns `401`; browser clients are force-logged-out (session reset + auth cookies cleared). Mobile/bearer clients should clear local tokens on `401` and redirect to login.
+- Refresh deny and reuse telemetry is persisted to `UserOccurrence`/`StaffOccurrence` with structured `context` JSON.
 
 ### 3.5 Help Namespace
 - `Help::Com::ContactsController` handles `new/create/show`.
@@ -189,7 +192,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - Preference cookie: `__Secure-root_app_preferences` (JSON: `lx`, `ri`, `tz`, `ct`).
 - Theme cookie: `root_<scope>_theme`.
 - Consent cookies: `:accept_functional_cookies`, `:accept_performance_cookies`, `:accept_targeting_cookies`.
-- Auth cookies: `:access_token` (JWT), `:refresh_token` (encrypted).
+- Auth cookies: access + refresh + device cookies (same security options; environment-dependent names).
 - HOTP private key: `cookies.encrypted[:htop_private_key]`.
 - Session: stores preference drafts, OTP metadata, WebAuthn challenges; `Memorize` offers encrypted Valkey storage keyed by host/session.
 

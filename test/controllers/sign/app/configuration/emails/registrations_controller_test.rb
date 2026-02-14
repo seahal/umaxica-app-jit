@@ -12,6 +12,7 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
     @token = UserToken.create!(
       user: @user,
     )
+    satisfy_user_verification(@token)
 
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }

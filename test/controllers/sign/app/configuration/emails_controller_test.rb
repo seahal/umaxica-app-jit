@@ -12,9 +12,8 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     @user = users(:one)
     @token = UserToken.create!(
       user_id: @user.id,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_email",
     )
+    satisfy_user_verification(@token)
   end
 
   def request_headers
@@ -67,9 +66,8 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     user = User.create!(status_id: UserStatus::NEYO, public_id: "ero_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_email",
     )
+    satisfy_user_verification(token)
     email = UserEmail.create!(
       address: "email_rule_ok@example.com",
       user: user,
@@ -106,9 +104,8 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     user = User.create!(status_id: UserStatus::NEYO, public_id: "ern_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_email",
     )
+    satisfy_user_verification(token)
     email = UserEmail.create!(
       address: "email_rule_ng@example.com",
       user: user,

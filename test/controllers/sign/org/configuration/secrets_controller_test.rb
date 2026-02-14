@@ -10,6 +10,8 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     @staff = Staff.create!(
       status_id: StaffStatus::ACTIVE,
     )
+    @token = StaffToken.create!(staff: @staff)
+    satisfy_staff_verification(@token)
     @staff_secret = StaffSecret.create!(
       staff: @staff,
       name: "Test Secret",
@@ -20,7 +22,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   def authenticated_headers
-    browser_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id.to_s)
+    browser_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => @token.public_id)
   end
 
   test "should get index" do

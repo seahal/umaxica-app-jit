@@ -1,0 +1,39 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: user_verifications
+# Database name: token
+#
+#  id            :bigint           not null, primary key
+#  expires_at    :datetime         not null
+#  last_used_at  :datetime
+#  revoked_at    :datetime
+#  token_digest  :string           not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  user_token_id :bigint           not null
+#
+# Indexes
+#
+#  index_user_verifications_on_expires_at     (expires_at)
+#  index_user_verifications_on_token_digest   (token_digest) UNIQUE
+#  index_user_verifications_on_user_token_id  (user_token_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_token_id => user_tokens.id)
+#
+one:
+  user_token: one
+  token_digest: digest_one
+  expires_at: <%= 10.minutes.from_now %>
+  revoked_at:
+  last_used_at: <%= Time.current %>
+
+two:
+  user_token: two
+  token_digest: digest_two
+  expires_at: <%= 10.minutes.from_now %>
+  revoked_at:
+  last_used_at: <%= Time.current %>

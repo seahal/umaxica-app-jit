@@ -3,12 +3,12 @@
 # == Schema Information
 #
 # Table name: org_timeline_behavior_events
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
 
-class OrgTimelineBehaviorEvent < ActivityRecord
+class OrgTimelineBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   NEYO = 1

@@ -13,6 +13,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     @token = UserToken.create!(
       user_id: @user.id,
     )
+    satisfy_user_verification(@token)
   end
 
   teardown do

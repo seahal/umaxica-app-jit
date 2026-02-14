@@ -20,6 +20,7 @@ class StaffActivityEvent < ActivityRecord
   STAFF_SECRET_CREATED = 8
   STAFF_SECRET_REMOVED = 9
   STAFF_SECRET_UPDATED = 10
+  STEP_UP_VERIFIED = 11
 
   # Association with staff_activities
   has_many :staff_activities,

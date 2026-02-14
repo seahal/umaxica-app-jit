@@ -18,6 +18,7 @@
 #  updated_at            :datetime         not null
 #  public_id             :string(255)      default(""), not null
 #  status_id             :bigint           default(13), not null
+#  visibility_id         :bigint           default(2), not null
 #
 # Indexes
 #
@@ -26,12 +27,14 @@
 #  index_users_on_purged_at              (purged_at) WHERE (purged_at IS NOT NULL)
 #  index_users_on_scheduled_purge_at     (scheduled_purge_at) WHERE (scheduled_purge_at IS NOT NULL)
 #  index_users_on_status_id              (status_id)
+#  index_users_on_visibility_id          (visibility_id)
 #  index_users_on_withdrawal_started_at  (withdrawal_started_at) WHERE (withdrawal_started_at IS NOT NULL)
 #  index_users_on_withdrawn_at           (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => user_statuses.id)
+#  fk_rails_...  (visibility_id => user_visibilities.id)
 #
 
 require "test_helper"
@@ -40,6 +43,7 @@ class UserTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
+    [0, 1, 2, 3].each { |id| UserVisibility.find_or_create_by!(id: id) }
 
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
@@ -78,6 +82,29 @@ class UserTest < ActiveSupport::TestCase
     user = User.create!
 
     assert_equal UserStatus::NONE, user.status_id
+  end
+
+  test "should default visibility_id to staff (2)" do
+    user = User.create!
+
+    assert_equal UserVisibility::STAFF, user.visibility_id
+  end
+
+  test "visibility association resolves to UserVisibility with id 2 by default" do
+    user = User.create!
+
+    assert_equal UserVisibility::STAFF, user.visibility.id
+  end
+
+  test "invalid visibility_id is rejected by foreign key" do
+    user = User.new(
+      public_id: "u_fk_#{SecureRandom.hex(6)}",
+      status_id: UserStatus::NONE,
+      visibility_id: 9_999,
+    )
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      user.save!(validate: false)
+    end
   end
 
   test "should have many user_emails association" do

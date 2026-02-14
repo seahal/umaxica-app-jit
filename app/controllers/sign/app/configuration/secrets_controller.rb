@@ -4,11 +4,10 @@ module Sign
   module App
     module Configuration
       class SecretsController < ApplicationController
-        include ::Auth::StepUp
+        include ::Auth::VerificationEnforcer
 
         before_action :authenticate_user!
         before_action :set_secret, only: %i(show edit destroy)
-        before_action -> { require_step_up!(scope: "configuration_secret") }, only: :destroy
         before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
 
         def index
@@ -68,6 +67,14 @@ module Sign
           return if current_user.has_verified_recovery_identity?
 
           render plain: User::RECOVERY_IDENTITY_REQUIRED_MESSAGE, status: :forbidden
+        end
+
+        def verification_required_action?
+          action_name == "destroy"
+        end
+
+        def verification_scope
+          "configuration_secret"
         end
       end
     end

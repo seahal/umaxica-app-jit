@@ -3,12 +3,12 @@
 # == Schema Information
 #
 # Table name: org_document_behavior_levels
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
 
-class OrgDocumentBehaviorLevel < ActivityRecord
+class OrgDocumentBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   NEYO = 1

@@ -21,6 +21,7 @@ module Sign
         include Sign::Webauthn
         include EmailValidation
         include IdentifierDetection
+        include MinimumResponseBudget
         include SessionLimitGate
 
         before_action :reject_logged_in_session
@@ -257,6 +258,10 @@ module Sign
             expires_in: result[:expires_in],
             redirect_url: redirect_url,
           }, status: :ok
+        end
+
+        def minimum_response_budget_enabled?
+          action_name == "options"
         end
       end
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_12_000002) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_13_131122) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -41,6 +41,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000002) do
   create_table "staff_tokens", force: :cascade do |t|
     t.datetime "compromised_at"
     t.datetime "created_at", null: false
+    t.string "device_id", default: "", null: false
     t.datetime "last_step_up_at"
     t.string "last_step_up_scope"
     t.datetime "last_used_at"
@@ -57,6 +58,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000002) do
     t.string "status", limit: 20, default: "active", null: false
     t.datetime "updated_at", null: false
     t.index ["compromised_at"], name: "index_staff_tokens_on_compromised_at"
+    t.index ["device_id"], name: "index_staff_tokens_on_device_id"
     t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_staff_tokens_on_refresh_expires_at"
     t.index ["refresh_token_digest"], name: "index_staff_tokens_on_refresh_token_digest", unique: true
@@ -70,6 +72,19 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000002) do
     t.check_constraint "staff_token_status_id >= 0", name: "chk_staff_tokens_status_id_positive"
   end
 
+  create_table "staff_verifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "last_used_at"
+    t.datetime "revoked_at"
+    t.bigserial "staff_token_id", null: false
+    t.string "token_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_staff_verifications_on_expires_at"
+    t.index ["staff_token_id"], name: "index_staff_verifications_on_staff_token_id"
+    t.index ["token_digest"], name: "index_staff_verifications_on_token_digest", unique: true
+  end
+
   create_table "user_token_kinds", force: :cascade do |t|
   end
 
@@ -79,6 +94,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000002) do
   create_table "user_tokens", force: :cascade do |t|
     t.datetime "compromised_at"
     t.datetime "created_at", null: false
+    t.string "device_id", default: "", null: false
     t.datetime "last_step_up_at"
     t.string "last_step_up_scope"
     t.datetime "last_used_at"
@@ -95,6 +111,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000002) do
     t.bigint "user_token_kind_id", default: 0, null: false
     t.bigint "user_token_status_id", default: 0, null: false
     t.index ["compromised_at"], name: "index_user_tokens_on_compromised_at"
+    t.index ["device_id"], name: "index_user_tokens_on_device_id"
     t.index ["public_id"], name: "index_user_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_user_tokens_on_refresh_expires_at"
     t.index ["refresh_token_digest"], name: "index_user_tokens_on_refresh_token_digest", unique: true
@@ -108,8 +125,23 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000002) do
     t.check_constraint "user_token_status_id >= 0", name: "chk_user_tokens_status_id_positive"
   end
 
+  create_table "user_verifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "last_used_at"
+    t.datetime "revoked_at"
+    t.string "token_digest", null: false
+    t.datetime "updated_at", null: false
+    t.bigserial "user_token_id", null: false
+    t.index ["expires_at"], name: "index_user_verifications_on_expires_at"
+    t.index ["token_digest"], name: "index_user_verifications_on_token_digest", unique: true
+    t.index ["user_token_id"], name: "index_user_verifications_on_user_token_id"
+  end
+
   add_foreign_key "staff_tokens", "staff_token_kinds", name: "fk_staff_tokens_on_staff_token_kind_id"
   add_foreign_key "staff_tokens", "staff_token_statuses", name: "fk_staff_tokens_on_staff_token_status_id"
+  add_foreign_key "staff_verifications", "staff_tokens"
   add_foreign_key "user_tokens", "user_token_kinds", name: "fk_user_tokens_on_user_token_kind_id"
   add_foreign_key "user_tokens", "user_token_statuses", name: "fk_user_tokens_on_user_token_status_id"
+  add_foreign_key "user_verifications", "user_tokens"
 end

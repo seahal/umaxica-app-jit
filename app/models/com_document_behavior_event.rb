@@ -3,12 +3,12 @@
 # == Schema Information
 #
 # Table name: com_document_behavior_events
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
 
-class ComDocumentBehaviorEvent < ActivityRecord
+class ComDocumentBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   CREATED = 1

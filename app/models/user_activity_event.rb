@@ -37,6 +37,7 @@ class UserActivityEvent < ActivityRecord
   EMAIL_REMOVED = 25
   TELEPHONE_REMOVED = 26
   SOCIAL_UNLINKED = 27
+  STEP_UP_VERIFIED = 28
 
   # Association with user_activities
   has_many :user_activities,
@@ -74,6 +75,7 @@ class UserActivityEvent < ActivityRecord
     EMAIL_REMOVED,
     TELEPHONE_REMOVED,
     SOCIAL_UNLINKED,
+    STEP_UP_VERIFIED,
   ].freeze
 
   def self.ensure_defaults!

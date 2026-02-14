@@ -210,24 +210,16 @@ module Preference::Core
   end
 
   def delete_preference_cookies
-    delete_options = {
-      httponly: true,
-      secure: Rails.env.production?,
-      same_site: :lax,
-    }
-    domain = cookie_domain
-    delete_options[:domain] = domain if domain.present?
+    clear_preference_auth_cookies!
 
     cookie_names = [
-      refresh_token_cookie_name,
-      access_token_cookie_name,
       Preference::Base::THEME_COOKIE_KEY,
       Preference::Base::LEGACY_THEME_COOKIE_KEY,
       Preference::Base::LANGUAGE_COOKIE_KEY,
       Preference::Base::TIMEZONE_COOKIE_KEY,
     ].uniq
     cookie_names.each do |cookie_name|
-      cookies.delete(cookie_name, **delete_options)
+      cookies.delete(cookie_name, **preference_cookie_deletion_options)
     end
   end
 

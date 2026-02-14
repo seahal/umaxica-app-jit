@@ -5,10 +5,9 @@ module Sign
     module Configuration
       class TelephonesController < ApplicationController
         include Sign::TelephoneRegistrable
-        include ::Auth::StepUp
+        include ::Auth::VerificationEnforcer
 
         before_action :authenticate_user!
-        before_action -> { require_step_up!(scope: "configuration_telephone") }
 
         def index
           @user_telephones = current_user.user_telephones
@@ -68,6 +67,14 @@ module Sign
             subject_type: subject.class.name,
             occurred_at: Time.current,
           )
+        end
+
+        def verification_required_action?
+          true
+        end
+
+        def verification_scope
+          "configuration_telephone"
         end
       end
     end

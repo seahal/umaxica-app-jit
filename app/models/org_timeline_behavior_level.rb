@@ -3,13 +3,13 @@
 # == Schema Information
 #
 # Table name: org_timeline_behavior_levels
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #
 #  id :string(255)      default("NEYO"), not null, primary key
 
-class OrgTimelineBehaviorLevel < ActivityRecord
+class OrgTimelineBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   NEYO = 1

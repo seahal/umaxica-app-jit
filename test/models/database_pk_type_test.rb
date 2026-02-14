@@ -58,8 +58,6 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
     models = [StaffTokenKind, StaffTokenStatus, UserTokenKind, UserTokenStatus]
     models.select! { |model| model.column_names.include?("code") }
 
-    return skip "No models with code column after database refactoring" if models.empty?
-
     models.each { |model| assert_code_is_citext(model) }
   end
 
@@ -68,7 +66,6 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
       [StaffTokenKind, StaffTokenStatus, UserTokenKind, UserTokenStatus].find do |candidate|
         candidate.included_modules.include?(CodeIdentifiable)
       end
-    return skip "No models include CodeIdentifiable" unless model
 
     status = nil
     begin

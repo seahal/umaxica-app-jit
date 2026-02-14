@@ -91,8 +91,11 @@ module Sign
             return true
           end
 
-          redirect_to sign_app_verification_path(verification_recovery_redirect_params),
-                      alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です")
+          safe_redirect_to(
+            sign_app_verification_path(verification_recovery_redirect_params),
+            fallback: sign_app_verification_path(ri: params[:ri]),
+            alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です"),
+          )
           false
         end
 
@@ -104,7 +107,10 @@ module Sign
           scope = rs["scope"]
 
           now = Time.current
+          verification, raw_token = UserVerification.issue_for_token!(token: @actor_token)
           @actor_token.update!(last_step_up_at: now, last_step_up_scope: scope)
+          set_verification_cookie!(raw_token, expires_at: verification.expires_at)
+          create_audit_event!(UserActivityEvent::STEP_UP_VERIFIED, subject: current_user)
 
           session.delete(REAUTH_SESSION_KEY)
           session.delete(EMAIL_OTP_SESSION_KEY)
@@ -118,8 +124,11 @@ module Sign
         def require_method_available!(method_sym)
           return true if available_step_up_methods.include?(method_sym)
 
-          redirect_to sign_app_verification_path(ri: params[:ri]),
-                      alert: I18n.t("auth.step_up.method_unavailable", default: "この認証方法は利用できません")
+          safe_redirect_to(
+            sign_app_verification_path(ri: params[:ri]),
+            fallback: "/verification",
+            alert: I18n.t("auth.step_up.method_unavailable", default: "この認証方法は利用できません"),
+          )
           false
         end
 
@@ -216,6 +225,33 @@ module Sign
         def clear_reauth_state!
           session.delete(REAUTH_SESSION_KEY)
           session.delete(EMAIL_OTP_SESSION_KEY)
+        end
+
+        def set_verification_cookie!(raw_token, expires_at:)
+          cookies[UserVerification.cookie_name] = {
+            value: raw_token,
+            expires: expires_at,
+            httponly: true,
+            secure: Rails.env.production? || request.ssl?,
+            same_site: :lax,
+            path: "/",
+          }
+        end
+
+        def create_audit_event!(event_id, subject:)
+          ActivityRecord.connected_to(role: :writing) do
+            UserActivityEvent.find_or_create_by!(id: event_id)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
+          end
+
+          UserActivity.create!(
+            actor_type: "User",
+            actor_id: current_user.id,
+            event_id: event_id,
+            subject_id: subject.id.to_s,
+            subject_type: subject.class.name,
+            occurred_at: Time.current,
+          )
         end
 
         # ------------------------------------------------------------------

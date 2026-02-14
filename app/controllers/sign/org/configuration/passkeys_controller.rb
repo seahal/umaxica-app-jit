@@ -19,6 +19,7 @@ module Sign
       # - PATCH /configuration/passkeys/:id (update - description only)
       # - DELETE /configuration/passkeys/:id (destroy)
       class PasskeysController < ApplicationController
+        include ::Auth::VerificationEnforcer
         include Sign::Webauthn
 
         before_action :authenticate_staff!
@@ -204,6 +205,14 @@ module Sign
 
         def passkey_description
           params[:description].presence || I18n.t("sign.default_passkey_description")
+        end
+
+        def verification_required_action?
+          %w(new options verification edit update destroy).include?(action_name)
+        end
+
+        def verification_scope
+          "configuration_passkey"
         end
       end
     end

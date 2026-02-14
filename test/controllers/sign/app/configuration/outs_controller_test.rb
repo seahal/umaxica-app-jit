@@ -34,8 +34,12 @@ class Sign::App::Configuration::OutsControllerTest < ActionDispatch::Integration
   end
 
   test "should destroy with user session" do
+    token = UserToken.create!(user: @user)
+    satisfy_user_verification(token)
     delete sign_app_configuration_out_url(ri: "jp"),
-           headers: { "Host" => @host, "X-TEST-CURRENT-USER" => @user.id }
+           headers: { "Host" => @host,
+                      "X-TEST-CURRENT-USER" => @user.id,
+                      "X-TEST-SESSION-PUBLIC-ID" => token.public_id, }
 
     assert_redirected_to sign_app_root_path(ri: "jp")
     assert_equal I18n.t("sign.shared.sign_out.success"), flash[:notice]

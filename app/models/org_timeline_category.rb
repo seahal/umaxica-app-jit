@@ -16,10 +16,10 @@
 #
 # Foreign Keys
 #
-#  fk_org_timeline_categories_on_org_timeline_category_master_id
-#    (org_timeline_category_master_id => org_timeline_category_masters.id)
-#  fk_rails_...
-#    (org_timeline_id => org_timelines.id) ON DELETE => cascade
+# rubocop:disable Layout/LineLength
+#  fk_org_timeline_categories_on_org_timeline_category_master_id  (org_timeline_category_master_id => org_timeline_category_masters.id)
+#  fk_rails_...                                                   (org_timeline_id => org_timelines.id) ON DELETE => cascade
+# rubocop:enable Layout/LineLength
 #
 
 # frozen_string_literal: true

@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: com_timeline_behavior_levels
-# Database name: activity
+# Database name: behavior
 #
 #  id :bigint           not null, primary key
 #

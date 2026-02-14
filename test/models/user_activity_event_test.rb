@@ -50,6 +50,7 @@ class UserActivityEventTest < ActiveSupport::TestCase
     assert_equal 25, UserActivityEvent::EMAIL_REMOVED
     assert_equal 26, UserActivityEvent::TELEPHONE_REMOVED
     assert_equal 27, UserActivityEvent::SOCIAL_UNLINKED
+    assert_equal 28, UserActivityEvent::STEP_UP_VERIFIED
   end
 
   test "record_timestamps is disabled" do
@@ -58,7 +59,7 @@ class UserActivityEventTest < ActiveSupport::TestCase
 
   test "DEFAULTS array contains all event IDs" do
     assert_kind_of Array, UserActivityEvent::DEFAULTS
-    assert_equal 27, UserActivityEvent::DEFAULTS.size
+    assert_equal 28, UserActivityEvent::DEFAULTS.size
     assert_includes UserActivityEvent::DEFAULTS, UserActivityEvent::LOGGED_IN
     assert_includes UserActivityEvent::DEFAULTS, UserActivityEvent::LOGIN_SUCCESS
     assert_includes UserActivityEvent::DEFAULTS, UserActivityEvent::TOKEN_REFRESHED
@@ -66,7 +67,7 @@ class UserActivityEventTest < ActiveSupport::TestCase
 
   test "ensure_defaults! creates records" do
     UserActivityEvent.delete_all
-    assert_difference("UserActivityEvent.count", 27) do
+    assert_difference("UserActivityEvent.count", 28) do
       UserActivityEvent.ensure_defaults!
     end
     assert UserActivityEvent.exists?(id: UserActivityEvent::LOGGED_IN)

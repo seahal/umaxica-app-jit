@@ -13,16 +13,19 @@
 #  updated_at           :datetime         not null
 #  public_id            :string           not null
 #  status_id            :bigint           default(2), not null
+#  visibility_id        :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_staffs_on_public_id     (public_id) UNIQUE
-#  index_staffs_on_status_id     (status_id)
-#  index_staffs_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_status_id      (status_id)
+#  index_staffs_on_visibility_id  (visibility_id)
+#  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => staff_statuses.id)
+#  fk_rails_...  (visibility_id => staff_visibilities.id)
 #
 
 class Staff < OperatorRecord
@@ -42,6 +45,9 @@ class Staff < OperatorRecord
 
   belongs_to :staff_status,
              foreign_key: :status_id,
+             inverse_of: :staffs
+  belongs_to :visibility,
+             class_name: "StaffVisibility",
              inverse_of: :staffs
   has_many :staff_emails,
            dependent: :restrict_with_error,

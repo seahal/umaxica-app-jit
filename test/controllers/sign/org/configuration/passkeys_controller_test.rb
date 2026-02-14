@@ -8,8 +8,10 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   setup do
     host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     @staff = staffs(:one)
+    @token = StaffToken.create!(staff: @staff)
+    satisfy_staff_verification(@token)
     @host_headers = { "Host" => ENV["SIGN_STAFF_URL"] || "sign.org.localhost" }.freeze
-    @headers = @host_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id)
+    @headers = @host_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id, "X-TEST-SESSION-PUBLIC-ID" => @token.public_id)
   end
 
   test "should get index" do

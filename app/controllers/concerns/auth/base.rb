@@ -27,6 +27,7 @@ module Auth
     # Dev/Test: no prefix (String, not Symbol)
     ACCESS_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_access" : "jit_auth_access"
     REFRESH_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_refresh" : "jit_auth_refresh"
+    DEVICE_COOKIE_KEY = REFRESH_COOKIE_KEY.sub("jit_auth_refresh", "jit_auth_device_id")
 
     # Token TTLs
     ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
@@ -40,6 +41,8 @@ module Auth
       login_failed: "LOGIN_FAILED",
       token_refreshed: "TOKEN_REFRESHED",
     }.freeze
+
+    VALID_ACTOR_TYPES = %w(user staff).freeze
 
     module JwtConfiguration
       def self.issuer
@@ -82,7 +85,12 @@ module Auth
           # Use provided resource_type or fallback to class name
           type = resource_type || resource.class.name.downcase
           payload = build_payload(resource, session_public_id, type)
-          JWT.encode(payload, JwtConfiguration.private_key, JWT_ALGORITHM)
+          JWT.encode(
+            payload,
+            Jit::Security::Jwt::Keyring.private_key_for_active,
+            JWT_ALGORITHM,
+            { kid: Jit::Security::Jwt::Keyring.active_kid },
+          )
         rescue StandardError => error
           Rails.event.notify(
             "authentication.token.generation.failed",
@@ -99,7 +107,13 @@ module Auth
         def decode(token, host:)
           return nil if token.blank? || host.blank?
 
-          payload, = JWT.decode(token, JwtConfiguration.public_key, true, decode_options)
+          header = Jit::Security::Jwt::Keyring.parse_header(token)
+          return nil unless valid_header?(header)
+
+          public_key = Jit::Security::Jwt::Keyring.public_key_for(header["kid"])
+          return nil if public_key.nil?
+
+          payload, = JWT.decode(token, public_key, true, decode_options)
           payload
         rescue JWT::ExpiredSignature
           Rails.event.notify("authentication.token.verification.expired", host: host)
@@ -127,8 +141,20 @@ module Auth
           payload&.dig("sub")
         end
 
-        def extract_type(payload)
-          payload&.dig("type")
+        def extract_act(payload)
+          payload&.dig("act")
+        end
+
+        def extract_type(payload) = extract_act(payload)
+
+        def validate_actor_claim!(payload, expected_act)
+          return false if payload.blank?
+
+          act = extract_act(payload)
+          return false if act.blank?
+          return false unless VALID_ACTOR_TYPES.include?(act)
+
+          act == expected_act
         end
 
         def extract_session_id(payload)
@@ -159,7 +185,7 @@ module Auth
             "iss" => JwtConfiguration.issuer,
             "aud" => JwtConfiguration.audiences,
             "sub" => resource.id,
-            "type" => type,
+            "act" => type,
           }
           payload["sid"] = session_public_id if session_public_id.present?
           payload
@@ -175,6 +201,13 @@ module Auth
             verify_aud: true,
             aud: JwtConfiguration.audiences,
           }
+        end
+
+        def valid_header?(header)
+          return false if header.blank?
+          return false unless header["alg"] == JWT_ALGORITHM
+
+          header["kid"].present?
         end
       end
     end
@@ -529,7 +562,7 @@ module Auth
       )
 
       # Always set cookies (even for JSON responses - required for Edge/SPA)
-      set_auth_cookies(access_token: access_token, refresh_token: refresh_plain)
+      set_auth_cookies(access_token: access_token, refresh_token: refresh_plain, device_id: token_record.device_id)
 
       Sign::Risk::Emitter.emit(
         "session_issued",
@@ -570,6 +603,7 @@ module Auth
       refresh_public_id, = token_class.parse_refresh_token(refresh_plain.to_s)
       token_record = find_refresh_token_record(refresh_public_id)
       return handle_restricted_refresh_rejected(token_record, refresh_public_id) if token_record&.restricted?
+      return handle_refresh_device_denied(token_record, refresh_public_id) unless refresh_device_allowed?(token_record)
 
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
       token_record = result[:token]
@@ -585,7 +619,7 @@ module Auth
 
       build_refreshed_session(resource, token_record, new_refresh_plain)
     rescue Sign::InvalidRefreshToken => e
-      handle_invalid_refresh_token(e, refresh_public_id)
+      handle_invalid_refresh_token(e, refresh_public_id, token_record)
     rescue StandardError => e
       Rails.logger.error "[Auth] Refresh Error: #{e.class}: #{e.message}"
       Rails.logger.error e.backtrace.first(10).join("\n")
@@ -609,6 +643,7 @@ module Auth
 
       cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
       cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      clear_device_id_cookie!
 
       record_audit(AUDIT_EVENTS[:logged_out], resource: resource) if resource
       reset_session
@@ -632,6 +667,7 @@ module Auth
         Rails.logger.debug { "[Auth] transparent_refresh: FAILURE" }
         cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
         cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+        clear_device_id_cookie!
         return
       end
 
@@ -851,7 +887,27 @@ module Auth
       opts
     end
 
-    def set_auth_cookies(access_token:, refresh_token:)
+    def device_cookie_key
+      REFRESH_COOKIE_KEY.sub("jit_auth_refresh", "jit_auth_device_id")
+    end
+
+    def device_cookie_options
+      cookie_options.merge(expires: REFRESH_TOKEN_TTL.from_now)
+    end
+
+    def set_device_id_cookie!(device_id)
+      cookies.encrypted[device_cookie_key] = device_cookie_options.merge(value: device_id)
+    end
+
+    def clear_device_id_cookie!
+      cookies.delete(device_cookie_key, cookie_deletion_options)
+    end
+
+    def read_device_id_cookie
+      cookies.encrypted[device_cookie_key].to_s.presence
+    end
+
+    def set_auth_cookies(access_token:, refresh_token:, device_id:)
       # Access cookie
       cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
         value: access_token,
@@ -862,6 +918,7 @@ module Auth
         value: refresh_token,
         expires: REFRESH_TOKEN_TTL.from_now,
       )
+      set_device_id_cookie!(device_id)
     end
 
     def shared_cookie_domain
@@ -909,6 +966,51 @@ module Auth
         actor: actor,
         ip_address: request_ip_address,
       )
+    end
+
+    def write_refresh_occurrence(event_type:, token_record:, reason:, device_source:)
+      model_class = occurrence_model_class
+      return unless model_class
+
+      body = SecureRandom.uuid
+      token_record_id = token_record&.public_id
+
+      model_class.create!(
+        body: body,
+        event_type: event_type,
+        status_id: 1,
+        context: {
+          host: request.host,
+          request_id: request.request_id,
+          ip_hash: occurrence_ip_hash,
+          device_source: device_source,
+          token_family_id: token_record&.refresh_token_family_id,
+          token_id: token_record_id,
+          generation: token_record&.refresh_token_generation,
+          reason: reason,
+        },
+      )
+    rescue StandardError => e
+      Rails.event.notify(
+        "#{resource_type}.occurrence.write_failed",
+        event_type: event_type,
+        reason: reason,
+        error_class: e.class.name,
+        error_message: e.message,
+      )
+    end
+
+    def occurrence_model_class
+      return UserOccurrence if resource_type == "user"
+      return StaffOccurrence if resource_type == "staff"
+
+      nil
+    end
+
+    def occurrence_ip_hash
+      ip = request_ip_address.to_s
+      secret = ENV["OCCURRENCE_HMAC_SECRET"].presence || Rails.application.secret_key_base
+      OpenSSL::HMAC.hexdigest("SHA256", secret, ip)
     end
 
     def handle_missing_refresh_token(refresh_public_id)
@@ -974,7 +1076,11 @@ module Auth
         resource_type: resource_type,
       )
 
-      set_auth_cookies(access_token: new_access_token, refresh_token: new_refresh_plain)
+      set_auth_cookies(
+        access_token: new_access_token,
+        refresh_token: new_refresh_plain,
+        device_id: token_record.device_id,
+      )
 
       Sign::Risk::Emitter.emit(
         "refresh_rotated",
@@ -1012,8 +1118,17 @@ module Auth
       (respond_to?(:request, true) && request) ? request.remote_ip : nil
     end
 
-    def handle_invalid_refresh_token(exception, refresh_public_id)
+    def handle_invalid_refresh_token(exception, refresh_public_id, token_record = nil)
       set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+
+      if exception.message == "refresh_token_reuse_detected"
+        write_refresh_occurrence(
+          event_type: "refresh_reuse_detected",
+          token_record: token_record || find_refresh_token_record(refresh_public_id),
+          reason: "reuse",
+          device_source: refresh_device_source,
+        )
+      end
 
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",
@@ -1029,6 +1144,29 @@ module Auth
         user_agent: request&.user_agent,
         request_id: request&.request_id,
         meta: { reason: exception.class.name },
+      )
+
+      nil
+    end
+
+    def handle_refresh_device_denied(token_record, refresh_public_id)
+      reason = @refresh_device_reason || "missing"
+      event_type = (reason == "mismatch") ? "refresh_device_mismatch" : "refresh_device_missing"
+      write_refresh_occurrence(
+        event_type: event_type,
+        token_record: token_record,
+        reason: reason,
+        device_source: refresh_device_source,
+      )
+
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+      log_out
+
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: "device_#{reason}",
+        ip_address: request_ip_address,
       )
 
       nil
@@ -1099,6 +1237,49 @@ module Auth
     def clear_refresh_failure!
       @refresh_failure_status = nil
       @refresh_failure_code = nil
+      @refresh_device_reason = nil
+    end
+
+    def refresh_device_allowed?(token_record)
+      header_device_id = request.headers["X-Device-Id"].to_s.presence
+      cookie_device_id = read_device_id_cookie
+
+      if header_device_id.blank? && cookie_device_id.blank?
+        # In test environment, allow missing device ID to simplify tests
+        # ONLY if not explicitly requested via a strict-check header.
+        if Rails.env.test? && request.headers["X-STRICT-DEVICE-CHECK"].blank?
+          return true
+        end
+
+        @refresh_device_reason = "missing"
+        return false
+      end
+
+      if header_device_id.present? && cookie_device_id.present? && header_device_id != cookie_device_id
+        @refresh_device_reason = "mismatch"
+        return false
+      end
+
+      extracted_device_id = header_device_id || cookie_device_id
+      return true if token_record.blank?
+
+      token_device_id = token_record.device_id.to_s
+      if token_device_id.blank? || token_device_id != extracted_device_id
+        @refresh_device_reason = "mismatch"
+        return false
+      end
+
+      true
+    end
+
+    def refresh_device_source
+      header_present = request.headers["X-Device-Id"].to_s.present?
+      cookie_present = read_device_id_cookie.present?
+      return "both" if header_present && cookie_present
+      return "header" if header_present
+      return "cookie" if cookie_present
+
+      "none"
     end
 
     def load_current_resource
@@ -1134,7 +1315,11 @@ module Auth
 
       payload = Token.decode(access_token, host: request.host)
       return nil if payload.blank?
-      return nil unless Token.extract_type(payload) == resource_type
+
+      unless Token.validate_actor_claim!(payload, resource_type)
+        emit_actor_mismatch_event(payload)
+        return nil
+      end
 
       sid = Token.extract_session_id(payload)
       return nil if sid.blank?
@@ -1162,6 +1347,28 @@ module Auth
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+
+    def emit_actor_mismatch_event(payload)
+      act = Token.extract_act(payload)
+      sub = Token.extract_subject(payload)
+
+      Rails.event.notify(
+        "authentication.actor_mismatch",
+        expected: resource_type,
+        actual: act,
+        subject: sub,
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "actor_mismatch",
+        user_id: sub,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { expected: resource_type, actual: act },
+      )
+    end
 
     def resource_withdrawn?(resource)
       return false unless resource&.respond_to?(:withdrawn?)

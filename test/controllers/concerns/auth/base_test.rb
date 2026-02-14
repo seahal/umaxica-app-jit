@@ -23,6 +23,21 @@ module Auth
       assert_kind_of String, Auth::Base::REFRESH_COOKIE_KEY
     end
 
+    test "DEVICE_COOKIE_KEY is defined" do
+      assert_kind_of String, Auth::Base::DEVICE_COOKIE_KEY
+    end
+
+    test "device cookie is managed through dedicated helpers only" do
+      source = Rails.root.join("app/controllers/concerns/auth/base.rb").read
+
+      assert_includes source, "def set_device_id_cookie!"
+      assert_includes source, "def clear_device_id_cookie!"
+      assert_includes source, "def read_device_id_cookie"
+      assert_no_match(/cookies\[DEVICE_COOKIE_KEY\]/, source)
+      assert_no_match(/cookies\.delete\s+DEVICE_COOKIE_KEY/, source)
+      assert_no_match(/cookies\.delete\(DEVICE_COOKIE_KEY/, source)
+    end
+
     test "ACCESS_TOKEN_TTL is defined" do
       assert_kind_of ActiveSupport::Duration, Auth::Base::ACCESS_TOKEN_TTL
     end
@@ -37,6 +52,14 @@ module Auth
 
     test "Token.extract_subject returns nil for nil payload" do
       assert_nil Auth::Base::Token.extract_subject(nil)
+    end
+
+    test "VALID_ACTOR_TYPES constant is defined" do
+      assert_equal %w(user staff), Auth::Base::VALID_ACTOR_TYPES
+    end
+
+    test "Token.extract_act returns nil for nil payload" do
+      assert_nil Auth::Base::Token.extract_act(nil)
     end
 
     test "Token.extract_type returns nil for nil payload" do

@@ -4,6 +4,8 @@ module Sign
   module Org
     module Configuration
       class SecretsController < ApplicationController
+        include ::Auth::VerificationEnforcer
+
         before_action :authenticate_staff!
         before_action :set_secret, only: %i(show edit update destroy)
 
@@ -70,6 +72,14 @@ module Sign
 
         def secret_params
           params.fetch(:staff_secret, {}).permit(:name, :enabled)
+        end
+
+        def verification_required_action?
+          %w(create update destroy).include?(action_name)
+        end
+
+        def verification_scope
+          "configuration_secret"
         end
       end
     end

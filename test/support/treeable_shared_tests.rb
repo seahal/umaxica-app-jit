@@ -81,8 +81,6 @@ module TreeableSharedTests
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
-    return skip("id is auto-generated for numeric primary keys") unless string_id_column?
-
     master = klass.new(id: nil, parent_id: tree_root_sentinel)
     assert_not master.valid?
     assert_not_empty master.errors[:id]
@@ -95,8 +93,6 @@ module TreeableSharedTests
   end
 
   def test_upcases_id_before_validation
-    return skip("id upcasing only applies to string ids") unless string_id_column?
-
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
@@ -106,8 +102,6 @@ module TreeableSharedTests
   end
 
   def test_validates_id_format
-    return skip("id format validation only applies to string ids") unless string_id_column?
-
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
@@ -127,8 +121,6 @@ module TreeableSharedTests
   end
 
   def test_validates_length_of_id
-    return skip("id length validation only applies to string ids") unless string_id_column?
-
     klass = treeable_class
     ensure_root_sentinel!(klass)
 

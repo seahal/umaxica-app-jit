@@ -5,7 +5,8 @@
 # Table name: staff_occurrence_statuses
 # Database name: occurrence
 #
-#  id :bigint           not null, primary key
+#  id   :bigint           not null, primary key
+#  name :string           default(""), not null
 #
 
 require "test_helper"

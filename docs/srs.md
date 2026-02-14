@@ -76,7 +76,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 ### 4.3 Identity, authentication, and account security (sign.*)
 - **FR-08**: Registration flows under `Sign::App::Registration` shall support email signup with Cloudflare Turnstile verification, HOTP issuance (ROTP), and `UserIdentityEmail` persistence using encrypted attributes.
 - **FR-09**: Telephone registration controllers mirror email flow but dispatch OTP codes through `AwsSmsService`, which must support AWS SNS, Infobip, and in-memory test providers selected via `Rails.application.config.sms_provider`.
-- **FR-10**: Authentication controllers (`Sign::App::Authentication::*`) must issue short-lived access tokens (JWT ES256) and encrypted refresh tokens using `Authn#log_in`. Logout must clear both cookies.
+- **FR-10**: Authentication controllers (`Sign::App::Authentication::*`) must issue short-lived access tokens (JWT ES384) and refresh tokens using `Auth::Base#log_in`. Refresh now requires `device_id` (`jit_auth_device_id` cookie or `X-Device-Id` header). If both are present they must match; missing/mismatch must return `401`, force logout for browser clients (clear access/refresh/device cookies + reset session), and require re-login.
 - **FR-11**: Passkey management (`Sign::App::Setting::PasskeysController`) must expose `/setting/passkeys/challenge` and `/verify` endpoints compatible with WebAuthn spec and persist credentials in `UserPasskey`. Passkey-backed sessions always require an enrolled email or telephone identity (no passkey-only login) and may be used both for sign-in after that identity check and as an MFA factor.
 - **FR-12**: TOTP provisioning (`Sign::App::Setting::TotpsController`) must generate QR codes (`rqrcode`) with session-stored secrets, verify first token, and persist to `TimeBasedOneTimePassword` (encrypted key).
 - **FR-13**: OAuth integrations (Google/Apple) use OmniAuth and must be wired for CSRF-safe flows (move to GET in backlog but tracked here as compliance requirement).
@@ -91,6 +91,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 - **FR-18**: Public API endpoints under `Api::App::V1::Inquiry` must provide Base64-safe email validation (`valid_email_addresses#show`) and JSON phone validation (`valid_telephone_numbers#create`) using the same `ServiceSiteContact` validator to avoid duplicating rules.
 - **FR-19**: BFF preference endpoints (`Bff::*::Preference::EmailsController`) must reuse `PreferenceRegions` logic while remaining stateless (no session writes) and support locale query aliases (`tz/tz`, `lx/lang`).
 - **FR-20**: API/BFF responses must include structured error payloads and standard headers (CORS via `rack-cors`) to enable SPA and mobile clients.
+  - Mobile/bearer clients must treat refresh `401` as logout: delete local access/refresh tokens and redirect to login.
 
 ### 4.6 Data protection and compliance
 - **FR-21**: Personally identifiable records must reside in their designated database clusters (`IdentitiesRecord`, `GuestRecord`, `OccurrenceRecord`, etc.) with `connects_to` wiring honoring read replicas for reporting workloads.

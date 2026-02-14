@@ -3,41 +3,29 @@
 # == Schema Information
 #
 # Table name: app_document_behaviors
-# Database name: activity
+# Database name: behavior
 #
-#  id             :bigint           not null, primary key
-#  actor_type     :text             default(""), not null
-#  context        :jsonb            not null
-#  current_value  :text             default(""), not null
-#  expires_at     :datetime         not null
-#  ip_address     :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
-#  occurred_at    :datetime         not null
-#  previous_value :text             default(""), not null
-#  subject_type   :text             not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  actor_id       :bigint           default(0), not null
-#  event_id       :bigint           default(0), not null
-#  level_id       :bigint           default(0), not null
-#  subject_id     :bigint           not null
+#  id           :bigint           not null, primary key
+#  actor_type   :string
+#  expires_at   :datetime
+#  occurred_at  :datetime
+#  subject_type :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  actor_id     :bigint
+#  event_id     :bigint
+#  level_id     :bigint
+#  subject_id   :bigint           not null
 #
 # Indexes
 #
-#  idx_on_subject_type_subject_id_occurred_at_9aaf743787     (subject_type,subject_id,occurred_at)
-#  index_app_document_behaviors_on_actor_id_and_occurred_at  (actor_id,occurred_at)
-#  index_app_document_behaviors_on_event_id                  (event_id)
-#  index_app_document_behaviors_on_expires_at                (expires_at)
-#  index_app_document_behaviors_on_level_id                  (level_id)
-#  index_app_document_behaviors_on_occurred_at               (occurred_at)
-#  index_app_document_behaviors_on_subject_id                (subject_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (event_id => app_document_behavior_events.id)
-#  fk_rails_...  (level_id => app_document_behavior_levels.id)
+#  index_app_document_behaviors_on_actor_type_and_actor_id      (actor_type,actor_id)
+#  index_app_document_behaviors_on_event_id                     (event_id)
+#  index_app_document_behaviors_on_level_id                     (level_id)
+#  index_app_document_behaviors_on_subject_type_and_subject_id  (subject_type,subject_id)
 #
 
-class AppDocumentBehavior < ActivityRecord
+class AppDocumentBehavior < BehaviorRecord
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :app_document, optional: true, foreign_key: :subject_id, inverse_of: :app_document_behaviors
   belongs_to :actor, polymorphic: true, optional: true # Helper methods for compatibility

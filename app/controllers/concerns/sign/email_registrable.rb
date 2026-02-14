@@ -233,13 +233,17 @@ module Sign
     def email_uniqueness_only_error?(user_email)
       return false if user_email.errors.empty?
 
-      address_errors = user_email.errors.details[:address] || user_email.errors.details[:raw_address] || []
-      return false if address_errors.empty?
+      # Fields that can have uniqueness errors
+      uniqueness_fields = %i(address raw_address address_bidx address_digest)
 
-      other_errors = user_email.errors.details.except(:address).values.flatten
-      return false if other_errors.any?
+      # Check if all errors are :taken errors on the uniqueness fields
+      user_email.errors.details.each do |field, errors|
+        return false unless uniqueness_fields.include?(field)
+        return false unless errors.all? { |error| error[:error] == :taken }
+      end
 
-      address_errors.all? { |error| error[:error] == :taken }
+      # Ensure at least one uniqueness error is present
+      user_email.errors.details.any?
     end
   end
 end

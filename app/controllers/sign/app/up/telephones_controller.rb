@@ -393,13 +393,17 @@ module Sign
         def telephone_uniqueness_only_error?(user_telephone)
           return false if user_telephone.errors.empty?
 
-          number_errors = user_telephone.errors.details[:number] || user_telephone.errors.details[:raw_number] || []
-          return false if number_errors.empty?
+          # Fields that can have uniqueness errors
+          uniqueness_fields = %i(number raw_number number_bidx number_digest)
 
-          other_errors = user_telephone.errors.details.except(:number).values.flatten
-          return false if other_errors.any?
+          # Check if all errors are :taken errors on the uniqueness fields
+          user_telephone.errors.details.each do |field, errors|
+            return false unless uniqueness_fields.include?(field)
+            return false unless errors.all? { |error| error[:error] == :taken }
+          end
 
-          number_errors.all? { |error| error[:error] == :taken }
+          # Ensure at least one uniqueness error is present
+          user_telephone.errors.details.any?
         end
 
         def log_signup_telephone_errors

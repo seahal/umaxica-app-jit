@@ -11,7 +11,9 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     host! @host
     @user = users(:one)
-    @headers = as_user_headers(@user, host: @host)
+    @token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    satisfy_user_verification(@token)
+    @headers = as_user_headers(@user, host: @host).merge("X-TEST-SESSION-PUBLIC-ID" => @token.public_id)
   end
 
   test "new requires schedule confirmation to proceed" do

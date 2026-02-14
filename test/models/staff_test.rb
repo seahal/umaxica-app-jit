@@ -13,16 +13,19 @@
 #  updated_at           :datetime         not null
 #  public_id            :string           not null
 #  status_id            :bigint           default(2), not null
+#  visibility_id        :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_staffs_on_public_id     (public_id) UNIQUE
-#  index_staffs_on_status_id     (status_id)
-#  index_staffs_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_status_id      (status_id)
+#  index_staffs_on_visibility_id  (visibility_id)
+#  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => staff_statuses.id)
+#  fk_rails_...  (visibility_id => staff_visibilities.id)
 #
 
 require "test_helper"
@@ -31,6 +34,7 @@ class StaffTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
+    [0, 1, 2, 3].each { |id| StaffVisibility.find_or_create_by!(id: id) }
     StaffTelephoneStatus.find_or_create_by!(id: StaffTelephoneStatus::UNVERIFIED)
     StaffEmailStatus.find_or_create_by!(id: StaffEmailStatus::UNVERIFIED)
     StaffTokenStatus.find_or_create_by!(id: StaffTokenStatus::ACTIVE)
@@ -50,6 +54,33 @@ class StaffTest < ActiveSupport::TestCase
     staff = Staff.create!
 
     assert_equal 8, staff.public_id.length
+  end
+
+  test "default visibility_id is staff (2)" do
+    staff = Staff.create!
+
+    assert_equal StaffVisibility::STAFF, staff.visibility_id
+  end
+
+  test "visibility association resolves to StaffVisibility with id 2 by default" do
+    staff = Staff.create!
+
+    assert_equal StaffVisibility::STAFF, staff.visibility.id
+  end
+
+  test "invalid visibility_id is rejected by foreign key" do
+    valid_public_id = Array.new(8) {
+      Staff::PUBLIC_ID_ALPHABET[SecureRandom.random_number(Staff::PUBLIC_ID_ALPHABET.length)]
+    }.join
+
+    staff = Staff.new(
+      public_id: valid_public_id,
+      status_id: StaffStatus::NEYO,
+      visibility_id: 9_999,
+    )
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      staff.save!(validate: false)
+    end
   end
 
   test "auto-generated public_id is lowercase" do
