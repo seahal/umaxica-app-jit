@@ -84,16 +84,16 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
 
       query = Rack::Utils.parse_nested_query(URI(response.location).query)
       scope = query["scope"]
-      return_to = query["return_to"]
+      return_to = query["rd"] || query["return_to"]
       assert_equal "configuration_email", scope
       assert_predicate return_to, :present?
 
-      get sign_app_verification_url(scope: scope, return_to: return_to, ri: "jp"), headers: stale_headers
+      get sign_app_verification_url(scope: scope, rd: return_to, ri: "jp"), headers: stale_headers
       assert_response :success
 
       Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
         post sign_app_verification_emails_url(ri: "jp"),
-             params: { verification: { scope: scope, return_to: return_to } },
+             params: { verification: { scope: scope, rd: return_to } },
              headers: stale_headers
       end
 
@@ -103,7 +103,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
 
       Sign::App::Verification::BaseController.any_instance.stub(:verify_email_otp!, true) do
         patch sign_app_verification_email_url(nonce, ri: "jp"),
-              params: { verification: { code: "123456", scope: scope, return_to: return_to } },
+              params: { verification: { code: "123456", scope: scope, rd: return_to } },
               headers: stale_headers
       end
 

@@ -51,13 +51,11 @@ module Auth
       return true if respond_to?(:logged_in?) && !logged_in?
       return true unless verification_required_action?
       return true if verification_satisfied?
+      return false unless enforce_step_up_prereqs!
 
       if request.get? || request.head?
-        safe_return_to = safe_internal_path(request.fullpath.to_s).presence || "/"
-        encoded_return_to = Base64.urlsafe_encode64(safe_return_to)
-
         safe_redirect_to(
-          verification_redirect_path(return_to: encoded_return_to),
+          verification_redirect_path(rd: encoded_step_up_rd),
           fallback: verification_redirect_fallback,
           status: :found,
         )
@@ -68,16 +66,69 @@ module Auth
       false
     end
 
-    def verification_redirect_path(return_to:)
-      attrs = { ri: params[:ri], return_to: return_to }
-      scope = verification_scope.to_s.presence
+    def enforce_step_up_prereqs!(scope_override: nil)
+      return true if available_step_up_methods.present?
+
+      if request.get? || request.head?
+        destination =
+          if configured_step_up_methods.empty?
+            verification_setup_redirect_path
+          else
+            verification_redirect_path(rd: encoded_step_up_rd, scope_override: scope_override)
+          end
+        fallback = configured_step_up_methods.empty? ? verification_setup_redirect_fallback : verification_redirect_fallback
+
+        safe_redirect_to(destination, fallback: fallback, status: :found)
+      else
+        render plain: I18n.t("auth.step_up.register_methods_required"), status: :unprocessable_content
+      end
+
+      false
+    end
+
+    def verification_redirect_path(rd:, scope_override: nil)
+      attrs = { ri: params[:ri], rd: rd }
+      scope = scope_override.to_s.presence || verification_scope.to_s.presence
       attrs[:scope] = scope if scope
 
       am_i_staff? ? sign_org_verification_path(attrs) : sign_app_verification_path(attrs)
     end
 
+    def verification_setup_redirect_path
+      attrs = { ri: params[:ri], rd: encoded_step_up_rd }
+      am_i_staff? ? new_sign_org_verification_setup_path(attrs) : new_sign_app_verification_setup_path(attrs)
+    end
+
     def verification_redirect_fallback
       "/verification"
+    end
+
+    def verification_setup_redirect_fallback
+      "/verification/setup"
+    end
+
+    def available_step_up_methods(actor = current_actor)
+      ::StepUp::AvailableMethods.call(actor) & step_up_supported_methods
+    end
+
+    def configured_step_up_methods(actor = current_actor)
+      ::StepUp::ConfiguredMethods.call(actor) & step_up_supported_methods
+    end
+
+    def step_up_supported_methods
+      am_i_staff? ? %i(passkey totp) : %i(email_otp passkey totp)
+    end
+
+    def current_actor
+      return current_staff if respond_to?(:am_i_staff?) && am_i_staff? && respond_to?(:current_staff)
+      return current_user if respond_to?(:current_user)
+
+      nil
+    end
+
+    def encoded_step_up_rd
+      safe_path = safe_internal_path(request.fullpath.to_s).presence || "/"
+      Base64.urlsafe_encode64(safe_path)
     end
 
     def current_actor_token

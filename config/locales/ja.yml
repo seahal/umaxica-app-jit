@@ -37,6 +37,14 @@ ja:
       exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
     social_auth:
       provider_error: "プロバイダーとの通信中にエラーが発生しました"
+  auth:
+    step_up:
+      required: "続行するには再認証が必要です。"
+      session_expired: "認証が必要です。"
+      invalid_request: "無効な認証リクエストです。"
+      method_unavailable: "選択した認証方法は利用できません。"
+      register_methods_required: "利用可能なステップアップ認証がありません。パスキー・メール・TOTPを登録してください。"
+      verification_required: "認証が必要です。"
   sign:
     app:
       in:
@@ -97,3 +105,20 @@ ja:
             ack_label: "本日中に利用停止（論理削除）されることを理解しました"
             submit: "退会する"
             confirm: "本日中に利用停止します。よろしいですか？"
+      verification:
+        setup:
+          title: "認証方法の登録"
+          description: "続行する前に、パスキー、メール、電話番号、または認証アプリを登録してください。"
+          methods:
+            passkey: "パスキーを登録"
+            email: "メールを登録"
+            telephone: "電話番号を登録"
+            totp: "認証アプリ（TOTP）を登録"
+    org:
+      verification:
+        setup:
+          title: "認証方法の登録"
+          description: "続行する前に、パスキーまたは認証アプリを登録してください。"
+          methods:
+            passkey: "パスキーを登録"
+            totp: "認証アプリ（TOTP）を登録"

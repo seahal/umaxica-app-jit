@@ -91,7 +91,7 @@ class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseC
     safe_redirect_to(
       sign_app_verification_path(verification_recovery_redirect_params),
       fallback: sign_app_verification_path(ri: params[:ri]),
-      alert: I18n.t("auth.step_up.invalid_request", default: "不正なリクエストです"),
+      alert: I18n.t("auth.step_up.invalid_request"),
     )
     false
   end

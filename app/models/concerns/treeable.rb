@@ -200,6 +200,8 @@ module Treeable
       q_parent = connection.quote_column_name(tree_parent_column)
       q_table = connection.quote_table_name(table_name)
       order_col = tree_order_column
+      pk_type = columns_hash.fetch(primary_key, nil)&.type
+      pk_sort_expr = pk_type.in?([:integer, :bigint]) ? "#{q_pk}::bigint" : "#{q_pk}::text"
       root_vals = tree_root_parent_values
 
       include_self = false if include_self && root_vals.include?(root_id)
@@ -209,17 +211,17 @@ module Treeable
       anchor_path =
         if order_col
           q_order = connection.quote_column_name(order_col)
-          "ARRAY[ROW(#{q_order}::int, #{q_pk}::text)]::record[]"
+          "ARRAY[ROW(#{q_order}::int, #{pk_sort_expr})]::record[]"
         else
-          "ARRAY[ROW(#{q_pk}::text)]::record[]"
+          "ARRAY[ROW(#{pk_sort_expr})]::record[]"
         end
 
       step_path =
         if order_col
           q_order = connection.quote_column_name(order_col)
-          "tree.path || ARRAY[ROW(t.#{q_order}::int, t.#{q_pk}::text)]::record[]"
+          "tree.path || ARRAY[ROW(t.#{q_order}::int, t.#{pk_sort_expr})]::record[]"
         else
-          "tree.path || ARRAY[ROW(t.#{q_pk}::text)]::record[]"
+          "tree.path || ARRAY[ROW(t.#{pk_sort_expr})]::record[]"
         end
 
       # rubocop:disable I18n/RailsI18n/DecorateString

@@ -35,7 +35,7 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
       sign_count: 0,
     )
 
-    Sign::Org::VerificationsController.any_instance.stub(:available_step_up_methods, [:passkey, :totp]) do
+    Sign::Org::VerificationController.any_instance.stub(:available_step_up_methods, [:passkey, :totp]) do
       get sign_org_verification_url(ri: "jp"), headers: @headers
       assert_response :success
 

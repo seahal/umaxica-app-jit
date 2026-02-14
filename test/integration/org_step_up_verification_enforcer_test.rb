@@ -21,14 +21,55 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     @headers["X-TEST-SESSION-PUBLIC-ID"] = @token.public_id
   end
 
-  test "GET protected endpoint redirects to verification when step-up is missing" do
+  test "GET protected endpoint redirects to setup when configured methods are zero" do
+    StepUp::ConfiguredMethods.stub(:call, []) do
+      StepUp::AvailableMethods.stub(:call, []) do
+        get sign_org_configuration_withdrawal_url(ri: "jp"), headers: @headers
+      end
+    end
+
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
+    assert_equal "/verification/setup/new", uri.path
+    assert_predicate query["rd"], :present?
+  end
+
+  test "GET protected endpoint redirects to verification when configured is non-zero but usable is zero" do
+    StepUp::ConfiguredMethods.stub(:call, [:passkey]) do
+      StepUp::AvailableMethods.stub(:call, []) do
+        get sign_org_configuration_withdrawal_url(ri: "jp"), headers: @headers
+      end
+    end
+
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
+    assert_equal "/verification", uri.path
+    assert_predicate query["rd"], :present?
+  end
+
+  test "GET protected endpoint redirects to verification when usable methods exist" do
+    StaffOneTimePassword.create!(
+      staff: @staff,
+      private_key: ROTP::Base32.random_base32,
+      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
+    )
+
     get sign_org_configuration_withdrawal_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
-    assert_includes response.location, "/verification"
+    uri = URI.parse(response.location)
+    assert_equal "/verification", uri.path
   end
 
-  test "POST protected endpoint returns 401 plain when step-up is missing" do
+  test "POST protected endpoint returns 401 plain when step-up is missing and usable methods exist" do
+    StaffOneTimePassword.create!(
+      staff: @staff,
+      private_key: ROTP::Base32.random_base32,
+      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
+    )
+
     post options_sign_org_configuration_passkeys_url(ri: "jp"), headers: @headers
 
     assert_response :unauthorized

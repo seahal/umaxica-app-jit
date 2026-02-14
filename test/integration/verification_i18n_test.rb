@@ -20,6 +20,12 @@ class VerificationI18nTest < ActionDispatch::IntegrationTest
       "X-TEST-CURRENT-USER" => @user.id.to_s,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
     ).freeze
+
+    UserEmail.create!(
+      user: @user,
+      address: "verify-i18n-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
   end
 
   test "verification view displays translated strings in Japanese" do
@@ -28,7 +34,7 @@ class VerificationI18nTest < ActionDispatch::IntegrationTest
     get sign_app_verification_url(ri: "jp"), headers: @headers
     assert_response :success
     assert_select "h1", text: I18n.t("sign.app.verification.index.title", locale: :ja)
-    assert_select "td", text: I18n.t("sign.app.verification.index.empty", locale: :ja)
+    assert_select "h2", text: I18n.t("sign.app.verification.new.title", locale: :ja)
   end
 
   test "verification view displays translated strings in English" do
@@ -37,6 +43,6 @@ class VerificationI18nTest < ActionDispatch::IntegrationTest
     get sign_app_verification_url(ri: "us"), headers: @headers
     assert_response :success
     assert_select "h1", text: I18n.t("sign.app.verification.index.title", locale: :en)
-    assert_select "td", text: I18n.t("sign.app.verification.index.empty", locale: :en)
+    assert_select "h2", text: I18n.t("sign.app.verification.new.title", locale: :en)
   end
 end

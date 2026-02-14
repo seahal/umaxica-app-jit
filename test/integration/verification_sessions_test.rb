@@ -26,6 +26,13 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
       "X-TEST-CURRENT-USER" => @user.id.to_s,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
     }.freeze
+
+    UserOneTimePassword.create!(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      last_otp_at: Time.zone.at(0),
+    )
   end
 
   test "GET within 15 minutes skips verification" do
@@ -37,7 +44,6 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
 
     get new_sign_app_verification_totp_url(ri: "jp"), headers: @headers
     assert_response :redirect
-    # Note: Session verification logic changed - now redirects to verification page
     assert_redirected_to sign_app_verification_url(ri: "jp")
   end
 
@@ -55,7 +61,6 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    # Note: Session verification logic changed - now redirects to verification page
     assert_redirected_to sign_app_verification_url(ri: "jp")
   end
 end

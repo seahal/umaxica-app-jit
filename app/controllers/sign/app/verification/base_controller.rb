@@ -32,6 +32,7 @@ module Sign
         before_action :authenticate_user!
         before_action :set_actor_token
         before_action :require_ri!
+        before_action :enforce_step_up_prereqs!
 
         private
 
@@ -94,7 +95,7 @@ module Sign
           safe_redirect_to(
             sign_app_verification_path(verification_recovery_redirect_params),
             fallback: sign_app_verification_path(ri: params[:ri]),
-            alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です"),
+            alert: I18n.t("auth.step_up.session_expired"),
           )
           false
         end
@@ -127,13 +128,13 @@ module Sign
           safe_redirect_to(
             sign_app_verification_path(ri: params[:ri]),
             fallback: "/verification",
-            alert: I18n.t("auth.step_up.method_unavailable", default: "この認証方法は利用できません"),
+            alert: I18n.t("auth.step_up.method_unavailable"),
           )
           false
         end
 
         def verification_params
-          params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json, :scope, :return_to)
+          params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json, :scope, :return_to, :rd)
         end
 
         def verification_scope
@@ -219,7 +220,10 @@ module Sign
         end
 
         def incoming_return_to
-          verification_params[:return_to].to_s.presence || params[:return_to].to_s
+          verification_params[:return_to].to_s.presence ||
+            verification_params[:rd].to_s.presence ||
+            params[:return_to].to_s.presence ||
+            params[:rd].to_s
         end
 
         def clear_reauth_state!

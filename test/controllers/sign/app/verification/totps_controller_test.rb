@@ -86,4 +86,17 @@ class Sign::App::Verification::TotpsControllerTest < ActionDispatch::Integration
     assert_select "input[name='verification[scope]'][value='configuration_email']"
     assert_select "input[name='verification[return_to]'][value='#{return_to}']"
   end
+
+  test "POST returns plain error when no usable step-up methods exist" do
+    StepUp::ConfiguredMethods.stub(:call, []) do
+      StepUp::AvailableMethods.stub(:call, []) do
+        post sign_app_verification_totp_url(ri: "jp"),
+             params: { verification: { code: "123456" } },
+             headers: @headers
+      end
+    end
+
+    assert_response :unprocessable_content
+    assert_equal I18n.t("auth.step_up.register_methods_required"), response.body
+  end
 end

@@ -24,6 +24,12 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
       "X-TEST-CURRENT-USER" => @user.id.to_s,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
     }.freeze
+
+    UserEmail.create!(
+      user: @user,
+      address: "stepup-auth-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
   end
 
   test "GET sensitive page redirects to verification when step-up is not satisfied" do
@@ -36,6 +42,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
     assert_equal "/verification", uri.path
     assert_equal "configuration_email", query["scope"]
     assert_equal "jp", query["ri"]
+    assert_predicate query["rd"], :present?
   end
 
   test "POST sensitive action returns 401 when step-up is not satisfied" do
@@ -58,6 +65,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_equal "/verification", uri.path
     assert_equal "configuration_email", query["scope"]
+    assert_predicate query["rd"], :present?
   end
 
   test "step-up older than 15 minutes redirects to verification" do
@@ -68,6 +76,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     uri = URI.parse(response.location)
     assert_equal "/verification", uri.path
+    assert_predicate Rack::Utils.parse_query(uri.query)["rd"], :present?
   end
 
   test "step-up within TTL and matching scope passes through" do
@@ -89,6 +98,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
     assert_equal "/verification", uri.path
     assert_equal "configuration_email", query["scope"]
     assert_equal "jp", query["ri"]
+    assert_predicate query["rd"], :present?
   end
 
   test "HEAD step-up within TTL and matching scope passes through" do

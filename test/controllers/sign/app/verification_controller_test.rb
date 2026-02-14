@@ -24,25 +24,27 @@ class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "shows setup message when no verification methods are registered" do
+  test "redirects to setup page when no verification methods are registered" do
     user = User.create!
     headers = as_user_headers(user, host: @host)
 
     get sign_app_verification_url(ri: "jp"), headers: headers
 
-    assert_response :success
-    assert_includes response.body, "email/passkey/totp を登録してください"
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
+    assert_equal "/verification/setup/new", uri.path
+    assert_predicate query["rd"], :present?
   end
 
-  test "show keeps scope and return_to in method links" do
+  test "show renders method links when scope and return_to are provided" do
     return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
     get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
 
     assert_response :success
-    assert_select "input[name='verification[scope]'][value='configuration_email']"
-    assert_select "input[name='verification[return_to]'][value='#{return_to}']"
+    assert_includes response.body, new_sign_app_verification_email_path(ri: "jp")
   end
 
   test "show handles bad request error" do

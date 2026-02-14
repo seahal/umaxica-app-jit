@@ -28,6 +28,7 @@ module Sign
         before_action :authenticate_staff!
         before_action :set_actor_token
         before_action :require_ri!
+        before_action :enforce_step_up_prereqs!
 
         private
 
@@ -85,7 +86,7 @@ module Sign
           safe_redirect_to(
             sign_org_configuration_path(ri: params[:ri]),
             fallback: "/configuration",
-            alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です"),
+            alert: I18n.t("auth.step_up.session_expired"),
           )
           false
         end
@@ -113,7 +114,7 @@ module Sign
           safe_redirect_to(
             sign_org_verification_path(ri: params[:ri]),
             fallback: "/verification",
-            alert: I18n.t("auth.step_up.method_unavailable", default: "この認証方法は利用できません"),
+            alert: I18n.t("auth.step_up.method_unavailable"),
           )
           false
         end

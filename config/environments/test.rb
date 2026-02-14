@@ -74,4 +74,8 @@ Rails.application.configure do
 
   # SMS Provider Configuration - Use test provider in test environment
   config.sms_provider = "test"
+
+  # i18n default locale for tests
+  # config.action_view.raise_on_missing_translations = true
+  # config.i18n.raise_on_missing_translations = true
 end

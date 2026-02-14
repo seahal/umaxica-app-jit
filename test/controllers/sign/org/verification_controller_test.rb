@@ -17,6 +17,16 @@ class Sign::Org::VerificationControllerTest < ActionDispatch::IntegrationTest
       refresh_expires_at: 1.day.from_now,
     )
     @headers["X-TEST-SESSION-PUBLIC-ID"] = @token.public_id
+
+    StaffPasskey.create!(
+      staff: @staff,
+      name: "Org Verification Passkey",
+      webauthn_id: "org-verify-#{SecureRandom.hex(4)}",
+      external_id: SecureRandom.uuid,
+      public_key: "public_key",
+      sign_count: 0,
+      status_id: StaffPasskeyStatus::ACTIVE,
+    )
   end
 
   test "should get show" do

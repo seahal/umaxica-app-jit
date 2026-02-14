@@ -13,14 +13,57 @@ class AppStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     @token = UserToken.find_by!(public_id: @headers["X-TEST-SESSION-PUBLIC-ID"])
   end
 
-  test "GET protected endpoint redirects to verification when step-up is missing" do
+  test "GET protected endpoint redirects to setup when configured methods are zero" do
+    StepUp::ConfiguredMethods.stub(:call, []) do
+      StepUp::AvailableMethods.stub(:call, []) do
+        get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
+      end
+    end
+
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
+    assert_equal "/verification/setup/new", uri.path
+    assert_predicate query["rd"], :present?
+  end
+
+  test "GET protected endpoint redirects to verification when configured is non-zero but usable is zero" do
+    StepUp::ConfiguredMethods.stub(:call, [:email_otp]) do
+      StepUp::AvailableMethods.stub(:call, []) do
+        get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
+      end
+    end
+
+    assert_response :redirect
+    uri = URI.parse(response.location)
+    query = Rack::Utils.parse_query(uri.query)
+    assert_equal "/verification", uri.path
+    assert_predicate query["rd"], :present?
+  end
+
+  test "GET protected endpoint redirects to verification when usable methods exist" do
+    UserOneTimePassword.create!(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      last_otp_at: Time.zone.at(0),
+    )
+
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
-    assert_includes response.location, "/verification"
+    uri = URI.parse(response.location)
+    assert_equal "/verification", uri.path
   end
 
-  test "POST protected endpoint returns 401 plain when step-up is missing" do
+  test "POST protected endpoint returns 401 plain when step-up is missing and usable methods exist" do
+    UserOneTimePassword.create!(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      last_otp_at: Time.zone.at(0),
+    )
+
     post sign_app_configuration_withdrawal_url(ri: "jp"), headers: @headers
 
     assert_response :unauthorized

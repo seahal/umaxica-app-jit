@@ -104,6 +104,11 @@ en:
   auth:
     step_up:
       required: "Re-authentication is required to continue."
+      session_expired: "Verification required."
+      invalid_request: "Invalid verification request."
+      method_unavailable: "Selected verification method is unavailable."
+      register_methods_required: "No step-up methods available. Please register passkey/email/totp."
+      verification_required: "Verification required."
   activerecord:
     attributes:
       user_passkey:
@@ -411,6 +416,14 @@ en:
           back: "Back"
         success:
           complete: "Verification completed."
+        setup:
+          title: "Set up verification methods"
+          description: "Please register passkey, email, telephone, or authenticator app before continuing."
+          methods:
+            passkey: "Register passkey"
+            email: "Register email"
+            telephone: "Register telephone"
+            totp: "Register authenticator app (TOTP)"
     social:
       sessions:
         invalid_provider: "Invalid provider specified"
@@ -503,6 +516,12 @@ en:
           confirm_cancel: "Are you sure?"
         success:
           complete: "Re-authentication completed."
+        setup:
+          title: "Set up verification methods"
+          description: "Please register passkey or authenticator app before continuing."
+          methods:
+            passkey: "Register passkey"
+            totp: "Register authenticator app (TOTP)"
 
       verification:
         index:

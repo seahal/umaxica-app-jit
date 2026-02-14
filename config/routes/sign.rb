@@ -91,8 +91,9 @@ scope module: :sign, as: :sign do
               via: %i(get post)
       end
 
-      resource :verification, only: %i(show)
+      resource :verification, only: %i(show), controller: :verification
       namespace :verification do
+        resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
         resource :totp, only: %i(new create)
         resources :emails, only: %i(new create edit update)
@@ -171,8 +172,9 @@ scope module: :sign, as: :sign do
         match "mfa", via: [:get, :post], to: redirect(status: 302) { |_params, req| "/in/challenge#{req.query_string.present? ? "?#{req.query_string}" : ""}" }
       end
 
-      resource :verification, only: %i(show)
+      resource :verification, only: %i(show), controller: :verification
       namespace :verification do
+        resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
         resource :totp, only: %i(new create)
       end

@@ -20,6 +20,16 @@ class OrgVerificationI18nTest < ActionDispatch::IntegrationTest
       "X-TEST-CURRENT-STAFF" => @staff.id.to_s,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
     ).freeze
+
+    StaffPasskey.create!(
+      staff: @staff,
+      name: "verify i18n passkey",
+      webauthn_id: "org-verify-i18n-#{SecureRandom.hex(4)}",
+      external_id: SecureRandom.uuid,
+      public_key: "public_key",
+      sign_count: 0,
+      status_id: StaffPasskeyStatus::ACTIVE,
+    )
   end
 
   test "verification view displays translated strings in Japanese" do
@@ -28,7 +38,7 @@ class OrgVerificationI18nTest < ActionDispatch::IntegrationTest
     get sign_org_verification_url(ri: "jp"), headers: @headers
     assert_response :success
     assert_select "h1", text: I18n.t("sign.org.verification.index.title", locale: :ja)
-    assert_select "td", text: I18n.t("sign.org.verification.index.empty", locale: :ja)
+    assert_select "h2", text: I18n.t("sign.org.verification.new.title", locale: :ja)
   end
 
   test "verification view displays translated strings in English" do
@@ -37,6 +47,6 @@ class OrgVerificationI18nTest < ActionDispatch::IntegrationTest
     get sign_org_verification_url(ri: "us"), headers: @headers
     assert_response :success
     assert_select "h1", text: I18n.t("sign.org.verification.index.title", locale: :en)
-    assert_select "td", text: I18n.t("sign.org.verification.index.empty", locale: :en)
+    assert_select "h2", text: I18n.t("sign.org.verification.new.title", locale: :en)
   end
 end
