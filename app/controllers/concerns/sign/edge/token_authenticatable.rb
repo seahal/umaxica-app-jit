@@ -35,16 +35,16 @@ module Sign
           return
         end
 
-        render json: { signed_in: false, error: "unauthorized" }, status: :unauthorized
+        render json: { error: "unauthorized" }, status: :unauthorized
       end
 
       def refresh_from_cookie_once!
-        return if request.env["jit_edge_signed_in_refreshed"]
+        return if request.env["jit_edge_token_refreshed"]
 
         refresh_plain = cookies[Auth::Base::REFRESH_COOKIE_KEY]
         return if refresh_plain.blank?
 
-        request.env["jit_edge_signed_in_refreshed"] = true
+        request.env["jit_edge_token_refreshed"] = true
         refreshed = refresh_access_token(refresh_plain)
         @current_resource = refreshed[:user] if refreshed
       end

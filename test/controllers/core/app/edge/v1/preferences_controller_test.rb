@@ -31,7 +31,7 @@ module Core
           test "should get show with existing preference" do
             s = open_session
             s.host! @host
-            
+
             # First request to get a preference and cookie
             s.get core_app_edge_v1_preference_url
             s.assert_response :success
@@ -55,13 +55,13 @@ module Core
               get core_app_edge_v1_preference_url
             end
             assert_response :success
-            assert response.parsed_body.dig("preference", "public_id").present?
+            assert_predicate response.parsed_body.dig("preference", "public_id"), :present?
           end
 
           test "should not create duplicate preference for same cookie" do
             s = open_session
             s.host! @host
-            
+
             s.get core_app_edge_v1_preference_url
             s.assert_response :success
             public_id = s.response.parsed_body.dig("preference", "public_id")
@@ -75,8 +75,8 @@ module Core
           test "should store encrypted token in cookies" do
             get core_app_edge_v1_preference_url
             assert_response :success
-            assert cookies[preference_access_cookie_name].present?
-            assert cookies[preference_refresh_cookie_name].present?
+            assert_predicate cookies[preference_access_cookie_name], :present?
+            assert_predicate cookies[preference_refresh_cookie_name], :present?
           end
 
           test "should create audit log with CREATE_NEW_PREFERENCE_TOKEN event" do
@@ -86,7 +86,7 @@ module Core
 
             recent_audits = AppPreferenceActivity.order(created_at: :desc).limit(2)
             event_ids = recent_audits.map { |a| a.app_preference_activity_event.id.to_i }
-            
+
             assert_includes event_ids, AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN
             assert_includes event_ids, AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED
           end
@@ -96,10 +96,10 @@ module Core
             s = open_session
             s.host! @host
             s.cookies[preference_refresh_cookie_name] = "invalid.token"
-            
+
             # Note: without a device ID, it might fail early if we don't have it.
             # But the requirement is to ignore invalid tokens.
-            
+
             s.assert_difference -> { AppPreference.count }, 1 do
               s.get core_app_edge_v1_preference_url
             end
@@ -112,11 +112,11 @@ module Core
             s.host! @host
             s.get core_app_edge_v1_preference_url
             s.assert_response :success
-            
+
             current_public_id = s.response.parsed_body.dig("preference", "public_id")
             device_id_encrypted = s.cookies[preference_device_id_cookie_name]
             device_id = AppPreference.find_by!(public_id: current_public_id).device_id
-            
+
             legacy_token = "legacy_refresh_#{SecureRandom.hex(8)}"
             legacy_digest = SHA3::Digest::SHA3_384.digest(legacy_token)
             legacy_preference =
@@ -135,7 +135,7 @@ module Core
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = legacy_token
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
-            
+
             s2.get core_app_edge_v1_preference_url
             s2.assert_response :success
 
@@ -159,7 +159,7 @@ module Core
             s2.host! @host
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = refresh_token
-            
+
             s2.get core_app_edge_v1_preference_url
             assert_equal 401, s2.response.status
           end
@@ -178,7 +178,7 @@ module Core
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = refresh_token
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
-            
+
             s2.get core_app_edge_v1_preference_url, headers: { "X-Device-Id" => SecureRandom.uuid }
             assert_equal 401, s2.response.status
           end
@@ -200,7 +200,7 @@ module Core
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = refresh_token
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
-            
+
             s2.get core_app_edge_v1_preference_url
             assert_equal 401, s2.response.status
           end
@@ -218,7 +218,7 @@ module Core
 
             # Trigger rotation
             s.get core_app_edge_v1_preference_url
-            puts "DEBUG: rotation request status: #{s.response.status}"
+            Rails.logger.debug { "DEBUG: rotation request status: #{s.response.status}" }
             s.assert_response :success
 
             # Replay the old token in a fresh session

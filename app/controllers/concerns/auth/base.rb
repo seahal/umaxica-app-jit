@@ -1054,7 +1054,7 @@ module Auth
         family_id = token_record.refresh_token_family_id.to_s
         if family_id.present?
           token_record.class.where(refresh_token_family_id: family_id, revoked_at: nil)
-                     .update_all(revoked_at: now, updated_at: now)
+            .update_all(revoked_at: now, updated_at: now)
         elsif token_record.revoked_at.nil?
           token_record.update!(revoked_at: now)
         end

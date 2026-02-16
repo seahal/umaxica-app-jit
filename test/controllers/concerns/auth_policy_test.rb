@@ -21,6 +21,7 @@ class Auth::PolicyTestController < ApplicationController
 
   def after_login_path
     return self.class.test_stubs[:after_login_path] if self.class.test_stubs.key?(:after_login_path)
+
     super if defined?(super)
   end
 
@@ -28,6 +29,7 @@ class Auth::PolicyTestController < ApplicationController
     if self.class.test_stubs.key?(:skip_after_login_path) && method == :after_login_path
       return false
     end
+
     super
   end
 

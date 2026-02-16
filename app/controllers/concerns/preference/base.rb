@@ -306,7 +306,7 @@ module Preference
       end
     end
 
-    def resolve_option_id_from_param(value, type, default, prefix)
+    def resolve_option_id_from_param(value, type, default, _prefix)
       return default if value.blank?
 
       sanitized = sanitize_option_id({ option_id: value }, option_type: type)
@@ -516,7 +516,7 @@ module Preference
       return nil if value.blank?
 
       theme = value.to_s.downcase
-      if COLORTHEME_SHORT_MAP.values.include?(theme)
+      if COLORTHEME_SHORT_MAP.value?(theme)
         theme
       else
         COLORTHEME_SHORT_MAP[theme]
@@ -536,13 +536,13 @@ module Preference
       return false if Token.extract_preference_type(payload) != preference_class.name
 
       @preference_payload = payload
-      
+
       # Load @preferences if public_id is present in the token
       public_id = Token.extract_public_id(payload)
       if public_id.present?
         @preferences = preference_class.includes(preference_associations_to_preload).find_by(public_id: public_id)
       end
-      
+
       true
     end
 

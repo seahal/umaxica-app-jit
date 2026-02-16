@@ -11,7 +11,6 @@ scope module: :sign, as: :sign do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
-          resource :signed_in, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create
@@ -146,7 +145,6 @@ scope module: :sign, as: :sign do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
-          resource :signed_in, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create

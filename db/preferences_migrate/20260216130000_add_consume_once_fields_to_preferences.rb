@@ -3,7 +3,7 @@
 class AddConsumeOnceFieldsToPreferences < ActiveRecord::Migration[8.2]
   disable_ddl_transaction!
 
-  TABLES = %i[app_preferences org_preferences com_preferences].freeze
+  TABLES = %i(app_preferences org_preferences com_preferences).freeze
 
   def up
     TABLES.each do |table|

@@ -191,7 +191,10 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh! consumes old row and creates new generation in same family" do
-    token = StaffToken.create!(staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "device-staff")
+    token = StaffToken.create!(
+      staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "device-staff",
+    )
     raw = token.rotate_refresh_token!
     _, verifier = StaffToken.parse_refresh_token(raw)
     digest = StaffToken.digest_refresh_token(verifier)
@@ -208,7 +211,10 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh! classifies second attempt as replay" do
-    token = StaffToken.create!(staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "device-staff")
+    token = StaffToken.create!(
+      staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "device-staff",
+    )
     raw = token.rotate_refresh_token!
     _, verifier = StaffToken.parse_refresh_token(raw)
     digest = StaffToken.digest_refresh_token(verifier)
@@ -237,8 +243,20 @@ class StaffTokenTest < ActiveSupport::TestCase
     compromised_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(compromised_raw).last)
     expired_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(expired_raw).last)
 
-    assert_equal :invalid, StaffToken.rotate_refresh!(presented_refresh_digest: revoked_digest, device_id: "sd1", now: Time.current)[:status]
-    assert_equal :invalid, StaffToken.rotate_refresh!(presented_refresh_digest: compromised_digest, device_id: "sd2", now: Time.current)[:status]
-    assert_equal :invalid, StaffToken.rotate_refresh!(presented_refresh_digest: expired_digest, device_id: "sd3", now: Time.current)[:status]
+    assert_equal :invalid,
+                 StaffToken.rotate_refresh!(
+                   presented_refresh_digest: revoked_digest, device_id: "sd1",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 StaffToken.rotate_refresh!(
+                   presented_refresh_digest: compromised_digest, device_id: "sd2",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 StaffToken.rotate_refresh!(
+                   presented_refresh_digest: expired_digest, device_id: "sd3",
+                   now: Time.current,
+                 )[:status]
   end
 end

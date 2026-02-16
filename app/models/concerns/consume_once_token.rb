@@ -22,8 +22,8 @@ module ConsumeOnceToken
       return nil unless target_id
 
       updated = where(id: target_id, token_digest: digest, used_at: nil, revoked_at: nil, compromised_at: nil)
-                .where(arel_table[:expires_at].gt(consumed_at))
-                .update_all(used_at: consumed_at, updated_at: consumed_at)
+        .where(arel_table[:expires_at].gt(consumed_at))
+        .update_all(used_at: consumed_at, updated_at: consumed_at)
       return nil unless updated == 1
 
       find_by(id: target_id)
@@ -67,7 +67,7 @@ module ConsumeOnceToken
 
     def migrate_preference_children!(from:, to:)
       prefix = from.class.model_name.singular
-      %w[cookie region timezone language colortheme].each do |suffix|
+      %w(cookie region timezone language colortheme).each do |suffix|
         association_name = "#{prefix}_#{suffix}"
         next unless from.respond_to?(association_name)
 

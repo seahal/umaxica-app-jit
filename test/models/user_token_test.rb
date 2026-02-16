@@ -270,8 +270,20 @@ class UserTokenTest < ActiveSupport::TestCase
     compromised_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(compromised_raw).last)
     expired_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(expired_raw).last)
 
-    assert_equal :invalid, UserToken.rotate_refresh!(presented_refresh_digest: revoked_digest, device_id: "d1", now: Time.current)[:status]
-    assert_equal :invalid, UserToken.rotate_refresh!(presented_refresh_digest: compromised_digest, device_id: "d2", now: Time.current)[:status]
-    assert_equal :invalid, UserToken.rotate_refresh!(presented_refresh_digest: expired_digest, device_id: "d3", now: Time.current)[:status]
+    assert_equal :invalid,
+                 UserToken.rotate_refresh!(
+                   presented_refresh_digest: revoked_digest, device_id: "d1",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 UserToken.rotate_refresh!(
+                   presented_refresh_digest: compromised_digest, device_id: "d2",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 UserToken.rotate_refresh!(
+                   presented_refresh_digest: expired_digest, device_id: "d3",
+                   now: Time.current,
+                 )[:status]
   end
 end

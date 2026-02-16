@@ -368,15 +368,15 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     # Extract cookies from response (including the new refresh token)
     cookies_hash = extract_cookies_from_response
-    puts "DEBUG: extracted cookies keys: #{cookies_hash.keys}"
-    puts "DEBUG: device_id cookie value: #{cookies_hash[Auth::Base::DEVICE_COOKIE_KEY]}"
-    
+    Rails.logger.debug { "DEBUG: extracted cookies keys: #{cookies_hash.keys}" }
+    Rails.logger.debug { "DEBUG: device_id cookie value: #{cookies_hash[Auth::Base::DEVICE_COOKIE_KEY]}" }
+
     # Use a fresh session for the second request
     s = open_session
     s.host! @host
     s.cookies[Auth::Base::REFRESH_COOKIE_KEY] = cookies_hash[Auth::Base::REFRESH_COOKIE_KEY]
     s.cookies[Auth::Base::DEVICE_COOKIE_KEY] = cookies_hash[Auth::Base::DEVICE_COOKIE_KEY]
-    puts "DEBUG: s.cookies device_id value: #{s.cookies[Auth::Base::DEVICE_COOKIE_KEY]}"
+    Rails.logger.debug { "DEBUG: s.cookies device_id value: #{s.cookies[Auth::Base::DEVICE_COOKIE_KEY]}" }
 
     # Clear the header, rely on cookie
     s.post "/edge/v1/token/refresh",

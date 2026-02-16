@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 704aa9785156f3b52f825b8c4dae8460e669bc97
+  revision: 927f674d2a4d801fe8534ad393c927b4eea1476c
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -244,7 +244,7 @@ GEM
       faraday (>= 1, < 3)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
-    fastly (15.1.0)
+    fastly (16.0.0)
       typhoeus (~> 1.0, >= 1.0.1)
     ffi (1.17.3-aarch64-linux-gnu)
     ffi (1.17.3-x86_64-linux-gnu)

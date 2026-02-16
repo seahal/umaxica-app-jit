@@ -11,14 +11,15 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
   ].freeze
 
   test "skip_forgery_protection is only used in approved controllers" do
-    controller_files = Dir.glob(Rails.root.join("app/controllers/**/*_controller.rb"))
+    controller_files = Rails.root.glob("app/controllers/**/*_controller.rb")
 
-    found_paths = controller_files.filter_map do |path|
-      content = File.read(path)
-      next unless content.match?(/\bskip_forgery_protection\b/)
+    found_paths =
+      controller_files.filter_map do |path|
+        content = File.read(path)
+        next unless content.match?(/\bskip_forgery_protection\b/)
 
-      path.delete_prefix("#{Rails.root}/")
-    end
+        path.delete_prefix("#{Rails.root.join}")
+      end
 
     violations = found_paths - ALLOWED_SKIP_FORGERY_PROTECTION_PATHS
     missing_allowed = ALLOWED_SKIP_FORGERY_PROTECTION_PATHS - found_paths
