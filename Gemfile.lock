@@ -664,8 +664,9 @@ GEM
     rbi (0.3.9)
       prism (~> 1.0)
       rbs (>= 3.4.4)
-    rbs (3.10.2)
+    rbs (3.10.3)
       logger
+      tsort
     rdoc (7.1.0)
       erb
       psych (>= 4.0.0)
@@ -736,7 +737,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-graphviz (1.2.5)
       rexml
-    ruby-lsp (0.26.5)
+    ruby-lsp (0.26.6)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
