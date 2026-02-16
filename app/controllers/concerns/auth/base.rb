@@ -606,6 +606,7 @@ module Auth
       return handle_refresh_device_denied(token_record, refresh_public_id) unless refresh_device_allowed?(token_record)
 
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
+      previous_token_record = result[:previous_token] || token_record
       token_record = result[:token]
       new_refresh_plain = result[:refresh_token]
 
@@ -617,7 +618,7 @@ module Auth
 
       return handle_inactive_resource(resource, refresh_public_id, token_record) unless resource&.active?
 
-      build_refreshed_session(resource, token_record, new_refresh_plain)
+      build_refreshed_session(resource, token_record, new_refresh_plain, previous_token_record: previous_token_record)
     rescue Sign::InvalidRefreshToken => e
       handle_invalid_refresh_token(e, refresh_public_id, token_record)
     rescue StandardError => e
@@ -871,20 +872,23 @@ module Auth
     end
 
     def cookie_options
-      opts = {
+      Core::CookieOptions.for(
+        surface: Core::Surface.current(request),
+        request: request,
         httponly: true,
         secure: Rails.env.production?,
         same_site: :lax,
         path: "/",
-      }
-      opts[:domain] = shared_cookie_domain if shared_cookie_domain
-      opts
+      )
     end
 
     def cookie_deletion_options
-      opts = { path: "/" }
-      opts[:domain] = shared_cookie_domain if shared_cookie_domain
-      opts
+      Core::CookieOptions.for(
+        surface: Core::Surface.current(request),
+        request: request,
+        same_site: :lax,
+        path: "/",
+      ).except(:expires, :httponly, :secure, :same_site)
     end
 
     def device_cookie_key
@@ -919,25 +923,6 @@ module Auth
         expires: REFRESH_TOKEN_TTL.from_now,
       )
       set_device_id_cookie!(device_id)
-    end
-
-    def shared_cookie_domain
-      @shared_cookie_domain ||= resolve_cookie_domain
-    end
-
-    def derive_cookie_domain_from_host
-      return nil unless request&.host
-
-      host_parts = request.host.split(".")
-      return nil if host_parts.length < 2
-
-      host_parts.last(2).join(".")
-    end
-
-    def formatted_domain(value)
-      return nil if value.blank?
-
-      value.start_with?(".") ? value : ".#{value}"
     end
 
     def extract_access_token(cookie_key)
@@ -1063,12 +1048,21 @@ module Auth
       # S3: Do not destroy token - only revoke it
       # This prevents destructive behavior in transparent refresh
       TokenRecord.connected_to(role: :writing) do
-        token_record.update!(revoked_at: Time.current) if token_record.revoked_at.nil?
+        next if token_record.blank?
+
+        now = Time.current
+        family_id = token_record.refresh_token_family_id.to_s
+        if family_id.present?
+          token_record.class.where(refresh_token_family_id: family_id, revoked_at: nil)
+                     .update_all(revoked_at: now, updated_at: now)
+        elsif token_record.revoked_at.nil?
+          token_record.update!(revoked_at: now)
+        end
       end
       nil
     end
 
-    def build_refreshed_session(resource, token_record, new_refresh_plain)
+    def build_refreshed_session(resource, token_record, new_refresh_plain, previous_token_record: nil)
       new_access_token = Token.encode(
         resource,
         host: request.host,
@@ -1094,7 +1088,7 @@ module Auth
       Rails.event.notify(
         "#{resource_type}.token.refreshed",
         "#{resource_type}_id": resource.id,
-        old_refresh_token_id: token_record.public_id,
+        old_refresh_token_id: previous_token_record&.public_id || token_record.public_id,
         new_refresh_token_id: token_record.public_id,
         ip_address: request_ip_address,
       )
@@ -1225,7 +1219,7 @@ module Auth
     def find_refresh_token_record(refresh_public_id)
       return nil if refresh_public_id.blank?
 
-      find_logic = -> { token_class.find_by(public_id: refresh_public_id, rotated_at: nil) }
+      find_logic = -> { token_class.find_by(public_id: refresh_public_id) }
       TokenRecord.connected_to(role: :reading, &find_logic)
     end
 
@@ -1402,14 +1396,6 @@ module Auth
         error_message: e.message,
         ip_address: request_ip_address,
       )
-    end
-
-    def resolve_cookie_domain
-      configured = ENV["SIGN_COOKIE_DOMAIN"]&.strip
-      return formatted_domain(configured) if configured.present?
-
-      derived = derive_cookie_domain_from_host
-      formatted_domain(derived)
     end
 
     # Handles session expiry by redirecting with appropriate message
@@ -1881,7 +1867,7 @@ module Auth
           "/"
         end
       message = options[:message] || I18n.t("errors.messages.already_authenticated")
-      redirect_to(path, allow_other_host: true, alert: message)
+      redirect_to(path, allow_other_host: false, alert: message)
     end
   end
 end

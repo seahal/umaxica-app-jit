@@ -213,7 +213,7 @@ module Auth
           "/"
         end
       message = options[:message] || I18n.t("errors.messages.already_authenticated")
-      redirect_to(path, allow_other_host: true, alert: message)
+      redirect_to(path, allow_other_host: false, alert: message)
     end
   end
 end

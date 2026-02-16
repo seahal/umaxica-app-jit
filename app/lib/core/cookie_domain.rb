@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+
+module Core
+  module CookieDomain
+    HOST_ONLY = "HOST_ONLY"
+    SURFACE_ENV = {
+      app: "COOKIE_DOMAIN_APP",
+      com: "COOKIE_DOMAIN_COM",
+      org: "COOKIE_DOMAIN_ORG",
+    }.freeze
+
+    module_function
+
+    def for(surface:, request_host:)
+      configured = ENV[SURFACE_ENV.fetch(surface.to_sym)]&.strip
+      return normalize_configured(configured) if configured.present?
+
+      derive_from_host(request_host)
+    end
+
+    def normalize_configured(value)
+      return nil if value.blank?
+
+      normalized = normalize_host(value)
+      return nil if normalized.blank? || normalized == HOST_ONLY
+      return value if value.start_with?(".")
+      return ".localhost" if localhost_host?(normalized)
+
+      apex = best_effort_apex(normalized)
+      apex ? ".#{apex}" : nil
+    end
+    private_class_method :normalize_configured
+
+    def derive_from_host(request_host)
+      host = normalize_host(request_host)
+      return nil if host.blank? || host == "localhost"
+      return ".localhost" if localhost_host?(host)
+
+      apex = best_effort_apex(host)
+      apex ? ".#{apex}" : nil
+    end
+    private_class_method :derive_from_host
+
+    def normalize_host(value)
+      value.to_s.downcase.delete_suffix(".").split(":").first
+    end
+    private_class_method :normalize_host
+
+    def localhost_host?(host)
+      host == "localhost" || host.end_with?(".localhost")
+    end
+    private_class_method :localhost_host?
+
+    def best_effort_apex(host)
+      parts = host.split(".")
+      return nil if parts.length < 2
+
+      parts.last(2).join(".")
+    end
+    private_class_method :best_effort_apex
+  end
+end

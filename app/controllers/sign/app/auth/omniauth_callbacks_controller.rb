@@ -24,7 +24,9 @@ module Sign
         # For link/reauth, auth is checked in prepare_social_auth_intent!
         public_strict! only: %i(omniauth failure)
 
-        # CSRF protection is handled by state parameter, not token
+        # CSRF protection is handled by state parameter, not token.
+        # If provider constraints allow migrating callbacks fully to GET,
+        # deprecate and remove POST callbacks.
         skip_forgery_protection only: %i(omniauth failure)
 
         # Skip preference before_actions that may interfere with OmniAuth callback

@@ -134,9 +134,9 @@ class Auth::UserTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @user)
 
-    assert_equal ".app.localhost", @obj.cookies.options_for(::Auth::User::ACCESS_COOKIE_KEY)[:domain]
-    assert_equal ".app.localhost", @obj.cookies.options_for(::Auth::User::REFRESH_COOKIE_KEY)[:domain]
-    assert_equal ".app.localhost", @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)[:domain]
+    assert_equal ".localhost", @obj.cookies.options_for(::Auth::User::ACCESS_COOKIE_KEY)[:domain]
+    assert_equal ".localhost", @obj.cookies.options_for(::Auth::User::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".localhost", @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)[:domain]
   end
 
   test "log_in returns tokens hash" do

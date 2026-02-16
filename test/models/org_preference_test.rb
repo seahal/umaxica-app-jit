@@ -3,26 +3,35 @@
 # Table name: org_preferences
 # Database name: preference
 #
-#  id           :bigint           not null, primary key
-#  expires_at   :datetime
-#  jti          :string
-#  token_digest :binary
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  device_id    :string
-#  public_id    :string           not null
-#  status_id    :bigint           default(2), not null
+#  id             :bigint           not null, primary key
+#  compromised_at :datetime
+#  expires_at     :datetime
+#  jti            :string
+#  revoked_at     :datetime
+#  token_digest   :binary
+#  used_at        :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  device_id      :string
+#  public_id      :string           not null
+#  replaced_by_id :bigint
+#  status_id      :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_org_preferences_on_device_id  (device_id)
-#  index_org_preferences_on_jti        (jti) UNIQUE
-#  index_org_preferences_on_public_id  (public_id) UNIQUE
-#  index_org_preferences_on_status_id  (status_id)
+#  index_org_preferences_on_device_id       (device_id)
+#  index_org_preferences_on_jti             (jti) UNIQUE
+#  index_org_preferences_on_public_id       (public_id) UNIQUE
+#  index_org_preferences_on_replaced_by_id  (replaced_by_id)
+#  index_org_preferences_on_revoked_at      (revoked_at)
+#  index_org_preferences_on_status_id       (status_id)
+#  index_org_preferences_on_token_digest    (token_digest)
+#  index_org_preferences_on_used_at         (used_at)
 #
 # Foreign Keys
 #
 #  fk_org_preferences_on_status_id  (status_id => org_preference_statuses.id)
+#  fk_rails_...                     (replaced_by_id => org_preferences.id)
 #
 
 # frozen_string_literal: true
@@ -120,5 +129,70 @@ class OrgPreferenceTest < ActiveSupport::TestCase
     colortheme_id = colortheme.id
     preference.destroy!
     assert_nil OrgPreferenceColortheme.find_by(id: colortheme_id)
+  end
+
+  test "consume_once_by_digest! is replay-detectable" do
+    digest = OrgPreference.digest_refresh_token("org-consume-once")
+    preference = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: digest,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+
+    first = OrgPreference.consume_once_by_digest!(digest: digest)
+    assert_equal preference.id, first.id
+    assert_predicate first.used_at, :present?
+    assert_nil OrgPreference.consume_once_by_digest!(digest: digest)
+    assert_predicate preference.reload, :replay?
+  end
+
+  test "consume_once_by_digest! rejects revoked compromised and expired rows" do
+    revoked = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: OrgPreference.digest_refresh_token("org-revoked"),
+      revoked_at: Time.current,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+    compromised = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: OrgPreference.digest_refresh_token("org-compromised"),
+      compromised_at: Time.current,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+    expired = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NEYO,
+      expires_at: 1.minute.ago,
+      token_digest: OrgPreference.digest_refresh_token("org-expired"),
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+
+    assert_nil OrgPreference.consume_once_by_digest!(digest: revoked.token_digest)
+    assert_nil OrgPreference.consume_once_by_digest!(digest: compromised.token_digest)
+    assert_nil OrgPreference.consume_once_by_digest!(digest: expired.token_digest)
+  end
+
+  test "rotate! creates replacement row and replacement link" do
+    digest = OrgPreference.digest_refresh_token("org-rotate")
+    original = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: digest,
+      jti: SecureRandom.uuid,
+      device_id: "org-device",
+    )
+
+    rotated = OrgPreference.rotate!(presented_digest: digest, device_id: "org-device", now: Time.current)
+
+    assert_predicate rotated, :present?
+    assert_predicate rotated.issued_refresh_token, :present?
+    assert_not_equal original.id, rotated.id
+    assert_equal rotated.id, original.reload.replaced_by_id
   end
 end

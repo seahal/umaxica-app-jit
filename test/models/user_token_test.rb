@@ -221,4 +221,57 @@ class UserTokenTest < ActiveSupport::TestCase
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { @token.reload }
   end
+
+  test "rotate_refresh! consumes old row and creates new generation in same family" do
+    token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "device-user")
+    raw = token.rotate_refresh_token!
+    _, verifier = UserToken.parse_refresh_token(raw)
+    digest = UserToken.digest_refresh_token(verifier)
+
+    result = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+
+    assert_equal :rotated, result[:status]
+    new_token = result[:token]
+    assert_predicate new_token, :present?
+    assert_not_equal token.id, new_token.id
+    assert_equal token.refresh_token_family_id, new_token.refresh_token_family_id
+    assert_equal token.refresh_token_generation + 1, new_token.refresh_token_generation
+    assert_nil new_token.rotated_at
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! classifies second attempt as replay" do
+    token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "device-user")
+    raw = token.rotate_refresh_token!
+    _, verifier = UserToken.parse_refresh_token(raw)
+    digest = UserToken.digest_refresh_token(verifier)
+
+    first = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+    assert_equal :rotated, first[:status]
+
+    second = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+    assert_equal :replay, second[:status]
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! rejects revoked compromised and expired tokens" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    revoked = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d1")
+    compromised = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d2")
+    expired = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d3")
+    revoked_raw = revoked.rotate_refresh_token!
+    compromised_raw = compromised.rotate_refresh_token!
+    expired_raw = expired.rotate_refresh_token!
+    revoked.update!(revoked_at: Time.current)
+    compromised.update!(compromised_at: Time.current)
+    expired.update!(refresh_expires_at: 1.minute.ago)
+
+    revoked_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(revoked_raw).last)
+    compromised_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(compromised_raw).last)
+    expired_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(expired_raw).last)
+
+    assert_equal :invalid, UserToken.rotate_refresh!(presented_refresh_digest: revoked_digest, device_id: "d1", now: Time.current)[:status]
+    assert_equal :invalid, UserToken.rotate_refresh!(presented_refresh_digest: compromised_digest, device_id: "d2", now: Time.current)[:status]
+    assert_equal :invalid, UserToken.rotate_refresh!(presented_refresh_digest: expired_digest, device_id: "d3", now: Time.current)[:status]
+  end
 end

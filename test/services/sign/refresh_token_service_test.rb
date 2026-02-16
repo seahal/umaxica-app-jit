@@ -14,12 +14,14 @@ class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
     first_refresh = token.rotate_refresh_token!
     result = Sign::RefreshTokenService.call(refresh_token: first_refresh)
 
-    token.reload
-    second_generation = token.refresh_token_generation
+    new_token = result[:token]
 
-    assert_equal 2, second_generation
+    assert_not_equal token.id, new_token.id
+    assert_equal token.refresh_token_generation + 1, new_token.refresh_token_generation
+    assert_equal token.refresh_token_family_id, new_token.refresh_token_family_id
+    assert_predicate token.reload.rotated_at, :present?
     assert_kind_of Hash, result
-    assert_equal token, result[:token]
+    assert_equal new_token, result[:token]
   end
 
   test "reuse detection revokes all actor tokens" do
@@ -88,7 +90,7 @@ class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
     assert_nothing_raised do
       result = Sign::RefreshTokenService.call(refresh_token: refresh)
       assert_kind_of Hash, result
-      assert_equal token, result[:token]
+      assert_not_equal token.id, result[:token].id
     end
   end
 end

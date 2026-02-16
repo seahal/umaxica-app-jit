@@ -93,6 +93,55 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil active_token1.revoked_at
   end
 
+  # Test: session promotion with valid Base64 rd param redirects to decoded URL
+  test "update with rd param decodes Base64 and redirects to decoded path" do
+    active_token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    active_token.rotate_refresh_token!
+
+    restricted_token = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+    restricted_token.rotate_refresh_token!
+
+    headers = as_user_headers_with_token(@user, restricted_token, host: @host)
+
+    # Base64-encode a relative path as the rd param
+    encoded_rd = Base64.urlsafe_encode64("/configuration")
+
+    patch sign_app_in_session_url(ri: "jp", rd: encoded_rd),
+          params: { revoke_refs: [active_token.signed_ref] },
+          headers: headers
+
+    restricted_token.reload
+    assert_equal UserToken::STATUS_ACTIVE, restricted_token.status
+
+    # Should redirect to the decoded path, not the raw Base64 string
+    assert_response :redirect
+    assert_match %r{/configuration}, response.location
+    assert_no_match encoded_rd, response.location
+  end
+
+  # Test: session promotion with invalid rd param falls back to configuration path
+  test "update with invalid rd param falls back to default path" do
+    active_token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    active_token.rotate_refresh_token!
+
+    restricted_token = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+    restricted_token.rotate_refresh_token!
+
+    headers = as_user_headers_with_token(@user, restricted_token, host: @host)
+
+    # Pass an invalid Base64 string
+    patch sign_app_in_session_url(ri: "jp", rd: "!!!invalid-base64!!!"),
+          params: { revoke_refs: [active_token.signed_ref] },
+          headers: headers
+
+    restricted_token.reload
+    assert_equal UserToken::STATUS_ACTIVE, restricted_token.status
+
+    # Should fall back to default configuration path
+    assert_response :redirect
+    assert_match %r{/configuration}, response.location
+  end
+
   # Test: active (non-restricted) session users are denied access to /in/session.
   # This page is ONLY for restricted session users (3rd login).
   # Active session access is an unexpected scenario, so we return 403 Forbidden.

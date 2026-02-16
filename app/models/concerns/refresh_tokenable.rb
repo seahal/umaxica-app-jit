@@ -18,9 +18,91 @@ module RefreshTokenable
     validates :refresh_token_digest, uniqueness: true, allow_nil: true
   end
 
+  class_methods do
+    def rotate_refresh!(presented_refresh_digest:, device_id:, now: Time.current)
+      return { status: :invalid, token: nil } if presented_refresh_digest.blank?
+
+      current_token = find_by(refresh_token_digest: presented_refresh_digest)
+      return { status: :invalid, token: nil } unless current_token
+
+      if device_id.present? && current_token.device_id.present? && current_token.device_id != device_id
+        return { status: :invalid, token: current_token }
+      end
+
+      transaction do
+        updated = where(id: current_token.id, refresh_token_digest: presented_refresh_digest, rotated_at: nil, revoked_at: nil, compromised_at: nil)
+                  .where(arel_table[:refresh_expires_at].gt(now))
+                  .update_all(rotated_at: now, last_used_at: now, updated_at: now)
+
+        if updated != 1
+          current_token.reload
+          return { status: :replay, token: current_token } if current_token.rotated_at.present?
+
+          return { status: :invalid, token: current_token }
+        end
+
+        current_token.reload
+        replacement, raw_refresh_token = create_rotated_token_record!(current_token)
+
+        {
+          status: :rotated,
+          token: replacement,
+          previous_token: current_token,
+          refresh_token: raw_refresh_token,
+        }
+      end
+    end
+
+    private
+
+    def create_rotated_token_record!(previous_token)
+      actor_key = actor_foreign_key_from(previous_token)
+      token_status_key = token_status_key_from(previous_token)
+      token_kind_key = token_kind_key_from(previous_token)
+
+      attrs = {
+        refresh_token_family_id: previous_token.refresh_token_family_id.presence || SecureRandom.uuid,
+        refresh_token_generation: previous_token.refresh_token_generation.to_i + 1,
+        refresh_expires_at: previous_token.refresh_expires_at,
+        device_id: previous_token.device_id,
+      }
+
+      attrs[:status] = previous_token.status if previous_token.respond_to?(:status)
+      attrs[actor_key] = previous_token.public_send(actor_key) if actor_key
+      attrs[token_status_key] = previous_token.public_send(token_status_key) if token_status_key
+      attrs[token_kind_key] = previous_token.public_send(token_kind_key) if token_kind_key
+
+      replacement = create!(attrs)
+      raw_refresh_token, verifier = generate_refresh_token(public_id: replacement.public_id)
+      replacement.update!(refresh_token_digest: digest_refresh_token(verifier))
+      [replacement, raw_refresh_token]
+    end
+
+    def actor_foreign_key_from(token)
+      return :user_id if token.has_attribute?(:user_id)
+      return :staff_id if token.has_attribute?(:staff_id)
+
+      nil
+    end
+
+    def token_status_key_from(token)
+      return :user_token_status_id if token.has_attribute?(:user_token_status_id)
+      return :staff_token_status_id if token.has_attribute?(:staff_token_status_id)
+
+      nil
+    end
+
+    def token_kind_key_from(token)
+      return :user_token_kind_id if token.has_attribute?(:user_token_kind_id)
+      return :staff_token_kind_id if token.has_attribute?(:staff_token_kind_id)
+
+      nil
+    end
+  end
+
   # Whether the token is revoked.
   def revoked?
-    revoked_at.present?
+    revoked_at.present? || compromised_at.present?
   end
 
   # Whether the refresh token has expired.

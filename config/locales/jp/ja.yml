@@ -806,15 +806,15 @@ ja:
           confirm_policy: プライバシーポリシーに同意します
           confirm_policy_note: ポリシーに同意いただけない場合は送信できません。
           category_id: お問い合わせ種別
-          email_address: メールアドレス
-          telephone_number: 電話番号
+          title: タイトル
+          body: お問い合わせ内容
           submit: 次へ
           cancel: キャンセル
           error_heading: '%{count}件のエラーがあるため送信できません。'
           heading: お問い合わせフォーム
           contact_category_title: お問い合わせ種別
         create:
-          success: お問い合わせを受け付けました。メールアドレスを確認してください。
+          success: お問い合わせを受け付けました
           failure: お問い合わせを送信できませんでした。入力内容をご確認ください。
           turnstile_error: セキュリティ検証に失敗しました。ページを更新して再度お試しください。
           confirm_policy_error: 続行するには、プライバシーポリシーに同意する必要があります。
@@ -834,6 +834,8 @@ ja:
           category_id: お問い合わせ種別
           email_address: メールアドレス
           telephone_number: 電話番号
+          title: タイトル
+          body: お問い合わせ内容
           submit: 次へ
           cancel: キャンセル
           error_heading: '%{count}件のエラーがあるため送信できません。'
@@ -914,11 +916,13 @@ ja:
           confirm_policy: プライバシーポリシーに同意します
           confirm_policy_note: ポリシーに同意いただけない場合は送信できません。
           category_id: お問い合わせ種別
-          email_address: メールアドレス
-          telephone_number: 電話番号
+          title: タイトル
+          body: お問い合わせ内容
           submit: 送信
           cancel: キャンセル
           error_heading: '%{count}件のエラーがあるため送信できません。'
+        create:
+          success: お問い合わせを受け付けました
       preference:
         cookie:
           edit:

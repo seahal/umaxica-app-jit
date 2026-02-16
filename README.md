@@ -24,6 +24,17 @@
 - WebAuthn requires a `TRUSTED_ORIGINS` environment variable that enumerates every allowed origin. Without it, Rails commands such as `bin/rails db:migrate` cannot start.
 - For local development we already set `TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000` inside `docker/core/env`. If you run Ruby commands outside the container, set the same value (or other hosts you use) beforehand.
 
+## Cookie domain configuration
+- Cookie domain is configured per surface:
+  - `COOKIE_DOMAIN_APP` (default example: `app.localhost`)
+  - `COOKIE_DOMAIN_COM` (default example: `com.localhost`)
+  - `COOKIE_DOMAIN_ORG` (default example: `org.localhost`)
+- Values are normalized for subdomain sharing:
+  - `app.localhost` / `org.localhost` / `com.localhost` => `.localhost`
+  - `example.com` => `.example.com`
+  - `HOST_ONLY` => host-only cookie (no `Domain` attribute)
+- Surface detection defaults to `:com` when host has no recognizable surface subdomain (for example `localhost`).
+
 ## Database IDs
 
 **PostgreSQL 18+ Required**: This application requires PostgreSQL 18 or later for native `uuidv7()` support.
@@ -118,4 +129,3 @@
 - This is a work in progress.
 - The public availability of this repository is not guaranteed permanently.
 - No warranty is provided, and the authors shall not be held liable for any damages arising from the use of this repository.
-- **Development Environment Cookie Limitation**: In the development environment using `localhost`, cookies cannot be shared across subdomains (e.g., between `app.localhost:3000` and `help.app.localhost:3000`) due to browser security restrictions. This limitation does not affect test or production environments. If subdomain cookie sharing is required during development, consider using a `.test` domain with `/etc/hosts` configuration.

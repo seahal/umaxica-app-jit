@@ -50,6 +50,8 @@ $stderr = original_stderr
 # Ensure custom middleware is loaded only if present
 subdomain_static_files_path = File.expand_path("../lib/subdomain_static_files.rb", __dir__)
 require_relative "../lib/subdomain_static_files" if File.exist?(subdomain_static_files_path)
+surface_middleware_path = File.expand_path("../app/middleware/core/surface_middleware.rb", __dir__)
+require_relative "../app/middleware/core/surface_middleware" if File.exist?(surface_middleware_path)
 
 module Jit
   class Application < Rails::Application
@@ -84,11 +86,8 @@ module Jit
 
     # Rack Attack Middleware
     config.middleware.use Rack::Attack
+    config.middleware.insert_before Rack::Head, Core::SurfaceMiddleware
 
-    # CSRF Validation Middleware for API endpoints
-    # Load middleware explicitly before use (required for test environment)
-    require_relative "../app/middleware/csrf_validation" unless defined?(CsrfValidation)
-    config.middleware.use CsrfValidation
     # Active Record Encryption Configuration
     if %w(test production development).include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key

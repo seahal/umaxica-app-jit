@@ -25,18 +25,19 @@
 				"GitHub.vscode-pull-request-github",
 				"ms-vscode.remote-explorer",
 				"rubocop.vscode-rubocop",
-				"oven.bun-vscode",
 				"openai.chatgpt",
+        				"anthropic.claude-code",
+				"anthropic.claude-code",
+
 				"-sorbet.sorbet-vscode-extension",
 				"-dbaeumer.vscode-eslint",
 				"-esbenp.prettier-vscode",
 				"-eamodio.gitlens",
 				"-KoichiSasada.vscode-rdbg",
-				"anthropic.claude-code",
 				"-sorbet.sorbet-vscode-extension",
 				"-GitHub.copilot",
-				"-GitHub.copilot-chat",
-				"google.geminicodeassist"
+				"-GitHub.copilot-chat"
+
 			],
 			"settings": {
 				"claude.allowDangerouslySkipPermissions": true,

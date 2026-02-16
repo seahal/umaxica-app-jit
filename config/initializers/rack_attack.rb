@@ -27,6 +27,7 @@
 #
 
 require "ipaddr"
+require "uri"
 
 class Rack::Attack
   ############################################################
@@ -106,6 +107,15 @@ class Rack::Attack
   # General API paths
   API_PATHS = %r{\A/api/}.freeze
 
+  # Public contact endpoints (core corporate host)
+  PUBLIC_CONTACT_PATHS = [
+    %r{\A/contacts/new\z},
+    %r{\A/contacts\z},
+    %r{\A/contacts/[^/]+\z},
+    %r{\A/contacts/[^/]+/(email|telephone)\z},
+    %r{\A/contacts/[^/]+/(email|telephone)/new\z},
+  ].freeze
+
   ############################################################
   # 5) Helper methods
   ############################################################
@@ -131,6 +141,16 @@ class Rack::Attack
     return unless Rails.env.development? && ENV["RACK_ATTACK_DEBUG"] == "1"
 
     Rails.logger.info("[Rack::Attack] #{message}")
+  end
+
+  def self.core_corporate_host
+    env_url = ENV["CORE_CORPORATE_URL"].to_s
+    return nil if env_url.blank?
+
+    uri = URI.parse(env_url.start_with?("http") ? env_url : "http://#{env_url}")
+    uri.host || env_url.split(":").first
+  rescue URI::InvalidURIError
+    env_url.split(":").first
   end
 
   ############################################################
@@ -186,6 +206,18 @@ class Rack::Attack
 
     key = "#{tenant_key(req)}:#{req.ip}"
     debug_log("Rule api_heavy/tenant_ip matched: #{req.path} -> #{key}")
+    key
+  end
+
+  # Rule 6: Core::Com public contact flow
+  throttle("core_com_contacts/tenant_ip", limit: proc { throttle_limit(20) }, period: 1.minute) do |req|
+    corporate_host = core_corporate_host
+    next unless corporate_host.nil? || req.host == corporate_host
+    next unless req.get? || req.post?
+    next unless PUBLIC_CONTACT_PATHS.any? { |re| re.match?(req.path) }
+
+    key = "#{tenant_key(req)}:#{req.ip}"
+    debug_log("Rule core_com_contacts/tenant_ip matched: #{req.path} -> #{key}")
     key
   end
 

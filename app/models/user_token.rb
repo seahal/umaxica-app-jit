@@ -146,7 +146,7 @@ class UserToken < TokenRecord
   def enforce_concurrent_session_limit
     return unless user_id
 
-    count = self.class.not_revoked.where(user_id: user_id).count
+    count = self.class.not_revoked.where(user_id: user_id, rotated_at: nil).count
     return if count < MAX_TOTAL_SESSIONS_PER_USER
 
     errors.add(

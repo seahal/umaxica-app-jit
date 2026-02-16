@@ -1,20 +1,9 @@
 # frozen_string_literal: true
 
-# Rotates refresh tokens using the public_id/verifier format.
-# Keeps verification centralized and raises a dedicated error on failure.
-#
-# Atomicity:
-# - Uses transaction + row lock (SELECT ... FOR UPDATE) for serialization
-# - Prevents concurrent refresh attempts and replay attacks
-# - LockWaitTimeout / Deadlocked treated as InvalidRefreshToken (401)
+# Rotates refresh tokens using one-time consume semantics.
+# Old rows are preserved and replay is detected via rotated_at.
 module Sign
   class RefreshTokenService
-    # Lock wait timeout exceptions vary by database adapter
-    LOCK_EXCEPTIONS = [
-      ActiveRecord::LockWaitTimeout,
-      ActiveRecord::Deadlocked,
-    ].freeze
-
     def self.call(refresh_token:)
       new(refresh_token).call
     end
@@ -25,55 +14,30 @@ module Sign
 
     def call
       public_id, verifier = parse_refresh_token!
+      digest = UserToken.digest_refresh_token(verifier)
 
       result = nil
-      reused_token = nil
-      execution_proc =
-        -> {
-          ActiveRecord::Base.transaction do
-            token = find_and_lock_token(public_id)
-            unless token
-              Rails.logger.debug { "[Service] Token not found! public_id: #{public_id}" }
-              # Debug connection info
-              connection = TokenRecord.connection
-              write_mode = connection.messages.include?("read_only") rescue false
-              Rails.logger.debug {
-                "[Service] DB Name: #{connection.current_database}, " \
-                  "Role: #{TokenRecord.connection_role}, Write? #{write_mode}"
-              }
-              raise InvalidRefreshToken, "token_not_found"
-            end
-            raise InvalidRefreshToken, "inactive_token" unless token.active?
+      ActiveRecord::Base.connected_to(role: :writing) do
+        token = find_token(public_id)
+        raise InvalidRefreshToken, "token_not_found" unless token
+        raise InvalidRefreshToken, "invalid_digest" unless token.refresh_token_digest == digest
 
-            if token.refresh_token_digest_matches?(verifier)
-              # Rotate and return new refresh token
-              new_refresh_token = token.rotate_refresh_token!
-              result = { token: token, refresh_token: new_refresh_token }
-            else
-              Rails.logger.debug "[Service] Digest mismatch!"
-              reused_token = token
-              raise ActiveRecord::Rollback
-            end
-          end
-        }
-
-      # Always use writing role for locking and updates
-      ActiveRecord::Base.connected_to(role: :writing, &execution_proc)
-
-      return result if result
-
-      if reused_token
-        handle_refresh_token_reuse(reused_token)
-        raise InvalidRefreshToken, "refresh_token_reuse_detected"
+        result = token.class.rotate_refresh!(
+          presented_refresh_digest: digest,
+          device_id: token.device_id,
+          now: Time.current,
+        )
       end
-    rescue *LOCK_EXCEPTIONS => e
-      # Treat lock contention as invalid token (prevents timing attacks)
-      Rails.event.notify(
-        "authentication.refresh.lock_contention",
-        error_class: e.class.name,
-        public_id: public_id,
-      )
-      raise InvalidRefreshToken, "concurrent_refresh_detected"
+
+      case result[:status]
+      when :rotated
+        { token: result[:token], refresh_token: result[:refresh_token], previous_token: result[:previous_token] }
+      when :replay
+        handle_refresh_token_reuse(result[:token])
+        raise InvalidRefreshToken, "refresh_token_reuse_detected"
+      else
+        raise InvalidRefreshToken, "inactive_token"
+      end
     end
 
     private
@@ -85,11 +49,9 @@ module Sign
       parsed
     end
 
-    def find_and_lock_token(public_id)
-      # Try UserToken first, then StaffToken
-      # Use lock (FOR UPDATE) to prevent concurrent modifications
-      UserToken.lock.find_by(public_id: public_id, rotated_at: nil) ||
-        StaffToken.lock.find_by(public_id: public_id, rotated_at: nil)
+    def find_token(public_id)
+      UserToken.find_by(public_id: public_id) ||
+        StaffToken.find_by(public_id: public_id)
     end
 
     # When reuse is observed (a valid token that no longer matches the

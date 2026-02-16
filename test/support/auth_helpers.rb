@@ -100,7 +100,27 @@ module AuthHelpers
   # Parse Set-Cookie header and extract cookies for follow-up requests
   # Returns a hash of cookie names to values
   def extract_cookies_from_response
-    response.cookies
+    raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
+    lines =
+      case raw_header
+      when Array
+        raw_header
+      when String
+        raw_header.split("\n")
+      else
+        []
+      end
+
+    parsed = {}
+    lines.each do |line|
+      pair = line.to_s.split(";", 2).first
+      name, value = pair.to_s.split("=", 2)
+      next if name.blank?
+
+      parsed[name] = CGI.unescape(value.to_s)
+    end
+
+    parsed
   end
 
   # Check if response has Set-Cookie for a specific cookie name

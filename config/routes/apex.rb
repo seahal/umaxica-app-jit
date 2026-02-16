@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 scope module: :apex, as: :apex do
-  constraints host: ENV["APEX_CORPORATE_URL"] do
+  constraints lambda { |request|
+                request.host == ENV["APEX_CORPORATE_URL"] && Core::Surface.matches?(request, :com)
+              } do
     scope module: :com, as: :com do
       root to: "roots#index"
       # health check for html
@@ -38,7 +40,9 @@ scope module: :apex, as: :apex do
     end
   end
 
-  constraints host: ENV["APEX_SERVICE_URL"] do
+  constraints lambda { |request|
+                request.host == ENV["APEX_SERVICE_URL"] && Core::Surface.matches?(request, :app)
+              } do
     scope module: :app, as: :app do
       root to: "roots#index"
       # endpoint of health check
@@ -75,7 +79,9 @@ scope module: :apex, as: :apex do
     end
   end
 
-  constraints host: ENV["APEX_STAFF_URL"] do
+  constraints lambda { |request|
+                request.host == ENV["APEX_STAFF_URL"] && Core::Surface.matches?(request, :org)
+              } do
     scope module: :org, as: :org do
       root to: "roots#index"
       # health check for html

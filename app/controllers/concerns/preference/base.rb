@@ -128,58 +128,8 @@ module Preference
 
       def audience_matches?(aud_claim, host)
         normalize_audiences(aud_claim).any? do |aud|
-          next false if aud.blank?
-
           host == aud || host.end_with?(".#{aud}")
         end
-      end
-
-      def build_payload(preferences, host, preference_type, public_id, jti)
-        {
-          "preferences" => preferences.slice("lx", "ri", "tz", "ct"),
-          "host" => host,
-          "preference_type" => preference_type,
-          "public_id" => public_id,
-          "jti" => jti,
-          **jwt_claims,
-        }
-      end
-
-      def jwt_claims
-        now = Time.current
-
-        {
-          "iss" => JwtConfiguration.issuer,
-          "aud" => resolve_audiences,
-          "nonce" => SecureRandom.uuid_v7,
-          "iat" => now.to_i,
-          "exp" => (now + ACCESS_TOKEN_TTL).to_i,
-        }
-      end
-
-      def decode_options
-        options = {
-          algorithms: [JWT_ALGORITHM],
-          verify_exp: true,
-          verify_iss: true,
-          iss: JwtConfiguration.issuer,
-        }
-
-        # Only verify audience if configured
-        audiences = JwtConfiguration.audiences
-        if audiences.present?
-          options[:verify_aud] = true
-          options[:aud] = audiences
-        else
-          options[:verify_aud] = false
-        end
-
-        options
-      end
-
-      def resolve_audiences
-        audiences = JwtConfiguration.audiences
-        audiences.presence || []
       end
 
       def normalize_audiences(aud_claim)
@@ -187,8 +137,33 @@ module Preference
         when Array then aud_claim
         when String then [aud_claim]
         else []
-             raise
         end
+      end
+
+      def build_payload(preferences, host, preference_type, public_id, jti)
+        now = Time.current.to_i
+        {
+          preferences: preferences,
+          host: host,
+          preference_type: preference_type,
+          public_id: public_id,
+          jti: jti,
+          iss: JwtConfiguration.issuer,
+          aud: JwtConfiguration.audiences,
+          nonce: SecureRandom.uuid,
+          iat: now,
+          exp: now + ACCESS_TOKEN_TTL.to_i,
+        }
+      end
+
+      def decode_options
+        {
+          algorithm: JWT_ALGORITHM,
+          verify_iss: true,
+          iss: JwtConfiguration.issuer,
+          verify_aud: false, # Manual audience verification in validate_payload
+          verify_iat: true,
+        }
       end
     end
   end
@@ -197,12 +172,24 @@ module Preference
     extend ActiveSupport::Concern
     include RefreshTokenShared
 
-    ACCESS_TOKEN_TTL = Token::ACCESS_TOKEN_TTL
+    ACCESS_TOKEN_TTL = 7.days
     REFRESH_TOKEN_TTL = 400.days
     THEME_COOKIE_KEY = "jit_ct"
     LEGACY_THEME_COOKIE_KEY = "ct"
     LANGUAGE_COOKIE_KEY = "jit_lx"
     TIMEZONE_COOKIE_KEY = "jit_tz"
+
+    COLORTHEME_SHORT_MAP = {
+      "light" => "li",
+      "dark" => "dr",
+      "system" => "sy",
+    }.freeze
+
+    COLORTHEME_OPTION_MAP = {
+      "li" => "light",
+      "dr" => "dark",
+      "sy" => "system",
+    }.freeze
 
     included do
       before_action :set_preferences_cookie
@@ -220,7 +207,9 @@ module Preference
 
       # Rotate refresh token on access token re-issue to limit replay if leaked.
       refresh_refresh_token_lifetime(preference)
-      issue_access_token_from(preference)
+      return render_preference_refresh_error! if preference_refresh_failed?
+
+      issue_access_token_from(@preferences || preference)
       nil
     end
 
@@ -297,108 +286,55 @@ module Preference
         targetable: false,
         performant: false,
         functional: false,
+        consented: false,
       )
-    end
-
-    def create_preference_option_records(prefix, preference, option_ids)
-      create_preference_option_record(prefix, preference, "Timezone", option_ids[:timezone])
-      create_preference_option_record(prefix, preference, "Language", option_ids[:language])
-      create_preference_option_record(prefix, preference, "Region", option_ids[:region])
-      create_preference_option_record(prefix, preference, "Colortheme", option_ids[:colortheme])
     end
 
     def ensure_preference_option_defaults(prefix)
-      option_classes = preference_option_classes(prefix).values
-
-      PreferenceRecord.connected_to(role: :writing) do
-        option_classes.each do |option_class|
-          if option_class.respond_to?(:ensure_defaults!)
-            option_class.ensure_defaults!
-            next
-          end
-
-          ids =
-            option_class.constants(false).filter_map do |const_name|
-              value = option_class.const_get(const_name)
-              value if value.is_a?(Integer)
-            end
-          next if ids.empty?
-
-          existing_ids = option_class.where(id: ids).pluck(:id)
-          missing_ids = ids - existing_ids
-          next if missing_ids.empty?
-
-          # Intentionally skip validations for bulk insert of default option IDs
-          # rubocop:disable Rails/SkipsModelValidations
-          option_class.insert_all(
-            missing_ids.map { |id| { id: id } },
-            unique_by: :primary_key,
-          )
-          # rubocop:enable Rails/SkipsModelValidations
-        end
+      %w(Timezone Language Region Colortheme).each do |type|
+        klass = "#{prefix}Preference#{type}Option".constantize
+        klass.ensure_defaults! if klass.respond_to?(:ensure_defaults!)
       end
-    rescue StandardError => e
-      Rails.logger.error("ensure_preference_option_defaults failed: #{e.class} - #{e.message}")
     end
 
-    def create_preference_option_record(prefix, preference, suffix, option_id)
-      "#{prefix}Preference#{suffix}".constantize.create!(
-        preference_id: preference.id,
-        option_id: option_id,
-      )
+    def create_preference_option_records(prefix, preference, option_ids)
+      %w(Timezone Language Region Colortheme).each do |type|
+        "#{prefix}Preference#{type}".constantize.create!(
+          preference_id: preference.id,
+          option_id: option_ids[type.downcase.to_sym],
+        )
+      end
     end
 
-    COLORTHEME_OPTION_MAP = {
-      "sy" => "system",
-      "system" => "system",
-      "dr" => "dark",
-      "dark" => "dark",
-      "li" => "light",
-      "light" => "light",
-    }.freeze
+    def resolve_option_id_from_param(value, type, default, prefix)
+      return default if value.blank?
 
-    COLORTHEME_SHORT_MAP = {
-      "sy" => "sy",
-      "system" => "sy",
-      "dr" => "dr",
-      "dark" => "dr",
-      "li" => "li",
-      "light" => "li",
-    }.freeze
-
-    def normalize_colortheme(value)
-      return nil if value.blank?
-
-      COLORTHEME_SHORT_MAP[value.to_s.downcase]
+      sanitized = sanitize_option_id({ option_id: value }, option_type: type)
+      if sanitized[:option_id].is_a?(Integer)
+        sanitized[:option_id]
+      else
+        default
+      end
     end
 
     def write_preference_cookie(key, value)
-      cookie_options = {
+      cookies[key] = preference_cookie_options(expires_at: REFRESH_TOKEN_TTL.from_now, httponly: false).merge(
         value: value,
-        expires: REFRESH_TOKEN_TTL.from_now,
-        secure: Rails.env.production?,
-        same_site: :lax,
-      }
-      domain = cookie_domain
-      cookie_options[:domain] = domain if domain.present?
-      cookies[key] = cookie_options
+      )
     end
 
     def set_locale_from_params
-      candidates = [
-        params[:lx],
-        locale_from_region_param(params[:ri]),
-        preference_payload_value("lx"),
-        preference_language_from_record,
-        session[:language],
-        I18n.default_locale,
-      ]
-      locale = candidates.filter_map { |value| normalized_locale(value) }.first
-      I18n.locale = locale || I18n.default_locale
+      locale = normalized_locale(params[:lx])
+      locale ||= normalized_locale(cookies[LANGUAGE_COOKIE_KEY])
+      locale ||= normalized_locale(preference_payload_value("lx"))
+      locale ||= locale_from_region(params[:ri])
+      locale ||= locale_from_region(preference_payload_value("ri"))
+      locale ||= I18n.default_locale
+
+      I18n.locale = locale
     end
 
-    def locale_from_region_param(region_param)
-      region = region_param.to_s.downcase
+    def locale_from_region(region)
       return if region.blank?
 
       {
@@ -467,8 +403,12 @@ module Preference
       end
     end
 
+    def ensure_preferences_record
+      load_preference_record_from_refresh_token!(create_if_missing: true)
+    end
+
     def create_audit_log(event_id:, context:, expires_at: nil)
-      expires_at_value = expires_at || Preference::Core::COOKIE_EXPIRY.from_now
+      expires_at_value = expires_at || REFRESH_TOKEN_TTL.from_now
       normalized_event_id = normalize_preference_audit_event_id(event_id)
 
       ActivityRecord.connected_to(role: :writing) do
@@ -503,101 +443,24 @@ module Preference
       @preference_colortheme_association ||= "#{preference_prefix_underscore}_colortheme"
     end
 
-    def association_name_for_region
-      @association_name_for_region ||= :"#{preference_class.name.underscore}_region"
-    end
+    def update_preference_child_with_audit(child, attributes, audit_event)
+      return if child.blank? || attributes.blank?
 
-    def association_name_for_language
-      @association_name_for_language ||= :"#{preference_class.name.underscore}_language"
-    end
+      # Ensure nested params are a Hash with indifferent access for reliable key access.
+      # Note: Rails 8 `expect` returns an ActionController::Parameters object,
+      # which we want to convert to Hash with indifferent access after ensuring it's permitted.
+      p_hash = attributes.to_h.with_indifferent_access
 
-    def preference_associations_to_preload
-      [association_name_for_region, association_name_for_language]
-    end
-
-    def load_or_create_preference_child(child_type, default_attributes = {})
-      raise PreferenceOperationError if @preferences.blank?
-
-      prefix = preference_prefix_underscore
-      child_class = "#{@preferences.class.name}#{child_type}".constantize
-      instance_var = "@preference_#{child_type.downcase}"
-
-      child_record =
-        PreferenceRecord.connected_to(role: :writing) do
-          child_class.find_by(preference_id: @preferences.id)
-        end
-
-      if child_record.present?
-        instance_variable_set(instance_var, child_record)
-        return child_record
-      end
-
-      begin
-        child_record = @preferences.public_send("create_#{prefix}_#{child_type.downcase}!", default_attributes)
-        instance_variable_set(instance_var, child_record)
-        child_record
-      rescue ActiveRecord::RecordNotUnique
-        child_record = child_class.find_by!(preference_id: @preferences.id)
-        instance_variable_set(instance_var, child_record)
-        child_record
-      end
-    end
-
-    def update_preference_child_with_audit(child_record, params, event_id)
       PreferenceRecord.transaction do
-        child_record.assign_attributes(params)
-
-        if child_record.changed?
-          child_record.save!
-
-          create_audit_log(
-            event_id: event_id,
-            context: child_record.previous_changes,
-          )
-
-          if @preferences.present?
-            # Reload to avoid stale association cache when issuing new token.
-            @preferences.reload
-            refresh_refresh_token_lifetime(@preferences)
-            issue_access_token_from(@preferences)
-          end
-        end
+        child.update!(p_hash)
+        create_audit_log(
+          event_id: audit_event,
+          context: { updated_attributes: p_hash },
+        )
       end
-    end
-
-    def resolve_option_id_from_param(param_value, option_type, default_option_id, prefix)
-      return default_option_id if param_value.blank?
-
-      # Convert param_value to uppercase constant name
-      # For example: "jp" -> "JP", "asia/tokyo" -> "ASIA_TOKYO"
-      const_name = param_value.to_s.upcase.tr("/", "_").tr("-", "_")
-
-      # Special handling for colortheme: normalize first
-      if option_type == :colortheme
-        canonical = canonical_colortheme_option_id(param_value)
-        const_name = canonical.to_s.upcase if canonical.present?
-      end
-
-      option_class_name =
-        case option_type
-        when :colortheme then "#{prefix}PreferenceColorthemeOption"
-        when :language then "#{prefix}PreferenceLanguageOption"
-        when :region then "#{prefix}PreferenceRegionOption"
-        when :timezone then "#{prefix}PreferenceTimezoneOption"
-        end
-
-      return default_option_id if option_class_name.blank?
-
-      begin
-        option_class = option_class_name.constantize
-        if option_class.const_defined?(const_name)
-          option_class.const_get(const_name)
-        else
-          default_option_id
-        end
-      rescue NameError
-        default_option_id
-      end
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error("#{audit_event} failed: #{e.message}")
+      raise PreferenceOperationError
     end
 
     def sanitize_option_id(params, option_type: nil)
@@ -628,11 +491,6 @@ module Preference
           # For Language/Region/Timezone, the input might be "US", "EN", "Asia/Tokyo"
           # We need to map these to constants like US, EN, ASIA_TOKYO
           const_name = name.to_s.upcase.tr("/", "_").tr("-", "_")
-          Rails.logger.debug do
-            "DEBUG: sanitize #{preference_class.name} #{option_type} " \
-              "name='#{name}' const='#{const_name}' " \
-              "found=#{option_class.const_defined?(const_name)}"
-          end
 
           if option_class.const_defined?(const_name)
             params[:option_id] = option_class.const_get(const_name)
@@ -654,6 +512,21 @@ module Preference
       COLORTHEME_SHORT_MAP[value.to_s.downcase]
     end
 
+    def normalize_colortheme(value)
+      return nil if value.blank?
+
+      theme = value.to_s.downcase
+      if COLORTHEME_SHORT_MAP.values.include?(theme)
+        theme
+      else
+        COLORTHEME_SHORT_MAP[theme]
+      end
+    end
+
+    def ensure_preference_status_defaults!
+      "#{preference_prefix}PreferenceStatus".constantize.ensure_defaults!
+    end
+
     def load_access_token_payload
       token = cookies[access_token_cookie_name]
       return false if token.blank?
@@ -663,6 +536,13 @@ module Preference
       return false if Token.extract_preference_type(payload) != preference_class.name
 
       @preference_payload = payload
+      
+      # Load @preferences if public_id is present in the token
+      public_id = Token.extract_public_id(payload)
+      if public_id.present?
+        @preferences = preference_class.includes(preference_associations_to_preload).find_by(public_id: public_id)
+      end
+      
       true
     end
 
@@ -673,6 +553,8 @@ module Preference
       @refresh_token_value = token_value
       refresh_public_id = nil
       refresh_device_id = nil
+      @refresh_presented_digest = nil
+      @refresh_public_id = nil
       preference =
         if token_value.present?
           refresh_public_id, refresh_verifier = parse_refresh_token(token_value)
@@ -691,6 +573,8 @@ module Preference
           PreferenceRecord.connected_to(role: :writing) do
             relation = preference_class.includes(preference_associations_to_preload)
             if digest
+              @refresh_presented_digest = digest
+              @refresh_public_id = refresh_public_id
               if refresh_public_id.present?
                 relation.find_by(public_id: refresh_public_id, token_digest: digest)
               else
@@ -715,6 +599,8 @@ module Preference
 
       return [nil, false] unless create_if_missing
 
+      @refresh_presented_digest = nil
+      @refresh_public_id = nil
       preference = create_new_preference_record!
       [preference, true]
     end
@@ -744,6 +630,11 @@ module Preference
             context: { token_created: true },
             expires_at: expires_at,
           )
+          create_audit_log(
+            event_id: "REFRESH_TOKEN_ROTATED",
+            context: { refresh_token_rotated: true, expires_at: expires_at },
+            expires_at: expires_at,
+          )
         rescue ActiveRecord::RecordInvalid => e
           @preferences&.destroy
           raise e
@@ -757,29 +648,34 @@ module Preference
       @preferences
     end
 
-    def ensure_preference_status_defaults!
-      status_class = "#{preference_class.name}Status".safe_constantize
-      return unless status_class&.respond_to?(:ensure_defaults!)
-
-      status_class.ensure_defaults!
-    end
-
     def refresh_refresh_token_lifetime(preference)
-      return if @refresh_token_value.blank? || preference.blank?
+      return if @refresh_token_value.blank? || preference.blank? || @refresh_presented_digest.blank?
 
-      new_token, verifier = generate_refresh_token(public_id: preference.public_id)
-      new_digest = digest_refresh_token(verifier)
-      new_expiry = refresh_token_expiry
+      rotated_preference =
+        PreferenceRecord.connected_to(role: :writing) do
+          preference.class.rotate!(
+            presented_digest: @refresh_presented_digest,
+            device_id: preference.device_id,
+            now: Time.current,
+          )
+        end
 
-      # TODO: Detect refresh token reuse (theft) by tracking previous token digest.
-      PreferenceRecord.connected_to(role: :writing) do
-        preference.update!(
-          token_digest: new_digest,
-          expires_at: new_expiry,
-        )
+      unless rotated_preference
+        replayed_preference = find_preference_by_presented_token
+        if replayed_preference&.replay?
+          handle_preference_refresh_replay!(replayed_preference)
+          return
+        end
+
+        clear_preference_auth_cookies!
+        @preference_refresh_failed = true
+        return
       end
 
-      @preferences ||= preference
+      new_token = rotated_preference.issued_refresh_token
+      new_expiry = rotated_preference.expires_at
+
+      @preferences = rotated_preference
       create_audit_log(
         event_id: "REFRESH_TOKEN_ROTATED",
         context: { refresh_token_rotated: true, expires_at: new_expiry },
@@ -787,7 +683,7 @@ module Preference
       )
 
       set_refresh_token_cookie(new_token, new_expiry)
-      set_preference_device_id_cookie!(preference.device_id, expires_at: new_expiry)
+      set_preference_device_id_cookie!(rotated_preference.device_id, expires_at: new_expiry)
       @refresh_token_value = new_token
     end
 
@@ -883,96 +779,8 @@ module Preference
       Token.extract_jti(@preference_payload)
     end
 
-    def ensure_preferences_record
-      load_preference_record_from_refresh_token!(create_if_missing: true)
-      render_preference_refresh_error! if preference_refresh_failed?
-    end
-
-    def refresh_token_expiry
-      REFRESH_TOKEN_TTL.from_now
-    end
-
-    def refresh_token_cookie_name
-      Rails.env.production? ? "__Secure-jit_preference_refresh" : "jit_preference_refresh"
-    end
-
-    def preference_device_id_cookie_name
-      refresh_token_cookie_name.sub("jit_preference_refresh", "jit_preference_device_id")
-    end
-
-    def refresh_token_value
-      cookies[refresh_token_cookie_name]
-    end
-
-    def refresh_token_lookup_digest(token)
-      parsed = parse_refresh_token(token)
-      return digest_refresh_token(parsed.last) if parsed
-
-      # Legacy tokens were stored as a flat base64 string without the public_id prefix.
-      # TODO (Apr 1, 2026): once every client has rotated, remove this branch and
-      # purge digests that still match legacy SHA3 values.
-      return legacy_refresh_token_digest(token) unless token.include?(refresh_token_separator)
-
-      nil
-    end
-
-    def set_refresh_token_cookie(token, expires_at)
-      cookies[refresh_token_cookie_name] = preference_auth_cookie_options(expires_at: expires_at).merge(value: token)
-    end
-
-    def set_preference_device_id_cookie!(device_id, expires_at: refresh_token_expiry)
-      cookies.encrypted[preference_device_id_cookie_name] =
-        preference_auth_cookie_options(expires_at: expires_at).merge(value: device_id)
-    end
-
-    def read_preference_device_id_cookie
-      cookies.encrypted[preference_device_id_cookie_name].to_s.presence
-    end
-
-    def clear_preference_device_id_cookie!
-      cookies.delete(preference_device_id_cookie_name, **preference_cookie_deletion_options)
-    end
-
-    def clear_preference_auth_cookies!
-      [access_token_cookie_name, refresh_token_cookie_name, preference_device_id_cookie_name].uniq.each do |cookie_name|
-        cookies.delete(cookie_name, **preference_cookie_deletion_options)
-      end
-    end
-
-    def access_token_cookie_name
-      if Rails.env.production?
-        "__Secure-jit_preference_access"
-      else
-        "jit_preference_access"
-      end
-    end
-
-    def preference_auth_cookie_options(expires_at:)
-      options = {
-        expires: expires_at,
-        httponly: true,
-        secure: Rails.env.production?,
-        same_site: :lax,
-      }
-      domain = cookie_domain
-      options[:domain] = domain if domain.present?
-      options
-    end
-
-    def preference_cookie_deletion_options
-      options = {
-        httponly: true,
-        secure: Rails.env.production?,
-        same_site: :lax,
-      }
-      domain = cookie_domain
-      options[:domain] = domain if domain.present?
-      options
-    end
-
     def clear_preference_refresh_failure!
       @preference_refresh_failed = false
-      @preference_refresh_device_reason = nil
     end
 
     def preference_refresh_failed?
@@ -1028,6 +836,33 @@ module Preference
         (preference.expires_at.nil? || preference.expires_at > Time.current)
     end
 
+    def find_preference_by_presented_token
+      return nil if @refresh_presented_digest.blank?
+
+      relation = preference_class.where(token_digest: @refresh_presented_digest)
+      relation = relation.where(public_id: @refresh_public_id) if @refresh_public_id.present?
+      relation.order(:id).last
+    end
+
+    def handle_preference_refresh_replay!(preference)
+      now = Time.current
+
+      PreferenceRecord.connected_to(role: :writing) do
+        preference.update!(compromised_at: now, revoked_at: now) if preference.compromised_at.nil?
+      end
+
+      clear_preference_auth_cookies!
+      @preference_refresh_failed = true
+
+      Rails.event.notify(
+        "preference.token.refresh.replay_detected",
+        preference_type: preference_class.name,
+        preference_public_id: preference.public_id,
+        replaced_by_id: preference.replaced_by_id,
+        request_id: request.request_id,
+      )
+    end
+
     def ensure_preference_jti!(preference)
       return if preference.jti.present?
 
@@ -1058,27 +893,70 @@ module Preference
       end
     end
 
-    def cookie_domain
-      configured = ENV["PREFERENCE_COOKIE_DOMAIN"]&.strip
-      return formatted_domain(configured) if configured.present?
-      return nil unless Rails.env.production?
-
-      formatted_domain(derive_cookie_domain_from_host)
+    def preference_cookie_options(expires_at:, httponly:)
+      ::Core::CookieOptions.for(
+        surface: ::Core::Surface.current(request),
+        request: request,
+        expires: expires_at,
+        httponly: httponly,
+        secure: Rails.env.production?,
+        same_site: :lax,
+      )
     end
 
-    def derive_cookie_domain_from_host
-      return nil unless request&.host
-
-      host_parts = request.host.split(".")
-      return nil if host_parts.length < 2
-
-      host_parts.last(2).join(".")
+    def preference_auth_cookie_options(expires_at:)
+      preference_cookie_options(expires_at: expires_at, httponly: true)
     end
 
-    def formatted_domain(value)
-      return nil if value.blank?
+    def access_token_cookie_name
+      if Rails.env.production?
+        "__Secure-jit_preference_access"
+      else
+        "jit_preference_access"
+      end
+    end
 
-      value.start_with?(".") ? value : ".#{value}"
+    def refresh_token_cookie_name
+      if Rails.env.production?
+        "__Secure-jit_preference_refresh"
+      else
+        "jit_preference_refresh"
+      end
+    end
+
+    def preference_device_id_cookie_name
+      refresh_token_cookie_name.sub("jit_preference_refresh", "jit_preference_device_id")
+    end
+
+    def set_refresh_token_cookie(token, expires_at)
+      cookies[refresh_token_cookie_name] = preference_cookie_options(expires_at: expires_at, httponly: true).merge(
+        value: token,
+      )
+    end
+
+    def set_preference_device_id_cookie!(device_id, expires_at:)
+      cookies.encrypted[preference_device_id_cookie_name] = preference_cookie_options(
+        expires_at: expires_at,
+        httponly: true,
+      ).merge(
+        value: device_id,
+      )
+    end
+
+    def read_preference_device_id_cookie
+      cookies.encrypted[preference_device_id_cookie_name]
+    end
+
+    def clear_preference_auth_cookies!
+      [access_token_cookie_name, refresh_token_cookie_name, preference_device_id_cookie_name].uniq.each do |cookie_name|
+        cookies.delete(cookie_name, **preference_cookie_deletion_options)
+      end
+    end
+
+    def preference_cookie_deletion_options
+      opts = preference_cookie_options(expires_at: nil, httponly: true)
+      opts.delete(:expires)
+      opts
     end
 
     def preference_language_from_record
@@ -1089,6 +967,48 @@ module Preference
       option_id_to_language(option_id, preference_prefix)
     rescue NoMethodError
       nil
+    end
+
+    def preference_associations_to_preload
+      prefix = preference_class.name.underscore
+      [
+        "#{prefix}_language",
+        "#{prefix}_region",
+        "#{prefix}_timezone",
+        "#{prefix}_colortheme",
+      ].map(&:to_sym)
+    end
+
+    def refresh_token_value
+      params[:refresh_token].presence || cookies[refresh_token_cookie_name]
+    end
+
+    def refresh_token_expiry
+      REFRESH_TOKEN_TTL.from_now
+    end
+
+    def refresh_token_lookup_digest(token)
+      legacy_refresh_token_digest(token)
+    end
+
+    def load_or_create_preference_child(child_type, default_attributes = {})
+      association_name = "#{preference_prefix_underscore}_#{child_type.downcase}"
+      child = @preferences.public_send(association_name)
+      return child if child.present?
+
+      # Ensure the parent preference record is fresh
+      @preferences.reload if @preferences.persisted?
+
+      # Try finding again in case it was created concurrently
+      child = @preferences.public_send(association_name)
+      return child if child.present?
+
+      begin
+        @preferences.public_send("create_#{association_name}!", default_attributes)
+      rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+        @preferences.reload
+        @preferences.public_send(association_name)
+      end
     end
   end
 end

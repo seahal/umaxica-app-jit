@@ -8,11 +8,13 @@
 #  id                :bigint           not null, primary key
 #  activated         :boolean          default(FALSE), not null
 #  deletable         :boolean          default(FALSE), not null
+#  description       :text
 #  expires_at        :datetime         not null
 #  otp_attempts_left :integer          default(3), not null
 #  otp_digest        :string
 #  otp_expires_at    :datetime
 #  remaining_views   :integer          default(10), not null
+#  title             :string(80)       default(""), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  org_contact_id    :bigint           not null
@@ -32,10 +34,11 @@
 class OrgContactTopic < GuestRecord
   include ::PublicId
 
-  # Allow assignment of optional metadata fields used in notifications without persisting them.
-  attr_accessor :title, :description
+  alias_attribute :body, :description
 
   belongs_to :org_contact, inverse_of: :org_contact_topics
 
+  validates :title, presence: true, length: { maximum: 80 }
+  validates :description, length: { maximum: 8000 }, allow_blank: true
   validates :otp_digest, length: { maximum: 255 }
 end

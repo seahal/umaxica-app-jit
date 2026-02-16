@@ -123,7 +123,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = build_contact
     email = contact.org_contact_emails.first
     phone = contact.org_contact_telephones.first
-    topic = OrgContactTopic.create!(org_contact: contact)
+    topic = OrgContactTopic.create!(org_contact: contact, title: "Test title", description: "Test body")
 
     contact.destroy
     assert_raise(ActiveRecord::RecordNotFound) { email.reload }

@@ -45,8 +45,16 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     # Set up mock auth with error
     OmniAuth.config.mock_auth[:google_oauth2] = :unexpected_error
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: { "Host" => @host }
+    # Suppress expected OmniAuth error log
+    old_logger = OmniAuth.config.logger
+    OmniAuth.config.logger = Logger.new(nil)
+
+    begin
+      get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+          headers: { "Host" => @host }
+    ensure
+      OmniAuth.config.logger = old_logger
+    end
 
     # Should handle error gracefully
     assert_not_equal 500, response.status,

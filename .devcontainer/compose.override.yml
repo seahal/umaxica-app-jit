@@ -4,11 +4,6 @@ services:
     environment:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=false
-    restart: unless-stopped
-    ports: !reset
-      - "3002:3000"
-    tty: true
-    stdin_open: true
   primary:
     container_name: jit-devcontainer-primary
     ports:  !reset []

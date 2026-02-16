@@ -76,7 +76,9 @@ module Auth
           else
             verification_redirect_path(rd: encoded_step_up_rd, scope_override: scope_override)
           end
-        fallback = configured_step_up_methods.empty? ? verification_setup_redirect_fallback : verification_redirect_fallback
+        fallback =
+          configured_step_up_methods.empty? ? verification_setup_redirect_fallback :
+                                                                 verification_redirect_fallback
 
         safe_redirect_to(destination, fallback: fallback, status: :found)
       else

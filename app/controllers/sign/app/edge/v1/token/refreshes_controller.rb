@@ -3,6 +3,7 @@
 class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::BaseController
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token
+  protect_from_forgery with: :exception
 
   def create
     response.set_header("Cache-Control", "no-store")

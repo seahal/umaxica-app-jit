@@ -45,7 +45,7 @@ module Core
             # Update contact status to CHECKED_TELEPHONE_NUMBER
             @contact.verify_phone!
 
-            redirect_url = edit_core_com_contact_url(
+            redirect_url = core_com_contact_url(
               @contact,
               **preserved_locale_query_params,
               **core_corporate_redirect_options,

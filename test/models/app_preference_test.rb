@@ -3,26 +3,35 @@
 # Table name: app_preferences
 # Database name: preference
 #
-#  id           :bigint           not null, primary key
-#  expires_at   :datetime
-#  jti          :string
-#  token_digest :binary
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  device_id    :string
-#  public_id    :string           not null
-#  status_id    :bigint           default(2), not null
+#  id             :bigint           not null, primary key
+#  compromised_at :datetime
+#  expires_at     :datetime
+#  jti            :string
+#  revoked_at     :datetime
+#  token_digest   :binary
+#  used_at        :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  device_id      :string
+#  public_id      :string           not null
+#  replaced_by_id :bigint
+#  status_id      :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_app_preferences_on_device_id  (device_id)
-#  index_app_preferences_on_jti        (jti) UNIQUE
-#  index_app_preferences_on_public_id  (public_id) UNIQUE
-#  index_app_preferences_on_status_id  (status_id)
+#  index_app_preferences_on_device_id       (device_id)
+#  index_app_preferences_on_jti             (jti) UNIQUE
+#  index_app_preferences_on_public_id       (public_id) UNIQUE
+#  index_app_preferences_on_replaced_by_id  (replaced_by_id)
+#  index_app_preferences_on_revoked_at      (revoked_at)
+#  index_app_preferences_on_status_id       (status_id)
+#  index_app_preferences_on_token_digest    (token_digest)
+#  index_app_preferences_on_used_at         (used_at)
 #
 # Foreign Keys
 #
 #  fk_app_preferences_on_status_id  (status_id => app_preference_statuses.id)
+#  fk_rails_...                     (replaced_by_id => app_preferences.id)
 #
 
 # frozen_string_literal: true
@@ -128,5 +137,79 @@ class AppPreferenceTest < ActiveSupport::TestCase
     colortheme_id = colortheme.id
     preference.destroy!
     assert_nil AppPreferenceColortheme.find_by(id: colortheme_id)
+  end
+
+  test "consume_once_by_digest! marks token used only once" do
+    digest = AppPreference.digest_refresh_token("app-consume-once")
+    preference = AppPreference.create!(
+      status_id: AppPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: digest,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+
+    consumed = AppPreference.consume_once_by_digest!(digest: digest)
+    assert_equal preference.id, consumed.id
+    assert_predicate consumed.used_at, :present?
+
+    second = AppPreference.consume_once_by_digest!(digest: digest)
+    assert_nil second
+    assert_predicate preference.reload, :replay?
+  end
+
+  test "consume_once_by_digest! rejects revoked compromised and expired rows" do
+    revoked_digest = AppPreference.digest_refresh_token("revoked")
+    compromised_digest = AppPreference.digest_refresh_token("compromised")
+    expired_digest = AppPreference.digest_refresh_token("expired")
+
+    AppPreference.create!(
+      status_id: AppPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: revoked_digest,
+      revoked_at: Time.current,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+    AppPreference.create!(
+      status_id: AppPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: compromised_digest,
+      compromised_at: Time.current,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+    AppPreference.create!(
+      status_id: AppPreferenceStatus::NEYO,
+      expires_at: 1.minute.ago,
+      token_digest: expired_digest,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+
+    assert_nil AppPreference.consume_once_by_digest!(digest: revoked_digest)
+    assert_nil AppPreference.consume_once_by_digest!(digest: compromised_digest)
+    assert_nil AppPreference.consume_once_by_digest!(digest: expired_digest)
+  end
+
+  test "rotate! creates replacement and links replaced_by_id" do
+    digest = AppPreference.digest_refresh_token("rotate-me")
+    preference = AppPreference.create!(
+      status_id: AppPreferenceStatus::NEYO,
+      expires_at: 1.day.from_now,
+      token_digest: digest,
+      jti: SecureRandom.uuid,
+      device_id: "device-1",
+    )
+
+    rotated = AppPreference.rotate!(presented_digest: digest, device_id: "device-1", now: Time.current)
+
+    assert_predicate rotated, :present?
+    assert_predicate rotated.issued_refresh_token, :present?
+    assert_not_equal preference.id, rotated.id
+    assert_equal preference.status_id, rotated.status_id
+    assert_equal "device-1", rotated.device_id
+    assert_predicate rotated.token_digest, :present?
+    assert_equal rotated.id, preference.reload.replaced_by_id
   end
 end

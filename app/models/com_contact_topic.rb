@@ -14,7 +14,7 @@
 #  otp_digest        :string
 #  otp_expires_at    :datetime
 #  remaining_views   :integer          default(10), not null
-#  title             :string
+#  title             :string(80)       default(""), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  com_contact_id    :bigint           not null
@@ -34,7 +34,11 @@
 class ComContactTopic < GuestRecord
   include ::PublicId
 
+  alias_attribute :body, :description
+
   belongs_to :com_contact, inverse_of: :com_contact_topics
 
+  validates :title, presence: true, length: { maximum: 80 }
+  validates :description, length: { maximum: 8000 }, allow_blank: true
   validates :otp_digest, length: { maximum: 255 }
 end

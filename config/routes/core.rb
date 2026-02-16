@@ -19,7 +19,7 @@ scope module: :core, as: :core do
       # configuration
       resource :configuration, only: [:show]
       # contact page
-      resources :contacts, only: %i(new create show edit update) do
+      resources :contacts, only: %i(new create show) do
         scope module: :contact do
           resource :email, only: [:new, :create]
           resource :telephone, only: [:new, :create]
@@ -49,7 +49,7 @@ scope module: :core, as: :core do
         end
       end
       # contact page
-      resources :contacts, only: %i(new create show edit update) do
+      resources :contacts, only: %i(new create show) do
         scope module: :contact do
           resource :email, only: [:new, :create]
           resource :telephone, only: [:new, :create]
@@ -80,7 +80,7 @@ scope module: :core, as: :core do
         end
       end
       # contact page
-      resources :contacts, only: %i(new create show edit) do
+      resources :contacts, only: %i(new create show) do
         scope module: :contact do
           resource :email, only: [:new, :create]
           resource :telephone, only: [:new, :create]

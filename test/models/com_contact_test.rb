@@ -136,7 +136,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = build_contact
     email = contact.com_contact_email
     phone = contact.com_contact_telephone
-    topic = ComContactTopic.create!(com_contact: contact)
+    topic = ComContactTopic.create!(com_contact: contact, title: "Test title", description: "Test body")
 
     contact.destroy
     assert_raise(ActiveRecord::RecordNotFound) { email.reload }

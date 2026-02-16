@@ -125,7 +125,8 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
     consume_session_limit_gate!
 
     if return_path.present?
-      redirect_to return_path, notice: notice
+      flash[:notice] = notice
+      jump_to_generated_url(return_path, fallback: sign_app_configuration_path)
     else
       redirect_to sign_app_configuration_path, notice: notice
     end

@@ -3,32 +3,42 @@
 # Table name: app_preferences
 # Database name: preference
 #
-#  id           :bigint           not null, primary key
-#  expires_at   :datetime
-#  jti          :string
-#  token_digest :binary
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  device_id    :string
-#  public_id    :string           not null
-#  status_id    :bigint           default(2), not null
+#  id             :bigint           not null, primary key
+#  compromised_at :datetime
+#  expires_at     :datetime
+#  jti            :string
+#  revoked_at     :datetime
+#  token_digest   :binary
+#  used_at        :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  device_id      :string
+#  public_id      :string           not null
+#  replaced_by_id :bigint
+#  status_id      :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_app_preferences_on_device_id  (device_id)
-#  index_app_preferences_on_jti        (jti) UNIQUE
-#  index_app_preferences_on_public_id  (public_id) UNIQUE
-#  index_app_preferences_on_status_id  (status_id)
+#  index_app_preferences_on_device_id       (device_id)
+#  index_app_preferences_on_jti             (jti) UNIQUE
+#  index_app_preferences_on_public_id       (public_id) UNIQUE
+#  index_app_preferences_on_replaced_by_id  (replaced_by_id)
+#  index_app_preferences_on_revoked_at      (revoked_at)
+#  index_app_preferences_on_status_id       (status_id)
+#  index_app_preferences_on_token_digest    (token_digest)
+#  index_app_preferences_on_used_at         (used_at)
 #
 # Foreign Keys
 #
 #  fk_app_preferences_on_status_id  (status_id => app_preference_statuses.id)
+#  fk_rails_...                     (replaced_by_id => app_preferences.id)
 #
 
 # frozen_string_literal: true
 
 class AppPreference < PreferenceRecord
   include ::PublicId
+  include ::ConsumeOnceToken
   include ::Preference::Resettable
 
   attribute :status_id, default: AppPreferenceStatus::NEYO
@@ -61,6 +71,14 @@ class AppPreference < PreferenceRecord
            foreign_key: :subject_id,
            inverse_of: :app_preference,
            dependent: :destroy
+  belongs_to :replaced_by,
+             class_name: "AppPreference",
+             optional: true
+  has_many :replacements,
+           class_name: "AppPreference",
+           foreign_key: :replaced_by_id,
+           inverse_of: :replaced_by,
+           dependent: :nullify
   validates :status_id, numericality: { only_integer: true }
   validates :jti, uniqueness: true, allow_nil: true
 end

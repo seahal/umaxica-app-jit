@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_13_010001) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -68,16 +68,20 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010001) do
     t.bigint "app_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
+    t.text "description"
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest"
     t.datetime "otp_expires_at"
     t.string "public_id", limit: 21, null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.string "title", limit: 80, default: "", null: false
     t.datetime "updated_at", null: false
     t.index ["app_contact_id"], name: "index_app_contact_topics_on_app_contact_id"
     t.index ["expires_at"], name: "index_app_contact_topics_on_expires_at"
     t.index ["public_id"], name: "index_app_contact_topics_on_public_id", unique: true
+    t.check_constraint "char_length(title::text) >= 1 AND char_length(title::text) <= 80", name: "chk_app_contact_topics_title_length"
+    t.check_constraint "description IS NULL OR char_length(description) <= 8000", name: "chk_app_contact_topics_description_length"
   end
 
   create_table "app_contacts", force: :cascade do |t|
@@ -168,11 +172,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010001) do
     t.datetime "otp_expires_at"
     t.string "public_id", limit: 21, null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
-    t.string "title"
+    t.string "title", limit: 80, default: "", null: false
     t.datetime "updated_at", null: false
     t.index ["com_contact_id"], name: "index_com_contact_topics_on_com_contact_id"
     t.index ["expires_at"], name: "index_com_contact_topics_on_expires_at"
     t.index ["public_id"], name: "index_com_contact_topics_on_public_id", unique: true
+    t.check_constraint "char_length(title::text) >= 1 AND char_length(title::text) <= 80", name: "chk_com_contact_topics_title_length"
+    t.check_constraint "description IS NULL OR char_length(description) <= 8000", name: "chk_com_contact_topics_description_length"
   end
 
   create_table "com_contacts", force: :cascade do |t|
@@ -245,6 +251,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010001) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
+    t.text "description"
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.bigint "org_contact_id", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
@@ -252,10 +259,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_010001) do
     t.datetime "otp_expires_at"
     t.string "public_id", limit: 21, null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.string "title", limit: 80, default: "", null: false
     t.datetime "updated_at", null: false
     t.index ["expires_at"], name: "index_org_contact_topics_on_expires_at"
     t.index ["org_contact_id"], name: "index_org_contact_topics_on_org_contact_id"
     t.index ["public_id"], name: "index_org_contact_topics_on_public_id", unique: true
+    t.check_constraint "char_length(title::text) >= 1 AND char_length(title::text) <= 80", name: "chk_org_contact_topics_title_length"
+    t.check_constraint "description IS NULL OR char_length(description) <= 8000", name: "chk_org_contact_topics_description_length"
   end
 
   create_table "org_contacts", force: :cascade do |t|

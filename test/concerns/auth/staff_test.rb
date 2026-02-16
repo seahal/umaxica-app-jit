@@ -126,9 +126,9 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)[:domain]
-    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)[:domain]
-    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)[:domain]
+    assert_equal ".localhost", @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)[:domain]
+    assert_equal ".localhost", @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".localhost", @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)[:domain]
   end
 
   test "log_in returns tokens hash" do

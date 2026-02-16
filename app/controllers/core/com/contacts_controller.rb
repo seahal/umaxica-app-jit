@@ -7,92 +7,71 @@ module Core
       include CloudflareTurnstile
       include Common::Otp
 
+      before_action :set_contact, only: :show
+
       def show
-        @contact = ComContact.find_by!(public_id: params[:id])
-        @topic = @contact.com_contact_topics.last
+        @topic = @contact.com_contact_topics.order(created_at: :desc).first
       end
 
       def new
         category_id = validate_category_id(params[:category])
         @contact = ComContact.new(category_id: category_id)
-        @contact_categories = ComContactCategory.all
-      end
-
-      def edit
-        @contact = ComContact.find_by!(public_id: params[:id])
-        @topic = @contact.com_contact_topics.build
+        @contact_categories = ComContactCategory.order(:id)
+        @email_address = ""
+        @telephone_number = ""
       end
 
       def create
-        # Cloudflare Turnstile validation
         turnstile_result = cloudflare_turnstile_validation
 
-        # Create contact with nested associations
         @contact = ComContact.new(
           category_id: params.dig(:com_contact, :category_id),
           confirm_policy: params.dig(:com_contact, :confirm_policy),
         )
+        @contact_categories = ComContactCategory.order(:id)
 
-        # Build associated email and telephone
         @email = @contact.build_com_contact_email(
           email_address: params.dig(:com_contact, :email_address),
         )
-
         @telephone = @contact.build_com_contact_telephone(
           telephone_number: params.dig(:com_contact, :telephone_number),
         )
+        @email_address = params.dig(:com_contact, :email_address).to_s
+        @telephone_number = params.dig(:com_contact, :telephone_number).to_s
+        @topic = @contact.com_contact_topics.build(
+          title: params.dig(:com_contact, :title),
+          description: params.dig(:com_contact, :body).presence || params.dig(:com_contact, :description),
+        )
 
-        # TODO: Inject error into @contact here and display error message.
         unless turnstile_result["success"]
-          @contact.errors.add(:base, "ロボットではないことの確認に失敗しました。もう一度お試しください。")
-          @email_address = params.dig(:com_contact, :email_address) || ""
-          @telephone_number = params.dig(:com_contact, :telephone_number) || ""
-          @contact_categories = ComContactCategory.all
+          @contact.errors.add(:base, I18n.t("turnstile_error"))
           render :new, status: :unprocessable_content
           return
         end
 
         if @contact.save
-          # Update status to SET_UP
           @contact.update!(status_id: ComContactStatus::SET_UP)
-
-          # Generate HOTP and save to email record
           token = @email.generate_hotp!
 
-          # Send email with HOTP code
           Email::Com::ContactMailer.with(
             email_address: @email.email_address,
             pass_code: token,
           ).create.deliver_later
 
-          # Redirect with proper host options
           redirect_to new_core_com_contact_email_url(
             contact_id: @contact.public_id,
             **core_corporate_redirect_options,
           ), notice: I18n.t("help.com.contacts.create.success")
         else
-          # Validation failed: re-render form with errors
-          @email_address = params.dig(:com_contact, :email_address) || ""
-          @telephone_number = params.dig(:com_contact, :telephone_number) || ""
-          @contact_categories = ComContactCategory.all
           render :new, status: :unprocessable_content
         end
       end
 
-      def update
-        @contact = ComContact.find_by!(public_id: params[:id])
-        @topic = @contact.com_contact_topics.build(topic_params)
-
-        if @topic.save
-          send_topic_notification(@contact, @topic)
-          redirect_to core_com_contact_url(@contact, **core_corporate_redirect_options),
-                      notice: I18n.t("help.com.contacts.update.success")
-        else
-          render :edit, status: :unprocessable_content
-        end
-      end
-
       private
+
+      def set_contact
+        @contact = ComContact.find_by!(public_id: params[:id])
+      end
 
       def validate_category_id(category_param)
         return nil if category_param.blank?
@@ -109,35 +88,6 @@ module Core
         end
       end
 
-      def send_topic_notification(contact, topic)
-        contact_email = contact.com_contact_email
-
-        unless contact_email
-          Rails.event.notify(
-            "contact.notification.skip",
-            contact_id: contact.public_id,
-            reason: "no email address configured",
-          )
-          return
-        end
-
-        Email::Com::TopicMailer.with(
-          contact: contact,
-          topic: topic,
-          email_address: contact_email.email_address,
-        ).notice.deliver_later
-      rescue StandardError => e
-        Rails.event.notify(
-          "contact.notification.failed",
-          contact_id: contact.public_id,
-          error_message: e.message,
-        )
-      end
-
-      def topic_params
-        params.expect(com_contact_topic: [:title, :description])
-      end
-
       def core_corporate_redirect_options
         {
           host: core_corporate_host,
@@ -150,12 +100,10 @@ module Core
         env_url = ENV["CORE_CORPORATE_URL"].presence
         return request.host unless env_url
 
-        # Extract hostname from URL or host string, removing port if present
         begin
           uri = URI.parse(env_url.start_with?("http") ? env_url : "http://#{env_url}")
           uri.host || env_url.split(":").first
         rescue URI::InvalidURIError
-          # If parsing fails, try to extract hostname by removing port
           env_url.split(":").first
         end
       end

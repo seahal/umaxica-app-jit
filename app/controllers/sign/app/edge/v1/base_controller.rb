@@ -8,7 +8,6 @@ module Sign
           public_strict!
           before_action :ensure_json_request
           skip_before_action :set_region
-          skip_forgery_protection
 
           private
 

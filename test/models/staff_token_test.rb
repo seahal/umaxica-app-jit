@@ -189,4 +189,56 @@ class StaffTokenTest < ActiveSupport::TestCase
 
     assert ActiveSupport::SecurityUtils.secure_compare(raw1, raw2)
   end
+
+  test "rotate_refresh! consumes old row and creates new generation in same family" do
+    token = StaffToken.create!(staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "device-staff")
+    raw = token.rotate_refresh_token!
+    _, verifier = StaffToken.parse_refresh_token(raw)
+    digest = StaffToken.digest_refresh_token(verifier)
+
+    result = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+
+    assert_equal :rotated, result[:status]
+    new_token = result[:token]
+    assert_predicate new_token, :present?
+    assert_not_equal token.id, new_token.id
+    assert_equal token.refresh_token_family_id, new_token.refresh_token_family_id
+    assert_equal token.refresh_token_generation + 1, new_token.refresh_token_generation
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! classifies second attempt as replay" do
+    token = StaffToken.create!(staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "device-staff")
+    raw = token.rotate_refresh_token!
+    _, verifier = StaffToken.parse_refresh_token(raw)
+    digest = StaffToken.digest_refresh_token(verifier)
+
+    first = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+    assert_equal :rotated, first[:status]
+
+    second = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+    assert_equal :replay, second[:status]
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! rejects revoked compromised and expired tokens" do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
+    revoked = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd1")
+    compromised = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd2")
+    expired = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd3")
+    revoked_raw = revoked.rotate_refresh_token!
+    compromised_raw = compromised.rotate_refresh_token!
+    expired_raw = expired.rotate_refresh_token!
+    revoked.update!(revoked_at: Time.current)
+    compromised.update!(compromised_at: Time.current)
+    expired.update!(refresh_expires_at: 1.minute.ago)
+
+    revoked_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(revoked_raw).last)
+    compromised_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(compromised_raw).last)
+    expired_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(expired_raw).last)
+
+    assert_equal :invalid, StaffToken.rotate_refresh!(presented_refresh_digest: revoked_digest, device_id: "sd1", now: Time.current)[:status]
+    assert_equal :invalid, StaffToken.rotate_refresh!(presented_refresh_digest: compromised_digest, device_id: "sd2", now: Time.current)[:status]
+    assert_equal :invalid, StaffToken.rotate_refresh!(presented_refresh_digest: expired_digest, device_id: "sd3", now: Time.current)[:status]
+  end
 end

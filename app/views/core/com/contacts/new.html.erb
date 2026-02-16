@@ -62,6 +62,21 @@
         <%= form.text_field :telephone_number,
                             value: @telephone_number %>
       </div>
+
+      <div>
+        <%= form.label :title, t('help.com.contacts.new.title') %>
+        <%= form.text_field :title,
+                            value: params.dig(:com_contact, :title),
+                            maxlength: 80 %>
+      </div>
+
+      <div>
+        <%= form.label :body, t('help.com.contacts.new.body') %>
+        <%= form.text_area :body,
+                           value: params.dig(:com_contact, :body),
+                           rows: 8,
+                           maxlength: 8000 %>
+      </div>
     </div>
 
     <div>

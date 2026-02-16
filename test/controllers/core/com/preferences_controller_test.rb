@@ -3,6 +3,10 @@
 require "test_helper"
 
 class Core::Com::PreferenceControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    host! ENV.fetch("APEX_CORPORATE_URL", "com.localhost")
+  end
+
   test "should get show" do
     get apex_com_preference_url(lx: "ja", ri: "jp")
     assert_response :success

@@ -33,8 +33,6 @@
 #
 # =============================================================================
 
-require Rails.root.join("app/middleware/social_auth_request_phase_guard")
-
 # Load credentials early
 google_client_id = ENV["OMNI_AUTH_GOOGLE_CLIENT_ID"] || Rails.application.credentials.dig(:OMNI_AUTH, :GOOGLE, :CLIENT_ID)
 google_client_secret = ENV["OMNI_AUTH_GOOGLE_CLIENT_SECRET"] || Rails.application.credentials.dig(:OMNI_AUTH, :GOOGLE, :CLIENT_SECRET)
@@ -110,8 +108,6 @@ end
 OmniAuth.config.silence_get_warning = true
 OmniAuth.config.allowed_request_methods = %i(get post)
 OmniAuth.config.after_request_phase = proc { |env| SocialCallbackGuard.capture_request_state!(env) }
-
-Rails.application.config.middleware.insert_before OmniAuth::Builder, SocialAuthRequestPhaseGuard
 
 # =============================================================================
 # Failure Handling

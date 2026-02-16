@@ -17,50 +17,6 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
-  test "request phase allows permitted origin with correct method" do
-    setup_google_mock_auth(uid: "request_google_allowed_#{SecureRandom.hex(4)}")
-    state = "rq_google_ok_#{SecureRandom.hex(6)}"
-
-    post "/auth/google_oauth2?state=#{state}", headers: request_headers
-
-    assert_response :redirect
-  end
-
-  test "request phase rejects disallowed origin" do
-    setup_google_mock_auth(uid: "request_google_bad_origin_#{SecureRandom.hex(4)}")
-
-    post "/auth/google_oauth2",
-         headers: request_headers(origin: "https://evil.example.com")
-
-    assert_response :forbidden
-  end
-
-  test "request phase rejects bad method" do
-    setup_google_mock_auth(uid: "request_google_bad_method_#{SecureRandom.hex(4)}")
-
-    put "/auth/google_oauth2", headers: request_headers
-
-    assert_response :forbidden
-  end
-
-  test "request phase allows referer when origin is missing" do
-    setup_google_mock_auth(uid: "request_google_referer_#{SecureRandom.hex(4)}")
-    state = "rq_google_referer_#{SecureRandom.hex(6)}"
-
-    post "/auth/google_oauth2?state=#{state}",
-         headers: request_headers(origin: nil, referer: "http://#{@host}/in/new")
-
-    assert_response :redirect
-  end
-
-  test "request phase rejects parse error in source header" do
-    setup_google_mock_auth(uid: "request_google_parse_error_#{SecureRandom.hex(4)}")
-
-    post "/auth/google_oauth2", headers: request_headers(origin: "http://%")
-
-    assert_response :forbidden
-  end
-
   test "callback phase rejects when state is missing" do
     setup_google_mock_auth(uid: "callback_google_missing_state_#{SecureRandom.hex(4)}")
     user = users(:one)
@@ -167,13 +123,6 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     uri = URI.parse(response.location)
     Rack::Utils.parse_nested_query(uri.query.to_s)["state"]
-  end
-
-  def request_headers(host: @host, origin: "http://#{@host}", referer: nil)
-    headers = { "Host" => host }
-    headers["Origin"] = origin if origin
-    headers["Referer"] = referer if referer
-    headers
   end
 
   def callback_headers(host: @host, origin: nil, referer: nil)

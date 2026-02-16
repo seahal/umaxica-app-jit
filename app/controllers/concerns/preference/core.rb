@@ -25,6 +25,7 @@ module Preference::Core
         sanitize_option_id(preference_region_params, option_type: :region),
         "UPDATE_PREFERENCE_REGION",
       )
+      reload_preferences_and_reissue_token!
     end
   end
 
@@ -43,6 +44,7 @@ module Preference::Core
         sanitize_option_id(preference_language_params, option_type: :language),
         "UPDATE_PREFERENCE_LANGUAGE",
       )
+      reload_preferences_and_reissue_token!
     end
 
     if @preference_language.option_id.present?
@@ -69,9 +71,15 @@ module Preference::Core
           sanitize_option_id(preference_timezone_params, option_type: :timezone),
           "UPDATE_PREFERENCE_TIMEZONE",
         )
+        reload_preferences_and_reissue_token!
       rescue ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey
         raise PreferenceOperationError
       end
+    end
+
+    if @preference_timezone.option_id.present?
+      timezone = option_id_to_timezone(@preference_timezone.option_id, preference_prefix)
+      write_preference_cookie(Preference::Base::TIMEZONE_COOKIE_KEY, timezone) if timezone.present?
     end
   end
 
@@ -90,6 +98,7 @@ module Preference::Core
         sanitize_option_id(preference_colortheme_params, option_type: :colortheme),
         "UPDATE_PREFERENCE_COLORTHEME",
       )
+      reload_preferences_and_reissue_token!
     end
 
     if @preference_colortheme.option_id.present?
@@ -122,10 +131,21 @@ module Preference::Core
         update_params,
         "UPDATE_PREFERENCE_COOKIE",
       )
+      reload_preferences_and_reissue_token!
     end
   end
 
   private
+
+  def reload_preferences_and_reissue_token!
+    @preferences.reload
+    # Force reload all preference associations to ensure they reflect DB state
+    %w(language region timezone colortheme).each do |type|
+      assoc_name = "#{preference_prefix_underscore}_#{type}"
+      @preferences.association(assoc_name.to_sym).reload if @preferences.respond_to?(assoc_name)
+    end
+    issue_access_token_from(@preferences)
+  end
 
   def preference_cookie_params
     params.expect(preference_cookie: %i(functional performant targetable consented consented_at))

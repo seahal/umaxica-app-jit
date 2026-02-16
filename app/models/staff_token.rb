@@ -134,7 +134,7 @@ class StaffToken < TokenRecord
   def enforce_concurrent_session_limit
     return unless staff_id
 
-    count = self.class.where(staff_id: staff_id).count
+    count = self.class.not_revoked.where(staff_id: staff_id, rotated_at: nil).count
     return if count < MAX_TOTAL_SESSIONS_PER_STAFF
 
     errors.add(
