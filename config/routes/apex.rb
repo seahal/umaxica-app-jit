@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 scope module: :apex, as: :apex do
-  constraints lambda { |request|
-                request.host == ENV["APEX_CORPORATE_URL"] && Core::Surface.matches?(request, :com)
-              } do
+  constraints host: ENV["APEX_CORPORATE_URL"] do
     scope module: :com, as: :com do
       root to: "roots#index"
       # health check for html
@@ -76,6 +74,12 @@ scope module: :apex, as: :apex do
         # logged in user's email settings.
         resources :emails, only: %i(edit update new create)
       end
+      # for emergency token operations
+      namespace :emergency do
+        namespace :app do
+          resource :token, only: %i(show update)
+        end
+      end
     end
   end
 
@@ -92,6 +96,36 @@ scope module: :apex, as: :apex do
         namespace :v1 do
           resource :health, only: :show
         end
+      end
+      # for emergency
+      namespace :emergency do
+        namespace :app do
+          resource :outage, only: %i(show update)
+          resource :token, only: %i(show update destroy)
+          resource :cache, only: %i(show update destroy)
+        end
+        namespace :com do
+          resource :outage, only: %i(show update)
+          resource :token, only: %i(show update)
+          resource :cache, only: %i(show update destroy)
+        end
+        namespace :org do
+          resource :outage, only: %i(show update)
+          resource :token, only: %i(show update destroy)
+          resource :cache, only: %i(show update destroy)
+        end
+      end
+      namespace :status do
+        namespace :app do
+        end
+        resource :app, only: :show
+        namespace :com do
+        end
+        resource :com, only: :show
+
+        namespace :org do
+        end
+        resource :org, only: :show
       end
       # preferences
       resource :preference, only: [:show]

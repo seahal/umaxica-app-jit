@@ -88,7 +88,7 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     # Login IS completed
     assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
     assert_nil session[:pending_mfa]
@@ -145,7 +145,7 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     # Login should now be completed
     assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
     # pending_mfa should be cleared
@@ -254,7 +254,7 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
     assert_nil session[:pending_mfa]
   end

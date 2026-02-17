@@ -19,7 +19,6 @@
 #  fk_app_preference_colorthemes_on_option_id  (option_id => app_preference_colortheme_options.id)
 #  fk_rails_...                                (preference_id => app_preferences.id)
 #
-
 one:
   preference: one
   option_id: <%= AppPreferenceColorthemeOption::SYSTEM %>

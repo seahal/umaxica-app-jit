@@ -34,7 +34,6 @@
 #  fk_rails_...  (latest_version_id => com_document_versions.id) ON DELETE => nullify
 #  fk_rails_...  (status_id => com_document_statuses.id)
 #
-
 one:
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
@@ -42,7 +41,6 @@ one:
   status_id: <%= ComDocumentStatus::ACTIVE %>
   slug_id: "com_doc_one_slug"
   revision_key: "rev_key_one"
-
 two:
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>

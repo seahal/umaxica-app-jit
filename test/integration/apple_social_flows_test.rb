@@ -25,7 +25,7 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
   end
 
   test "sign in uses existing identity" do
@@ -44,7 +44,7 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: @callback_headers
 
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
     assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"), flash[:notice]
   end
 

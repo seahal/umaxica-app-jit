@@ -216,9 +216,9 @@ module Core
             old_preference = AppPreference.find_by!(public_id: old_public_id)
             device_id_encrypted = s.cookies[preference_device_id_cookie_name]
 
-            # Trigger rotation
+            # Trigger rotation by clearing access token to force refresh
+            s.cookies.delete(preference_access_cookie_name)
             s.get core_app_edge_v1_preference_url
-            Rails.logger.debug { "DEBUG: rotation request status: #{s.response.status}" }
             s.assert_response :success
 
             # Replay the old token in a fresh session

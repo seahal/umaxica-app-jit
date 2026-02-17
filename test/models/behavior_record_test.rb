@@ -7,7 +7,7 @@ class BehaviorRecordTest < ActiveSupport::TestCase
     config = BehaviorRecord.connection_db_config
 
     assert_equal "behavior", config.name
-    assert_equal "test_behavior_db", config.database
-    assert_equal "test_behavior_db", BehaviorRecord.connection.select_value("SELECT current_database()")
+    assert_match(/^test_behavior_db(_\d+)?$/, config.database)
+    assert_match(/^test_behavior_db(_\d+)?$/, BehaviorRecord.connection.select_value("SELECT current_database()"))
   end
 end

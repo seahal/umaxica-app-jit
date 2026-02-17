@@ -19,7 +19,6 @@
 #  fk_org_preference_colorthemes_on_option_id  (option_id => org_preference_colortheme_options.id)
 #  fk_rails_...                                (preference_id => org_preferences.id)
 #
-
 one:
   preference: one
   option_id: <%= OrgPreferenceColorthemeOption::SYSTEM %>

@@ -280,6 +280,8 @@ module Auth
 
     # Default session key for storing redirect parameter
     DEFAULT_RD_SESSION_KEY = :user_email_authentication_rd
+    CHECKPOINT_SESSION_KEY = :in_checkpoint
+    CHECKPOINT_TIMEOUT = 2.hours
 
     # Preserves the redirect parameter in session and returns it for immediate use
     #
@@ -389,6 +391,74 @@ module Auth
       rd_value = peek_redirect_parameter(session_key)
       redirect_params[:rd] = rd_value if rd_value.present?
       redirect_params
+    end
+
+    # ======================================================================
+    # Checkpoint Flow
+    # ======================================================================
+
+    def issue_checkpoint!(kind: "mock", state: "new", payload: {})
+      session[CHECKPOINT_SESSION_KEY] = {
+        "issued_at" => Time.current.to_i,
+        "kind" => kind.to_s,
+        "state" => state.to_s,
+      }.merge(payload.stringify_keys)
+    end
+
+    # Injects checkpoint state from a test header (X-TEST-CHECKPOINT).
+    # Used as a before_action in checkpoint controllers to seed session
+    # state for integration tests that cannot set session directly.
+    def maybe_inject_test_checkpoint!
+      return unless Rails.env.test?
+
+      raw = request.headers["X-TEST-CHECKPOINT"]
+      return if raw.blank?
+      return if session[CHECKPOINT_SESSION_KEY].present?
+
+      session[CHECKPOINT_SESSION_KEY] = JSON.parse(raw)
+    end
+
+    def checkpoint_state
+      raw = session[CHECKPOINT_SESSION_KEY]
+      return nil unless raw.is_a?(Hash)
+
+      raw.with_indifferent_access
+    end
+
+    def checkpoint_active?
+      checkpoint_state.present? && !checkpoint_expired?
+    end
+
+    def checkpoint_expired?
+      data = checkpoint_state
+      return true if data.blank?
+
+      issued_at = data[:issued_at].to_i
+      return true if issued_at <= 0
+
+      Time.current.to_i >= issued_at + CHECKPOINT_TIMEOUT.to_i
+    end
+
+    def refresh_checkpoint_dimension!(state: "updated")
+      data = checkpoint_state
+      return unless data
+
+      session[CHECKPOINT_SESSION_KEY] = data.merge(
+        "issued_at" => Time.current.to_i,
+        "state" => state.to_s,
+      )
+    end
+
+    def consume_checkpoint!
+      session.delete(CHECKPOINT_SESSION_KEY)
+    end
+
+    def safe_redirect_to_rd_or_default!(rd_param, default_path:)
+      if rd_param.present?
+        jump_to_generated_url(rd_param, fallback: default_path)
+      else
+        redirect_to default_path
+      end
     end
 
     # ======================================================================

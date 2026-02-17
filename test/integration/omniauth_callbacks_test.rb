@@ -103,7 +103,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
          headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
-    assert_match(%r{/configuration}, response.redirect_url)
+    assert_match(%r{/in/checkpoint}, response.redirect_url)
     assert_nil session[:pending_mfa]
   end
 
@@ -178,7 +178,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
-    assert_match(%r{/configuration}, response.redirect_url)
+    assert_match(%r{/in/checkpoint}, response.redirect_url)
     assert_nil session[:pending_mfa]
   end
 

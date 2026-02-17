@@ -616,7 +616,7 @@ ja:
             updated: 管理テーマを%{theme}に更新しました
     sign:
       app:
-        configuration:
+        setting:
           show:
             page_title: 設定
             withdrawal: 退会
@@ -626,6 +626,10 @@ ja:
             secret: リカバリーコード
             google: Google
             apple: Apple
+            email: メール
+            telephone: 電話番号
+            session: セッション
+            activity: アクティビティ
           passkey:
             index:
               page_title: パスキーの一覧
@@ -1116,6 +1120,10 @@ ja:
     totp_title_placeholder: タイトル（任意）
   activerecord:
     attributes:
+      user_email:
+        address: メールアドレス
+      user_telephone:
+        number: 電話番号
       user_identity_email:
         address: メールアドレス
     errors:

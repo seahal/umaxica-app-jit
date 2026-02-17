@@ -5,24 +5,16 @@ require "test_helper"
 class Core::Org::EmergencyRoutingTest < ActionDispatch::IntegrationTest
   CORE_STAFF_HOST = ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
 
-  test "routes emergency app outage/token" do
+  test "routes emergency app outage" do
     assert_routed("/emergency/app/outage", :get, "core/org/emergency/app/outages", "show")
     assert_routed("/emergency/app/outage", :patch, "core/org/emergency/app/outages", "update")
     assert_routed("/emergency/app/outage", :put, "core/org/emergency/app/outages", "update")
-
-    assert_routed("/emergency/app/token", :get, "core/org/emergency/app/tokens", "show")
-    assert_routed("/emergency/app/token", :patch, "core/org/emergency/app/tokens", "update")
-    assert_routed("/emergency/app/token", :put, "core/org/emergency/app/tokens", "update")
   end
 
-  test "routes emergency com outage/token" do
+  test "routes emergency com outage" do
     assert_routed("/emergency/com/outage", :get, "core/org/emergency/com/outages", "show")
     assert_routed("/emergency/com/outage", :patch, "core/org/emergency/com/outages", "update")
     assert_routed("/emergency/com/outage", :put, "core/org/emergency/com/outages", "update")
-
-    assert_routed("/emergency/com/token", :get, "core/org/emergency/com/tokens", "show")
-    assert_routed("/emergency/com/token", :patch, "core/org/emergency/com/tokens", "update")
-    assert_routed("/emergency/com/token", :put, "core/org/emergency/com/tokens", "update")
   end
 
   test "routes emergency org outage/token" do

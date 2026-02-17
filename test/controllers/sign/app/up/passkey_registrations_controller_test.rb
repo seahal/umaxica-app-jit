@@ -58,7 +58,7 @@ module Sign::App::Up
       assert_select "[data-passkey-registration-begin-url-value='#{begin_path}']"
       finish_path = sign_app_up_telephone_passkey_registration_path(telephone, ri: "jp")
       assert_select "[data-passkey-registration-finish-url-value='#{finish_path}']"
-      assert_select "[data-passkey-registration-success-redirect-url-value='#{sign_app_configuration_path(
+      assert_select "[data-passkey-registration-success-redirect-url-value='#{sign_app_in_checkpoint_path(
         ri: "jp",
       )}']"
     end
@@ -108,7 +108,7 @@ module Sign::App::Up
 
       assert_response :created
       assert_equal "ok", response.parsed_body["status"]
-      assert_equal sign_app_configuration_path(ri: "jp"), response.parsed_body["redirect_url"]
+      assert_equal sign_app_in_checkpoint_path(ri: "jp"), response.parsed_body["redirect_url"]
       assert_nil session[:user_telephone_registration]
       assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, telephone.user.reload.status_id
     end
@@ -169,7 +169,8 @@ module Sign::App::Up
       end
 
       assert_response :created
-      assert_equal rt, response.parsed_body["redirect_url"]
+      assert_equal sign_app_in_checkpoint_path(ri: "jp", rd: Base64.urlsafe_encode64(rt)),
+                   response.parsed_body["redirect_url"]
     end
 
     test "POST create creates audit record on success" do

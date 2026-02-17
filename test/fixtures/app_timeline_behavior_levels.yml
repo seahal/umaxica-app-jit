@@ -7,15 +7,11 @@
 #
 neyo:
   id: 1
-
 debug:
   id: 2
-
 info:
   id: 3
-
 warn:
   id: 4
-
 error:
   id: 5

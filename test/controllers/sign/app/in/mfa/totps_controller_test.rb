@@ -76,7 +76,7 @@ module Sign::App::In
               "pending_mfa after: #{session[:pending_mfa].inspect}"
       end
       assert_response :found
-      assert_redirected_to sign_app_configuration_path(ri: "jp")
+      assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
       assert_nil session[:pending_mfa]
       assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
     end

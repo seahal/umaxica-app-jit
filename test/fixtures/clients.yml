@@ -29,7 +29,6 @@
 #  fk_rails_...                    (client_status_id => client_statuses.id)
 #  fk_rails_...                    (user_id => users.id) ON DELETE => nullify
 #
-
 one:
   user: one
   status_id: <%= ClientStatus::NEYO %>

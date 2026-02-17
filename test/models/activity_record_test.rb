@@ -7,8 +7,8 @@ class ActivityRecordTest < ActiveSupport::TestCase
     config = ActivityRecord.connection_db_config
 
     assert_equal "activity", config.name
-    assert_equal "test_activity_db", config.database
-    assert_equal "test_activity_db", ActivityRecord.connection.select_value("SELECT current_database()")
+    assert_match(/^test_activity_db(_\d+)?$/, config.database)
+    assert_match(/^test_activity_db(_\d+)?$/, ActivityRecord.connection.select_value("SELECT current_database()"))
   end
 
   test "can perform basic write and read via activity model" do

@@ -118,6 +118,18 @@ module Preference::Global
     nil
   end
 
+  def association_name_for_region
+    :"#{preference_prefix_underscore}_region"
+  rescue NoMethodError
+    nil
+  end
+
+  def association_name_for_language
+    :"#{preference_prefix_underscore}_language"
+  rescue NoMethodError
+    nil
+  end
+
   def association_name_for_timezone
     :"#{preference_prefix_underscore}_timezone"
   rescue NoMethodError

@@ -12,7 +12,7 @@ module SocialAuth
 
     test "ProviderError can be instantiated with custom message" do
       error = ProviderError.new("custom.error.key")
-      assert_equal "Translation missing: ja.custom.error.key", error.message
+      assert_equal "カスタムエラー", error.message
     end
 
     test "ProviderError includes context" do

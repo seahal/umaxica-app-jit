@@ -77,5 +77,5 @@ Rails.application.configure do
 
   # i18n default locale for tests
   # config.action_view.raise_on_missing_translations = true
-  # config.i18n.raise_on_missing_translations = true
+  config.i18n.raise_on_missing_translations = true
 end

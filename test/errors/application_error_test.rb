@@ -34,7 +34,7 @@ class ApplicationErrorTest < ActiveSupport::TestCase
   def test_application_error_translates_i18n_key_to_message
     error = ApplicationError.new("test.error.key", :bad_request)
 
-    assert_includes error.message.downcase, "translation missing"
+    assert_equal "テストエラー", error.message
   end
 
   def test_application_error_can_be_raised_and_caught

@@ -31,10 +31,6 @@
 #  fk_rails_...  (active_handle_id => handles.id)
 #  fk_rails_...  (capability_id => avatar_capabilities.id)
 #
-#  fk_rails_...  (active_handle_id => handles.id)
-#  fk_rails_...  (capability_id => avatar_capabilities.id)
-  #
-
 one:
   moniker: "Moniker One"
   public_id: "avatar_pk_123"

@@ -31,7 +31,6 @@
 #  fk_rails_...                   (latest_revision_id => org_timeline_revisions.id) ON DELETE => nullify
 #  fk_rails_...                   (latest_version_id => org_timeline_versions.id) ON DELETE => nullify
 #
-
 one:
   slug_id: "org-timeline-0000001"
   status_id: 1
@@ -39,7 +38,6 @@ one:
   expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 two:
   slug_id: "org-timeline-0000002"
   status_id: 1

@@ -34,14 +34,12 @@
 #  fk_rails_...  (status_id => user_statuses.id)
 #  fk_rails_...  (visibility_id => user_visibilities.id)
 #
-
 zero:
   id: 0
   status_id: <%= UserStatus::NEYO %>
   public_id: "zero_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 placeholder:
   status_id: <%= UserStatus::NEYO %>
   public_id: "placeholder_id"

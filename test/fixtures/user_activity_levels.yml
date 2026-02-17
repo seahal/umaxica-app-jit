@@ -5,7 +5,6 @@
 #
 #  id :bigint           not null, primary key
 #
-
 neyo:
   id: 4
 debug:

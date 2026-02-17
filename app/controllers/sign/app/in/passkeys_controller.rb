@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "base64"
-
 module Sign
   module App
     module In
@@ -134,15 +132,8 @@ module Sign
           )
         end
 
-        def retrieve_redirect_url
-          rd = params[:rd].presence || session.delete(:passkey_return_to)
-          return nil unless rd
-
-          begin
-            Base64.urlsafe_decode64(rd)
-          rescue ArgumentError
-            nil
-          end
+        def retrieve_redirect_parameter_for_checkpoint
+          params[:rd].presence
         end
 
         def find_active_user_by_identifier(identifier)
@@ -199,7 +190,7 @@ module Sign
           end
 
           verify_passkey(credential, passkey, challenge)
-          rd = retrieve_redirect_url
+          rd = retrieve_redirect_parameter_for_checkpoint
           result = complete_sign_in_or_start_mfa!(
             passkey.user, rt: rd, ri: params[:ri], auth_method: "passkey",
           )
@@ -250,7 +241,11 @@ module Sign
         end
 
         def render_success(result)
-          redirect_url = retrieve_redirect_url || sign_app_configuration_path(ri: params[:ri])
+          issue_checkpoint!
+          redirect_url = sign_app_in_checkpoint_path(
+            rd: retrieve_redirect_parameter_for_checkpoint,
+            ri: params[:ri],
+          )
           render json: {
             status: "ok",
             access_token: result[:access_token],

@@ -217,9 +217,9 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
           params: { user_email: { pass_code: valid_pass_code } },
           headers: { "Host" => @host }
 
-    # Should redirect to configuration on success
+    # Should redirect to checkpoint on success
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
   end
 
   test "email sign-in redirects to MFA challenge when MFA is enabled" do
@@ -466,10 +466,9 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: { "Host" => @host }
 
-    # Should redirect to the encoded URL
+    # Should redirect to checkpoint with rd preserved
     assert_response :found
-    assert_redirected_to redirect_url
-    assert_nil session[:user_email_authentication_rd]
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -508,7 +507,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: { "Host" => @host }
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
   # rubocop:enable Minitest/MultipleAssertions
   test "resets session ID after successful email login" do

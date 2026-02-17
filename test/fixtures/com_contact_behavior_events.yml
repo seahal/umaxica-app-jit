@@ -1,5 +1,4 @@
 # Fixed IDs - do not modify these values
-
 # == Schema Information
 #
 # Table name: com_contact_behavior_events
@@ -9,12 +8,9 @@
 #
 neyo:
   id: 1
-
 created:
   id: 2
-
 updated:
   id: 3
-
 deleted:
   id: 4

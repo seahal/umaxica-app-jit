@@ -67,6 +67,7 @@ module Sign
 
             record_signup_audit!(@user)
             log_in(@user, record_login_audit: false)
+            issue_checkpoint!
             session[:user_telephone_registration] = nil
 
             render json: {
@@ -151,14 +152,8 @@ module Sign
         end
 
         def success_redirect_url
-          redirect_target = safe_redirect_target(params[:rt])
-          redirect_target || sign_app_configuration_path(ri: params[:ri])
-        end
-
-        def safe_redirect_target(target)
-          return nil if target.blank?
-
-          safe_internal_path(target) || safe_external_url(target)
+          rd_param = params[:rd].presence || generate_redirect_url(params[:rt])
+          sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri])
         end
       end
     end

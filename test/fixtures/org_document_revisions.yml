@@ -29,9 +29,7 @@
 #
 #  fk_rails_...  (org_document_id => org_documents.id) ON DELETE => cascade
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   org_document: one
   permalink: p1
@@ -41,7 +39,6 @@ one:
   edited_by_type: MyString
   edited_by_id:
   public_id: 216 # was MyStringOne
-
 two:
   org_document: two
   permalink: p2

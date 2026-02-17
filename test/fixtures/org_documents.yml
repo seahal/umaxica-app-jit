@@ -34,12 +34,10 @@
 #  fk_rails_...  (latest_version_id => org_document_versions.id) ON DELETE => nullify
 #  fk_rails_...  (status_id => org_document_statuses.id)
 #
-
 one:
   slug_id: "org-documents-0000001"
   status_id: 6
   permalink: "org-documents-0000001"
-
 two:
   slug_id: "org-documents-0000002"
   status_id: 6

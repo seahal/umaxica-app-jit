@@ -1,5 +1,4 @@
 # <% I18n.locale = :ja %>
-
 # == Schema Information
 #
 # Table name: avatar_capabilities

@@ -18,7 +18,7 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
         content = File.read(path)
         next unless content.match?(/\bskip_forgery_protection\b/)
 
-        path.delete_prefix("#{Rails.root.join}")
+        path.relative_path_from(Rails.root).to_s
       end
 
     violations = found_paths - ALLOWED_SKIP_FORGERY_PROTECTION_PATHS

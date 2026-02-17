@@ -5,6 +5,5 @@
 #
 #  id :bigint           not null, primary key
 #
-
 info:
   id: 1

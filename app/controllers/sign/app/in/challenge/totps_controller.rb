@@ -75,10 +75,9 @@ module Sign
             when :restricted
               redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
             else
-              redirect_with_notice(
-                result[:redirect_path] || sign_app_configuration_path,
-                I18n.t("sign.app.in.mfa.totp.success"),
-              )
+              issue_checkpoint!
+              redirect_to sign_app_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
+                          notice: I18n.t("sign.app.in.mfa.totp.success")
             end
           end
 

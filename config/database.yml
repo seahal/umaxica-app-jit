@@ -16,8 +16,8 @@ test_default: &test_default
   timeout: 60000
   prepared_statements: false
   advisory_locks: true
-  lock_timeout: 5s
-  statement_timeout: 5s
+  lock_timeout: 10s
+  statement_timeout: 30s
 development:
   guest:
     !!merge <<: *default

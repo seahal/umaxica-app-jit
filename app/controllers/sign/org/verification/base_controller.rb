@@ -6,6 +6,7 @@ module Sign
   module Org
     module Verification
       class BaseController < ApplicationController
+        include ::Preference::Global
         include Common::Otp
         include ::Auth::StepUp
         include Sign::Webauthn

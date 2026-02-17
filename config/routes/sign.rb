@@ -63,6 +63,7 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
+        resource :checkpoint, only: %i(show update destroy)
         resource :challenge, only: %i(show)
         namespace :challenge do
           resource :totp, only: %i(new create)
@@ -165,6 +166,7 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
+        resource :checkpoint, only: %i(show update destroy)
         resource :challenge, only: %i(show create)
         # Backward compatibility: redirect mfa to challenge
         match "mfa", via: [:get, :post], to: redirect(status: 302) { |_params, req| "/in/challenge#{req.query_string.present? ? "?#{req.query_string}" : ""}" }

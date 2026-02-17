@@ -160,10 +160,12 @@ module Sign
 
             Rails.logger.debug { "[OmniAuth] Login successful - redirecting" }
             if existing_account
-              redirect_to social_auth_success_redirect_path,
+              issue_checkpoint!
+              redirect_to sign_app_in_checkpoint_path(ri: params[:ri]),
                           notice: I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name)
             else
-              redirect_to social_auth_success_redirect_path,
+              issue_checkpoint!
+              redirect_to sign_app_in_checkpoint_path(ri: params[:ri]),
                           notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name)
             end
           end

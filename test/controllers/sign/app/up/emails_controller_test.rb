@@ -527,8 +527,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: default_headers
 
-    # Should redirect to configuration page (ignoring rd to avoid bounce loops)
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    # Should redirect to checkpoint and preserve rd
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -573,7 +573,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     # Verify success response
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
 
     # Verify User count unchanged (pending user was updated, not created)
     assert_equal initial_user_count, User.count
@@ -633,7 +633,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: default_headers
 
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     assert UserActivityEvent.exists?(id: UserActivityEvent::SIGNED_UP_WITH_EMAIL)
     assert UserActivity.exists?(event_id: UserActivityEvent::SIGNED_UP_WITH_EMAIL, subject_id: user_email.user_id)
   end

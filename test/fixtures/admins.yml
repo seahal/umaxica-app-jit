@@ -26,14 +26,11 @@
 #  fk_rails_...  (staff_id => staffs.id)
 #  fk_rails_...  (status_id => admin_statuses.id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 admin_one:
   staff: one
   status_id: 2
   public_id: admin_test_one
-
 admin_two:
   staff: two
   status_id: 2

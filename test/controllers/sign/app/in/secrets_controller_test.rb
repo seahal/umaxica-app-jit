@@ -88,7 +88,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     assert_not_equal old_session_id, session.id
   end
 
@@ -100,7 +100,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
   end
 
   test "secret sign-in redirects to MFA challenge for weak method when MFA is enabled" do
@@ -189,7 +189,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     assert_equal 0, one_time_secret.reload.uses_remaining
     assert_equal UserSecretStatus::USED, one_time_secret.user_secret_status_id
 
@@ -259,7 +259,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     assert_not_nil session.id
   end
 

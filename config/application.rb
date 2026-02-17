@@ -111,7 +111,7 @@ module Jit
     # Load translations from nested locale directories (e.g., config/locales/jp/**/*.yml)
     config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
     # Prioritize root ja.yml to ensure our fixes are applied
-    config.i18n.load_path.unshift(Rails.root.join("config/locales/ja.yml").to_s)
+    config.i18n.load_path.push(Rails.root.join("config/locales/ja.yml").to_s)
     config.i18n.default_locale = :ja
 
     # Set bigserial as default primary key for new tables

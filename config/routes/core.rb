@@ -89,16 +89,14 @@ scope module: :core, as: :core do
       # for emergency
       namespace :emergency do
         namespace :app do
-          resource :outage, only: %i[show update]
-          resource :token, only: %i[show update]
+          resource :outage, only: %i(show update)
         end
         namespace :com do
-          resource :outage, only: %i[show update]
-          resource :token, only: %i[show update]
+          resource :outage, only: %i(show update)
         end
         namespace :org do
-          resource :outage, only: %i[show update]
-          resource :token, only: %i[show update]
+          resource :outage, only: %i(show update)
+          resource :token, only: %i(show update)
         end
       end
       # for docs

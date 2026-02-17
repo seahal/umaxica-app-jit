@@ -29,22 +29,9 @@ ja:
       taken: "はすでに存在します"
       invalid: "は不正な値です"
     attributes:
+      user_email:
+        address: "メールアドレス"
       user_passkey:
-        description: "名前"
-        created_at: "登録日"
-        last_used_at: "最終使用日"
-        sign_count: "使用回数"
-      staff_passkey:
-        description: "名前"
-        created_at: "登録日"
-        sign_count: "使用回数"
-    errors:
-      models:
-        staff:
-          attributes:
-            public_id:
-              invalid_format: "英小文字と数字のみ（i, o, 0, 1, s, z, g を除く）で8文字にしてください"
-  actions:
     edit: "編集"
     destroy: "削除"
     save: "保存"
@@ -117,6 +104,14 @@ ja:
     default_passkey_description: "マイパスキー"
     app:
       in:
+        checkpoints:
+          show:
+            title: "チェックポイント"
+            body: "mfa をおんにしてください。重要な規約の変更があります、承諾しますか？"
+            actions:
+              update: "更新する"
+              continue: "続行する"
+          timeout: "timeout しました"
         session:
           title: "セッション管理"
           description: "同時にログインできるセッション数の上限に達しています。続行するには、少なくとも1つのアクティブなセッションを無効化してください。"
@@ -344,6 +339,15 @@ ja:
           invalid: "登録ステップを順番に進めてください。"
           invalid_step: "前のステップを完了してください。"
     org:
+      in:
+        checkpoints:
+          show:
+            title: "チェックポイント"
+            body: "mfa をおんにしてください。重要な規約の変更があります、承諾しますか？"
+            actions:
+              update: "更新する"
+              continue: "続行する"
+          timeout: "timeout しました"
       reauth:
         index:
           title: "再認証セッション"

@@ -147,8 +147,9 @@ module Sign
           when :restricted
             redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
           else
+            issue_checkpoint!
             redirect_to(
-              result[:redirect_path] || success_redirect_path,
+              sign_app_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
               notice: t("sign.app.authentication.secret.create.success"),
             )
           end
@@ -174,7 +175,9 @@ module Sign
           elsif result[:restricted]
             redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
           else
-            redirect_with_notice(success_redirect_path, t("sign.app.authentication.secret.create.success"))
+            issue_checkpoint!
+            redirect_to sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
+                        notice: t("sign.app.authentication.secret.create.success")
           end
         end
 
@@ -264,10 +267,6 @@ module Sign
 
         def invalid_secret_message
           t("sign.app.authentication.secret.create.invalid")
-        end
-
-        def success_redirect_path
-          sign_app_configuration_path(ri: params[:ri])
         end
 
         def report_authentication_error(error, flow:)

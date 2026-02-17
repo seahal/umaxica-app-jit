@@ -84,8 +84,10 @@ module Sign
                 elsif result[:redirect_path]
                   redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
                 else
-                  # Redirect to rd parameter if provided, otherwise to configuration
-                  redirect_with_notice(sign_app_configuration_path, t("sign.app.authentication.email.update.success"))
+                  rd_param = retrieve_redirect_parameter
+                  issue_checkpoint!
+                  redirect_to sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri]),
+                              notice: t("sign.app.authentication.email.update.success")
                 end
               end
               format.json do

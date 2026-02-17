@@ -25,7 +25,6 @@
 #  fk_rails_...  (status_id => staff_statuses.id)
 #  fk_rails_...  (visibility_id => staff_visibilities.id)
 #
-
 placeholder:
   status_id: <%= StaffStatus::NEYO %>
   public_id: "abcd2345"
@@ -41,7 +40,6 @@ none_staff:
   public_id: "cdef4567"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 two:
   status_id: <%= StaffStatus::NEYO %>
   public_id: "defh5678"

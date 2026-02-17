@@ -2,8 +2,13 @@ ja:
   messages:
     totp_successfully_created: "TOTP の登録が完了しました。"
     totp_successfully_updated: "TOTP の設定が更新されました。"
+    totp_successfully_deleted: "TOTPを削除しました。"
+    confirm_delete_totp: "本当にこのTOTPを削除しますか？"
+    no_totp_found: "登録済みのTOTPはありません。"
   actions:
     up: "上へ"
+    delete: "削除"
+    update: "更新"
   otp:
     resend:
       button: "コードを再送する"
@@ -11,6 +16,26 @@ ja:
       too_soon: "しばらく待ってから再送してください。"
       failed: "再送に失敗しました。時間を置いて再度お試しください。"
   activerecord:
+    attributes:
+      user_email:
+        address: "メールアドレス"
+        status: "ステータス"
+      user_telephone:
+        number: "電話番号"
+        status: "ステータス"
+      user_secret:
+        name: "名前"
+        created_at: "作成日時"
+        last_used_at: "最終使用日"
+      user_one_time_password:
+        title: "名前"
+        created_at: "作成日時"
+        last_otp_at: "最終使用日"
+      staff_secret:
+        name: "名前"
+        value: "値"
+        created_at: "作成日時"
+        last_used_at: "最終使用日"
     errors:
       messages:
         code_format: "大文字・数字・アンダースコアのみを使用してください"
@@ -35,6 +60,8 @@ ja:
       memo_too_long: "メモは1000文字以内で入力してください"
     rate_limit:
       exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
+      too_many_requests: "アクセスが集中しています。時間をおいて再度お試しください。"
+      retry_later: "時間をおいて再度お試しください。"
     social_auth:
       provider_error: "プロバイダーとの通信中にエラーが発生しました"
   auth:
@@ -45,8 +72,19 @@ ja:
       method_unavailable: "選択した認証方法は利用できません。"
       register_methods_required: "利用可能なステップアップ認証がありません。パスキー・メール・TOTPを登録してください。"
       verification_required: "認証が必要です。"
-  sign:
+  core:
     app:
+      layout:
+        nav:
+          log_in: "ログイン"
+          configuration: "設定"
+          logout: "ログアウト"
+  sign:
+    withdrawal:
+      test: "テスト"
+    app:
+      common:
+        cancel: "キャンセル"
       in:
         mfa:
           title: "追加の認証が必要です"
@@ -72,6 +110,11 @@ ja:
             back: "認証方法の選択に戻る"
             success: "認証に成功しました。"
       authentication:
+        email:
+          edit:
+            session_expired: "セッションの有効期限が切れました。"
+          create:
+            invalid_format: "無効な形式です。"
         secret:
           new:
             page_title: "シークレットでサインイン"
@@ -85,7 +128,42 @@ ja:
       layout:
         nav:
           log_out: "ログアウト"
+      registration:
+        email:
+          flow:
+            invalid: "無効なフローです。"
+        new:
+          links:
+            sign_in: "ログイン"
+        telephone:
+          already_logged_in: "既にログインしています。"
+      social:
+        sessions:
+          destroy:
+            success: "連携を解除しました。"
       configuration:
+        totps:
+          invalid_code: "認証コードが正しくありません。"
+        totp:
+          new:
+            page_title: "TOTPの作成"
+            description: "認証アプリ（Google Authenticator等）を設定します。"
+            title_hint: "例: 会社のスマホ"
+        telephone:
+          new:
+            title: "電話番号の追加"
+        secrets:
+          edit:
+            title: "シークレットの編集"
+            description: "シークレット情報を更新します。"
+          show:
+            title: "シークレットの詳細"
+            description: "シークレット情報の詳細を確認します。"
+          index:
+            new: "新規作成"
+          new:
+            title: "シークレットの作成"
+            description: "新しいシークレットを作成します。"
         edit:
           page_title: "アカウントの状態"
           deactivated_notice: "退会手続き中です。設定の変更はできません。"
@@ -114,7 +192,37 @@ ja:
             email: "メールを登録"
             telephone: "電話番号を登録"
             totp: "認証アプリ（TOTP）を登録"
+      setting:
+        totp:
+          edit:
+            title: "TOTPの編集"
+            description: "TOTP設定を更新します。"
+            title_hint: "例: 会社のスマホ"
+          index:
+            new_link: "新規追加"
     org:
+      authentication:
+        secret:
+          new:
+            totp_label: "TOTPコード"
+      ups:
+        new:
+          recruit_prompt: "採用情報"
+      configuration:
+        secrets:
+          index:
+            title: "シークレット管理"
+            description: "登録済みのシークレットを管理します。"
+            new: "新規作成"
+          show:
+            title: "シークレット詳細"
+            description: "シークレット情報を表示します。"
+          edit:
+            title: "シークレット編集"
+            description: "シークレット情報を編集します。"
+          new:
+            title: "新規シークレット"
+            description: "新しいシークレットを作成します。"
       verification:
         setup:
           title: "認証方法の登録"
@@ -122,3 +230,56 @@ ja:
           methods:
             passkey: "パスキーを登録"
             totp: "認証アプリ（TOTP）を登録"
+  org_timeline_tags: { "%{id}": "org_timeline_tag_%{id}" }
+  app_timeline_tags: { "%{id}": "app_timeline_tag_%{id}" }
+  com_timeline_categories: { "%{id}": "com_timeline_category_%{id}" }
+  com_timeline_tags: { "%{id}": "com_timeline_tag_%{id}" }
+  org_timeline_categories: { "%{id}": "org_timeline_category_%{id}" }
+  app_timeline_categories: { "%{id}": "app_timeline_category_%{id}" }
+  com_document_categories: { "%{id}": "com_document_category_%{id}" }
+  com_document_tags: { "%{id}": "com_document_tag_%{id}" }
+  org_document_tags: { "%{id}": "org_document_tag_%{id}" }
+  app_document_tags: { "%{id}": "app_document_tag_%{id}" }
+  org_document_categories: { "%{id}": "org_document_category_%{id}" }
+  app_document_categories: { "%{id}": "app_document_category_%{id}" }
+  controller:
+    sign:
+      app:
+        v1:
+          passkey:
+            new: "新規パスキー"
+  custom:
+    error:
+      key: "カスタムエラー"
+  test:
+    error:
+      key: "テストエラー"
+  apex:
+    org:
+      preference:
+        cookie:
+          edit:
+            description: "クッキー設定"
+      preferences:
+        theme:
+          select_theme: "テーマ選択"
+    com:
+      preferences:
+        theme:
+          select_theme: "テーマ選択"
+    app:
+      preferences:
+        theme:
+          select_theme: "テーマ選択"
+      preference:
+        cookie:
+          edit:
+            description: "クッキー設定"
+  help:
+    com:
+      contact:
+        telephones:
+          edit:
+            retry: "やり直し"
+          create:
+            hotp_code_required: "コードを入力してください"

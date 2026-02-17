@@ -5,27 +5,20 @@
 #
 #  id :bigint           not null, primary key
 #
-
 none:
   id: 0
 login_success:
   id: 1
-
 neyo:
   id: 7
-
 authorization_failed:
   id: 2
-
 logged_in:
   id: 3
-
 logged_out:
   id: 4
-
 login_failed:
   id: 5
-
 token_refreshed:
   id: 6
 step_up_verified:

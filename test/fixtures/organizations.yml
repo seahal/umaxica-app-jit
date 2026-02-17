@@ -25,7 +25,6 @@
 #
 #  fk_rails_...  (workspace_status_id => organization_statuses.id)
 #
-
 one:
   name: "My Organization"
   domain: "my-org"

@@ -91,7 +91,9 @@ module Sign
           end
 
           progress_email_flow!(:update)
-          redirect_to sign_app_configuration_path, notice: t("sign.app.registration.email.update.success")
+          issue_checkpoint!
+          redirect_to sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
+                      notice: t("sign.app.registration.email.update.success")
         end
 
         private

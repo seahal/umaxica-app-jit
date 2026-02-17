@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "support/simplecov_setup"
+require "active_model"
+
+require_relative "support/simplecov_setup" unless ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
 
 ENV["RAILS_ENV"] ||= "test"
 ENV["SIGN_SERVICE_URL"] ||= "sign.app.localhost"
@@ -32,8 +34,9 @@ Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
-    # parallelize(workers: :number_of_processors)
+    # Run tests in parallel with threads (threads avoid per-process DB duplication
+    # which is costly with 20+ databases).
+    parallelize(workers: 16)
 
     self.use_transactional_tests = true
 

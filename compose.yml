@@ -12,6 +12,9 @@ services:
     command: [ "sleep", "infinity" ]
     restart: always
     user: "${UID:-1000}:${GID:-1000}"
+    tmpfs:
+      - /home/jit/workspace/tmp:uid=1000,gid=1000
+      - /home/jit/workspace/log:uid=1000,gid=1000
     ports:
       - "3001:3000"
     volumes:

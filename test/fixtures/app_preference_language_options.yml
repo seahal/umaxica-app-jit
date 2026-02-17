@@ -5,9 +5,7 @@
 #
 #  id :bigint           not null, primary key
 #
-
 ja:
   id: 1
-
 en:
   id: 2

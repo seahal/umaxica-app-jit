@@ -45,7 +45,7 @@ class ComTimelineCategoryMaster < NewsRecord
   def self.tree_root_parent_value = 0
 
   def name
-    I18n.t("com_timeline_categorys.%{id}", id: id)
+    I18n.t("com_timeline_categories.%{id}", id: id)
   end
 
   def root?

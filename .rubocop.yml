@@ -1148,10 +1148,10 @@ Minitest/MultipleAssertions:
   Max: 10
 
 Minitest/NoAssertions:
-  Enabled: false
+  Enabled: true
 
 Minitest/NoTestCases:
-  Enabled: false
+  Enabled: true
 
 Minitest/NonExecutableTestMethod:
   Enabled: true
@@ -1169,7 +1169,7 @@ Minitest/SkipEnsure:
   Enabled: true
 
 Minitest/SkipWithoutReason:
-  Enabled: false
+  Enabled: true
 
 Minitest/TestFileName:
   Enabled: true

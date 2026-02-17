@@ -564,37 +564,43 @@ module Preference
             else
               refresh_token_lookup_digest(token_value)
             end
-          refresh_device_id = extract_preference_refresh_device_id
-          if refresh_device_id.blank?
-            handle_preference_refresh_device_denied(nil, refresh_public_id)
-            return [nil, false]
-          end
-
           PreferenceRecord.connected_to(role: :writing) do
             relation = preference_class.includes(preference_associations_to_preload)
             if digest
               @refresh_presented_digest = digest
               @refresh_public_id = refresh_public_id
-              if refresh_public_id.present?
-                relation.find_by(public_id: refresh_public_id, token_digest: digest)
-              else
-                relation.find_by(token_digest: digest)
+              pref =
+                if refresh_public_id.present?
+                  relation.find_by(public_id: refresh_public_id, token_digest: digest)
+                else
+                  relation.find_by(token_digest: digest)
+                end
+
+              if pref.present?
+                refresh_device_id = extract_preference_refresh_device_id
+                if refresh_device_id.blank? || pref.device_id.to_s != refresh_device_id.to_s
+                  @preference_refresh_device_reason = refresh_device_id.blank? ? "missing" : "mismatch"
+                  handle_preference_refresh_device_denied(pref, refresh_public_id)
+                  return [nil, false]
+                end
               end
+              pref
             end
           end
         end
 
-      if token_value.present? &&
-          preference.present? &&
-          preference.device_id.to_s != refresh_device_id.to_s
-        @preference_refresh_device_reason = "mismatch"
-        handle_preference_refresh_device_denied(preference, refresh_public_id)
-        return [nil, false]
-      end
-
       if valid_refresh_preference?(preference)
         @preferences = preference
         return [preference, false]
+      end
+
+      if preference.present?
+        if preference.replay?
+          handle_preference_refresh_replay!(preference)
+        else
+          handle_preference_refresh_failed(preference, refresh_public_id)
+        end
+        return [nil, false]
       end
 
       return [nil, false] unless create_if_missing
@@ -819,6 +825,20 @@ module Preference
       )
     end
 
+    def handle_preference_refresh_failed(preference, refresh_public_id)
+      clear_preference_auth_cookies!
+      @preference_refresh_failed = true
+
+      Rails.logger.warn(
+        {
+          message: "Preference refresh failed",
+          preference_type: preference_class.name,
+          preference_public_id: preference&.public_id || refresh_public_id,
+          request_id: request.request_id,
+        },
+      )
+    end
+
     def render_preference_refresh_error!
       if request.format.json?
         render json: {
@@ -833,7 +853,9 @@ module Preference
     def valid_refresh_preference?(preference)
       preference.present? &&
         preference.status_id != preference_status_class::DELETED &&
-        (preference.expires_at.nil? || preference.expires_at > Time.current)
+        (preference.expires_at.nil? || preference.expires_at > Time.current) &&
+        !preference.replay? &&
+        !preference.revoked?
     end
 
     def find_preference_by_presented_token

@@ -42,7 +42,6 @@
 #  fk_user_tokens_on_user_token_kind_id    (user_token_kind_id => user_token_kinds.id)
 #  fk_user_tokens_on_user_token_status_id  (user_token_status_id => user_token_statuses.id)
 #
-
 one:
   public_id: 651 # was one_user_token_000001
   user: one

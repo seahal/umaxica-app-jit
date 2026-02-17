@@ -25,6 +25,14 @@ en:
   sign:
     app:
       in:
+        checkpoints:
+          show:
+            title: "Checkpoint"
+            body: "Please enable MFA. There is an important terms update. Do you accept it?"
+            actions:
+              update: "Update checkpoint state"
+              continue: "Continue"
+          timeout: "timeout しました"
         session:
           title: "Manage Sessions"
           description: "You have reached the maximum number of concurrent sessions. To continue, revoke at least one active session."
@@ -77,6 +85,14 @@ en:
           log_out: "logout"
     org:
       in:
+        checkpoints:
+          show:
+            title: "Checkpoint"
+            body: "Please enable MFA. There is an important terms update. Do you accept it?"
+            actions:
+              update: "Update checkpoint state"
+              continue: "Continue"
+          timeout: "timeout しました"
         session:
           title: "Manage Sessions"
           description: "You have reached the maximum number of concurrent sessions. To continue, revoke at least one active session."
@@ -189,6 +205,8 @@ en:
     login_failed: "Login failed"
     rate_limit:
       exceeded: "Too many requests. Please try again later."
+      too_many_requests: "Too many requests right now. Please try again shortly."
+      retry_later: "Please retry in a little while."
     webauthn:
       email_required: "Please enter your email address"
       identifier_required: "Please enter your email or staff code"
@@ -614,3 +632,33 @@ en:
             ignore_instruction: "If you did not request this, please ignore this email."
   sequential_flow:
     invalid_step: "Invalid access. Please start from the beginning."
+  org_timeline_tags: { "%{id}": "org_timeline_tag_%{id}" }
+  app_timeline_tags: { "%{id}": "app_timeline_tag_%{id}" }
+  com_timeline_categories: { "%{id}": "com_timeline_category_%{id}" }
+  com_timeline_tags: { "%{id}": "com_timeline_tag_%{id}" }
+  org_timeline_categories: { "%{id}": "org_timeline_category_%{id}" }
+  app_timeline_categories: { "%{id}": "app_timeline_category_%{id}" }
+  com_document_categories: { "%{id}": "com_document_category_%{id}" }
+  com_document_tags: { "%{id}": "com_document_tag_%{id}" }
+  org_document_tags: { "%{id}": "org_document_tag_%{id}" }
+  app_document_tags: { "%{id}": "app_document_tag_%{id}" }
+  org_document_categories: { "%{id}": "org_document_category_%{id}" }
+  app_document_categories: { "%{id}": "app_document_category_%{id}" }
+  core:
+    app:
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          configuration: "Configuration"
+  apex:
+    org:
+      preference:
+        cookie:
+          edit:
+            description: "Cookie Preferences"
+  custom:
+    error:
+      key: "Custom Error"
+  test:
+    error:
+      key: "Test Error"

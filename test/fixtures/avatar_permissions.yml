@@ -1,5 +1,4 @@
 # Fixed IDs - do not modify these values
-
 # == Schema Information
 #
 # Table name: avatar_permissions
@@ -9,12 +8,9 @@
 #
 neyo:
   id: 1
-
 read:
   id: 2
-
 write:
   id: 3
-
 admin:
   id: 4

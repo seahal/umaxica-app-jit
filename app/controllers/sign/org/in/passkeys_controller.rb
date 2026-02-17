@@ -137,15 +137,8 @@ module Sign
           Staff.find_by(public_id: identifier)
         end
 
-        def retrieve_redirect_url
-          rd = params[:rd].presence || session.delete(:passkey_return_to)
-          return nil unless rd
-
-          begin
-            Base64.urlsafe_decode64(rd)
-          rescue ArgumentError
-            nil
-          end
+        def retrieve_redirect_parameter_for_checkpoint
+          params[:rd].presence
         end
 
         def find_active_staff(identifier)
@@ -213,7 +206,8 @@ module Sign
         end
 
         def render_success(result)
-          redirect_url = retrieve_redirect_url || sign_org_root_path
+          issue_checkpoint!
+          redirect_url = sign_org_in_checkpoint_path(rd: retrieve_redirect_parameter_for_checkpoint, ri: params[:ri])
           render json: {
             status: "ok",
             access_token: result[:access_token],

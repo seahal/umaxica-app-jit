@@ -32,7 +32,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: browser_headers.merge(@callback_headers)
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
     follow_redirect!
 
     user = UserSocialApple.find_by(uid: "apple_uid_new").user
@@ -69,7 +69,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: browser_headers.merge(@callback_headers)
 
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
 
     PreferenceRecord.connected_to(role: :writing) do
       assert AppPreferenceTimezoneOption.exists?(id: AppPreferenceTimezoneOption::ASIA_TOKYO)
@@ -101,7 +101,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: browser_headers.merge(@callback_headers)
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
 
     assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"), flash[:notice]
   end
@@ -136,7 +136,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     end
 
     # Should redirect to success path, NOT /in/new (email registration)
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
     follow_redirect!
     assert_predicate flash[:notice], :present?, "Should have success message"
 
@@ -206,7 +206,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
 
     identity = UserSocialGoogle.find_by(uid: uid)
     assert_not_nil identity

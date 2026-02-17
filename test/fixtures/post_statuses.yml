@@ -5,15 +5,11 @@
 #
 #  id :bigint           not null, primary key
 #
-
 neyo:
   id: 1
-
 active:
   id: 2
-
 inactive:
   id: 3
-
 deleted:
   id: 4

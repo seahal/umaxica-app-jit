@@ -5,9 +5,7 @@
 #
 #  id :bigint           not null, primary key
 #
-
 utc:
   id: 1
-
 asia_tokyo:
   id: 2
