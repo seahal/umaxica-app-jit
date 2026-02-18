@@ -3,5 +3,7 @@
 require "test_helper"
 
 class Sign::Org::RecoveriesControllerTest < ActionDispatch::IntegrationTest
-  # Tests removed as routes do not exist
+  test "placeholder test for recoveries" do
+    skip "TODO: add assertions for org recovery flow"
+  end
 end

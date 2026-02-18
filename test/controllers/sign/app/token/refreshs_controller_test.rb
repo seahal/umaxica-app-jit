@@ -4,11 +4,8 @@ require "test_helper"
 
 module Sign::App::Token
   class RefreshsControllerTest < ActionDispatch::IntegrationTest
-    # TODO: Uncomment when sign_app_token_refresh_url(ri: "jp") route is available
-    # test "should get show" do
-    #   get sign_app_token_refresh_url(ri: "jp")
-    #
-    #   assert_response :success
-    # end
+    test "placeholder test for token refresh" do
+      skip "TODO: add assertions for app token refresh flow"
+    end
   end
 end

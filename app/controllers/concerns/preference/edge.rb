@@ -8,6 +8,13 @@ module Preference::Edge
     public_strict! # may be rewriten in future controllers
   end
 
+  # POST endpoint for React Router 401/419 CSRF recovery.
+  # Returns the same payload as show but is reachable via non-GET (CSRF-verified) request,
+  # allowing the client to refresh preference state after an auth/CSRF failure.
+  def create
+    show
+  end
+
   def show
     preferences = preference_payload_preferences
     public_id = preference_payload_public_id

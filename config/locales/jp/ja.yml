@@ -23,6 +23,8 @@ ja:
     save: 保存
     back: もどる
   sign:
+    telephone_verification:
+      sms_message: "確認コード: %{code}"
     default_user_name: ユーザー
     default_staff_name: スタッフ
     default_passkey_description: パスキー

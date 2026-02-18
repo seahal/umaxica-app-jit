@@ -2,7 +2,8 @@
 
 require "active_model"
 
-require_relative "support/simplecov_setup" unless ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+require_relative "support/simplecov_setup" if coverage_enabled
 
 ENV["RAILS_ENV"] ||= "test"
 ENV["SIGN_SERVICE_URL"] ||= "sign.app.localhost"
@@ -34,9 +35,15 @@ Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with threads (threads avoid per-process DB duplication
-    # which is costly with 20+ databases).
-    parallelize(workers: 16)
+    coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+
+    # Use a single worker for coverage runs to keep SimpleCov results deterministic.
+    # Use max available CPU workers for normal test runs.
+    # NOTE: Multi-process parallelism (the default) forks the process. Each worker gets
+    # its own database connection pool and transaction, so fixture isolation is maintained.
+    # If you observe flaky tests with shared state (e.g. Rails.cache, ENV), consider
+    # running with PARALLEL_WORKERS=1 to isolate the issue.
+    parallelize(workers: coverage_enabled ? 1 : :number_of_processors)
 
     self.use_transactional_tests = true
 

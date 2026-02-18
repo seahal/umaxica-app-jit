@@ -9,12 +9,21 @@ module Sign
       include Common::Otp
     end
 
+    TELEPHONE_VERIFICATION_RATE_LIMIT = 5
+    TELEPHONE_VERIFICATION_RATE_WINDOW = 60
+
+    # Initiates SMS OTP verification for a telephone number.
+    # Returns true on success, false on failure (user blank or validation error).
+    # Raises RateLimiter::RateLimitExceeded if rate limit is exceeded.
     def initiate_telephone_verification(user, number, auto_accept_confirmations: false)
       return false if user.blank?
 
-      # TODO: Rate limit check
+      check_telephone_verification_rate_limit!
 
-      existing_user_telephone = find_existing_user_telephone(user, number)
+      # Compute digest once and reuse for both lookup and stale-record cleanup.
+      digest = IdentifierBlindIndex.bidx_for_telephone(number)
+      existing_user_telephone = digest.present? ? user.user_telephones.find_by(number_digest: digest) : nil
+
       @user_telephone = existing_user_telephone || user.user_telephones.build(raw_number: number)
       @user_telephone.raw_number = number if existing_user_telephone
       @user_telephone.user_telephone_status_id = UserTelephoneStatus::UNVERIFIED
@@ -24,10 +33,10 @@ module Sign
         @user_telephone.confirm_using_mfa = true
       end
 
-      # Delete existing unverified
-      if @user_telephone.number_digest.present? && existing_user_telephone.blank?
+      # Delete any stale unverified records for this number before creating a new one.
+      if digest.present? && existing_user_telephone.blank?
         UserTelephone.where(
-          number_digest: @user_telephone.number_digest,
+          number_digest: digest,
           user_id: user.id,
           user_telephone_status_id: UserTelephoneStatus::UNVERIFIED,
         ).destroy_all
@@ -46,6 +55,8 @@ module Sign
       true
     end
 
+    # Returns an existing UserTelephone for the given number or nil.
+    # complete_telephone_verification returns one of: :success, :session_expired, :invalid_code, :locked
     def find_existing_user_telephone(user, number)
       digest = IdentifierBlindIndex.bidx_for_telephone(number)
       return nil if digest.blank?
@@ -69,6 +80,8 @@ module Sign
           @user_telephone.destroy!
           return :locked
         end
+        # NOTE: This key is scoped to the registration flow. If this concern is
+        # ever reused in recovery/MFA contexts, add a per-caller i18n key instead.
         @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
         return :invalid_code
       end
@@ -82,11 +95,30 @@ module Sign
     end
 
     def send_telephone_verification_sms(user_telephone, otp_number)
+      message = I18n.t("sign.telephone_verification.sms_message", code: otp_number)
       SmsDeliveryJob.perform_later(
         to: user_telephone.number,
-        message: "PassCode => #{otp_number}",
-        subject: "PassCode => #{otp_number}",
+        message: message,
+        subject: message,
       )
+    end
+
+    private
+
+    def check_telephone_verification_rate_limit!
+      key = "telephone_verification:#{request.remote_ip}"
+      RateLimiter.limit!(
+        key: key,
+        max_requests: TELEPHONE_VERIFICATION_RATE_LIMIT,
+        window: TELEPHONE_VERIFICATION_RATE_WINDOW,
+      )
+    rescue RateLimiter::RateLimitExceeded => e
+      Rails.event.notify(
+        "telephone.verification.rate_limited",
+        ip: request.remote_ip,
+        retry_after: e.retry_after,
+      )
+      raise
     end
   end
 end

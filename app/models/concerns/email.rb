@@ -31,14 +31,13 @@ module Email
 
   # OTP-related methods for email authentication
   # Stores OTP secret on this email record
-  # FIXME: minus -> plus
   def store_otp(otp_private_key, otp_counter, expires_at)
     update!(
       otp_private_key: otp_private_key,
       otp_counter: otp_counter,
       otp_expires_at: Time.zone.at(expires_at),
       otp_attempts_count: 0,
-      locked_at: "-infinity", # Sentinel for unlocked
+      locked_at: "infinity", # Sentinel for unlocked: "locks at infinity" = never locked
       otp_last_sent_at: Time.current,
     )
   end
@@ -55,13 +54,12 @@ module Email
   end
 
   # Clears OTP secret after verification
-  # FIXME: minus -> plus
   def clear_otp
     update!(
       otp_counter: "0",
       otp_expires_at: "-infinity",
       otp_attempts_count: 0,
-      locked_at: "-infinity",
+      locked_at: "infinity", # Sentinel for unlocked: "locks at infinity" = never locked
       otp_last_sent_at: "-infinity",
     )
   end
@@ -79,9 +77,9 @@ module Email
   end
 
   def locked?
-    is_locked_by_time = locked_at.present? &&
-      locked_at != -Float::INFINITY &&
-      locked_at != Float::INFINITY
+    # locked_at == Float::INFINITY is the sentinel for "unlocked" (set by store_otp/clear_otp).
+    # A real lock time (past timestamp) means the account is locked by time.
+    is_locked_by_time = locked_at.present? && locked_at != Float::INFINITY
     is_locked_by_attempts = otp_attempts_count >= MAX_OTP_ATTEMPTS
     is_locked_by_time || is_locked_by_attempts
   end
@@ -106,7 +104,7 @@ module Email
     # Atomically set locked_at only when attempts reached threshold and not already locked
     # Check for both NULL and -infinity as sentinel values for "not locked"
     affected = self.class.where(id: id)
-      .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
+      .where("locked_at IS NULL OR locked_at = 'infinity'::timestamp")
       .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
       # Skip model validations intentionally: this is a guarded atomic DB update
       # to avoid race conditions when multiple processes increment simultaneously.

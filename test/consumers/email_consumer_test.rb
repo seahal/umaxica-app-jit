@@ -5,8 +5,7 @@ require "test_helper"
 class EmailConsumerTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
-  def setup
-    @consumer = EmailConsumer.new
-    ActionMailer::Base.deliveries.clear
+  test "placeholder test for email consumer" do
+    skip "TODO: add assertions for EmailConsumer"
   end
 end

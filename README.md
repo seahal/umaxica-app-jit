@@ -14,7 +14,7 @@
   - Kafka instances
 
 ## Initial Setup
-0. Set up Docker compose and run it: `docker compoe up`
+0. Set up Docker compose and run it: `docker compose up`
 1. Install Ruby dependencies: `bundle install`
 2. Install JavaScript/TypeScript dependencies: `pnpm install`
 3. Prepare the database (creates, migrates, seeds as`

@@ -35,7 +35,9 @@ module Auth
     end
 
     def am_i_owner?
-      # TODO: Implement owner check logic for staff
+      # Returns whether the current staff member holds an "owner" role.
+      # Implement once a staff role/permission model is established
+      # (e.g. check staff membership role: current_staff.role == "owner").
       false
     end
 

@@ -4,8 +4,8 @@ require "test_helper"
 
 module Apex::App
   class HonaSampleTest < ActionDispatch::IntegrationTest
-    # test "should get show" do
-    #   assert true
-    # end
+    test "placeholder test" do
+      skip "TODO: add assertions for Hona sample endpoint"
+    end
   end
 end

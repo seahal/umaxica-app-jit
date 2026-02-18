@@ -12,8 +12,7 @@ scope module: :core, as: :core do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
-          resource :preference, only: :show
-          # TODO: Add preference refresh endpoint (CSRF-protected) for React Router 401/419 recovery.
+          resource :preference, only: %i(show create)
         end
       end
       # configuration

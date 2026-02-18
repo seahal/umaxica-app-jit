@@ -14,7 +14,7 @@ This is a Rails 8 app with domain-separated surfaces (`app`, `com`, `org`) imple
 - `bundle exec rails test`: run the test suite.
 - `COVERAGE=true bundle exec rails test`: run tests with SimpleCov enabled.
 - `bundle exec rubocop`: Ruby linting/style checks.
-- `bundle exec erb_lint -a .`: ERB lint and autocorrect.
+- `bundle exec erb_lint --lint-all`: ERB lint and autocorrect.
 - `pnpm run check`: Biome check/format pass for `app/javascript`.
 - `bundle exec brakeman --no-pager`: static security scan.
 

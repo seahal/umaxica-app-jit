@@ -432,14 +432,13 @@ test:
     database: test_default_db
     host: <%= ENV["POSTGRESQL_DEFAULT_PUB"] || default_host %>
     migrations_paths: db/defaults_migrate
-# FIXME: please implement below code
 production:
   guest:
     !!merge <<: *default
     database: production_guest_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.GUEST&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.GUEST&.PASSWORD %>
     migrations_paths: db/guests_migrate
   guest_replica:
@@ -448,7 +447,7 @@ production:
     database: production_guest_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.GUEST_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.GUEST_REPLICA&.PASSWORD %>
     migrations_paths: db/guests_migrate
   principal:
@@ -456,7 +455,7 @@ production:
     database: production_principal_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL&.PASSWORD %>
     migrations_paths: db/principals_migrate
   principal_replica:
@@ -465,7 +464,7 @@ production:
     database: production_principal_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL_REPLICA&.PASSWORD %>
     migrations_paths: db/principals_migrate
   profile:
@@ -473,7 +472,7 @@ production:
     database: production_profile_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.PROFILE&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PROFILE&.PASSWORD %>
     migrations_paths: db/profiles_migrate
   profile_replica:
@@ -482,7 +481,7 @@ production:
     database: production_profile_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.PROFILE_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PROFILE_REPLICA&.PASSWORD %>
     migrations_paths: db/profiles_migrate
   preference:
@@ -490,7 +489,7 @@ production:
     database: production_preference_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.PREFERENCE&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PREFERENCE&.PASSWORD %>
     migrations_paths: db/preferences_migrate
   preference_replica:
@@ -499,7 +498,7 @@ production:
     database: production_preference_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.PREFERENCE_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PREFERENCE_REPLICA&.PASSWORD %>
     migrations_paths: db/preferences_migrate
   activity:
@@ -507,7 +506,7 @@ production:
     database: production_activity_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.ACTIVITY&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.ACTIVITY&.PASSWORD %>
     migrations_paths: db/activity_migrate
   activity_replica:
@@ -516,7 +515,7 @@ production:
     database: production_activity_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.ACTIVITY_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.ACTIVITY_REPLICA&.PASSWORD %>
     migrations_paths: db/activity_migrate
   behavior:
@@ -524,7 +523,7 @@ production:
     database: production_behavior_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.BEHAVIOR&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.BEHAVIOR&.PASSWORD %>
     migrations_paths: db/behavior_migrate
   token:
@@ -532,7 +531,7 @@ production:
     database: production_token_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.TOKEN&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.TOKEN&.PASSWORD %>
     migrations_paths: db/tokens_migrate
   token_replica:
@@ -541,7 +540,7 @@ production:
     database: production_token_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.TOKEN_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.TOKEN_REPLICA&.PASSWORD %>
     migrations_paths: db/tokens_migrate
   billing:
@@ -549,7 +548,7 @@ production:
     database: production_billing_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.BILLING&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.BILLING&.PASSWORD %>
     migrations_paths: db/billing_migrate
   billing_replica:
@@ -558,7 +557,7 @@ production:
     database: production_billing_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.BILLING_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.BILLING_REPLICA&.PASSWORD %>
     migrations_paths: db/billing_migrate
   message:
@@ -566,7 +565,7 @@ production:
     database: production_message_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.MESSAGE&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.MESSAGE&.PASSWORD %>
     migrations_paths: db/messages_migrate
   message_replica:
@@ -575,7 +574,7 @@ production:
     database: production_message_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.MESSAGE_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.MESSAGE_REPLICA&.PASSWORD %>
     migrations_paths: db/messages_migrate
   notification:
@@ -583,7 +582,7 @@ production:
     database: production_notification_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION&.PASSWORD %>
     migrations_paths: db/notifications_migrate
   notification_replica:
@@ -592,7 +591,7 @@ production:
     database: production_notification_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION_REPLICA&.PASSWORD %>
     migrations_paths: db/notifications_migrate
   cache:
@@ -600,7 +599,7 @@ production:
     database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.CACHE&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.CACHE&.PASSWORD %>
     migrations_paths: db/caches_migrate
   cache_replica:
@@ -609,7 +608,7 @@ production:
     database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.PASSWORD %>
     migrations_paths: db/caches_migrate
   storage:
@@ -617,7 +616,7 @@ production:
     database: production_storage_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.STORAGE&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.STORAGE&.PASSWORD %>
     migrations_paths: db/storages_migrate
   storage_replica:
@@ -626,7 +625,7 @@ production:
     database: production_storage_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.STORAGE_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.STORAGE_REPLICA&.PASSWORD %>
     migrations_paths: db/storages_migrate
   queue:
@@ -634,7 +633,7 @@ production:
     database: production_queue_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.QUEUE&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.QUEUE&.PASSWORD %>
     migrations_paths: db/queues_migrate
   queue_replica:
@@ -643,7 +642,7 @@ production:
     database: production_queue_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.QUEUE_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.QUEUE_REPLICA&.PASSWORD %>
     migrations_paths: db/queues_migrate
   occurrence:
@@ -651,7 +650,7 @@ production:
     database: production_occurrence_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE&.PASSWORD %>
     migrations_paths: db/occurrences_migrate
   occurrence_replica:
@@ -660,7 +659,7 @@ production:
     database: production_occurrence_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE_REPLICA&.PASSWORD %>
     migrations_paths: db/occurrences_migrate
   operator:
@@ -668,7 +667,7 @@ production:
     database: production_operator_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.OPERATOR&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.OPERATOR&.PASSWORD %>
     migrations_paths: db/operators_migrate
   operator_replica:
@@ -677,7 +676,7 @@ production:
     database: production_operator_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.OPERATOR_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.OPERATOR_REPLICA&.PASSWORD %>
     migrations_paths: db/operators_migrate
   avatar:
@@ -685,7 +684,7 @@ production:
     database: production_avatar_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.AVATAR&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.AVATAR&.PASSWORD %>
     migrations_paths: db/avatars_migrate
   avatar_replica:
@@ -694,7 +693,6 @@ production:
     database: production_avatar_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.AVATAR_REPLICA&.HOST %>
-    username: 'neondb_owner'
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.AVATAR_REPLICA&.PASSWORD %>
     migrations_paths: db/avatars_migrate
-  # note: I thought that username host should be stored at secret manager.

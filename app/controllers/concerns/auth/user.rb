@@ -36,7 +36,10 @@ module Auth
     end
 
     def am_i_owner?
-      # TODO: Implement owner check logic for user
+      # User-side ownership is typically handled at the policy level via Pundit's owner?
+      # (see ApplicationPolicy#owner? which checks record.user_id == actor.id).
+      # This controller-level method is a placeholder; implement if controller-scoped
+      # ownership gating is required.
       false
     end
 

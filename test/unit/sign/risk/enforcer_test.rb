@@ -23,13 +23,10 @@ module Sign
       test "does nothing if feature flag is off" do
         ENV["RISK_ENFORCEMENT_ENABLED"] = "false"
 
-        # Stub Engine.score to return 100
         Engine.stub :score, 100 do
-          # Expect NO revoke! call.
-          # We can spy on Enforcer.revoke!
           Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
-            Enforcer.call(@user)
-            pass
+            result = Enforcer.call(@user)
+            assert_nil result
           end
         end
       end
@@ -59,8 +56,8 @@ module Sign
         Engine.stub :score, 0 do
           Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
             Enforcer.stub :require_step_up!, ->(_) { raise "Should not be called" } do
-              Enforcer.call(@user)
-              pass
+              result = Enforcer.call(@user)
+              assert_nil result
             end
           end
         end

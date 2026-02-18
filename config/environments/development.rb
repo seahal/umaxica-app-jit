@@ -100,7 +100,8 @@ Rails.application.configure do
   config.hosts << "news.app.localhost"
   config.hosts << "news.com.localhost"
   config.hosts << "news.org.localhost"
-  # TODO: dele them
+  # Production hostnames allowed in development for Cloudflare Tunnel testing.
+  # Remove once local-only development is sufficient.
   config.hosts << "sign.umaxica.app"
   config.hosts << "sign.umaxica.org"
 

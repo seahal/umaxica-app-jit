@@ -55,6 +55,8 @@ en:
           create:
             success: "Your inquiry has been received. Please check your email address."
   sign:
+    telephone_verification:
+      sms_message: "Verification code: %{code}"
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"

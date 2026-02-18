@@ -30,7 +30,4 @@ Rails.application.routes.draw do
       resource :surface, only: :show
     end
   end
-
-  # mount Rswag::Ui::Engine => '/api-docs'
-  # mount Rswag::Api::Engine => '/api-docs'
 end

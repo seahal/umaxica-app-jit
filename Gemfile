@@ -10,7 +10,11 @@ gem "rake"
 # Rack
 gem "rack"
 # Rails
-# gem "rails"
+# Tracking the main branch for Rails 8.1 features.
+# Once Rails 8.1 has a stable gem release, switch to:
+#   gem "rails", "~> 8.1.0"
+# or the stable maintenance branch:
+#   gem "rails", github: "rails/rails", branch: "8-1-stable"
 gem "rails", github: "rails/rails", branch: "main"
 # Web server
 gem "puma"

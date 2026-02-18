@@ -84,9 +84,9 @@ class Sign::Org::In::SessionsController < ApplicationController
           .where(id: session_ids, revoked_at: nil)
 
         sessions_to_revoke.find_each do |token|
+          # Add revoked_reason once the column is added via migration:
+          #   add_column :staff_tokens, :revoked_reason, :string
           token.update!(revoked_at: Time.current)
-          # TODO: Add revoked_reason if column exists
-          # token.update!(revoked_at: Time.current, revoked_reason: "concurrent_sessions_limit")
         end
       end
     end

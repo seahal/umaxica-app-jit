@@ -4,7 +4,7 @@ require "test_helper"
 require "minitest/mock"
 
 class ApplicationConsumerTest < ActiveSupport::TestCase
-  def setup
-    @consumer = ApplicationConsumer.new
+  test "placeholder test for application consumer" do
+    skip "TODO: add assertions for ApplicationConsumer"
   end
 end
