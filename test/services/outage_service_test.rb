@@ -120,8 +120,8 @@ class OutageServiceTest < ActiveSupport::TestCase
       duration: 300, # 5 minutes in seconds
     )
 
-    assert result[:expires_at] > before + 290.seconds
-    assert result[:expires_at] < before + 310.seconds
+    assert_operator result[:expires_at], :>, before + 290.seconds
+    assert_operator result[:expires_at], :<, before + 310.seconds
   end
 
   # ---------------------------------------------------------------------------
@@ -154,12 +154,12 @@ class OutageServiceTest < ActiveSupport::TestCase
   test "clear! returns true" do
     OutageService.update!(surface: SURFACE, state: "maintenance", actor_id: 1, reason: "test")
     result = OutageService.clear!(SURFACE, actor_id: 1, reason: "resolved")
-    assert_equal true, result
+    assert result
   end
 
   test "clear! returns true even when no outage is active" do
     result = OutageService.clear!(SURFACE, actor_id: 1, reason: "noop")
-    assert_equal true, result
+    assert result
   end
 
   # ---------------------------------------------------------------------------

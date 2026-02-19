@@ -174,12 +174,7 @@ class EmailTest < ActiveSupport::TestCase
     email.clear_otp
 
     assert_equal 0, email.otp_attempts_count
-    # Fixed expectation for locked_at
-    assert(
-      email.locked_at.is_a?(Time) ||
-      email.locked_at.to_s == "-infinity" ||
-      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
-    )
+    assert_not email.locked?
   end
 
   test "increment_attempts! is thread-safe under concurrent access" do
@@ -217,12 +212,7 @@ class EmailTest < ActiveSupport::TestCase
     assert_equal otp_key, email.otp_private_key
     assert_equal otp_counter.to_s, email.otp_counter.to_s
     assert_equal 0, email.otp_attempts_count
-    # Expect -infinity
-    assert(
-      email.locked_at.is_a?(Time) ||
-      email.locked_at.to_s == "-infinity" ||
-      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
-    )
+    assert_not email.locked?
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -354,11 +344,7 @@ class EmailTest < ActiveSupport::TestCase
       (email.otp_expires_at.is_a?(Float) && email.otp_expires_at == -Float::INFINITY),
     )
     assert_equal 0, email.otp_attempts_count
-    assert(
-      email.locked_at.is_a?(Time) ||
-      email.locked_at.to_s == "-infinity" ||
-      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
-    )
+    assert_not email.locked?
   end
   # rubocop:enable Minitest/MultipleAssertions
 

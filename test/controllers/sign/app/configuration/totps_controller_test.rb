@@ -14,12 +14,16 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
+    # Clear existing TOTPs to avoid limit error
+    @user.user_one_time_passwords.destroy_all
+
     @token = UserToken.create!(user_id: @user.id)
     @headers = {
-      "X-TEST-CURRENT-USER" => @user.id,
+      "X-TEST-CURRENT-USER" => @user.id.to_s,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
     }.freeze
     satisfy_user_verification(@token)
+
     @totp = UserOneTimePassword.create!(
       user: @user,
       private_key: ROTP::Base32.random_base32,
@@ -87,6 +91,9 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
   end
 
   test "should create totp with valid token" do
+    # Clear TOTP created in setup to allow creation of a new one (limit is 2)
+    @user.user_one_time_passwords.destroy_all
+
     with_mocked_totp do |secret|
       get new_sign_app_configuration_totp_url(ri: "jp"), headers: @headers
       token = ROTP::TOTP.new(secret).now
@@ -97,22 +104,25 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
              headers: @headers
       end
 
-      assert_redirected_to %r{/configuration/totps}
+      assert_redirected_to sign_app_configuration_totps_url(ri: "jp")
     end
   end
 
   test "should assign attributes to created totp" do
+    @user.user_one_time_passwords.destroy_all
+
     with_mocked_totp do |secret|
       get new_sign_app_configuration_totp_url(ri: "jp"), headers: @headers
       token = ROTP::TOTP.new(secret).now
 
       post sign_app_configuration_totps_url(ri: "jp"),
-           params: { user_one_time_password: { first_token: token } },
+           params: { user_one_time_password: { first_token: token, title: "New TOTP" } },
            headers: @headers
 
       created_totp = UserOneTimePassword.order(created_at: :desc).first
 
       assert_equal @user, created_totp.user
+      assert_equal "New TOTP", created_totp.title
       assert_not_nil created_totp.last_otp_at
     end
   end
@@ -122,7 +132,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
 
     assert_no_difference("UserOneTimePassword.count") do
       post sign_app_configuration_totps_url(ri: "jp"),
-           params: { user_one_time_password: { first_token: "invalid" } },
+           params: { user_one_time_password: { first_token: "000000" } },
            headers: @headers
     end
 
@@ -135,7 +145,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     token.update!(created_at: 1.hour.ago)
     satisfy_user_verification(token)
     headers = {
-      "X-TEST-CURRENT-USER" => user.id,
+      "X-TEST-CURRENT-USER" => user.id.to_s,
       "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
     }
 
@@ -150,7 +160,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     token.update!(created_at: 1.hour.ago)
     satisfy_user_verification(token)
     headers = {
-      "X-TEST-CURRENT-USER" => user.id,
+      "X-TEST-CURRENT-USER" => user.id.to_s,
       "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
     }
 

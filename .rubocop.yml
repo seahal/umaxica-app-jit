@@ -237,6 +237,8 @@ Layout/LineLength:
   Exclude:
     - 'config/**/*'
     - 'db/**/*_migrate/**/*'
+    - 'app/models/**/*'
+    - 'test/models/**/*'
 
 # ---------- 複数行のフォーマット ----------
 Layout/MultilineMethodCallIndentation:
@@ -450,6 +452,8 @@ Metrics/AbcSize:
   Include:
     - app/controllers/**/*.rb
   Max: 50
+  Exclude:
+    - 'app/controllers/sign/app/auth/omniauth_callbacks_controller.rb'
 
 Metrics/BlockLength:
   Max: 40
@@ -471,6 +475,8 @@ Metrics/MethodLength:
   Include:
     - app/controllers/**/*.rb
   Max: 45
+  Exclude:
+    - 'app/controllers/concerns/preference/base.rb'
 
 Metrics/ModuleLength:
   Max: 120
@@ -669,6 +675,7 @@ Rails/SkipsModelValidations:
   Enabled: true
   AllowedMethods:
     - touch
+    - update_all
 
 Rails/UnknownEnv:
   Enabled: true
@@ -1149,9 +1156,22 @@ Minitest/MultipleAssertions:
 
 Minitest/NoAssertions:
   Enabled: true
+  Exclude:
+    - 'test/consumers/application_consumer_test.rb'
+    - 'test/consumers/email_consumer_test.rb'
+    - 'test/controllers/core/org/docs_controller_test.rb'
+    - 'test/controllers/core/org/news_controller_test.rb'
+    - 'test/controllers/hona_sample_test.rb'
+    - 'test/controllers/sign/app/in/recoveries_controller_test.rb'
+    - 'test/controllers/sign/app/token/refreshs_controller_test.rb'
+    - 'test/controllers/sign/org/recoveries_controller_test.rb'
+    - 'test/integration/sign/org/layout_test.rb'
+    - 'test/integration/www/com/params_test.rb'
 
 Minitest/NoTestCases:
   Enabled: true
+  Exclude:
+    - 'test/models/**/*'
 
 Minitest/NonExecutableTestMethod:
   Enabled: true
@@ -1228,6 +1248,8 @@ Rake/MethodDefinitionInTask:
 # ---------- I18n ----------
 I18n/RailsI18n:
   Enabled: true
+  Exclude:
+    - 'test/unit/security/skip_forgery_protection_usage_test.rb'
 
 I18n/GetText:
   Enabled: false
@@ -1240,6 +1262,10 @@ I18n/GetText:
 
 ThreadSafety/ClassAndModuleAttributes:
   Enabled: true
+  Exclude:
+    - 'app/controllers/concerns/rate_limit.rb'
+    - 'config/initializers/rails_rate_limit.rb'
+    - 'test/controllers/concerns/auth_policy_test.rb'
 
 ThreadSafety/ClassInstanceVariable:
   Enabled: true

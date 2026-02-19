@@ -110,6 +110,13 @@ class Staff < OperatorRecord
     false
   end
 
+  # Generate a random 8-character public_id from the allowed alphabet
+  def self.generate_public_id
+    Array.new(PUBLIC_ID_LENGTH) { PUBLIC_ID_ALPHABET[SecureRandom.random_number(PUBLIC_ID_ALPHABET.length)] }.join
+  end
+
+  delegate :generate_public_id, to: :class
+
   private
 
   # Normalize public_id: strip whitespace, remove hyphens/underscores, downcase
@@ -128,10 +135,5 @@ class Staff < OperatorRecord
       self.public_id = generate_public_id
       break unless self.class.exists?(public_id: public_id)
     end
-  end
-
-  # Generate a random 8-character public_id from the allowed alphabet
-  def generate_public_id
-    Array.new(PUBLIC_ID_LENGTH) { PUBLIC_ID_ALPHABET[SecureRandom.random_number(PUBLIC_ID_ALPHABET.length)] }.join
   end
 end

@@ -17,13 +17,13 @@ class RuntimeConfig
     private
 
     def fetch_from_source!(key)
-      # 例:
+      # Example:
       # Setting.fetch!(key).value
       raise NotImplementedError, "define fetch_from_source! for #{key}"
     end
 
     def safe_default(key, error:)
-      # 例（要件に合わせて）
+      # Example (adjust based on requirements)
       # key == "maintenance_mode" ? true : false
       nil
     end

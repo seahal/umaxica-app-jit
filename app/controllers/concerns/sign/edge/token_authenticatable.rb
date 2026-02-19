@@ -47,7 +47,7 @@ module Sign
         # Cross-request single-flight: acquire a short-lived cache lock keyed on the
         # refresh token digest so concurrent requests don't all attempt to exchange
         # the same (single-use) refresh token simultaneously.
-        lock_key = "edge:refresh_lock:#{Digest::SHA256.hexdigest(refresh_plain)[..15]}"
+        lock_key = "edge:refresh_lock:#{Digest::SHA256.hexdigest(refresh_plain).take(16)}"
         return unless Rails.cache.write(lock_key, 1, expires_in: 15.seconds, unless_exist: true)
 
         request.env["jit_edge_token_refreshed"] = true

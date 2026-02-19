@@ -53,8 +53,8 @@ class User < PrincipalRecord
   ].freeze
   RECOVERY_IDENTITY_REQUIRED_MESSAGE = "パスキー/シークレットを登録するには、先にメールアドレスまたは電話番号を1つ以上登録（確認）してください。"
 
-  # webauthn_id は passkeys テーブルへの移行後に削除予定のレガシーカラム。
-  # マイグレーションで DROP COLUMN 後にこの行も削除すること。
+  # Legacy column scheduled for removal after passkeys table migration.
+  # Remove this line as well after DROP COLUMN migration is completed.
   self.ignored_columns += ["webauthn_id"]
 
   attribute :status_id, default: UserStatus::NONE

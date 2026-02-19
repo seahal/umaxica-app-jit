@@ -30,9 +30,15 @@ module RefreshTokenable
       end
 
       transaction do
-        updated = where(id: current_token.id, refresh_token_digest: presented_refresh_digest, rotated_at: nil, revoked_at: nil, compromised_at: nil)
-          .where(arel_table[:refresh_expires_at].gt(now))
-          .update_all(rotated_at: now, last_used_at: now, updated_at: now)
+        updated =
+          where(
+            id: current_token.id,
+            refresh_token_digest: presented_refresh_digest,
+            rotated_at: nil,
+            revoked_at: nil,
+            compromised_at: nil,
+          ).where(arel_table[:refresh_expires_at].gt(now))
+            .update_all(rotated_at: now, last_used_at: now, updated_at: now)
 
         if updated != 1
           current_token.reload

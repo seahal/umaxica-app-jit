@@ -137,7 +137,8 @@ module Core
             telephones = current_staff.staff_telephones.to_a
             verified =
               telephones.find do |telephone|
-                telephone.staff_identity_telephone_status_id == StaffTelephoneStatus::VERIFIED && telephone.number.present?
+                telephone.staff_identity_telephone_status_id == StaffTelephoneStatus::VERIFIED &&
+                  telephone.number.present?
               end
             verified || telephones.find { |telephone| telephone.number.present? }
           end

@@ -78,7 +78,7 @@ class Sign::App::In::CheckpointsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :request_timeout
 
-    # New request — session already has expired checkpoint from previous request
+    # New request; session already has expired checkpoint from previous request
     patch sign_app_in_checkpoint_url(ri: "jp"),
           headers: as_user_headers(@user, host: @host)
 

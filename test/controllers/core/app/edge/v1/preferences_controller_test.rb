@@ -104,6 +104,7 @@ module Core
               s.get core_app_edge_v1_preference_url
             end
             s.assert_response :success
+            assert_predicate s.response.parsed_body.dig("preference", "public_id"), :present?
           end
 
           test "legacy refresh token is accepted" do

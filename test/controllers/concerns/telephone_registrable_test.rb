@@ -71,12 +71,12 @@ class TelephoneRegistrableTest < ActiveSupport::TestCase
 
   test "initiate_telephone_verification returns false when user is blank" do
     result = @controller.initiate_telephone_verification(nil, "+819012345678")
-    assert_equal false, result
+    assert_not result
   end
 
   test "initiate_telephone_verification returns false when user is empty string" do
     result = @controller.initiate_telephone_verification("", "+819012345678")
-    assert_equal false, result
+    assert_not result
   end
 
   # ---------------------------------------------------------------------------

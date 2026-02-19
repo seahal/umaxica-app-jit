@@ -13,9 +13,6 @@ services:
   valkey:
     container_name: jit-devcontainer-valkey
     ports:  !reset []
-  zookeeper:
-    container_name: jit-devcontainer-zookeeper
-    ports:  !reset []
   master:
     container_name: jit-devcontainer-seaweedfs-master
     ports:  !reset []

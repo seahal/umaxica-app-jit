@@ -7,11 +7,6 @@ class TokenEmergencyService
   REFRESH_UNFREEZE_EXPIRY = 30.days
   TOKEN_FOREIGN_KEYS = { "UserToken" => :user_id, "StaffToken" => :staff_id }.freeze
 
-  private_class_method :perform_action, :token_class_for_surface,
-                       :perform_access_reset, :perform_refresh_freeze,
-                       :perform_refresh_unfreeze, :perform_revoke_all,
-                       :resource_foreign_key, :record_audit
-
   def self.call!(action:, surface:, actor_id:, reason:)
     raise EmergencyActionError, "Invalid action: #{action}" unless EMERGENCY_ACTIONS.include?(action)
 
@@ -53,12 +48,11 @@ class TokenEmergencyService
   def self.perform_access_reset(token_class, actor_id)
     TokenRecord.connected_to(role: :writing) do
       token_class.transaction do
-        tokens = token_class.where(resource_foreign_key(token_class) => actor_id, :revoked_at => nil).lock
-        count = tokens.count
+        scope = token_class.where(resource_foreign_key(token_class) => actor_id, :revoked_at => nil)
         # rubocop:disable Rails/SkipsModelValidations
-        tokens.update_all(revoked_at: Time.current, updated_at: Time.current)
+        affected = scope.update_all(revoked_at: Time.current, updated_at: Time.current)
         # rubocop:enable Rails/SkipsModelValidations
-        { affected_count: count, action: "access_reset" }
+        { affected_count: affected, action: "access_reset" }
       end
     end
   end
@@ -66,16 +60,12 @@ class TokenEmergencyService
   def self.perform_refresh_freeze(token_class, actor_id)
     TokenRecord.connected_to(role: :writing) do
       token_class.transaction do
-        tokens = token_class.where(resource_foreign_key(token_class) => actor_id, :revoked_at => nil).lock
-        count = tokens.count
+        scope = token_class.where(resource_foreign_key(token_class) => actor_id, :revoked_at => nil)
         now = Time.current
         # rubocop:disable Rails/SkipsModelValidations
-        tokens.update_all(
-          refresh_expires_at: now,
-          updated_at: now,
-        )
+        affected = scope.update_all(refresh_expires_at: now, updated_at: now)
         # rubocop:enable Rails/SkipsModelValidations
-        { affected_count: count, action: "refresh_freeze" }
+        { affected_count: affected, action: "refresh_freeze" }
       end
     end
   end
@@ -83,16 +73,12 @@ class TokenEmergencyService
   def self.perform_refresh_unfreeze(token_class, actor_id)
     TokenRecord.connected_to(role: :writing) do
       token_class.transaction do
-        tokens = token_class.where(resource_foreign_key(token_class) => actor_id, :revoked_at => nil).lock
-        count = tokens.count
+        scope = token_class.where(resource_foreign_key(token_class) => actor_id, :revoked_at => nil)
         new_expiry = REFRESH_UNFREEZE_EXPIRY.from_now
         # rubocop:disable Rails/SkipsModelValidations
-        tokens.update_all(
-          refresh_expires_at: new_expiry,
-          updated_at: Time.current,
-        )
+        affected = scope.update_all(refresh_expires_at: new_expiry, updated_at: Time.current)
         # rubocop:enable Rails/SkipsModelValidations
-        { affected_count: count, action: "refresh_unfreeze", new_expiry: new_expiry }
+        { affected_count: affected, action: "refresh_unfreeze", new_expiry: new_expiry }
       end
     end
   end
@@ -102,16 +88,11 @@ class TokenEmergencyService
     # status field is updated and consistent. Use access_reset to target only active tokens.
     TokenRecord.connected_to(role: :writing) do
       token_class.transaction do
-        tokens = token_class.where(resource_foreign_key(token_class) => actor_id).lock
-        count = tokens.count
+        scope = token_class.where(resource_foreign_key(token_class) => actor_id)
         # rubocop:disable Rails/SkipsModelValidations
-        tokens.update_all(
-          revoked_at: Time.current,
-          status: "revoked",
-          updated_at: Time.current,
-        )
+        affected = scope.update_all(revoked_at: Time.current, status: "revoked", updated_at: Time.current)
         # rubocop:enable Rails/SkipsModelValidations
-        { affected_count: count, action: "revoke_all" }
+        { affected_count: affected, action: "revoke_all" }
       end
     end
   end
@@ -135,4 +116,9 @@ class TokenEmergencyService
     Rails.logger.error("[TokenEmergencyService] Failed to record audit: #{e.message}")
     Rails.error.report(e, handled: true, severity: :warning)
   end
+
+  private_class_method :perform_action, :token_class_for_surface,
+                       :perform_access_reset, :perform_refresh_freeze,
+                       :perform_refresh_unfreeze, :perform_revoke_all,
+                       :resource_foreign_key, :record_audit
 end

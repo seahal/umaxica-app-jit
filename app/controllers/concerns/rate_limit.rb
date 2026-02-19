@@ -13,6 +13,11 @@ module RateLimit
 
   class_methods do
     def rate_limit_rule(name, scope:, limit:, period:, key: nil, retry_after: nil, only: nil, except: nil)
+      only_actions = Array(only).compact
+      only_actions.map!(&:to_s)
+      except_actions = Array(except).compact
+      except_actions.map!(&:to_s)
+
       rule = {
         name: name.to_s,
         scope: scope.to_s,
@@ -20,8 +25,8 @@ module RateLimit
         period: period,
         key: key,
         retry_after: retry_after,
-        only: Array(only).compact.map(&:to_s),
-        except: Array(except).compact.map(&:to_s),
+        only: only_actions,
+        except: except_actions,
       }
 
       self.rate_limit_rules += [rule]
@@ -132,7 +137,10 @@ module RateLimit
       scope: scope.to_s,
       path: request.path,
     )
-    Rails.logger.warn("[RailsRateLimit] THROTTLED rule=#{rule} tenant=#{rate_limit_tenant} scope=#{scope} path=#{request.path}")
+    Rails.logger.warn(
+      "[RailsRateLimit] THROTTLED rule=#{rule} tenant=#{rate_limit_tenant} " \
+      "scope=#{scope} path=#{request.path}",
+    )
 
     if request.format.json?
       render json: { error: "rate_limited", rule: rule.to_s, message: message }, status: :too_many_requests

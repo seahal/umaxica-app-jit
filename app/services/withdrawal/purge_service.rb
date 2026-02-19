@@ -9,8 +9,8 @@ module Withdrawal
     # Permanently purges PII and revokes credentials for a withdrawn user.
     #
     # Execution order:
-    #   1. Revoke all tokens (token DB — separate connection)
-    #   2. Destroy PII associations (principal DB — within a transaction)
+    #   1. Revoke all tokens (token DB, separate connection)
+    #   2. Destroy PII associations (principal DB, within a transaction)
     #   3. Mark the user record as purged
     #   4. Emit audit event
     #

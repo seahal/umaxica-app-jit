@@ -77,9 +77,12 @@ module Email
   end
 
   def locked?
-    # locked_at == Float::INFINITY is the sentinel for "unlocked" (set by store_otp/clear_otp).
-    # A real lock time (past timestamp) means the account is locked by time.
-    is_locked_by_time = locked_at.present? && locked_at != Float::INFINITY
+    # locked_at == Float::INFINITY  -> new sentinel for "unlocked" (set by store_otp/clear_otp)
+    # locked_at == -Float::INFINITY -> old sentinel for "unlocked" (backward-compatible with existing rows)
+    # Any real timestamp in the past means the account is locked by time.
+    is_locked_by_time = locked_at.present? &&
+      locked_at != -Float::INFINITY &&
+      locked_at != Float::INFINITY
     is_locked_by_attempts = otp_attempts_count >= MAX_OTP_ATTEMPTS
     is_locked_by_time || is_locked_by_attempts
   end
@@ -104,7 +107,7 @@ module Email
     # Atomically set locked_at only when attempts reached threshold and not already locked
     # Check for both NULL and -infinity as sentinel values for "not locked"
     affected = self.class.where(id: id)
-      .where("locked_at IS NULL OR locked_at = 'infinity'::timestamp")
+      .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp")
       .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
       # Skip model validations intentionally: this is a guarded atomic DB update
       # to avoid race conditions when multiple processes increment simultaneously.

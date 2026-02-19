@@ -117,13 +117,16 @@ scope module: :apex, as: :apex do
       end
       namespace :status do
         namespace :app do
+          # keep namespace for future status routes
         end
         resource :app, only: :show
         namespace :com do
+          # keep namespace for future status routes
         end
         resource :com, only: :show
 
         namespace :org do
+          # keep namespace for future status routes
         end
         resource :org, only: :show
       end

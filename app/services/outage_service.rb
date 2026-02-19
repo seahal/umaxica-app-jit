@@ -88,8 +88,6 @@ class OutageService
       true
     end
 
-    private_class_method :outage_cache_key, :record_audit
-
     private
 
     def outage_cache_key(surface)
