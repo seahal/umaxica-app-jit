@@ -232,12 +232,15 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   test "create with existing email enqueues no emails" do
     user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
-    UserEmail.create!(
+    existing_email = UserEmail.create!(
       user: user,
       address: "no_otp_send@example.com",
       confirm_policy: "1",
       user_email_status_id: UserEmailStatus::VERIFIED,
     )
+    before_otp_last_sent_at = existing_email.otp_last_sent_at
+    before_otp_counter = existing_email.otp_counter
+    before_otp_attempts_count = existing_email.otp_attempts_count
 
     assert_enqueued_emails 0 do
       post sign_app_up_emails_url(ri: "jp"),
@@ -253,6 +256,45 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     assert_match(%r{/up/emails/[^/]+/edit}, response.location)
+    assert_equal before_otp_last_sent_at, existing_email.reload.otp_last_sent_at
+    assert_equal before_otp_counter, existing_email.otp_counter
+    assert_equal before_otp_attempts_count, existing_email.otp_attempts_count
+  end
+
+  test "update for existing registered email redirects to sign-in without otp verification" do
+    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+    existing_email = UserEmail.create!(
+      user: user,
+      address: "existing_update_redirect@example.com",
+      confirm_policy: "1",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: existing_email.address,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+    assert_match(%r{/up/emails/[^/]+/edit}, response.location)
+
+    patch sign_app_up_email_url(existing_email, ri: "jp"),
+          params: {
+            id: existing_email.id,
+            user_email: {
+              pass_code: "123456",
+            },
+          },
+          headers: default_headers
+
+    assert_response :redirect
+    assert_redirected_to %r{/in/new}
+    assert_equal I18n.t("sign.app.registration.email.update.sign_in_required"), flash[:notice]
   end
 
   test "create with validation failure enqueues no emails and returns 422" do

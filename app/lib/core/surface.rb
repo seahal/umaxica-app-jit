@@ -22,13 +22,7 @@ module Core
     end
 
     def current(request)
-      env = request.respond_to?(:env) ? request.env : nil
-      value = env&.[](ENV_KEY)
-      return value.to_sym if value.present? && SURFACES.include?(value.to_sym)
-
-      detected = detect(request)
-      env[ENV_KEY] = detected if env
-      detected
+      detect(request)
     end
 
     def matches?(request, surface)

@@ -133,8 +133,8 @@ group :development do
   # Speed up commands on slow machines / big apps
   # gem "spring"
   gem "brakeman", require: false
-  # Web console on exception pages
-  gem "web-console"
+  # web-console 4.2.1 is incompatible with Rails main (ActionDispatch::RemoteIp API change)
+  # gem "web-console"
   # RuboCop
   gem "rubocop", require: false
   gem "rubocop-performance", require: false

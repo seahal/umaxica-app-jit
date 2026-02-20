@@ -3,6 +3,7 @@
 module Help
   module App
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include ::RateLimit
       include ::Auth::Base
 

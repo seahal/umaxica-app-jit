@@ -43,17 +43,6 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
     CloudflareTurnstile.test_validation_response = nil
   end
 
-  def trigger_mfa_login
-    post sign_app_in_secret_url(ri: "jp"), params: {
-      secret_login_form: {
-        identifier: @email.address,
-        secret_value: @raw_secret,
-      },
-      "cf-turnstile-response": "test_token",
-    }
-    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
-  end
-
   test "new redirects to sign in when mfa_user_id is missing" do
     get new_sign_app_in_challenge_totp_path(ri: "jp")
 
@@ -159,5 +148,18 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+  end
+
+  private
+
+  def trigger_mfa_login
+    post sign_app_in_secret_url(ri: "jp"), params: {
+      secret_login_form: {
+        identifier: @email.address,
+        secret_value: @raw_secret,
+      },
+      "cf-turnstile-response": "test_token",
+    }
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
   end
 end

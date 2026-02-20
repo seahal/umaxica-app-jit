@@ -1,9 +1,24 @@
 <!DOCTYPE html>
 <html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
-<%= render "layouts/shared/head",
-           namespace: "app",
-           stylesheets: ["apex/main", "apex/app/main"],
-           title: "#{ENV['BRAND_NAME']} (app) Apex" %>
+<head>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (app) Apex", title: page_title %>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-method" content="morph">
+  <meta name="turbo-refresh-scroll" content="preserve">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "apex/main" %>
+  <%= stylesheet_link_tag "apex/app/main" %>
+
+  <%= javascript_importmap_tags %>
+
+  <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
+
+  <%= yield :head %>
+</head>
 
 <body>
 <div>

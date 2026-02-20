@@ -45,7 +45,6 @@ module Jit
 
     # Rack Attack Middleware
     config.middleware.use Rack::Attack
-    config.middleware.insert_before Rack::Head, Core::SurfaceMiddleware
 
     # Active Record Encryption Configuration
     if %w(test production development).include? Rails.env

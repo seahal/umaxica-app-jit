@@ -3,6 +3,7 @@
 module News
   module Org
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include ::RateLimit
       include ::Auth::Base
 

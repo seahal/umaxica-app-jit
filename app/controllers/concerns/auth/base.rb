@@ -580,6 +580,14 @@ module Auth
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
       reset_session
 
+      # Clear any existing auth cookies to prevent conflicts with old sessions
+      # This ensures we don't have duplicate cookies with different domains/paths
+      # Note: We clear cookies before setting new ones, but preserve @current_resource
+      # which will be set to the logged-in user after successful authentication
+      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      clear_device_id_cookie!
+
       if require_totp_check
         totp_result = check_totp_requirement(resource)
         return totp_result if totp_result
@@ -711,14 +719,10 @@ module Auth
       resource = current_resource
 
       destroy_refresh_token_from_cookie
-
-      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
-      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
-      clear_device_id_cookie!
+      clear_auth_cookies!
 
       record_audit(AUDIT_EVENTS[:logged_out], resource: resource) if resource
       reset_session
-      @current_resource = nil
     end
 
     def transparent_refresh_access_token
@@ -736,9 +740,7 @@ module Auth
       refreshed = refresh_access_token(refresh_plain)
       unless refreshed
         Rails.logger.debug { "[Auth] transparent_refresh: FAILURE" }
-        cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
-        cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
-        clear_device_id_cookie!
+        clear_auth_cookies!
         return
       end
 
@@ -975,6 +977,13 @@ module Auth
 
     def clear_device_id_cookie!
       cookies.delete(device_cookie_key, cookie_deletion_options)
+    end
+
+    def clear_auth_cookies!
+      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      clear_device_id_cookie!
+      @current_resource = nil
     end
 
     def read_device_id_cookie
@@ -1224,7 +1233,8 @@ module Auth
       )
 
       set_refresh_failure!(:unauthorized, "invalid_refresh_token")
-      log_out
+      destroy_refresh_token_from_cookie
+      clear_auth_cookies!
 
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",

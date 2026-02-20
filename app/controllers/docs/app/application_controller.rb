@@ -3,6 +3,7 @@
 module Docs
   module App
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include ::Preference::Regional
       include ::RateLimit
       include ::Auth::Base

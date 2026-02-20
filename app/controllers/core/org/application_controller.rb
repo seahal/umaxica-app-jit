@@ -3,6 +3,7 @@
 module Core
   module Org
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include Pundit::Authorization
       include ::Auth::Staff
       include ::Preference::Regional

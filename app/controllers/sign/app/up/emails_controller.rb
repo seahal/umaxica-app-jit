@@ -121,11 +121,15 @@ module Sign
         end
 
         def valid_email_session?
-          return false unless @user_email.present? && !@user_email.otp_expired?
+          return false if @user_email.blank?
 
           if existing_signup_email_flow?
-            session_existing_email_id.to_i == @user_email.id
+            return false unless session_existing_email_id.to_i == @user_email.id
+
+            existing_signup_skip_otp? || !@user_email.otp_expired?
           else
+            return false if @user_email.otp_expired?
+
             @user_email.user_email_status_id == UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
           end
         end
@@ -138,7 +142,18 @@ module Sign
           session[Sign::EmailRegistrable::EXISTING_EMAIL_SESSION_KEY]
         end
 
+        def existing_signup_skip_otp?
+          session[Sign::EmailRegistrable::EXISTING_EMAIL_SKIP_OTP_SESSION_KEY] == true
+        end
+
         def handle_existing_email_verification(submitted_code)
+          if existing_signup_skip_otp?
+            reset_email_flow!
+            redirect_to new_sign_app_in_path,
+                        notice: t("sign.app.registration.email.update.sign_in_required")
+            return :redirected
+          end
+
           result = verify_otp_code(@user_email, submitted_code)
           unless result[:success]
             increment_otp_attempts!(@user_email)

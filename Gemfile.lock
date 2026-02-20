@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 47a2645fc02980096ce55721b05b32dcec989894
+  revision: f5255a4089cff69af0ce3b63fda751bdc6dd93cb
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -149,7 +149,6 @@ GEM
       smart_properties
     bigdecimal (4.0.1)
     bindata (2.5.1)
-    bindex (0.8.1)
     bootsnap (1.23.0)
       msgpack (~> 1.2)
     brakeman (8.0.2)
@@ -739,7 +738,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-graphviz (1.2.5)
       rexml
-    ruby-lsp (0.26.6)
+    ruby-lsp (0.26.7)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
@@ -779,14 +778,14 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12945)
-      sorbet-static (= 0.6.12945)
-    sorbet-runtime (0.6.12945)
-    sorbet-static (0.6.12945-aarch64-linux)
-    sorbet-static (0.6.12945-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12945)
-      sorbet (= 0.6.12945)
-      sorbet-runtime (= 0.6.12945)
+    sorbet (0.6.12949)
+      sorbet-static (= 0.6.12949)
+    sorbet-runtime (0.6.12949)
+    sorbet-static (0.6.12949-aarch64-linux)
+    sorbet-static (0.6.12949-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12949)
+      sorbet (= 0.6.12949)
+      sorbet-runtime (= 0.6.12949)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -803,8 +802,8 @@ GEM
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
-    tailwindcss-ruby (4.1.18-aarch64-linux-gnu)
-    tailwindcss-ruby (4.1.18-x86_64-linux-gnu)
+    tailwindcss-ruby (4.2.0-aarch64-linux-gnu)
+    tailwindcss-ruby (4.2.0-x86_64-linux-gnu)
     tapioca (0.16.11)
       benchmark
       bundler (>= 2.2.25)
@@ -837,11 +836,6 @@ GEM
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
-    web-console (4.2.1)
-      actionview (>= 6.0.0)
-      activemodel (>= 6.0.0)
-      bindex (>= 0.4.0)
-      railties (>= 6.0.0)
     webauthn (3.4.3)
       android_key_attestation (~> 0.3.0)
       bindata (~> 2.4)
@@ -862,7 +856,7 @@ GEM
     yard-sorbet (0.9.0)
       sorbet-runtime
       yard
-    zeitwerk (2.7.4)
+    zeitwerk (2.7.5)
 
 PLATFORMS
   aarch64-linux
@@ -954,7 +948,6 @@ DEPENDENCIES
   test-prof
   turbo-rails
   tzinfo-data
-  web-console
   webauthn
   yard
 

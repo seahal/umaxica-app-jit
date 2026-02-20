@@ -3,6 +3,7 @@
 module News
   module App
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include ::Preference::Regional
 
       protect_from_forgery with: :exception

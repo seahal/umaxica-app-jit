@@ -3,6 +3,7 @@
 module Apex
   module Org
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Global

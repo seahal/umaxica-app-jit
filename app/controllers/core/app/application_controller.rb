@@ -3,6 +3,7 @@
 module Core
   module App
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include Pundit::Authorization
       include ::AuthorizationAudit
       include ::RateLimit

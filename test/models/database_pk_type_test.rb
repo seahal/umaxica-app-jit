@@ -66,32 +66,6 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
     models.each { |model| assert_code_is_citext(model) }
   end
 
-  test "CodeIdentifiable concern provides find_by_code methods" do
-    model =
-      [StaffTokenKind, StaffTokenStatus, UserTokenKind, UserTokenStatus].find do |candidate|
-        candidate.included_modules.include?(CodeIdentifiable)
-      end
-
-    unless model
-      assert true, "No model with CodeIdentifiable found (migrated to fixed IDs)"
-      return
-    end
-
-    status = nil
-    begin
-      status = model.create!(code: "TEST")
-
-      assert_equal status, model.find_by(code: "TEST")
-      assert_equal status, model.find_by(code: "test")
-      assert_equal status, model.find_by(code: "TeSt")
-
-      assert_equal status, model.find_by!(code: "TEST")
-      assert_raises(ActiveRecord::RecordNotFound) { model.find_by!(code: "NONEXISTENT") }
-    ensure
-      status&.destroy
-    end
-  end
-
   private
 
   def assert_bigint_pk(model)

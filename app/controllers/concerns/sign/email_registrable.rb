@@ -26,6 +26,7 @@ module Sign
 
     SESSION_KEY = :sign_up_email_flow_state
     EXISTING_EMAIL_SESSION_KEY = :sign_up_existing_email_id
+    EXISTING_EMAIL_SKIP_OTP_SESSION_KEY = :sign_up_existing_email_skip_otp
 
     included do
       include ::CloudflareTurnstile
@@ -46,6 +47,7 @@ module Sign
         reset_email_flow!
         return
       end
+
       return if current_state == required_state
 
       redirect_flow_violation
@@ -66,6 +68,7 @@ module Sign
     def reset_email_flow!
       session[SESSION_KEY] = STATE_INIT
       session.delete(EXISTING_EMAIL_SESSION_KEY)
+      session.delete(EXISTING_EMAIL_SKIP_OTP_SESSION_KEY)
     end
 
     def redirect_flow_violation
@@ -214,8 +217,8 @@ module Sign
 
     def dispatch_existing_email_verification!(existing_email)
       @user_email = existing_email
-      generate_otp_for(@user_email)
       session[EXISTING_EMAIL_SESSION_KEY] = @user_email.id
+      session[EXISTING_EMAIL_SKIP_OTP_SESSION_KEY] = true
       true
     end
 

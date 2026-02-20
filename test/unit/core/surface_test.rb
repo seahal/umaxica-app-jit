@@ -26,8 +26,8 @@ module Core
       assert_equal :com, Core::Surface.detect(request)
     end
 
-    test "current reads from env when present" do
-      request = RequestStub.new("app.localhost", { Core::Surface::ENV_KEY => :org })
+    test "current returns detected surface from request host" do
+      request = RequestStub.new("org.localhost", {})
       assert_equal :org, Core::Surface.current(request)
     end
   end

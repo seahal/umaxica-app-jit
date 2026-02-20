@@ -189,6 +189,9 @@ module Preference
       "li" => "light",
       "dr" => "dark",
       "sy" => "system",
+      "light" => "light",
+      "dark" => "dark",
+      "system" => "system",
     }.freeze
 
     included do

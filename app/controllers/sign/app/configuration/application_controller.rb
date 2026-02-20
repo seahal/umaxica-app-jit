@@ -4,6 +4,8 @@ module Sign
   module App
     module Configuration
       class ApplicationController < Sign::App::ApplicationController
+        include ::Fuse
+
         auth_required!
       end
     end

@@ -3,6 +3,7 @@
 module Apex
   module Com
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include Pundit::Authorization
       include Sign::ErrorResponses
       include ::Preference::Global
