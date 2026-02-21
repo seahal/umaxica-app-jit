@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module Auth
-  module VerificationEnforcer
+module Authentication
+  module Base
     extend ActiveSupport::Concern
 
-    include ::Verification::Base
+    include ::Auth::Base
   end
 end

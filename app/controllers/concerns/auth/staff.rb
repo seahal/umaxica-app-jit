@@ -3,82 +3,17 @@
 module Auth
   module Staff
     extend ActiveSupport::Concern
+
     include Auth::Base
 
-    # Cookie keys are defined in Auth::Base (environment-dependent)
-    ACCESS_COOKIE_KEY = Auth::Base::ACCESS_COOKIE_KEY
-    REFRESH_COOKIE_KEY = Auth::Base::REFRESH_COOKIE_KEY
-    AUDIT_EVENTS = Auth::Base::AUDIT_EVENTS
+    # Export core constants from Auth::Base for backward compatibility
+    %i(
+      ACCESS_COOKIE_KEY REFRESH_COOKIE_KEY DEVICE_COOKIE_KEY
+      ACCESS_TOKEN_TTL REFRESH_TOKEN_TTL AUDIT_EVENTS
+    ).each { |c| const_set(c, Auth::Base.const_get(c)) }
 
-    included do
-      helper_method :current_staff, :logged_in?, :active_staff?, :logged_in_staff? if respond_to?(:helper_method)
-      alias_method :current_staff, :current_resource
-      alias_method :authenticate_staff!, :authenticate!
-      alias_method :logged_in_staff?, :logged_in?
-      # Prepended after enforce_access_policy! so it runs first:
-      #   transparent_refresh_access_token -> enforce_access_policy!
-      if respond_to?(:prepend_before_action)
-        prepend_before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
-      end
-      include ::AuthorizationAudit
-    end
-
-    def audit_staff_login_failed(staff)
-      record_audit(AUDIT_EVENTS[:login_failed], resource: staff, actor: nil) if staff
-    end
-
-    # Authorization methods
-    def active_staff?
-      current_staff.present? && current_staff.active?
-    end
-
-    def am_i_user?
-      false
-    end
-
-    def am_i_staff?
-      true
-    end
-
-    def am_i_owner?
-      # Returns whether the current staff member holds an "owner" role.
-      # Implement once a staff role/permission model is established
-      # (e.g. check staff membership role: current_staff.role == "owner").
-      false
-    end
-
-    private
-
-    def resource_class
-      ::Staff
-    end
-
-    def token_class
-      StaffToken
-    end
-
-    def audit_class
-      ::StaffActivity
-    end
-
-    def resource_type
-      "staff"
-    end
-
-    def resource_foreign_key
-      :staff_id
-    end
-
-    def test_header_key
-      "X-TEST-CURRENT-STAFF"
-    end
-
-    def sign_in_url_with_return(return_to)
-      new_sign_org_in_url(
-        rt: return_to,
-        host: ENV["SIGN_STAFF_URL"],
-        protocol: request.protocol,
-      )
-    end
+    include ::Authentication::Staff
+    include ::Authorization::Staff
+    include ::Verification::Staff
   end
 end

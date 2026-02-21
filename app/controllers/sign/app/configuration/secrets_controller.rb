@@ -4,7 +4,7 @@ module Sign
   module App
     module Configuration
       class SecretsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::User
 
         before_action :authenticate_user!
         before_action :set_secret, only: %i(show edit destroy)

@@ -5,7 +5,7 @@ module Sign
     module Configuration
       class TelephonesController < ApplicationController
         include Sign::TelephoneRegistrable
-        include ::Auth::VerificationEnforcer
+        include ::Verification::User
 
         before_action :authenticate_user!
 

@@ -5,8 +5,10 @@ module Core
     class ApplicationController < ActionController::Base
       include ::Fuse
       include ::RateLimit
+      include ::Authentication::User
+      include ::Authorization::User
+      include ::Verification::User
       include ::Preference::Regional
-      include ::Auth::User
       include Pundit::Authorization
       include ::Finisher
 

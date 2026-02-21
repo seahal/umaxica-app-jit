@@ -4,7 +4,7 @@ module Sign
   module Org
     module Configuration
       class SecretsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::Staff
 
         before_action :authenticate_staff!
         before_action :set_secret, only: %i(show edit update destroy)

@@ -57,6 +57,19 @@ class Auth::PolicyTestController < ApplicationController
     render json: { message: "success" }
   end
 
+  # Implement abstract methods from Auth::Base
+  def resource_class = User
+
+  def resource_type = "user"
+
+  def token_class = UserToken
+
+  def audit_class = UserAudit
+
+  def resource_foreign_key = :user_id
+
+  def test_header_key = "X-TEST-ID"
+
   # Define policies
   public_strict!
 

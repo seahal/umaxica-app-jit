@@ -8,7 +8,7 @@ module Sign
       class BaseController < ApplicationController
         include ::Preference::Global
         include Common::Otp
-        include ::Auth::StepUp
+        include ::Verification::User
         include Sign::Webauthn
         include Sign::VerificationTiming
 

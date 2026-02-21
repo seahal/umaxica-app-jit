@@ -4,7 +4,7 @@ module Sign
   module Org
     module Configuration
       class WithdrawalsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::Staff
 
         before_action :authenticate_staff!
 

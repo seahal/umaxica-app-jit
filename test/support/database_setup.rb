@@ -33,12 +33,21 @@ ActiveSupport.on_load(:active_record) do
   if defined?(AppPreferenceActivityLevel)
     AppPreferenceActivityLevel.find_or_create_by!(id: AppPreferenceActivityLevel::INFO)
   end
+  if defined?(AppPreferenceActivityEvent)
+    AppPreferenceActivityEvent.ensure_defaults!
+  end
 
   if defined?(ComPreferenceActivityLevel)
     ComPreferenceActivityLevel.find_or_create_by!(id: ComPreferenceActivityLevel::INFO)
   end
+  if defined?(ComPreferenceActivityEvent)
+    ComPreferenceActivityEvent.ensure_defaults!
+  end
 
   if defined?(OrgPreferenceActivityLevel)
     OrgPreferenceActivityLevel.find_or_create_by!(id: OrgPreferenceActivityLevel::INFO)
+  end
+  if defined?(OrgPreferenceActivityEvent)
+    OrgPreferenceActivityEvent.ensure_defaults!
   end
 end

@@ -796,7 +796,21 @@ module Auth
     end
 
     def test_header_key
-      raise NotImplementedError, "test_header_key must be implemented"
+      return "X-TEST-CURRENT-RESOURCE" unless Rails.env.test?
+
+      actor_type = resource_type if respond_to?(:resource_type, true)
+      case actor_type
+      when "user"
+        "X-TEST-CURRENT-USER"
+      when "staff"
+        "X-TEST-CURRENT-STAFF"
+      when "viewer"
+        "X-TEST-CURRENT-VIEWER"
+      else
+        "X-TEST-CURRENT-RESOURCE"
+      end
+    rescue StandardError
+      "X-TEST-CURRENT-RESOURCE"
     end
 
     def sign_in_url_with_return(return_to)
@@ -820,8 +834,6 @@ module Auth
       include ::Sign::ErrorResponses
       include ::SessionLimitGate
 
-      # Important: prepend first so this runs before other before_action hooks.
-      prepend_before_action :enforce_access_policy! if respond_to?(:prepend_before_action)
       if respond_to?(:helper_method)
         helper_method :current_account, :current_session_public_id, :current_session_restricted?
       end
@@ -1372,7 +1384,14 @@ module Auth
     def load_from_test_header
       return nil unless respond_to?(:request, true) && request
 
-      test_id = request.headers[test_header_key]
+      header_key = test_header_key
+      test_id = request.headers[header_key]
+      if test_id.blank? && header_key == "X-TEST-CURRENT-RESOURCE"
+        test_id = request.headers["X-TEST-CURRENT-RESOURCE"] ||
+          request.headers["X-TEST-CURRENT-USER"] ||
+          request.headers["X-TEST-CURRENT-STAFF"] ||
+          request.headers["X-TEST-CURRENT-VIEWER"]
+      end
       return nil unless test_id
 
       resource = resource_class.find_by(id: test_id)

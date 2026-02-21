@@ -19,7 +19,7 @@ module Sign
       # - PATCH /configuration/passkeys/:id (update - description only)
       # - DELETE /configuration/passkeys/:id (destroy)
       class PasskeysController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::Staff
         include Sign::Webauthn
 
         before_action :authenticate_staff!

@@ -4,7 +4,7 @@ module Sign
   module App
     module Configuration
       class TotpsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::User
 
         MAX_TOTPS = 2
         before_action :authenticate_user!

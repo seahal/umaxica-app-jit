@@ -4,7 +4,7 @@ module Sign
   module Org
     module Configuration
       class OutsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::Staff
 
         auth_required!
         before_action :authenticate!

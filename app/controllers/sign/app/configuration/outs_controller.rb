@@ -4,7 +4,7 @@ module Sign
   module App
     module Configuration
       class OutsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::User
 
         auth_required!
         before_action :authenticate!

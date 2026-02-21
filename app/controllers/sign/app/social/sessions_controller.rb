@@ -12,7 +12,7 @@ module Sign
       # The actual OmniAuth callbacks are handled by:
       #   Sign::App::Auth::OmniauthCallbacksController
       class SessionsController < Sign::App::ApplicationController
-        include ::Auth::StepUp
+        include ::Verification::User
         include SocialAuthConcern
 
         SUPPORTED_PROVIDERS = %w(google_oauth2 apple).freeze

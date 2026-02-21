@@ -4,7 +4,7 @@ module Sign
   module App
     module Configuration
       class WithdrawalsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::User
         include Common::Redirect
 
         before_action :authenticate_user!

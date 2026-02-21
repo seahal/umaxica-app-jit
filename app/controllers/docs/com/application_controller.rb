@@ -6,7 +6,9 @@ module Docs
       include ::Fuse
       include ::RateLimit
       include ::Preference::Regional
-      include ::Auth::Viewer
+      include ::Authentication::Viewer
+      include ::Authorization::Viewer
+      include ::Verification::Viewer
       include Pundit::Authorization
       include ::Finisher
 

@@ -27,4 +27,19 @@ class OrgPreferenceActivityEvent < ActivityRecord
            inverse_of: :org_preference_activity_event,
            dependent: :restrict_with_error
   scope :ordered, -> { column_names.include?("position") ? order(:position, :id) : order(:id) }
+
+  DEFAULTS = [
+    CREATE_NEW_PREFERENCE_TOKEN,
+    REFRESH_TOKEN_ROTATED,
+    UPDATE_PREFERENCE_COOKIE,
+    UPDATE_PREFERENCE_LANGUAGE,
+    UPDATE_PREFERENCE_TIMEZONE,
+    RESET_BY_USER_DECISION,
+    UPDATE_PREFERENCE_REGION,
+    UPDATE_PREFERENCE_COLORTHEME,
+  ].freeze
+
+  def self.ensure_defaults!
+    DEFAULTS.each { |id| find_or_create_by!(id: id) }
+  end
 end

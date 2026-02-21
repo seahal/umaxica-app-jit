@@ -6,7 +6,9 @@ module Apex
       include ::Fuse
       include ::RateLimit
       include ::Preference::Global
-      include ::Auth::Staff
+      include ::Authentication::Staff
+      include ::Authorization::Staff
+      include ::Verification::Staff
       include Pundit::Authorization
       include ::Finisher
 

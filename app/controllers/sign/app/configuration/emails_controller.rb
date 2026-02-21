@@ -4,7 +4,7 @@ module Sign
   module App
     module Configuration
       class EmailsController < ApplicationController
-        include ::Auth::VerificationEnforcer
+        include ::Verification::User
 
         before_action :authenticate_user!
 

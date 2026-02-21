@@ -6,7 +6,7 @@ module Sign
       module Emails
         class RegistrationsController < ::Sign::App::Configuration::ApplicationController
           include Sign::EmailRegistrationFlow
-          include ::Auth::VerificationEnforcer
+          include ::Verification::User
 
           before_action :authenticate_user!
 

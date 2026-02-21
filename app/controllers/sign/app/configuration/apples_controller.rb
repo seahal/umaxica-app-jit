@@ -4,7 +4,7 @@ module Sign
   module App
     module Configuration
       class ApplesController < ApplicationController
-        include ::Auth::StepUp
+        include ::Verification::User
 
         before_action :authenticate_user!
         before_action -> { require_step_up!(scope: "social_unlink") }, only: :destroy

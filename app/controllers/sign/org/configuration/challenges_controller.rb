@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Sign::Org::Configuration::ChallengesController < ApplicationController
-  include ::Auth::VerificationEnforcer
+  include ::Verification::Staff
 
   before_action :authenticate_staff!
 
