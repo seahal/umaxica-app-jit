@@ -56,7 +56,7 @@ class UserActivity < ActivityRecord
   before_create :set_timestamp
   before_validation do
     if actor_id.blank? && actor_type.blank?
-      self.actor_id = "00000000-0000-0000-0000-000000000000"
+      self.actor_id = 0
       self.actor_type = "User"
     end
   end

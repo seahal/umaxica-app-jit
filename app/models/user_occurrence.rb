@@ -22,7 +22,6 @@
 #  index_user_occurrences_on_event_type_and_created_at  (event_type,created_at)
 #  index_user_occurrences_on_expires_at                 (expires_at)
 #  index_user_occurrences_on_public_id                  (public_id) UNIQUE
-#  index_user_occurrences_on_status_id                  (status_id)
 #  index_user_occurrences_on_status_id_and_created_at   (status_id,created_at)
 #
 # Foreign Keys

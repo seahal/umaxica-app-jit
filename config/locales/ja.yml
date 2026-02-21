@@ -65,6 +65,7 @@ ja:
     social_auth:
       provider_error: "プロバイダーとの通信中にエラーが発生しました"
   auth:
+    unauthorized: "権限がありません"
     step_up:
       required: "続行するには再認証が必要です。"
       session_expired: "認証が必要です。"

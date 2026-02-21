@@ -44,13 +44,14 @@ module Sign
             return
           end
 
-          @user_telephone.skip_user_presence_validation = true
           @user_telephone.validate
-          @user_telephone.skip_user_presence_validation = false
+
           existing_telephone = find_existing_telephone_by_digest
           uniqueness_only = telephone_uniqueness_only_error?(@user_telephone)
 
-          if @user_telephone.errors.any? && !uniqueness_only
+          has_errors = @user_telephone.errors.details.except(:user, :user_id).any?
+
+          if has_errors && !uniqueness_only
             log_signup_telephone_errors
             render :new, status: :unprocessable_content
             return
@@ -392,13 +393,15 @@ module Sign
         end
 
         def telephone_uniqueness_only_error?(user_telephone)
-          return false if user_telephone.errors.empty?
+          # ignore :user and :user_id error
+          errors_to_check = user_telephone.errors.details.except(:user, :user_id)
+          return false if errors_to_check.empty?
 
           # Fields that can have uniqueness errors
           uniqueness_fields = %i(number raw_number number_bidx number_digest)
 
           # Check if all errors are :taken errors on the uniqueness fields
-          user_telephone.errors.details.each do |field, errors|
+          errors_to_check.each do |field, errors|
             return false unless uniqueness_fields.include?(field)
             return false unless errors.all? { |error| error[:error] == :taken }
           end

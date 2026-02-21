@@ -22,7 +22,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (staff_token_id => staff_tokens.id)
+#  fk_rails_...  (staff_token_id => staff_tokens.id) ON DELETE => cascade
 #
 require "test_helper"
 

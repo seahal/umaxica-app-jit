@@ -596,7 +596,7 @@ GEM
       prism (>= 0.25.0)
       sorbet-runtime (>= 0.5.9914)
       zeitwerk (>= 2.6.1)
-    pagy (43.2.10)
+    pagy (43.3.0)
       json
       uri
       yaml
@@ -791,14 +791,14 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12956)
-      sorbet-static (= 0.6.12956)
-    sorbet-runtime (0.6.12956)
-    sorbet-static (0.6.12956-aarch64-linux)
-    sorbet-static (0.6.12956-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12956)
-      sorbet (= 0.6.12956)
-      sorbet-runtime (= 0.6.12956)
+    sorbet (0.6.12957)
+      sorbet-static (= 0.6.12957)
+    sorbet-runtime (0.6.12957)
+    sorbet-static (0.6.12957-aarch64-linux)
+    sorbet-static (0.6.12957-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12957)
+      sorbet (= 0.6.12957)
+      sorbet-runtime (= 0.6.12957)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -942,6 +942,7 @@ DEPENDENCIES
   rubocop-i18n
   rubocop-minitest
   rubocop-performance
+  rubocop-rails
   rubocop-rails-omakase
   rubocop-rake
   rubocop-rubycw

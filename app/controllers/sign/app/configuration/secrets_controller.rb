@@ -7,7 +7,7 @@ module Sign
         include ::Verification::User
 
         before_action :authenticate_user!
-        before_action :set_secret, only: %i(show edit destroy)
+        before_action :set_secret, only: %i(show edit destroy regenerate)
         before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
 
         def index
@@ -53,6 +53,13 @@ module Sign
           redirect_to sign_app_configuration_secrets_path, status: :see_other
         end
 
+        # Reserved for future secret rotation support.
+        def regenerate
+          redirect_to sign_app_configuration_secret_path(@secret.public_id),
+                      alert: t("messages.not_implemented"),
+                      status: :see_other
+        end
+
         private
 
         def set_secret
@@ -70,7 +77,7 @@ module Sign
         end
 
         def verification_required_action?
-          action_name == "destroy"
+          %w(destroy regenerate).include?(action_name)
         end
 
         def verification_scope

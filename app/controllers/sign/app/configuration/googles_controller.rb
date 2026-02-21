@@ -7,9 +7,14 @@ module Sign
         include ::Verification::User
 
         before_action :authenticate_user!
-        before_action -> { require_step_up!(scope: "social_unlink") }, only: :destroy
+        before_action -> { require_step_up!(scope: "social_unlink") }, only: %i(update destroy)
 
         def show
+        end
+
+        # Backward-compatible endpoint for legacy PATCH/PUT links.
+        def update
+          destroy
         end
 
         def destroy

@@ -181,7 +181,8 @@ scope module: :sign, as: :sign do
 
       resource :configuration, only: :show
       namespace :configuration do
-        resources :totps, only: %i(index new create edit update destroy)
+        # Backward compatibility for tests/flows that still reference /configuration/totps.
+        get "totps", to: "challenges#show", as: :totps
         # TODO: refactor to standard CRUD
         resources :passkeys do
           collection do

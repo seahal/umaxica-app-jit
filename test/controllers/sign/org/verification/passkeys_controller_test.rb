@@ -31,12 +31,16 @@ class Sign::Org::Verification::PasskeysControllerTest < ActionDispatch::Integrat
 
           get new_sign_org_verification_passkey_url(ri: "jp"), headers: @headers
           assert_response :success
-          # assert_response :redirect
 
-          # post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
+          post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
 
-          # assert_response :redirect
-          # assert_redirected_to sign_org_configuration_passkeys_url(ri: "jp")
+          assert_response :redirect
+          assert_redirected_to sign_org_configuration_passkeys_url(ri: "jp")
+
+          @token.reload
+          assert_not_nil @token.last_step_up_at
+          assert_equal "configuration_passkey", @token.last_step_up_scope
+          assert_nil session[:reauth]
         end
       end
     end

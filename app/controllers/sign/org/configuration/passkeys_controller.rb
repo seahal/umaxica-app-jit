@@ -45,6 +45,20 @@ module Sign
         def edit
         end
 
+        # POST /configuration/passkeys
+        # Reserved for future non-WebAuthn registration flow.
+        def create
+          respond_to do |format|
+            format.html do
+              redirect_to new_sign_org_configuration_passkey_path,
+                          alert: t("messages.not_implemented")
+            end
+            format.json do
+              render json: { error: t("messages.not_implemented") }, status: :unprocessable_content
+            end
+          end
+        end
+
         # POST /configuration/passkeys/options
         # Generate WebAuthn registration options
         #
@@ -208,7 +222,7 @@ module Sign
         end
 
         def verification_required_action?
-          %w(new options verification edit update destroy).include?(action_name)
+          %w(new create options verification edit update destroy).include?(action_name)
         end
 
         def verification_scope

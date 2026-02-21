@@ -17,6 +17,13 @@ module Sign
       # the staff's registered passkeys.
       class PasskeysController < ApplicationController
         include Sign::Webauthn
+        include Sign::PasskeyAuthentication
+        include Sign::PasskeyAuthenticationHelpers
+        include Sign::PasskeyOptionsFlow
+        include Sign::PasskeyVerificationFlow
+        include Sign::PasskeySignInFlow
+        include Sign::PasskeyLoginResultFlow
+        include StaffIdentifierDetection
         include MinimumResponseBudget
         include SessionLimitGate
 
@@ -29,192 +36,63 @@ module Sign
         def new
         end
 
-        # POST /in/passkeys/options
-        # Generate WebAuthn authentication options for the staff identified by email or staff_code
-        #
-        # Request body:
-        #   { identifier: "staff@example.com" } or { identifier: "ab12cd34" }
-        #
-        # Response:
-        #   {
-        #     challenge_id: "abc123",
-        #     options: { ... WebAuthn options ... }
-        #   }
-        # rubocop:disable Metrics/AbcSize
-        def options
-          identifier = params[:identifier].to_s.strip.downcase
-          return render_error("errors.webauthn.identifier_required", :unprocessable_content) if identifier.blank?
-
-          staff = find_active_staff(identifier)
-          return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) unless staff
-
-          passkeys = staff.staff_passkeys.where(status_id: StaffPasskeyStatus::ACTIVE)
-          return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) if passkeys.empty?
-
-          challenge_id, request_options = generate_challenge_options(passkeys, staff)
-
-          render json: {
-            challenge_id: challenge_id,
-            options: request_options,
-          }, status: :ok
-        rescue Sign::Webauthn::OriginValidationError => e
-          Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
-          render_error("errors.webauthn.origin_invalid", :forbidden)
-        rescue StandardError => e
-          Rails.logger.error("WebAuthn authentication options failed: #{e.message}")
-          render_error("errors.webauthn.options_failed", :unprocessable_content)
-        end
-
-        # rubocop:enable Metrics/AbcSize
-
-        # POST /in/passkeys/verification
-        # Verify WebAuthn authentication response and establish session
-        #
-        # Request body:
-        #   {
-        #     challenge_id: "abc123",
-        #     credential: { id: "...", response: { ... }, ... }
-        #   }
-        #
-        # Response on success:
-        #   {
-        #     status: "ok",
-        #     access_token: "...",
-        #     token_type: "Bearer",
-        #     expires_in: 3600,
-        #     redirect_url: "/"
-        #   }
-        # rubocop:disable Metrics/AbcSize
-        def verification
-          challenge_id = params[:challenge_id]
-          return render_error("errors.webauthn.challenge_id_required", :bad_request) if challenge_id.blank?
-
-          challenge_data = peek_challenge(challenge_id)
-          return render_error("errors.webauthn.challenge_invalid", :bad_request) unless challenge_data
-
-          staff_id = challenge_data["staff_id"]
-
-          with_challenge(challenge_id, purpose: :authentication) do |challenge|
-            verify_and_login(challenge, staff_id)
-          end
-        rescue Sign::Webauthn::ChallengeNotFoundError, Sign::Webauthn::ChallengeExpiredError => e
-          Rails.logger.warn("WebAuthn challenge error: #{e.message}")
-          render_error("errors.webauthn.challenge_invalid", :bad_request)
-        rescue Sign::Webauthn::ChallengePurposeMismatchError => e
-          Rails.logger.warn("WebAuthn challenge purpose mismatch: #{e.message}")
-          render_error("errors.webauthn.challenge_invalid", :bad_request)
-        rescue WebAuthn::SignCountVerificationError => e
-          Rails.logger.warn("WebAuthn sign count verification failed: #{e.message}")
-          render_error("errors.webauthn.sign_count_mismatch", :unauthorized)
-        rescue WebAuthn::Error => e
-          Rails.logger.warn("WebAuthn authentication failed: #{e.message}")
-          render_error("errors.webauthn.verification_failed", :unauthorized)
-        end
-
-        # rubocop:enable Metrics/AbcSize
-
         private
 
-        def credential_params
-          params.expect(
-            credential: [
-              :id,
-              :rawId,
-              :type,
-              :authenticatorAttachment,
-              { response: %i(clientDataJSON authenticatorData signature userHandle) },
-              { clientExtensionResults: {} },
-            ],
-          )
+        def normalized_passkey_identifier
+          params[:identifier].to_s.strip.downcase
         end
 
-        def find_staff_by_identifier(identifier)
-          # Try to find by email first
-          staff_email = StaffEmail.find_by(address: identifier)
-          return staff_email.staff if staff_email
-
-          # Try to find by staff_code (public_id)
-          Staff.find_by(public_id: identifier)
-        end
-
-        def retrieve_redirect_parameter_for_checkpoint
-          params[:rd].presence
-        end
-
-        def find_active_staff(identifier)
+        def find_active_passkey_actor(identifier)
           staff = find_staff_by_identifier(identifier)
           staff if staff&.active?
         end
 
-        def generate_challenge_options(passkeys, staff)
-          allow_credentials = passkeys.map { |pk| { id: pk.webauthn_id } }
-          challenge_id, request_options = create_authentication_challenge(allow_credentials: allow_credentials)
-
-          challenges = session[CHALLENGE_SESSION_KEY]
-          challenges[challenge_id]["staff_id"] = staff.id
-          session[CHALLENGE_SESSION_KEY] = challenges
-
-          [challenge_id, request_options]
+        def active_passkeys_for_actor(staff)
+          staff.staff_passkeys.where(status_id: StaffPasskeyStatus::ACTIVE)
         end
 
-        def render_error(message_key, status)
-          render json: { error: I18n.t(message_key) }, status: status
+        def passkey_challenge_actor_id_key
+          "staff_id"
         end
 
-        def verify_and_login(challenge, staff_id)
-          credential = WebAuthn::Credential.from_get(credential_params.to_h)
-          passkey = StaffPasskey.find_by(webauthn_id: credential.id)
-
-          unless passkey && passkey.staff_id == staff_id
-            Rails.logger.warn("WebAuthn: Credential not found or staff mismatch")
-            return render_error("errors.webauthn.credential_not_found", :unauthorized)
-          end
-
-          verify_passkey(credential, passkey, challenge)
-          result = log_in(passkey.staff, record_login_audit: true)
-          handle_login_result(result)
+        def passkey_sign_in_model
+          StaffPasskey
         end
 
-        def verify_passkey(credential, passkey, challenge)
-          with_webauthn_config do
-            credential.verify(
-              challenge,
-              public_key: passkey.public_key,
-              sign_count: passkey.sign_count,
-            )
-          end
-          passkey.update!(sign_count: credential.sign_count)
+        def passkey_belongs_to_challenge_actor?(passkey, actor_id)
+          passkey.staff_id == actor_id
         end
 
-        def handle_login_result(result)
+        def passkey_owner_mismatch_log_message
+          "WebAuthn: Credential not found or staff mismatch"
+        end
+
+        def perform_passkey_sign_in(passkey)
+          log_in(passkey.staff, record_login_audit: true)
+        end
+
+        def handle_domain_specific_login_status(result)
           case result[:status]
           when :totp_required
             render json: { status: "totp_required", redirect_url: new_sign_org_in_totp_path }, status: :ok
+            true
           when :session_limit_hard_reject
             render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
+            true
           when :session_limit_exceeded
             issue_session_limit_gate!(return_to: request.fullpath, flow: "in.passkeys.session")
             render json: {
               status: "session_limit_exceeded",
               redirect_url: new_sign_org_in_passkey_path,
             }, status: :ok
-          when :success
-            render_success(result)
+            true
           else
-            render_error("errors.login_failed", :unprocessable_content)
+            false
           end
         end
 
-        def render_success(result)
-          issue_checkpoint!
-          redirect_url = sign_org_in_checkpoint_path(rd: retrieve_redirect_parameter_for_checkpoint, ri: params[:ri])
-          render json: {
-            status: "ok",
-            access_token: result[:access_token],
-            token_type: result[:token_type],
-            expires_in: result[:expires_in],
-            redirect_url: redirect_url,
-          }, status: :ok
+        def passkey_checkpoint_redirect_url
+          sign_org_in_checkpoint_path(rd: retrieve_redirect_parameter_for_checkpoint, ri: params[:ri])
         end
 
         def minimum_response_budget_enabled?

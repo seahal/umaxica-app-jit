@@ -9,7 +9,6 @@ scope module: :apex, as: :apex do
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
-          resource :csrf, only: :show
           resource :health, only: :show
         end
       end
@@ -31,10 +30,6 @@ scope module: :apex, as: :apex do
         resource :cookie, only: [:edit, :update]
       end
       resource :configuration, only: [:show]
-      namespace :configuration do
-        # logged in user's email settings.
-        resources :emails, only: %i(edit update new create)
-      end
     end
   end
 
@@ -48,7 +43,6 @@ scope module: :apex, as: :apex do
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
-          resource :csrf, only: :show
           resource :health, only: :show
         end
       end
@@ -89,7 +83,6 @@ scope module: :apex, as: :apex do
     scope module: :org, as: :org do
       root to: "roots#index"
       # health check for html
-      resource :csrf, only: :show
       resource :health, only: :show, format: :html
       # Edge API endpoint (browser/SPA)
       namespace :edge do
@@ -100,35 +93,16 @@ scope module: :apex, as: :apex do
       # for emergency
       namespace :emergency do
         namespace :app do
-          resource :outage, only: %i(show update)
-          resource :token, only: %i(show update destroy)
+          resource :token, only: %i(show update)
           resource :cache, only: %i(show update destroy)
         end
         namespace :com do
-          resource :outage, only: %i(show update)
           resource :token, only: %i(show update)
           resource :cache, only: %i(show update destroy)
         end
         namespace :org do
-          resource :outage, only: %i(show update)
-          resource :token, only: %i(show update destroy)
           resource :cache, only: %i(show update destroy)
         end
-      end
-      namespace :status do
-        namespace :app do
-          # keep namespace for future status routes
-        end
-        resource :app, only: :show
-        namespace :com do
-          # keep namespace for future status routes
-        end
-        resource :com, only: :show
-
-        namespace :org do
-          # keep namespace for future status routes
-        end
-        resource :org, only: :show
       end
       # preferences
       resource :preference, only: [:show]

@@ -27,7 +27,6 @@ module Sign
       @user_telephone = existing_user_telephone || user.user_telephones.build(raw_number: number)
       @user_telephone.raw_number = number if existing_user_telephone
       @user_telephone.user_telephone_status_id = UserTelephoneStatus::UNVERIFIED
-      @user_telephone.skip_user_presence_validation = false
       if auto_accept_confirmations
         @user_telephone.confirm_policy = true
         @user_telephone.confirm_using_mfa = true

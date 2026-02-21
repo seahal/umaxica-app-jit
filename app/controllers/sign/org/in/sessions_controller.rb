@@ -54,6 +54,12 @@ class Sign::Org::In::SessionsController < ApplicationController
     end
   end
 
+  # Reserved for future explicit logout/session-cancel endpoint.
+  def destroy
+    reset_session
+    redirect_to login_path
+  end
+
   private
 
   def require_valid_gate

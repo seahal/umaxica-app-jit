@@ -22,7 +22,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (staff_token_id => staff_tokens.id)
+#  fk_rails_...  (staff_token_id => staff_tokens.id) ON DELETE => cascade
 #
 class StaffVerification < TokenRecord
   include RefreshTokenShared
@@ -30,7 +30,7 @@ class StaffVerification < TokenRecord
   COOKIE_NAME = "__Host-jit_step_up_org"
   TTL = 15.minutes
 
-  belongs_to :staff_token
+  belongs_to :staff_token, inverse_of: :staff_verifications
 
   validates :token_digest, presence: true, uniqueness: true
   validates :expires_at, presence: true

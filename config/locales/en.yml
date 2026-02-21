@@ -118,6 +118,7 @@ en:
           invalid_session: "Invalid session reference."
           cannot_revoke_current: "Cannot revoke current session this way. Use cancel to log out."
   auth:
+    unauthorized: "You are not authorized to access this page."
     step_up:
       required: "Re-authentication is required to continue."
       session_expired: "Verification required."

@@ -50,6 +50,7 @@
 class StaffToken < TokenRecord
   include ::PublicId
   include ::RefreshTokenable
+  include ::SignedSessionReference
 
   # Maximum active sessions per staff
   MAX_SESSIONS_PER_STAFF = 2
@@ -68,6 +69,7 @@ class StaffToken < TokenRecord
   belongs_to :staff
   belongs_to :staff_token_status
   belongs_to :staff_token_kind, optional: true
+  has_many :staff_verifications, dependent: :delete_all, inverse_of: :staff_token
   attribute :staff_token_status_id, default: StaffTokenStatus::NEYO
   attribute :staff_token_kind_id, default: StaffTokenKind::BROWSER_WEB
   attribute :status, default: STATUS_ACTIVE
@@ -106,24 +108,6 @@ class StaffToken < TokenRecord
   # Revoke the session
   def revoke!
     update!(revoked_at: Time.current, status: STATUS_REVOKED)
-  end
-
-  # Generate a signed reference for safe external exposure
-  def signed_ref
-    Rails.application.message_verifier(:session_ref).generate(
-      { id: id, pid: public_id },
-      expires_in: 1.hour,
-    )
-  end
-
-  # Find token by signed reference (returns nil if invalid/expired)
-  def self.find_from_signed_ref(signed_ref)
-    return nil if signed_ref.blank?
-
-    data = Rails.application.message_verifier(:session_ref).verify(signed_ref)
-    find_by(id: data[:id], public_id: data[:pid])
-  rescue ActiveSupport::MessageVerifier::InvalidSignature
-    nil
   end
 
   private

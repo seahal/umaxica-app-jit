@@ -44,18 +44,15 @@ class UserEmail < PrincipalRecord
 
   include Turnstile
 
-  attr_accessor :skip_user_presence_validation
-
   MAX_EMAILS_PER_USER = 4
   attribute :user_email_status_id, default: UserEmailStatus::UNVERIFIED
   belongs_to :user_email_status,
              optional: true,
              inverse_of: :user_emails
-  belongs_to :user, optional: true, inverse_of: :user_emails
+  belongs_to :user, inverse_of: :user_emails
   validates :address, uniqueness: { case_sensitive: false }
   validates :address_bidx, uniqueness: true, allow_nil: true
   validates :address_digest, uniqueness: true, allow_nil: true
-  validates :user, presence: true, unless: :skip_user_presence_validation
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }

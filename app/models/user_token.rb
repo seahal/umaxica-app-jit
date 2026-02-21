@@ -50,6 +50,7 @@
 class UserToken < TokenRecord
   include ::PublicId
   include ::RefreshTokenable
+  include ::SignedSessionReference
 
   # Maximum active sessions per user
   MAX_SESSIONS_PER_USER = 2
@@ -69,6 +70,7 @@ class UserToken < TokenRecord
   belongs_to :user, inverse_of: :user_tokens
   belongs_to :user_token_status
   belongs_to :user_token_kind, optional: true
+  has_many :user_verifications, dependent: :delete_all, inverse_of: :user_token
   attribute :user_token_status_id, default: UserTokenStatus::NEYO
   attribute :user_token_kind_id, default: UserTokenKind::BROWSER_WEB
   attribute :status, default: STATUS_ACTIVE
@@ -107,32 +109,6 @@ class UserToken < TokenRecord
   # Revoke the session
   def revoke!
     update!(revoked_at: Time.current, status: STATUS_REVOKED)
-  end
-
-  # Generate a signed reference for safe external exposure
-  def signed_ref
-    Rails.application.message_verifier(:session_ref).generate(
-      { id: id, pid: public_id },
-      expires_in: 1.hour,
-    )
-  end
-
-  # Find token by signed reference (returns nil if invalid/expired)
-  def self.find_from_signed_ref(signed_ref)
-    return nil if signed_ref.blank?
-
-    data = Rails.application.message_verifier(:session_ref).verify(signed_ref)
-    token_id = data[:id] || data["id"]
-    public_id = data[:pid] || data["pid"]
-    find_logic = -> { find_by(id: token_id, public_id: public_id) }
-
-    if Rails.env.test?
-      TokenRecord.connected_to(role: :writing, &find_logic)
-    else
-      TokenRecord.connected_to(role: :reading, &find_logic)
-    end
-  rescue ActiveSupport::MessageVerifier::InvalidSignature
-    nil
   end
 
   private

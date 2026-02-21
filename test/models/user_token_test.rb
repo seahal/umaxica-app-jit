@@ -286,4 +286,20 @@ class UserTokenTest < ActiveSupport::TestCase
                    now: Time.current,
                  )[:status]
   end
+
+  test "find_from_signed_ref resolves token when verifier payload has string keys" do
+    token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    signed_ref = Rails.application.message_verifier(:session_ref).generate(
+      { "id" => token.id, "pid" => token.public_id },
+      expires_in: 1.hour,
+    )
+
+    found = UserToken.find_from_signed_ref(signed_ref)
+
+    assert_equal token.id, found&.id
+  end
+
+  test "find_from_signed_ref returns nil for invalid signature" do
+    assert_nil UserToken.find_from_signed_ref("invalid-signed-ref")
+  end
 end

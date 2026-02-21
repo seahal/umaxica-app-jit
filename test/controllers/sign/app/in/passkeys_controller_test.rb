@@ -157,12 +157,13 @@ module Sign::App::In
         }
 
         # Should log in
-        post verification_sign_app_in_passkeys_path(ri: "jp"), params: params
+        post verification_sign_app_in_passkeys_path(ri: "jp", rd: "/configuration/emails"), params: params
 
         assert_response :ok
         json = response.parsed_body
         assert_equal "ok", json["status"]
         assert_not_nil json["access_token"]
+        assert_includes json["redirect_url"], "rd="
 
         # Challenge verification updates sign count
         assert_equal 1, @passkey.reload.sign_count
@@ -269,6 +270,92 @@ module Sign::App::In
 
       assert_response :unauthorized
       assert_equal mismatch_body, response.body
+    end
+
+    test "verification returns unauthorized when challenge actor and passkey owner mismatch" do
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_email.address)
+      challenge_id = response.parsed_body["challenge_id"]
+
+      other_user = create_verified_user_with_email(email_address: "passkey_other_#{SecureRandom.hex(4)}@example.com")
+      other_passkey = UserPasskey.create!(
+        user: other_user,
+        webauthn_id: Base64.urlsafe_encode64("other_user_key_#{SecureRandom.hex(4)}", padding: false),
+        external_id: SecureRandom.uuid,
+        public_key: "other_user_key",
+        description: "Other User Key",
+        status_id: UserPasskeyStatus::ACTIVE,
+      )
+
+      mock_credential = Object.new
+      mock_credential.define_singleton_method(:id) { other_passkey.webauthn_id }
+      mock_credential.define_singleton_method(:sign_count) { 1 }
+      mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+      WebAuthn::Credential.stub :from_get, mock_credential do
+        post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
+          challenge_id: challenge_id,
+          credential: {
+            id: other_passkey.webauthn_id,
+            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+          },
+        }
+      end
+
+      assert_response :unauthorized
+      assert_includes response.body, I18n.t("errors.webauthn.credential_not_found")
+    end
+
+    test "verification returns 422 when login result status is unknown" do
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_email.address)
+      challenge_id = response.parsed_body["challenge_id"]
+
+      passkey_id = @passkey.webauthn_id
+      mock_credential = Object.new
+      mock_credential.define_singleton_method(:id) { passkey_id }
+      mock_credential.define_singleton_method(:sign_count) { 1 }
+      mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+      Sign::App::In::PasskeysController.any_instance.stub(
+        :complete_sign_in_or_start_mfa!, { status: :unknown },
+      ) do
+        WebAuthn::Credential.stub :from_get, mock_credential do
+          post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
+            challenge_id: challenge_id,
+            credential: {
+              id: @passkey.webauthn_id,
+              response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+            },
+          }
+        end
+      end
+
+      assert_response :unprocessable_content
+      assert_includes response.body, I18n.t("errors.login_failed")
+    end
+
+    test "verification returns bad request on challenge purpose mismatch" do
+      email = UserEmail.find_by(user: @user).address
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email)
+      challenge_id = response.parsed_body["challenge_id"]
+
+      mismatch_error = Sign::Webauthn::ChallengePurposeMismatchError.new("purpose mismatch")
+
+      Sign::App::In::PasskeysController.any_instance.stub(
+        :with_challenge, ->(*_args, &_block) {
+                           raise mismatch_error
+                         },
+      ) do
+        post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
+          challenge_id: challenge_id,
+          credential: {
+            id: @passkey.webauthn_id,
+            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+          },
+        }
+      end
+
+      assert_response :bad_request
+      assert_includes response.body, I18n.t("errors.webauthn.challenge_invalid")
     end
 
     test "options returns 409 when user is at session hard_reject limit" do

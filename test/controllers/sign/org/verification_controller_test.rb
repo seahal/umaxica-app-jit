@@ -43,6 +43,13 @@ class Sign::Org::VerificationControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
+  test "show redirects to configuration when return_to is invalid" do
+    get sign_org_verification_url(scope: "configuration_email", return_to: "%%%INVALID%%%", ri: "jp"),
+        headers: @headers
+
+    assert_redirected_to sign_org_configuration_path(ri: "jp")
+  end
+
   test "show handles recent verification" do
     @token.update!(last_step_up_at: 5.minutes.ago, last_step_up_scope: "configuration_email")
 

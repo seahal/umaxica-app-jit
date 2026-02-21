@@ -209,13 +209,15 @@ module Sign
           )
           raise
         end
+
+        private
+
+        def log_signup_email_errors
+          return unless @user_email&.errors&.any?
+
+          Rails.logger.warn("signup email invalid: #{@user_email.errors.full_messages.join(", ")}")
+        end
       end
     end
   end
-end
-
-def log_signup_email_errors
-  return unless @user_email&.errors&.any?
-
-  Rails.logger.warn("signup email invalid: #{@user_email.errors.full_messages.join(", ")}")
 end

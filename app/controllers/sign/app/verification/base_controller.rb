@@ -11,6 +11,12 @@ module Sign
         include ::Verification::User
         include Sign::Webauthn
         include Sign::VerificationTiming
+        include Sign::VerificationCommonBase
+        include Sign::VerificationAuditAndCookie
+        include Sign::VerificationReauthSessionStore
+        include Sign::VerificationReauthLifecycle
+        include Sign::VerificationPasskeyChecks
+        include Sign::VerificationTotpChecks
 
         auth_required!
 
@@ -37,127 +43,12 @@ module Sign
 
         private
 
-        def require_ri!
-          params.require(:ri)
-        end
-
-        def set_actor_token
-          @actor_token = token_class.find_by!(public_id: current_session_public_id)
-        end
-
-        def actor_token
-          @actor_token
-        end
-
         # ------------------------------------------------------------------
         # Session-based reauth state management
         # ------------------------------------------------------------------
 
-        # Called only at the entry point (/verification#show).
-        # Decodes Base64-encoded return_to, validates scope + return_to, stores in session.
-        def start_reauth_session!(scope:, return_to_param:)
-          decoded = Base64.urlsafe_decode64(return_to_param.to_s)
-          safe_path = safe_internal_path(decoded)
-          raise ActionController::BadRequest, "invalid return_to" if safe_path.blank?
-
-          scope_str = scope.to_s
-          raise ActionController::BadRequest, "invalid scope" unless ALLOWED_SCOPES.key?(scope_str)
-
-          pattern = ALLOWED_SCOPES[scope_str]
-          raise ActionController::BadRequest, "scope mismatch" unless safe_path.match?(pattern)
-
-          session[REAUTH_SESSION_KEY] = {
-            "user_id" => current_user.id,
-            "scope" => scope_str,
-            "return_to" => safe_path,
-            "expires_at" => REAUTH_TTL.from_now.to_i,
-          }
-        rescue ArgumentError
-          raise ActionController::BadRequest, "invalid return_to encoding"
-        end
-
-        def current_reauth_session
-          session[REAUTH_SESSION_KEY]
-        end
-
-        # Validates the reauth session stored in Rails session.
-        # Redirects and returns false if invalid; returns true if valid.
-        def require_reauth_session!
-          rs = current_reauth_session
-          if valid_reauth_session?(rs)
-            return true
-          end
-
-          clear_reauth_state!
-          if restore_reauth_session_from_params! && valid_reauth_session?(current_reauth_session)
-            return true
-          end
-
-          safe_redirect_to(
-            sign_app_verification_path(verification_recovery_redirect_params),
-            fallback: sign_app_verification_path(ri: params[:ri]),
-            alert: I18n.t("auth.step_up.session_expired"),
-          )
-          false
-        end
-
-        # Consumes the reauth session after successful verification.
-        # Updates the step-up token, deletes session, and redirects to return_to.
-        def consume_reauth_session!
-          rs = current_reauth_session
-          return_to = rs["return_to"]
-          scope = rs["scope"]
-
-          now = Time.current
-          verification, raw_token = UserVerification.issue_for_token!(token: @actor_token)
-          @actor_token.update!(last_step_up_at: now, last_step_up_scope: scope)
-          set_verification_cookie!(raw_token, expires_at: verification.expires_at)
-          create_audit_event!(UserActivityEvent::STEP_UP_VERIFIED, subject: current_user)
-
-          session.delete(REAUTH_SESSION_KEY)
-          session.delete(EMAIL_OTP_SESSION_KEY)
-
-          flash[:notice] = I18n.t("sign.app.verification.success.complete")
-          safe_redirect_to(return_to, fallback: sign_app_verification_path(ri: params[:ri]))
-        end
-
-        # Checks that the given verification method is available for the current user.
-        # Redirects and returns false if unavailable.
-        def require_method_available!(method_sym)
-          return true if available_step_up_methods.include?(method_sym)
-
-          safe_redirect_to(
-            sign_app_verification_path(ri: params[:ri]),
-            fallback: "/verification",
-            alert: I18n.t("auth.step_up.method_unavailable"),
-          )
-          false
-        end
-
         def verification_params
           params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json, :scope, :return_to, :rd)
-        end
-
-        def verification_scope
-          current_reauth_session&.fetch("scope", nil)
-        end
-
-        def redirect_if_recent_verification_for_get!
-          scope = verification_scope
-          return false unless scope
-          return false unless verification_recent_for_get?(scope: scope)
-
-          consume_reauth_session!
-          true
-        end
-
-        def redirect_if_recent_verification_for_post!
-          scope = verification_scope
-          return false unless scope
-          return false unless verification_recent_for_post?(scope: scope)
-
-          consume_reauth_session!
-          true
         end
 
         def email_otp_session_active?
@@ -227,109 +118,81 @@ module Sign
             params[:rd].to_s
         end
 
+        def reauth_actor_id
+          current_user.id
+        end
+
+        def handle_invalid_reauth_session!
+          clear_reauth_state!
+          if restore_reauth_session_from_params! && valid_reauth_session?(current_reauth_session)
+            return true
+          end
+
+          safe_redirect_to(
+            sign_app_verification_path(verification_recovery_redirect_params),
+            fallback: sign_app_verification_path(ri: params[:ri]),
+            alert: I18n.t("auth.step_up.session_expired"),
+          )
+          false
+        end
+
+        def verification_unavailable_redirect_path
+          sign_app_verification_path(ri: params[:ri])
+        end
+
         def clear_reauth_state!
           session.delete(REAUTH_SESSION_KEY)
           session.delete(EMAIL_OTP_SESSION_KEY)
         end
 
-        def set_verification_cookie!(raw_token, expires_at:)
-          cookies[UserVerification.cookie_name] = {
-            value: raw_token,
-            expires: expires_at,
-            httponly: true,
-            secure: Rails.env.production? || request.ssl?,
-            same_site: :lax,
-            path: "/",
-          }
+        def verification_model
+          UserVerification
         end
 
-        def create_audit_event!(event_id, subject:)
-          ActivityRecord.connected_to(role: :writing) do
-            UserActivityEvent.find_or_create_by!(id: event_id)
-            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
-          end
-
-          UserActivity.create!(
-            actor_type: "User",
-            actor_id: current_user.id,
-            event_id: event_id,
-            subject_id: subject.id.to_s,
-            subject_type: subject.class.name,
-            occurred_at: Time.current,
-          )
+        def verification_success_event_id
+          UserActivityEvent::STEP_UP_VERIFIED
         end
 
-        # ------------------------------------------------------------------
-        # Passkey verification
-        # ------------------------------------------------------------------
-
-        def prepare_passkey_challenge!
-          allow_credentials = current_user.user_passkeys.active.map { |pk| { id: pk.webauthn_id } }
-          if allow_credentials.empty?
-            @verification_errors = [I18n.t("sign.app.verification.errors.no_passkey", default: "パスキーが登録されていません")]
-            return false
-          end
-
-          @passkey_challenge_id, @passkey_request_options =
-            create_authentication_challenge(allow_credentials: allow_credentials)
-          true
+        def verification_success_notice_key
+          "sign.app.verification.success.complete"
         end
 
-        def verify_passkey!
-          challenge_id = verification_params[:challenge_id].to_s
-          credential_json = verification_params[:credential_json].to_s
-          if challenge_id.blank? || credential_json.blank?
-            @verification_errors = ["パスキー認証データが不足しています"]
-            return false
-          end
-
-          credential_hash = JSON.parse(credential_json)
-
-          with_challenge(challenge_id, purpose: :authentication) do |challenge|
-            credential = WebAuthn::Credential.from_get(credential_hash, relying_party: webauthn_relying_party)
-            passkey = UserPasskey.find_by(webauthn_id: credential.id)
-            unless passkey && passkey.user_id == current_user.id
-              @verification_errors = [I18n.t("errors.webauthn.credential_not_found")]
-              next false
-            end
-
-            credential.verify(
-              challenge,
-              public_key: passkey.public_key,
-              sign_count: passkey.sign_count,
-            )
-            passkey.update!(sign_count: credential.sign_count)
-            true
-          end
-        rescue Sign::Webauthn::ChallengeNotFoundError,
-               Sign::Webauthn::ChallengeExpiredError,
-               Sign::Webauthn::ChallengePurposeMismatchError
-          @verification_errors = [I18n.t("errors.webauthn.challenge_invalid")]
-          false
-        rescue WebAuthn::Error, JSON::ParserError
-          @verification_errors = [I18n.t("errors.webauthn.verification_failed")]
-          false
+        def verification_success_fallback_path
+          sign_app_verification_path(ri: params[:ri])
         end
 
-        # ------------------------------------------------------------------
-        # TOTP verification
-        # ------------------------------------------------------------------
+        def verification_audit_event_class = UserActivityEvent
 
-        def verify_totp!
-          code = verification_params[:code].to_s
-          unless code.match?(/\A\d{6}\z/)
-            @verification_errors = ["確認コードが不正です"]
-            return false
-          end
+        def verification_audit_level_class = UserActivityLevel
 
-          totps =
-            current_user.user_one_time_passwords
-              .where(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
-              .order(created_at: :desc)
+        def verification_default_activity_level_id = UserActivityLevel::NEYO
 
-          result = totps.any? { |totp| ROTP::TOTP.new(totp.private_key).verify(code) }
-          @verification_errors = ["確認コードが正しくありません"] unless result
-          result
+        def verification_activity_model = UserActivity
+
+        def current_verification_actor = current_user
+
+        def verification_actor_type = "User"
+
+        def verification_passkeys_scope
+          current_user.user_passkeys
+        end
+
+        def verification_passkey_model
+          UserPasskey
+        end
+
+        def passkey_actor_matches?(passkey)
+          passkey.user_id == current_user.id
+        end
+
+        def verification_no_passkey_i18n_key
+          "sign.app.verification.errors.no_passkey"
+        end
+
+        def active_totp_credentials
+          current_user.user_one_time_passwords
+            .where(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
+            .order(created_at: :desc)
         end
 
         # ------------------------------------------------------------------

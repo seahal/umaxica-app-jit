@@ -45,19 +45,16 @@ class UserTelephone < PrincipalRecord
     public_id
   end
 
-  attr_accessor :skip_user_presence_validation
-
   MAX_TELEPHONES_PER_USER = 4
   attribute :user_identity_telephone_status_id, default: UserTelephoneStatus::UNVERIFIED
 
-  belongs_to :user_telephone_status, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id
-  belongs_to :user, optional: true, inverse_of: :user_telephones
+  belongs_to :user_telephone_status, optional: true, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id
+  belongs_to :user, inverse_of: :user_telephones
 
   # Note: :number validation is now handled by Telephone concern (E.164 normalization)
   validates :number, uniqueness: { case_sensitive: false }
   validates :number_bidx, uniqueness: true, allow_nil: true
   validates :number_digest, uniqueness: true, allow_nil: true
-  validates :user, presence: true, unless: :skip_user_presence_validation
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }

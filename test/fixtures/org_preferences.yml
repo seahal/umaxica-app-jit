@@ -31,7 +31,7 @@
 # Foreign Keys
 #
 #  fk_org_preferences_on_status_id  (status_id => org_preference_statuses.id)
-#  fk_rails_...                     (replaced_by_id => org_preferences.id)
+#  fk_rails_...                     (replaced_by_id => org_preferences.id) ON DELETE => nullify
 #
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 one:

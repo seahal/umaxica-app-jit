@@ -31,7 +31,7 @@
 # Foreign Keys
 #
 #  fk_app_preferences_on_status_id  (status_id => app_preference_statuses.id)
-#  fk_rails_...                     (replaced_by_id => app_preferences.id)
+#  fk_rails_...                     (replaced_by_id => app_preferences.id) ON DELETE => nullify
 #
 
 # frozen_string_literal: true

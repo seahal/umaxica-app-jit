@@ -22,7 +22,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_token_id => user_tokens.id)
+#  fk_rails_...  (user_token_id => user_tokens.id) ON DELETE => cascade
 #
 class UserVerification < TokenRecord
   include RefreshTokenShared
@@ -30,7 +30,7 @@ class UserVerification < TokenRecord
   COOKIE_NAME = "__Host-jit_step_up_app"
   TTL = 15.minutes
 
-  belongs_to :user_token
+  belongs_to :user_token, inverse_of: :user_verifications
 
   validates :token_digest, presence: true, uniqueness: true
   validates :expires_at, presence: true

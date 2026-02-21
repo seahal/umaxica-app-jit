@@ -48,13 +48,10 @@ class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show handles bad request error" do
-    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
-
-    get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+    get sign_app_verification_url(scope: "configuration_email", return_to: "%%%INVALID%%%", ri: "jp"),
         headers: @headers
 
-    # Should either succeed or redirect gracefully
-    assert response.ok? || response.redirect?
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
   end
 
   test "show with recent verification shows success message" do

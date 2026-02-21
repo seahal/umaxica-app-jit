@@ -103,19 +103,16 @@ scope module: :core, as: :core do
         namespace :com do
           resources :posts do
             resources :versions
-            resources :revisions
           end
         end
         namespace :org do
           resources :posts do
             resources :versions
-            resources :revisions
           end
         end
         namespace :app do
           resources :posts do
             resources :versions
-            resources :revisions
           end
         end
       end
@@ -124,19 +121,16 @@ scope module: :core, as: :core do
         namespace :com do
           resources :posts do
             resources :versions
-            resources :revisions
           end
         end
         namespace :org do
           resources :posts do
             resources :versions
-            resources :revisions
           end
         end
         namespace :app do
           resources :posts do
             resources :versions
-            resources :revisions
           end
         end
       end
@@ -144,15 +138,12 @@ scope module: :core, as: :core do
       namespace :help do
         namespace :com do
           resources :contacts
-          resources :revisions
         end
         namespace :org do
           resources :contacts
-          resources :revisions
         end
         namespace :app do
           resources :contacts
-          resources :revisions
         end
       end
     end

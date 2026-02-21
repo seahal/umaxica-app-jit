@@ -82,9 +82,7 @@ module Sign
       build_user_email(email_address, confirm_policy)
       @user_email.user_email_status_id = UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
 
-      @user_email.skip_user_presence_validation = true
       @user_email.validate
-      @user_email.skip_user_presence_validation = false
       existing_email =
         if allow_existing && @user_email.address_digest.present?
           UserEmail.find_by(address_digest: @user_email.address_digest)
@@ -97,7 +95,9 @@ module Sign
         return dispatch_existing_email_verification!(existing_email)
       end
 
-      if @user_email.errors.any?
+      has_errors = @user_email.errors.details.except(:user, :user_id).any?
+
+      if has_errors
         return false unless allow_existing && uniqueness_only &&
           existing_email&.user_email_status_id == UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
       end
@@ -234,13 +234,15 @@ module Sign
     end
 
     def email_uniqueness_only_error?(user_email)
-      return false if user_email.errors.empty?
+      # ignore :user and :user_id error
+      errors_to_check = user_email.errors.details.except(:user, :user_id)
+      return false if errors_to_check.empty?
 
       # Fields that can have uniqueness errors
       uniqueness_fields = %i(address raw_address address_bidx address_digest)
 
       # Check if all errors are :taken errors on the uniqueness fields
-      user_email.errors.details.each do |field, errors|
+      errors_to_check.each do |field, errors|
         return false unless uniqueness_fields.include?(field)
         return false unless errors.all? { |error| error[:error] == :taken }
       end

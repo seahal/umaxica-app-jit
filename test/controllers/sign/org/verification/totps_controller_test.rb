@@ -34,15 +34,38 @@ class Sign::Org::Verification::TotpsControllerTest < ActionDispatch::Integration
 
     get new_sign_org_verification_totp_url(ri: "jp"), headers: @headers
     assert_response :success
-    # assert_response :redirect
 
-    # code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
+    code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
 
-    # post sign_org_verification_totp_url(ri: "jp"),
-    #      params: { verification: { code: code } },
-    #      headers: @headers
+    post sign_org_verification_totp_url(ri: "jp"),
+         params: { verification: { code: code } },
+         headers: @headers
 
-    # assert_response :redirect
-    # assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
+    assert_response :redirect
+    assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
+
+    @token.reload
+    assert_not_nil @token.last_step_up_at
+    assert_equal "manage_totp", @token.last_step_up_scope
+    assert_nil session[:reauth]
+  end
+
+  test "returns 422 on malformed code" do
+    private_key = "JBSWY3DPEHPK3PXP"
+    StaffOneTimePassword.create!(
+      staff: @staff,
+      private_key: private_key,
+      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
+    )
+
+    return_to = Base64.urlsafe_encode64(sign_org_configuration_totps_path(ri: "jp"))
+    get sign_org_verification_url(scope: "manage_totp", return_to: return_to, ri: "jp"),
+        headers: @headers
+
+    post sign_org_verification_totp_url(ri: "jp"),
+         params: { verification: { code: "abc123" } },
+         headers: @headers
+
+    assert_response :unprocessable_content
   end
 end

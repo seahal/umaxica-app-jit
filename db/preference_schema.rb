@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_16_130000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_21_100002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -286,7 +286,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_16_130000) do
   add_foreign_key "app_preference_timezones", "app_preference_timezone_options", column: "option_id", name: "fk_app_preference_timezones_on_option_id"
   add_foreign_key "app_preference_timezones", "app_preferences", column: "preference_id", validate: false
   add_foreign_key "app_preferences", "app_preference_statuses", column: "status_id", name: "fk_app_preferences_on_status_id"
-  add_foreign_key "app_preferences", "app_preferences", column: "replaced_by_id", validate: false
+  add_foreign_key "app_preferences", "app_preferences", column: "replaced_by_id", on_delete: :nullify, validate: false
   add_foreign_key "com_preference_colorthemes", "com_preference_colortheme_options", column: "option_id", name: "fk_com_preference_colorthemes_on_option_id"
   add_foreign_key "com_preference_colorthemes", "com_preferences", column: "preference_id", validate: false
   add_foreign_key "com_preference_cookies", "com_preferences", column: "preference_id", validate: false
@@ -297,7 +297,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_16_130000) do
   add_foreign_key "com_preference_timezones", "com_preference_timezone_options", column: "option_id", name: "fk_com_preference_timezones_on_option_id"
   add_foreign_key "com_preference_timezones", "com_preferences", column: "preference_id", validate: false
   add_foreign_key "com_preferences", "com_preference_statuses", column: "status_id", name: "fk_com_preferences_on_status_id"
-  add_foreign_key "com_preferences", "com_preferences", column: "replaced_by_id", validate: false
+  add_foreign_key "com_preferences", "com_preferences", column: "replaced_by_id", on_delete: :nullify, validate: false
   add_foreign_key "org_preference_colorthemes", "org_preference_colortheme_options", column: "option_id", name: "fk_org_preference_colorthemes_on_option_id"
   add_foreign_key "org_preference_colorthemes", "org_preferences", column: "preference_id", validate: false
   add_foreign_key "org_preference_cookies", "org_preferences", column: "preference_id", validate: false
@@ -308,5 +308,5 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_16_130000) do
   add_foreign_key "org_preference_timezones", "org_preference_timezone_options", column: "option_id", name: "fk_org_preference_timezones_on_option_id"
   add_foreign_key "org_preference_timezones", "org_preferences", column: "preference_id", validate: false
   add_foreign_key "org_preferences", "org_preference_statuses", column: "status_id", name: "fk_org_preferences_on_status_id"
-  add_foreign_key "org_preferences", "org_preferences", column: "replaced_by_id", validate: false
+  add_foreign_key "org_preferences", "org_preferences", column: "replaced_by_id", on_delete: :nullify, validate: false
 end

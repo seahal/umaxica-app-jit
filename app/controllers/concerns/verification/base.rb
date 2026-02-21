@@ -53,7 +53,7 @@ module Verification
       return false unless verification
 
       begin
-        verification.update_column(:last_used_at, Time.current)
+        verification.touch(:last_used_at)
       rescue ActiveRecord::ReadOnlyError
         nil
       end
@@ -131,7 +131,12 @@ module Verification
           else
             verification_redirect_path(rd: encoded_step_up_rd, scope_override: scope_override)
           end
-        fallback = configured_step_up_methods.empty? ? verification_setup_redirect_fallback : verification_redirect_fallback
+        fallback =
+          if configured_step_up_methods.empty?
+            verification_setup_redirect_fallback
+          else
+            verification_redirect_fallback
+          end
 
         safe_redirect_to(destination, fallback: fallback, status: :found)
       elsif request.format.json?

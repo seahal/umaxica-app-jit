@@ -113,6 +113,30 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, I18n.t("errors.webauthn.challenge_invalid")
   end
 
+  test "verification returns bad request on challenge purpose mismatch" do
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    challenge_id = response.parsed_body["challenge_id"]
+
+    mismatch_error = Sign::Webauthn::ChallengePurposeMismatchError.new("purpose mismatch")
+
+    Sign::Org::In::PasskeysController.any_instance.stub(
+      :with_challenge, ->(*_args, &_block) {
+                         raise mismatch_error
+                       },
+    ) do
+      post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
+        challenge_id: challenge_id,
+        credential: {
+          id: @staff_passkey.webauthn_id,
+          response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+        },
+      }
+    end
+
+    assert_response :bad_request
+    assert_includes response.body, I18n.t("errors.webauthn.challenge_invalid")
+  end
+
   test "verification logs staff in on success" do
     assert_not_nil @staff_passkey, "Passkey must exist"
     # Get challenge
@@ -138,15 +162,17 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
       }
 
       # Should log in
-      post verification_sign_org_in_passkeys_url(ri: "jp"), params: params
+      post verification_sign_org_in_passkeys_url(ri: "jp", rd: "/configuration/passkeys"), params: params
 
       assert_response :ok
       json = response.parsed_body
       assert_equal "ok", json["status"]
       assert_not_nil json["access_token"]
+      assert_includes json["redirect_url"], "rd="
 
       # Challenge verification updates sign count
       assert_equal 1, @staff_passkey.reload.sign_count
+      assert_not_nil @staff_passkey.reload.last_used_at
     end
   end
 
@@ -171,6 +197,71 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
       assert_response :unauthorized
       assert_includes response.body, I18n.t("errors.webauthn.credential_not_found")
     end
+  end
+
+  test "verification returns unauthorized when challenge actor and passkey owner mismatch" do
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    challenge_id = response.parsed_body["challenge_id"]
+
+    other_staff = staffs(:two)
+    other_staff.update!(status_id: StaffStatus::ACTIVE)
+    StaffEmail.create!(
+      staff: other_staff,
+      address: "other_staff_#{SecureRandom.hex(4)}@example.com",
+      staff_email_status_id: StaffEmailStatus::VERIFIED,
+    )
+    other_passkey = StaffPasskey.create!(
+      staff: other_staff,
+      webauthn_id: Base64.urlsafe_encode64("other_staff_key_#{SecureRandom.hex(4)}", padding: false),
+      external_id: SecureRandom.uuid,
+      public_key: "other_staff_key",
+      name: "Other Staff Key",
+      status_id: StaffPasskeyStatus::ACTIVE,
+    )
+
+    mock_credential = Object.new
+    mock_credential.define_singleton_method(:id) { other_passkey.webauthn_id }
+    mock_credential.define_singleton_method(:sign_count) { 1 }
+    mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+    WebAuthn::Credential.stub :from_get, mock_credential do
+      post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
+        challenge_id: challenge_id,
+        credential: {
+          id: other_passkey.webauthn_id,
+          response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+        },
+      }
+    end
+
+    assert_response :unauthorized
+    assert_includes response.body, I18n.t("errors.webauthn.credential_not_found")
+  end
+
+  test "verification returns 422 when login result status is unknown" do
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    challenge_id = response.parsed_body["challenge_id"]
+
+    passkey_id = @staff_passkey.webauthn_id
+    mock_credential = Object.new
+    mock_credential.define_singleton_method(:id) { passkey_id }
+    mock_credential.define_singleton_method(:sign_count) { 1 }
+    mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+    Sign::Org::In::PasskeysController.any_instance.stub(:log_in, { status: :unknown }) do
+      WebAuthn::Credential.stub :from_get, mock_credential do
+        post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
+          challenge_id: challenge_id,
+          credential: {
+            id: @staff_passkey.webauthn_id,
+            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+          },
+        }
+      end
+    end
+
+    assert_response :unprocessable_content
+    assert_includes response.body, I18n.t("errors.login_failed")
   end
 
   test "verification for staff with mfa enabled succeeds (MFA not enforced for staff)" do
@@ -200,5 +291,18 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
       json = response.parsed_body
       assert_equal "ok", json["status"]
     end
+  end
+
+  test "verification returns unauthorized for malformed credential payload" do
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    challenge_id = response.parsed_body["challenge_id"]
+
+    post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
+      challenge_id: challenge_id,
+      credential: { invalid: "payload" },
+    }
+
+    assert_response :unauthorized
+    assert_includes response.body, I18n.t("errors.webauthn.credential_not_found")
   end
 end

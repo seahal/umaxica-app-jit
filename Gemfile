@@ -145,6 +145,7 @@ group :development do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-i18n", require: false
   gem "rubocop-rubycw", require: false
+  gem "rubocop-rails", require: false
   # Boundary enforcement for granular modular architecture
   gem "packwerk", require: false
   # ERB lint

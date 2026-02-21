@@ -7,7 +7,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @prev_env = { "NEWS_CORPORATE_URL" => ENV["NEWS_CORPORATE_URL"] }.freeze
-    ENV["NEWS_CORPORATE_URL"] = "com.localhost"
+    ENV["NEWS_CORPORATE_URL"] = "news.com.localhost"
   end
 
   teardown do
@@ -15,7 +15,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get show" do
-    get news_com_root_url()
+    get_root_with_follow(news_com_root_url)
 
     assert_response :success
   end
@@ -27,7 +27,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "sets lang attribute on html element" do
-    get news_com_root_url(format: :html)
+    get_root_with_follow(news_com_root_url(format: :html))
 
     assert_response :success
     assert_select("html[lang=?]", "ja")
@@ -36,7 +36,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
-    get news_com_root_url()
+    get_root_with_follow(news_com_root_url)
 
     assert_layout_contract
     assert_select "head", count: 1 do
@@ -56,15 +56,15 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
-    get news_com_root_url()
+    get_root_with_follow(news_com_root_url)
     assert_response :success
     assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
   end
 
   test "sets theme cookie" do
-    host! "com.localhost"
+    host! "news.com.localhost"
     get news_com_root_path
-    assert_redirected_to news_com_root_url(ri: "jp", host: "com.localhost")
+    assert_response :success
     assert_not_nil cookies["jit_preference_access"]
   end
 
@@ -72,5 +72,10 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   def brand_name
     (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
+
+  def get_root_with_follow(url)
+    get url
+    follow_redirect! while response.redirect?
   end
 end

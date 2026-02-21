@@ -109,6 +109,15 @@ module Sign
           render :new, status: :unprocessable_content
         end
 
+        # Reserved for future withdrawal cancellation flow.
+        def destroy
+          safe_redirect_to(
+            edit_sign_app_configuration_withdrawal_path(ri: params[:ri]),
+            fallback: sign_app_configuration_path(ri: params[:ri]),
+            status: :see_other,
+          )
+        end
+
         private
 
         def recoverable_withdrawal?

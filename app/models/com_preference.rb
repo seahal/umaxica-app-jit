@@ -31,7 +31,7 @@
 # Foreign Keys
 #
 #  fk_com_preferences_on_status_id  (status_id => com_preference_statuses.id)
-#  fk_rails_...                     (replaced_by_id => com_preferences.id)
+#  fk_rails_...                     (replaced_by_id => com_preferences.id) ON DELETE => nullify
 #
 
 # frozen_string_literal: true
