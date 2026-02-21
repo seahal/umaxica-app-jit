@@ -4,27 +4,17 @@ module Apex
   module Org
     class ApplicationController < ActionController::Base
       include ::Fuse
-      include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Global
       include ::Auth::Staff
-
-      auth_required!
+      include Pundit::Authorization
+      include ::Finisher
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
-      rescue_from Pundit::NotAuthorizedError, with: :staff_not_authorized
-
-      private
-
-      def staff_not_authorized
-        respond_to do |format|
-          format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-          format.any { head :forbidden }
-        end
-      end
+      auth_required!
     end
   end
 end

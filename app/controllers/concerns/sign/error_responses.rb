@@ -16,8 +16,11 @@ module Sign
       include Common::Redirect
 
       # Automatically set up rescue_from if Pundit is included
-      rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized if defined?(Pundit)
-      rescue_from ApplicationError, with: :handle_application_error
+      if respond_to?(:rescue_from)
+        rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized if defined?(Pundit)
+        rescue_from ApplicationError, with: :handle_application_error
+        rescue_from ActionController::InvalidCrossOriginRequest, with: :handle_csrf_failure
+      end
     end
 
     def handle_application_error(exception)
@@ -47,5 +50,14 @@ module Sign
 
     # Alias for staff-facing authorization failures
     alias_method :staff_not_authorized, :handle_not_authorized
+
+    def handle_csrf_failure
+      if request.format.json?
+        render json: { error: I18n.t("errors.invalid_authenticity_token", default: "セッションが期限切れです。ページを再読み込みしてください。") },
+               status: :unprocessable_content
+      else
+        raise ActionController::InvalidCrossOriginRequest
+      end
+    end
   end
 end

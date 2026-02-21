@@ -4,33 +4,26 @@ module Sign
   module Org
     class ApplicationController < ActionController::Base
       include ::Fuse
-      include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Global
       include ::Auth::Staff
-
-      guest_only!
-      include ::Sign::ErrorResponses
+      include Pundit::Authorization
+      include ::Finisher
 
       protect_from_forgery with: :exception
 
-      rescue_from ActionController::InvalidCrossOriginRequest, with: :handle_csrf_failure
-
       allow_browser versions: :modern
 
-      before_action :set_locale
-      before_action :set_timezone
-      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
+      guest_only!
 
       private
 
-      def handle_csrf_failure
-        if request.format.json?
-          render json: { error: I18n.t("errors.invalid_authenticity_token", default: "セッションが期限切れです。ページを再読み込みしてください。") },
-                 status: :unprocessable_content
-        else
-          raise ActionController::InvalidCrossOriginRequest
-        end
+      # Redirect logged-in users from guest_only! pages to the configuration page.
+      # Overrides Auth::Base#after_login_path. ri is added automatically via default_url_options.
+      def after_login_path
+        sign_org_configuration_path
+      rescue StandardError
+        "/"
       end
     end
   end

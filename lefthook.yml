@@ -1,15 +1,6 @@
 pre-commit:
   parallel: true
   commands:
-    pnpm_audit:
-      run: |
-        #!/bin/sh
-        set -eu
-        if [ -f /.dockerenv ]; then
-          pnpm audit
-        else
-          docker compose run core pnpm audit
-        fi
     pnpm_biome_check:
       run: |
         #!/bin/sh
@@ -37,6 +28,21 @@ pre-commit:
         else
           docker compose run core bundle exec erb_lint -a .
         fi
+    # secret-scan:
+    #   run: gitleaks protect
+
+pre-push:
+  parallel: true
+  commands:
+    pnpm_audit:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          pnpm audit
+        else
+          docker compose run core pnpm audit
+        fi
     ruby_audit:
       run: |
         #!/bin/sh
@@ -60,14 +66,7 @@ pre-commit:
         #!/bin/sh
         set -eu
         if [ -f /.dockerenv ]; then
-          bundle exec rails db:migrate && bundle exec rails test
+          bundle exec rails test
         else
-          docker compose run core bash -c "bundle exec rails db:migrate && bundle exec rails test "
+          docker compose run core bash -c "bundle exec rails test"
         fi
-    # secret-scan:
-    #   run: |
-    #     #!/bin/sh
-    #     set -eu
-    #     docker run -v pwd:pwd -w pwd --rm -it secretlint/secretlint secretlint "**/*"
-    # # secret-scan:
-    #   run: gitleaks protect

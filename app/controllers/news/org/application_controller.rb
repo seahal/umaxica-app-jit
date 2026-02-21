@@ -5,13 +5,16 @@ module News
     class ApplicationController < ActionController::Base
       include ::Fuse
       include ::RateLimit
-      include ::Auth::Base
-
-      public_strict!
       include ::Preference::Regional
+      include ::Auth::Staff
+      include Pundit::Authorization
+      include ::Finisher
 
       protect_from_forgery with: :exception
+
       allow_browser versions: :modern
+
+      public_strict!
     end
   end
 end

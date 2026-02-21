@@ -5,6 +5,7 @@ module Sign
     module Configuration
       class ApplicationController < Sign::App::ApplicationController
         include ::Fuse
+        include ::Finisher
 
         auth_required!
       end

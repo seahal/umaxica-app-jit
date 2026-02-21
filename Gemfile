@@ -32,6 +32,7 @@ gem "redis"
 gem "rack-cors"
 # DoS protection
 gem "rack-attack"
+gem "rack-timeout", group: %i(development production)
 # Password hashing
 gem "argon2"
 gem "bcrypt"
@@ -92,8 +93,6 @@ gem "nanoid"
 gem "pundit"
 # billing
 gem "stripe"
-# sorbet
-gem "sorbet-runtime"
 
 group :development, :test do
   # Test coverage
@@ -115,6 +114,8 @@ group :development, :test do
   gem "debride"
   # type
   gem "tapioca", require: false
+  # sorbet
+  gem "sorbet-runtime"
 end
 
 group :development do
@@ -144,6 +145,8 @@ group :development do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-i18n", require: false
   gem "rubocop-rubycw", require: false
+  # Boundary enforcement for granular modular architecture
+  gem "packwerk", require: false
   # ERB lint
   gem "erb_lint", require: false
   # Annotate models, routes, fixtures, etc.

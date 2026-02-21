@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 # ============================================================
 # RuboCop Configuration
 # ============================================================
@@ -1312,3 +1314,22 @@ Style/RedundantReturn:
 # Force use of .blank? or .present? in Rails (more robust than nil? or empty?)
 Rails/Blank:
   Enabled: true
+
+# ============================================================
+# 11. Custom Rules for Technical Debt Prevention
+# ============================================================
+
+# Disallow new TODO / FIXME annotations without an issue number
+# Example allowed: TODO(#123): Fix this part
+# Example disallowed: TODO: Fix this part
+Style/CommentAnnotation:
+  Enabled: true
+  RequireColon: true
+  Keywords:
+    - TODO
+    - FIXME
+    - OPTIMIZE
+    - HACK
+    - REVIEW
+  # (Optional: If you want to require issue numbers, you could craft a custom cop,
+  # but base CommentAnnotation flags these keywords so we can review them).

@@ -15,6 +15,12 @@ module Auth
       alias_method :current_staff, :current_resource
       alias_method :authenticate_staff!, :authenticate!
       alias_method :logged_in_staff?, :logged_in?
+      # Prepended after enforce_access_policy! so it runs first:
+      #   transparent_refresh_access_token -> enforce_access_policy!
+      if respond_to?(:prepend_before_action)
+        prepend_before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
+      end
+      include ::AuthorizationAudit
     end
 
     def audit_staff_login_failed(staff)

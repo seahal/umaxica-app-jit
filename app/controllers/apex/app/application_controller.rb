@@ -4,31 +4,17 @@ module Apex
   module App
     class ApplicationController < ActionController::Base
       include ::Fuse
-      include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Global
-      include ::Sign::ErrorResponses
       include ::Auth::User
-
-      public_strict!
+      include Pundit::Authorization
+      include ::Finisher
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
-      rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
-      before_action :set_locale
-      before_action :set_timezone
-
-      private
-
-      def user_not_authorized
-        respond_to do |format|
-          format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-          format.any { head :forbidden }
-        end
-      end
+      public_strict!
     end
   end
 end

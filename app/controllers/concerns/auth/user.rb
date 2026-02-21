@@ -16,6 +16,12 @@ module Auth
       alias_method :authenticate_user!, :authenticate!
       alias_method :logged_in_user?, :logged_in?
       before_action :enforce_withdrawal_gate! if respond_to?(:before_action)
+      # Prepended after enforce_access_policy! so it runs first:
+      #   transparent_refresh_access_token -> enforce_access_policy!
+      if respond_to?(:prepend_before_action)
+        prepend_before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
+      end
+      include ::AuthorizationAudit
     end
 
     def audit_user_login_failed(user)

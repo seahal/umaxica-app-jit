@@ -4,19 +4,17 @@ module Core
   module Org
     class ApplicationController < ActionController::Base
       include ::Fuse
-      include Pundit::Authorization
-      include ::Auth::Staff
+      include ::RateLimit
       include ::Preference::Regional
-      include ::AuthorizationAudit
+      include ::Auth::Staff
+      include Pundit::Authorization
+      include ::Finisher
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
       public_strict!
-
-      # Note: AuthorizationAudit concern handles Pundit::NotAuthorizedError
-      # and provides audit logging functionality
     end
   end
 end

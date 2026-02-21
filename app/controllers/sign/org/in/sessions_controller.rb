@@ -16,7 +16,7 @@ class Sign::Org::In::SessionsController < ApplicationController
   before_action :require_valid_gate
 
   # Display active sessions for the staff to select which to revoke
-  def edit
+  def show
     @pending_staff = load_pending_staff
     unless @pending_staff
       return redirect_to login_path,
@@ -39,7 +39,7 @@ class Sign::Org::In::SessionsController < ApplicationController
     if revoke_ids.empty?
       flash[:alert] = I18n.t("session_limit.no_sessions_selected", default: "無効化するセッションを選択してください。")
       @active_sessions = @pending_staff.staff_tokens.where(revoked_at: nil).order(created_at: :desc)
-      return render :edit, status: :unprocessable_content
+      return render :show, status: :unprocessable_content
     end
 
     revoke_sessions_for_staff(@pending_staff, revoke_ids)

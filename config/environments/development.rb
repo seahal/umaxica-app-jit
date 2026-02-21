@@ -131,4 +131,7 @@ Rails.application.configure do
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
   config.active_support.structured_logging = true # Enable structured logging
+
+  # Enable Gzip compression
+  config.middleware.use Rack::Deflater
 end

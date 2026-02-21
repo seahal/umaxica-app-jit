@@ -817,6 +817,7 @@ module Auth
     end
 
     included do
+      include ::Sign::ErrorResponses
       include ::SessionLimitGate
 
       # Important: prepend first so this runs before other before_action hooks.
@@ -1751,6 +1752,12 @@ module Auth
       end
     rescue StandardError
       "/in/session"
+    end
+
+    # Default redirect destination after login for guest_only! policy.
+    # Override in controllers to customize (e.g. to preserve ri parameter).
+    def after_login_path
+      default_after_login_path
     end
 
     def default_after_login_path

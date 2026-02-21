@@ -5,29 +5,16 @@ module Help
     class ApplicationController < ActionController::Base
       include ::Fuse
       include ::RateLimit
-      include ::Auth::Base
-
-      public_strict!
       include ::Preference::Regional
+      include ::Auth::Staff
       include Pundit::Authorization
+      include ::Finisher
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
-      before_action :set_locale
-      before_action :set_timezone
-
-      rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
-      private
-
-      def user_not_authorized
-        respond_to do |format|
-          format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-          format.any { head :forbidden }
-        end
-      end
+      public_strict!
     end
   end
 end

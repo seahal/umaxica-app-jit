@@ -9,7 +9,9 @@ module AuthorizationAudit
     include Common::Redirect
 
     # Log authorization failures for audit purposes
-    rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error
+    if respond_to?(:rescue_from)
+      rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error
+    end
   end
 
   private

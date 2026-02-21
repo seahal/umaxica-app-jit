@@ -96,4 +96,7 @@ Rails.application.configure do
   ### Added by owner
   # We've configured this production environment to prevent the delivery of public static content.
   config.public_file_server.enabled = false
+
+  # Enable Gzip compression
+  config.middleware.use Rack::Deflater
 end
