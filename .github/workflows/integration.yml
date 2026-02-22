@@ -1,5 +1,5 @@
 # CI/CD Pipeline for Umaxica App
-name: 'CI'
+name: "CI"
 on:
   push:
     branches: [develop, main]
@@ -19,12 +19,12 @@ defaults:
 env:
   # CI Configuration
   CI: true
-  DOCKER_BUILDKIT: '1'
-  COMPOSE_DOCKER_CLI_BUILD: '1'
+  DOCKER_BUILDKIT: "1"
+  COMPOSE_DOCKER_CLI_BUILD: "1"
   # Version Configuration
-  RUBY_VERSION: '4.0.1'
-  NODE_VERSION: '22'
-  PNPM_VERSION: '10.27.0'
+  RUBY_VERSION: "4.0.1"
+  NODE_VERSION: "22"
+  PNPM_VERSION: "10.27.0"
   # Rails Configuration
   RAILS_ENV: test
   RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
@@ -33,8 +33,8 @@ env:
   BUNDLE_WITH: test
   BUNDLE_JOBS: 4
   BUNDLE_PATH: vendor/bundle
-  BUNDLE_DEPLOYMENT: 'true'
-  BUNDLE_FROZEN: 'true'
+  BUNDLE_DEPLOYMENT: "true"
+  BUNDLE_FROZEN: "true"
   # Region Configuration
   REGION_CODE: jp
   APEX_REGION: true
@@ -229,8 +229,8 @@ jobs:
       PORT: 3000
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
-      IDENTIFIER_REGION_CODE: '392'
-      IDENTIFIER_INSTANCE_ID: '0123456789'
+      IDENTIFIER_REGION_CODE: "392"
+      IDENTIFIER_INSTANCE_ID: "0123456789"
       # Domain URLs - APEX
       PEAK_CORPORATE_URL: com.localhost
       PEAK_SERVICE_URL: app.localhost
@@ -308,7 +308,7 @@ jobs:
       POSTGRESQL_AVATAR_PUB: localhost
       POSTGRESQL_AVATAR_SUB: localhost
       # Kafka
-      KAFKA_BROKERS: kafka:29092
+      KAFKA_BROKERS: localhost:9092
       # Email
       RESEND_SMTP_ENDPOINT: smtp.resend.com
       RESEND_SMTP_USER_NAME: resend
@@ -332,20 +332,20 @@ jobs:
           - 6379:6379
         options: >-
           --health-cmd "valkey-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-      zookeeper:
-        image: confluentinc/cp-zookeeper:7.4.0
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
       kafka:
-        image: confluentinc/cp-kafka:7.4.0
+        image: confluentinc/cp-kafka:7.9.0
         env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_NODE_ID: 1
+          KAFKA_PROCESS_ROLES: broker,controller
+          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
           KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+          KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
           KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
           KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
           KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+          CLUSTER_ID: UmaxicaCluster01
         ports:
           - 9092:9092
         options: >-
@@ -450,7 +450,7 @@ jobs:
         with:
           image-ref: umaxica-app:${{ github.sha }}
           format: table
-          exit-code: '1'
+          exit-code: "1"
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           scanners: vuln,secret,config

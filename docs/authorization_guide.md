@@ -9,13 +9,13 @@
 
 5段階のロールヒエラルキー：
 
-| Role | Key | 権限 |
-|------|-----|------|
-| Administrator | `admin` | 全権限（ユーザー管理、削除権限含む） |
-| Manager | `manager` | コンテンツ管理、他ユーザーの投稿編集・削除 |
-| Editor | `editor` | 全コンテンツの作成・編集、自分の投稿のみ削除可能 |
-| Contributor | `contributor` | コンテンツ作成、自分の投稿のみ編集可能 |
-| Viewer | `viewer` | 閲覧のみ |
+| Role          | Key           | 権限                                             |
+| ------------- | ------------- | ------------------------------------------------ |
+| Administrator | `admin`       | 全権限（ユーザー管理、削除権限含む）             |
+| Manager       | `manager`     | コンテンツ管理、他ユーザーの投稿編集・削除       |
+| Editor        | `editor`      | 全コンテンツの作成・編集、自分の投稿のみ削除可能 |
+| Contributor   | `contributor` | コンテンツ作成、自分の投稿のみ編集可能           |
+| Viewer        | `viewer`      | 閲覧のみ                                         |
 
 ## コントローラーでの使用
 
@@ -221,21 +221,21 @@ end
 
 ポリシー内で使用可能なヘルパーメソッド：
 
-| メソッド | 説明 |
-|---------|------|
-| `actor` | 現在のUser/Staff |
-| `record` | 認可対象のレコード |
-| `organization` | recordから自動取得されたWorkspace（互換名） |
-| `owner?` | アクターがレコードの所有者か |
-| `admin?` | adminロールを持つか |
-| `manager?` | managerロールを持つか |
-| `editor?` | editorロールを持つか |
-| `contributor?` | contributorロールを持つか |
-| `viewer?` | viewerロールを持つか |
-| `admin_or_manager?` | admin または manager |
-| `can_edit?` | 編集権限（admin/manager/editor） |
-| `can_view?` | 閲覧権限（全ロール） |
-| `can_contribute?` | 作成権限（admin/manager/editor/contributor） |
+| メソッド            | 説明                                         |
+| ------------------- | -------------------------------------------- |
+| `actor`             | 現在のUser/Staff                             |
+| `record`            | 認可対象のレコード                           |
+| `organization`      | recordから自動取得されたWorkspace（互換名）  |
+| `owner?`            | アクターがレコードの所有者か                 |
+| `admin?`            | adminロールを持つか                          |
+| `manager?`          | managerロールを持つか                        |
+| `editor?`           | editorロールを持つか                         |
+| `contributor?`      | contributorロールを持つか                    |
+| `viewer?`           | viewerロールを持つか                         |
+| `admin_or_manager?` | admin または manager                         |
+| `can_edit?`         | 編集権限（admin/manager/editor）             |
+| `can_view?`         | 閲覧権限（全ロール）                         |
+| `can_contribute?`   | 作成権限（admin/manager/editor/contributor） |
 
 ## ロール管理
 
@@ -288,6 +288,7 @@ user.roles_in(organization)
 ```
 
 監査ログは：
+
 1. **Rails.logger** に警告として記録
 2. **UserIdentityAudit** または **StaffIdentityAudit** テーブルに保存
 
@@ -350,6 +351,7 @@ end
 ### ポリシーが見つからない
 
 ポリシーファイルが存在し、正しい命名規則になっているか確認：
+
 - モデル: `Document`
 - ポリシー: `DocumentPolicy`（`app/policies/document_policy.rb`）
 
@@ -368,6 +370,7 @@ user.has_role?('admin', organization: org)  # => true/false
 ## まとめ
 
 このAuthZ実装により：
+
 - ✅ 柔軟なロールベース権限管理
 - ✅ リソースレベルの細かい制御
 - ✅ 認可失敗の自動監査ログ

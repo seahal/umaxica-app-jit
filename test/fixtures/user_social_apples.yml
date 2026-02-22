@@ -28,4 +28,4 @@
 #  fk_rails_...  (user_identity_social_apple_status_id => user_social_apple_statuses.id)
 #
 
-  # Empty fixture - no test data needed yet
+# Empty fixture - no test data needed yet

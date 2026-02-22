@@ -1,6 +1,7 @@
 # Design Philosophy
 
 ## 1. Color Roles
+
 Colors are defined by their meaning (role) rather than their appearance. This ensures consistency across different components and themes.
 
 - `bg`: Main background color
@@ -17,25 +18,30 @@ Colors are defined by their meaning (role) rather than their appearance. This en
 - `ring`: Color for focus rings
 
 ## 2. Page Hierarchy
+
 We do not use breadcrumbs. Each page follows a strict hierarchy:
+
 1. **Up**: Link to the parent page or back in history.
 2. **Title**: The main heading of the page.
 3. **Description**: 1-2 lines explaining the page's purpose.
 4. **Body**: The main content (forms, lists, etc.).
 
 ## 3. Up Navigation
+
 - If `up_to` is provided, it links to that specific path.
 - If `up_to` is not provided, it attempts `history.back()`.
 - A fallback is provided for cases where history is unavailable or JS is disabled.
 - The label should be "To [Parent Page Name]" (e.g., "To Settings").
 
 ## 4. UI Density & Layout
+
 - **Mobile-First**: Designed primarily for mobile screens, scaling up for desktop.
 - **Max Width**: The main content area is capped at `max-w-screen-sm` (approx. 640px) to maintain readability and mobile-like experience on large screens.
 - **Touch Targets**: All interactive elements have a minimum size of 44x44px.
 - **Vertical Stack**: Forms and lists are stacked vertically with ample whitespace.
 
 ## 5. Dark Mode
+
 - Supports system preferences by default.
 - Controlled via the `.dark` class on the `<html>` element.
 - State is persisted in `localStorage`.

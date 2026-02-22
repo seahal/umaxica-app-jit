@@ -12,5 +12,5 @@
 # Keywords: TODO, FIXME, OPTIMIZE, HACK, REVIEW, NOTE
 Style/CommentAnnotation:
   Exclude:
-    - 'db/operators_migrate/20240827130202_create_staffs.rb'
-    - 'db/principals_migrate/20240827130201_create_users.rb'
+    - "db/operators_migrate/20240827130202_create_staffs.rb"
+    - "db/principals_migrate/20240827130201_create_users.rb"

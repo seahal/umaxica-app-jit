@@ -13,11 +13,13 @@
 現在のアプリケーションは複雑なマルチデータベース構成を持っており、以下の理由から Service Layer の導入が推奨されます：
 
 #### Identity vs. Personality の分離
+
 - **Identity データ（認証情報）**: グローバルに一意。ログイン認証情報、MFA設定など
 - **Personality データ（プロフィール）**: 地域固有。ユーザー設定、ロケール、地域特有の情報など
 - この分離により、スケーラビリティとデータのローカリティが向上
 
 #### User vs. Staff の分離
+
 - **セキュリティ要件の違い**: Staff と User は異なる認証システム（SSO vs OAuth など）
 - **アクセスパターンの違い**: 明確なセキュリティ境界と負荷分離が必要
 - **運用上の理由**: 別々のサービス境界で管理することで、セキュリティ強化と負荷分離を実現
@@ -27,17 +29,20 @@
 マルチモデル・マルチデータベース環境において、Service Layer は以下の責務を持ちます：
 
 #### 集約（Aggregation）
+
 - サービスは **Aggregate Root** として機能
 - 複数の分離されたモデル（*Identity と *Personality）を組み合わせて、完全な User または Staff を表現
 - ビジネスロジックの一元化
 
 #### トランザクション管理
+
 - 異なるデータベース間での分散トランザクションの管理
   - Identity データベース: グローバル DB
   - Personality データベース: リージョナル DB
 - データ整合性の保証
 
 #### デザインパターンの実装場所
+
 - **CQRS（Command Query Responsibility Segregation）**: コマンドとクエリの責任分離
 - **Saga Pattern**: 分離されたデータストア間でのデータ整合性管理
 
@@ -68,6 +73,7 @@ storage        - ファイルストレージメタデータ
 #### Base クラス
 
 1. **IdentitiesRecord** (Identity データベース)
+
    ```ruby
    class IdentitiesRecord < ApplicationRecord
      self.abstract_class = true
@@ -76,6 +82,7 @@ storage        - ファイルストレージメタデータ
    ```
 
 2. **OccurrenceRecord** (Occurrence データベース)
+
    ```ruby
    class OccurrenceRecord < ApplicationRecord
      self.abstract_class = true
@@ -94,6 +101,7 @@ storage        - ファイルストレージメタデータ
 #### Identity モデル（既存）
 
 ##### User モデル
+
 ```ruby
 # Identity データベース
 class User < IdentitiesRecord
@@ -112,12 +120,14 @@ end
 ```
 
 テーブル: `users`
+
 - id (uuid)
 - password_digest
 - webauthn_id
 - created_at, updated_at
 
 ##### Staff モデル
+
 ```ruby
 # Identity データベース
 class Staff < IdentitiesRecord
@@ -127,6 +137,7 @@ end
 ```
 
 テーブル: `staffs`
+
 - id (uuid)
 - password_digest
 - webauthn_id
@@ -146,6 +157,7 @@ end
 ```
 
 テーブル構造:
+
 - id (uuid)
 - otp_private_key
 - last_otp_at
@@ -154,6 +166,7 @@ end
 #### Identity データベースの関連モデル
 
 認証関連:
+
 - UserEmail, StaffEmail
 - UserTelephone, StaffTelephone
 - UserIdentitySocialApple, UserIdentitySocialGoogle
@@ -170,14 +183,17 @@ end
 ### ドメイン構造
 
 #### Web インターフェース（WWW）
+
 - `WWW_CORPORATE_URL` (com): 法人/クライアントサイト
 - `WWW_SERVICE_URL` (app): メインサービスアプリケーション
 - `WWW_STAFF_URL` (org): スタッフ管理インターフェース
 
 #### API エンドポイント
+
 - `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL`
 
 #### コントローラー構成
+
 ```
 app/controllers/www/{com,app,org}/  - 各ドメインの Web コントローラー
 app/controllers/api/{com,app,org}/  - 各ドメインの API コントローラー

@@ -6,31 +6,31 @@ services:
       - RUBY_DEBUG_OPEN=false
   primary:
     container_name: jit-devcontainer-primary
-    ports:  !reset []
+    ports: !reset []
   replica:
     container_name: jit-devcontainer-replica
-    ports:  !reset []
+    ports: !reset []
   valkey:
     container_name: jit-devcontainer-valkey
-    ports:  !reset []
+    ports: !reset []
   master:
     container_name: jit-devcontainer-seaweedfs-master
-    ports:  !reset []
+    ports: !reset []
   volume:
     container_name: jit-devcontainer-seaweedfs-volume
-    ports:  !reset []
+    ports: !reset []
   filer:
     container_name: jit-devcontainer-seaweedfs-filer
-    ports:  !reset []
+    ports: !reset []
   s3:
     container_name: jit-devcontainer-seaweedfs-s3
-    ports:  !reset []
+    ports: !reset []
   loki:
     container_name: jit-devcontainer-loki
-    ports:  !reset []
+    ports: !reset []
   tempo:
     container_name: jit-devcontainer-tempo
-    ports:  !reset []
+    ports: !reset []
   grafana:
     container_name: jit-devcontainer-grafana
-    ports:  !reset []
+    ports: !reset []

@@ -20,8 +20,6 @@
 #  fk_rails_...                              (preference_id => app_preferences.id)
 #
 
-
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 # This fixture is for the preference database

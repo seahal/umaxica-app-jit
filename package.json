@@ -1,18 +1,30 @@
 {
-	"name": "umaxica-app-jit",
-	"private": true,
+  "name": "umaxica-app-jit",
+  "private": true,
+  "type": "module",
+  "module": "index.ts",
 	"scripts": {
-		"check": "biome check --write app/javascript",
-		"format": "biome format --write app/javascript",
-		"lint": "biome lint --write app/javascript"
+		"check": "pnpm run format && pnpm run lint",
+		"format": "pnpm exec oxfmt --write app/javascript",
+		"lint": "pnpm exec oxlint --fix app/javascript"
 	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.4.2",
-		"@playwright/test": "^1.58.2",
-		"oxfmt": "^0.33.0",
-		"oxlint": "^1.48.0"
-	},
-	"module": "index.ts",
-	"type": "module",
-	"packageManager": "pnpm@10.27.0"
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.2",
+    "@playwright/test": "^1.58.2",
+    "oxfmt": "^0.33.0",
+    "oxlint": "^1.48.0"
+  },
+  "packageManager": "pnpm@10.27.0",
+  "oxfmt": {},
+  "oxlint": {
+    "rules": {
+      "eslint/no-unused-vars": [
+        "warn",
+        {
+          "caughtErrors": "all",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ]
+    }
+  }
 }

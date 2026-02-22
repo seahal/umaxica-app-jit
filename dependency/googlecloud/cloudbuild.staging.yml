@@ -1,7 +1,7 @@
 steps:
-  - name: 'ubuntu:24.04'
+  - name: "ubuntu:24.04"
     args:
-      - '-lc'
+      - "-lc"
       - |
         set -euo pipefail
         export DEBIAN_FRONTEND=noninteractive
@@ -37,9 +37,9 @@ steps:
         SECRET_KEY_BASE=dummy RAILS_ENV=asset REGION_CODE=jp APEX_REGION=true bundle exec rails assets:precompile
     id: Build assets with mise (ruby/node/pnpm)
     entrypoint: bash
-  - name: 'public.ecr.aws/aws-cli/aws-cli:latest'
+  - name: "public.ecr.aws/aws-cli/aws-cli:latest"
     args:
-      - '-lc'
+      - "-lc"
       - |
         set -euo pipefail
         export AWS_REGION=auto
@@ -56,11 +56,11 @@ steps:
     args:
       - build
       - .
-      - '--target'
+      - "--target"
       - production
-      - '-t'
+      - "-t"
       - asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample
-      - '--file'
+      - "--file"
       - Dockerfile
     id: Docker build
   - name: gcr.io/cloud-builders/docker
@@ -84,8 +84,8 @@ options:
   logging: CLOUD_LOGGING_ONLY
 substitutions:
   _R2_BUCKET: umaxica-production-cloudflare-r2-asset-jit-jp
-  _R2_ENDPOINT: 'https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/'
-  _IMAGE: '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}'
+  _R2_ENDPOINT: "https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/"
+  _IMAGE: "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}"
   _REGION: asia-northeast1
   _REPO: umaxica-app
   _IMAGE_NAME: sample

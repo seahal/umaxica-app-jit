@@ -1,6 +1,7 @@
 [![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
 
 # Umaxica App (JIT)
+
 （ ＾ν＾） Hello, World!
 
 ## Prerequisites
@@ -14,6 +15,7 @@
   - Kafka instances
 
 ## Initial Setup
+
 0. Set up Docker compose and run it: `docker compose up`
 1. Install Ruby dependencies: `bundle install`
 2. Install JavaScript/TypeScript dependencies: `pnpm install`
@@ -21,10 +23,12 @@
 4. ... run `bin/dev`
 
 ## WebAuthn configuration
+
 - WebAuthn requires a `TRUSTED_ORIGINS` environment variable that enumerates every allowed origin. Without it, Rails commands such as `bin/rails db:migrate` cannot start.
 - For local development we already set `TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000` inside `docker/core/env`. If you run Ruby commands outside the container, set the same value (or other hosts you use) beforehand.
 
 ## Cookie domain configuration
+
 - Cookie domain is configured per surface:
   - `COOKIE_DOMAIN_APP` (default example: `app.localhost`)
   - `COOKIE_DOMAIN_COM` (default example: `com.localhost`)
@@ -46,19 +50,23 @@
 - Verification: Run `rake uuid:pk:report` to audit UUID primary key configurations.
 
 ## Testing
+
 - Rails test suite (parallelized): `bundle exec rails test`
 - Coverage can be calculated (or measured) when you execute the test suite using the command `COVERAGE=true bin/rails test.`
 
 ## Linting & Formatting
+
 - Ruby style checks: `bundle exec rubocop`
 - ERB templates: `bundle exec erb_lint .`
 - Frontend formatting and linting: `pnpm run check`
 
 ## Logging
+
 - Rails emits structured logs via `Rails.event` (ActiveSupport::Notifications) rather than `Rails.logger`.
 - Use `Rails.event.record("event.name", payload_hash)` or `Rails.event.error(...)` so logs stay machine-parseable.
 
 ## Key Services & Integrations
+
 - Data and messaging: PostgreSQL, Valkey (Redis), Kafka
 - Default infrastructure ports: Valkey exposed on host port 56379 (override with `VALKEY_HOST_PORT`)
 - Email and Telecomunication:
@@ -89,43 +97,48 @@
 - Monitor CI status via the integration workflow badge above.
 
 ## Environments & Endpoints
-  - Corporate site:
-    - `www.umaxica.com`
-    - `www.[jp|us].news.umaxica.com`
-    - `www.[jp|us].help.umaxica.com`
-    - `www.[jp|us].docs.umaxica.com`
-  - Service endpoints:
-    - `www.umaxica.app`
-    - `sign.umaxica.app`
-    - `www.[jp|us].docs.umaxica.app`
-    - `www.[jp|us].help.umaxica.app`
-    - `www.[jp|us].news.umaxica.app`
-  - Staff site:
-    - `www.umaxica.org`
-    - `sign.umaxica.org`
-    - `www.[jp|us].docs.umaxica.org`
-    - `www.[jp|us].help.umaxica.org`
-    - `www.[jp|us].news.umaxica.org`
-  - Network endpoints:
-    - `a[jp|us].umaxica.net`
+
+- Corporate site:
+  - `www.umaxica.com`
+  - `www.[jp|us].news.umaxica.com`
+  - `www.[jp|us].help.umaxica.com`
+  - `www.[jp|us].docs.umaxica.com`
+- Service endpoints:
+  - `www.umaxica.app`
+  - `sign.umaxica.app`
+  - `www.[jp|us].docs.umaxica.app`
+  - `www.[jp|us].help.umaxica.app`
+  - `www.[jp|us].news.umaxica.app`
+- Staff site:
+  - `www.umaxica.org`
+  - `sign.umaxica.org`
+  - `www.[jp|us].docs.umaxica.org`
+  - `www.[jp|us].help.umaxica.org`
+  - `www.[jp|us].news.umaxica.org`
+- Network endpoints:
+  - `a[jp|us].umaxica.net`
 
 ## Secrets & Credentials
+
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
 - Run `git-secrets --scan` (hooked via Lefthook) before committing to prevent accidental secret leakage.
 - We store our cryptographic keys in Cloud KMS.
 
 ## Troubleshooting
+
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
 - If your devcontainer fails to start, rebuilding it might resolve the issue.
 - The credentials key will be shared with you separately.
 
 ## Useful References
+
 - [Official Ruby on Rails Guides](https://rubyonrails.org/)
 - [RubyGem](https://rubygems.org/)
 - [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
 
 ## Known Issues & Limitations
+
 - This is a work in progress.
 - The public availability of this repository is not guaranteed permanently.
 - No warranty is provided, and the authors shall not be held liable for any damages arising from the use of this repository.

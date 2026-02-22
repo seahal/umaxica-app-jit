@@ -25,4 +25,4 @@
 #  fk_email_occurrences_on_status_id  (status_id => email_occurrence_statuses.id)
 #
 #  fk_rails_...  (status_id => email_occurrence_statuses.id)
-  #
+#

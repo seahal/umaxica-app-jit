@@ -301,6 +301,7 @@ end
 ## Security Best Practices
 
 1. **Never log raw codes/tokens**
+
    ```ruby
    # ❌ BAD
    Rails.logger.info "Verification code: #{raw_code}"
@@ -314,6 +315,7 @@ end
    - Never send via query params (use POST body or secure cookies)
 
 3. **Display token only once**
+
    ```erb
    <% if flash[:raw_token] %>
      <div class="alert alert-warning">

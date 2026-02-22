@@ -1,6 +1,7 @@
 # Sign Configuration Sprint - Weird Behavior Analysis (2026-02-06)
 
 ## 1) SMS OTP could establish login without passkey
+
 - What was weird:
   - `DELETE /up/telephones/:id` logged in the user even though SMS flow is supposed to require passkey registration.
 - Repro:
@@ -18,6 +19,7 @@
     - "should log in after sms verification when passkey already exists"
 
 ## 2) Passkey edit/show pages were scaffold placeholders and used numeric IDs
+
 - What was weird:
   - `/configuration/passkeys/:id/edit` and `show` rendered placeholder scaffolds and leaked numeric IDs.
 - Repro:
@@ -35,6 +37,7 @@
     - index link uses public_id
 
 ## 3) Unlink/disable could lock users out
+
 - What was weird:
   - Email/telephone/secret removal lacked last-method checks and audit logging.
 - Repro:
@@ -56,6 +59,7 @@
     - destroy blocked when last method
 
 ## 4) Emergency key not issued after passkey registration
+
 - What was weird:
   - Passkey registration completed without issuing an emergency key.
 - Repro:
@@ -69,4 +73,3 @@
 - Regression tests:
   - `test/controllers/sign/app/up/passkeys_controller_test.rb`
     - passkey registration issues emergency key and logs in
-

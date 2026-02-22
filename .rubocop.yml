@@ -40,19 +40,19 @@ AllCops:
   UseCache: true
   CacheRootDirectory: tmp/rubocop_cache
   Exclude:
-    - 'vendor/**/*'
-    - 'node_modules/**/*'
-    - 'db/schema.rb'
-    - 'db/*_schema.rb'
-    - 'bin/**/*'
-    - 'tmp/**/*'
-    - 'log/**/*'
-    - '**/*.md'
+    - "vendor/**/*"
+    - "node_modules/**/*"
+    - "db/schema.rb"
+    - "db/*_schema.rb"
+    - "bin/**/*"
+    - "tmp/**/*"
+    - "log/**/*"
+    - "**/*.md"
   Include:
-    - '**/*.rb'
-    - '**/*.rake'
-    - '**/Gemfile'
-    - '**/Rakefile'
+    - "**/*.rb"
+    - "**/*.rake"
+    - "**/Gemfile"
+    - "**/Rakefile"
 
 # ============================================================
 # 2. レイアウト・フォーマット
@@ -237,10 +237,10 @@ Layout/LineLength:
   AllowedPatterns:
     - '^#\s+index_'
   Exclude:
-    - 'config/**/*'
-    - 'db/**/*_migrate/**/*'
-    - 'app/models/**/*'
-    - 'test/models/**/*'
+    - "config/**/*"
+    - "db/**/*_migrate/**/*"
+    - "app/models/**/*"
+    - "test/models/**/*"
 
 # ---------- 複数行のフォーマット ----------
 Layout/MultilineMethodCallIndentation:
@@ -455,13 +455,13 @@ Metrics/AbcSize:
     - app/controllers/**/*.rb
   Max: 50
   Exclude:
-    - 'app/controllers/sign/app/auth/omniauth_callbacks_controller.rb'
+    - "app/controllers/sign/app/auth/omniauth_callbacks_controller.rb"
 
 Metrics/BlockLength:
   Max: 40
   Exclude:
-    - 'config/**/*'
-    - 'db/**/*_migrate/**/*'
+    - "config/**/*"
+    - "db/**/*_migrate/**/*"
 
 Metrics/ClassLength:
   Max: 200
@@ -478,7 +478,7 @@ Metrics/MethodLength:
     - app/controllers/**/*.rb
   Max: 45
   Exclude:
-    - 'app/controllers/concerns/preference/base.rb'
+    - "app/controllers/concerns/preference/base.rb"
 
 Metrics/ModuleLength:
   Max: 120
@@ -499,8 +499,8 @@ Metrics/BlockNesting:
 Metrics/CollectionLiteralLength:
   LengthThreshold: 80
   Exclude:
-    - 'db/**/*_migrate/**/*'
-    - 'test/**/*'
+    - "db/**/*_migrate/**/*"
+    - "test/**/*"
 
 # ---------- Lint（潜在的なバグの検出） ----------
 Lint/AmbiguousAssignment:
@@ -566,8 +566,8 @@ Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: false
   IgnoreEmptyMethods: true
   Exclude:
-    - 'app/services/**/*'
-    - 'test/support/**/*'
+    - "app/services/**/*"
+    - "test/support/**/*"
 
 Lint/IncompatibleIoSelectWithFiberScheduler:
   Enabled: true
@@ -617,7 +617,7 @@ Lint/UselessMethodDefinition:
 Lint/ConstantDefinitionInBlock:
   Enabled: true
   Exclude:
-    - 'config/initializers/**/*'
+    - "config/initializers/**/*"
 
 # ============================================================
 # 4. セキュリティ
@@ -1159,21 +1159,21 @@ Minitest/MultipleAssertions:
 Minitest/NoAssertions:
   Enabled: true
   Exclude:
-    - 'test/consumers/application_consumer_test.rb'
-    - 'test/consumers/email_consumer_test.rb'
-    - 'test/controllers/core/org/docs_controller_test.rb'
-    - 'test/controllers/core/org/news_controller_test.rb'
-    - 'test/controllers/hona_sample_test.rb'
-    - 'test/controllers/sign/app/in/recoveries_controller_test.rb'
-    - 'test/controllers/sign/app/token/refreshs_controller_test.rb'
-    - 'test/controllers/sign/org/recoveries_controller_test.rb'
-    - 'test/integration/sign/org/layout_test.rb'
-    - 'test/integration/www/com/params_test.rb'
+    - "test/consumers/application_consumer_test.rb"
+    - "test/consumers/email_consumer_test.rb"
+    - "test/controllers/core/org/docs_controller_test.rb"
+    - "test/controllers/core/org/news_controller_test.rb"
+    - "test/controllers/hona_sample_test.rb"
+    - "test/controllers/sign/app/in/recoveries_controller_test.rb"
+    - "test/controllers/sign/app/token/refreshs_controller_test.rb"
+    - "test/controllers/sign/org/recoveries_controller_test.rb"
+    - "test/integration/sign/org/layout_test.rb"
+    - "test/integration/www/com/params_test.rb"
 
 Minitest/NoTestCases:
   Enabled: true
   Exclude:
-    - 'test/models/**/*'
+    - "test/models/**/*"
 
 Minitest/NonExecutableTestMethod:
   Enabled: true
@@ -1251,7 +1251,7 @@ Rake/MethodDefinitionInTask:
 I18n/RailsI18n:
   Enabled: true
   Exclude:
-    - 'test/unit/security/skip_forgery_protection_usage_test.rb'
+    - "test/unit/security/skip_forgery_protection_usage_test.rb"
 
 I18n/GetText:
   Enabled: false
@@ -1260,14 +1260,12 @@ I18n/GetText:
 # 9. Thread Safety (Strengthened)
 # ============================================================
 
-
-
 ThreadSafety/ClassAndModuleAttributes:
   Enabled: true
   Exclude:
-    - 'app/controllers/concerns/rate_limit.rb'
-    - 'config/initializers/rails_rate_limit.rb'
-    - 'test/controllers/concerns/auth_policy_test.rb'
+    - "app/controllers/concerns/rate_limit.rb"
+    - "config/initializers/rails_rate_limit.rb"
+    - "test/controllers/concerns/auth_policy_test.rb"
 
 ThreadSafety/ClassInstanceVariable:
   Enabled: true

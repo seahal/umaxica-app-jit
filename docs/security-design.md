@@ -62,7 +62,9 @@ When implementing One-Time Password (OTP) systems, particularly HMAC-based OTP (
 ### Best Practices
 
 #### 1. Private Key Storage
+
 **Do NOT store private keys in sessions**
+
 - Sessions can be compromised through XSS or CSRF attacks
 - Session data may be logged or cached insecurely
 - **Recommended**: Store encrypted private keys in the database
@@ -80,7 +82,9 @@ user_email.update!(
 ```
 
 #### 2. Counter Value Management
+
 **Use simple, sequential counter values**
+
 - Start counters at 0 or use sequential increments
 - Avoid complex counter generation schemes
 - Do NOT use timestamps or predictable values in counters
@@ -97,7 +101,9 @@ otp_counter = previous_counter + 1  # Increment after verification
 ```
 
 #### 3. Brute Force Protection
+
 **Implement attempt limits**
+
 - Limit verification attempts (recommended: 3-5 attempts)
 - Lock out after maximum attempts exceeded
 - Reset attempts counter only after successful verification or timeout
@@ -120,7 +126,9 @@ end
 ```
 
 #### 4. Proper HOTP Verification
+
 **Use the verify() method correctly**
+
 - Always use `hotp.verify()` for verification, never string comparison
 - Verify against the correct counter value
 - Do NOT increment counter on failed attempts
@@ -138,7 +146,9 @@ end
 ```
 
 #### 5. Strict Timeout Enforcement
+
 **Enforce expiration times rigorously**
+
 - Set reasonable expiration periods (10-15 minutes recommended)
 - Check expiration BEFORE verification attempts
 - Invalidate OTPs immediately after timeout

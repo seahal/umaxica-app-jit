@@ -10,26 +10,31 @@ Users see the correct page for their domain without a URL change.
 ### When a 404 Occurs
 
 1. **User request**
+
    ```
    User → https://umaxica.com/naisaito
    ```
 
 2. **Fastly forwards to Rails**
+
    ```
    Fastly → Rails application
    ```
 
 3. **Rails responds with 404**
+
    ```
    Rails → returns 404 (page not found)
    ```
 
 4. **Fastly VCL handles the error**
+
    ```
    Fastly VCL → catches 404 in vcl_error
    ```
 
 5. **Fetch static error page**
+
    ```
    Fastly → retrieves 404.html from Cloudflare
    - umaxica.com → /com/404.html
@@ -58,7 +63,7 @@ sub vcl_error {
       set bereq.backend = cloudflare_errors;
       set bereq.url = "/org/" + obj.status + ".html";
     }
-    
+
     set bereq.http.host = "errors.cloudflare.com";
     restart;
   }
@@ -77,7 +82,7 @@ sub vcl_error {
 
 - Cloudflare Pages
 - AWS S3
-- Google Cloud Storage  
+- Google Cloud Storage
 - Netlify
 - GitHub Pages
 

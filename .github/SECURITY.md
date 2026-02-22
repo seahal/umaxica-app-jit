@@ -20,6 +20,7 @@ Please do not create a public GitHub issue for security vulnerabilities.
 ### 2. Report Privately
 
 Report security vulnerabilities through GitHub's Security Advisories:
+
 - Go to the repository's Security tab
 - Click "Report a vulnerability"
 - Fill in the vulnerability details
@@ -29,6 +30,7 @@ Alternatively, you can email security concerns to: [Your Security Email]
 ### 3. Provide Details
 
 Please include the following information in your report:
+
 - Type of vulnerability
 - Full paths of source files related to the vulnerability
 - Location of the affected source code (tag/branch/commit/direct URL)
@@ -52,6 +54,7 @@ Please include the following information in your report:
 Our application implements the following security measures:
 
 ### Authentication & Authorization
+
 - Multi-factor authentication (WebAuthn, TOTP)
 - OAuth integration (Apple, Google)
 - Password hashing with Argon2
@@ -59,11 +62,13 @@ Our application implements the following security measures:
 - Role-based access control (Pundit)
 
 ### Data Protection
+
 - Encryption at rest for sensitive data
 - Encryption in transit (TLS)
 - Secure credential management with Rails credentials
 
 ### Infrastructure Security
+
 - Regular dependency updates and audits
 - Automated security scanning (Brakeman, CodeQL, Semgrep, Trivy)
 - Secret leak detection (Gitleaks)
@@ -71,6 +76,7 @@ Our application implements the following security measures:
 - SBOM generation for supply chain security
 
 ### Application Security
+
 - Rate limiting (Rack::Attack)
 - Input validation and sanitization
 - CSRF protection
@@ -79,6 +85,7 @@ Our application implements the following security measures:
 - Secure headers configuration
 
 ### Monitoring & Logging
+
 - Structured logging with OpenTelemetry
 - Security event tracking
 - Audit trails for sensitive operations
@@ -95,6 +102,7 @@ Our application implements the following security measures:
 ## Dependency Security
 
 We use automated tools to monitor and update dependencies:
+
 - **Bundler Audit**: Ruby gem vulnerability checking
 - **Bun Audit**: JavaScript package vulnerability checking
 - **Dependabot**: Automated dependency updates
@@ -103,6 +111,7 @@ We use automated tools to monitor and update dependencies:
 ## Compliance
 
 Our security practices align with:
+
 - OWASP Top 10
 - NIST Cybersecurity Framework
 - SOC 2 Type II principles (in progress)
@@ -114,6 +123,7 @@ We currently do not have a bug bounty program. However, we deeply appreciate res
 ## Contact
 
 For security-related questions or concerns:
+
 - Security Email: [Your Security Email]
 - Security Advisories: Use GitHub Security tab
 

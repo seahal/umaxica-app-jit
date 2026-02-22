@@ -8,8 +8,8 @@ services:
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
     env_file: docker/core/env
-    entrypoint: [ "/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh" ]
-    command: [ "sleep", "infinity" ]
+    entrypoint: ["/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh"]
+    command: ["sleep", "infinity"]
     restart: always
     user: "${UID:-1000}:${GID:-1000}"
     tmpfs:
@@ -22,12 +22,12 @@ services:
         source: .
         target: /home/jit/workspace
     networks:
-      backend: { }
+      backend: {}
       frontend:
         aliases:
           - sign.app.localhost
           - sign.org.localhost
-      observability: { }
+      observability: {}
     depends_on:
       primary:
         condition: service_healthy
@@ -64,7 +64,7 @@ services:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U root -d db -h 127.0.0.1" ]
+      test: ["CMD-SHELL", "pg_isready -U root -d db -h 127.0.0.1"]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -104,7 +104,7 @@ services:
       - valkey-volume:/data
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "valkey-cli", "ping" ]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 3s
       timeout: 2s
       retries: 20
@@ -130,7 +130,7 @@ services:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -187,7 +187,7 @@ services:
     ports:
       - "127.0.0.1:9333:9333"
       - "127.0.0.1:19333:19333"
-    command: 'master -ip=master -ip.bind=0.0.0.0'
+    command: "master -ip=master -ip.bind=0.0.0.0"
     volumes:
       - master_data:/data
     networks:
@@ -249,15 +249,15 @@ services:
 #   restart: unless-stopped
 
 networks:
-  backend: { }
-  frontend: { }
-  observability: { }
+  backend: {}
+  frontend: {}
+  observability: {}
 
 volumes:
-  valkey-volume: { }
-  loki-volume: { }
-  tempo-volume: { }
-  grafana-volume: { }
+  valkey-volume: {}
+  loki-volume: {}
+  tempo-volume: {}
+  grafana-volume: {}
   master_data: {}
   volume_data: {}
   filer_data: {}

@@ -44,14 +44,14 @@ Ruby 4.0.1 / Rails 8.1 (from `rails/rails` main branch). PostgreSQL 18+ required
 
 The app serves multiple domains, each split into three audience tiers: **app** (end users), **org** (staff), **com** (corporate/public). Routes are host-constrained and modularized:
 
-| Route file | Domain purpose | Hosts (dev) |
-|---|---|---|
-| `config/routes/sign.rb` | Authentication (sign-in/up, MFA, passkeys, social) | `sign.app.localhost`, `sign.org.localhost` |
-| `config/routes/apex.rb` | Dashboard shell & preferences | `app.localhost`, `org.localhost`, `com.localhost` |
-| `config/routes/core.rb` | Main app backend (contacts, content management) | `www.app.localhost`, `www.org.localhost`, `www.com.localhost` |
-| `config/routes/docs.rb` | Documentation delivery | `docs.com.localhost` |
-| `config/routes/news.rb` | News/blog delivery | news domains |
-| `config/routes/help.rb` | Help system | help domains |
+| Route file              | Domain purpose                                     | Hosts (dev)                                                   |
+| ----------------------- | -------------------------------------------------- | ------------------------------------------------------------- |
+| `config/routes/sign.rb` | Authentication (sign-in/up, MFA, passkeys, social) | `sign.app.localhost`, `sign.org.localhost`                    |
+| `config/routes/apex.rb` | Dashboard shell & preferences                      | `app.localhost`, `org.localhost`, `com.localhost`             |
+| `config/routes/core.rb` | Main app backend (contacts, content management)    | `www.app.localhost`, `www.org.localhost`, `www.com.localhost` |
+| `config/routes/docs.rb` | Documentation delivery                             | `docs.com.localhost`                                          |
+| `config/routes/news.rb` | News/blog delivery                                 | news domains                                                  |
+| `config/routes/help.rb` | Help system                                        | help domains                                                  |
 
 Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/sign/org/`, `app/controllers/apex/com/`, etc.
 
@@ -59,20 +59,20 @@ Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/sign/org/
 
 Each database has a write (pub) and read replica (sub) connection. Key databases:
 
-| Database | Migration dir | Purpose |
-|---|---|---|
-| `principal` | `db/principals_migrate` | Users & staff identity |
-| `operator` | `db/operators_migrate` | Staff/operator management |
-| `token` | `db/tokens_migrate` | Auth tokens (access/refresh) |
-| `preference` | `db/preferences_migrate` | User/staff preferences |
-| `guest` | `db/guests_migrate` | Guest contacts |
-| `document` | `db/documents_migrate` | CMS documents |
-| `news` | `db/news_migrate` | News posts |
-| `activity` | `db/activity_migrate` | Audit logs |
-| `occurrence` | `db/occurrences_migrate` | Rate-limiting events |
-| `avatar` | `db/avatars_migrate` | Avatar/social profiles |
-| `queue` | `db/queues_migrate` | SolidQueue jobs |
-| `cache` | `db/caches_migrate` | SolidCache |
+| Database     | Migration dir            | Purpose                      |
+| ------------ | ------------------------ | ---------------------------- |
+| `principal`  | `db/principals_migrate`  | Users & staff identity       |
+| `operator`   | `db/operators_migrate`   | Staff/operator management    |
+| `token`      | `db/tokens_migrate`      | Auth tokens (access/refresh) |
+| `preference` | `db/preferences_migrate` | User/staff preferences       |
+| `guest`      | `db/guests_migrate`      | Guest contacts               |
+| `document`   | `db/documents_migrate`   | CMS documents                |
+| `news`       | `db/news_migrate`        | News posts                   |
+| `activity`   | `db/activity_migrate`    | Audit logs                   |
+| `occurrence` | `db/occurrences_migrate` | Rate-limiting events         |
+| `avatar`     | `db/avatars_migrate`     | Avatar/social profiles       |
+| `queue`      | `db/queues_migrate`      | SolidQueue jobs              |
+| `cache`      | `db/caches_migrate`      | SolidCache                   |
 
 Schema files: `db/<name>_schema.rb` (e.g., `db/principal_schema.rb`). The root `db/schema.rb` also exists.
 
@@ -127,6 +127,7 @@ Runs on push to develop/main and PRs. Jobs: actionlint, hadolint, Brakeman + bun
 ## Requirements Analysis Best Practices
 
 ### Verify with multiple sources
+
 Always verify initial understanding against primary sources. Never proceed on assumptions alone.
 
 1. **Hypothesis**: Recognize intuitive understanding as a hypothesis
