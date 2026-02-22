@@ -1,0 +1,94 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Auth
+  class CurrentResourceResolverTest < ActiveSupport::TestCase
+    FakeResource = Struct.new(:id)
+
+    class FakeTokenScope
+      def where(*)
+        self
+      end
+
+      def exists?
+        true
+      end
+    end
+
+    class FakeTokenClass
+      def self.where(*)
+        FakeTokenScope.new
+      end
+
+      def self.column_names
+        %w(id public_id revoked_at)
+      end
+    end
+
+    class FakeResourceClass
+      def self.find_by(id:)
+        return FakeResource.new(id) if id == 123
+
+        nil
+      end
+    end
+
+    test "returns failure when access token is blank" do
+      result = Auth::CurrentResourceResolver.new(
+        access_token: nil,
+        request_host: "app.localhost",
+        resource_type: "user",
+        resource_class: FakeResourceClass,
+        token_class: FakeTokenClass,
+        test_env: true,
+      ).call
+
+      assert_equal :blank_access_token, result.failure_reason
+      assert_nil result.resource
+    end
+
+    test "returns resource and session id when token is valid" do
+      payload = { "sub" => 123, "sid" => "sess_1", "act" => "user" }
+
+      Auth::Base::Token.stub(:decode, payload) do
+        Auth::Base::Token.stub(:validate_actor_claim!, true) do
+          TokenRecord.stub(:connected_to, ->(*, **, &block) { block.call }) do
+            result = Auth::CurrentResourceResolver.new(
+              access_token: "token",
+              request_host: "app.localhost",
+              resource_type: "user",
+              resource_class: FakeResourceClass,
+              token_class: FakeTokenClass,
+              test_env: true,
+            ).call
+
+            assert_nil result.failure_reason
+            assert_equal "sess_1", result.session_public_id
+            assert_equal 123, result.resource.id
+          end
+        end
+      end
+    end
+
+    test "returns actor_mismatch failure when actor claim differs" do
+      payload = { "sub" => 123, "sid" => "sess_1", "act" => "staff" }
+
+      Auth::Base::Token.stub(:decode, payload) do
+        Auth::Base::Token.stub(:validate_actor_claim!, false) do
+          result = Auth::CurrentResourceResolver.new(
+            access_token: "token",
+            request_host: "app.localhost",
+            resource_type: "user",
+            resource_class: FakeResourceClass,
+            token_class: FakeTokenClass,
+            test_env: true,
+          ).call
+
+          assert_equal :actor_mismatch, result.failure_reason
+          assert_equal payload, result.payload
+        end
+      end
+    end
+  end
+end

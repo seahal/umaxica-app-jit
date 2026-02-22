@@ -4,6 +4,32 @@ require "test_helper"
 
 module Auth
   class BaseTest < ActiveSupport::TestCase
+    class HeaderKeyHarness
+      include Auth::Base
+
+      attr_accessor :actor_type
+
+      def resource_type
+        actor_type
+      end
+
+      def resource_class = User
+
+      def token_class = UserToken
+
+      def audit_class = UserActivity
+
+      def resource_foreign_key = :user_id
+
+      def sign_in_url_with_return(_return_to) = "/sign/in"
+
+      def am_i_user? = false
+
+      def am_i_staff? = false
+
+      def am_i_owner? = false
+    end
+
     test "VALID_POLICIES constant is defined" do
       assert_equal %i(public_strict auth_required guest_only), Auth::Base::VALID_POLICIES
     end
@@ -17,14 +43,33 @@ module Auth
 
     test "ACCESS_COOKIE_KEY is defined" do
       assert_kind_of String, Auth::Base::ACCESS_COOKIE_KEY
+      assert_equal "jit_auth_access", Auth::Base::ACCESS_COOKIE_KEY
     end
 
     test "REFRESH_COOKIE_KEY is defined" do
       assert_kind_of String, Auth::Base::REFRESH_COOKIE_KEY
+      assert_equal "jit_auth_refresh", Auth::Base::REFRESH_COOKIE_KEY
     end
 
     test "DEVICE_COOKIE_KEY is defined" do
       assert_kind_of String, Auth::Base::DEVICE_COOKIE_KEY
+      assert_equal "jit_auth_device_id", Auth::Base::DEVICE_COOKIE_KEY
+    end
+
+    test "test_header_key resolves actor specific keys" do
+      harness = HeaderKeyHarness.new
+
+      harness.actor_type = "user"
+      assert_equal "X-TEST-CURRENT-USER", harness.send(:test_header_key)
+
+      harness.actor_type = "staff"
+      assert_equal "X-TEST-CURRENT-STAFF", harness.send(:test_header_key)
+
+      harness.actor_type = "viewer"
+      assert_equal "X-TEST-CURRENT-VIEWER", harness.send(:test_header_key)
+
+      harness.actor_type = "unknown"
+      assert_equal "X-TEST-CURRENT-RESOURCE", harness.send(:test_header_key)
     end
 
     test "device cookie is managed through dedicated helpers only" do

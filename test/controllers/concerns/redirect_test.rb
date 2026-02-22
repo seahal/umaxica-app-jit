@@ -3,63 +3,62 @@
 require "test_helper"
 
 class RedirectConcernTest < ActiveSupport::TestCase
-  include Common::Redirect
+  class RedirectHarness
+    include Common::Redirect
 
-  # Mock ENV variables for testing by overriding the method
-  def allowed_hosts
-    ["example.com", "trusted.jp"]
+    attr_reader :redirect_target, :redirect_options
+
+    def redirect_to(target = nil, **options)
+      @redirect_target = target
+      @redirect_options = options
+    end
   end
 
-  test "allowed_host? allows exact match" do
-    assert allowed_host?("example.com")
-    assert allowed_host?("trusted.jp")
+  setup do
+    @harness = RedirectHarness.new
   end
 
-  test "allowed_host? allows subdomains" do
-    assert allowed_host?("sub.example.com")
-    assert allowed_host?("deep.sub.trusted.jp")
+  test "safe_redirect_to allows absolute internal paths only" do
+    @harness.send(:safe_redirect_to, "/dashboard?x=1", fallback: "/fallback", status: :found)
+
+    assert_equal "/dashboard?x=1", @harness.redirect_target
+    assert_not @harness.redirect_options[:allow_other_host]
+    assert_equal :found, @harness.redirect_options[:status]
   end
 
-  test "allowed_host? denies partial match suffix" do
-    assert_not allowed_host?("evilexample.com")
-    assert_not allowed_host?("nottrusted.jp")
+  test "safe_redirect_to rejects absolute URL and falls back" do
+    @harness.send(:safe_redirect_to, "https://app.localhost/dashboard", fallback: "/fallback")
+
+    assert_equal "/fallback", @harness.redirect_target
+    assert_not @harness.redirect_options[:allow_other_host]
   end
 
-  test "allowed_host? denies unrelated hosts" do
-    assert_not allowed_host?("google.com")
-    assert_not allowed_host?("evil.com")
+  test "safe_redirect_to rejects protocol-relative URL and falls back" do
+    @harness.send(:safe_redirect_to, "//app.localhost/dashboard", fallback: "/fallback")
+
+    assert_equal "/fallback", @harness.redirect_target
+    assert_not @harness.redirect_options[:allow_other_host]
   end
 
-  test "allowed_host? denies empty or nil" do
-    assert_not allowed_host?(nil)
-    assert_not allowed_host?("")
+  test "safe_redirect_to rejects path without leading slash and falls back" do
+    @harness.send(:safe_redirect_to, "a/b", fallback: "/fallback")
+
+    assert_equal "/fallback", @harness.redirect_target
+    assert_not @harness.redirect_options[:allow_other_host]
   end
 
-  test "generate_redirect_url returns nil for disallowed hosts" do
-    assert_nil generate_redirect_url("http://evil.com")
+  test "safe_redirect_to rejects control characters and falls back" do
+    @harness.send(:safe_redirect_to, "/dashboard\nx", fallback: "/fallback")
+
+    assert_equal "/fallback", @harness.redirect_target
+    assert_not @harness.redirect_options[:allow_other_host]
   end
 
-  test "generate_redirect_url returns encoded url for allowed hosts" do
-    url = "https://sub.example.com/path?query=1"
-    encoded = generate_redirect_url(url)
+  test "generate_redirect_url encodes internal paths only" do
+    encoded = @harness.send(:generate_redirect_url, "/dashboard?x=1")
 
     assert_not_nil encoded
-    assert_equal url, Base64.urlsafe_decode64(encoded)
-  end
-
-  test "generate_redirect_url denies non-http schemes" do
-    assert_nil generate_redirect_url("javascript:alert(1)")
-    assert_nil generate_redirect_url("file:///etc/passwd")
-  end
-
-  test "generate_redirect_url denies urls with userinfo" do
-    assert_nil generate_redirect_url("https://user:pass@example.com")
-    assert_nil generate_redirect_url("https://:pass@example.com")
-    assert_nil generate_redirect_url("https://user@example.com")
-  end
-
-  test "generate_redirect_url denies urls with control characters" do
-    assert_nil generate_redirect_url("https://example.com/\n")
-    assert_nil generate_redirect_url("https://example.com/\r")
+    assert_equal "/dashboard?x=1", Base64.urlsafe_decode64(encoded)
+    assert_nil @harness.send(:generate_redirect_url, "https://app.localhost/dashboard")
   end
 end

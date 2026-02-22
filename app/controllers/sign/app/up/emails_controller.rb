@@ -113,8 +113,6 @@ module Sign
 
           if safe_path
             Base64.urlsafe_encode64(safe_path)
-          elsif safe_external_url?(decoded_url)
-            Base64.urlsafe_encode64(decoded_url)
           end
         rescue ArgumentError, URI::InvalidURIError
           nil

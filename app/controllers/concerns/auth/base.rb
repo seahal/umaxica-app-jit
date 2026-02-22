@@ -7,6 +7,22 @@ module Auth
     extend ActiveSupport::Concern
     include Common::Redirect
 
+    # ==========================================================================
+    # TOC (approximate)
+    # 1) JWT & Token primitives ....................................... L40-L210
+    # 2) Request guards (public API, I/O boundary) .................... L215-L275
+    # 3) Redirect/checkpoint session flows (I/O boundary) ............. L277-L462
+    # 4) Session auth lifecycle (public API, I/O boundary) ............ L464-L775
+    # 5) Abstract contract & policy DSL ............................... L778-L907
+    # 6) Private request/cookie/token I/O ............................. L909-L1505
+    # 7) Policy/domain decisions ...................................... L1514-L1869
+    # 8) MFA/session helper decisions ................................. L1873-L1966
+    # ==========================================================================
+
+    # ==========================================================================
+    # 1) JWT & Token primitives
+    # ==========================================================================
+
     # --- Policy errors ---
     class MissingPolicyError < StandardError; end
 
@@ -25,9 +41,9 @@ module Auth
     # Cookie keys - environment-dependent naming
     # Production: "__Secure-" prefix for secure cookies
     # Dev/Test: no prefix (String, not Symbol)
-    ACCESS_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_access" : "jit_auth_access"
-    REFRESH_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_refresh" : "jit_auth_refresh"
-    DEVICE_COOKIE_KEY = REFRESH_COOKIE_KEY.sub("jit_auth_refresh", "jit_auth_device_id")
+    ACCESS_COOKIE_KEY = Auth::CookieName.access
+    REFRESH_COOKIE_KEY = Auth::CookieName.refresh
+    DEVICE_COOKIE_KEY = Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
 
     # Token TTLs
     ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
@@ -91,7 +107,7 @@ module Auth
             JWT_ALGORITHM,
             { kid: Jit::Security::Jwt::Keyring.active_kid },
           )
-        rescue StandardError => error
+        rescue JWT::EncodeError, OpenSSL::PKey::PKeyError, ArgumentError => error
           Rails.event.notify(
             "authentication.token.generation.failed",
             error_class: error.class.name,
@@ -125,7 +141,7 @@ module Auth
             host: host,
           )
           nil
-        rescue StandardError => error
+        rescue OpenSSL::PKey::PKeyError, ArgumentError, TypeError => error
           Rails.event.notify(
             "authentication.token.verification.error",
             error_class: error.class.name,
@@ -138,11 +154,11 @@ module Auth
         # rubocop:enable Metrics/MethodLength
 
         def extract_subject(payload)
-          payload&.dig("sub")
+          Auth::TokenClaims.subject(payload)
         end
 
         def extract_act(payload)
-          payload&.dig("act")
+          Auth::TokenClaims.actor(payload)
         end
 
         def extract_type(payload) = extract_act(payload)
@@ -158,11 +174,11 @@ module Auth
         end
 
         def extract_session_id(payload)
-          payload&.dig("sid")
+          Auth::TokenClaims.session_id(payload)
         end
 
         def extract_jti(payload)
-          payload&.dig("jti")
+          Auth::TokenClaims.jti(payload)
         end
 
         private
@@ -176,19 +192,16 @@ module Auth
         end
 
         def build_payload(resource, session_public_id, type)
-          now = Time.current
-
-          payload = {
-            "iat" => now.to_i,
-            "exp" => (now + Auth::Base::ACCESS_TOKEN_TTL).to_i,
-            "jti" => Jit::Security::Jwt::JtiGenerator.generate,
+          Auth::TokenClaims.build(
+            resource: resource,
+            session_public_id: session_public_id,
+            resource_type: type,
+            issued_at: Time.current,
+            access_token_ttl: Auth::Base::ACCESS_TOKEN_TTL,
+          ).merge(
             "iss" => JwtConfiguration.issuer,
             "aud" => JwtConfiguration.audiences,
-            "sub" => resource.id,
-            "act" => type,
-          }
-          payload["sid"] = session_public_id if session_public_id.present?
-          payload
+          )
         end
 
         def decode_options
@@ -217,7 +230,8 @@ module Auth
     end
 
     # ======================================================================
-    # Pre-Authentication Guards
+    # 2) Request guards (public API, Request I/O boundary)
+    # - Reads request format and writes HTTP response
     # ======================================================================
 
     # Ensures user is not already logged in
@@ -275,12 +289,13 @@ module Auth
     end
 
     # ======================================================================
-    # Redirect Parameter Handling
+    # 3) Redirect/checkpoint session flows (Session/params I/O boundary)
+    # - Reads/writes params, flash, session
     # ======================================================================
 
     # Default session key for storing redirect parameter
-    DEFAULT_RD_SESSION_KEY = :user_email_authentication_rd
-    CHECKPOINT_SESSION_KEY = :in_checkpoint
+    DEFAULT_RD_SESSION_KEY = Auth::IoKeys::Session::DEFAULT_RD
+    CHECKPOINT_SESSION_KEY = Auth::IoKeys::Session::CHECKPOINT
     CHECKPOINT_TIMEOUT = 2.hours
 
     # Preserves the redirect parameter in session and returns it for immediate use
@@ -288,9 +303,9 @@ module Auth
     # @param session_key [Symbol] The session key to store rd parameter in
     # @return [String, nil] The rd parameter value if present
     def preserve_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
-      if params[:rd].present?
-        session[session_key] = params[:rd]
-        params[:rd]
+      if params[Auth::IoKeys::Params::RD].present?
+        session[session_key] = params[Auth::IoKeys::Params::RD]
+        params[Auth::IoKeys::Params::RD]
       end
     end
 
@@ -300,7 +315,7 @@ module Auth
     # @param session_key [Symbol] The session key to retrieve from
     # @return [String, nil] The rd parameter value
     def retrieve_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
-      rd_param = params[:rd].presence || session[session_key]
+      rd_param = params[Auth::IoKeys::Params::RD].presence || session[session_key]
       session[session_key] = nil
       rd_param
     end
@@ -310,7 +325,7 @@ module Auth
     # @param session_key [Symbol] The session key to retrieve from
     # @return [String, nil] The rd parameter value
     def peek_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
-      params[:rd].presence || session[session_key]
+      params[Auth::IoKeys::Params::RD].presence || session[session_key]
     end
 
     # Builds redirect params hash with optional rd parameter
@@ -323,7 +338,7 @@ module Auth
     def build_redirect_params(message_key, message_value, session_key = DEFAULT_RD_SESSION_KEY)
       redirect_params = { message_key => message_value }
       rd_value = peek_redirect_parameter(session_key)
-      redirect_params[:rd] = rd_value if rd_value.present?
+      redirect_params[Auth::IoKeys::Params::RD] = rd_value if rd_value.present?
       redirect_params
     end
 
@@ -389,12 +404,12 @@ module Auth
     # @return [Hash] The modified redirect_params hash
     def add_rd_to_params!(redirect_params, session_key = DEFAULT_RD_SESSION_KEY)
       rd_value = peek_redirect_parameter(session_key)
-      redirect_params[:rd] = rd_value if rd_value.present?
+      redirect_params[Auth::IoKeys::Params::RD] = rd_value if rd_value.present?
       redirect_params
     end
 
     # ======================================================================
-    # Checkpoint Flow
+    # 3-1) Checkpoint flow (Session/header I/O boundary + test hook)
     # ======================================================================
 
     def issue_checkpoint!(kind: "mock", state: "new", payload: {})
@@ -411,7 +426,7 @@ module Auth
     def maybe_inject_test_checkpoint!
       return unless Rails.env.test?
 
-      raw = request.headers["X-TEST-CHECKPOINT"]
+      raw = request.headers[Auth::IoKeys::Headers::TEST_CHECKPOINT]
       return if raw.blank?
       return if session[CHECKPOINT_SESSION_KEY].present?
 
@@ -462,7 +477,7 @@ module Auth
     end
 
     # ======================================================================
-    # Session Authentication
+    # 4) Session auth lifecycle (public API, Cookie/session/request I/O boundary)
     # ======================================================================
 
     # Loads authentication session data and validates expiry
@@ -729,13 +744,13 @@ module Auth
       return if logged_in?
 
       # Loop guard: prevents infinite refresh loops within the same request
-      return if request.env["jit_auth_refreshed"]
+      return if request.env[Auth::IoKeys::Env::AUTH_REFRESHED_FLAG]
 
       refresh_plain = cookies[REFRESH_COOKIE_KEY]
       return if refresh_plain.blank?
 
       # Mark as refreshed to prevent recursion
-      request.env["jit_auth_refreshed"] = true
+      request.env[Auth::IoKeys::Env::AUTH_REFRESHED_FLAG] = true
 
       refreshed = refresh_access_token(refresh_plain)
       unless refreshed
@@ -796,21 +811,21 @@ module Auth
     end
 
     def test_header_key
-      return "X-TEST-CURRENT-RESOURCE" unless Rails.env.test?
+      return Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE unless Rails.env.test?
 
       actor_type = resource_type if respond_to?(:resource_type, true)
       case actor_type
       when "user"
-        "X-TEST-CURRENT-USER"
+        Auth::IoKeys::Headers::TEST_CURRENT_USER
       when "staff"
-        "X-TEST-CURRENT-STAFF"
+        Auth::IoKeys::Headers::TEST_CURRENT_STAFF
       when "viewer"
-        "X-TEST-CURRENT-VIEWER"
+        Auth::IoKeys::Headers::TEST_CURRENT_VIEWER
       else
-        "X-TEST-CURRENT-RESOURCE"
+        Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE
       end
     rescue StandardError
-      "X-TEST-CURRENT-RESOURCE"
+      Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE
     end
 
     def sign_in_url_with_return(return_to)
@@ -839,6 +854,9 @@ module Auth
       end
     end
 
+    # ==========================================================================
+    # 5) Abstract contract & policy DSL (controller class API)
+    # ==========================================================================
     class_methods do
       # Declare policy for controller or specific actions (only/except).
       def access_policy_rules
@@ -907,8 +925,12 @@ module Auth
     private
 
     # ======================================================================
-    # Withdrawal Gate - Confines deactivated users to configuration edit
+    # 6) Private request/cookie/token I/O helpers
     # ======================================================================
+
+    # ----------------------------------------------------------------------
+    # 6-1) Withdrawal gate (Request I/O boundary)
+    # ----------------------------------------------------------------------
 
     def enforce_withdrawal_gate!
       return unless logged_in?
@@ -945,9 +967,9 @@ module Auth
 
     def withdrawal_gate_redirect_path
       if respond_to?(:edit_sign_app_configuration_path, true)
-        edit_sign_app_configuration_path(ri: params[:ri])
+        edit_sign_app_configuration_path(ri: params[Auth::IoKeys::Params::RI])
       elsif respond_to?(:edit_sign_org_configuration_path, true)
-        edit_sign_org_configuration_path(ri: params[:ri])
+        edit_sign_org_configuration_path(ri: params[Auth::IoKeys::Params::RI])
       else
         "/configuration/edit"
       end
@@ -956,6 +978,9 @@ module Auth
       "/configuration/edit"
     end
 
+    # ----------------------------------------------------------------------
+    # 6-2) Cookie/session/header accessors (I/O boundary)
+    # ----------------------------------------------------------------------
     def cookie_options
       Core::CookieOptions.for(
         surface: Core::Surface.current(request),
@@ -977,7 +1002,7 @@ module Auth
     end
 
     def device_cookie_key
-      REFRESH_COOKIE_KEY.sub("jit_auth_refresh", "jit_auth_device_id")
+      Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
     end
 
     def device_cookie_options
@@ -1020,7 +1045,7 @@ module Auth
     def extract_access_token(cookie_key)
       return nil unless respond_to?(:request, true) && request
 
-      auth_header = request.headers["Authorization"]
+      auth_header = request.headers[Auth::IoKeys::Headers::AUTHORIZATION]
       if auth_header.present?
         prefix, token = auth_header.split(" ", 2)
         return token if prefix.casecmp("Bearer").zero? && token.present?
@@ -1029,6 +1054,9 @@ module Auth
       cookies[cookie_key]
     end
 
+    # ----------------------------------------------------------------------
+    # 6-3) Audit/occurrence writing (side-effect boundary)
+    # ----------------------------------------------------------------------
     def record_audit(event_id, resource:, actor: resource)
       return unless resource && event_id
 
@@ -1090,6 +1118,9 @@ module Auth
       OpenSSL::HMAC.hexdigest("SHA256", secret, ip)
     end
 
+    # ----------------------------------------------------------------------
+    # 6-4) Refresh error handling and token/device guards
+    # ----------------------------------------------------------------------
     def handle_missing_refresh_token(refresh_public_id)
       set_refresh_failure!(:unauthorized, "invalid_refresh_token")
 
@@ -1328,13 +1359,13 @@ module Auth
     end
 
     def refresh_device_allowed?(token_record)
-      header_device_id = request.headers["X-Device-Id"].to_s.presence
+      header_device_id = request.headers[Auth::IoKeys::Headers::DEVICE_ID].to_s.presence
       cookie_device_id = read_device_id_cookie
 
       if header_device_id.blank? && cookie_device_id.blank?
         # In test environment, allow missing device ID to simplify tests
         # ONLY if not explicitly requested via a strict-check header.
-        if Rails.env.test? && request.headers["X-STRICT-DEVICE-CHECK"].blank?
+        if Rails.env.test? && request.headers[Auth::IoKeys::Headers::STRICT_DEVICE_CHECK].blank?
           return true
         end
 
@@ -1360,7 +1391,7 @@ module Auth
     end
 
     def refresh_device_source
-      header_present = request.headers["X-Device-Id"].to_s.present?
+      header_present = request.headers[Auth::IoKeys::Headers::DEVICE_ID].to_s.present?
       cookie_present = read_device_id_cookie.present?
       return "both" if header_present && cookie_present
       return "header" if header_present
@@ -1386,18 +1417,18 @@ module Auth
 
       header_key = test_header_key
       test_id = request.headers[header_key]
-      if test_id.blank? && header_key == "X-TEST-CURRENT-RESOURCE"
-        test_id = request.headers["X-TEST-CURRENT-RESOURCE"] ||
-          request.headers["X-TEST-CURRENT-USER"] ||
-          request.headers["X-TEST-CURRENT-STAFF"] ||
-          request.headers["X-TEST-CURRENT-VIEWER"]
+      if test_id.blank? && header_key == Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE
+        test_id = request.headers[Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE] ||
+          request.headers[Auth::IoKeys::Headers::TEST_CURRENT_USER] ||
+          request.headers[Auth::IoKeys::Headers::TEST_CURRENT_STAFF] ||
+          request.headers[Auth::IoKeys::Headers::TEST_CURRENT_VIEWER]
       end
       return nil unless test_id
 
       resource = resource_class.find_by(id: test_id)
       if resource
         @bypass_withdrawn_check = true
-        test_session_id = request.headers["X-TEST-SESSION-PUBLIC-ID"]
+        test_session_id = request.headers[Auth::IoKeys::Headers::TEST_SESSION_PUBLIC_ID]
         @current_session_public_id = test_session_id if test_session_id.present?
       end
       resource
@@ -1405,39 +1436,21 @@ module Auth
 
     def load_from_token
       access_token = extract_access_token(ACCESS_COOKIE_KEY)
-      return nil if access_token.blank?
+      request_host = request&.host
+      return nil if request_host.blank?
 
-      payload = Token.decode(access_token, host: request.host)
-      return nil if payload.blank?
+      result = Auth::CurrentResourceResolver.new(
+        access_token: access_token,
+        request_host: request_host,
+        resource_type: resource_type,
+        resource_class: resource_class,
+        token_class: token_class,
+        test_env: Rails.env.test?,
+      ).call
 
-      unless Token.validate_actor_claim!(payload, resource_type)
-        emit_actor_mismatch_event(payload)
-        return nil
-      end
-
-      sid = Token.extract_session_id(payload)
-      return nil if sid.blank?
-
-      # Use replica for reading, but skip connected_to in tests to ensure transaction visibility
-      check_logic =
-        -> {
-          scope = token_class.where(public_id: sid)
-          scope = scope.where(revoked_at: nil) if token_class.column_names.include?("revoked_at")
-          scope.exists?
-        }
-
-      token_exists =
-        if Rails.env.test?
-          # Ensure visibility by using writing connection which holds the test transaction
-          TokenRecord.connected_to(role: :writing, &check_logic)
-        else
-          TokenRecord.connected_to(role: :reading, &check_logic)
-        end
-      return nil unless token_exists
-
-      @current_session_public_id = sid
-
-      resource_class.find_by(id: Token.extract_subject(payload))
+      emit_actor_mismatch_event(result.payload) if result.failure_reason == :actor_mismatch
+      @current_session_public_id = result.session_public_id if result.session_public_id.present?
+      result.resource
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -1505,10 +1518,14 @@ module Auth
     def handle_session_expiry(redirect_path, message_key)
       redirect_params = { notice: t(message_key) }
       # Preserve redirect parameter if present
-      redirect_params[:rd] = session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
+      default_rd_key = Auth::IoKeys::Session::DEFAULT_RD
+      redirect_params[Auth::IoKeys::Params::RD] = session[default_rd_key] if session[default_rd_key].present?
       redirect_to redirect_path, redirect_params
     end
 
+    # ======================================================================
+    # 7) Policy/domain decisions
+    # ======================================================================
     # --- Policy enforcement methods ---
 
     def enforce_access_policy!
@@ -1672,6 +1689,9 @@ module Auth
       end
     end
 
+    # ----------------------------------------------------------------------
+    # 7-1) MFA/session-limit domain decisions
+    # ----------------------------------------------------------------------
     def check_totp_requirement(resource)
       return unless mfa_required_for?(resource)
 
@@ -1869,6 +1889,9 @@ module Auth
       end
     end
 
+    # ======================================================================
+    # 8) Session/MFA helper reads + response shapers
+    # ======================================================================
     # Get the current session token record
     def current_session
       return @current_session if defined?(@current_session)
@@ -1907,7 +1930,7 @@ module Auth
       decoded = decode_base64_urlsafe(raw_value)
       candidate = decoded.presence || raw_value
 
-      safe_internal_path(candidate) || safe_external_url(candidate)
+      safe_internal_path(candidate)
     end
 
     def decode_base64_urlsafe(value)

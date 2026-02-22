@@ -73,6 +73,11 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
 RESEND_SMTP_ENDPOINT=smtp.resend.com
 RESEND_SMTP_USER_NAME=resend
 # Domain URLs
+CORPORATE_URL=com.localhost
+SERVICE_URL=app.localhost
+STAFF_URL=org.localhost
+NETWORK_URL=network.localhost
+DEV_URL=dev.localhost
 APEX_CORPORATE_URL=com.localhost
 APEX_SERVICE_URL=app.localhost
 APEX_STAFF_URL=org.localhost

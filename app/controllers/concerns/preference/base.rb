@@ -5,6 +5,20 @@ require "sha3"
 require "concurrent"
 
 module Preference
+  # ==========================================================================
+  # TOC (approximate)
+  # 1) JWT configuration & token primitives ........................... L8-L168
+  # 2) Preference request entrypoints (I/O boundary) .................. L170-L240
+  # 3) Preference option/domain mapping ............................... L240-L406
+  # 4) Audit + preference domain updates .............................. L409-L530
+  # 5) Refresh/access token lifecycle (I/O + domain) ................. L533-L895
+  # 6) Cookie/header/session helpers (I/O boundary) ................... L897-L985
+  # 7) Child-record lazy helpers ...................................... L985-L1005
+  # ==========================================================================
+
+  # ==========================================================================
+  # 1) JWT configuration & token primitives
+  # ==========================================================================
   module JwtConfiguration
     EPHEMERAL_PRIVATE_KEY_MUTEX = Mutex.new
     EPHEMERAL_PRIVATE_KEY_CACHE = Concurrent::AtomicReference.new(nil)
@@ -174,10 +188,10 @@ module Preference
 
     ACCESS_TOKEN_TTL = 7.days
     REFRESH_TOKEN_TTL = 400.days
-    THEME_COOKIE_KEY = "jit_ct"
-    LEGACY_THEME_COOKIE_KEY = "ct"
-    LANGUAGE_COOKIE_KEY = "jit_lx"
-    TIMEZONE_COOKIE_KEY = "jit_tz"
+    THEME_COOKIE_KEY = Preference::IoKeys::Cookies::THEME
+    LEGACY_THEME_COOKIE_KEY = Preference::IoKeys::Cookies::LEGACY_THEME
+    LANGUAGE_COOKIE_KEY = Preference::IoKeys::Cookies::LANGUAGE
+    TIMEZONE_COOKIE_KEY = Preference::IoKeys::Cookies::TIMEZONE
 
     COLORTHEME_SHORT_MAP = {
       "light" => "li",
@@ -200,6 +214,9 @@ module Preference
 
     private
 
+    # ==========================================================================
+    # 2) Preference request entrypoints (Request/Cookie I/O boundary)
+    # ==========================================================================
     def set_preferences_cookie
       clear_preference_refresh_failure!
       return if load_access_token_payload
@@ -217,7 +234,7 @@ module Preference
     end
 
     def set_color_theme
-      theme = normalize_colortheme(params[:ct].presence)
+      theme = normalize_colortheme(params[Preference::IoKeys::Params::CT].presence)
       theme ||= normalize_colortheme(cookies[THEME_COOKIE_KEY])
       theme ||= normalize_colortheme(cookies[LEGACY_THEME_COOKIE_KEY])
       theme ||= normalize_colortheme(preference_payload_value("ct"))
@@ -243,6 +260,9 @@ module Preference
       create_preference_option_records(prefix, preference, option_ids)
     end
 
+    # ==========================================================================
+    # 3) Preference option/domain mapping
+    # ==========================================================================
     def preference_option_ids(prefix, params_hash)
       option_classes = preference_option_classes(prefix)
 
@@ -276,15 +296,15 @@ module Preference
 
     def preference_option_classes(prefix)
       {
-        timezone: "#{prefix}PreferenceTimezoneOption".constantize,
-        language: "#{prefix}PreferenceLanguageOption".constantize,
-        region: "#{prefix}PreferenceRegionOption".constantize,
-        colortheme: "#{prefix}PreferenceColorthemeOption".constantize,
+        timezone: Preference::ClassRegistry.option_class(prefix, :timezone),
+        language: Preference::ClassRegistry.option_class(prefix, :language),
+        region: Preference::ClassRegistry.option_class(prefix, :region),
+        colortheme: Preference::ClassRegistry.option_class(prefix, :colortheme),
       }
     end
 
     def create_preference_cookie(prefix, preference)
-      "#{prefix}PreferenceCookie".constantize.create!(
+      Preference::ClassRegistry.cookie_class(prefix).create!(
         preference_id: preference.id,
         targetable: false,
         performant: false,
@@ -295,14 +315,14 @@ module Preference
 
     def ensure_preference_option_defaults(prefix)
       %w(Timezone Language Region Colortheme).each do |type|
-        klass = "#{prefix}Preference#{type}Option".constantize
+        klass = Preference::ClassRegistry.option_class(prefix, type)
         klass.ensure_defaults! if klass.respond_to?(:ensure_defaults!)
       end
     end
 
     def create_preference_option_records(prefix, preference, option_ids)
       %w(Timezone Language Region Colortheme).each do |type|
-        "#{prefix}Preference#{type}".constantize.create!(
+        Preference::ClassRegistry.record_class(prefix, type).create!(
           preference_id: preference.id,
           option_id: option_ids[type.downcase.to_sym],
         )
@@ -327,10 +347,10 @@ module Preference
     end
 
     def set_locale_from_params
-      locale = normalized_locale(params[:lx])
+      locale = normalized_locale(params[Preference::IoKeys::Params::LX])
       locale ||= normalized_locale(cookies[LANGUAGE_COOKIE_KEY])
       locale ||= normalized_locale(preference_payload_value("lx"))
-      locale ||= locale_from_region(params[:ri])
+      locale ||= locale_from_region(params[Preference::IoKeys::Params::RI])
       locale ||= locale_from_region(preference_payload_value("ri"))
       locale ||= I18n.default_locale
 
@@ -373,28 +393,29 @@ module Preference
     def preference_class
       @preference_class ||=
         begin
-          path_parts = controller_path.split("/")
-          prefix = path_parts[1]&.capitalize
-          "#{prefix}Preference".constantize
+          Preference::ClassRegistry.for_controller_path(controller_path)
         end
     end
 
     def preference_audit_class
-      @preference_audit_class ||= "#{preference_class.name}Activity".constantize
+      @preference_audit_class ||= Preference::ClassRegistry.audit_class_for(preference_class)
     end
 
     def preference_audit_event_class
-      @preference_audit_event_class ||= "#{preference_class.name}ActivityEvent".constantize
+      @preference_audit_event_class ||= Preference::ClassRegistry.audit_event_class_for(preference_class)
     end
 
     def preference_audit_level_class
-      @preference_audit_level_class ||= "#{preference_class.name}ActivityLevel".constantize
+      @preference_audit_level_class ||= Preference::ClassRegistry.audit_level_class_for(preference_class)
     end
 
     def preference_status_class
-      @preference_status_class ||= "#{preference_class.name}Status".constantize
+      @preference_status_class ||= Preference::ClassRegistry.status_class_for(preference_class)
     end
 
+    # ==========================================================================
+    # 4) Audit + preference domain updates
+    # ==========================================================================
     def normalize_preference_audit_event_id(event_id)
       return if event_id.blank?
       return event_id if event_id.is_a?(Integer)
@@ -467,36 +488,41 @@ module Preference
     end
 
     def sanitize_option_id(params, option_type: nil)
-      params[:option_id] = nil if params[:option_id].blank?
+      params[Preference::IoKeys::Params::OPTION_ID] = nil if params[Preference::IoKeys::Params::OPTION_ID].blank?
 
-      return params if params[:option_id].blank?
+      return params if params[Preference::IoKeys::Params::OPTION_ID].blank?
 
       # If option_id is already an integer, use it as-is
-      if params[:option_id].is_a?(Integer) || params[:option_id].to_s.match?(/^\d+$/)
-        params[:option_id] = params[:option_id].to_i
+      option_id_key = Preference::IoKeys::Params::OPTION_ID
+      if params[option_id_key].is_a?(Integer) || params[option_id_key].to_s.match?(/^\d+$/)
+        params[option_id_key] = params[option_id_key].to_i
         return params
       end
 
-      prefix = preference_class.name.gsub("Preference", "")
-      option_class_name =
+      prefix = preference_class.name.delete_suffix("Preference")
+      option_class =
         case option_type
-        when :colortheme then "#{prefix}PreferenceColorthemeOption"
-        when :language then "#{prefix}PreferenceLanguageOption"
-        when :region then "#{prefix}PreferenceRegionOption"
-        when :timezone then "#{prefix}PreferenceTimezoneOption"
+        when :colortheme then Preference::ClassRegistry.option_class(prefix, :colortheme)
+        when :language then Preference::ClassRegistry.option_class(prefix, :language)
+        when :region then Preference::ClassRegistry.option_class(prefix, :region)
+        when :timezone then Preference::ClassRegistry.option_class(prefix, :timezone)
         end
 
-      if option_class_name
-        name = (option_type == :colortheme) ? canonical_colortheme_option_id(params[:option_id]) : params[:option_id]
+      if option_class
+        name =
+          if option_type == :colortheme
+            canonical_colortheme_option_id(params[option_id_key])
+          else
+            params[option_id_key]
+          end
         if name.present?
-          option_class = option_class_name.constantize
           # Try to find constant matching the name (upcase)
           # For Language/Region/Timezone, the input might be "US", "EN", "Asia/Tokyo"
           # We need to map these to constants like US, EN, ASIA_TOKYO
           const_name = name.to_s.upcase.tr("/", "_").tr("-", "_")
 
           if option_class.const_defined?(const_name)
-            params[:option_id] = option_class.const_get(const_name)
+            params[option_id_key] = option_class.const_get(const_name)
           end
         end
       end
@@ -527,9 +553,12 @@ module Preference
     end
 
     def ensure_preference_status_defaults!
-      "#{preference_prefix}PreferenceStatus".constantize.ensure_defaults!
+      Preference::ClassRegistry.status_class_for(preference_class).ensure_defaults!
     end
 
+    # ==========================================================================
+    # 5) Refresh/access token lifecycle (Cookie/Header/Request I/O boundary)
+    # ==========================================================================
     def load_access_token_payload
       token = cookies[access_token_cookie_name]
       return false if token.blank?
@@ -632,7 +661,15 @@ module Preference
             token_digest: digest_refresh_token(verifier),
           )
 
-          create_preference_options(@preferences, params.slice(:ri, :lx, :tz, :ct))
+          create_preference_options(
+            @preferences,
+            params.slice(
+              Preference::IoKeys::Params::RI,
+              Preference::IoKeys::Params::LX,
+              Preference::IoKeys::Params::TZ,
+              Preference::IoKeys::Params::CT,
+            ),
+          )
 
           create_audit_log(
             event_id: "CREATE_NEW_PREFERENCE_TOKEN",
@@ -734,7 +771,7 @@ module Preference
     def option_id_to_language(option_id, prefix)
       return if option_id.blank?
 
-      option_class = "#{prefix}PreferenceLanguageOption".constantize
+      option_class = Preference::ClassRegistry.option_class(prefix, :language)
       return "ja" if option_id == option_class::JA
       return "en" if option_class.const_defined?(:EN) && option_id == option_class::EN
 
@@ -744,7 +781,7 @@ module Preference
     def option_id_to_region(option_id, prefix)
       return if option_id.blank?
 
-      option_class = "#{prefix}PreferenceRegionOption".constantize
+      option_class = Preference::ClassRegistry.option_class(prefix, :region)
       return "jp" if option_id == option_class::JP
       return "us" if option_id == option_class::US
 
@@ -754,7 +791,7 @@ module Preference
     def option_id_to_timezone(option_id, prefix)
       return if option_id.blank?
 
-      option_class = "#{prefix}PreferenceTimezoneOption".constantize
+      option_class = Preference::ClassRegistry.option_class(prefix, :timezone)
       return "Asia/Tokyo" if option_id == option_class::ASIA_TOKYO
       return "Etc/UTC" if option_id == option_class::ETC_UTC
 
@@ -764,7 +801,7 @@ module Preference
     def option_id_to_colortheme(option_id, prefix)
       return if option_id.blank?
 
-      option_class = "#{prefix}PreferenceColorthemeOption".constantize
+      option_class = Preference::ClassRegistry.option_class(prefix, :colortheme)
       return "light" if option_id == option_class::LIGHT
       return "dark" if option_id == option_class::DARK
       return "system" if option_id == option_class::SYSTEM
@@ -797,7 +834,7 @@ module Preference
     end
 
     def extract_preference_refresh_device_id
-      header_device_id = request.headers["X-Device-Id"].to_s.presence
+      header_device_id = request.headers[Preference::IoKeys::Headers::DEVICE_ID].to_s.presence
       cookie_device_id = read_preference_device_id_cookie
 
       if header_device_id.blank? && cookie_device_id.blank?
@@ -888,36 +925,15 @@ module Preference
       )
     end
 
-    def ensure_preference_jti!(preference)
-      return if preference.jti.present?
-
-      PreferenceRecord.connected_to(role: :writing) do
-        preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
-      end
-    end
-
     def rotate_preference_jti!(preference)
       PreferenceRecord.connected_to(role: :writing) do
         preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
       end
     end
 
-    def verify_jti_for_write!
-      return if @preference_payload.blank?
-
-      jti_in_token = preference_payload_jti
-      public_id = preference_payload_public_id
-      return if jti_in_token.blank? || public_id.blank?
-
-      PreferenceRecord.connected_to(role: :writing) do
-        preference = preference_class.find_by(public_id: public_id)
-
-        if preference.blank? || preference.jti != jti_in_token
-          head :unauthorized
-        end
-      end
-    end
-
+    # ==========================================================================
+    # 6) Cookie/header/session helpers (I/O boundary)
+    # ==========================================================================
     def preference_cookie_options(expires_at:, httponly:)
       ::Core::CookieOptions.for(
         surface: ::Core::Surface.current(request),
@@ -934,23 +950,15 @@ module Preference
     end
 
     def access_token_cookie_name
-      if Rails.env.production?
-        "__Secure-jit_preference_access"
-      else
-        "jit_preference_access"
-      end
+      Preference::CookieName.access
     end
 
     def refresh_token_cookie_name
-      if Rails.env.production?
-        "__Secure-jit_preference_refresh"
-      else
-        "jit_preference_refresh"
-      end
+      Preference::CookieName.refresh
     end
 
     def preference_device_id_cookie_name
-      refresh_token_cookie_name.sub("jit_preference_refresh", "jit_preference_device_id")
+      Preference::CookieName.device(refresh_cookie_key: refresh_token_cookie_name)
     end
 
     def set_refresh_token_cookie(token, expires_at)
@@ -984,16 +992,6 @@ module Preference
       opts
     end
 
-    def preference_language_from_record
-      return if @preferences.blank?
-
-      association = "#{@preferences.class.name.underscore}_language"
-      option_id = @preferences.public_send(association)&.option_id
-      option_id_to_language(option_id, preference_prefix)
-    rescue NoMethodError
-      nil
-    end
-
     def preference_associations_to_preload
       prefix = preference_class.name.underscore
       [
@@ -1005,7 +1003,7 @@ module Preference
     end
 
     def refresh_token_value
-      params[:refresh_token].presence || cookies[refresh_token_cookie_name]
+      params[Preference::IoKeys::Params::REFRESH_TOKEN].presence || cookies[refresh_token_cookie_name]
     end
 
     def refresh_token_expiry
@@ -1016,6 +1014,9 @@ module Preference
       legacy_refresh_token_digest(token)
     end
 
+    # ==========================================================================
+    # 7) Child-record lazy helpers
+    # ==========================================================================
     def load_or_create_preference_child(child_type, default_attributes = {})
       association_name = "#{preference_prefix_underscore}_#{child_type.downcase}"
       child = @preferences.public_send(association_name)

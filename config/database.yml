@@ -13,7 +13,8 @@ default: &default
   advisory_locks: false
 test_default: &test_default
   !!merge <<: *default
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 32 } %>
+  # Keep test pool intentionally small for multi-DB setups to avoid exhausting Postgres connections.
+  pool: <%= ENV.fetch("RAILS_TEST_DB_POOL", 2) %>
   timeout: 60000
   prepared_statements: false
   advisory_locks: true
