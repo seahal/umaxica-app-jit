@@ -33,7 +33,7 @@
                   window.turnstileScriptLoading = true;
                   const s = document.createElement('script');
                   s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-                  s.nonce = '<%= content_security_policy_nonce %>';
+                  s.nonce = <%= content_security_policy_nonce.to_json %>;
                   s.async = true;
                   s.onload = function () {
                       window.turnstileScriptLoaded = true;

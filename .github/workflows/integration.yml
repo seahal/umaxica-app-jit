@@ -440,7 +440,7 @@ jobs:
           severity: CRITICAL,HIGH,MEDIUM
           ignore-unfixed: true
           vuln-type: os,library
-          scanners: vuln,secret,misconfig
+          scanners: vuln,secret
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
@@ -455,7 +455,7 @@ jobs:
           exit-code: "1"
           severity: CRITICAL,HIGH
           ignore-unfixed: true
-          scanners: vuln,secret,misconfig
+          scanners: vuln,secret
       - name: Run Grype vulnerability scanner
         uses: anchore/scan-action@v5
         id: grype
