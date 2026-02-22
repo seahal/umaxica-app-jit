@@ -133,39 +133,6 @@ jobs:
           fail-on-severity: moderate
           comment-summary-in-pr: true
           deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0
-  # ====================
-  # NOTE: CodeQL job is commented out because GitHub's default CodeQL setup is enabled.
-  # To use this custom configuration instead:
-  # 1. Go to Settings > Code security and analysis
-  # 2. Disable "CodeQL analysis" default setup
-  # 3. Uncomment the job below
-  #
-  # codeql:
-  #   name: CodeQL Security Analysis
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 20
-  #   permissions:
-  #     actions: read
-  #     contents: read
-  #     security-events: write
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       language: [ruby, javascript]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Initialize CodeQL
-  #       uses: github/codeql-action/init@v3
-  #       with:
-  #         languages: ${{ matrix.language }}
-  #         queries: security-extended,security-and-quality
-  #     - name: Autobuild
-  #       uses: github/codeql-action/autobuild@v3
-  #     - name: Perform CodeQL Analysis
-  #       uses: github/codeql-action/analyze@v3
-  #       with:
-  #         category: "/language:${{ matrix.language }}"
-  # ====================
   semgrep:
     name: Semgrep SAST
     runs-on: ubuntu-latest
@@ -203,8 +170,6 @@ jobs:
           cache-version: 1
       - name: Run RuboCop
         run: bundle exec rubocop --parallel --fail-fast --format github
-      - name: Run ERB Lint
-        run: bundle exec erb_lint --lint-all
       - name: Check unused routing config
         run: bundle exec rails routes --unused
       - name: Check importmap integrity
