@@ -93,10 +93,6 @@ jobs:
         continue-on-error: true
       - name: Run Brakeman (fail on issues)
         run: bundle exec brakeman -z -q --no-pager
-      - name: Run bundle-audit
-        run: bundle exec bundle audit check --update
-      # - name: Run license_finder
-      #   run: bundle exec license_finder
   gitleaks:
     name: Secret Leaks Detection
     runs-on: ubuntu-latest
@@ -363,6 +359,8 @@ jobs:
         run: bin/rails db:prepare
       - name: Run Rails tests
         run: COVERAGE=true bundle exec rails test
+      - name: Run bundle-audit
+        run: bundle exec bundle audit check --update
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
