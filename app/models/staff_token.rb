@@ -51,20 +51,10 @@ class StaffToken < TokenRecord
   include ::PublicId
   include ::RefreshTokenable
   include ::SignedSessionReference
+  include ::TokenStatusManagement
 
-  # Maximum active sessions per staff
   MAX_SESSIONS_PER_STAFF = 2
-
-  # Total maximum sessions (active + restricted)
   MAX_TOTAL_SESSIONS_PER_STAFF = 3
-  RESTRICTED_TTL = 15.minutes
-
-  # Status values for session state management
-  STATUS_ACTIVE = "active"
-  STATUS_RESTRICTED = "restricted"
-  STATUS_REVOKED = "revoked"
-
-  VALID_STATUSES = [STATUS_ACTIVE, STATUS_RESTRICTED, STATUS_REVOKED].freeze
 
   belongs_to :staff
   belongs_to :staff_token_status
@@ -72,45 +62,11 @@ class StaffToken < TokenRecord
   has_many :staff_verifications, dependent: :delete_all, inverse_of: :staff_token
   attribute :staff_token_status_id, default: StaffTokenStatus::NEYO
   attribute :staff_token_kind_id, default: StaffTokenKind::BROWSER_WEB
-  attribute :status, default: STATUS_ACTIVE
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :refresh_expires_at, presence: true
-  validates :status, inclusion: { in: VALID_STATUSES }, length: { maximum: 20 }
 
   validate :enforce_concurrent_session_limit, on: :create
-
-  # Scopes for session status
-  scope :active_status, -> { where(status: STATUS_ACTIVE, revoked_at: nil) }
-  scope :restricted_status, -> { where(status: STATUS_RESTRICTED, revoked_at: nil) }
-  scope :not_revoked, -> { where(revoked_at: nil) }
-
-  # Check if this session is restricted
-  def restricted?
-    status == STATUS_RESTRICTED
-  end
-
-  # Check if this session is active
-  def active_status?
-    status == STATUS_ACTIVE && revoked_at.nil?
-  end
-
-  # Mark session as restricted
-  def mark_restricted!
-    update!(status: STATUS_RESTRICTED)
-  end
-
-  # Promote restricted session to active
-  def promote_to_active!
-    update!(status: STATUS_ACTIVE)
-  end
-
-  # Revoke the session
-  def revoke!
-    update!(revoked_at: Time.current, status: STATUS_REVOKED)
-  end
-
-  private
 
   # This is a model-level validation to provide a friendly error message to the user.
   # The primary enforcement of the session limit is done by a database trigger,

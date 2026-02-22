@@ -15,6 +15,7 @@
 #
 class SocialAuthService
   VALID_INTENTS = %w(login link reauth).freeze
+  ALLOWED_ID_TOKEN_ALGORITHMS = %w(RS256 ES256).freeze
 
   class << self
     def handle_callback(auth_hash:, current_user:, intent:)
@@ -166,13 +167,25 @@ class SocialAuthService
     id_token ||= @auth_hash.dig(:credentials, :id_token)
     return nil if id_token.blank?
 
-    # Decode JWT without verification (we just need the sub claim)
-    # The token has already been verified by omniauth-apple
-    payload = JWT.decode(id_token, nil, false).first
+    # Guard against alg:none forgery as defense in depth.
+    # omniauth-apple already verified the token, but we explicitly reject
+    # disallowed algorithms before decoding.
+    header_segment = id_token.split(".").first
+    padding = "=" * ((4 - (header_segment.length % 4)) % 4)
+    header_json = Base64.urlsafe_decode64(header_segment + padding)
+    alg = JSON.parse(header_json)["alg"]
+    unless ALLOWED_ID_TOKEN_ALGORITHMS.include?(alg)
+      Rails.logger.warn("[SocialAuth] Rejected id_token with disallowed algorithm: #{alg.inspect}")
+      return nil
+    end
+
+    # Decode JWT without signature verification (we just need the sub claim).
+    # The token has already been verified by omniauth-apple.
+    payload = JWT.decode(id_token, nil, false, algorithms: ALLOWED_ID_TOKEN_ALGORITHMS).first
     uid = payload["sub"]
     Rails.logger.debug { "[SocialAuth] Extracted uid from id_token: #{uid&.first(8)}***" }
     uid
-  rescue JWT::DecodeError => e
+  rescue JWT::DecodeError, JSON::ParserError, ArgumentError => e
     Rails.logger.warn("[SocialAuth] Failed to decode id_token: #{e.message}")
     nil
   end

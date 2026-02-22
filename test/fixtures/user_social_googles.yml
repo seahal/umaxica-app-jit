@@ -27,6 +27,3 @@
 #  fk_rails_...  (user_id => users.id)
 #  fk_rails_...  (user_identity_social_google_status_id => user_social_google_statuses.id)
 #
-#  fk_rails_...  (user_id => users.id)
-#  fk_rails_...  (user_identity_social_google_status_id => user_social_google_statuses.id)
-#

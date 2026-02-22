@@ -126,6 +126,32 @@ module Preference
         [preferences, host, preference_type, public_id, jti].all?(&:present?)
       end
 
+      def build_payload(preferences, host, preference_type, public_id, jti)
+        now = Time.current.to_i
+        {
+          preferences: preferences,
+          host: host,
+          preference_type: preference_type,
+          public_id: public_id,
+          jti: jti,
+          iss: JwtConfiguration.issuer,
+          aud: JwtConfiguration.audiences,
+          nonce: SecureRandom.uuid,
+          iat: now,
+          exp: now + ACCESS_TOKEN_TTL.to_i,
+        }
+      end
+
+      def decode_options
+        {
+          algorithm: JWT_ALGORITHM,
+          verify_iss: true,
+          iss: JwtConfiguration.issuer,
+          verify_aud: false,
+          verify_iat: true,
+        }
+      end
+
       def validate_payload(payload, host)
         return nil unless payload.is_a?(Hash)
         return nil unless host_matches?(payload["host"], host)
@@ -152,32 +178,6 @@ module Preference
         when String then [aud_claim]
         else []
         end
-      end
-
-      def build_payload(preferences, host, preference_type, public_id, jti)
-        now = Time.current.to_i
-        {
-          preferences: preferences,
-          host: host,
-          preference_type: preference_type,
-          public_id: public_id,
-          jti: jti,
-          iss: JwtConfiguration.issuer,
-          aud: JwtConfiguration.audiences,
-          nonce: SecureRandom.uuid,
-          iat: now,
-          exp: now + ACCESS_TOKEN_TTL.to_i,
-        }
-      end
-
-      def decode_options
-        {
-          algorithm: JWT_ALGORITHM,
-          verify_iss: true,
-          iss: JwtConfiguration.issuer,
-          verify_aud: false, # Manual audience verification in validate_payload
-          verify_iat: true,
-        }
       end
     end
   end
