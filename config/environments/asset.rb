@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # NOTE: This code is used to precompile assets outside the production environment.

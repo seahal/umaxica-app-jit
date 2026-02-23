@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: staff_one_time_password_statuses

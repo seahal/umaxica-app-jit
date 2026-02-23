@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -28,10 +29,21 @@ class UserStatusTest < ActiveSupport::TestCase
       NONE: 13,
     }
 
-    actual_status_constants =
-      expected_status_constants.each_key.with_object({}) do |const_name, hash|
-        hash[const_name] = UserStatus.const_get(const_name)
-      end
+    actual_status_constants = {
+      ACTIVE: UserStatus::ACTIVE,
+      INACTIVE: UserStatus::INACTIVE,
+      PENDING: UserStatus::PENDING,
+      DELETED: UserStatus::DELETED,
+      WITHDRAWN: UserStatus::WITHDRAWN,
+      PENDING_DELETION: UserStatus::PENDING_DELETION,
+      PRE_WITHDRAWAL_CONDITION: UserStatus::PRE_WITHDRAWAL_CONDITION,
+      WITHDRAWAL_COMPLETED: UserStatus::WITHDRAWAL_COMPLETED,
+      UNVERIFIED_WITH_SIGN_UP: UserStatus::UNVERIFIED_WITH_SIGN_UP,
+      VERIFIED_WITH_SIGN_UP: UserStatus::VERIFIED_WITH_SIGN_UP,
+      NEYO: UserStatus::NEYO,
+      GHOST: UserStatus::GHOST,
+      NONE: UserStatus::NONE,
+    }
 
     assert_equal expected_status_constants, actual_status_constants
   end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Enforces isolation mode for restricted sessions.

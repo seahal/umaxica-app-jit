@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Provide a sane default `@headers` for tests that expect it but don't set it.

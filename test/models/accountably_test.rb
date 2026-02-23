@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -6,9 +7,9 @@ require_relative "../../app/models/user"
 require_relative "../../app/models/staff"
 
 class AccountablyTest < ActiveSupport::TestCase
-  %w(User Staff).each do |klass|
+  { "User" => ::User, "Staff" => ::Staff }.each do |_klass_name, klass|
     test "#{klass} is a ..." do
-      assert_includes klass.constantize.included_modules, ::Accountably
+      assert_includes klass.included_modules, ::Accountably
     end
   end
 

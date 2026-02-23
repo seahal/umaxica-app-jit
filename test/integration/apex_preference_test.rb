@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -9,9 +10,30 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   end
 
   DOMAINS = [
-    { name: "app", host: "app.localhost", scope: "apex.app.preferences", preference_model: AppPreference },
-    { name: "org", host: "org.localhost", scope: "apex.org.preferences", preference_model: OrgPreference },
-    { name: "com", host: "com.localhost", scope: "apex.com.preferences", preference_model: ComPreference },
+    {
+      name: "app",
+      host: "app.localhost",
+      scope: "apex.app.preferences",
+      preference_model: AppPreference,
+      audit_class: AppPreferenceActivity,
+      audit_event_class: AppPreferenceActivityEvent,
+    },
+    {
+      name: "org",
+      host: "org.localhost",
+      scope: "apex.org.preferences",
+      preference_model: OrgPreference,
+      audit_class: OrgPreferenceActivity,
+      audit_event_class: OrgPreferenceActivityEvent,
+    },
+    {
+      name: "com",
+      host: "com.localhost",
+      scope: "apex.com.preferences",
+      preference_model: ComPreference,
+      audit_class: ComPreferenceActivity,
+      audit_event_class: ComPreferenceActivityEvent,
+    },
   ].freeze
 
   DOMAINS.each do |domain|
@@ -333,7 +355,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} domain reset destroy updates preference status to DELETED" do
       host!(domain[:host])
       pref, _token, _cookie_name = assert_preference_created(domain)
-      audit_class = "#{domain[:name].capitalize}PreferenceActivity".constantize
+      audit_class = domain[:audit_class]
 
       # Record initial state
       initial_status = pref.status_id
@@ -356,7 +378,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
                       "Audit log should be created"
 
       # Verify audit log event
-      event_class = "#{domain[:name].capitalize}PreferenceActivityEvent".constantize
+      event_class = domain[:audit_event_class]
       audit = audit_class.where(subject_id: pref.id).order(id: :desc).first
       assert_equal event_class::RESET_BY_USER_DECISION, audit.event_id
     end
@@ -408,7 +430,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} domain reset logs database operations" do
       host!(domain[:host])
       _, _token, _cookie_name = assert_preference_created(domain)
-      "#{domain[:name].capitalize}PreferenceActivity".constantize
+      domain[:audit_class]
 
       # Capture SQL queries
       queries = []

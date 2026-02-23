@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Secret
@@ -39,7 +40,27 @@ module Secret
 
     def status_id_for(status)
       status_key = status.to_s.upcase
-      identity_secret_status_class.const_get(status_key)
+      case identity_secret_status_class.name
+      when "UserSecretStatus"
+        {
+          "ACTIVE" => UserSecretStatus::ACTIVE,
+          "EXPIRED" => UserSecretStatus::EXPIRED,
+          "REVOKED" => UserSecretStatus::REVOKED,
+          "USED" => UserSecretStatus::USED,
+          "DELETED" => UserSecretStatus::DELETED,
+          "NEYO" => UserSecretStatus::NEYO,
+        }.fetch(status_key)
+      when "StaffSecretStatus"
+        {
+          "ACTIVE" => StaffSecretStatus::ACTIVE,
+          "DELETED" => StaffSecretStatus::DELETED,
+          "EXPIRED" => StaffSecretStatus::EXPIRED,
+          "REVOKED" => StaffSecretStatus::REVOKED,
+          "USED" => StaffSecretStatus::USED,
+        }.fetch(status_key)
+      else
+        raise KeyError, "Unknown identity secret status class: #{identity_secret_status_class.name}"
+      end
     end
 
     def supports_uses_remaining?

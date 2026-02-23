@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Preference::Global
@@ -149,10 +150,10 @@ module Preference::Global
 
     @allowed_region_values ||=
       begin
-        region_option_class = "#{preference_prefix}PreferenceRegionOption".constantize
-        values = region_option_class.pluck(:id).map(&:downcase).presence
+        region_option_class = Preference::ClassRegistry.option_class(preference_prefix, :region)
+        values = region_option_class.ordered.filter_map { |option| option.name&.downcase }.presence
         values || ALLOWED_REGION_VALUES
-      rescue NameError
+      rescue KeyError, NameError
         ALLOWED_REGION_VALUES
       end
   end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Rate limiting concern for authentication endpoints

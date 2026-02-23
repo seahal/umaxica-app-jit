@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class Sign::App::VerificationController < Sign::App::Verification::BaseController

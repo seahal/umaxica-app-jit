@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -76,7 +77,7 @@ module Sign::App::In
         id: @passkey.webauthn_id,
         sign_count: 11,
       )
-      def mock_credential.verify(_challenge, **)
+      mock_credential.define_singleton_method(:verify) do |_challenge, **|
         true
       end
 

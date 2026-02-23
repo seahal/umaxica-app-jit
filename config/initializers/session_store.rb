@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # config/initializers/session_store.rb

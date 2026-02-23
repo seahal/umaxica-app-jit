@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Provides server-side session gating for concurrent session limit management.

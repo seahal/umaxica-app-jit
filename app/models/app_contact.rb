@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -69,8 +70,7 @@ class AppContact < GuestRecord
   validates :token, length: { maximum: 32 }
   validates :token_digest, length: { maximum: 255 }
   # Callbacks
-  # status_id is integer
-  before_create :generate_token
+  has_secure_token :token
 
   # State transition helpers
   def email_pending?
@@ -147,11 +147,5 @@ class AppContact < GuestRecord
   # Override to_param to use public_id in URLs
   def to_param
     public_id
-  end
-
-  private
-
-  def generate_token
-    self.token ||= SecureRandom.alphanumeric(32)
   end
 end

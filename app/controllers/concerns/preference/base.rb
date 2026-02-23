@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "jwt"
@@ -206,6 +207,39 @@ module Preference
       "light" => "light",
       "dark" => "dark",
       "system" => "system",
+    }.freeze
+
+    PREFERENCE_AUDIT_EVENT_ID_MAP = {
+      "AppPreferenceActivityEvent" => {
+        "REFRESH_TOKEN_ROTATED" => AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED,
+        "UPDATE_PREFERENCE_COOKIE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE,
+        "UPDATE_PREFERENCE_COLORTHEME" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
+        "RESET_BY_USER_DECISION" => AppPreferenceActivityEvent::RESET_BY_USER_DECISION,
+        "UPDATE_PREFERENCE_TIMEZONE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
+        "UPDATE_PREFERENCE_REGION" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
+        "UPDATE_PREFERENCE_LANGUAGE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE,
+        "CREATE_NEW_PREFERENCE_TOKEN" => AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
+      }.freeze,
+      "ComPreferenceActivityEvent" => {
+        "CREATE_NEW_PREFERENCE_TOKEN" => ComPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
+        "REFRESH_TOKEN_ROTATED" => ComPreferenceActivityEvent::REFRESH_TOKEN_ROTATED,
+        "UPDATE_PREFERENCE_COOKIE" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE,
+        "UPDATE_PREFERENCE_LANGUAGE" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE,
+        "UPDATE_PREFERENCE_TIMEZONE" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
+        "RESET_BY_USER_DECISION" => ComPreferenceActivityEvent::RESET_BY_USER_DECISION,
+        "UPDATE_PREFERENCE_REGION" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
+        "UPDATE_PREFERENCE_COLORTHEME" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
+      }.freeze,
+      "OrgPreferenceActivityEvent" => {
+        "CREATE_NEW_PREFERENCE_TOKEN" => OrgPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
+        "REFRESH_TOKEN_ROTATED" => OrgPreferenceActivityEvent::REFRESH_TOKEN_ROTATED,
+        "UPDATE_PREFERENCE_COOKIE" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE,
+        "UPDATE_PREFERENCE_LANGUAGE" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE,
+        "UPDATE_PREFERENCE_TIMEZONE" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
+        "RESET_BY_USER_DECISION" => OrgPreferenceActivityEvent::RESET_BY_USER_DECISION,
+        "UPDATE_PREFERENCE_REGION" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
+        "UPDATE_PREFERENCE_COLORTHEME" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
+      }.freeze,
     }.freeze
 
     included do
@@ -420,11 +454,10 @@ module Preference
       return if event_id.blank?
       return event_id if event_id.is_a?(Integer)
 
-      if preference_audit_event_class.const_defined?(event_id)
-        preference_audit_event_class.const_get(event_id)
-      else
-        event_id
-      end
+      event_map = PREFERENCE_AUDIT_EVENT_ID_MAP[preference_audit_event_class.name]
+      return event_id unless event_map
+
+      event_map.fetch(event_id.to_s, event_id)
     end
 
     def ensure_preferences_record
@@ -515,18 +548,28 @@ module Preference
           else
             params[option_id_key]
           end
-        if name.present?
-          # Try to find constant matching the name (upcase)
-          # For Language/Region/Timezone, the input might be "US", "EN", "Asia/Tokyo"
-          # We need to map these to constants like US, EN, ASIA_TOKYO
-          const_name = name.to_s.upcase.tr("/", "_").tr("-", "_")
-
-          if option_class.const_defined?(const_name)
-            params[option_id_key] = option_class.const_get(const_name)
-          end
-        end
+        resolved_option_id = lookup_option_id(option_class, name)
+        params[option_id_key] = resolved_option_id if resolved_option_id
       end
       params
+    end
+
+    def lookup_option_id(option_class, raw_name)
+      return if option_class.blank? || raw_name.blank?
+
+      target_keys = normalized_option_lookup_keys(raw_name)
+      option_class.ordered.each do |option|
+        return option.id if (target_keys & normalized_option_lookup_keys(option.name)).any?
+      end
+      nil
+    end
+
+    def normalized_option_lookup_keys(value)
+      normalized = value.to_s
+      [
+        normalized.downcase,
+        normalized.upcase.tr("/", "_").tr("-", "_").downcase,
+      ].uniq
     end
 
     def canonical_colortheme_option_id(value)

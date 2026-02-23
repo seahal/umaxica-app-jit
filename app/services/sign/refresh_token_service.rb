@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Rotates refresh tokens using one-time consume semantics.

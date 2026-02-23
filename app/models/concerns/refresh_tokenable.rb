@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Shared refresh-token behavior for token models.

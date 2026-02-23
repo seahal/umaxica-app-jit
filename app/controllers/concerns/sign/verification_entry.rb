@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -27,7 +28,7 @@ module Sign
     private
 
     def reauth_session_key
-      self.class.const_get(:REAUTH_SESSION_KEY)
+      self.class::REAUTH_SESSION_KEY
     end
 
     def verification_success_notice_key

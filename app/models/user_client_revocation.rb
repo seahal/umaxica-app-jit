@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: user_client_revocations

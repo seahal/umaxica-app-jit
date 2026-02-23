@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class Sign::Org::Edge::V1::Token::ChecksController < Sign::Org::Edge::V1::BaseController

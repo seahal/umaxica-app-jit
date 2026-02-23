@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: post_versions

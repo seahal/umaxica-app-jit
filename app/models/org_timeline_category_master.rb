@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: org_timeline_category_masters

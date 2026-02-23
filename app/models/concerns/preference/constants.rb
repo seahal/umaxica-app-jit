@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Preference constants shared across the application

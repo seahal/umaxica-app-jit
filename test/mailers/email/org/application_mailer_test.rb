@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -11,7 +12,7 @@ class Email::Org::ApplicationMailerTest < ActionMailer::TestCase
 
     mailer =
       Class.new(Email::Org::ApplicationMailer) do
-        def sample
+        define_method(:sample) do
           mail(to: "org-user@example.com", subject: I18n.t("test.email.org.application_mailer.subject")) do |format|
             format.text { render plain: "hello" }
           end

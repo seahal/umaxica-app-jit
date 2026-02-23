@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class Apex::Org::Emergency::App::CachesController < ApplicationController

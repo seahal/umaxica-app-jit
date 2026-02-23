@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -69,7 +70,7 @@ class ComContact < GuestRecord
   validates :token_digest, length: { maximum: 255 }
 
   # Callbacks
-  before_create :generate_token
+  has_secure_token :token
 
   # State check methods
   def email_pending?
@@ -151,11 +152,5 @@ class ComContact < GuestRecord
   # Override to_param to use public_id in URLs
   def to_param
     public_id
-  end
-
-  private
-
-  def generate_token
-    self.token ||= SecureRandom.alphanumeric(32)
   end
 end

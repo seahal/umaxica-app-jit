@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -217,12 +218,11 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
 
-      def format.html
-        yield
+      format.define_singleton_method(:html) do |&inner_block|
+        inner_block&.call
       end
 
-      def format.json
-      end
+      format.define_singleton_method(:json) { nil }
 
       # Do nothing for json
       block.call(format)
@@ -243,13 +243,12 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
 
-      def format.html
-      end
+      format.define_singleton_method(:html) { nil }
 
       # Do nothing for html
 
-      def format.json
-        yield
+      format.define_singleton_method(:json) do |&inner_block|
+        inner_block&.call
       end
 
       block.call(format)
@@ -281,7 +280,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
     notifier =
       Struct.new(:events) do
-        def notify(name, payload)
+        define_method(:notify) do |name, payload|
           events << [name, payload]
         end
       end

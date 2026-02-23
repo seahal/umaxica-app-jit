@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Controller concern for handling OAuth social authentication flow.

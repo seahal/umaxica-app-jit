@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -79,7 +80,7 @@ module Sign::App::In::Passkey
       )
 
       # We need to verify signature and return expected result
-      def mock_credential.verify(_challenge, **)
+      mock_credential.define_singleton_method(:verify) do |_challenge, **|
         true
       end
 
@@ -130,7 +131,7 @@ module Sign::App::In::Passkey
         id: @encoded_credential_id,
         sign_count: 12,
       )
-      def mock_credential.verify(_challenge, **)
+      mock_credential.define_singleton_method(:verify) do |_challenge, **|
         true
       end
 

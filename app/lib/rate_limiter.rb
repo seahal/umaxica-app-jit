@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Simple rate limiting using Rails.cache

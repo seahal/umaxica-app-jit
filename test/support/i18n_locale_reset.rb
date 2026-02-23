@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Ensure tests are order-independent by resetting the I18n locale for each test.

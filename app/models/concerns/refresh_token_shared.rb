@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Shared refresh-token primitives for both auth and preference paths.

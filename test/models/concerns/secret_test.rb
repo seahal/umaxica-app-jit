@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -18,6 +19,10 @@ class SecretTest < ActiveSupport::TestCase
 
     def initialize(id)
       @id = id
+    end
+
+    def self.name
+      "UserSecretStatus"
     end
   end
 

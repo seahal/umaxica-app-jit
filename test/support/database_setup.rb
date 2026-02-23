@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Manual database initialization for test environment.

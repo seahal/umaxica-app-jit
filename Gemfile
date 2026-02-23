@@ -30,8 +30,6 @@ gem "strong_migrations"
 gem "redis"
 # CORS
 gem "rack-cors"
-# DoS protection
-gem "rack-attack"
 gem "rack-timeout", group: %i(development production)
 # Password hashing
 gem "argon2"
@@ -138,6 +136,7 @@ group :development do
   # gem "web-console"
   # RuboCop
   gem "rubocop", require: false
+  gem "rubocop-ast", require: false
   gem "rubocop-performance", require: false
   gem "rubocop-thread_safety", require: false
   gem "rubocop-rake", require: false
@@ -146,6 +145,7 @@ group :development do
   gem "rubocop-i18n", require: false
   gem "rubocop-rubycw", require: false
   gem "rubocop-rails", require: false
+  gem "rubocop-sorbet", require: false
   # Boundary enforcement for granular modular architecture
   gem "packwerk", require: false
   # ERB lint

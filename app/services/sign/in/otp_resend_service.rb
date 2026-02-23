@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -190,9 +191,17 @@ module Sign
         def status_id_for(status_class, key)
           STATUS_ID_CACHE.compute_if_absent(status_class) { Concurrent::Map.new }
             .compute_if_absent(key) do
-              status_id = status_class.const_get(key)
+              status_id =
+                case status_class.name
+                when "EmailOccurrenceStatus"
+                  { ACTIVE: EmailOccurrenceStatus::ACTIVE, NEYO: EmailOccurrenceStatus::NEYO }.fetch(key)
+                when "TelephoneOccurrenceStatus"
+                  { ACTIVE: TelephoneOccurrenceStatus::ACTIVE, NEYO: TelephoneOccurrenceStatus::NEYO }.fetch(key)
+                else
+                  raise KeyError, "Unsupported occurrence status class: #{status_class.name}"
+                end
               status_class.find_or_create_by!(id: status_id).id
-          end
+            end
         end
       end
     end

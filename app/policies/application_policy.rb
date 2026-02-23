@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Base policy class for authorization using Pundit

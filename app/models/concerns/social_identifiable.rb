@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Shared concern for social identity models (UserSocialGoogle, UserSocialApple, etc.)

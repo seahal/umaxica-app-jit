@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # NOTE: The occurrence database keeps globally unique identifiers.

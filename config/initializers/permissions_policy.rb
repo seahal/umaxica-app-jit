@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # config/initializers/permissions_policy.rb

@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: org_timeline_tag_masters

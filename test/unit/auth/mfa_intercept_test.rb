@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -80,33 +81,57 @@ class Auth::MfaInterceptUnitTest < ActiveSupport::TestCase
 
         attr_accessor :session
 
-        def initialize
+        define_method(:initialize) do
           @session = {}
         end
 
-        def resource_class = ::User
+        define_method(:resource_class) do
+          ::User
+        end
 
-        def token_class = UserToken
+        define_method(:token_class) do
+          UserToken
+        end
 
-        def audit_class = ::UserActivity
+        define_method(:audit_class) do
+          ::UserActivity
+        end
 
-        def resource_type = "user"
+        define_method(:resource_type) do
+          "user"
+        end
 
-        def resource_foreign_key = :user_id
+        define_method(:resource_foreign_key) do
+          :user_id
+        end
 
-        def test_header_key = "X-TEST-CURRENT-USER"
+        define_method(:test_header_key) do
+          "X-TEST-CURRENT-USER"
+        end
 
-        def sign_in_url_with_return(_rt) = "/in"
+        define_method(:sign_in_url_with_return) do |_rt|
+          "/in"
+        end
 
-        def am_i_user? = true
+        define_method(:am_i_user?) do
+          true
+        end
 
-        def am_i_staff? = false
+        define_method(:am_i_staff?) do
+          false
+        end
 
-        def am_i_owner? = false
+        define_method(:am_i_owner?) do
+          false
+        end
 
-        def respond_to?(name, *) = (name == :sign_app_in_mfa_path) ? true : super
+        define_method(:respond_to?) do |name, *|
+          (name == :sign_app_in_mfa_path) ? true : super
+        end
 
-        def sign_app_in_mfa_path(ri: nil) = ri ? "/in/mfa?ri=#{ri}" : "/in/mfa"
+        define_method(:sign_app_in_mfa_path) do |ri: nil|
+          ri ? "/in/mfa?ri=#{ri}" : "/in/mfa"
+        end
       end
 
     controller_class.new

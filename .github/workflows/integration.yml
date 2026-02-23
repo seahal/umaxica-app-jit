@@ -172,6 +172,8 @@ jobs:
         run: bundle exec rubocop --parallel --fail-fast --format github
       - name: Check unused routing config
         run: bundle exec rails routes --unused
+        env:
+          TRUSTED_ORIGINS: http://sign.app.localhost,http://sign.org.localhost
       - name: Check importmap integrity
         run: bin/importmap audit
   # ====================

@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_preference_regions

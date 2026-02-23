@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 if ENV["SKIP_DB"] == "1"

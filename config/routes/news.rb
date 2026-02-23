@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 scope module: :news, as: :news do

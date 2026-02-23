@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require_relative "boot"
@@ -42,9 +43,6 @@ module Jit
       rescue IPAddr::InvalidAddressError
         nil
       end
-
-    # Rack Attack Middleware
-    config.middleware.use Rack::Attack
 
     # Active Record Encryption Configuration
     if %w(test production development).include? Rails.env

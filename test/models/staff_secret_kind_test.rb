@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: staff_secret_kinds

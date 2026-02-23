@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Authorization policy for ComContact resources (Corporate contact inquiries)

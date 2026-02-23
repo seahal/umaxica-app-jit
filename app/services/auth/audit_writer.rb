@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Auth
@@ -102,16 +103,66 @@ module Auth
 
     def self.normalize_event_id(audit_class, event_id)
       return event_id if event_id.is_a?(Integer)
-      return event_id unless event_id.is_a?(String)
+      return event_id unless event_id.is_a?(String) || event_id.is_a?(Symbol)
 
-      event_class_name = audit_class.name.sub(/Activity\z/, "ActivityEvent")
-      event_class = event_class_name.safe_constantize
-      return event_id unless event_class
-      return event_id unless event_class.const_defined?(event_id)
-
-      event_class.const_get(event_id)
+      event_id_map_for(audit_class).fetch(event_id.to_s, event_id)
     end
 
+    def self.event_id_map_for(audit_class)
+      case audit_class.name
+      when "UserActivity"
+        {
+          "LOGGED_IN" => UserActivityEvent::LOGGED_IN,
+          "LOGGED_OUT" => UserActivityEvent::LOGGED_OUT,
+          "LOGIN_FAILED" => UserActivityEvent::LOGIN_FAILED,
+          "TOKEN_REFRESHED" => UserActivityEvent::TOKEN_REFRESHED,
+        }
+      when "StaffActivity"
+        {
+          "LOGGED_IN" => StaffActivityEvent::LOGGED_IN,
+          "LOGGED_OUT" => StaffActivityEvent::LOGGED_OUT,
+          "LOGIN_FAILED" => StaffActivityEvent::LOGIN_FAILED,
+          "TOKEN_REFRESHED" => StaffActivityEvent::TOKEN_REFRESHED,
+        }
+      when "AppPreferenceActivity"
+        {
+          "REFRESH_TOKEN_ROTATED" => AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED,
+          "UPDATE_PREFERENCE_COOKIE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE,
+          "UPDATE_PREFERENCE_COLORTHEME" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
+          "RESET_BY_USER_DECISION" => AppPreferenceActivityEvent::RESET_BY_USER_DECISION,
+          "UPDATE_PREFERENCE_TIMEZONE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
+          "UPDATE_PREFERENCE_REGION" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
+          "UPDATE_PREFERENCE_LANGUAGE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE,
+          "CREATE_NEW_PREFERENCE_TOKEN" => AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
+        }
+      when "ComPreferenceActivity"
+        {
+          "CREATE_NEW_PREFERENCE_TOKEN" => ComPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
+          "REFRESH_TOKEN_ROTATED" => ComPreferenceActivityEvent::REFRESH_TOKEN_ROTATED,
+          "UPDATE_PREFERENCE_COOKIE" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE,
+          "UPDATE_PREFERENCE_LANGUAGE" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE,
+          "UPDATE_PREFERENCE_TIMEZONE" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
+          "RESET_BY_USER_DECISION" => ComPreferenceActivityEvent::RESET_BY_USER_DECISION,
+          "UPDATE_PREFERENCE_REGION" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
+          "UPDATE_PREFERENCE_COLORTHEME" => ComPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
+        }
+      when "OrgPreferenceActivity"
+        {
+          "CREATE_NEW_PREFERENCE_TOKEN" => OrgPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
+          "REFRESH_TOKEN_ROTATED" => OrgPreferenceActivityEvent::REFRESH_TOKEN_ROTATED,
+          "UPDATE_PREFERENCE_COOKIE" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE,
+          "UPDATE_PREFERENCE_LANGUAGE" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE,
+          "UPDATE_PREFERENCE_TIMEZONE" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
+          "RESET_BY_USER_DECISION" => OrgPreferenceActivityEvent::RESET_BY_USER_DECISION,
+          "UPDATE_PREFERENCE_REGION" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
+          "UPDATE_PREFERENCE_COLORTHEME" => OrgPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
+        }
+      else
+        {}
+      end
+    end
+
+    private_class_method :event_id_map_for
     private_class_method :normalize_event_id
   end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: org_preference_cookies

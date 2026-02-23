@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: client_avatar_impersonations

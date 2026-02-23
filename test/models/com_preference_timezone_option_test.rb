@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_preference_timezone_options
