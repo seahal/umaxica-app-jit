@@ -29,6 +29,7 @@ ENV["COOKIE_DOMAIN_COM"] ||= "com.localhost"
 ENV["COOKIE_DOMAIN_ORG"] ||= "org.localhost"
 ENV["REGION_CODE"] ||= "jp"
 ENV["TRUSTED_ORIGINS"] ||= "http://sign.app.localhost:3001,http://sign.org.localhost:3001"
+ENV["OCCURRENCE_HMAC_SECRET"] ||= "test_hmac_secret_key_for_testing_only"
 
 require_relative "../config/environment"
 require "rails/test_help"

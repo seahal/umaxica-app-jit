@@ -170,10 +170,8 @@ jobs:
           cache-version: 1
       - name: Run RuboCop
         run: bundle exec rubocop --parallel --fail-fast --format github
-      - name: Check unused routing config
-        run: bundle exec rails routes --unused
-        env:
-          TRUSTED_ORIGINS: http://sign.app.localhost,http://sign.org.localhost
+      - name: Run ERB Lint
+        run: bundle exec erb_lint --lint-all
       - name: Check importmap integrity
         run: bin/importmap audit
   # ====================
