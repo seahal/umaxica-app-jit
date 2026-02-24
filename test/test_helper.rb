@@ -29,6 +29,7 @@ ENV["COOKIE_DOMAIN_COM"] ||= "com.localhost"
 ENV["COOKIE_DOMAIN_ORG"] ||= "org.localhost"
 ENV["REGION_CODE"] ||= "jp"
 ENV["TRUSTED_ORIGINS"] ||= "http://sign.app.localhost:3001,http://sign.org.localhost:3001"
+ENV["PREFERENCE_JWT_AUDIENCES"] ||= "app.localhost,org.localhost,com.localhost"
 
 require_relative "../config/environment"
 require "rails/test_help"

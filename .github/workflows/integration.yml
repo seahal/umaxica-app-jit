@@ -390,6 +390,7 @@ jobs:
           context: .
           target: production
           tags: umaxica-app:${{ github.sha }}
+          build-args: RUBY_VERSION=${{ env.RUBY_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           load: true
@@ -429,7 +430,7 @@ jobs:
           fail-build: false
           severity-cutoff: high
       - name: Upload Grype SARIF
-        if: always()
+        if: always() && steps.grype.outputs.sarif != ''
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.grype.outputs.sarif }}
