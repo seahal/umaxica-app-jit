@@ -8,7 +8,6 @@ module RateLimit
 
   included do
     class_attribute :rate_limit_rules, instance_writer: false, default: []
-
     before_action :apply_rate_limit_rules
   end
 
@@ -39,6 +38,23 @@ module RateLimit
     return if count.to_i <= limit
 
     throttle_rate_limit!(rule: rule, scope: scope, retry_after: retry_after || period || DEFAULT_RETRY_AFTER)
+  rescue StandardError => e
+    if RailsRateLimit.fail_close?
+      Rails.logger.error(
+        "[RailsRateLimit] STORE_ERROR mode=close rule=#{rule} scope=#{scope} " \
+        "path=#{request.path} error=#{e.class}: #{e.message}",
+      )
+      throttle_rate_limit!(
+        rule: "rate_limit_store_error",
+        scope: scope || "store",
+        retry_after: DEFAULT_RETRY_AFTER,
+      )
+    else
+      Rails.logger.warn(
+        "[RailsRateLimit] STORE_ERROR mode=open rule=#{rule} scope=#{scope} " \
+        "path=#{request.path} error=#{e.class}: #{e.message}",
+      )
+    end
   end
 
   def rate_limit_key(rule:, tenant:, scope:, discriminator:)
@@ -73,6 +89,7 @@ module RateLimit
         retry_after: rule[:retry_after],
         scope: scope,
       )
+      break if performed?
     end
   end
 

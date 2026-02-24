@@ -130,9 +130,15 @@
   },
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude.json,target=/home/jit/.claude.json,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.copilot,target=/home/jit/.copilot,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.gemini,target=/home/jit/.gemini,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/opencode,target=/home/jit/.config/opencode,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.config/gh,target=/home/jit/.config/gh,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.config/git,target=/home/jit/.config/git,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.local/share/opencode,target=/home/jit/.local/share/opencode,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.local/state/opencode,target=/home/jit/.local/state/opencode,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.gitconfig,target=/home/jit/.gitconfig,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind,consistency=cached"
   ]

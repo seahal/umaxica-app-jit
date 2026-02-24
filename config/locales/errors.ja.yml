@@ -1,0 +1,4 @@
+ja:
+  errors:
+    rate_limit:
+      exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"

@@ -1,0 +1,4 @@
+en:
+  errors:
+    rate_limit:
+      exceeded: "Too many requests. Please try again later."

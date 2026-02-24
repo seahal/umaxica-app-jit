@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_13_142000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_24_031806) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -405,6 +405,32 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_142000) do
     t.check_constraint "level_id >= 0", name: "org_timeline_audits_level_id_non_negative_check"
   end
 
+  create_table "scavenger_global_events", force: :cascade do |t|
+  end
+
+  create_table "scavenger_global_statuses", force: :cascade do |t|
+  end
+
+  create_table "scavenger_globals", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.bigint "event_id", default: 0, null: false
+    t.datetime "finished_at"
+    t.string "idempotency_key", limit: 128
+    t.string "job_type", limit: 64
+    t.datetime "occurred_at"
+    t.jsonb "payload"
+    t.integer "retry_count"
+    t.datetime "started_at"
+    t.bigint "status_id", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_scavenger_globals_on_event_id"
+    t.index ["idempotency_key"], name: "index_scavenger_globals_on_idempotency_key", unique: true
+    t.index ["job_type"], name: "index_scavenger_globals_on_job_type"
+    t.index ["occurred_at"], name: "index_scavenger_globals_on_occurred_at"
+    t.index ["status_id"], name: "index_scavenger_globals_on_status_id"
+  end
+
   create_table "staff_activities", force: :cascade do |t|
     t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
@@ -495,6 +521,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_142000) do
   add_foreign_key "org_preference_activities", "org_preference_activity_levels", column: "level_id", validate: false
   add_foreign_key "org_timeline_audits", "org_timeline_audit_events", column: "event_id", validate: false
   add_foreign_key "org_timeline_audits", "org_timeline_audit_levels", column: "level_id", validate: false
+  add_foreign_key "scavenger_globals", "scavenger_global_events", column: "event_id"
+  add_foreign_key "scavenger_globals", "scavenger_global_statuses", column: "status_id"
   add_foreign_key "staff_activities", "staff_activity_events", column: "event_id", validate: false
   add_foreign_key "staff_activities", "staff_activity_levels", column: "level_id", validate: false
   add_foreign_key "user_activities", "user_activity_events", column: "event_id", validate: false

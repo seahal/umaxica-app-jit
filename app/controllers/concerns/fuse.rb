@@ -4,10 +4,6 @@
 module Fuse
   extend ActiveSupport::Concern
 
-  included do
-    before_action :check_fuse!
-  end
-
   private
 
   def check_fuse!

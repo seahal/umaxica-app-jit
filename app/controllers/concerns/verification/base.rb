@@ -13,10 +13,6 @@ module Verification
     STEP_UP_TTL = 15.minutes
     STEP_UP_REQUIRED_MESSAGE = "再認証が必要です\n操作は保存されていません"
 
-    included do
-      before_action :enforce_verification_if_required if respond_to?(:before_action)
-    end
-
     def verification_requirement
       @required_verification
     end

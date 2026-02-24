@@ -13,6 +13,13 @@ module News
       include Pundit::Authorization
       include ::Finisher
 
+      before_action :check_fuse!
+      before_action :enforce_withdrawal_gate!
+      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
+      before_action :enforce_access_policy!
+      before_action :enforce_verification_if_required
+      append_after_action :finish_request
+
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern

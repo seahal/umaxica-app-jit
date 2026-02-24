@@ -19,10 +19,6 @@ module Authentication
       alias_method :current_user, :current_resource
       alias_method :authenticate_user!, :authenticate!
       alias_method :logged_in_user?, :logged_in?
-      before_action :enforce_withdrawal_gate! if respond_to?(:before_action)
-      before_action :transparent_refresh_access_token, unless: -> {
-        request.format.json?
-      } if respond_to?(:before_action)
       include ::AuthorizationAudit
     end
 

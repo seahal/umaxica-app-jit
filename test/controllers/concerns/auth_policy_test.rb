@@ -7,6 +7,8 @@ require "test_helper"
 class Auth::PolicyTestController < ApplicationController
   include Auth::Policy
 
+  before_action :enforce_access_policy!
+
   class << self
     attr_accessor :test_stubs
   end
@@ -65,7 +67,7 @@ class Auth::PolicyTestController < ApplicationController
 
   def token_class = UserToken
 
-  def audit_class = UserAudit
+  def audit_class = UserActivity
 
   def resource_foreign_key = :user_id
 

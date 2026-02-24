@@ -4,6 +4,7 @@
 set -e
 
 CLAUDE_DIR="${HOME}/.claude"
+CLAUDE_JSON="${HOME}/.claude.json"
 CREDENTIALS_FILE="${CLAUDE_DIR}/.credentials.json"
 
 echo "🔍 Checking Claude Code configuration..."
@@ -17,31 +18,42 @@ fi
 
 echo "✅ Claude directory found: ${CLAUDE_DIR}"
 
-# Check if credentials file exists
-if [ ! -f "${CREDENTIALS_FILE}" ]; then
-  echo "⚠️  Credentials file not found: ${CREDENTIALS_FILE}"
+# Prefer modern auth/config file and keep legacy support.
+if [ -f "${CLAUDE_JSON}" ]; then
+  echo "✅ Claude JSON config found: ${CLAUDE_JSON}"
+elif [ -f "${CREDENTIALS_FILE}" ]; then
+  echo "✅ Legacy credentials file found: ${CREDENTIALS_FILE}"
+else
+  echo "⚠️  No Claude auth/config file found (${CLAUDE_JSON} or ${CREDENTIALS_FILE})"
   echo "   You may need to login to Claude Code manually"
   exit 0
 fi
 
-echo "✅ Credentials file found: ${CREDENTIALS_FILE}"
-
 # Check file permissions
-PERMS=$(stat -c "%a" "${CREDENTIALS_FILE}" 2>/dev/null || stat -f "%Lp" "${CREDENTIALS_FILE}" 2>/dev/null || echo "unknown")
-echo "📋 Credentials file permissions: ${PERMS}"
-
-# Ensure proper ownership (in case UID mapping is different)
-if [ "$(stat -c "%U" "${CREDENTIALS_FILE}" 2>/dev/null)" != "$(whoami)" ]; then
-  echo "⚠️  Credentials file owner mismatch, but this is expected with bind mounts"
+if [ -f "${CLAUDE_JSON}" ]; then
+  PERMS=$(stat -c "%a" "${CLAUDE_JSON}" 2>/dev/null || stat -f "%Lp" "${CLAUDE_JSON}" 2>/dev/null || echo "unknown")
+  echo "📋 Claude JSON file permissions: ${PERMS}"
+else
+  PERMS=$(stat -c "%a" "${CREDENTIALS_FILE}" 2>/dev/null || stat -f "%Lp" "${CREDENTIALS_FILE}" 2>/dev/null || echo "unknown")
+  echo "📋 Legacy credentials file permissions: ${PERMS}"
 fi
 
-# Verify credentials file is valid JSON
-if ! jq empty "${CREDENTIALS_FILE}" 2>/dev/null; then
-  echo "⚠️  Credentials file is not valid JSON"
+# Ensure proper ownership (in case UID mapping is different)
+TARGET_FILE="${CLAUDE_JSON}"
+if [ ! -f "${TARGET_FILE}" ]; then
+  TARGET_FILE="${CREDENTIALS_FILE}"
+fi
+if [ "$(stat -c "%U" "${TARGET_FILE}" 2>/dev/null)" != "$(whoami)" ]; then
+  echo "⚠️  Config file owner mismatch, but this is expected with bind mounts"
+fi
+
+# Verify config file is valid JSON
+if ! jq empty "${TARGET_FILE}" 2>/dev/null; then
+  echo "⚠️  Config file is not valid JSON"
   exit 0
 fi
 
-echo "✅ Credentials file is valid JSON"
+echo "✅ Claude config is valid JSON"
 
 # Check if Claude Code is installed
 if ! command -v claude &> /dev/null; then

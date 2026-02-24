@@ -1,16 +1,18 @@
 # Fixed IDs - do not modify these values
 # == Schema Information
 #
-# Table name: user_identity_audit_events
-# Database name: principal
+# Table name: scavenger_global_events
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
-neyo:
-  id: 1
+nothing:
+  id: 0
 created:
+  id: 1
+started:
   id: 2
-updated:
+finished:
   id: 3
-deleted:
+failed:
   id: 4

@@ -75,11 +75,11 @@ end
 
 class RateLimitConcernTest < ActionDispatch::IntegrationTest
   setup do
-    RailsRateLimit.store.clear if RailsRateLimit.store.respond_to?(:clear)
+    RailsRateLimit.store.clear! if RailsRateLimit.store.respond_to?(:clear!)
   end
 
   teardown do
-    RailsRateLimit.store.clear if RailsRateLimit.store.respond_to?(:clear)
+    RailsRateLimit.store.clear! if RailsRateLimit.store.respond_to?(:clear!)
   end
 
   test "rails rate limiter returns 429 with layer headers and i18n message" do
@@ -129,11 +129,8 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
       get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
     end
 
-    assert_equal "rails_rate_limit", RailsRateLimit.store.options[:namespace]
-
-    keys = RailsRateLimit.store.instance_variable_get(:@data).keys
-    assert keys.any? { |key| key.start_with?("rails_rate_limit:dummy_ip:") }
-    assert keys.none? { |key| key.start_with?("rack_attack:") }
+    expected_namespace = ENV["RATE_LIMIT_NAMESPACE"].presence || "rate_limit:test:#{Process.pid}"
+    assert_equal expected_namespace, RailsRateLimit.store.namespace
   end
 
   test "rails limiter returns 429 for HTML format with plain text message" do

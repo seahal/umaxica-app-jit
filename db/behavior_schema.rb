@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_21_100000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_24_031809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -230,6 +230,33 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_100000) do
     t.index ["subject_type", "subject_id"], name: "index_org_timeline_behaviors_on_subject_type_and_subject_id"
   end
 
+  create_table "scavenger_regional_events", force: :cascade do |t|
+  end
+
+  create_table "scavenger_regional_statuses", force: :cascade do |t|
+  end
+
+  create_table "scavenger_regionals", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.bigint "event_id", default: 0, null: false
+    t.datetime "finished_at"
+    t.string "idempotency_key", limit: 128
+    t.string "job_type", limit: 64
+    t.datetime "occurred_at"
+    t.jsonb "payload"
+    t.bigint "region_id"
+    t.integer "retry_count"
+    t.datetime "started_at"
+    t.bigint "status_id", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_scavenger_regionals_on_event_id"
+    t.index ["occurred_at"], name: "index_scavenger_regionals_on_occurred_at"
+    t.index ["region_id", "idempotency_key"], name: "index_scavenger_regionals_on_region_id_and_idempotency_key", unique: true
+    t.index ["region_id", "job_type"], name: "index_scavenger_regionals_on_region_id_and_job_type"
+    t.index ["status_id"], name: "index_scavenger_regionals_on_status_id"
+  end
+
   add_foreign_key "app_contact_behaviors", "app_contact_behavior_events", column: "event_id"
   add_foreign_key "app_contact_behaviors", "app_contact_behavior_levels", column: "level_id"
   add_foreign_key "app_document_behaviors", "app_document_behavior_events", column: "event_id"
@@ -248,4 +275,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_100000) do
   add_foreign_key "org_document_behaviors", "org_document_behavior_levels", column: "level_id"
   add_foreign_key "org_timeline_behaviors", "org_timeline_behavior_events", column: "event_id"
   add_foreign_key "org_timeline_behaviors", "org_timeline_behavior_levels", column: "level_id"
+  add_foreign_key "scavenger_regionals", "scavenger_regional_events", column: "event_id"
+  add_foreign_key "scavenger_regionals", "scavenger_regional_statuses", column: "status_id"
 end

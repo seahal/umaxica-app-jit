@@ -18,12 +18,6 @@ module Preference::Global
   included do
     helper_method :get_language, :get_timezone, :get_region, :get_colortheme
     helper_method :effective_context, :required_ri
-    before_action :set_preferences_cookie
-    before_action :resolve_param_context
-    before_action :set_region
-    before_action :set_locale
-    before_action :set_timezone
-    before_action :set_color_theme
   end
 
   def resolve_param_context
