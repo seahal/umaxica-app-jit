@@ -9,8 +9,8 @@
 #  id              :bigint           not null, primary key
 #  error_message   :text
 #  finished_at     :datetime
-#  idempotency_key :string(128)
-#  job_type        :string(64)
+#  idempotency_key :string(128)      not null
+#  job_type        :string(64)       not null
 #  occurred_at     :datetime
 #  payload         :jsonb
 #  retry_count     :integer
@@ -18,7 +18,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  event_id        :bigint           default(0), not null
-#  region_id       :bigint
+#  region_id       :bigint           not null
 #  status_id       :bigint           default(0), not null
 #
 # Indexes
@@ -66,7 +66,7 @@ class ScavengerRegionalTest < ActiveSupport::TestCase
       idempotency_key: key,
     )
 
-    assert_raises(ActiveRecord::RecordNotUnique) do
+    assert_raises(ActiveRecord::RecordInvalid) do
       ScavengerRegional.create!(
         region_id: 1,
         occurred_at: Time.current,

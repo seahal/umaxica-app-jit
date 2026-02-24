@@ -9,8 +9,8 @@
 #  id              :bigint           not null, primary key
 #  error_message   :text
 #  finished_at     :datetime
-#  idempotency_key :string(128)
-#  job_type        :string(64)
+#  idempotency_key :string(128)      not null
+#  job_type        :string(64)       not null
 #  occurred_at     :datetime
 #  payload         :jsonb
 #  retry_count     :integer
@@ -63,7 +63,7 @@ class ScavengerGlobalTest < ActiveSupport::TestCase
       idempotency_key: key,
     )
 
-    assert_raises(ActiveRecord::RecordNotUnique) do
+    assert_raises(ActiveRecord::RecordInvalid) do
       ScavengerGlobal.create!(
         occurred_at: Time.current,
         job_type: "scavenger:global:unique",

@@ -9,8 +9,8 @@
 #  id              :bigint           not null, primary key
 #  error_message   :text
 #  finished_at     :datetime
-#  idempotency_key :string(128)
-#  job_type        :string(64)
+#  idempotency_key :string(128)      not null
+#  job_type        :string(64)       not null
 #  occurred_at     :datetime
 #  payload         :jsonb
 #  retry_count     :integer
@@ -47,6 +47,6 @@ class ScavengerGlobal < ActivityRecord
 
   validates :event_id, numericality: { only_integer: true }, allow_nil: true
   validates :status_id, numericality: { only_integer: true }, allow_nil: true
-  validates :job_type, presence: true
-  validates :idempotency_key, presence: true
+  validates :job_type, presence: true, length: { maximum: 64 }
+  validates :idempotency_key, presence: true, length: { maximum: 128 }, uniqueness: true
 end

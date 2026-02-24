@@ -416,8 +416,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_24_031806) do
     t.text "error_message"
     t.bigint "event_id", default: 0, null: false
     t.datetime "finished_at"
-    t.string "idempotency_key", limit: 128
-    t.string "job_type", limit: 64
+    t.string "idempotency_key", limit: 128, null: false
+    t.string "job_type", limit: 64, null: false
     t.datetime "occurred_at"
     t.jsonb "payload"
     t.integer "retry_count"
