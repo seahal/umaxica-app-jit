@@ -26,9 +26,11 @@ module Sign
         public_strict! only: %i(omniauth failure)
 
         # CSRF protection is handled by state parameter, not token.
+        # OAuth callbacks from Apple/Google cannot include Rails CSRF tokens;
+        # the `state` param provides equivalent CSRF protection (validated in validate_social_auth_state!).
         # If provider constraints allow migrating callbacks fully to GET,
         # deprecate and remove POST callbacks.
-        skip_forgery_protection only: %i(omniauth failure)
+        skip_forgery_protection only: %i(omniauth failure) # codeql[rb/csrf-protection-disabled]
 
         # Skip preference before_actions that may interfere with OmniAuth callback
         skip_before_action :set_region, :set_locale, :set_timezone, :set_color_theme,
