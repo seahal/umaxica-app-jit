@@ -349,7 +349,7 @@ jobs:
       - name: Run database consistency checks
         run: bundle exec database_consistency
   lint-js:
-    name: JavaScript Lint (Biome)
+    name: JavaScript Lint (oxlint + oxfmt)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -368,7 +368,7 @@ jobs:
       - name: Check JS dependencies for vulnerabilities
         run: pnpm audit
         continue-on-error: true
-      - name: Run Biome checks
+      - name: Run oxlint + oxfmt checks
         run: pnpm run check
   # ====================
   # SECURITY SCANS
