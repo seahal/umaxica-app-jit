@@ -20,7 +20,7 @@
               return;
           }
 
-          const siteKey = <%== site_key.to_json %>;
+          const siteKey = <%= site_key.to_json.html_safe %>;
           let widgetId = null;
 
           function ensureScript(callback) {
