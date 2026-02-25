@@ -211,7 +211,6 @@ RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
 RUN npm install -g pnpm@10.27.0
 
 
-RUN rm -rf "${HOME}/.cache"
-RUN rm -rf "${HOME}/.local"
+RUN rm -rf "${HOME}/.cache" "${HOME}/.local"
 
 USER ${DOCKER_USER}
