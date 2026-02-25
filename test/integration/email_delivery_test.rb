@@ -43,6 +43,7 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
 
     # Find the job and verify it's a mail delivery job
     job = SolidQueue::Job.where(class_name: "ActionMailer::MailDeliveryJob").order(:created_at).last
+
     assert_equal "ActionMailer::MailDeliveryJob", job.class_name
     assert_equal "default", job.queue_name
 

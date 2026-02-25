@@ -15,12 +15,14 @@ class Sign::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get show when logged in" do
     get sign_org_configuration_url(ri: "jp"), headers: @headers
+
     assert_response :success
   end
 
   test "should redirect show when not logged in" do
     get sign_org_configuration_url(ri: "jp")
     rt = Base64.strict_encode64(sign_org_configuration_url(ri: "jp"))
+
     assert_redirected_to new_sign_org_in_url(rt: rt, host: "sign.org.localhost")
   end
 end

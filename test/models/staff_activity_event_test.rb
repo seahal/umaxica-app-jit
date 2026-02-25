@@ -20,6 +20,7 @@ class StaffActivityEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = StaffActivityEvent.new(id: 9)
+
     assert_predicate record, :valid?
   end
 
@@ -38,6 +39,7 @@ class StaffActivityEventTest < ActiveSupport::TestCase
 
   test "has_many association with staff_activities" do
     association = StaffActivityEvent.reflect_on_association(:staff_activities)
+
     assert_equal :has_many, association.macro
     assert_equal :destroy, association.options[:dependent]
     assert_equal :event_id, association.options[:foreign_key]

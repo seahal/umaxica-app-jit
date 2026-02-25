@@ -24,6 +24,7 @@ class AppStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     uri = URI.parse(response.location)
     query = Rack::Utils.parse_query(uri.query)
+
     assert_equal "/verification/setup/new", uri.path
     assert_predicate query["rd"], :present?
   end
@@ -38,6 +39,7 @@ class AppStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     uri = URI.parse(response.location)
     query = Rack::Utils.parse_query(uri.query)
+
     assert_equal "/verification", uri.path
     assert_predicate query["rd"], :present?
   end
@@ -54,6 +56,7 @@ class AppStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     uri = URI.parse(response.location)
+
     assert_equal "/verification", uri.path
   end
 
@@ -83,6 +86,7 @@ class AppStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     return_to = Base64.urlsafe_encode64(sign_app_configuration_withdrawal_path(ri: "jp"))
 
     get sign_app_verification_url(scope: "withdrawal", return_to: return_to, ri: "jp"), headers: @headers
+
     assert_response :success
 
     code = ROTP::TOTP.new(private_key).at(Time.current.to_i)

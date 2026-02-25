@@ -45,6 +45,7 @@ class UserClientImpersonationTest < ActiveSupport::TestCase
       user: @user,
       client: @client,
     )
+
     assert_predicate impersonation, :valid?
   end
 end

@@ -25,6 +25,7 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
 
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
+
     assert_response :redirect
 
     user_count_before = User.count
@@ -50,6 +51,7 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
       response.location,
     )
     follow_redirect!
+
     assert_predicate flash[:alert], :present?
   end
 
@@ -59,6 +61,7 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
 
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(user, host: @host)
+
     assert_response :redirect
 
     travel_to 6.minutes.from_now do

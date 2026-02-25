@@ -59,6 +59,7 @@ class Sign::App::Web::V1::In::Telephone::OtpsControllerTest < ActionDispatch::In
     assert_equal 0, response.parsed_body["retry_after"]
 
     occurrence = TelephoneOccurrence.find_by(body: hmac)
+
     assert_not_nil occurrence
     assert_equal TelephoneOccurrenceStatus::ACTIVE, occurrence.status_id
     assert_includes occurrence.memo, "purpose=in"
@@ -86,6 +87,7 @@ class Sign::App::Web::V1::In::Telephone::OtpsControllerTest < ActionDispatch::In
 
     telephone_record.reload
     otp_data = telephone_record.get_otp
+
     assert_not_nil otp_data
 
     new_code = ROTP::HOTP.new(otp_data[:otp_private_key]).at(otp_data[:otp_counter]).to_s

@@ -14,6 +14,7 @@ require "test_helper"
 class ZipOccurrenceStatusTest < ActiveSupport::TestCase
   test "accepts integer ids" do
     record = ZipOccurrenceStatus.new(id: 3)
+
     assert_predicate record, :valid?
   end
 

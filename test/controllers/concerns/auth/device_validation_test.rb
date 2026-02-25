@@ -132,6 +132,7 @@ class AuthDeviceValidationTest < ActiveSupport::TestCase
     @harness.request_obj.headers_hash[Auth::IoKeys::Headers::DEVICE_ID] = "device-123"
 
     result = @harness.send(:refresh_device_allowed?, token_record)
+
     assert_not result
   end
 

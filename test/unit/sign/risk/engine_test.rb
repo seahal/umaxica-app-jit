@@ -135,6 +135,7 @@ module Sign
         end
 
         Emitter.persist(Event.new("session_issued", payload: { user_id: @user_id }))
+
         assert_equal 0, Engine.score(@user_id)
       end
     end

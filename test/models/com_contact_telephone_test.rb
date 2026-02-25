@@ -503,6 +503,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
 
     # Correct.
     telephone.update!(verifier_expires_at: 1.hour.ago)
+
     assert_not telephone.verify_hotp_code(code)
   end
 

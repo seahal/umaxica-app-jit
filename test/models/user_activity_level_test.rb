@@ -18,6 +18,7 @@ class UserActivityLevelTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = UserActivityLevel.new(id: 9)
+
     assert_predicate record, :valid?
   end
 
@@ -40,8 +41,10 @@ class UserActivityLevelTest < ActiveSupport::TestCase
   test "ordered scope returns ordered records" do
     UserActivityLevel.ensure_defaults!
     levels = UserActivityLevel.ordered
+
     assert_kind_of ActiveRecord::Relation, levels
     ordered_ids = levels.pluck(:id)
+
     assert_equal ordered_ids.sort, ordered_ids
   end
 end

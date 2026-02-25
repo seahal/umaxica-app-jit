@@ -29,6 +29,24 @@ module Sign::App::Up
       assert_response :success
     end
 
+    test "edit route uses id path parameter" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          raw_number: "+1234567890",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      telephone = registration_telephone
+
+      get edit_sign_app_up_telephone_url(telephone, ri: "jp")
+
+      assert_response :success
+      assert_equal telephone.public_id, request.path_parameters[:id]
+      assert_nil request.path_parameters[:public_id]
+    end
+
     test "should create telephone and redirect to edit" do
       assert_enqueued_jobs 1, only: SmsDeliveryJob do
         assert_difference("UserTelephone.count") do
@@ -157,6 +175,7 @@ module Sign::App::Up
 
       # OTP should be cleared (-infinity)
       expires = telephone.otp_expires_at
+
       assert expires.nil? || expires.to_s == "-infinity" || (expires.is_a?(Float) && expires == -Float::INFINITY)
       assert_equal [nil, nil], [telephone.confirm_policy, telephone.confirm_using_mfa]
     end
@@ -243,6 +262,7 @@ module Sign::App::Up
         event_id: UserActivityEvent::SIGNED_UP_WITH_TELEPHONE,
         actor_id: user.id,
       ).last
+
       assert_not_nil signup_audit
       assert_equal "User", signup_audit.actor_type
     end
@@ -377,6 +397,7 @@ module Sign::App::Up
         post resend_sign_app_up_telephones_url(ri: "jp")
       end
       sent_at = session[:user_telephone_otp_last_sent_at]
+
       assert_predicate sent_at, :present?
       assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
       assert_equal I18n.t("sign.app.registration.telephone.resend.sent"), flash[:notice]

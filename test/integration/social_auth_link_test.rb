@@ -61,6 +61,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     # Start link flow as user_two
     get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_two, host: @host)
+
     assert_response :redirect
 
     # Callback should fail with conflict
@@ -76,6 +77,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Identity should still belong to user_one
     identity = UserSocialGoogle.find_by(uid: existing_uid)
+
     assert_equal @user_one.id, identity.user_id, "Identity should still belong to original user"
   end
 
@@ -96,6 +98,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     # User two starts link flow
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_two, host: @host)
+
     assert_response :redirect
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
@@ -103,9 +106,11 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     follow_redirect!
+
     assert_predicate flash[:alert], :present?, "Should have conflict error for Apple"
 
     identity = UserSocialApple.find_by(uid: existing_uid)
+
     assert_equal @user_one.id, identity.user_id
   end
 
@@ -122,9 +127,11 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       response.location,
     )
     follow_redirect!
+
     assert_predicate flash[:alert], :present?, "Should have error flash for state mismatch"
 
     identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
+
     assert_nil identity, "Identity should not be created on state mismatch"
   end
 
@@ -133,6 +140,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
+
     assert_response :redirect
 
     travel_to 6.minutes.from_now do
@@ -143,6 +151,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
 
     identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
+
     assert_nil identity, "Identity should not be created when intent expired"
   end
 
@@ -206,6 +215,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     # New identity created
     assert_equal identity_count_before + 1, UserSocialGoogle.count
     identity = UserSocialGoogle.find_by(uid: new_uid)
+
     assert_not_nil identity
     assert_equal @user_one.id, identity.user_id, "Identity should belong to current user"
     assert_not_nil identity.last_authenticated_at, "last_authenticated_at should be set"
@@ -259,6 +269,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Identity should be reactivated (status changed to ACTIVE)
     revoked_identity.reload
+
     assert_equal UserSocialGoogleStatus::ACTIVE, revoked_identity.user_identity_social_google_status_id,
                  "Identity should be ACTIVE"
   end
@@ -289,6 +300,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     assert_predicate flash[:notice], :present?, "Should have success flash for Apple reactivation"
 
     revoked_identity.reload
+
     assert_equal UserSocialAppleStatus::ACTIVE, revoked_identity.user_identity_social_apple_status_id,
                  "Apple identity should be ACTIVE"
   end

@@ -30,6 +30,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
   test "guest can access login page" do
     get new_sign_app_in_path, headers: { "Host" => @host }
     follow_redirect! if response.redirect? && response.location.include?("ri=jp")
+
     assert_response :ok
   end
 
@@ -58,6 +59,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Verify cookies updated (rotated)
     new_refresh = response.cookies["jit_auth_refresh"] || cookies["jit_auth_refresh"]
+
     assert_not_nil new_refresh
     # Note: refresh_plain string matching might be complex if cookies are encoded/encrypted differently in response
     # but at least one should exist.
@@ -190,6 +192,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     assert UserToken.exists?(id: token_id), "Token should still exist (S3: not destroyed)"
 
     token_record.reload
+
     assert_not_nil token_record.revoked_at, "Token should be revoked"
   end
 end

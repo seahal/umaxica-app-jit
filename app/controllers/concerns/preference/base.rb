@@ -1024,7 +1024,8 @@ module Preference
     end
 
     def clear_preference_auth_cookies!
-      [access_token_cookie_name, refresh_token_cookie_name, preference_device_id_cookie_name].uniq.each do |cookie_name|
+      [access_token_cookie_name, refresh_token_cookie_name,
+       preference_device_id_cookie_name,].uniq.each do |cookie_name|
         cookies.delete(cookie_name, **preference_cookie_deletion_options)
       end
     end

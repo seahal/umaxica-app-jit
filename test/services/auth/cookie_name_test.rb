@@ -19,6 +19,7 @@ module Auth
 
     test "derives device cookie key from refresh cookie key" do
       refresh = "__Secure-jit_auth_refresh"
+
       assert_equal "__Secure-jit_auth_device_id", Auth::CookieName.device(refresh_cookie_key: refresh)
     end
   end

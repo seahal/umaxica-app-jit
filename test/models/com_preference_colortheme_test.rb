@@ -33,6 +33,7 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     colortheme = ComPreferenceColortheme.new
+
     assert_not colortheme.valid?
     assert_predicate colortheme.errors[:preference], :any?, "Expected preference error to be present"
   end
@@ -40,6 +41,7 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = com_preference_colortheme_options(:light)
     colortheme = ComPreferenceColortheme.create!(preference: @preference, option: option)
+
     assert_not_nil colortheme.id
     assert_equal @preference, colortheme.preference
     assert_equal option, colortheme.option
@@ -47,6 +49,7 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     colortheme = ComPreferenceColortheme.create!(preference: @preference)
+
     assert_equal ComPreferenceColorthemeOption::SYSTEM, colortheme.option_id
   end
 end

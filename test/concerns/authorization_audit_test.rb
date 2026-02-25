@@ -191,6 +191,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     end
 
     record = UserActivity.last
+
     assert_equal user, record.user
     assert_equal 3, record.event_id
   end
@@ -205,6 +206,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     end
 
     record = StaffActivity.last
+
     assert_equal staff, record.staff
     assert_equal 2, record.event_id
   end

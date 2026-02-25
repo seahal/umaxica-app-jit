@@ -67,6 +67,7 @@ class UserClientRevocationTest < ActiveSupport::TestCase
       user: @user,
       client: client,
     )
+
     assert_predicate revocation, :valid?
   end
 end

@@ -28,7 +28,10 @@ class Email::App::RegistrationMailerTest < ActionMailer::TestCase
   end
 
   test "should set greeting instance variable from hotp_token" do
-    mail = Email::App::RegistrationMailer.with(hotp_token: "999888", email_address: "greet@example.com").create
+    mail = Email::App::RegistrationMailer.with(
+      hotp_token: "999888",
+      email_address: "greet@example.com",
+    ).create
 
     assert_match "999888", mail.html_part.body.decoded
   end

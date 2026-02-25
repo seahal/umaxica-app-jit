@@ -69,6 +69,7 @@ class ComTimelineVersionTest < ActiveSupport::TestCase
   end
   test "validates presence of required fields" do
     version = ComTimelineVersion.new
+
     assert_not version.valid?
     assert_not_empty version.errors[:permalink]
     assert_not_empty version.errors[:response_mode]

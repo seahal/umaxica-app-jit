@@ -29,9 +29,11 @@ scope module: :sign, as: :sign do
         namespace :v1 do
           namespace :in do
             namespace :email do
+              # TODO: nusty code!, delete controller of this line
               resource :otp, only: :create, controller: :otps
             end
             namespace :telephone do
+              # TODO: nusty code!, delete controller of this line
               resource :otp, only: :create, controller: :otps
             end
           end
@@ -41,13 +43,13 @@ scope module: :sign, as: :sign do
       resource :up, only: :new
       namespace :up do
         resources :emails, only: %i(new create edit update)
-        resources :telephones, only: %i(new create edit update), param: :public_id do
+        resources :telephones, only: %i(new create edit update) do
           collection do
             post :resend
           end
-          # kesitai
+          # TODO: nusty code!
           resource :passkey_registration, only: %i(show create)
-          # kroemo kesitai
+          # TODO: nusty code!
           post "passkey_registration/begin", to: "passkey_registrations#begin"
         end
       end
@@ -72,7 +74,6 @@ scope module: :sign, as: :sign do
         end
       end
 
-      # TODO: Which one is working?
       # Social auth: start sets intent/state then redirects to /auth/:provider
       namespace :social do
         get "start", to: "sessions#start"
@@ -102,10 +103,9 @@ scope module: :sign, as: :sign do
 
       resource :configuration, only: %i(show edit)
       namespace :configuration do
-        # TODO: implement TOTP settings management
-        resources :totps, only: %i(index new create edit update destroy), param: :public_id
+        resources :totps, only: %i(index new create edit update destroy)
         # TODO: refactor to standard CRUD
-        resources :passkeys, param: :public_id do
+        resources :passkeys do
           collection do
             post :options
             post :verification
@@ -113,22 +113,27 @@ scope module: :sign, as: :sign do
         end
         resource :challenge, only: %i(show update)
         namespace :emails do
+          # TODO: nusty code!, delete controller of this line
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
         resources :emails, only: %i(index edit destroy)
         namespace :telephones do
+          # TODO: nusty code!, delete controller of this line
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
         resources :telephones, only: %i(index new edit create destroy)
         resource :apple, only: [:show, :destroy]
-        # by the way, what is update mehtods for google here?
+        # TODO: by the way, what is update mehtods for google here?
         resource :google, only: %i(show update destroy)
-        # refactor to standard CRUD
-        resources :secrets, only: %i(index show new edit create destroy), param: :public_id do
+        # TODO: refactor to standard CRUD
+        resources :secrets, only: %i(index show new edit create destroy) do
           post :regenerate, on: :member
         end
-        # i want this code more precisely routing.
-        resources :sessions, only: %i(index destroy)
+        resources :sessions, only: %i(index destroy) do
+          collection do
+            delete :others
+          end
+        end
         resources :activities, only: :index
         resource :activity, only: :show, controller: :activities
         resource :out, only: %i(edit destroy)
@@ -169,8 +174,6 @@ scope module: :sign, as: :sign do
         resource :session, only: %i(show update destroy)
         resource :checkpoint, only: %i(show update destroy)
         resource :challenge, only: %i(show create)
-        # Backward compatibility: redirect mfa to challenge
-        match "mfa", via: [:get, :post], to: redirect(status: 302) { |_params, req| "/in/challenge#{req.query_string.present? ? "?#{req.query_string}" : ""}" }
       end
 
       resource :verification, only: %i(show), controller: :verification
@@ -182,7 +185,8 @@ scope module: :sign, as: :sign do
 
       resource :configuration, only: :show
       namespace :configuration do
-        # Backward compatibility for tests/flows that still reference /configuration/totps.
+        # Backward compatibility for tests/flows that still reference /configuration/totps.,
+        # TODO: delete controller of this line
         get "totps", to: "challenges#show", as: :totps
         # TODO: refactor to standard CRUD
         resources :passkeys do
@@ -192,10 +196,12 @@ scope module: :sign, as: :sign do
           end
         end
         resource :challenge, only: %i(show update)
-        # Backward compatibility: redirect mfa to challenge
-        match "mfa", via: %i(get put patch), to: redirect(status: 302) { |_params, req| "/configuration/challenge#{req.query_string.present? ? "?#{req.query_string}" : ""}" }
-        resources :secrets, param: :public_id
-        resources :sessions, only: %i(index show new edit create update destroy)
+        resources :secrets
+        resources :sessions, only: %i(index destroy) do
+          collection do
+            delete :others
+          end
+        end
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(show)
       end

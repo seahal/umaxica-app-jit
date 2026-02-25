@@ -52,6 +52,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     google_identity.reload
+
     assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
   end
 
@@ -77,6 +78,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     apple_identity.reload
+
     assert_equal UserSocialAppleStatus::ACTIVE, apple_identity.user_identity_social_apple_status_id
   end
 
@@ -164,6 +166,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     # Google identity should be soft-deleted (status changed to REVOKED)
     google_identity.reload
+
     assert_equal UserSocialGoogleStatus::REVOKED, google_identity.user_identity_social_google_status_id,
                  "Google identity should be REVOKED"
 
@@ -171,6 +174,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_equal 1, UserSocialApple.where(user: @user).count
 
     audit = UserActivity.order(created_at: :desc).find_by(event_id: UserActivityEvent::SOCIAL_UNLINKED)
+
     assert_not_nil audit, "Should create audit record for social unlink"
     assert_equal google_identity.id.to_s, audit.subject_id
     assert_equal "UserSocialGoogle", audit.subject_type
@@ -205,6 +209,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     # Apple identity should be soft-deleted (status changed to REVOKED)
     apple_identity.reload
+
     assert_equal UserSocialAppleStatus::REVOKED, apple_identity.user_identity_social_apple_status_id,
                  "Apple identity should be REVOKED"
   end
@@ -244,6 +249,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_equal "ログインが必要です", flash[:alert]
 
     google_identity.reload
+
     assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
   end
 
@@ -276,9 +282,11 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     follow_redirect!
+
     assert_predicate flash[:notice], :present?
 
     google_identity.reload
+
     assert_equal UserSocialGoogleStatus::REVOKED, google_identity.user_identity_social_google_status_id
   end
 
@@ -320,6 +328,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     follow_redirect!
+
     assert_predicate flash[:notice], :present?
   end
 
@@ -377,6 +386,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_predicate flash[:notice], :present?, "Should succeed with email as backup auth method"
 
     apple_identity.reload
+
     assert_equal UserSocialAppleStatus::REVOKED, apple_identity.user_identity_social_apple_status_id
   end
 
@@ -412,6 +422,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     # Google should still be ACTIVE (not unlinked)
     google_identity.reload
+
     assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
   end
 end

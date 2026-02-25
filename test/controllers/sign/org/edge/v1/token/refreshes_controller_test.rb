@@ -46,10 +46,12 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookie_lines = raw_header.is_a?(Array) ? raw_header : raw_header.to_s.split("\n")
     access_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::ACCESS_COOKIE_KEY}=") }.to_s
     refresh_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::REFRESH_COOKIE_KEY}=") }.to_s
+
     assert_match(/samesite=lax/i, access_cookie)
     assert_match(/samesite=lax/i, refresh_cookie)
 
     json = response.parsed_body
+
     assert json["refreshed"]
   end
 
@@ -81,6 +83,7 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["authenticated"], "Staff should be authenticated"
   end
 
@@ -104,6 +107,7 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_equal "invalid_refresh_token", json["error_code"]
   end
 
@@ -126,6 +130,7 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     occurrence = StaffOccurrence.order(:id).last
+
     assert_equal "refresh_device_missing", occurrence.event_type
     assert_equal 1, occurrence.status_id
     assert_equal "missing", occurrence.context["reason"]

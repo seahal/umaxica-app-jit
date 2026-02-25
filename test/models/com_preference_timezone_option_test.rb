@@ -18,6 +18,7 @@ class ComPreferenceTimezoneOptionTest < ActiveSupport::TestCase
 
   test "can be created" do
     option = ComPreferenceTimezoneOption.create!(id: 99)
+
     assert_not_nil option.id
   end
 
@@ -25,6 +26,7 @@ class ComPreferenceTimezoneOptionTest < ActiveSupport::TestCase
     option = ComPreferenceTimezoneOption.create!(id: 99)
     preference = ComPreference.create!
     timezone = ComPreferenceTimezone.create!(preference: preference, option: option)
+
     assert_includes option.com_preference_timezones, timezone
   end
 

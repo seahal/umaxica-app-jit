@@ -20,6 +20,7 @@ class ComDocumentBehaviorEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = ComDocumentBehaviorEvent.new(id: 2)
+
     assert_predicate record, :valid?
   end
 end

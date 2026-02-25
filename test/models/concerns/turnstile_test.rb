@@ -77,6 +77,7 @@ class TurnstileTest < ActiveSupport::TestCase
     Jit::Security::TurnstileConfig.stub(:default_secret_key, "dummy") do
       Net::HTTP.stub(:post_form, ->(_uri, _params) { raise StandardError, "Network error" }) do
         result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
+
         assert_not result["success"]
         assert_equal "Network error", result["error"]
       end
@@ -97,6 +98,7 @@ class TurnstileTest < ActiveSupport::TestCase
 
   test "turnstile_error_message uses default when none provided" do
     model = DummyTurnstile.new
+
     assert_equal I18n.t("turnstile_error"), model.turnstile_error_message
   end
 end

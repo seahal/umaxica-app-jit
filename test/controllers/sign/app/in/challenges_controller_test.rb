@@ -76,6 +76,7 @@ class Sign::App::In::ChallengesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_in_challenge_path(ri: "jp")
 
     follow_redirect!
+
     assert_response :success
     assert_not_includes response.body, I18n.t("sign.app.in.mfa.methods.totp")
   end
@@ -94,6 +95,7 @@ class Sign::App::In::ChallengesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_in_challenge_path(ri: "jp")
 
     follow_redirect!
+
     assert_response :success
     assert_not_includes response.body, I18n.t("sign.app.in.mfa.methods.passkey")
   end

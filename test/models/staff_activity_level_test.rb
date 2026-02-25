@@ -40,6 +40,7 @@ class StaffActivityLevelTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = StaffActivityLevel.new(id: 3)
+
     assert_predicate record, :valid?
   end
 
@@ -49,6 +50,7 @@ class StaffActivityLevelTest < ActiveSupport::TestCase
 
   test "has_many association with staff_activities" do
     association = StaffActivityLevel.reflect_on_association(:staff_activities)
+
     assert_equal :has_many, association.macro
     assert_equal :restrict_with_error, association.options[:dependent]
     assert_equal :level_id, association.options[:foreign_key]

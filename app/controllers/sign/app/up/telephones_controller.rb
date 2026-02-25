@@ -21,7 +21,7 @@ module Sign
         end
 
         def edit
-          @user_telephone = UserTelephone.find_by(public_id: params["public_id"])
+          @user_telephone = UserTelephone.find_by(public_id: params["id"])
           return if valid_telephone_session?
 
           redirect_to new_sign_app_up_telephone_path,
@@ -40,7 +40,10 @@ module Sign
           res = cloudflare_turnstile_validation
 
           unless res["success"]
-            @user_telephone.errors.add(:base, t("sign.app.registration.telephone.create.turnstile_validation_failed"))
+            @user_telephone.errors.add(
+              :base,
+              t("sign.app.registration.telephone.create.turnstile_validation_failed"),
+            )
             render :new, status: :unprocessable_content
             return
           end
@@ -112,7 +115,7 @@ module Sign
         # rubocop:enable Metrics/MethodLength
 
         def update
-          @user_telephone = UserTelephone.find_by(public_id: params["public_id"])
+          @user_telephone = UserTelephone.find_by(public_id: params["id"])
 
           return redirect_telephone_session_expired unless @user_telephone
 
@@ -215,7 +218,7 @@ module Sign
         def valid_registration_session?(registration_session)
           session_public_id = session_public_id_from_registration(registration_session)
           registration_session.present? &&
-            session_public_id.to_s == params["public_id"].to_s
+            session_public_id.to_s == params["id"].to_s
         end
 
         def session_public_id_from_registration(registration_session = session[:user_telephone_registration])

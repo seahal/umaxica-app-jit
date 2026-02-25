@@ -18,6 +18,7 @@ class ComPreferenceColorthemeOptionTest < ActiveSupport::TestCase
 
   test "can be created" do
     option = ComPreferenceColorthemeOption.create!(id: 99)
+
     assert_not_nil option.id
   end
 
@@ -25,6 +26,7 @@ class ComPreferenceColorthemeOptionTest < ActiveSupport::TestCase
     option = ComPreferenceColorthemeOption.create!(id: 99)
     preference = ComPreference.create!
     colortheme = ComPreferenceColortheme.create!(preference: preference, option: option)
+
     assert_includes option.com_preference_colorthemes, colortheme
   end
 

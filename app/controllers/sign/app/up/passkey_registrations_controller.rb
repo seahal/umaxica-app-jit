@@ -93,7 +93,8 @@ module Sign
         private
 
         def set_user_telephone
-          @user_telephone = UserTelephone.find_by(public_id: params[:telephone_public_id])
+          telephone_public_id = params[:telephone_id].presence || params[:telephone_public_id].presence
+          @user_telephone = UserTelephone.find_by(public_id: telephone_public_id)
           registration_session = session[:user_telephone_registration] || {}
           session_public_id =
             registration_session[:public_id] || registration_session["public_id"]

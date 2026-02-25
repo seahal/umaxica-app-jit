@@ -14,6 +14,7 @@ require "test_helper"
 class StaffSecretKindTest < ActiveSupport::TestCase
   test "valid kind" do
     kind = StaffSecretKind.new(id: 99)
+
     assert_predicate kind, :valid?
     assert kind.save
     assert_equal 99, kind.id
@@ -22,6 +23,7 @@ class StaffSecretKindTest < ActiveSupport::TestCase
   test "validates uniqueness of id" do
     StaffSecretKind.create!(id: 77)
     duplicate = StaffSecretKind.new(id: 77)
+
     assert_predicate duplicate, :invalid?
     assert_predicate duplicate.errors[:id], :any?
   end

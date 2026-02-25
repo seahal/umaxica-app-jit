@@ -21,7 +21,10 @@ class Sign::Org::In::SessionsController < ApplicationController
     @pending_staff = load_pending_staff
     unless @pending_staff
       return redirect_to login_path,
-                         alert: I18n.t("session_limit.staff_not_found", default: "スタッフが見つかりません。もう一度ログインしてください。")
+                         alert: I18n.t(
+                           "session_limit.staff_not_found",
+                           default: "スタッフが見つかりません。もう一度ログインしてください。",
+                         )
     end
 
     @active_sessions = @pending_staff.staff_tokens.where(revoked_at: nil).order(created_at: :desc)
@@ -32,7 +35,10 @@ class Sign::Org::In::SessionsController < ApplicationController
     @pending_staff = load_pending_staff
     unless @pending_staff
       return redirect_to login_path,
-                         alert: I18n.t("session_limit.staff_not_found", default: "スタッフが見つかりません。もう一度ログインしてください。")
+                         alert: I18n.t(
+                           "session_limit.staff_not_found",
+                           default: "スタッフが見つかりません。もう一度ログインしてください。",
+                         )
     end
 
     revoke_ids = Array(params[:revoke_session_ids]).compact_blank
@@ -49,9 +55,11 @@ class Sign::Org::In::SessionsController < ApplicationController
     # Redirect back to the original login flow
     return_path = session_limit_return_to
     if return_path.present?
-      redirect_to return_path, notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
+      redirect_to return_path,
+                  notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
     else
-      redirect_to login_path, notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
+      redirect_to login_path,
+                  notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
     end
   end
 

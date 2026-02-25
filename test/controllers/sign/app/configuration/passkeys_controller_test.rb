@@ -47,6 +47,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   # Case D-1: Not logged in
   test "options redirects when not logged in" do
     post options_sign_app_configuration_passkeys_path(ri: "jp")
+
     assert_response :redirect
   end
 
@@ -67,6 +68,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
         assert_kind_of String, credential["id"]
       end
       exclude_ids = json["options"]["excludeCredentials"].pluck("id")
+
       assert_includes exclude_ids, @passkey_webauthn_id
     end
 
@@ -85,28 +87,38 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
     # Verify challenge is Base64URL encoded
     challenge = options["challenge"]
+
     assert_match(/\A[A-Za-z0-9_-]+\z/, challenge, "challenge should be Base64URL format")
     padding_needed = (4 - (challenge.length % 4)) % 4
+
     assert_operator padding_needed, :<=, 2,
                     "challenge should have valid Base64URL padding (0-2 chars), but would need #{padding_needed}"
 
     # Verify user.id is Base64URL encoded
     user_id = options["user"]["id"]
+
     assert_match(/\A[A-Za-z0-9_-]+\z/, user_id, "user.id should be Base64URL format")
     user_id_padding = (4 - (user_id.length % 4)) % 4
+
     assert_operator user_id_padding, :<=, 2,
                     "user.id should have valid Base64URL padding, but would need #{user_id_padding}"
 
     # Verify no duplicate keys in JSON (regression test for symbol/string key mismatch)
     json_string = response.body
     challenge_count = json_string.scan(/"challenge"/).count
-    assert_equal 1, challenge_count, "JSON should contain exactly one 'challenge' key (found #{challenge_count})"
+
+    assert_equal 1, challenge_count,
+                 "JSON should contain exactly one 'challenge' key (found #{challenge_count})"
 
     # Verify excludeCredentials IDs are properly encoded
     if options["excludeCredentials"].is_a?(Array)
       options["excludeCredentials"].each_with_index do |credential, index|
         cred_id = credential["id"]
-        assert_match(/\A[A-Za-z0-9_-]+\z/, cred_id, "excludeCredentials[#{index}].id should be Base64URL format")
+
+        assert_match(
+          /\A[A-Za-z0-9_-]+\z/, cred_id,
+          "excludeCredentials[#{index}].id should be Base64URL format",
+        )
       end
     end
   end
@@ -116,6 +128,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     # Temporarily remove trusted origins
     Webauthn.stub :trusted_origins, [] do
       post options_sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
+
       assert_response :forbidden
     end
   end
@@ -127,6 +140,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       credential: { id: "cred_id", response: {} },
     }
     post verification_sign_app_configuration_passkeys_path(ri: "jp"), params: params, headers: @headers
+
     assert_response :bad_request
     # Generic error message validation
     assert_includes response.parsed_body["error"], I18n.t("errors.webauthn.challenge_invalid")
@@ -231,6 +245,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   # Standard CRUD tests retained and updated to avoid conflicts or use as is
   test "should get index" do
     get sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
+
     assert_response :ok
   end
 
@@ -243,6 +258,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
   test "should get new" do
     get new_sign_app_configuration_passkey_path(ri: "jp"), headers: @headers
+
     assert_response :ok
   end
 
@@ -287,7 +303,10 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
   test "should get edit with public_id" do
     get edit_sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp"), headers: @headers
+
     assert_response :ok
+    assert_equal @passkey.public_id, request.path_parameters[:id]
+    assert_nil request.path_parameters[:public_id]
   end
 
   test "should update description with public_id" do
@@ -390,11 +409,13 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       )
 
     get edit_sign_app_configuration_passkey_path(other_passkey.public_id, ri: "jp"), headers: @headers
+
     assert_response :not_found
   end
 
   test "index uses public_id in edit link" do
     get sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
+
     assert_response :ok
     assert_select "a[href=?]", edit_sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp")
   end

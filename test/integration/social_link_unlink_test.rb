@@ -38,11 +38,14 @@ class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
     )
 
     delete sign_app_configuration_apple_url(ri: "jp"), headers: @headers
+
     assert_redirected_to sign_app_configuration_apple_url(ri: "jp")
     follow_redirect!(headers: @headers)
+
     assert_equal I18n.t("sign.app.social.sessions.destroy.success", provider: "Apple"), flash[:notice]
 
     revoked = UserSocialApple.find_by(uid: "apple_uid_link")
+
     assert revoked
     assert_equal UserSocialAppleStatus::REVOKED, revoked.user_identity_social_apple_status_id
   end

@@ -128,12 +128,14 @@ class UserTest < ActiveSupport::TestCase
     @user.save!
 
     duplicate_user = User.new(public_id: "duplicate-id")
+
     assert_not duplicate_user.valid?
     assert_not_empty duplicate_user.errors[:public_id]
   end
 
   test "boundary values: public_id length" do
     @user.public_id = "a" * 22
+
     assert_not @user.valid?
     assert_not_empty @user.errors[:public_id]
   end

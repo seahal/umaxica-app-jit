@@ -61,6 +61,7 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: state),
         headers: callback_headers.merge(as_user_headers(user, host: @host))
+
     assert_response :redirect
 
     setup_google_mock_auth(uid: "callback_google_reused_state_2_#{SecureRandom.hex(4)}")
@@ -121,6 +122,7 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   def prepare_callback_flow(provider:, user:)
     get sign_app_social_start_url(provider: provider, intent: "link", ri: "jp"),
         headers: as_user_headers(user, host: @host)
+
     assert_response :redirect
     uri = URI.parse(response.location)
     Rack::Utils.parse_nested_query(uri.query.to_s)["state"]

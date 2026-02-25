@@ -14,6 +14,7 @@ require "test_helper"
 class TelephoneOccurrenceStatusTest < ActiveSupport::TestCase
   test "accepts integer ids" do
     record = TelephoneOccurrenceStatus.new(id: 9)
+
     assert_predicate record, :valid?
   end
 

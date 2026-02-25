@@ -54,6 +54,7 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:disable Minitest/MultipleAssertions
   test "footer contains navigation links" do
     get sign_app_root_url(ri: "jp")
+
     assert_response :success
     assert_select "footer" do
       assert_select "a"
@@ -65,6 +66,7 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get sign_app_root_url(ri: "jp")
+
     assert_response :success
     assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
   end
@@ -88,12 +90,15 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "rate limit applies on root for HTML requests" do
     get sign_app_root_url(ri: "jp")
+
     assert_response :success
 
     get sign_app_root_url(ri: "jp")
+
     assert_response :success
 
     get sign_app_root_url(ri: "jp")
+
     assert_response :too_many_requests
 
     assert_equal "rails", response.headers["X-RateLimit-Layer"]
@@ -103,12 +108,15 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "rate limit applies on root for JSON requests" do
     get sign_app_root_url(ri: "jp")
+
     assert_response :success
 
     get sign_app_root_url(ri: "jp")
+
     assert_response :success
 
     get sign_app_root_url(ri: "jp"), headers: { "Accept" => "application/json" }
+
     assert_response :too_many_requests
 
     assert_equal "rails", response.headers["X-RateLimit-Layer"]
@@ -116,6 +124,7 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_predicate response.headers["Retry-After"], :present?
 
     body = response.parsed_body
+
     assert_equal "rate_limited", body["error"]
     assert_equal "test_root_web", body["rule"]
     assert_predicate body["message"], :present?

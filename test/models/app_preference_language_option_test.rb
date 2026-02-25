@@ -18,6 +18,7 @@ class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
 
   test "can be created" do
     option = AppPreferenceLanguageOption.create!(id: 99)
+
     assert_not_nil option.id
   end
 
@@ -25,6 +26,7 @@ class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
     option = AppPreferenceLanguageOption.create!(id: 99)
     preference = AppPreference.create!
     language = AppPreferenceLanguage.create!(preference: preference, option: option)
+
     assert_includes option.app_preference_languages, language
   end
 

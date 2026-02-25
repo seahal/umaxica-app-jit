@@ -111,6 +111,7 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
     establish_pending_mfa_via_secret!
 
     get sign_app_in_challenge_path(ri: "jp")
+
     assert_response :success
     assert_includes response.body, I18n.t("sign.app.in.mfa.methods.totp")
   end
@@ -220,6 +221,7 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to sign_app_in_challenge_path
     mfa_data = session[:pending_mfa]
+
     assert_not_nil mfa_data
     assert_equal @mfa_user.id, mfa_data["user_id"]
     assert_equal "secret", mfa_data["auth_method"]
@@ -238,14 +240,17 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
       },
       "cf-turnstile-response": "test_token",
     }
+
     assert_redirected_to sign_app_in_challenge_path(ri: "jp")
 
     # Step 2: Visit MFA selection page
     get sign_app_in_challenge_path(ri: "jp")
+
     assert_response :success
 
     # Step 3: Visit TOTP form
     get new_sign_app_in_challenge_totp_path(ri: "jp")
+
     assert_response :success
 
     # Step 4: Submit valid TOTP code
@@ -270,6 +275,7 @@ class Sign::App::In::MfaInterceptTest < ActionDispatch::IntegrationTest
       },
       "cf-turnstile-response": "test_token",
     }
+
     assert_redirected_to sign_app_in_challenge_path(ri: "jp")
   end
 end

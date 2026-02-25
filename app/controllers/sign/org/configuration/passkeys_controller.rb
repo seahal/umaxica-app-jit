@@ -152,7 +152,8 @@ module Sign
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
         rescue WebAuthn::Error => e
           Rails.logger.warn("WebAuthn registration failed: #{e.message}")
-          render json: { error: I18n.t("errors.webauthn.verification_failed") }, status: :unprocessable_content
+          render json: { error: I18n.t("errors.webauthn.verification_failed") },
+                 status: :unprocessable_content
         rescue ActiveRecord::RecordNotUnique
           render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
@@ -174,7 +175,9 @@ module Sign
           rescue ActiveRecord::RecordInvalid
             respond_to do |format|
               format.html { render :edit, status: :unprocessable_content }
-              format.json { render json: { errors: @passkey.errors.full_messages }, status: :unprocessable_content }
+              format.json {
+                render json: { errors: @passkey.errors.full_messages }, status: :unprocessable_content
+              }
             end
           end
         end

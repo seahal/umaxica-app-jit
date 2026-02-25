@@ -6,12 +6,12 @@ class CreateScavengerGlobals < ActiveRecord::Migration[8.2]
       t.datetime :occurred_at
       t.bigint :event_id, null: false, default: 0
       t.bigint :status_id, null: false, default: 0
-      t.string :job_type, limit: 64
+      t.string :job_type, limit: 64, null: false
       t.jsonb :payload
       t.datetime :started_at
       t.datetime :finished_at
       t.integer :retry_count
-      t.string :idempotency_key, limit: 128
+      t.string :idempotency_key, limit: 128, null: false
       t.text :error_message
 
       t.timestamps

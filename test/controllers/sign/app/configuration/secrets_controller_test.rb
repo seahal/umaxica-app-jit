@@ -83,7 +83,8 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     get new_sign_app_configuration_secret_url(ri: "jp"), headers: authenticated_headers
 
     assert_response :success
-    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"), text: /#{Regexp.escape(I18n.t("actions.back"))}/
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"),
+                  text: /#{Regexp.escape(I18n.t("actions.back"))}/
   end
 
   test "should get edit" do
@@ -96,7 +97,8 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     get edit_sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
     assert_response :success
-    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"), text: /#{Regexp.escape(I18n.t("actions.back"))}/
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"),
+                  text: /#{Regexp.escape(I18n.t("actions.back"))}/
   end
 
   test "should create secret and redirect to index" do
@@ -162,10 +164,13 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     get sign_app_configuration_secret_url(@user_secret.public_id, ri: "jp"), headers: authenticated_headers
 
     assert_response :success
+    assert_equal @user_secret.public_id, request.path_parameters[:id]
+    assert_nil request.path_parameters[:public_id]
   end
 
   test "should not access secret by numeric ID" do
     get sign_app_configuration_secret_url(@user_secret.id, ri: "jp"), headers: authenticated_headers
+
     assert_response :not_found
   end
 

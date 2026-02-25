@@ -83,6 +83,7 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     assert_equal tree[:c], tree[:c1].parent
 
     root_child_ids = tree[:root].children.pluck(:id)
+
     assert_includes root_child_ids, tree[:a].id
     assert_includes root_child_ids, tree[:b].id
     assert_includes root_child_ids, tree[:c].id
@@ -124,15 +125,19 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     expected_subtree_ids = [tree[:root].id, tree[:a].id, tree[:b].id, tree[:c].id, tree[:c1].id]
 
     subtree_ids_with_self = AppDocumentTagMaster.subtree_ids(tree[:root].id, include_self: true)
+
     assert_equal expected_subtree_ids.sort, subtree_ids_with_self.sort
 
     subtree_ids_without_self = AppDocumentTagMaster.subtree_ids(tree[:root].id, include_self: false)
+
     assert_equal (expected_subtree_ids - [tree[:root].id]).sort, subtree_ids_without_self.sort
 
     ancestor_ids_with_self = AppDocumentTagMaster.ancestor_ids(tree[:c1].id, include_self: true)
+
     assert_equal [tree[:root].id, tree[:c].id, tree[:c1].id], ancestor_ids_with_self
 
     ancestor_ids_without_self = AppDocumentTagMaster.ancestor_ids(tree[:c1].id, include_self: false)
+
     assert_equal [tree[:root].id, tree[:c].id], ancestor_ids_without_self
   end
 
@@ -147,11 +152,13 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
 
     ancestor_ids_with_self = tree[:c1].ancestors(include_self: true).map(&:id)
     ancestor_ids_without_self = tree[:c1].ancestors(include_self: false).map(&:id)
+
     assert_equal [tree[:root].id, tree[:c].id, tree[:c1].id], ancestor_ids_with_self
     assert_equal [tree[:root].id, tree[:c].id], ancestor_ids_without_self
 
     descendant_ids_with_self = tree[:c].descendants(include_self: true).map(&:id)
     descendant_ids_without_self = tree[:c].descendants(include_self: false).map(&:id)
+
     assert_equal [tree[:c].id, tree[:c1].id], descendant_ids_with_self
     assert_equal [tree[:c1].id], descendant_ids_without_self
   end
@@ -164,10 +171,12 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     if AppDocumentTagMaster.column_names.include?("position")
       # position asc -> id asc
       expected = [tree[:root].id, tree[:b].id, tree[:c].id, tree[:c1].id, tree[:a].id]
+
       assert_equal expected, ids
     else
       # This model currently has no `position` column, so ordering is by id only.
       expected = [tree[:root].id, tree[:a].id, tree[:b].id, tree[:c].id, tree[:c1].id]
+
       assert_equal expected, ids
     end
   end
@@ -178,18 +187,21 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     # self-parent (must be persisted for current validation logic)
     node = tree[:b]
     node.parent_id = node.id
+
     assert_not node.valid?
     assert_predicate node.errors[:parent_id], :any?
 
     # descendant-parent (cycle detected)
     root = tree[:root]
     root.parent_id = tree[:c1].id
+
     assert_not root.valid?
     assert_predicate root.errors[:parent_id], :any?
 
     # valid parent change
     a = tree[:a]
     a.parent = tree[:c]
+
     assert_predicate a, :valid?
     a.save!
   end

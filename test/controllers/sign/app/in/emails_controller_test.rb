@@ -589,6 +589,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # A restricted token should have been created
     restricted = UserToken.where(user_id: user.id, status: UserToken::STATUS_RESTRICTED)
+
     assert_equal 1, restricted.count
 
     # Session limit gate should be issued
@@ -628,6 +629,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     json = response.parsed_body
+
     assert_equal "session_restricted", json["status"]
     assert_equal sign_app_in_session_path(ri: "jp"), json["redirect_url"]
   end

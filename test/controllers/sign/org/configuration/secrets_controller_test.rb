@@ -23,7 +23,10 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   def authenticated_headers
-    browser_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => @token.public_id)
+    browser_headers.merge(
+      "X-TEST-CURRENT-STAFF" => @staff.id.to_s,
+      "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
+    )
   end
 
   test "should get index" do
@@ -70,6 +73,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_redirected_to sign_org_configuration_secrets_url(ri: "jp")
     assert_predicate flash[:notice], :present?
     @staff_secret.reload
+
     assert_equal "Updated Secret", @staff_secret.name
   end
 
@@ -98,6 +102,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
 
   test "should not access secret by numeric ID" do
     get sign_org_configuration_secret_url(@staff_secret.id, ri: "jp"), headers: authenticated_headers
+
     assert_response :not_found
   end
 end

@@ -36,11 +36,13 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookie_lines = raw_header.is_a?(Array) ? raw_header : raw_header.to_s.split("\n")
     access_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::ACCESS_COOKIE_KEY}=") }.to_s
     refresh_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::REFRESH_COOKIE_KEY}=") }.to_s
+
     assert_match(/samesite=lax/i, access_cookie)
     assert_match(/samesite=lax/i, refresh_cookie)
 
     # Verify JSON response indicates success
     json = response.parsed_body
+
     assert json["refreshed"]
   end
 
@@ -71,6 +73,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["authenticated"], "User should be authenticated"
   end
 
@@ -84,6 +87,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     post "/edge/v1/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
          as: :json
+
     assert_response :ok
 
     # Try to use the old refresh token
@@ -95,6 +99,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_equal "invalid_refresh_token", json["error_code"]
     assert_equal "refresh_reuse_detected", UserOccurrence.order(:id).last&.event_type
   end
@@ -109,6 +114,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
   end
 
@@ -119,6 +125,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
   end
 
@@ -129,6 +136,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :bad_request
     json = response.parsed_body
+
     assert_equal "missing_refresh_token", json["error_code"]
   end
 
@@ -175,9 +183,11 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :forbidden
     json = response.parsed_body
+
     assert_equal "restricted_session", json["error_code"]
 
     token_record.reload
+
     assert_equal before_generation, token_record.refresh_token_generation
     assert_equal before_digest, token_record.refresh_token_digest
   end
@@ -199,6 +209,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookie_refresh_token = CGI.unescape(response_cookies[Auth::Base::REFRESH_COOKIE_KEY].to_s)
 
     public_id, verifier = UserToken.parse_refresh_token(cookie_refresh_token)
+
     assert_predicate public_id, :present?, "Cookie should contain the public_id prefix"
     assert_predicate verifier, :present?, "Cookie should contain verifier"
     assert_includes cookie_refresh_token, ".", "Refresh cookie should be in public_id.verifier format"
@@ -220,10 +231,12 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
       # Check the expires attribute of the access cookie
       expiry = response_cookie_expiry(Auth::Base::ACCESS_COOKIE_KEY)
+
       assert_not_nil expiry, "Access cookie should have expires attribute"
 
       # Should be approximately 1 hour from now (within a few seconds tolerance)
       expected_expiry = Auth::Base::ACCESS_TOKEN_TTL.from_now
+
       assert_in_delta expected_expiry.to_i, expiry.to_i, 5,
                       "Access cookie expiry should be ~1 hour from now"
     end
@@ -240,11 +253,15 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["refreshed"]
   end
 
   test "POST refresh rejects deactivated user even with valid refresh token" do
-    @user.update!(deactivated_at: Time.current, withdrawal_started_at: 1.hour.ago, scheduled_purge_at: 31.days.from_now)
+    @user.update!(
+      deactivated_at: Time.current, withdrawal_started_at: 1.hour.ago,
+      scheduled_purge_at: 31.days.from_now,
+    )
 
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
@@ -256,6 +273,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_includes [401, 403], response.status
     json = response.parsed_body
+
     assert_not json["refreshed"]
     assert_predicate json["error_code"], :present?
   end
@@ -271,6 +289,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     occurrence = UserOccurrence.order(:id).last
+
     assert_equal "refresh_device_missing", occurrence.event_type
     assert_equal 1, occurrence.status_id
     assert_equal "missing", occurrence.context["reason"]
@@ -295,6 +314,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     occurrence = UserOccurrence.order(:id).last
+
     assert_equal "refresh_device_mismatch", occurrence.event_type
     assert_equal "mismatch", occurrence.context["reason"]
     assert_equal "both", occurrence.context["device_source"]
@@ -311,6 +331,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :unauthorized
     occurrence = UserOccurrence.order(:id).last
+
     assert_equal "refresh_device_mismatch", occurrence.event_type
     assert_equal "mismatch", occurrence.context["reason"]
   end
@@ -332,7 +353,10 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_not_nil device_line, "Response should set device_id cookie"
     assert_match(/httponly/i, device_line)
-    assert_no_match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i, CGI.unescape(device_line))
+    assert_no_match(
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i,
+      CGI.unescape(device_line),
+    )
   end
 
   test "device_id cookie is set on token refresh" do
@@ -365,6 +389,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     post "/edge/v1/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
          as: :json
+
     assert_response :ok
 
     # Extract cookies from response (including the new refresh token)
@@ -394,7 +419,9 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     headers["X-CSRF-Token"] = csrf_token if with_csrf
     if device_id.present?
       headers["X-Device-Id"] = device_id
-      jar = ActionDispatch::Cookies::CookieJar.build(ActionDispatch::Request.new(Rails.application.env_config), {})
+      jar = ActionDispatch::Cookies::CookieJar.build(
+        ActionDispatch::Request.new(Rails.application.env_config), {},
+      )
       jar.encrypted[Auth::Base::DEVICE_COOKIE_KEY] = device_id
       cookies[Auth::Base::DEVICE_COOKIE_KEY] = jar[Auth::Base::DEVICE_COOKIE_KEY]
     end
@@ -408,6 +435,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
             params: { ri: "jp" },
             headers: { "Host" => @host, "Accept" => "application/json" },
             as: :json
+
         assert_response :ok
         response.parsed_body.fetch("csrf_token")
       end

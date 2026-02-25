@@ -30,6 +30,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
 
   test "should get index" do
     get sign_app_configuration_telephones_url(ri: "jp"), headers: request_headers
+
     assert_response :success
   end
 
@@ -43,6 +44,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
   test "should get new" do
     get new_sign_app_configuration_telephones_registration_url(ri: "jp"),
         headers: request_headers
+
     assert_response :success
   end
 
@@ -56,6 +58,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     end
 
     created = UserTelephone.order(created_at: :desc).first
+
     assert_redirected_to edit_sign_app_configuration_telephone_url(created.id, ri: "jp")
   end
 
@@ -163,6 +166,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     assert_no_difference("UserTelephone.count") do
       delete sign_app_configuration_telephone_url(other_telephone, ri: "jp"),
              headers: request_headers
+
       assert_response :not_found
     end
   end
@@ -171,6 +175,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     assert_no_difference("UserTelephone.count") do
       delete sign_app_configuration_telephone_url("missing-public-id", ri: "jp"),
              headers: request_headers
+
       assert_response :not_found
     end
   end

@@ -380,16 +380,19 @@ class EmailTest < ActiveSupport::TestCase
 
     # Active after send
     email.update!(otp_last_sent_at: Time.current)
+
     assert_predicate email, :otp_cooldown_active?
     assert_operator email.otp_cooldown_remaining, :>, 0
 
     # Not active after cooldown period
     email.update!(otp_last_sent_at: 2.minutes.ago)
+
     assert_not email.otp_cooldown_active?
     assert_equal 0, email.otp_cooldown_remaining
 
     # Handles sentinel -infinity
     email.update!(otp_last_sent_at: "-infinity")
+
     assert_not email.otp_cooldown_active?
   end
 end

@@ -16,6 +16,7 @@ module Sign::App::Configuration
 
     test "should get show when logged in" do
       get sign_app_configuration_apple_url(ri: "jp"), headers: @headers
+
       assert_response :success
     end
 
@@ -29,6 +30,7 @@ module Sign::App::Configuration
     test "should redirect show when not logged in" do
       get sign_app_configuration_apple_url(ri: "jp")
       rt = Base64.strict_encode64(sign_app_configuration_apple_url(ri: "jp"))
+
       assert_redirected_to new_sign_app_in_url(rt: rt, host: "sign.app.localhost")
     end
   end

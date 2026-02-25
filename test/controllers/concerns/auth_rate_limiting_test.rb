@@ -57,6 +57,7 @@ class AuthRateLimitingConcernTest < ActionDispatch::IntegrationTest
 
       3.times do |_i|
         post "/send_otp", params: { user_id: "user123" }
+
         assert_response :success
         assert_equal "OTP sent", response.body
       end
@@ -74,6 +75,7 @@ class AuthRateLimitingConcernTest < ActionDispatch::IntegrationTest
 
       # Fourth request should still return success (silent failure)
       post "/send_otp", params: { user_id: "user123" }
+
       assert_response :success
       assert_equal "OTP sent", response.body
     end
@@ -90,6 +92,7 @@ class AuthRateLimitingConcernTest < ActionDispatch::IntegrationTest
 
       # user2 should still be able to send OTPs
       post "/send_otp", params: { user_id: "user2" }
+
       assert_response :success
     end
   end
@@ -102,6 +105,7 @@ class AuthRateLimitingConcernTest < ActionDispatch::IntegrationTest
 
       30.times do
         post "/refresh", params: { user_id: "user123" }
+
         assert_response :success
       end
     end
@@ -115,12 +119,14 @@ class AuthRateLimitingConcernTest < ActionDispatch::IntegrationTest
 
       10.times do
         post "/social_callback", params: { provider: "google" }, headers: { "REMOTE_ADDR" => "1.2.3.4" }
+
         assert_response :success
       end
 
       # Different provider should have separate limit
       10.times do
         post "/social_callback", params: { provider: "github" }, headers: { "REMOTE_ADDR" => "1.2.3.4" }
+
         assert_response :success
       end
     end
@@ -138,6 +144,7 @@ class AuthRateLimitingConcernTest < ActionDispatch::IntegrationTest
       assert_equal "120", response.headers["Retry-After"]
 
       body = response.parsed_body
+
       assert_equal "rate_limit_exceeded", body["error"]
       assert_equal 120, body["retry_after"]
     end

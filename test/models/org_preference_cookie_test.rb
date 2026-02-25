@@ -37,6 +37,7 @@ class OrgPreferenceCookieTest < ActiveSupport::TestCase
   test "belongs to preference" do
     I18n.with_locale(:ja) do
       cookie = OrgPreferenceCookie.new(targetable: true)
+
       assert_not cookie.valid?
       assert_includes cookie.errors[:preference], "を入力してください"
     end
@@ -44,6 +45,7 @@ class OrgPreferenceCookieTest < ActiveSupport::TestCase
 
   test "has false as default for all flags" do
     cookie = OrgPreferenceCookie.create!(preference: @preference)
+
     assert_not cookie.targetable
     assert_not cookie.performant
     assert_not cookie.functional
@@ -69,6 +71,7 @@ class OrgPreferenceCookieTest < ActiveSupport::TestCase
         performant: performant,
         functional: functional,
       )
+
       assert cookie.save, "combo failed: targetable=#{targetable} performant=#{performant} functional=#{functional}"
       cookie.destroy!
     end

@@ -205,7 +205,11 @@ module Sign
         # This keeps verification deterministic and logging easier to reason about.
         def verify_secret_for_sign_in(user:, raw_secret:)
           return SecretVerificationResult.new(reason: :identifier_not_found, details: {}) unless user
-          return SecretVerificationResult.new(reason: :verified_pii_missing, details: {}) unless user.has_verified_pii?
+
+          return SecretVerificationResult.new(
+            reason: :verified_pii_missing,
+            details: {},
+          ) unless user.has_verified_pii?
 
           latest_secret = user.user_secrets.order(created_at: :desc).first
           return SecretVerificationResult.new(reason: :secret_not_found, details: {}) unless latest_secret

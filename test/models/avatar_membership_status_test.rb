@@ -14,6 +14,7 @@ require "test_helper"
 class AvatarMembershipStatusTest < ActiveSupport::TestCase
   test "validations" do
     status = AvatarMembershipStatus.new(id: 9)
+
     assert_predicate status, :valid?
   end
 

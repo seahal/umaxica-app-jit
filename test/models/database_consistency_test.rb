@@ -15,6 +15,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
       user_id: users(:one).id,
       public_id: "test_public_id_12345",
     )
+
     assert_predicate email, :valid?
 
     # Try to create another with same public_id (requires first to be saved if using new logic,
@@ -28,6 +29,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
       user_id: users(:one).id,
       public_id: "test_public_id_12345",
     )
+
     assert_not duplicate.valid?
     assert_includes duplicate.errors[:public_id], "はすでに存在します"
   end
@@ -40,6 +42,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
     )
     # PublicId concern auto-generates public_id before validation on create
     email.valid?
+
     assert_not_nil email.public_id
     assert_equal 21, email.public_id.length
   end
@@ -55,6 +58,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
       jti: "unique_jti_123",
       status_id: AppPreferenceStatus::NEYO,
     )
+
     assert_not pref2.valid?
     assert_includes pref2.errors[:jti], "はすでに存在します"
   end
@@ -80,6 +84,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
       user_occurrence_id: user_occ.id,
       zip_occurrence_id: zip_occ.id,
     )
+
     assert_not occurrence2.valid?
     assert_includes occurrence2.errors[:user_occurrence_id], "はすでに存在します"
   end
@@ -94,6 +99,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
     # Note: before_validation sets default user_id, so we test after that
     email.user_id = nil
     email.valid?
+
     assert_not email.valid?
     assert_includes email.errors[:user], "を入力してください"
   end
@@ -103,6 +109,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
       public_id: SecureRandom.uuid,
       staff_id: nil,
     )
+
     assert_not notification.valid?
     assert_includes notification.errors[:staff], "を入力してください"
   end

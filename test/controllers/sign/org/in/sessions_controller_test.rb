@@ -18,13 +18,17 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
           headers: browser_headers.merge("Host" => "sign.org.localhost")
 
       assert_redirected_to new_sign_org_in_url
-      assert_equal I18n.t("session_limit.staff_not_found", default: "スタッフが見つかりません。もう一度ログインしてください。"), flash[:alert]
+      assert_equal I18n.t("session_limit.staff_not_found", default: "スタッフが見つかりません。もう一度ログインしてください。"),
+                   flash[:alert]
     end
   end
 
   test "show with gate and pending staff displays active sessions" do
     staff = staffs(:one)
-    staff.staff_tokens.create!(refresh_token_digest: "testtoken", revoked_at: nil, refresh_expires_at: 1.day.from_now)
+    staff.staff_tokens.create!(
+      refresh_token_digest: "testtoken", revoked_at: nil,
+      refresh_expires_at: 1.day.from_now,
+    )
 
     Sign::Org::In::SessionsController.any_instance.stub(:valid_gate?, true) do
       Sign::Org::In::SessionsController.any_instance.stub(:load_pending_staff, staff) do
@@ -38,7 +42,10 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update without selections flashes alert and re-renders show" do
     staff = staffs(:one)
-    staff.staff_tokens.create!(refresh_token_digest: "testtoken", revoked_at: nil, refresh_expires_at: 1.day.from_now)
+    staff.staff_tokens.create!(
+      refresh_token_digest: "testtoken", revoked_at: nil,
+      refresh_expires_at: 1.day.from_now,
+    )
 
     Sign::Org::In::SessionsController.any_instance.stub(:valid_gate?, true) do
       Sign::Org::In::SessionsController.any_instance.stub(:load_pending_staff, staff) do
@@ -47,7 +54,8 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
               headers: browser_headers.merge("Host" => "sign.org.localhost")
 
         assert_response :unprocessable_content
-        assert_equal I18n.t("session_limit.no_sessions_selected", default: "無効化するセッションを選択してください。"), flash[:alert]
+        assert_equal I18n.t("session_limit.no_sessions_selected", default: "無効化するセッションを選択してください。"),
+                     flash[:alert]
       end
     end
   end
@@ -67,7 +75,8 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
                 headers: browser_headers.merge("Host" => "sign.org.localhost")
 
           assert_redirected_to "/some/path"
-          assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"), flash[:notice]
+          assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"),
+                       flash[:notice]
           assert_not_nil token.reload.revoked_at
         end
       end
@@ -89,7 +98,8 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
                 headers: browser_headers.merge("Host" => "sign.org.localhost")
 
           assert_redirected_to new_sign_org_in_url
-          assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"), flash[:notice]
+          assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"),
+                       flash[:notice]
           assert_not_nil token.reload.revoked_at
         end
       end

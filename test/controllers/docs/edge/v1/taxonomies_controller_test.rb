@@ -64,17 +64,21 @@ module Docs
 
             assert_response :success
             data = response.parsed_body["data"]
+
             assert_instance_of Array, data
 
             root_node = find_node(data, tree[:root].id)
+
             assert_not_nil root_node
             assert_equal tree[:root].name, root_node["name"]
 
             child_ids = root_node["children"].pluck("id").to_set
             expected_child_ids = Set[tree[:a].id, tree[:b].id, tree[:c].id]
+
             assert_equal expected_child_ids, child_ids
 
             c_node = find_node(data, tree[:c].id)
+
             assert_not_nil c_node
             assert_equal [tree[:c1].id], c_node["children"].pluck("id")
           end

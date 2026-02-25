@@ -294,6 +294,8 @@ en:
           revoke:
             success: "Session revoked."
             failure: "Cannot revoke current session."
+            others_button: "Revoke all other sessions"
+            others_confirm: "Delete all other sessions?"
       reauth:
         index:
           title: "Re-authentication Sessions"

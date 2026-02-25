@@ -10,6 +10,7 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get new" do
     get new_sign_org_up_url(ri: "jp"), headers: { "Host" => @host }
+
     assert_response :success
     if ENV["DEBUG"]
       puts "BODY: #{response.body}"
@@ -28,8 +29,11 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
 
     # Verify that the URL contains all required parameters
     link = css_select("div a").find { |a| a.text == I18n.t("sign.org.ups.new.recruit_link_text") }
-    assert_not_nil link, "Could not find link with text: #{I18n.t("sign.org.ups.new.recruit_link_text").inspect}"
+
+    assert_not_nil link,
+                   "Could not find link with text: #{I18n.t("sign.org.ups.new.recruit_link_text").inspect}"
     href = link["href"]
+
     assert_match(/category=recruit/, href)
     assert_match(/ri=jp/, href)
   end

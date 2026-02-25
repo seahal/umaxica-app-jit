@@ -41,6 +41,7 @@ class TelephoneRegistrableTest < ActiveSupport::TestCase
     5.times do
       remaining = @controller.send(:check_telephone_verification_rate_limit!)
     end
+
     assert_equal 0, remaining
   end
 
@@ -72,11 +73,13 @@ class TelephoneRegistrableTest < ActiveSupport::TestCase
 
   test "initiate_telephone_verification returns false when user is blank" do
     result = @controller.initiate_telephone_verification(nil, "+819012345678")
+
     assert_not result
   end
 
   test "initiate_telephone_verification returns false when user is empty string" do
     result = @controller.initiate_telephone_verification("", "+819012345678")
+
     assert_not result
   end
 
@@ -86,6 +89,7 @@ class TelephoneRegistrableTest < ActiveSupport::TestCase
 
   test "complete_telephone_verification returns :session_expired when record not found" do
     result = @controller.complete_telephone_verification("nonexistent-id", "123456")
+
     assert_equal :session_expired, result
   end
 end

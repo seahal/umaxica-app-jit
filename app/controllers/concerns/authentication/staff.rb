@@ -15,7 +15,8 @@ module Authentication
     AUDIT_EVENTS = Auth::Base::AUDIT_EVENTS
 
     included do
-      helper_method :current_staff, :logged_in?, :active_staff?, :logged_in_staff? if respond_to?(:helper_method)
+      helper_method :current_staff, :logged_in?, :active_staff?,
+                    :logged_in_staff? if respond_to?(:helper_method)
       alias_method :current_staff, :current_resource
       alias_method :authenticate_staff!, :authenticate!
       alias_method :logged_in_staff?, :logged_in?

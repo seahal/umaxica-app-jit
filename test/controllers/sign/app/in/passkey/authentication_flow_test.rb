@@ -6,7 +6,8 @@ require "minitest/mock"
 
 module Sign::App::In::Passkey
   class AuthenticationFlowTest < ActionDispatch::IntegrationTest
-    fixtures :users, :user_statuses, :user_email_statuses, :user_passkey_statuses, :user_one_time_password_statuses
+    fixtures :users, :user_statuses, :user_email_statuses, :user_passkey_statuses,
+             :user_one_time_password_statuses
 
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -56,6 +57,7 @@ module Sign::App::In::Passkey
       assert_response :success
       json_response = response.parsed_body
       challenge_id = json_response["challenge_id"]
+
       assert_not_nil challenge_id
 
       # Verify session storage
@@ -103,6 +105,7 @@ module Sign::App::In::Passkey
 
       assert_response :success
       json_response = response.parsed_body
+
       assert_equal "ok", json_response["status"]
       assert_not_nil json_response["access_token"]
 
@@ -111,6 +114,7 @@ module Sign::App::In::Passkey
       # Challenge should be consumed (removed from session) or session reset
       assert_nil session[:passkey_challenges]
       @passkey.reload
+
       assert_equal 11, @passkey.sign_count # updated
     end
 
@@ -167,6 +171,7 @@ module Sign::App::In::Passkey
 
       assert_response :bad_request
       json_response = response.parsed_body
+
       assert_equal I18n.t("errors.webauthn.challenge_invalid"), json_response["error"]
     end
 

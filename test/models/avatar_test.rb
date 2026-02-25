@@ -56,6 +56,7 @@ class AvatarTest < ActiveSupport::TestCase
       moniker: "Test User",
       image_data: { url: "http://example.com/img.png" },
     )
+
     assert_predicate avatar, :valid?
     assert avatar.save
     assert_not_nil avatar.public_id
@@ -63,18 +64,21 @@ class AvatarTest < ActiveSupport::TestCase
 
   test "requires capability" do
     avatar = Avatar.new(active_handle: @handle, moniker: "No Cap", capability_id: nil)
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:capability]
   end
 
   test "requires active_handle" do
     avatar = Avatar.new(capability: @capability, moniker: "No Handle")
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:active_handle]
   end
 
   test "requires moniker" do
     avatar = Avatar.new(capability: @capability, active_handle: @handle, moniker: "")
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:moniker]
   end
@@ -85,11 +89,13 @@ class AvatarTest < ActiveSupport::TestCase
       active_handle: @handle,
       moniker: "Default Image",
     )
+
     assert_empty(avatar.image_data)
   end
 
   test "moniker is invalid when only whitespace" do
     avatar = Avatar.new(capability: @capability, active_handle: @handle, moniker: "   ")
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:moniker]
   end
@@ -106,6 +112,7 @@ class AvatarTest < ActiveSupport::TestCase
       moniker: "Another Moniker",
       public_id: @avatar.public_id,
     )
+
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:public_id]
   end
@@ -152,22 +159,27 @@ class AvatarTest < ActiveSupport::TestCase
 
     # Affiliation
     avatar.avatar_assignments.create!(user_id: user.id, role: "affiliation")
+
     assert_equal user, avatar.affiliation_user
 
     # Administrators
     avatar.avatar_assignments.create!(user_id: user.id, role: "administrator")
+
     assert_includes avatar.administrators, user
 
     # Editors
     avatar.avatar_assignments.create!(user_id: user.id, role: "editor")
+
     assert_includes avatar.editors, user
 
     # Reviewers
     avatar.avatar_assignments.create!(user_id: user.id, role: "reviewer")
+
     assert_includes avatar.reviewers, user
 
     # Viewers
     avatar.avatar_assignments.create!(user_id: user.id, role: "viewer")
+
     assert_includes avatar.viewers, user
   end
 

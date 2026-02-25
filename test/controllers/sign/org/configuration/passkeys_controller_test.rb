@@ -138,6 +138,7 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     )
 
     get sign_org_configuration_passkey_url(other_passkey, ri: "jp"), headers: @headers
+
     assert_response :not_found
   end
 end

@@ -15,6 +15,7 @@ class AppPreferenceActivityLevelTest < ActiveSupport::TestCase
 
   test "ordered scope sorts by id when position is absent" do
     ordered_ids = AppPreferenceActivityLevel.ordered.pluck(:id)
+
     assert_equal ordered_ids.sort, ordered_ids
   end
 
@@ -28,6 +29,7 @@ class AppPreferenceActivityLevelTest < ActiveSupport::TestCase
 
   test "has_many association with app_preference_activities" do
     association = AppPreferenceActivityLevel.reflect_on_association(:app_preference_activities)
+
     assert_equal :has_many, association.macro
     assert_equal :restrict_with_error, association.options[:dependent]
   end
@@ -39,9 +41,11 @@ class AppPreferenceActivityLevelTest < ActiveSupport::TestCase
   test "ensure_defaults! creates the INFO record" do
     AppPreferenceActivity.delete_all
     AppPreferenceActivityLevel.where(id: AppPreferenceActivityLevel::INFO).delete_all
+
     assert_nil AppPreferenceActivityLevel.find_by(id: AppPreferenceActivityLevel::INFO)
 
     AppPreferenceActivityLevel.ensure_defaults!
+
     assert_not_nil AppPreferenceActivityLevel.find_by(id: AppPreferenceActivityLevel::INFO)
   end
 

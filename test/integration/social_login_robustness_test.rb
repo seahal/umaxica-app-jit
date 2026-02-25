@@ -158,6 +158,7 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     # Start social login
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
+
     assert_response :redirect
 
     # Do callback - this should redirect to MFA, but the callback processing itself

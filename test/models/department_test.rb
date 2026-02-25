@@ -42,11 +42,13 @@ class DepartmentTest < ActiveSupport::TestCase
       department_status_id: DepartmentStatus::NEYO,
       workspace: @workspace,
     )
+
     assert_predicate department, :valid?, department.errors.full_messages.to_sentence
   end
 
   test "requires name" do
     department = Department.new(department_status_id: DepartmentStatus::NEYO)
+
     assert_not department.valid?
     assert_includes department.errors[:name], "を入力してください"
   end

@@ -49,7 +49,10 @@ module Sign::App::In
     end
 
     teardown do
-      Webauthn.define_singleton_method(:trusted_origins, @original_trusted_origins) if @original_trusted_origins
+      Webauthn.define_singleton_method(
+        :trusted_origins,
+        @original_trusted_origins,
+      ) if @original_trusted_origins
       CloudflareTurnstile.test_mode = false
       CloudflareTurnstile.test_validation_response = nil
     end
@@ -68,9 +71,11 @@ module Sign::App::In
       establish_pending_mfa_via_secret!
 
       get new_sign_app_in_challenge_passkey_path(ri: "jp")
+
       assert_response :success
 
       challenge_id = session[:passkey_challenges].keys.first
+
       assert_not_nil challenge_id
 
       mock_credential = OpenStruct.new(

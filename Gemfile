@@ -19,12 +19,12 @@ gem "rails", github: "rails/rails", branch: "main"
 # Web server
 gem "puma"
 # JSON APIs
-gem "jbuilder"
+# gem "jbuilder" # unused: no .jbuilder templates found
 # Use OpenStruct
 gem "ostruct"
 # Database
 gem "pg"
-gem "neighbor"
+# gem "neighbor" # unused: no neighbor scopes/modules found
 gem "strong_migrations"
 # Redis
 gem "redis"
@@ -45,8 +45,8 @@ gem "shrine"
 gem "image_processing"
 # AWS SDKs
 gem "aws-sdk-sns"
-gem "aws-sdk-connect"
-gem "aws-sdk-polly"
+# gem "aws-sdk-connect" # unused: no Connect client/integration found
+# gem "aws-sdk-polly" # unused: no Polly client/integration found
 # Asset pipeline
 gem "propshaft"
 # OpenTelemetry
@@ -54,7 +54,7 @@ gem "opentelemetry-sdk", require: false
 gem "opentelemetry-exporter-otlp", require: false
 gem "opentelemetry-instrumentation-all", require: false
 # Sitemap
-gem "sitemap_generator"
+# gem "sitemap_generator" # unused: no sitemap config/task found
 # TOTP
 gem "rotp"
 # QR code generation
@@ -63,9 +63,9 @@ gem "rqrcode"
 gem "solid_cache"
 # Solid Queue
 gem "solid_queue"
-gem "mission_control-jobs"
+# gem "mission_control-jobs" # unused: dashboard is not mounted in routes
 # Pagination
-gem "pagy"
+# gem "pagy" # unused: no Pagy usage found
 # WebAuthn (FIDO2)
 gem "webauthn"
 # Social login
@@ -100,7 +100,7 @@ group :development, :test do
   # Slow test profiling
   gem "test-prof"
   # Postgres performance viewer
-  gem "pghero"
+  # gem "pghero" # unused: PgHero is not mounted in routes
   # N+1 query detector
   # gem "bullet"
   gem "prosopite"

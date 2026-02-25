@@ -20,6 +20,7 @@ class OrgDocumentBehaviorEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = OrgDocumentBehaviorEvent.new(id: 2)
+
     assert_predicate record, :valid?
   end
 end

@@ -37,6 +37,7 @@ class OrgVerificationI18nTest < ActionDispatch::IntegrationTest
     ReauthSession.delete_all
 
     get sign_org_verification_url(ri: "jp"), headers: @headers
+
     assert_response :success
     assert_select "main h1", text: I18n.t("sign.org.verification.index.title", locale: :ja)
     assert_select "h2", text: I18n.t("sign.org.verification.new.title", locale: :ja)
@@ -46,6 +47,7 @@ class OrgVerificationI18nTest < ActionDispatch::IntegrationTest
     ReauthSession.delete_all
 
     get sign_org_verification_url(ri: "us", lx: "en"), headers: @headers
+
     assert_response :success
     assert_select "main h1", text: I18n.t("sign.org.verification.index.title", locale: :en)
     assert_select "h2", text: I18n.t("sign.org.verification.new.title", locale: :en)

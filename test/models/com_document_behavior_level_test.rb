@@ -38,6 +38,7 @@ class ComDocumentBehaviorLevelTest < ActiveSupport::TestCase
       "activerecord.errors.messages.restrict_dependent_destroy.has_many",
       record: "com document behaviors",
     )
+
     assert_equal expected_message, level.errors[:base].first
   end
 
@@ -51,6 +52,7 @@ class ComDocumentBehaviorLevelTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = ComDocumentBehaviorLevel.new(id: 3)
+
     assert_predicate record, :valid?
   end
 end

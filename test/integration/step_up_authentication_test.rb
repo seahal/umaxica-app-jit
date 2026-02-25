@@ -76,6 +76,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     uri = URI.parse(response.location)
+
     assert_equal "/verification", uri.path
     assert_predicate Rack::Utils.parse_query(uri.query)["rd"], :present?
   end

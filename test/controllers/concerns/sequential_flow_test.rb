@@ -61,6 +61,7 @@ class SequentialFlowConcernTest < ActionDispatch::IntegrationTest
       end
 
       get "/new"
+
       assert_response :success
       assert_equal "new", response.body
     end
@@ -79,6 +80,7 @@ class SequentialFlowConcernTest < ActionDispatch::IntegrationTest
 
       # Try to access edit without completing step 1
       get "/edit"
+
       assert_redirected_to "/new"
       assert_equal I18n.t("sequential_flow.invalid_step"), flash[:alert]
     end
@@ -93,10 +95,12 @@ class SequentialFlowConcernTest < ActionDispatch::IntegrationTest
       end
 
       post "/create"
+
       assert_redirected_to "/edit"
 
       # Now edit should be accessible
       get "/edit"
+
       assert_response :success
       assert_equal "edit", response.body
     end
@@ -114,20 +118,25 @@ class SequentialFlowConcernTest < ActionDispatch::IntegrationTest
 
       # Step 1
       get "/new"
+
       assert_response :success
 
       post "/create"
+
       assert_redirected_to "/edit"
 
       # Step 2
       get "/edit"
+
       assert_response :success
 
       patch "/update"
+
       assert_redirected_to "/show"
 
       # Step 3
       get "/show"
+
       assert_response :success
     end
   end

@@ -101,6 +101,7 @@ class OrgContactTest < ActiveSupport::TestCase
 
   test "should set default category and status when nil" do
     contact = OrgContact.new(category_id: nil, status_id: nil, confirm_policy: "1")
+
     assert contact.save
     assert_equal OrgContactCategory::ORGANIZATION_INQUIRY, contact.category_id
     assert_equal OrgContactStatus::NEYO, contact.status_id
@@ -109,14 +110,17 @@ class OrgContactTest < ActiveSupport::TestCase
   test "should generate public_id on create" do
     contact = OrgContact.new(confirm_policy: "1")
     contact.save!
+
     assert_not_nil contact.public_id
     assert_equal 21, contact.public_id.length
   end
 
   test "should verify email" do
     contact = build_contact(status_id: OrgContactStatus::SET_UP)
+
     assert_predicate contact, :can_verify_email?
     contact.verify_email!
+
     assert_equal OrgContactStatus::CHECKED_EMAIL_ADDRESS, contact.status_id
   end
 

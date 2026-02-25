@@ -47,6 +47,13 @@ module Sign
           head :see_other
         end
 
+        def others
+          @sessions.clear
+          persist_sessions!
+
+          head :see_other
+        end
+
         private
 
         def load_sessions

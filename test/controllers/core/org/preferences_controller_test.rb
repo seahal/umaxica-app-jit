@@ -6,6 +6,7 @@ require "test_helper"
 class Core::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "show action is defined" do
     controller = Core::Org::PreferencesController.new
+
     assert_respond_to controller, :show
   end
 

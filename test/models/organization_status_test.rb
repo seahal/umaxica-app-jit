@@ -17,6 +17,7 @@ class OrganizationStatusTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = OrganizationStatus.new(id: 9)
+
     assert_predicate record, :valid?
   end
 

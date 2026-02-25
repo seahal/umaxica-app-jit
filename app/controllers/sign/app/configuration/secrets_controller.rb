@@ -64,7 +64,7 @@ module Sign
         private
 
         def set_secret
-          @secret = current_user.user_secrets.find_by!(public_id: params[:public_id])
+          @secret = current_user.user_secrets.find_by!(public_id: params[:id])
         end
 
         def secret_params

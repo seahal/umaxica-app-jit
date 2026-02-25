@@ -14,6 +14,7 @@ require "test_helper"
 class DomainOccurrenceStatusTest < ActiveSupport::TestCase
   test "accepts integer ids" do
     record = DomainOccurrenceStatus.new(id: 9)
+
     assert_predicate record, :valid?
   end
 

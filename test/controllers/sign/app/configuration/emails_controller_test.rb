@@ -27,6 +27,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
 
   test "should get index" do
     get sign_app_configuration_emails_url(ri: "jp"), headers: request_headers
+
     assert_response :success
   end
 

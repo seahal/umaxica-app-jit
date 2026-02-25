@@ -17,6 +17,7 @@ module Docs
 
           test "should show 404 for non-existent permalink" do
             get docs_com_edge_v1_post_url(id: "nonexistent_permalink_xyz")
+
             assert_response :not_found
           end
 
@@ -31,6 +32,7 @@ module Docs
             )
 
             get docs_com_edge_v1_post_url(id: expired_doc.permalink)
+
             assert_response :not_found
           end
 
@@ -45,17 +47,20 @@ module Docs
             )
 
             get docs_com_edge_v1_post_url(id: future_doc.permalink)
+
             assert_response :not_found
           end
 
           # List/Search tests (from FindController)
           test "should show all documents list" do
             get docs_com_edge_v1_posts_url
+
             assert_response :success
           end
 
           test "should search documents by query" do
             get docs_com_edge_v1_posts_url(q: "test")
+
             assert_response :success
           end
         end

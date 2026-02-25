@@ -90,6 +90,7 @@ class AuthCookieHelpersTest < ActiveSupport::TestCase
 
   test "device_cookie_key returns correct key name" do
     key = @harness.send(:device_cookie_key)
+
     assert_equal "jit_auth_device_id", key
   end
 

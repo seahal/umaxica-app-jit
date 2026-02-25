@@ -88,12 +88,14 @@ module TreeableSharedTests
     ensure_root_sentinel!(klass)
 
     master = klass.new(id: nil, parent_id: tree_root_sentinel)
+
     assert_not master.valid?
     assert_not_empty master.errors[:id]
 
     token = SecureRandom.hex(4).upcase
     existing = create_master!(klass, id: "EXISTING_#{token}", parent_id: tree_root_sentinel)
     duplicate = klass.new(id: existing.id.downcase, parent_id: tree_root_sentinel)
+
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:id]
   end
@@ -109,6 +111,7 @@ module TreeableSharedTests
 
     master = klass.new(id: "new_category", parent_id: tree_root_sentinel)
     master.valid?
+
     assert_equal "NEW_CATEGORY", master.id
   end
 
@@ -122,6 +125,7 @@ module TreeableSharedTests
     ensure_root_sentinel!(klass)
 
     master = klass.new(id: "INVALID-ID!", parent_id: tree_root_sentinel)
+
     assert_not master.valid?
     assert_not_empty master.errors[:id]
   end
@@ -132,6 +136,7 @@ module TreeableSharedTests
 
     id_value = string_id_column? ? "TEST_CAT" : 1
     master = klass.new(id: id_value, parent_id: tree_root_sentinel)
+
     assert_respond_to master, :name
     assert_kind_of String, master.name
   end
@@ -146,6 +151,7 @@ module TreeableSharedTests
     ensure_root_sentinel!(klass)
 
     record = klass.new(id: "A" * 256, parent_id: tree_root_sentinel)
+
     assert_predicate record, :invalid?
     assert_predicate record.errors[:id], :any?
   end
@@ -159,6 +165,7 @@ module TreeableSharedTests
     assert_equal tree[:c], tree[:c1].parent
 
     root_child_ids = tree[:root].children.pluck(:id)
+
     assert_includes root_child_ids, tree[:a].id
     assert_includes root_child_ids, tree[:b].id
     assert_includes root_child_ids, tree[:c].id
@@ -202,20 +209,25 @@ module TreeableSharedTests
     expected_subtree_ids = [tree[:root].id, tree[:a].id, tree[:b].id, tree[:c].id, tree[:c1].id]
 
     subtree_ids_with_self = klass.subtree_ids(tree[:root].id, include_self: true)
+
     assert_equal expected_subtree_ids.sort, subtree_ids_with_self.sort
 
     subtree_ids_without_self = klass.subtree_ids(tree[:root].id, include_self: false)
+
     assert_equal (expected_subtree_ids - [tree[:root].id]).sort, subtree_ids_without_self.sort
 
     ancestor_ids_with_self = klass.ancestor_ids(tree[:c1].id, include_self: true)
+
     assert_equal [tree[:root].id, tree[:c].id, tree[:c1].id], ancestor_ids_with_self
 
     ancestor_ids_without_self = klass.ancestor_ids(tree[:c1].id, include_self: false)
+
     assert_equal [tree[:root].id, tree[:c].id], ancestor_ids_without_self
   end
 
   def test_breadcrumb_order
     tree = build_tree!(treeable_class)
+
     assert_equal [tree[:root].id, tree[:c].id, tree[:c1].id], tree[:c1].breadcrumb.map(&:id)
   end
 
@@ -224,11 +236,13 @@ module TreeableSharedTests
 
     ancestor_ids_with_self = tree[:c1].ancestors(include_self: true).map(&:id)
     ancestor_ids_without_self = tree[:c1].ancestors(include_self: false).map(&:id)
+
     assert_equal [tree[:root].id, tree[:c].id, tree[:c1].id], ancestor_ids_with_self
     assert_equal [tree[:root].id, tree[:c].id], ancestor_ids_without_self
 
     descendant_ids_with_self = tree[:c].descendants(include_self: true).map(&:id)
     descendant_ids_without_self = tree[:c].descendants(include_self: false).map(&:id)
+
     assert_equal [tree[:c].id, tree[:c1].id], descendant_ids_with_self
     assert_equal [tree[:c1].id], descendant_ids_without_self
   end
@@ -241,9 +255,11 @@ module TreeableSharedTests
 
     if klass.column_names.include?("position")
       expected = [tree[:root].id, tree[:b].id, tree[:c].id, tree[:c1].id, tree[:a].id]
+
       assert_equal expected, ids
     else
       expected = [tree[:root].id, tree[:a].id, tree[:b].id, tree[:c].id, tree[:c1].id]
+
       assert_equal expected, ids
     end
   end
@@ -253,16 +269,19 @@ module TreeableSharedTests
 
     node = tree[:b]
     node.parent_id = node.id
+
     assert_not node.valid?
     assert_predicate node.errors[:parent_id], :any?
 
     root = tree[:root]
     root.parent_id = tree[:c1].id
+
     assert_not root.valid?
     assert_predicate root.errors[:parent_id], :any?
 
     a = tree[:a]
     a.parent = tree[:c]
+
     assert_predicate a, :valid?
     a.save!
   end

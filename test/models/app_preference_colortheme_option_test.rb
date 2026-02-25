@@ -18,6 +18,7 @@ class AppPreferenceColorthemeOptionTest < ActiveSupport::TestCase
 
   test "can be created" do
     option = AppPreferenceColorthemeOption.create!(id: 99)
+
     assert_not_nil option.id
   end
 
@@ -25,6 +26,7 @@ class AppPreferenceColorthemeOptionTest < ActiveSupport::TestCase
     option = AppPreferenceColorthemeOption.create!(id: 99)
     preference = AppPreference.create!
     colortheme = AppPreferenceColortheme.create!(preference: preference, option: option)
+
     assert_includes option.app_preference_colorthemes, colortheme
   end
 

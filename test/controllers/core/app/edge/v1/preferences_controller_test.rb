@@ -43,6 +43,7 @@ module Core
             s.get core_app_edge_v1_preference_url
             s.assert_response :success
             second_json = s.response.parsed_body
+
             assert_equal first_public_id, second_json["preference"]["public_id"]
 
             assert_equal "ja", second_json["preference"]["lx"]
@@ -70,11 +71,13 @@ module Core
             s.assert_no_difference -> { AppPreference.count } do
               s.get core_app_edge_v1_preference_url
             end
+
             assert_equal public_id, s.response.parsed_body.dig("preference", "public_id")
           end
 
           test "should store encrypted token in cookies" do
             get core_app_edge_v1_preference_url
+
             assert_response :success
             assert_predicate cookies[preference_access_cookie_name], :present?
             assert_predicate cookies[preference_refresh_cookie_name], :present?
@@ -105,6 +108,7 @@ module Core
               s.get core_app_edge_v1_preference_url
             end
             s.assert_response :success
+
             assert_predicate s.response.parsed_body.dig("preference", "public_id"), :present?
           end
 
@@ -142,9 +146,11 @@ module Core
             s2.assert_response :success
 
             new_token = s2.cookies[preference_refresh_cookie_name]
+
             assert_predicate new_token, :present?
 
             legacy_preference.reload
+
             assert_predicate legacy_preference.used_at, :present?
             assert_predicate legacy_preference.replaced_by_id, :present?
           end
@@ -163,6 +169,7 @@ module Core
             s2.cookies[preference_refresh_cookie_name] = refresh_token
 
             s2.get core_app_edge_v1_preference_url
+
             assert_equal 401, s2.response.status
           end
 
@@ -182,6 +189,7 @@ module Core
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
             s2.get core_app_edge_v1_preference_url, headers: { "X-Device-Id" => SecureRandom.uuid }
+
             assert_equal 401, s2.response.status
           end
 
@@ -204,6 +212,7 @@ module Core
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
             s2.get core_app_edge_v1_preference_url
+
             assert_equal 401, s2.response.status
           end
 
@@ -231,6 +240,7 @@ module Core
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
             s2.get core_app_edge_v1_preference_url
+
             assert_equal 401, s2.response.status
             assert_predicate old_preference.reload.compromised_at, :present?
           end
@@ -257,15 +267,18 @@ module Core
             s2.assert_response :success
 
             second_public_id = s2.response.parsed_body.dig("preference", "public_id")
+
             assert_not_equal first_public_id, second_public_id
             assert_predicate first_preference.reload.replaced_by_id, :present?
           end
 
           test "should return JSON with correct structure" do
             get core_app_edge_v1_preference_url
+
             assert_response :success
 
             json = response.parsed_body
+
             assert json.key?("preference")
             assert_equal 5, json["preference"].keys.size
             assert json["preference"].key?("public_id")
@@ -281,7 +294,10 @@ module Core
             assert_nil cookies[name]
             # Also check Set-Cookie header for explicit deletion
             cookie_lines = response_cookie_lines
-            assert cookie_lines.any? { |line| line.start_with?("#{name}=;") || line.include?("#{name}=deleted") }
+
+            assert cookie_lines.any? { |line|
+              line.start_with?("#{name}=;") || line.include?("#{name}=deleted")
+            }
           end
 
           def assert_cleared_preference_auth_cookies!

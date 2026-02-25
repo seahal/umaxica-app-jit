@@ -20,7 +20,8 @@ module Sign
               end
 
               def render_result(result)
-                response.headers["Retry-After"] = result.retry_after.to_s if result.status == :too_many_requests
+                response.headers["Retry-After"] =
+                  result.retry_after.to_s if result.status == :too_many_requests
                 render json: {
                   resendable: result.resendable,
                   retry_after: result.retry_after,

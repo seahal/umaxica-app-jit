@@ -15,11 +15,13 @@ class OrgPreferenceActivityLevelTest < ActiveSupport::TestCase
 
   test "ordered scope sorts by id when position is absent" do
     ordered_ids = OrgPreferenceActivityLevel.ordered.pluck(:id)
+
     assert_equal ordered_ids.sort, ordered_ids
   end
 
   test "has_many association with org_preference_activities" do
     association = OrgPreferenceActivityLevel.reflect_on_association(:org_preference_activities)
+
     assert_equal :has_many, association.macro
     assert_equal :restrict_with_error, association.options[:dependent]
   end
@@ -39,9 +41,11 @@ class OrgPreferenceActivityLevelTest < ActiveSupport::TestCase
   test "ensure_defaults! creates the INFO record" do
     OrgPreferenceActivity.delete_all
     OrgPreferenceActivityLevel.where(id: OrgPreferenceActivityLevel::INFO).delete_all
+
     assert_nil OrgPreferenceActivityLevel.find_by(id: OrgPreferenceActivityLevel::INFO)
 
     OrgPreferenceActivityLevel.ensure_defaults!
+
     assert_not_nil OrgPreferenceActivityLevel.find_by(id: OrgPreferenceActivityLevel::INFO)
   end
 

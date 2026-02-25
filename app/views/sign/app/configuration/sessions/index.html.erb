@@ -1,5 +1,14 @@
 <% content_for :page_title, 'Sessions' %>
 <%= link_to t('sign.app.configuration.show.back'), sign_app_configuration_path %>
+<% has_other_sessions = @sessions.any? { |session| session.public_id != current_session_public_id } %>
+<% if has_other_sessions %>
+  <div>
+    <%= button_to t("sign.app.configuration.sessions.revoke.others_button"),
+                  others_sign_app_configuration_sessions_path,
+                  method: :delete,
+                  data: { confirm: t("sign.app.configuration.sessions.revoke.others_confirm") } %>
+  </div>
+<% end %>
 
 <% if @sessions.any? %>
   <div>

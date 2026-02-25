@@ -20,6 +20,7 @@ class UserActivityEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = UserActivityEvent.new(id: 9)
+
     assert_predicate record, :valid?
   end
 
@@ -77,13 +78,16 @@ class UserActivityEventTest < ActiveSupport::TestCase
   test "ordered scope returns ordered records" do
     UserActivityEvent.ensure_defaults!
     events = UserActivityEvent.ordered
+
     assert_kind_of ActiveRecord::Relation, events
     ordered_ids = events.pluck(:id)
+
     assert_equal ordered_ids.sort, ordered_ids
   end
 
   test "has_many association with user_activities" do
     association = UserActivityEvent.reflect_on_association(:user_activities)
+
     assert_equal :has_many, association.macro
     assert_equal :restrict_with_error, association.options[:dependent]
     assert_equal :event_id, association.options[:foreign_key]

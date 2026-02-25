@@ -32,6 +32,7 @@ class IdColumnTypeTest < ActiveSupport::TestCase
 
   def assert_bigint_column(model, column_name)
     column = model.columns_hash[column_name]
+
     assert column, "#{model.name} should have #{column_name}"
     assert_equal :integer, column.type, "#{model.name}.#{column_name} should be :integer"
     assert_equal 8, column.limit, "#{model.name}.#{column_name} should be bigint (limit: 8)"
@@ -39,12 +40,14 @@ class IdColumnTypeTest < ActiveSupport::TestCase
 
   def assert_string_column(model, column_name)
     column = model.columns_hash[column_name]
+
     assert column, "#{model.name} should have #{column_name}"
     assert_equal :string, column.type, "#{model.name}.#{column_name} should be :string"
   end
 
   def assert_bigint_table_column(connection, table_name, column_name)
     column = connection.columns(table_name).find { |col| col.name == column_name }
+
     assert column, "#{table_name}.#{column_name} should exist"
     assert_equal :integer, column.type, "#{table_name}.#{column_name} should be :integer"
     assert_equal 8, column.limit, "#{table_name}.#{column_name} should be bigint (limit: 8)"

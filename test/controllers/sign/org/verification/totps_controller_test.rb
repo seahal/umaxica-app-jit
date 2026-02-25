@@ -34,6 +34,7 @@ class Sign::Org::Verification::TotpsControllerTest < ActionDispatch::Integration
         headers: @headers
 
     get new_sign_org_verification_totp_url(ri: "jp"), headers: @headers
+
     assert_response :success
 
     code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
@@ -46,6 +47,7 @@ class Sign::Org::Verification::TotpsControllerTest < ActionDispatch::Integration
     assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
 
     @token.reload
+
     assert_not_nil @token.last_step_up_at
     assert_equal "manage_totp", @token.last_step_up_scope
     assert_nil session[:reauth]

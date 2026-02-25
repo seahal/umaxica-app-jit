@@ -27,6 +27,7 @@ module Sign
         Engine.stub :score, 100 do
           Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
             result = Enforcer.call(@user)
+
             assert_nil result
           end
         end
@@ -39,6 +40,7 @@ module Sign
           Enforcer.stub :revoke!, ->(u) { called = true; assert_equal @user, u } do
             Enforcer.call(@user)
           end
+
           assert called, "revoke! should have been called"
         end
       end
@@ -49,6 +51,7 @@ module Sign
           Enforcer.stub :require_step_up!, ->(u) { called = true; assert_equal @user, u } do
             Enforcer.call(@user)
           end
+
           assert called, "require_step_up! should have been called"
         end
       end
@@ -58,6 +61,7 @@ module Sign
           Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
             Enforcer.stub :require_step_up!, ->(_) { raise "Should not be called" } do
               result = Enforcer.call(@user)
+
               assert_nil result
             end
           end
@@ -114,6 +118,7 @@ module Sign
 
         # 3. Check revocation
         token.reload
+
         assert_not_nil token.revoked_at
       end
     end

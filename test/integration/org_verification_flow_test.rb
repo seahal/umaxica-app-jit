@@ -38,6 +38,7 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
 
     Sign::Org::VerificationController.any_instance.stub(:available_step_up_methods, [:passkey, :totp]) do
       get sign_org_verification_url(ri: "jp"), headers: @headers
+
       assert_response :success
 
       # Should have passkey and totp links - check for any link containing these terms
@@ -60,6 +61,7 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
               headers: @headers
 
           post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
+
           assert_response :redirect
           # Redirects to return_to decoded value
           assert_redirected_to sign_org_configuration_passkeys_url(ri: "jp")

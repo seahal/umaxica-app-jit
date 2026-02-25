@@ -32,8 +32,10 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should redirect show when not logged in" do
     get sign_app_configuration_url(ri: "jp")
+
     assert_response :redirect
     target_path = new_sign_app_in_path
+
     assert_match %r{#{Regexp.escape(target_path)}\?.*ri=jp}, response.headers["Location"]
   end
 

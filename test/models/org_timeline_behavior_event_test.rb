@@ -20,6 +20,7 @@ class OrgTimelineBehaviorEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = OrgTimelineBehaviorEvent.new(id: 2)
+
     assert_predicate record, :valid?
   end
 end

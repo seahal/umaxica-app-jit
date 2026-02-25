@@ -14,6 +14,7 @@ require "test_helper"
 class UserSecretKindTest < ActiveSupport::TestCase
   test "valid kind" do
     kind = UserSecretKind.new(id: 99)
+
     assert_predicate kind, :valid?
     assert kind.save
     assert_equal 99, kind.id
@@ -22,6 +23,7 @@ class UserSecretKindTest < ActiveSupport::TestCase
   test "validates uniqueness of id" do
     UserSecretKind.create!(id: 99)
     duplicate = UserSecretKind.new(id: 99)
+
     assert_predicate duplicate, :invalid?
     assert_predicate duplicate.errors[:id], :any?
   end
@@ -36,12 +38,14 @@ class UserSecretKindTest < ActiveSupport::TestCase
 
   test "validates id is non-negative" do
     record = UserSecretKind.new(id: -1)
+
     assert_predicate record, :invalid?
     assert_includes record.errors[:id], "は0以上の値にしてください"
   end
 
   test "validates id is an integer" do
     record = UserSecretKind.new(id: 1.5)
+
     assert_predicate record, :invalid?
   end
 end

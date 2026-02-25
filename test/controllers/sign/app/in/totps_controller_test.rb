@@ -11,6 +11,7 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
   test "TotpChallengeForm validates token presence" do
     form = Sign::App::In::TotpsController::TotpChallengeForm.new
     form.token = nil
+
     assert_not form.valid?
     assert_predicate form.errors[:token], :any?
   end
@@ -18,6 +19,7 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
   test "TotpChallengeForm validates token length" do
     form = Sign::App::In::TotpsController::TotpChallengeForm.new
     form.token = "123"
+
     assert_not form.valid?
     assert_predicate form.errors[:token], :any?
   end
@@ -25,11 +27,13 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
   test "TotpChallengeForm accepts valid 6-digit token" do
     form = Sign::App::In::TotpsController::TotpChallengeForm.new
     form.token = "123456"
+
     assert_predicate form, :valid?
   end
 
   test "TotpChallengeForm has model_name for form builders" do
     model_name = Sign::App::In::TotpsController::TotpChallengeForm.model_name
+
     assert_equal "totp_challenge_form", model_name.param_key
   end
 
@@ -53,6 +57,7 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
     before_actions = Sign::App::In::TotpsController._process_action_callbacks
       .select { |cb| cb.kind == :before }
       .map { |cb| cb.filter }
+
     assert_includes before_actions, :ensure_mfa_user!
   end
 
@@ -60,6 +65,7 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
     before_actions = Sign::App::In::TotpsController._process_action_callbacks
       .select { |cb| cb.kind == :before }
       .map { |cb| cb.filter }
+
     assert_includes before_actions, :reject_logged_in_session
   end
 end

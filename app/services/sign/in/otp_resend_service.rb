@@ -35,8 +35,14 @@ module Sign
         decision = policy.evaluate(issued_timestamps: issued_timestamps)
 
         unless decision.resendable
-          log_blocked!(occurrence: occurrence, issued_timestamps: issued_timestamps, retry_after: decision.retry_after)
-          return Response.new(status: :too_many_requests, resendable: false, retry_after: decision.retry_after)
+          log_blocked!(
+            occurrence: occurrence, issued_timestamps: issued_timestamps,
+            retry_after: decision.retry_after,
+          )
+          return Response.new(
+            status: :too_many_requests, resendable: false,
+            retry_after: decision.retry_after,
+          )
         end
 
         issue_and_send!(normalized_target)
@@ -196,7 +202,8 @@ module Sign
                 when "EmailOccurrenceStatus"
                   { ACTIVE: EmailOccurrenceStatus::ACTIVE, NEYO: EmailOccurrenceStatus::NEYO }.fetch(key)
                 when "TelephoneOccurrenceStatus"
-                  { ACTIVE: TelephoneOccurrenceStatus::ACTIVE, NEYO: TelephoneOccurrenceStatus::NEYO }.fetch(key)
+                  { ACTIVE: TelephoneOccurrenceStatus::ACTIVE,
+                    NEYO: TelephoneOccurrenceStatus::NEYO, }.fetch(key)
                 else
                   raise KeyError, "Unsupported occurrence status class: #{status_class.name}"
                 end

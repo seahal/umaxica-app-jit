@@ -69,6 +69,7 @@ class UserSecrets::UpdateTest < ActiveSupport::TestCase
     end
 
     activity = UserActivity.last
+
     assert_equal @user, activity.actor
     assert_equal "UserSecret", activity.subject_type
     assert_equal @secret.id.to_s, activity.subject_id

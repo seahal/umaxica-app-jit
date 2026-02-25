@@ -33,6 +33,7 @@ class UserClientDeletionTest < ActiveSupport::TestCase
     user = User.find_by!(public_id: "one_id")
     client = Client.find_by!(public_id: "client_one")
     deletion = UserClientDeletion.find_by!(user: user, client: client)
+
     assert_predicate deletion, :valid?
   end
 end

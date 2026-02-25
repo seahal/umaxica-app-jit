@@ -44,6 +44,7 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
         headers: @headers
 
     get new_sign_app_verification_totp_url(ri: "jp"), headers: @headers
+
     assert_response :redirect
     assert_redirected_to sign_app_verification_url(ri: "jp")
   end

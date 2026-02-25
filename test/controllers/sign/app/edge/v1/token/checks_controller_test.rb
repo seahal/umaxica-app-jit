@@ -33,6 +33,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["authenticated"], "User should be authenticated"
     assert_equal "user", json["type"]
     assert_equal @user.id, json["id"]
@@ -46,6 +47,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -59,6 +61,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -88,6 +91,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -113,6 +117,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -151,6 +156,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["authenticated"], "Bearer token should take precedence"
     assert_equal "user", json["type"]
     assert_equal @user.id, json["id"]

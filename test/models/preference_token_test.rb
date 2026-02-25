@@ -32,6 +32,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_not_nil token
       assert_kind_of String, token
     end
@@ -85,6 +86,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_nil Preference::Token.decode(token, host: "other.com")
     end
   end
@@ -100,6 +102,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
       )
 
       payload = Preference::Token.decode(token, host: "app.example.com")
+
       assert_kind_of Hash, payload
     end
   end
@@ -119,6 +122,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
 
   test "extract_preferences returns preferences hash from payload" do
     payload = { "preferences" => @preferences }
+
     assert_equal @preferences, Preference::Token.extract_preferences(payload)
   end
 
@@ -148,6 +152,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
 
   test "extract_jti returns jti from payload" do
     payload = { "jti" => @jti }
+
     assert_equal @jti, Preference::Token.extract_jti(payload)
   end
 

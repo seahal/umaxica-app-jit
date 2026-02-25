@@ -62,6 +62,7 @@ class StaffOneTimePasswordTest < ActiveSupport::TestCase
 
     assert_not extra.valid?
     message = "exceeds maximum totps per staff (#{StaffOneTimePassword::MAX_TOTPS_PER_STAFF})"
+
     assert_includes extra.errors[:base], message
   end
 end

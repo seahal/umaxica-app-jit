@@ -30,6 +30,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
             headers: @headers
 
         get new_sign_app_verification_email_url(ri: "jp"), headers: @headers
+
         assert_response :redirect
 
         assert_match %r{/verification/emails/.+/edit}, response.location
@@ -81,15 +82,18 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
 
     Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
       get sign_app_configuration_emails_url(ri: "jp"), headers: stale_headers
+
       assert_response :redirect
 
       query = Rack::Utils.parse_nested_query(URI(response.location).query)
       scope = query["scope"]
       return_to = query["rd"] || query["return_to"]
+
       assert_equal "configuration_email", scope
       assert_predicate return_to, :present?
 
       get sign_app_verification_url(scope: scope, rd: return_to, ri: "jp"), headers: stale_headers
+
       assert_response :success
 
       Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
@@ -100,6 +104,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
 
       assert_response :redirect
       nonce = response.location[%r{/verification/emails/([^/]+)/edit}, 1]
+
       assert_predicate nonce, :present?
 
       Sign::App::Verification::BaseController.any_instance.stub(:verify_email_otp!, true) do

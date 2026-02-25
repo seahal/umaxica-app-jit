@@ -21,7 +21,10 @@ module Auth
 
       ActivityRecord.connected_to(role: :writing) do
         normalized_event_id = normalize_event_id(audit_class, event_id)
-        audit = build_audit(audit_class, normalized_event_id, resource: resource, actor: actor, ip_address: ip_address)
+        audit = build_audit(
+          audit_class, normalized_event_id, resource: resource, actor: actor,
+                                            ip_address: ip_address,
+        )
 
         unless audit.save
           error_message = "Audit save failed: #{audit.errors.full_messages.join(", ")}"

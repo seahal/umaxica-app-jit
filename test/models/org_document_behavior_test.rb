@@ -45,6 +45,7 @@ class OrgDocumentBehaviorTest < ActiveSupport::TestCase
     assert_equal :belongs_to, refl.macro
 
     refl_level = OrgDocumentBehavior.reflect_on_association(:org_document_behavior_level)
+
     assert_not_nil refl_level, "expected belongs_to :org_document_behavior_level association"
     assert_equal :belongs_to, refl_level.macro
   end
@@ -56,6 +57,7 @@ class OrgDocumentBehaviorTest < ActiveSupport::TestCase
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
     )
+
     assert_nil audit.org_document
   end
 

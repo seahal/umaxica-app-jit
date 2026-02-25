@@ -166,12 +166,14 @@ class UserPasskeyTest < ActiveSupport::TestCase
   test "description is invalid when blank" do
     @passkey.description = ""
     @passkey.define_singleton_method(:set_defaults) { } # Skip callback to test validation
+
     assert_not @passkey.valid?
     assert_not_empty @passkey.errors[:description]
   end
 
   test "sign_count cannot be negative" do
     @passkey.sign_count = -1
+
     assert_not @passkey.valid?
     assert_not_empty @passkey.errors[:sign_count]
   end

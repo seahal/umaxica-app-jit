@@ -51,6 +51,7 @@ class OrgVerificationTest < ActionDispatch::IntegrationTest
     # assert_redirected_to sign_org_configuration_url(ri: "jp")
 
     @token.reload
+
     assert_not_nil @token.last_step_up_at
     assert_equal "manage_totp", @token.last_step_up_scope
   end

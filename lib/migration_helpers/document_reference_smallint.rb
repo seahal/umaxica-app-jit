@@ -14,7 +14,10 @@ module MigrationHelpers
             fk[:table], to_table: fk[:to_table], column: fk[:column],
           )
         else
-          remove_foreign_key fk[:table], column: fk[:column] if foreign_key_exists?(fk[:table], column: fk[:column])
+          remove_foreign_key fk[:table], column: fk[:column] if foreign_key_exists?(
+            fk[:table],
+            column: fk[:column],
+          )
         end
       end
     end
@@ -23,7 +26,8 @@ module MigrationHelpers
   module DocumentReferenceSmallint
     include ForeignKeyHelpers
 
-    def convert_string_id_pk_table(table_name:, sentinel_id:, lower_index:, check_constraint:, child_foreign_keys: [])
+    def convert_string_id_pk_table(table_name:, sentinel_id:, lower_index:, check_constraint:,
+                                   child_foreign_keys: [])
       safety_assured do
         add_column table_name, :id_small, :integer, limit: 2 unless column_exists?(table_name, :id_small)
         fill_smallint_ids(table_name, sentinel_id)
@@ -32,7 +36,10 @@ module MigrationHelpers
         change_column_null table_name, :id_small, false
         drop_child_foreign_keys(child_foreign_keys)
 
-        remove_index table_name, name: lower_index if lower_index && index_exists?(table_name, name: lower_index)
+        remove_index table_name, name: lower_index if lower_index && index_exists?(
+          table_name,
+          name: lower_index,
+        )
         remove_check_constraint(table_name, check_constraint) if check_constraint
 
         drop_primary_key_constraint(table_name)

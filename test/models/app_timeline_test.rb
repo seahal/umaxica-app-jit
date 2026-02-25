@@ -75,9 +75,11 @@ class AppTimelineTest < ActiveSupport::TestCase
 
   test "redirect_url is required when response_mode is redirect" do
     timeline = AppTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: nil))
+
     assert_not timeline.valid?
 
     timeline = AppTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: "https://example.com"))
+
     assert_predicate timeline, :valid?
   end
 
@@ -119,6 +121,7 @@ class AppTimelineTest < ActiveSupport::TestCase
 
   test "published_at must be before expires_at" do
     timeline = AppTimeline.new(base_attrs.merge(published_at: 1.day.from_now, expires_at: 1.day.ago))
+
     assert_not timeline.valid?
     assert_not_empty timeline.errors[:published_at]
   end

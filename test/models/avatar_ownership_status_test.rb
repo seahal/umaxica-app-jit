@@ -14,6 +14,7 @@ require "test_helper"
 class AvatarOwnershipStatusTest < ActiveSupport::TestCase
   test "accepts integer ids" do
     status = AvatarOwnershipStatus.new(id: 9)
+
     assert_predicate status, :valid?
   end
 

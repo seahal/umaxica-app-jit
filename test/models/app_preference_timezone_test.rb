@@ -33,6 +33,7 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     timezone = AppPreferenceTimezone.new
+
     assert_not timezone.valid?
     assert_includes timezone.errors[:preference], "を入力してください"
   end
@@ -40,6 +41,7 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = app_preference_timezone_options(:asia_tokyo)
     timezone = AppPreferenceTimezone.create!(preference: @preference, option: option)
+
     assert_not_nil timezone.id
     assert_equal @preference, timezone.preference
     assert_equal option, timezone.option
@@ -47,6 +49,7 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     timezone = AppPreferenceTimezone.create!(preference: @preference)
+
     assert_equal AppPreferenceTimezoneOption::ASIA_TOKYO, timezone.option_id
   end
 
@@ -54,14 +57,17 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
     option = app_preference_timezone_options(:asia_tokyo)
     AppPreferenceTimezone.create!(preference: @preference, option: option)
     duplicate_timezone = AppPreferenceTimezone.new(preference: @preference, option: option)
+
     assert_not duplicate_timezone.valid?
     assert_includes duplicate_timezone.errors[:preference_id], "はすでに存在します"
   end
 
   test "AppPreferenceTimezoneOption accepts numeric ids" do
     option = AppPreferenceTimezoneOption.create!(id: 99)
+
     assert_predicate option, :persisted?
     timezone = AppPreferenceTimezone.create!(preference: @preference, option_id: 99)
+
     assert_equal option, timezone.option
   end
 end

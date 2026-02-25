@@ -20,11 +20,13 @@ class AppDocumentBehaviorEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = AppDocumentBehaviorEvent.new(id: 2)
+
     assert_predicate record, :valid?
   end
 
   test "allows nil id on new records" do
     record = AppDocumentBehaviorEvent.new(id: nil)
+
     assert_predicate record, :valid?
   end
 end

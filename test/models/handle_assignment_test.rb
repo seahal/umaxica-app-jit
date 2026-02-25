@@ -59,6 +59,7 @@ class HandleAssignmentTest < ActiveSupport::TestCase
     )
 
     valid_to = assignment.reload.valid_to
+
     assert_predicate valid_to, :present?
     assert valid_to.to_s == "infinity" || (valid_to.is_a?(Float) && valid_to == Float::INFINITY)
   end

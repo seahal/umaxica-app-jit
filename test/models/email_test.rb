@@ -76,6 +76,7 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
       assert_not m.valid?
       m.pass_code = nil
+
       assert_predicate m, :valid?
     end
     # rubocop:enable Minitest/MultipleAssertions

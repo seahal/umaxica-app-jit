@@ -78,6 +78,7 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
     newest_pos = response.body.index("newest-entry")
     middle_pos = response.body.index("middle-entry")
     oldest_pos = response.body.index("oldest-entry")
+
     assert newest_pos && middle_pos && oldest_pos, "expected all entries to be present in response body"
     assert_operator newest_pos, :<, middle_pos
     assert_operator middle_pos, :<, oldest_pos

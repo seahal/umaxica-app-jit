@@ -32,7 +32,9 @@ module Sign
 
       case result[:status]
       when :rotated
-        { token: result[:token], refresh_token: result[:refresh_token], previous_token: result[:previous_token] }
+        { token: result[:token],
+          refresh_token: result[:refresh_token],
+          previous_token: result[:previous_token], }
       when :replay
         handle_refresh_token_reuse(result[:token])
         raise InvalidRefreshToken, "refresh_token_reuse_detected"

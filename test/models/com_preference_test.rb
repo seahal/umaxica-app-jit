@@ -46,12 +46,14 @@ class ComPreferenceTest < ActiveSupport::TestCase
 
   test "generates public_id on create" do
     preference = ComPreference.create!
+
     assert_not_nil preference.public_id
     assert_equal 21, preference.public_id.length
   end
 
   test "validates public_id maximum length" do
     preference = ComPreference.new(public_id: "a" * 22)
+
     assert_not preference.valid?
     assert_includes preference.errors[:public_id], "は21文字以内で入力してください"
   end
@@ -59,12 +61,14 @@ class ComPreferenceTest < ActiveSupport::TestCase
   test "does not overwrite existing public_id" do
     custom_id = "custom_public_id_123"
     preference = ComPreference.create!(public_id: custom_id)
+
     assert_equal custom_id, preference.public_id
   end
 
   test "has one com_preference_cookie" do
     preference = ComPreference.create!
     cookie = preference.create_com_preference_cookie!
+
     assert_equal cookie, preference.com_preference_cookie
   end
 
@@ -73,6 +77,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     cookie = preference.create_com_preference_cookie!
     cookie_id = cookie.id
     preference.destroy!
+
     assert_nil ComPreferenceCookie.find_by(id: cookie_id)
   end
 
@@ -80,6 +85,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     preference = ComPreference.create!
     option = com_preference_region_options(:jp)
     region = preference.create_com_preference_region!(option: option)
+
     assert_equal region, preference.com_preference_region
   end
 
@@ -89,6 +95,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     region = preference.create_com_preference_region!(option: option)
     region_id = region.id
     preference.destroy!
+
     assert_nil ComPreferenceRegion.find_by(id: region_id)
   end
 
@@ -96,6 +103,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     preference = ComPreference.create!
     option = com_preference_timezone_options(:asia_tokyo)
     timezone = preference.create_com_preference_timezone!(option: option)
+
     assert_equal timezone, preference.com_preference_timezone
   end
 
@@ -105,6 +113,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     timezone = preference.create_com_preference_timezone!(option: option)
     timezone_id = timezone.id
     preference.destroy!
+
     assert_nil ComPreferenceTimezone.find_by(id: timezone_id)
   end
 
@@ -112,6 +121,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     preference = ComPreference.create!
     option = com_preference_language_options(:ja)
     language = preference.create_com_preference_language!(option: option)
+
     assert_equal language, preference.com_preference_language
   end
 
@@ -121,6 +131,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     language = preference.create_com_preference_language!(option: option)
     language_id = language.id
     preference.destroy!
+
     assert_nil ComPreferenceLanguage.find_by(id: language_id)
   end
 
@@ -128,6 +139,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     preference = ComPreference.create!
     option = com_preference_colortheme_options(:light)
     colortheme = preference.create_com_preference_colortheme!(option: option)
+
     assert_equal colortheme, preference.com_preference_colortheme
   end
 
@@ -137,6 +149,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     colortheme = preference.create_com_preference_colortheme!(option: option)
     colortheme_id = colortheme.id
     preference.destroy!
+
     assert_nil ComPreferenceColortheme.find_by(id: colortheme_id)
   end
 
@@ -151,6 +164,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
     )
 
     first = ComPreference.consume_once_by_digest!(digest: digest)
+
     assert_equal preference.id, first.id
     assert_predicate first.used_at, :present?
     assert_nil ComPreference.consume_once_by_digest!(digest: digest)

@@ -13,7 +13,10 @@ class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
     mailer =
       Class.new(Email::Com::ApplicationMailer) do
         define_method(:sample) do
-          mail(to: "com-user@example.com", subject: I18n.t("test.email.com.application_mailer.subject")) do |format|
+          mail(
+            to: "com-user@example.com",
+            subject: I18n.t("test.email.com.application_mailer.subject"),
+          ) do |format|
             format.text { render plain: "hello" }
           end
         end

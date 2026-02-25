@@ -33,6 +33,7 @@ class OrgPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     timezone = OrgPreferenceTimezone.new
+
     assert_not timezone.valid?
     assert_includes timezone.errors[:preference], "を入力してください"
   end
@@ -40,6 +41,7 @@ class OrgPreferenceTimezoneTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = org_preference_timezone_options(:asia_tokyo)
     timezone = OrgPreferenceTimezone.create!(preference: @preference, option: option)
+
     assert_not_nil timezone.id
     assert_equal @preference, timezone.preference
     assert_equal option, timezone.option
@@ -47,6 +49,7 @@ class OrgPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     timezone = OrgPreferenceTimezone.create!(preference: @preference)
+
     assert_equal OrgPreferenceTimezoneOption::ASIA_TOKYO, timezone.option_id
   end
 end

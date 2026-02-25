@@ -275,7 +275,8 @@ module Auth
     # @param message_key [Symbol] Either :notice or :alert
     # @param message_value [String] Flash message value
     # @param session_key [Symbol] The session key for rd parameter
-    def redirect_with_rd_handling(default_path, message_key, message_value, session_key = DEFAULT_RD_SESSION_KEY)
+    def redirect_with_rd_handling(default_path, message_key, message_value,
+                                  session_key = DEFAULT_RD_SESSION_KEY)
       rd_param = retrieve_redirect_parameter(session_key)
 
       if rd_param.present?
@@ -563,7 +564,10 @@ module Auth
       )
 
       # Always set cookies (even for JSON responses - required for Edge/SPA)
-      set_auth_cookies(access_token: access_token, refresh_token: refresh_plain, device_id: token_record.device_id)
+      set_auth_cookies(
+        access_token: access_token, refresh_token: refresh_plain,
+        device_id: token_record.device_id,
+      )
 
       Sign::Risk::Emitter.emit(
         "session_issued",
@@ -604,7 +608,11 @@ module Auth
       refresh_public_id, = token_class.parse_refresh_token(refresh_plain.to_s)
       token_record = find_refresh_token_record(refresh_public_id)
       return handle_restricted_refresh_rejected(token_record, refresh_public_id) if token_record&.restricted?
-      return handle_refresh_device_denied(token_record, refresh_public_id) unless refresh_device_allowed?(token_record)
+
+      return handle_refresh_device_denied(
+        token_record,
+        refresh_public_id,
+      ) unless refresh_device_allowed?(token_record)
 
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
       previous_token_record = result[:previous_token] || token_record
@@ -619,7 +627,10 @@ module Auth
 
       return handle_inactive_resource(resource, refresh_public_id, token_record) unless resource&.active?
 
-      build_refreshed_session(resource, token_record, new_refresh_plain, previous_token_record: previous_token_record)
+      build_refreshed_session(
+        resource, token_record, new_refresh_plain,
+        previous_token_record: previous_token_record,
+      )
     rescue Sign::InvalidRefreshToken => e
       handle_invalid_refresh_token(e, refresh_public_id, token_record)
     rescue StandardError => e
@@ -1728,7 +1739,10 @@ module Auth
       ) if mfa_bypassed_for_auth_method?(auth_method) || !mfa_required_for?(resource)
 
       return_to = resolve_mfa_return_to(rt)
-      set_pending_mfa!(resource: resource, primary: auth_method, return_to: return_to, ri: ri, auth_method: auth_method)
+      set_pending_mfa!(
+        resource: resource, primary: auth_method, return_to: return_to, ri: ri,
+        auth_method: auth_method,
+      )
 
       {
         status: :mfa_required,

@@ -57,6 +57,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       links = css_select("a[href*='/preference']")
       links.each do |link|
         href = link["href"]
+
         assert_match(/ri=/, href, "Preference link should include ri parameter: #{href}")
       end
     end
@@ -77,7 +78,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
 
       # Check preference links (which use url helpers)
       links = css_select("a[href*='/preference'][href*='lx=en']")
-      assert_predicate links, :any?, "Preference links should preserve lx=en parameter when it was in the request"
+
+      assert_predicate links, :any?,
+                       "Preference links should preserve lx=en parameter when it was in the request"
     end
 
     test "#{domain[:name]} lx param is NOT added to navigation links when NOT in request" do
@@ -92,6 +95,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       links = css_select("a[href*='/preference']")
       links.each do |link|
         href = link["href"]
+
         assert_no_match(/lx=/, href, "Preference link should NOT include lx parameter: #{href}")
       end
     end
@@ -105,7 +109,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       links = css_select("a[href*='/preference'][href*='ct=dr']")
-      assert_predicate links, :any?, "Preference links should preserve ct=dr parameter when it was in the request"
+
+      assert_predicate links, :any?,
+                       "Preference links should preserve ct=dr parameter when it was in the request"
     end
 
     test "#{domain[:name]} ct param is NOT added to navigation links when NOT in request" do
@@ -119,6 +125,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       links = css_select("a[href*='/preference']")
       links.each do |link|
         href = link["href"]
+
         assert_no_match(/ct=/, href, "Preference link should NOT include ct parameter: #{href}")
       end
     end
@@ -132,7 +139,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       links = css_select("a[href*='/preference'][href*='tz=utc']")
-      assert_predicate links, :any?, "Preference links should preserve tz=utc parameter when it was in the request"
+
+      assert_predicate links, :any?,
+                       "Preference links should preserve tz=utc parameter when it was in the request"
     end
 
     test "#{domain[:name]} tz param is NOT added to navigation links when NOT in request" do
@@ -146,6 +155,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       links = css_select("a[href*='/preference']")
       links.each do |link|
         href = link["href"]
+
         assert_no_match(/tz=/, href, "Preference link should NOT include tz parameter: #{href}")
       end
     end
@@ -160,6 +170,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
 
       # Check that preference links preserve all params
       links = css_select("a[href*='/preference']")
+
       assert_predicate links, :any?, "Should have preference links"
 
       # At least some links should have all the params
@@ -168,7 +179,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
           href = link["href"]
           href.include?("lx=en") && href.include?("ct=dr") && href.include?("tz=utc")
         end
-      assert_predicate links_with_all_params, :any?, "Some preference links should have all optional params preserved"
+
+      assert_predicate links_with_all_params, :any?,
+                       "Some preference links should have all optional params preserved"
     end
   end
 
@@ -286,6 +299,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
 
       # Check that internal links preserve lx
       links = internal_links_for(domain[:host]).select { |link| link["href"].include?("lx=en") }
+
       assert_predicate links, :any?, "Links should preserve lx=en parameter"
     end
 
@@ -297,6 +311,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       links = internal_links_for(domain[:host]).select { |link| link["href"].include?("ct=dr") }
+
       assert_predicate links, :any?, "Links should preserve ct=dr parameter"
     end
 
@@ -308,6 +323,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       links = internal_links_for(domain[:host]).select { |link| link["href"].include?("tz=utc") }
+
       assert_predicate links, :any?, "Links should preserve tz=utc parameter"
     end
 
@@ -325,6 +341,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
           href = link["href"]
           href.include?("lx=en") && href.include?("ct=dr") && href.include?("tz=utc")
         end
+
       assert_predicate links_with_all, :any?, "Some links should have all optional params preserved"
     end
 
@@ -357,10 +374,12 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
 
       # lx should be in links, but efg should NOT
       links = internal_links_for(domain[:host]).select { |link| link["href"].include?("lx=en") }
+
       assert_predicate links, :any?, "Links should preserve lx=en"
 
       links.each do |link|
         href = link["href"]
+
         assert_no_match(/efg=/, href, "Link should NOT include efg param: #{href}")
       end
     end

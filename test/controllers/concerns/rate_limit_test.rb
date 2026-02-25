@@ -85,9 +85,11 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
   test "rails rate limiter returns 429 with layer headers and i18n message" do
     with_dummy_route do
       get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
+
       assert_response :success
 
       get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
+
       assert_response :too_many_requests
 
       assert_equal "rails", response.headers["X-RateLimit-Layer"]
@@ -95,6 +97,7 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
       assert_predicate response.headers["Retry-After"], :present?
 
       body = response.parsed_body
+
       assert_equal "rate_limited", body["error"]
       assert_equal "dummy_ip", body["rule"]
       assert_equal I18n.t("errors.rate_limit.exceeded"), body["message"]
@@ -118,6 +121,7 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
 
     assert_predicate payloads, :any?, "Expected rails_rate_limit.throttled to be emitted"
     payload = payloads.last
+
     assert_equal "dummy_ip", payload[:rule]
     assert_equal "example.com", payload[:tenant]
     assert_equal "ip", payload[:scope]
@@ -130,15 +134,18 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
     end
 
     expected_namespace = ENV["RATE_LIMIT_NAMESPACE"].presence || "rate_limit:test:#{Process.pid}"
+
     assert_equal expected_namespace, RailsRateLimit.store.namespace
   end
 
   test "rails limiter returns 429 for HTML format with plain text message" do
     with_dummy_route do
       get "/test_rate_limit"
+
       assert_response :success
 
       get "/test_rate_limit"
+
       assert_response :too_many_requests
 
       assert_equal I18n.t("errors.rate_limit.exceeded"), response.body
@@ -153,16 +160,20 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
       end
 
       get "/test_except", headers: { "Host" => "example.com" }
+
       assert_response :success
 
       get "/test_except", headers: { "Host" => "example.com" }
+
       assert_response :too_many_requests
 
       # Excluded action should not be rate limited
       get "/test_except_excluded", headers: { "Host" => "example.com" }
+
       assert_response :success
 
       get "/test_except_excluded", headers: { "Host" => "example.com" }
+
       assert_response :success
     end
   end
@@ -174,9 +185,11 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
       end
 
       get "/test_array_key", headers: { "Host" => "example.com" }
+
       assert_response :success
 
       get "/test_array_key", headers: { "Host" => "example.com" }
+
       assert_response :too_many_requests
     end
   end
@@ -188,9 +201,11 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
       end
 
       get "/test_hash_key", headers: { "Host" => "example.com" }
+
       assert_response :success
 
       get "/test_hash_key", headers: { "Host" => "example.com" }
+
       assert_response :too_many_requests
     end
   end
@@ -202,9 +217,11 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
       end
 
       get "/test_email", params: { email: "test@example.com" }, headers: { "Host" => "example.com" }
+
       assert_response :success
 
       get "/test_email", params: { email: "test@example.com" }, headers: { "Host" => "example.com" }
+
       assert_response :too_many_requests
     end
   end
@@ -216,13 +233,16 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
       end
 
       get "/test_telephone", params: { telephone: "+1-555-123-4567" }, headers: { "Host" => "example.com" }
+
       assert_response :success
 
       get "/test_telephone", params: { telephone: "+1-555-123-4567" }, headers: { "Host" => "example.com" }
+
       assert_response :too_many_requests
 
       # Different telephone should not be rate limited
       get "/test_telephone", params: { telephone: "+1-555-999-8888" }, headers: { "Host" => "example.com" }
+
       assert_response :success
     end
   end

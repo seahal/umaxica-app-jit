@@ -47,6 +47,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     # Start login flow
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
+
     assert_response :redirect
 
     # Callback
@@ -59,9 +60,11 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     assert_equal user_count_before, User.count, "Existing user login should NOT create new user"
 
     existing_user.reload
+
     assert_equal UserStatus::NEYO, existing_user.status_id
 
     follow_redirect!
+
     assert_predicate flash[:notice], :present?, "Should have success message"
   end
 
@@ -114,6 +117,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     assert_equal identity_count_before + 1, UserSocialGoogle.count
 
     identity = UserSocialGoogle.find_by(uid: new_uid)
+
     assert_not_nil identity
     assert_not_nil identity.user
     assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, identity.user.status_id
@@ -139,6 +143,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     assert_equal identity_count_before + 1, UserSocialApple.count
 
     identity = UserSocialApple.find_by(uid: new_uid)
+
     assert_not_nil identity
     assert_not_nil identity.user
   end
@@ -195,7 +200,9 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
         headers: browser_headers.merge(@callback_headers)
 
     identity.reload
-    assert_operator identity.last_authenticated_at, :>=, time_before, "last_authenticated_at should be updated on login"
+
+    assert_operator identity.last_authenticated_at, :>=, time_before,
+                    "last_authenticated_at should be updated on login"
     assert_operator identity.last_authenticated_at, :>, old_auth_time,
                     "last_authenticated_at should be newer than before"
   end

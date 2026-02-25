@@ -51,6 +51,7 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
     # CRITICAL: UserSocialApple should be created and linked to current_user
     user.reload
+
     assert_not_nil user.user_social_apple, "UserSocialApple should be linked to user"
     assert_equal apple_uid, user.user_social_apple.uid
     assert_equal "apple", user.user_social_apple.provider
@@ -88,6 +89,7 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
     # CRITICAL: UserSocialGoogle should be created and linked to current_user
     user.reload
+
     assert_not_nil user.user_social_google, "UserSocialGoogle should be linked to user"
     assert_equal google_uid, user.user_social_google.uid
   end
@@ -107,10 +109,12 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: @callback_headers.merge(as_user_headers(user, host: @host))
+
     assert_response :redirect
 
     user.reload
     first_identity = user.user_social_apple
+
     assert_not_nil first_identity
     first_identity_id = first_identity.id
 
@@ -120,10 +124,12 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: @callback_headers.merge(as_user_headers(user, host: @host))
+
     assert_response :redirect
 
     # Should NOT create a new UserSocialApple
     user.reload
+
     assert_equal first_identity_id, user.user_social_apple.id, "Should reuse existing identity"
 
     # Total count should still be 1
@@ -164,10 +170,12 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
     # userB should NOT have UserSocialApple
     user_b.reload
+
     assert_nil user_b.user_social_apple, "userB should NOT have Apple identity"
 
     # userA should still have the identity
     user_a.reload
+
     assert_equal apple_uid, user_a.user_social_apple.uid
   end
 
@@ -188,6 +196,7 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
     # UserSocialApple should exist
     identity = UserSocialApple.find_by(uid: apple_uid)
+
     assert_not_nil identity
     assert_not_nil identity.user
   end

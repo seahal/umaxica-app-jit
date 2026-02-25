@@ -56,6 +56,7 @@ module Sign::App::In
       # Verify user's OTPs are accessible
       otps = user.user_one_time_passwords
         .where(user_identity_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
+
       assert_not_empty otps,
                        "User should have active OTPs. All OTPs: #{user.user_one_time_passwords.pluck(
                          :id,
@@ -71,11 +72,13 @@ module Sign::App::In
       # Debug: check if the response body contains TOTP verification error
       if response.status == 422
         errors = response.body.scan(/class="[^"]*error[^"]*"[^>]*>([^<]+)</)
+
         flunk "TOTP verification failed (422). Errors: #{errors.inspect}. " \
               "TOTP code: #{totp_code}. " \
               "User OTP count: #{user.user_one_time_passwords.count}. " \
               "pending_mfa after: #{session[:pending_mfa].inspect}"
       end
+
       assert_response :found
       assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
       assert_nil session[:pending_mfa]
@@ -112,6 +115,7 @@ module Sign::App::In
         },
         "cf-turnstile-response": "test_token",
       }
+
       assert_response :redirect
     end
   end

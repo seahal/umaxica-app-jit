@@ -126,7 +126,7 @@
     "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
     "ghcr.io/devcontainers/features/sshd:latest": {},
     "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
-    "ghcr.io/jasonthedeveloper/features/trivy:1": {}
+    "ghcr.io/jasonthedeveloper/features/trivy:1": {},
   },
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind,consistency=cached",

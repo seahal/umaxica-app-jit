@@ -104,6 +104,7 @@ class ComContactTest < ActiveSupport::TestCase
 
   test "should set default category and status when nil" do
     contact = ComContact.new(category_id: nil, status_id: nil, confirm_policy: "1")
+
     assert contact.save
     assert_equal ComContactCategory::SECURITY_ISSUE, contact.category_id
     assert_equal ComContactStatus::NEYO, contact.status_id
@@ -112,23 +113,27 @@ class ComContactTest < ActiveSupport::TestCase
   test "should generate public_id on create" do
     contact = ComContact.new(confirm_policy: "1")
     contact.save!
+
     assert_not_nil contact.public_id
     assert_equal 21, contact.public_id.length
   end
 
   test "email_pending? should return true for SET_UP state" do
     contact = build_contact(status_id: ComContactStatus::SET_UP)
+
     assert_predicate contact, :email_pending?
   end
 
   test "verify_email! should transition to email_verified state" do
     contact = build_contact(status_id: ComContactStatus::SET_UP)
+
     assert contact.verify_email!
     assert_equal ComContactStatus::CHECKED_EMAIL_ADDRESS, contact.status_id
   end
 
   test "token length boundary" do
     contact = ComContact.new(confirm_policy: "1", token: "a" * 33)
+
     assert_not contact.valid?
     assert_not_empty contact.errors[:token]
   end

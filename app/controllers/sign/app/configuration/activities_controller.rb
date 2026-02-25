@@ -53,7 +53,10 @@ module Sign
 
         def activity_event_label(activity)
           key = EVENT_LABELS[activity.event_id]
-          return t("sign.app.configuration.activity.events.unknown", event_id: activity.event_id) if key.blank?
+          return t(
+            "sign.app.configuration.activity.events.unknown",
+            event_id: activity.event_id,
+          ) if key.blank?
 
           I18n.t("sign.app.configuration.activity.events." + key)
         end
@@ -97,7 +100,10 @@ module Sign
         end
 
         def activity_login_method(activity)
-          method = activity_context_value(activity, "auth_method") || activity_context_value(activity, "method")
+          method = activity_context_value(
+            activity,
+            "auth_method",
+          ) || activity_context_value(activity, "method")
           return "-" if method.blank?
 
           method.to_s

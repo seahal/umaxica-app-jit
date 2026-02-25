@@ -33,6 +33,7 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     colortheme = AppPreferenceColortheme.new
+
     assert_not colortheme.valid?
     assert_not_empty colortheme.errors[:preference]
   end
@@ -40,6 +41,7 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = app_preference_colortheme_options(:light)
     colortheme = AppPreferenceColortheme.create!(preference: @preference, option: option)
+
     assert_not_nil colortheme.id
     assert_equal @preference, colortheme.preference
     assert_equal option, colortheme.option
@@ -47,6 +49,7 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     colortheme = AppPreferenceColortheme.create!(preference: @preference)
+
     assert_equal AppPreferenceColorthemeOption::SYSTEM, colortheme.option_id
   end
 
@@ -54,14 +57,17 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
     option = app_preference_colortheme_options(:light)
     AppPreferenceColortheme.create!(preference: @preference, option: option)
     duplicate_colortheme = AppPreferenceColortheme.new(preference: @preference, option: option)
+
     assert_not duplicate_colortheme.valid?
     assert_not_empty duplicate_colortheme.errors[:preference_id]
   end
 
   test "AppPreferenceColorthemeOption accepts numeric ids" do
     option = AppPreferenceColorthemeOption.create!(id: 99)
+
     assert_predicate option, :persisted?
     colortheme = AppPreferenceColortheme.create!(preference: @preference, option_id: 99)
+
     assert_equal option, colortheme.option
   end
 end

@@ -46,7 +46,9 @@ module Sign
 
       # Count "challenge" keys in JSON output
       challenge_count = json_output.scan(/"challenge"/).count
-      assert_equal 1, challenge_count, "JSON should contain exactly one 'challenge' key, found #{challenge_count}"
+
+      assert_equal 1, challenge_count,
+                   "JSON should contain exactly one 'challenge' key, found #{challenge_count}"
     end
 
     test "normalize_webauthn_options_for_json encodes user.id as Base64URL" do
@@ -65,11 +67,13 @@ module Sign
 
       # Should have valid padding when decoded
       padding_needed = (4 - (user_id.length % 4)) % 4
+
       assert_operator padding_needed, :<=, 2,
                       "user.id should have valid Base64URL padding (0-2), but would need #{padding_needed}"
 
       # Should decode back to original
       decoded = Base64.urlsafe_decode64(user_id)
+
       assert_equal "980190962", decoded
     end
 
@@ -87,6 +91,7 @@ module Sign
 
       # Verify valid padding
       padding_needed = (4 - (challenge.length % 4)) % 4
+
       assert_operator padding_needed, :<=, 2, "challenge should have valid Base64URL padding"
     end
 
@@ -125,29 +130,35 @@ module Sign
     test "normalize_webauthn_id handles various input types" do
       # String already in Base64URL format
       result = @controller.send(:normalize_webauthn_id, "abc123_-")
+
       assert_equal "abc123_-", result
 
       # String that looks like Base64URL but is actually raw ASCII letters
       # (will be returned as-is since it matches /\A[A-Za-z0-9_-]+\z/)
       result = @controller.send(:normalize_webauthn_id, "test")
+
       assert_equal "test", result
 
       # Binary string with non-Base64URL chars (e.g. with null bytes)
       binary_with_null = "test\x00data".b
       result = @controller.send(:normalize_webauthn_id, binary_with_null)
+
       assert_equal Base64.urlsafe_encode64(binary_with_null, padding: false), result
 
       # Array of bytes
       result = @controller.send(:normalize_webauthn_id, [116, 101, 115, 116])
+
       assert_equal Base64.urlsafe_encode64("test", padding: false), result
 
       # Integer
       result = @controller.send(:normalize_webauthn_id, 12_345)
+
       assert_kind_of String, result
       assert_match(/\A[A-Za-z0-9_-]+\z/, result)
 
       # Nil
       result = @controller.send(:normalize_webauthn_id, nil)
+
       assert_nil result
     end
 

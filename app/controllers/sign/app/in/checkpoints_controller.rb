@@ -22,7 +22,10 @@ module Sign
         def destroy
           rd_param = params[:rd].presence
           consume_checkpoint!
-          safe_redirect_to_rd_or_default!(rd_param, default_path: sign_app_configuration_path(ri: params[:ri]))
+          safe_redirect_to_rd_or_default!(
+            rd_param,
+            default_path: sign_app_configuration_path(ri: params[:ri]),
+          )
         end
 
         private

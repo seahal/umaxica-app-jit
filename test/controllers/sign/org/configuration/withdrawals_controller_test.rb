@@ -14,11 +14,15 @@ class Sign::Org::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   end
 
   def authenticated_headers
-    browser_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => @token.public_id)
+    browser_headers.merge(
+      "X-TEST-CURRENT-STAFF" => @staff.id.to_s,
+      "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
+    )
   end
 
   test "should get show" do
     get sign_org_configuration_withdrawal_url(ri: "jp"), headers: authenticated_headers
+
     assert_response :success
   end
 end

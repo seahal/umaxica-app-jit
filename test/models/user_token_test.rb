@@ -155,10 +155,12 @@ class UserTokenTest < ActiveSupport::TestCase
     assert_predicate token, :active?
 
     token.update!(revoked_at: Time.current)
+
     assert_predicate token, :revoked?
     assert_not token.active?
 
     token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+
     assert_predicate token, :expired_refresh?
     assert_not token.active?
   end
@@ -202,17 +204,20 @@ class UserTokenTest < ActiveSupport::TestCase
     user = User.create!
     token1 = UserToken.create!(user: user)
     token2 = UserToken.create!(user: user)
+
     assert_not_equal token1.public_id, token2.public_id
   end
 
   test "public_id length boundary" do
     @token.public_id = "a" * 22
+
     assert_not @token.valid?
     assert_not_empty @token.errors[:public_id]
   end
 
   test "refresh_expires_at is required" do
     @token.refresh_expires_at = nil
+
     assert_not @token.valid?
     assert_not_empty @token.errors[:refresh_expires_at]
   end
@@ -233,6 +238,7 @@ class UserTokenTest < ActiveSupport::TestCase
 
     assert_equal :rotated, result[:status]
     new_token = result[:token]
+
     assert_predicate new_token, :present?
     assert_not_equal token.id, new_token.id
     assert_equal token.refresh_token_family_id, new_token.refresh_token_family_id
@@ -248,9 +254,11 @@ class UserTokenTest < ActiveSupport::TestCase
     digest = UserToken.digest_refresh_token(verifier)
 
     first = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+
     assert_equal :rotated, first[:status]
 
     second = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+
     assert_equal :replay, second[:status]
     assert_predicate token.reload.rotated_at, :present?
   end

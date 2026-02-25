@@ -45,6 +45,7 @@ class ComTimelineBehaviorTest < ActiveSupport::TestCase
     assert_equal :belongs_to, refl.macro
 
     refl_level = ComTimelineBehavior.reflect_on_association(:com_timeline_behavior_level)
+
     assert_not_nil refl_level, "expected belongs_to :com_timeline_behavior_level association"
     assert_equal :belongs_to, refl_level.macro
   end
@@ -56,6 +57,7 @@ class ComTimelineBehaviorTest < ActiveSupport::TestCase
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
     )
+
     assert_nil audit.com_timeline
   end
 

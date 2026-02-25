@@ -23,6 +23,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "redirects to canonical path by stripping ri=jp" do
     get news_com_root_url(ri: "jp")
+
     assert_redirected_to news_com_root_url
     assert_nil request.path_parameters[:ri]
   end
@@ -58,6 +59,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get_root_with_follow(news_com_root_url)
+
     assert_response :success
     assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
   end
@@ -65,6 +67,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   test "sets theme cookie" do
     host! "news.com.localhost"
     get news_com_root_path
+
     assert_response :success
     assert_not_nil cookies["jit_preference_access"]
   end

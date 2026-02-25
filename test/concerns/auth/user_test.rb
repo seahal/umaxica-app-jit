@@ -237,10 +237,12 @@ class Auth::UserTest < ActiveSupport::TestCase
 
     freeze_time do
       result = @obj.send(:log_in, @user, require_totp_check: false)
+
       assert_equal :success, result[:status]
       assert result[:restricted]
 
       restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED).order(:created_at).last
+
       assert_not_nil restricted
       assert_in_delta 15.minutes.from_now.to_i, restricted.refresh_expires_at.to_i, 1
     end

@@ -46,6 +46,7 @@ class AppTimelineBehaviorLevelTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = AppTimelineBehaviorLevel.new(id: 3)
+
     assert_predicate record, :valid?
   end
 end

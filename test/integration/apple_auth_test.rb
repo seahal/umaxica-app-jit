@@ -33,10 +33,12 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: browser_headers.merge(@callback_headers)
+
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
     follow_redirect!
 
     user = UserSocialApple.find_by(uid: "apple_uid_new").user
+
     assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user.status_id
     assert_nil UserEmail.find_by(user: user)
   end
@@ -102,9 +104,11 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: browser_headers.merge(@callback_headers)
+
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
 
-    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"), flash[:notice]
+    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"),
+                 flash[:notice]
   end
 
   # ============================================================================
@@ -139,15 +143,18 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     # Should redirect to success path, NOT /in/new (email registration)
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
     follow_redirect!
+
     assert_predicate flash[:notice], :present?, "Should have success message"
 
     # Verify user and identity were created
     identity = UserSocialApple.find_by(uid: uid)
+
     assert_not_nil identity, "UserSocialApple identity should exist"
     assert_not_nil identity.user, "User should be associated with identity"
 
     # CRITICAL: Verify NO email was saved
     user = identity.user
+
     assert_nil UserEmail.find_by(user: user), "NO UserEmail should exist for social login user"
   end
 
@@ -170,9 +177,11 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: browser_headers.merge(@callback_headers)
+
     assert_response :redirect
 
     identity = UserSocialApple.find_by(uid: uid)
+
     assert_not_nil identity
 
     # Verify email column is NOT populated (if it exists in schema)
@@ -210,6 +219,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
 
     identity = UserSocialGoogle.find_by(uid: uid)
+
     assert_not_nil identity
     assert_nil UserEmail.find_by(user: identity.user), "NO UserEmail for Google login user"
 

@@ -18,6 +18,7 @@ class OrgPreferenceRegionOptionTest < ActiveSupport::TestCase
 
   test "can be created" do
     option = OrgPreferenceRegionOption.create!(id: 99)
+
     assert_not_nil option.id
   end
 
@@ -25,6 +26,7 @@ class OrgPreferenceRegionOptionTest < ActiveSupport::TestCase
     option = OrgPreferenceRegionOption.create!(id: 99)
     preference = OrgPreference.create!
     region = OrgPreferenceRegion.create!(preference: preference, option: option)
+
     assert_includes option.org_preference_regions, region
   end
 

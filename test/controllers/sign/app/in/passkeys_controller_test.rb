@@ -51,7 +51,8 @@ module Sign::App::In
 
     # Case F-1: Identifier does not exist
     test "options returns error if identifier not found" do
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: "unknown@example.com")
+      post options_sign_app_in_passkeys_path(ri: "jp"),
+           params: options_params(identifier: "unknown@example.com")
 
       assert_response :unprocessable_content
       assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
@@ -79,6 +80,7 @@ module Sign::App::In
 
       assert_not_nil json["challenge_id"]
       options = json["options"]
+
       assert_not_empty options["allowCredentials"]
 
       Rails.logger.debug { "DEBUG: allowCredentials = #{options["allowCredentials"].inspect}" }
@@ -87,6 +89,7 @@ module Sign::App::In
 
       # Verify allowCredentials contains our passkey ID
       match = options["allowCredentials"].any? { |c| c["id"] == @passkey.webauthn_id }
+
       assert match, "Expected allowCredentials to contain #{@passkey.webauthn_id}"
 
       # Case F-4: Challenge saved with correct purpose
@@ -95,10 +98,12 @@ module Sign::App::In
     end
 
     test "options returns challenge and allowCredentials for telephone identifier" do
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_telephone.number)
+      post options_sign_app_in_passkeys_path(ri: "jp"),
+           params: options_params(identifier: @user_telephone.number)
 
       assert_response :ok
       json = response.parsed_body
+
       assert_not_nil json["challenge_id"]
       assert_not_empty json.dig("options", "allowCredentials")
     end
@@ -115,20 +120,28 @@ module Sign::App::In
 
       # Verify challenge is Base64URL encoded
       challenge = options["challenge"]
+
       assert_match(/\A[A-Za-z0-9_-]+\z/, challenge, "challenge should be Base64URL format")
       padding_needed = (4 - (challenge.length % 4)) % 4
+
       assert_operator padding_needed, :<=, 2,
                       "challenge should have valid Base64URL padding (0-2 chars), but would need #{padding_needed}"
 
       # Verify no duplicate keys in JSON
       json_string = response.body
       challenge_count = json_string.scan(/"challenge"/).count
-      assert_equal 1, challenge_count, "JSON should contain exactly one 'challenge' key (found #{challenge_count})"
+
+      assert_equal 1, challenge_count,
+                   "JSON should contain exactly one 'challenge' key (found #{challenge_count})"
 
       # Verify allowCredentials IDs are properly encoded
       options["allowCredentials"].each_with_index do |credential, index|
         cred_id = credential["id"]
-        assert_match(/\A[A-Za-z0-9_-]+\z/, cred_id, "allowCredentials[#{index}].id should be Base64URL format")
+
+        assert_match(
+          /\A[A-Za-z0-9_-]+\z/, cred_id,
+          "allowCredentials[#{index}].id should be Base64URL format",
+        )
       end
     end
 
@@ -153,7 +166,10 @@ module Sign::App::In
           challenge_id: challenge_id,
           credential: {
             id: @passkey.webauthn_id,
-            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+            response: { clientDataJSON: "e30=",
+                        authenticatorData: "e30=",
+                        signature: "sig",
+                        userHandle: "h", },
           },
         }
 
@@ -162,6 +178,7 @@ module Sign::App::In
 
         assert_response :ok
         json = response.parsed_body
+
         assert_equal "ok", json["status"]
         assert_not_nil json["access_token"]
         assert_includes json["redirect_url"], "rd="
@@ -198,7 +215,10 @@ module Sign::App::In
           challenge_id: challenge_id,
           credential: {
             id: @passkey.webauthn_id,
-            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+            response: { clientDataJSON: "e30=",
+                        authenticatorData: "e30=",
+                        signature: "sig",
+                        userHandle: "h", },
           },
         }
 
@@ -206,11 +226,13 @@ module Sign::App::In
 
         assert_response :ok
         json = response.parsed_body
+
         assert_equal "session_restricted", json["status"]
         assert_equal sign_app_in_session_path(ri: "jp"), json["redirect_url"]
 
         # A restricted token should have been created
         restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED)
+
         assert_equal 1, restricted.count
 
         # Session limit gate should be issued
@@ -221,7 +243,8 @@ module Sign::App::In
 
     test "verification returns same response for credential mismatch and missing verified pii" do
       # Baseline: credential mismatch
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_email.address)
+      post options_sign_app_in_passkeys_path(ri: "jp"),
+           params: options_params(identifier: @user_email.address)
       baseline_challenge_id = response.parsed_body["challenge_id"]
 
       post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
@@ -264,7 +287,10 @@ module Sign::App::In
           challenge_id: pii_challenge_id,
           credential: {
             id: passkey.webauthn_id,
-            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+            response: { clientDataJSON: "e30=",
+                        authenticatorData: "e30=",
+                        signature: "sig",
+                        userHandle: "h", },
           },
         }
       end
@@ -274,7 +300,8 @@ module Sign::App::In
     end
 
     test "verification returns unauthorized when challenge actor and passkey owner mismatch" do
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_email.address)
+      post options_sign_app_in_passkeys_path(ri: "jp"),
+           params: options_params(identifier: @user_email.address)
       challenge_id = response.parsed_body["challenge_id"]
 
       other_user = create_verified_user_with_email(email_address: "passkey_other_#{SecureRandom.hex(4)}@example.com")
@@ -297,7 +324,10 @@ module Sign::App::In
           challenge_id: challenge_id,
           credential: {
             id: other_passkey.webauthn_id,
-            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+            response: { clientDataJSON: "e30=",
+                        authenticatorData: "e30=",
+                        signature: "sig",
+                        userHandle: "h", },
           },
         }
       end
@@ -307,7 +337,8 @@ module Sign::App::In
     end
 
     test "verification returns 422 when login result status is unknown" do
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_email.address)
+      post options_sign_app_in_passkeys_path(ri: "jp"),
+           params: options_params(identifier: @user_email.address)
       challenge_id = response.parsed_body["challenge_id"]
 
       passkey_id = @passkey.webauthn_id
@@ -324,7 +355,10 @@ module Sign::App::In
             challenge_id: challenge_id,
             credential: {
               id: @passkey.webauthn_id,
-              response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+              response: { clientDataJSON: "e30=",
+                          authenticatorData: "e30=",
+                          signature: "sig",
+                          userHandle: "h", },
             },
           }
         end
@@ -350,7 +384,10 @@ module Sign::App::In
           challenge_id: challenge_id,
           credential: {
             id: @passkey.webauthn_id,
-            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+            response: { clientDataJSON: "e30=",
+                        authenticatorData: "e30=",
+                        signature: "sig",
+                        userHandle: "h", },
           },
         }
       end
@@ -375,6 +412,7 @@ module Sign::App::In
 
       assert_response :conflict
       json = response.parsed_body
+
       assert_equal "session_limit_hard_reject", json["error_code"]
     end
 

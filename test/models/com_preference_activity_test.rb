@@ -63,12 +63,14 @@ class ComPreferenceActivityTest < ActiveSupport::TestCase
 
   test "com_preference helper method returns nil for other subject types" do
     @audit.subject_type = "OtherType"
+
     assert_nil @audit.com_preference
   end
 
   test "can set com_preference" do
     new_pref = com_preferences(:two)
     @audit.com_preference = new_pref
+
     assert_equal new_pref.id, @audit.subject_id
     assert_equal "ComPreference", @audit.subject_type
     assert_equal new_pref, @audit.com_preference
@@ -84,12 +86,14 @@ class ComPreferenceActivityTest < ActiveSupport::TestCase
 
   test "validates presence of subject_id" do
     @audit.subject_id = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_id], I18n.t("errors.messages.blank")
   end
 
   test "validates presence of subject_type" do
     @audit.subject_type = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_type], I18n.t("errors.messages.blank")
   end
@@ -97,12 +101,14 @@ class ComPreferenceActivityTest < ActiveSupport::TestCase
   test "event_id is integer type" do
     # event_id is now bigint, not string - length validation doesn't apply
     @audit.event_id = 1
+
     assert_kind_of Integer, @audit.event_id
   end
 
   test "level_id is integer type" do
     # level_id is now bigint, not string - length validation doesn't apply
     @audit.level_id = 1
+
     assert_kind_of Integer, @audit.level_id
   end
 end

@@ -58,18 +58,21 @@ class UserSocialAppleTest < ActiveSupport::TestCase
 
   test "token is required" do
     identity = UserSocialApple.new(user: User.find_by!(public_id: "one_id"), uid: "uid", expires_at: 123)
+
     assert_not identity.valid?
     assert_not_empty identity.errors[:token]
   end
 
   test "uid is required" do
     identity = UserSocialApple.new(user: User.find_by!(public_id: "one_id"), token: "token", expires_at: 123)
+
     assert_not identity.valid?
     assert_not_empty identity.errors[:uid]
   end
 
   test "expires_at is required" do
     identity = UserSocialApple.new(user: User.find_by!(public_id: "one_id"), uid: "uid", token: "token")
+
     assert_not identity.valid?
     assert_not_empty identity.errors[:expires_at]
   end
@@ -193,6 +196,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
 
   test "normalized_provider maps provider" do
     identity = UserSocialApple.new(provider: "apple")
+
     assert_equal "apple", identity.normalized_provider
   end
 

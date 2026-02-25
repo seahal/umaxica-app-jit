@@ -47,6 +47,7 @@ class ComTimelineBehaviorLevelTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = ComTimelineBehaviorLevel.new(id: 3)
+
     assert_predicate record, :valid?
   end
 end

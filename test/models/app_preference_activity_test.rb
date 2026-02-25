@@ -63,6 +63,7 @@ class AppPreferenceActivityTest < ActiveSupport::TestCase
   test "can set app_preference" do
     new_pref = app_preferences(:two)
     @audit.app_preference = new_pref
+
     assert_equal new_pref.id, @audit.subject_id
     assert_equal "AppPreference", @audit.subject_type
     assert_equal new_pref, @audit.app_preference
@@ -78,18 +79,21 @@ class AppPreferenceActivityTest < ActiveSupport::TestCase
 
   test "validates presence of subject_id" do
     @audit.subject_id = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_id], I18n.t("errors.messages.blank")
   end
 
   test "validates presence of subject_type" do
     @audit.subject_type = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_type], I18n.t("errors.messages.blank")
   end
 
   test "app_preference helper method returns nil when subject_type is not AppPreference" do
     @audit.subject_type = "SomeOtherType"
+
     assert_nil @audit.app_preference
   end
 end

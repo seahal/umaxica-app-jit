@@ -73,6 +73,7 @@ class LocaleInitializerTest < ActiveSupport::TestCase
   def assert_includes_locale_path(location)
     matched_paths = I18n.load_path.grep(/#{Regexp.escape(location)}/)
 
-    assert_predicate matched_paths, :any?, "Expected I18n.load_path to include #{location}, but got #{I18n.load_path}"
+    assert_predicate matched_paths, :any?,
+                     "Expected I18n.load_path to include #{location}, but got #{I18n.load_path}"
   end
 end

@@ -37,6 +37,7 @@ class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
     end
 
     token.reload
+
     assert token.revoked_at, "Original token should be revoked"
     assert token.compromised_at, "Compromise timestamp should be recorded"
     assert UserToken.where(user_id: user.id).all?(&:revoked?), "All actor tokens should be revoked"
@@ -90,6 +91,7 @@ class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
 
     assert_nothing_raised do
       result = Sign::RefreshTokenService.call(refresh_token: refresh)
+
       assert_kind_of Hash, result
       assert_not_equal token.id, result[:token].id
     end

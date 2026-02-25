@@ -24,6 +24,7 @@ class Sign::App::Verification::PasskeysControllerTest < ActionDispatch::Integrat
               headers: @headers
 
           get new_sign_app_verification_passkey_url(ri: "jp"), headers: @headers
+
           assert_response :success
 
           post sign_app_verification_passkey_url(ri: "jp"), headers: @headers

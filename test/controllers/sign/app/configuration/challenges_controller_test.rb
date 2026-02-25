@@ -21,6 +21,7 @@ class Sign::App::Configuration::ChallengesControllerTest < ActionDispatch::Integ
 
   test "should get show" do
     get sign_app_configuration_challenge_url(ri: "jp"), headers: @headers
+
     assert_response :success
     assert_select "h1", I18n.t("sign.app.configuration.mfa.show.title")
   end

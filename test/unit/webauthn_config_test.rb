@@ -21,6 +21,7 @@ class WebauthnConfigTest < ActiveSupport::TestCase
   test "validate_origin! returns true for trusted origins" do
     # Assuming config is loaded properly in test env
     trusted_origin = Webauthn.trusted_origins.first
+
     assert Webauthn.validate_origin!(trusted_origin)
   end
 

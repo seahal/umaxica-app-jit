@@ -100,7 +100,10 @@ module SocialCallbackGuard
   def allowed_hosts
     @allowed_hosts ||= # rubocop:disable ThreadSafety/ClassInstanceVariable
       begin
-        hosts = [ENV["SIGN_SERVICE_URL"], ENV["SIGN_STAFF_URL"]].compact.filter_map { |v| normalize_host_port(v) }
+        hosts =
+          [ENV["SIGN_SERVICE_URL"], ENV["SIGN_STAFF_URL"]].compact.filter_map { |v|
+            normalize_host_port(v)
+          }
         hosts.uniq
       end
   end

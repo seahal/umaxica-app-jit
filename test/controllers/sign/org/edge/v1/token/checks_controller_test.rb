@@ -30,6 +30,7 @@ class Sign::Org::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["authenticated"], "Staff should be authenticated"
     assert_equal "staff", json["type"]
     assert_equal @staff.id, json["id"]
@@ -43,6 +44,7 @@ class Sign::Org::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -90,6 +92,7 @@ class Sign::Org::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end

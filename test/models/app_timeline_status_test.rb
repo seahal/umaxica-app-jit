@@ -24,6 +24,7 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     status = @model_class.new(id: 9)
+
     assert_predicate status, :valid?
   end
 

@@ -46,6 +46,7 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get news_app_root_url
+
     assert_response :success
     assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
   end

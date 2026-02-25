@@ -136,9 +136,11 @@ class AppContactTopicTest < ActiveSupport::TestCase
   test "title length boundary" do
     contact = build_contact
     topic = AppContactTopic.new(app_contact: contact, title: "a" * 80, description: "ok")
+
     assert_predicate topic, :valid?
 
     topic.title = "a" * 81
+
     assert_not topic.valid?
     assert_not_empty topic.errors[:title]
   end
@@ -146,9 +148,11 @@ class AppContactTopicTest < ActiveSupport::TestCase
   test "description length boundary" do
     contact = build_contact
     topic = AppContactTopic.new(app_contact: contact, title: "ok", description: "a" * 8000)
+
     assert_predicate topic, :valid?
 
     topic.description = "a" * 8001
+
     assert_not topic.valid?
     assert_not_empty topic.errors[:description]
   end

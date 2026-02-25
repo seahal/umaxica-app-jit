@@ -16,6 +16,7 @@ module Sign
         assert_response :success
 
         query = {}
+
         assert_select "a[href=?]", new_sign_app_in_email_path(query, ri: "jp"),
                       I18n.t("sign.app.authentication.new.links.email")
         assert_select "a[href=?]", new_sign_app_in_passkey_path(query, ri: "jp"),
@@ -50,6 +51,7 @@ module Sign
 
       test "should render in english when lx=en" do
         get new_sign_app_in_url(lx: "en", ri: "jp"), headers: { "Host" => @host }
+
         assert_response :success
         assert_select "html[lang=en]"
         assert_select "a", text: /Need an account/

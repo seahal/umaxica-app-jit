@@ -28,6 +28,7 @@ class Sign::App::Verification::TotpsControllerTest < ActionDispatch::Integration
         headers: @headers
 
     get new_sign_app_verification_totp_url(ri: "jp"), headers: @headers
+
     assert_response :success
 
     session[:reauth_email_otp] = { "expires_at" => 5.minutes.from_now.to_i }
@@ -42,6 +43,7 @@ class Sign::App::Verification::TotpsControllerTest < ActionDispatch::Integration
     assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
 
     @token.reload
+
     assert_not_nil @token.last_step_up_at
     assert_equal "configuration_email", @token.last_step_up_scope
     assert_nil session[:reauth]

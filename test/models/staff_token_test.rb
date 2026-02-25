@@ -147,10 +147,12 @@ class StaffTokenTest < ActiveSupport::TestCase
     assert_predicate @token, :active?
 
     @token.update!(revoked_at: Time.current)
+
     assert_predicate @token, :revoked?
     assert_not @token.active?
 
     @token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+
     assert_predicate @token, :expired_refresh?
     assert_not @token.active?
   end
@@ -204,6 +206,7 @@ class StaffTokenTest < ActiveSupport::TestCase
 
     assert_equal :rotated, result[:status]
     new_token = result[:token]
+
     assert_predicate new_token, :present?
     assert_not_equal token.id, new_token.id
     assert_equal token.refresh_token_family_id, new_token.refresh_token_family_id
@@ -221,9 +224,11 @@ class StaffTokenTest < ActiveSupport::TestCase
     digest = StaffToken.digest_refresh_token(verifier)
 
     first = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+
     assert_equal :rotated, first[:status]
 
     second = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+
     assert_equal :replay, second[:status]
     assert_predicate token.reload.rotated_at, :present?
   end

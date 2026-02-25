@@ -55,12 +55,15 @@ class AppDocumentTest < ActiveSupport::TestCase
 
   test "permalink validation rejects slash, accepts underscore, rejects long length" do
     doc = AppDocument.new(base_attrs.merge(permalink: "bad/slug"))
+
     assert_not doc.valid?
 
     doc = AppDocument.new(base_attrs.merge(permalink: "good_slug"))
+
     assert_predicate doc, :valid?
 
     doc = AppDocument.new(base_attrs.merge(permalink: "a" * 201))
+
     assert_not doc.valid?
   end
 
@@ -80,9 +83,11 @@ class AppDocumentTest < ActiveSupport::TestCase
 
   test "redirect_url is required when response_mode is redirect" do
     doc = AppDocument.new(base_attrs.merge(response_mode: "redirect", redirect_url: nil))
+
     assert_not doc.valid?
 
     doc = AppDocument.new(base_attrs.merge(response_mode: "redirect", redirect_url: "https://example.com"))
+
     assert_predicate doc, :valid?
   end
 
@@ -114,21 +119,26 @@ class AppDocumentTest < ActiveSupport::TestCase
 
   test "permalink is required and must not be empty" do
     doc = AppDocument.new(base_attrs.merge(permalink: nil))
+
     assert_not doc.valid?
     doc = AppDocument.new(base_attrs.merge(permalink: ""))
+
     assert_not doc.valid?
     doc = AppDocument.new(base_attrs.merge(permalink: "   "))
+
     assert_not doc.valid?
   end
 
   test "published_at must be before expires_at" do
     doc = AppDocument.new(base_attrs.merge(published_at: 1.day.from_now, expires_at: 1.day.ago))
+
     assert_not doc.valid?
     assert_not_empty doc.errors[:published_at]
   end
 
   test "revision_key is ensured before validation" do
     doc = AppDocument.new(base_attrs.merge(revision_key: nil))
+
     assert_predicate doc, :valid?
     assert_not_nil doc.revision_key
   end

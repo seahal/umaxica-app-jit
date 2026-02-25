@@ -15,6 +15,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     head = { "X-TEST-CURRENT-USER" => @user.id, "Host" => @host }
     get "/configuration", headers: head
     follow_redirect!(headers: head) if response.redirect?
+
     assert_response :success
 
     # Check for brand name in header
@@ -28,6 +29,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     head = as_user_headers(@user, host: @host)
     get "/configuration", headers: head
     follow_redirect!(headers: head) if response.redirect?
+
     assert_response :success
     assert_select "h1", text: I18n.t("sign.app.configuration.show.page_title")
   end
@@ -50,6 +52,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     pages.each do |path|
       get path, headers: head
       follow_redirect!(headers: head) if response.redirect?
+
       assert_response :success, "Failed to load #{path}"
     end
   end
@@ -62,6 +65,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     get sign_app_configuration_url, headers: headers
 
     follow_redirect!(headers: headers) if response.redirect?
+
     assert_select "html.dark"
 
     headers = as_user_headers(@user, host: @host)
@@ -69,6 +73,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     headers["Cookie"] = [existing_cookie, "jit_ct=light"].compact.join("; ")
     get sign_app_configuration_url, headers: headers
     follow_redirect!(headers: headers) if response.redirect?
+
     assert_select "html:not(.dark)"
   end
 

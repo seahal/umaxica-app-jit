@@ -143,6 +143,7 @@ module Sign
           }
 
           email = UserEmail.find_by(address: "otp_test@example.com")
+
           assert_not_nil email.reload.otp_private_key
           assert_not_nil email.otp_counter
         end
@@ -168,6 +169,7 @@ module Sign
           assert_response :found # Redirects on success
 
           email.reload
+
           assert_equal "0", email.otp_counter
           assert_equal 0, email.otp_attempts_count
         end

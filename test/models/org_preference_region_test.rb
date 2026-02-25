@@ -33,6 +33,7 @@ class OrgPreferenceRegionTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     region = OrgPreferenceRegion.new
+
     assert_not region.valid?
     assert_includes region.errors[:preference], I18n.t("errors.messages.required")
   end
@@ -40,6 +41,7 @@ class OrgPreferenceRegionTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = org_preference_region_options(:jp)
     region = OrgPreferenceRegion.create!(preference: @preference, option: option)
+
     assert_not_nil region.id
     assert_equal @preference, region.preference
     assert_equal option, region.option
@@ -47,6 +49,7 @@ class OrgPreferenceRegionTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     region = OrgPreferenceRegion.create!(preference: @preference)
+
     assert_equal OrgPreferenceRegionOption::JP, region.option_id
   end
 end

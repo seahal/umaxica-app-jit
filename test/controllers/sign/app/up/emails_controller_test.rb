@@ -511,8 +511,14 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   test "turnstile validation error message i18n key exists" do
     # Verify the turnstile error message key exists in all locales
-    assert_not_nil I18n.t("sign.app.registration.email.create.turnstile_validation_failed", locale: :ja, default: nil)
-    assert_not_nil I18n.t("sign.app.registration.email.create.turnstile_validation_failed", locale: :en, default: nil)
+    assert_not_nil I18n.t(
+      "sign.app.registration.email.create.turnstile_validation_failed", locale: :ja,
+                                                                        default: nil,
+    )
+    assert_not_nil I18n.t(
+      "sign.app.registration.email.create.turnstile_validation_failed", locale: :en,
+                                                                        default: nil,
+    )
   end
 
   test "redirects to root when user is already logged in" do
@@ -678,7 +684,10 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
     assert UserActivityEvent.exists?(id: UserActivityEvent::SIGNED_UP_WITH_EMAIL)
-    assert UserActivity.exists?(event_id: UserActivityEvent::SIGNED_UP_WITH_EMAIL, subject_id: user_email.user_id)
+    assert UserActivity.exists?(
+      event_id: UserActivityEvent::SIGNED_UP_WITH_EMAIL,
+      subject_id: user_email.user_id,
+    )
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -869,7 +878,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Verify user_id is not zero or null
     assert_not_nil user_email.user_id, "user_id should not be nil"
-    assert_not_equal "00000000-0000-0000-0000-000000000000", user_email.user_id, "user_id should not be zero UUID"
+    assert_not_equal "00000000-0000-0000-0000-000000000000", user_email.user_id,
+                     "user_id should not be zero UUID"
 
     # Verify user actually exists
     assert User.exists?(id: user_email.user_id), "User record should exist for user_id"

@@ -79,7 +79,10 @@ module RateLimit
       next unless rule_applies_to_action?(rule)
 
       scope, discriminator = resolve_rule_scope_and_discriminator(rule)
-      key = rate_limit_key(rule: rule[:name], tenant: rate_limit_tenant, scope: scope, discriminator: discriminator)
+      key = rate_limit_key(
+        rule: rule[:name], tenant: rate_limit_tenant, scope: scope,
+        discriminator: discriminator,
+      )
 
       rate_limit!(
         rule: rule[:name],
@@ -106,9 +109,15 @@ module RateLimit
   def rate_limit_for_scope!(rule:, scope:, limit:, period:, retry_after: nil)
     scope_key = normalize_rate_limit_part(scope)
     discriminator = discriminator_for(scope)
-    key = rate_limit_key(rule: rule, tenant: rate_limit_tenant, scope: scope_key, discriminator: discriminator)
+    key = rate_limit_key(
+      rule: rule, tenant: rate_limit_tenant, scope: scope_key,
+      discriminator: discriminator,
+    )
 
-    rate_limit!(rule: rule, key: key, limit: limit, period: period, retry_after: retry_after, scope: scope_key)
+    rate_limit!(
+      rule: rule, key: key, limit: limit, period: period, retry_after: retry_after,
+      scope: scope_key,
+    )
   end
 
   def rule_applies_to_action?(rule)

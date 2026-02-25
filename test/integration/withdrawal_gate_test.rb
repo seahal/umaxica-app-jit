@@ -42,9 +42,11 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
 
   test "deactivated user can access allowlisted pages" do
     get new_sign_app_configuration_withdrawal_url(ri: "jp"), headers: @headers
+
     assert_response :success
 
     get edit_sign_app_configuration_url(ri: "jp"), headers: @headers
+
     assert_response :success
   end
 
@@ -53,6 +55,7 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
 
     assert_response :forbidden
     json_response = response.parsed_body
+
     assert_equal "WITHDRAWAL_REQUIRED", json_response["error"]
   end
 

@@ -61,15 +61,19 @@ module Auth
       harness = HeaderKeyHarness.new
 
       harness.actor_type = "user"
+
       assert_equal "X-TEST-CURRENT-USER", harness.send(:test_header_key)
 
       harness.actor_type = "staff"
+
       assert_equal "X-TEST-CURRENT-STAFF", harness.send(:test_header_key)
 
       harness.actor_type = "viewer"
+
       assert_equal "X-TEST-CURRENT-VIEWER", harness.send(:test_header_key)
 
       harness.actor_type = "unknown"
+
       assert_equal "X-TEST-CURRENT-RESOURCE", harness.send(:test_header_key)
     end
 
@@ -122,11 +126,13 @@ module Auth
 
     test "JwtConfiguration.issuer returns string" do
       issuer = Auth::Base::JwtConfiguration.issuer
+
       assert_kind_of String, issuer
     end
 
     test "JwtConfiguration.audiences returns array" do
       audiences = Auth::Base::JwtConfiguration.audiences
+
       assert_kind_of Array, audiences
     end
 

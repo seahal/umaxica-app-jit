@@ -25,7 +25,10 @@ class Auth::StaffTest < ActiveSupport::TestCase
     def initialize
       @session = {}
       @cookies = CookieMock.new
-      @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent", format: FormatMock.new)
+      @request = OpenStruct.new(
+        host: "test.host", headers: {}, user_agent: "TestAgent",
+        format: FormatMock.new,
+      )
     end
 
     def reset_session

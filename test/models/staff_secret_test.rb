@@ -100,18 +100,21 @@ class StaffSecretTest < ActiveSupport::TestCase
       password: secure_secret,
       staff_secret_kind_id: nil,
     )
+
     assert_not record.valid?
     assert_not_empty record.errors[:staff_secret_kind]
   end
 
   test "login_secret? predicate returns true for LOGIN kind" do
     record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: StaffSecretKind::LOGIN)
+
     assert_predicate record, :login_secret?
     assert_not record.totp_secret?
   end
 
   test "totp_secret? predicate returns true for TOTP kind" do
     record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: StaffSecretKind::TOTP)
+
     assert_predicate record, :totp_secret?
     assert_not record.login_secret?
   end

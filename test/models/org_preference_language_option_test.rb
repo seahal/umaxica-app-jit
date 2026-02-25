@@ -18,6 +18,7 @@ class OrgPreferenceLanguageOptionTest < ActiveSupport::TestCase
 
   test "can be created" do
     option = OrgPreferenceLanguageOption.create!(id: 99)
+
     assert_not_nil option.id
   end
 
@@ -25,6 +26,7 @@ class OrgPreferenceLanguageOptionTest < ActiveSupport::TestCase
     option = OrgPreferenceLanguageOption.create!(id: 99)
     preference = OrgPreference.create!
     language = OrgPreferenceLanguage.create!(preference: preference, option: option)
+
     assert_includes option.org_preference_languages, language
   end
 

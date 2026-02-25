@@ -59,6 +59,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     # Start reauth flow
     get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
+
     assert_response :redirect
 
     # Callback with correct state and matching identity
@@ -73,11 +74,13 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     # CRITICAL: last_reauth_at should be updated
     @user.reload
+
     assert_not_nil @user.last_reauth_at, "last_reauth_at MUST be updated after reauth"
     assert_operator @user.last_reauth_at, :>=, time_before, "last_reauth_at should be recent"
 
     # Identity's last_authenticated_at should also be updated
     google_identity.reload
+
     assert_operator google_identity.last_authenticated_at, :>=, time_before
   end
 
@@ -100,6 +103,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     get sign_app_social_start_url(provider: "apple", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
+
     assert_response :redirect
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
@@ -109,6 +113,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     @user.reload
+
     assert_not_nil @user.last_reauth_at, "last_reauth_at MUST be updated for Apple reauth"
     assert_operator @user.last_reauth_at, :>=, time_before
   end
@@ -148,6 +153,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     # last_reauth_at should NOT be updated
     @user.reload
+
     assert_equal original_reauth_at, @user.last_reauth_at, "last_reauth_at should not change on failed reauth"
   end
 

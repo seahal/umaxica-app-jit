@@ -56,20 +56,25 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
 
   test "restricted? returns true when status is restricted" do
     @token.update!(status: "restricted")
+
     assert_predicate @token, :restricted?
 
     @token.update!(status: "active")
+
     assert_not_predicate @token, :restricted?
   end
 
   test "active_status? returns true when status is active and not revoked" do
     @token.update!(status: "active", revoked_at: nil)
+
     assert_predicate @token, :active_status?
 
     @token.update!(status: "restricted")
+
     assert_not_predicate @token, :active_status?
 
     @token.update!(status: "active", revoked_at: Time.current)
+
     assert_not_predicate @token, :active_status?
   end
 
@@ -124,12 +129,15 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_predicate token, :active_status?
 
     token.mark_restricted!
+
     assert_predicate token, :restricted?
 
     token.promote_to_active!
+
     assert_predicate token, :active_status?
 
     token.revoke!
+
     assert_equal "revoked", token.reload.status
   end
 end

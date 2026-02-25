@@ -38,6 +38,7 @@ class AdminTest < ActiveSupport::TestCase
   test "can create admin with staff" do
     staff = Staff.create!(public_id: "abcdef23")
     admin = Admin.create!(staff: staff)
+
     assert_predicate admin, :persisted?
     assert_equal staff, admin.staff
   end
@@ -45,12 +46,14 @@ class AdminTest < ActiveSupport::TestCase
   test "staff has many admins" do
     staff = Staff.create!(public_id: "abcdef24")
     admin = Admin.create!(staff: staff)
+
     assert_includes staff.admins, admin
   end
 
   test "belongs to staff" do
     staff = Staff.create!(public_id: "abcdef25")
     admin = Admin.create!(staff: staff)
+
     assert_equal staff, admin.staff
   end
 end

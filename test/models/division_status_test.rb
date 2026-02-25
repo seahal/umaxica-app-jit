@@ -18,6 +18,7 @@ class DivisionStatusTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = DivisionStatus.new(id: 9)
+
     assert_predicate record, :valid?
   end
 

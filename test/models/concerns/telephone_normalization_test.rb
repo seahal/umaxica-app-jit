@@ -101,6 +101,7 @@ class TelephoneNormalizationTest < ActiveSupport::TestCase
     # Ambiguous: could be domestic without 0, or international without +
     # Return as-is and let E.164 validation fail
     result = TelephoneNormalization.normalize_to_e164("9012345678")
+
     assert_equal "9012345678", result
   end
 
@@ -114,6 +115,7 @@ class TelephoneNormalizationTest < ActiveSupport::TestCase
     # "0" alone -> "+81" (domestic 0 removed, but no number left)
     # This should return invalid and fail E.164 validation
     result = TelephoneNormalization.normalize_to_e164("0")
+
     assert_equal "+81", result # Will fail E.164 validation (needs at least 2 more digits)
   end
 
@@ -121,6 +123,7 @@ class TelephoneNormalizationTest < ActiveSupport::TestCase
     # "00" alone -> "+" (international prefix with no number)
     # Should return invalid
     result = TelephoneNormalization.normalize_to_e164("00")
+
     assert_equal "+", result # Will fail E.164 validation
   end
 
@@ -135,6 +138,7 @@ class TelephoneNormalizationTest < ActiveSupport::TestCase
     # Country codes cannot start with 0
     # Return as-is, let validation fail
     result = TelephoneNormalization.normalize_to_e164("+0123456789")
+
     assert_equal "+0123456789", result
   end
 

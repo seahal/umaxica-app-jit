@@ -46,7 +46,8 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
          headers: @callback_headers
 
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
-    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"), flash[:notice]
+    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"),
+                 flash[:notice]
   end
 
   test "link succeeds for logged in user" do
@@ -61,9 +62,11 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     follow_redirect!
+
     assert_predicate flash[:notice], :present?
 
     identity = UserSocialApple.find_by(uid: "apple_flow_link")
+
     assert_not_nil identity
     assert_equal user.id, identity.user_id
   end
@@ -81,9 +84,11 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     follow_redirect!
+
     assert_predicate flash[:notice], :present?
 
     identity = UserSocialApple.find_by(uid: "apple_flow_link_session_only")
+
     assert_not_nil identity
     assert_equal user.id, identity.user_id
   end
@@ -111,9 +116,11 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     follow_redirect!
+
     assert_predicate flash[:alert], :present?
 
     identity = UserSocialApple.find_by(uid: "apple_flow_conflict")
+
     assert_equal owner.id, identity.user_id
   end
 

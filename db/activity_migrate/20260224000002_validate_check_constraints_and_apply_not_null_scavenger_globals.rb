@@ -2,6 +2,8 @@
 
 class ValidateCheckConstraintsAndApplyNotNullScavengerGlobals < ActiveRecord::Migration[8.2]
   def up
+    return unless table_exists?(:scavenger_globals)
+
     validate_check_constraint :scavenger_globals, name: "scavenger_globals_job_type_null"
     validate_check_constraint :scavenger_globals, name: "scavenger_globals_idempotency_key_null"
 

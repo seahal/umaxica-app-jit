@@ -61,6 +61,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
 
     # Verify the session was revoked
     token.reload
+
     assert_not_nil token.revoked_at
     assert_equal UserToken::STATUS_REVOKED, token.status
   end
@@ -87,10 +88,12 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
 
     # The restricted session should be promoted to active
     restricted_token.reload
+
     assert_equal UserToken::STATUS_ACTIVE, restricted_token.status
 
     # The revoked session should be marked as revoked
     active_token1.reload
+
     assert_not_nil active_token1.revoked_at
   end
 
@@ -112,6 +115,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
           headers: headers
 
     restricted_token.reload
+
     assert_equal UserToken::STATUS_ACTIVE, restricted_token.status
 
     # Should redirect to the decoded path, not the raw Base64 string
@@ -136,6 +140,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
           headers: headers
 
     restricted_token.reload
+
     assert_equal UserToken::STATUS_ACTIVE, restricted_token.status
 
     # Should fall back to default configuration path

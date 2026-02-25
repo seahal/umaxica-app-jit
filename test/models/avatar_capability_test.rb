@@ -35,6 +35,7 @@ class AvatarCapabilityTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = AvatarCapability.new(id: 9)
+
     assert_predicate record, :valid?
   end
 

@@ -708,6 +708,8 @@ ja:
           revoke:
             success: セッションを破棄しました。
             failure: 現在のセッションは破棄できません。
+            others_button: 他のセッションをすべて削除
+            others_confirm: その他のセッションをすべて消しますか？
         registration:
           google:
             new:

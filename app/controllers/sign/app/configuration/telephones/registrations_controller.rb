@@ -54,7 +54,10 @@ module Sign
 
             submitted_code = params.dig(:user_telephone, :pass_code)
             if submitted_code.blank?
-              @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.code_required"))
+              @user_telephone.errors.add(
+                :pass_code,
+                t("sign.app.registration.telephone.update.code_required"),
+              )
               render :edit, status: :unprocessable_content
               return
             end

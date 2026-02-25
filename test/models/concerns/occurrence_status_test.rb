@@ -14,6 +14,7 @@ class OccurrenceStatusTest < ActiveSupport::TestCase
 
     record.expires_at = nil
     record.valid?
+
     assert_predicate record.expires_at, :present?
   end
 
@@ -22,6 +23,7 @@ class OccurrenceStatusTest < ActiveSupport::TestCase
 
     assert_not record.has_attribute?(:expires_at)
     record.valid?
+
     assert_not record.respond_to?(:expires_at)
   end
 end

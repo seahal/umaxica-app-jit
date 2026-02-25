@@ -20,6 +20,7 @@ class Sign::Org::InsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     query = { ri: "jp" }
+
     assert_select "a[href=?]", new_sign_org_in_passkey_path(query)
     assert_select "a[href=?]", new_sign_org_in_secret_path(query)
   end

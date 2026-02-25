@@ -31,7 +31,8 @@ module Sign
           initialize_totp
 
           if @totp.private_key.blank?
-            redirect_to new_sign_app_configuration_totp_path, notice: t("sign.app.registration.email.flow.invalid")
+            redirect_to new_sign_app_configuration_totp_path,
+                        notice: t("sign.app.registration.email.flow.invalid")
             return
           end
 
@@ -86,7 +87,7 @@ module Sign
         private
 
         def find_totp
-          current_user.user_one_time_passwords.find_by!(public_id: params[:public_id])
+          current_user.user_one_time_passwords.find_by!(public_id: params[:id])
         end
 
         def generate_totp_session

@@ -5,12 +5,16 @@ module MigrationHelpers
   module DocumentFkSmallint
     include DocumentReferenceSmallint
 
-    def convert_fk_column_to_smallint(table_name:, column_name:, parent_table:, sentinel_values: ["NEYO", "none"],
+    def convert_fk_column_to_smallint(table_name:, column_name:, parent_table:, sentinel_values: ["NEYO",
+                                                                                                  "none",],
                                       index_name:, foreign_key_options: {})
       small_column = "#{column_name}_small"
 
       safety_assured do
-        add_column table_name, small_column, :integer, limit: 2 unless column_exists?(table_name, small_column)
+        add_column table_name, small_column, :integer, limit: 2 unless column_exists?(
+          table_name,
+          small_column,
+        )
         fill_fk_small_column(table_name, column_name, parent_table, sentinel_values, small_column)
         change_column_default table_name, small_column, from: nil, to: 0
         change_column_null table_name, small_column, false
@@ -28,7 +32,10 @@ module MigrationHelpers
         change_column_null table_name, column_name, false
 
         add_index table_name, column_name, name: index_name if index_name
-        add_check_constraint(table_name, "#{column_name} >= 0", name: "#{table_name}_#{column_name}_non_negative")
+        add_check_constraint(
+          table_name, "#{column_name} >= 0",
+          name: "#{table_name}_#{column_name}_non_negative",
+        )
         add_foreign_key table_name, parent_table, column: column_name, primary_key: :id, **foreign_key_options
       end
     end

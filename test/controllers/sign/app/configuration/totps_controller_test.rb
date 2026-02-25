@@ -57,6 +57,8 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     get edit_sign_app_configuration_totp_url(@totp.public_id, ri: "jp"), headers: @headers
 
     assert_response :success
+    assert_equal @totp.public_id, request.path_parameters[:id]
+    assert_nil request.path_parameters[:public_id]
   end
 
   test "should update title with public_id" do

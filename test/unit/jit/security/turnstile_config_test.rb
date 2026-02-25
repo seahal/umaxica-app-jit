@@ -96,6 +96,7 @@ module Jit
           flat: { CLOUDFLARE_TURNSTILE_SITE_KEY: "flat-site" },
           nested: { TURNSTILE_SITE_KEY: "nested-site" },
         )
+
         Rails.application.stub(:credentials, fake_creds) do
           assert_equal "flat-site", TurnstileConfig.default_site_key
         end

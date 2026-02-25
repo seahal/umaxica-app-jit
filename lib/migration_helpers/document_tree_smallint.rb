@@ -27,17 +27,29 @@ module MigrationHelpers
         change_column_default table_name, :id_small, from: nil, to: 0
         change_column_null table_name, :id_small, false
 
-        add_column table_name, :parent_id_small, :integer, limit: 2 unless column_exists?(table_name, :parent_id_small)
+        add_column table_name, :parent_id_small, :integer, limit: 2 unless column_exists?(
+          table_name,
+          :parent_id_small,
+        )
         fill_parent_id_small(table_name, parent_column, parent_sentinel_values)
         change_column_default table_name, :parent_id_small, from: nil, to: 0
         change_column_null table_name, :parent_id_small, false
 
-        remove_foreign_key table_name, column: parent_column if foreign_key_exists?(table_name, column: parent_column)
+        remove_foreign_key table_name, column: parent_column if foreign_key_exists?(
+          table_name,
+          column: parent_column,
+        )
 
         drop_child_foreign_keys(child_foreign_keys)
 
-        remove_index table_name, name: lower_index if lower_index && index_exists?(table_name, name: lower_index)
-        remove_index table_name, name: parent_index if parent_index && index_exists?(table_name, name: parent_index)
+        remove_index table_name, name: lower_index if lower_index && index_exists?(
+          table_name,
+          name: lower_index,
+        )
+        remove_index table_name, name: parent_index if parent_index && index_exists?(
+          table_name,
+          name: parent_index,
+        )
 
         remove_check_constraint(table_name, check_constraint) if check_constraint
 
@@ -57,7 +69,10 @@ module MigrationHelpers
 
         add_primary_key_constraint(table_name)
         add_check_constraint(table_name, "id >= 0", name: "#{table_name}_id_non_negative")
-        add_check_constraint(table_name, "#{parent_column} >= 0", name: "#{table_name}_#{parent_column}_non_negative")
+        add_check_constraint(
+          table_name, "#{parent_column} >= 0",
+          name: "#{table_name}_#{parent_column}_non_negative",
+        )
 
         add_index table_name, parent_column, name: parent_index if parent_index
         add_foreign_key table_name, table_name, column: parent_column, primary_key: :id, validate: false

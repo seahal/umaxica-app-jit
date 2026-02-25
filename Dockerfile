@@ -45,6 +45,7 @@ RUN if ! getent group "${DOCKER_GROUP}" >/dev/null; then \
 
 # hadolint ignore=DL3008
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
     ca-certificates \
     libpq5 \

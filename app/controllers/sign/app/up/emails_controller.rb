@@ -34,7 +34,8 @@ module Sign
           )
 
           if result == :cooldown
-            render plain: t("sign.app.registration.email.create.otp_resend_too_soon"), status: :too_many_requests
+            render plain: t("sign.app.registration.email.create.otp_resend_too_soon"),
+                   status: :too_many_requests
             return
           end
 

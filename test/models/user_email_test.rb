@@ -92,6 +92,7 @@ class UserEmailTest < ActiveSupport::TestCase
 
   test "should require valid email format" do
     user_email = UserEmail.new(@valid_attributes.merge(address: "invalid-email"))
+
     assert_not user_email.valid?
     assert_not_empty user_email.errors[:address]
   end
@@ -101,12 +102,14 @@ class UserEmailTest < ActiveSupport::TestCase
     # address is initialized to "" in after_initialize, so it won't be nil, but empty string
     # validates presence checks for non-blank.
     user_email.address = ""
+
     assert_not user_email.valid?
     assert_not_empty user_email.errors[:address]
   end
 
   test "should require policy confirmation" do
     user_email = UserEmail.new(@valid_attributes.merge(confirm_policy: false))
+
     assert_not user_email.valid?
     assert_not_empty user_email.errors[:confirm_policy]
   end
@@ -114,6 +117,7 @@ class UserEmailTest < ActiveSupport::TestCase
   test "should require unique email addresses" do
     UserEmail.create!(@valid_attributes)
     duplicate_email = UserEmail.new(@valid_attributes)
+
     assert_not duplicate_email.valid?
     assert_not_empty duplicate_email.errors[:address]
   end
@@ -126,6 +130,7 @@ class UserEmailTest < ActiveSupport::TestCase
     )
 
     expected = IdentifierBlindIndex.bidx_for_email("test@example.com")
+
     assert_equal expected, user_email.address_digest
   end
 

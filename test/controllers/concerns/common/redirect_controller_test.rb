@@ -14,6 +14,7 @@ class Common::RedirectControllerTest < ActionDispatch::IntegrationTest
 
   test "allowed_hosts returns array of hosts" do
     hosts = @controller.allowed_hosts
+
     assert_kind_of Array, hosts
     # Should include at least some hosts from environment variables
     assert hosts.all? { |h| h.is_a?(String) }
@@ -21,15 +22,19 @@ class Common::RedirectControllerTest < ActionDispatch::IntegrationTest
 
   test "normalize_host strips scheme from URL" do
     result = Common::Redirect.normalize_host("http://example.com/path")
+
     assert_includes result, "example.com"
     result = Common::Redirect.normalize_host("https://example.com")
+
     assert_includes result, "example.com"
   end
 
   test "normalize_host handles localhost" do
     result = Common::Redirect.normalize_host("localhost:3000")
+
     assert_includes result, "localhost"
     result = Common::Redirect.normalize_host("http://localhost")
+
     assert_includes result, "localhost"
   end
 

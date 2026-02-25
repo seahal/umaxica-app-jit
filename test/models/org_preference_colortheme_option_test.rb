@@ -18,6 +18,7 @@ class OrgPreferenceColorthemeOptionTest < ActiveSupport::TestCase
 
   test "can be created" do
     option = OrgPreferenceColorthemeOption.create!(id: 99)
+
     assert_not_nil option.id
   end
 
@@ -25,6 +26,7 @@ class OrgPreferenceColorthemeOptionTest < ActiveSupport::TestCase
     option = OrgPreferenceColorthemeOption.create!(id: 99)
     preference = OrgPreference.create!
     colortheme = OrgPreferenceColortheme.create!(preference: preference, option: option)
+
     assert_includes option.org_preference_colorthemes, colortheme
   end
 
@@ -40,6 +42,7 @@ class OrgPreferenceColorthemeOptionTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     option = OrgPreferenceColorthemeOption.new(id: 123)
+
     assert_predicate option, :valid?
   end
 end

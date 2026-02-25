@@ -37,6 +37,7 @@ require "test_helper"
 class AvatarMembershipTest < ActiveSupport::TestCase
   test "validations" do
     membership = AvatarMembership.new
+
     assert_not membership.valid?
     # valid_from is required but might be auto-set by DB default? No, schema says
     # not null, model validation says presence.
@@ -45,6 +46,7 @@ class AvatarMembershipTest < ActiveSupport::TestCase
 
   test "assigns numeric id" do
     record = AvatarMembership.new(id: 99)
+
     assert_equal 99, record.id
   end
 end

@@ -33,6 +33,7 @@ class ComPreferenceLanguageTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     language = ComPreferenceLanguage.new
+
     assert_not language.valid?
     assert_includes language.errors[:preference], "を入力してください"
   end
@@ -40,6 +41,7 @@ class ComPreferenceLanguageTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = com_preference_language_options(:ja)
     language = ComPreferenceLanguage.create!(preference: @preference, option: option)
+
     assert_not_nil language.id
     assert_equal @preference, language.preference
     assert_equal option, language.option
@@ -47,6 +49,7 @@ class ComPreferenceLanguageTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     language = ComPreferenceLanguage.create!(preference: @preference)
+
     assert_equal ComPreferenceLanguageOption::JA, language.option_id
   end
 end

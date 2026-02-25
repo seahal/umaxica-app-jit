@@ -186,6 +186,7 @@ class AuthRedirectCheckpointTest < ActiveSupport::TestCase
       @harness.issue_checkpoint!(kind: "mfa", state: "pending")
 
       checkpoint = @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY]
+
       assert_equal "mfa", checkpoint["kind"]
       assert_equal "pending", checkpoint["state"]
       assert_equal Time.current.to_i, checkpoint["issued_at"]

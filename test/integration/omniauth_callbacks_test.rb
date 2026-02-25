@@ -4,7 +4,8 @@
 require "test_helper"
 
 class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
-  fixtures :user_social_google_statuses, :user_social_apple_statuses, :user_statuses, :user_one_time_password_statuses
+  fixtures :user_social_google_statuses, :user_social_apple_statuses, :user_statuses,
+           :user_one_time_password_statuses
 
   setup do
     OmniAuth.config.test_mode = true
@@ -40,10 +41,12 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
+
     assert_redirected_to @expected_redirect
     follow_redirect!
 
     user = UserSocialGoogle.find_by(uid: "123456789").user
+
     assert_not_nil user
     assert UserToken.exists?(user_id: user.id), "UserToken should be created for Google login"
   end
@@ -64,10 +67,12 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
          headers: SocialCallbackTestHelper.callback_headers(@host)
+
     assert_redirected_to @expected_redirect
     follow_redirect!
 
     user = UserSocialApple.find_by(uid: "apple_uid_123").user
+
     assert_not_nil user
   end
 
@@ -136,11 +141,14 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
+
     assert_redirected_to @expected_redirect
     follow_redirect!
 
     provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
-    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name), flash[:notice]
+
+    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name),
+                 flash[:notice]
   end
 
   test "social login with MFA enabled does not require additional MFA challenge" do
@@ -250,6 +258,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
     # A restricted token should have been created
     restricted = UserToken.where(user_id: user.id, status: UserToken::STATUS_RESTRICTED)
+
     assert_equal 1, restricted.count
   end
   # rubocop:enable Minitest/MultipleAssertions

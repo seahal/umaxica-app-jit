@@ -49,7 +49,10 @@ module Sign
         # ------------------------------------------------------------------
 
         def verification_params
-          params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json, :scope, :return_to, :rd)
+          params.fetch(:verification, {}).permit(
+            :code, :challenge_id, :credential_json, :scope, :return_to,
+            :rd,
+          )
         end
 
         def email_otp_session_active?

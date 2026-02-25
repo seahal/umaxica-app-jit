@@ -421,7 +421,10 @@ class SocialAuthService
         "credentials",
         "refresh_token",
       ) || @auth_hash.dig(:credentials, :refresh_token) || "",
-      expires_at: @auth_hash.dig("credentials", "expires_at") || @auth_hash.dig(:credentials, :expires_at) || 0,
+      expires_at: @auth_hash.dig(
+        "credentials",
+        "expires_at",
+      ) || @auth_hash.dig(:credentials, :expires_at) || 0,
     )
     assign_identity_to_user(user, identity, identity_class, provider)
     identity

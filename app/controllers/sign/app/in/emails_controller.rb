@@ -68,7 +68,8 @@ module Sign
             respond_to do |format|
               format.html { render :edit, status: :unprocessable_content }
               format.json {
-                render json: { error: @user_email.errors.full_messages.join(", ") }, status: :unprocessable_content
+                render json: { error: @user_email.errors.full_messages.join(", ") },
+                       status: :unprocessable_content
               }
             end
             return
@@ -207,7 +208,10 @@ module Sign
             if result[:status] == :mfa_required
               { success: true, redirect_path: result[:redirect_path] }
             elsif result[:status] == :session_limit_hard_reject
-              { success: false, error: result[:message], hard_reject: true, http_status: result[:http_status] }
+              { success: false,
+                error: result[:message],
+                hard_reject: true,
+                http_status: result[:http_status], }
             elsif result[:restricted]
               { success: true, restricted: true, redirect_path: sign_app_in_session_path }
             else

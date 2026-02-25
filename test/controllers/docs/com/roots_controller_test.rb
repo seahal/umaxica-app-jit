@@ -43,6 +43,7 @@ class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get docs_com_root_path, headers: browser_headers
+
     assert_response :success
     assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
   end

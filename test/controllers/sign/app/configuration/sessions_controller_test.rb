@@ -32,9 +32,11 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     )
 
     delete sign_app_configuration_session_url(user_token.public_id, ri: "jp"), headers: @headers
+
     assert_response :see_other
 
     user_token.reload
+
     assert_not_nil user_token.revoked_at
   end
 
@@ -42,6 +44,56 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     get sign_app_configuration_sessions_url(ri: "jp"), headers: { "Host" => @host }
 
     assert_response :redirect
+  end
+
+  test "others revokes active sessions except current session" do
+    current_session_id = @headers["X-TEST-SESSION-PUBLIC-ID"]
+    token_one = UserToken.create!(
+      user_id: @user.id,
+      public_id: "others_one_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+    token_two = UserToken.create!(
+      user_id: @user.id,
+      public_id: "others_two_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+
+    delete others_sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :see_other
+    current_session = UserToken.find_by!(public_id: current_session_id)
+    token_one.reload
+    token_two.reload
+
+    assert_nil current_session.revoked_at
+    assert_not_nil token_one.revoked_at
+    assert_not_nil token_two.revoked_at
+    assert_not response_has_cookie?(::Auth::Base::ACCESS_COOKIE_KEY)
+    assert_not response_has_cookie?(::Auth::Base::REFRESH_COOKIE_KEY)
+  end
+
+  test "others requires authentication" do
+    delete others_sign_app_configuration_sessions_url(ri: "jp"), headers: { "Host" => @host }
+
+    assert_response :redirect
+  end
+
+  test "index shows revoke all other sessions button" do
+    UserToken.create!(
+      user_id: @user.id,
+      public_id: "others_btn_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+
+    get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "form[action^='#{others_sign_app_configuration_sessions_path}']"
+    assert_select "button", text: I18n.t("sign.app.configuration.sessions.revoke.others_button")
   end
 
   test "should show back link on index page" do

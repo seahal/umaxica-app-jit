@@ -17,6 +17,7 @@ class ActivityRecordTest < ActiveSupport::TestCase
     UserActivityLevel.where(id: temp_id).delete_all
 
     record = UserActivityLevel.create!(id: temp_id)
+
     assert_equal temp_id, record.id
     assert_equal record, UserActivityLevel.find(temp_id)
   ensure

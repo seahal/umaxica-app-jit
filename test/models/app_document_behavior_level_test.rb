@@ -49,6 +49,7 @@ class AppDocumentBehaviorLevelTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = AppDocumentBehaviorLevel.new(id: 3)
+
     assert_predicate record, :valid?
   end
 end

@@ -1,5 +1,4 @@
 inherit_from:
-  - .rubocop_todo.yml
   - .rubocop/rubocop_ast.yml
 
 # ============================================================
@@ -27,12 +26,12 @@ inherit_gem:
 # プラグイン
 plugins:
   - rubocop-performance
-  - rubocop-rails
-  - rubocop-i18n
-  - rubocop-rake
-  - rubocop-rubycw
-  - rubocop-minitest
   - rubocop-thread_safety
+  - rubocop-rake
+  - rubocop-minitest
+  - rubocop-i18n
+  - rubocop-rubycw
+  - rubocop-rails
   - rubocop-sorbet
 
 # 全Copに適用される設定
@@ -482,6 +481,7 @@ Metrics/MethodLength:
   Max: 45
   Exclude:
     - "app/controllers/concerns/preference/base.rb"
+    - "app/controllers/core/com/contact/telephones_controller.rb"
 
 Metrics/ModuleLength:
   Max: 120
@@ -1141,13 +1141,13 @@ Minitest/DuplicateTestRun:
   Enabled: true
 
 Minitest/EmptyLineBeforeAssertionMethods:
-  Enabled: false
+  Enabled: true
 
 Minitest/Focus:
   Enabled: true
 
 Minitest/GlobalExpectations:
-  Enabled: false
+  Enabled: true
 
 Minitest/LifecycleHooksOrder:
   Enabled: true

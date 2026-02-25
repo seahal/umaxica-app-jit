@@ -34,6 +34,7 @@ class ComPreferenceRegionTest < ActiveSupport::TestCase
   test "belongs to preference" do
     I18n.with_locale(:ja) do
       region = ComPreferenceRegion.new
+
       assert_not region.valid?
       assert_includes region.errors[:preference], "を入力してください"
     end
@@ -42,6 +43,7 @@ class ComPreferenceRegionTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = com_preference_region_options(:jp)
     region = ComPreferenceRegion.create!(preference: @preference, option: option)
+
     assert_not_nil region.id
     assert_equal @preference, region.preference
     assert_equal option, region.option
@@ -49,6 +51,7 @@ class ComPreferenceRegionTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     region = ComPreferenceRegion.create!(preference: @preference)
+
     assert_equal ComPreferenceRegionOption::JP, region.option_id
   end
 end

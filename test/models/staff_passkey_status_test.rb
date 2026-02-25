@@ -15,6 +15,7 @@ class StaffPasskeyStatusTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     status = StaffPasskeyStatus.new(id: 9)
+
     assert_predicate status, :valid?
   end
 

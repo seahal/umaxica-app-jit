@@ -24,6 +24,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get new" do
     get new_sign_app_in_secret_url(ri: "jp"), headers: default_headers
+
     assert_response :success
   end
 
@@ -31,6 +32,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_secret_url(ri: "jp"),
          params: { secret_login_form: { identifier: "", secret_value: "" } },
          headers: default_headers
+
     assert_response :unprocessable_entity
     assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
   end
@@ -153,6 +155,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_secret_url(ri: "jp"),
          params: login_params(identifier: @raw_email, secret_value: "wrong-secret"),
          headers: default_headers
+
     assert_response :unprocessable_entity
     assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
 
@@ -344,6 +347,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
     # A restricted token should have been created
     restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED)
+
     assert_equal 1, restricted.count
 
     # Session limit gate should be issued

@@ -39,6 +39,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
   test "should get new" do
     get new_sign_org_in_passkey_url(ri: "jp")
+
     assert_response :success
   end
 
@@ -79,10 +80,12 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
     assert_not_nil json["challenge_id"]
     options = json["options"]
+
     assert_not_empty options["allowCredentials"]
 
     # Verify allowCredentials contains our passkey ID
     match = options["allowCredentials"].any? { |c| c["id"] == @staff_passkey.webauthn_id }
+
     assert match, "Expected allowCredentials to contain #{@staff_passkey.webauthn_id}"
 
     # Verify challenge saved with correct purpose
@@ -96,6 +99,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     json = response.parsed_body
+
     assert_not_nil json["challenge_id"]
     assert_not_empty json.dig("options", "allowCredentials")
   end
@@ -167,6 +171,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :ok
       json = response.parsed_body
+
       assert_equal "ok", json["status"]
       assert_not_nil json["access_token"]
       assert_includes json["redirect_url"], "rd="
@@ -182,7 +187,9 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     challenge_id = response.parsed_body["challenge_id"]
 
     mock_credential = Object.new
-    mock_credential.define_singleton_method(:id) { Base64.urlsafe_encode64("unknown_credential", padding: false) }
+    mock_credential.define_singleton_method(:id) {
+      Base64.urlsafe_encode64("unknown_credential", padding: false)
+    }
     mock_credential.define_singleton_method(:sign_count) { 1 }
     mock_credential.define_singleton_method(:verify) { |*_args| true }
 
@@ -255,7 +262,10 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
           challenge_id: challenge_id,
           credential: {
             id: @staff_passkey.webauthn_id,
-            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+            response: { clientDataJSON: "e30=",
+                        authenticatorData: "e30=",
+                        signature: "sig",
+                        userHandle: "h", },
           },
         }
       end
@@ -290,6 +300,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :ok
       json = response.parsed_body
+
       assert_equal "ok", json["status"]
     end
   end

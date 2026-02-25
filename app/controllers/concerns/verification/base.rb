@@ -137,7 +137,8 @@ module Verification
 
         safe_redirect_to(destination, fallback: fallback, status: :found)
       elsif request.format.json?
-        render json: { error: I18n.t("auth.step_up.register_methods_required") }, status: :unprocessable_content
+        render json: { error: I18n.t("auth.step_up.register_methods_required") },
+               status: :unprocessable_content
       else
         render plain: I18n.t("auth.step_up.register_methods_required"), status: :unprocessable_content
       end

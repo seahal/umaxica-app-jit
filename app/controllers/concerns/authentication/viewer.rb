@@ -8,7 +8,8 @@ module Authentication
     include Authentication::Base
 
     included do
-      helper_method :current_viewer, :logged_in?, :active_viewer?, :logged_in_viewer? if respond_to?(:helper_method)
+      helper_method :current_viewer, :logged_in?, :active_viewer?,
+                    :logged_in_viewer? if respond_to?(:helper_method)
       alias_method :current_viewer, :current_resource
       alias_method :authenticate_viewer!, :authenticate!
       alias_method :logged_in_viewer?, :logged_in?

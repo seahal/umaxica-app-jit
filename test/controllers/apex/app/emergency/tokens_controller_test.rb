@@ -24,10 +24,12 @@ class Apex::App::Emergency::TokensControllerTest < ActionDispatch::IntegrationTe
 
   test "PATCH/PUT update redirects to show" do
     patch apex_app_emergency_app_token_url
+
     assert_response :redirect
     assert_redirected_to apex_app_emergency_app_token_url
 
     put apex_app_emergency_app_token_url
+
     assert_response :redirect
     assert_redirected_to apex_app_emergency_app_token_url
   end

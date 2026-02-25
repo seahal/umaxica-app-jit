@@ -131,7 +131,8 @@ module Sign
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
         rescue WebAuthn::Error => e
           Rails.logger.warn("WebAuthn registration failed: #{e.message}")
-          render json: { error: I18n.t("errors.webauthn.verification_failed") }, status: :unprocessable_content
+          render json: { error: I18n.t("errors.webauthn.verification_failed") },
+                 status: :unprocessable_content
         rescue ActiveRecord::RecordNotUnique
           render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
@@ -155,7 +156,9 @@ module Sign
           rescue ActiveRecord::RecordInvalid
             respond_to do |format|
               format.html { render :edit, status: :unprocessable_content }
-              format.json { render json: { errors: @passkey.errors.full_messages }, status: :unprocessable_content }
+              format.json {
+                render json: { errors: @passkey.errors.full_messages }, status: :unprocessable_content
+              }
             end
           end
         end
@@ -194,7 +197,7 @@ module Sign
         private
 
         def set_passkey
-          @passkey = current_user.user_passkeys.find_by!(public_id: params[:public_id])
+          @passkey = current_user.user_passkeys.find_by!(public_id: params[:id])
         end
 
         def credential_params
@@ -261,7 +264,10 @@ module Sign
         end
 
         def create_params
-          params.fetch(:user_passkey, {}).permit(:webauthn_id, :public_key, :sign_count, :description, :external_id)
+          params.fetch(:user_passkey, {}).permit(
+            :webauthn_id, :public_key, :sign_count, :description,
+            :external_id,
+          )
         end
 
         def issue_emergency_key!

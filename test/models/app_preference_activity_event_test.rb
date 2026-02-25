@@ -16,11 +16,13 @@ class AppPreferenceActivityEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = AppPreferenceActivityEvent.new(id: 9)
+
     assert_predicate record, :valid?
   end
 
   test "ordered scope sorts by id when position is absent" do
     ordered_ids = AppPreferenceActivityEvent.ordered.pluck(:id)
+
     assert_equal ordered_ids.sort, ordered_ids
   end
 end

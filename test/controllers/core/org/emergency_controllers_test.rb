@@ -10,40 +10,48 @@ class Core::Org::EmergencyControllersTest < ActionDispatch::IntegrationTest
 
   test "GET show renders app emergency pages" do
     get core_org_emergency_app_outage_url
+
     assert_response :success
     assert_select "h1", "Emergency App Outage"
   end
 
   test "GET show renders com emergency pages" do
     get core_org_emergency_com_outage_url
+
     assert_response :success
     assert_select "h1", "Emergency Com Outage"
   end
 
   test "GET show renders org emergency pages" do
     get core_org_emergency_org_outage_url
+
     assert_response :success
     assert_select "h1", "Emergency Org Outage"
 
     get core_org_emergency_org_token_url
+
     assert_response :success
     assert_select "h1", "Emergency Org Token"
   end
 
   test "PATCH and PUT update redirect to show" do
     patch core_org_emergency_app_outage_url
+
     assert_response :redirect
     assert_redirected_to core_org_emergency_app_outage_url
 
     patch core_org_emergency_com_outage_url
+
     assert_response :redirect
     assert_redirected_to core_org_emergency_com_outage_url
 
     patch core_org_emergency_org_outage_url
+
     assert_response :redirect
     assert_redirected_to core_org_emergency_org_outage_url
 
     put core_org_emergency_org_token_url
+
     assert_response :redirect
     assert_redirected_to core_org_emergency_org_token_url
   end

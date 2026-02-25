@@ -71,19 +71,23 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
 
   def assert_bigint_pk(model)
     id_column = model.columns_hash["id"]
+
     assert id_column, "#{model.name} should have 'id' column"
 
     # PostgreSQL bigint is reported as :integer with limit: 8
     sql_type = id_column.sql_type.downcase
+
     assert ["bigint", "bigserial"].any? { |type| sql_type.include?(type) },
            "#{model.name}.id should be bigint/bigserial, got: #{sql_type}"
   end
 
   def assert_code_is_citext(model)
     code_column = model.columns_hash["code"]
+
     assert code_column, "#{model.name} should have 'code' column"
 
     sql_type = code_column.sql_type.downcase
+
     assert_includes sql_type, "citext",
                     "#{model.name}.code should be citext, got: #{sql_type}"
   end

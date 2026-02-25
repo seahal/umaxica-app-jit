@@ -56,8 +56,10 @@ module Sign::App::Up
       assert_response :success
       assert_select "[data-controller='passkey-registration']"
       begin_path = sign_app_up_telephone_passkey_registration_begin_path(telephone, ri: "jp")
+
       assert_select "[data-passkey-registration-begin-url-value='#{begin_path}']"
       finish_path = sign_app_up_telephone_passkey_registration_path(telephone, ri: "jp")
+
       assert_select "[data-passkey-registration-finish-url-value='#{finish_path}']"
       assert_select "[data-passkey-registration-success-redirect-url-value='#{sign_app_in_checkpoint_path(
         ri: "jp",
@@ -78,6 +80,7 @@ module Sign::App::Up
       assert_predicate json.dig("options", "user", "id"), :present?
 
       challenge = session[:passkey_challenges][json["challenge_id"]]
+
       assert_predicate challenge, :present?
       assert_equal "registration", challenge["purpose"]
     end
@@ -140,6 +143,7 @@ module Sign::App::Up
       assert_response :created
 
       get sign_app_configuration_url(ri: "jp")
+
       assert_response :success
     end
 
@@ -200,6 +204,7 @@ module Sign::App::Up
       end
 
       audit = UserActivity.last
+
       assert_equal UserActivityEvent::SIGNED_UP_WITH_TELEPHONE, audit.event_id
       assert_equal telephone.user.id, audit.actor_id
     end

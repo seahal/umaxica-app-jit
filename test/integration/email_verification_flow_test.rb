@@ -38,6 +38,7 @@ class EmailVerificationFlowTest < ActionDispatch::IntegrationTest
     # User status should still be UNVERIFIED_WITH_SIGN_UP if it was new,
     # but no UserEmail should have been created from the IdP info
     user = UserSocialApple.find_by(uid: "flow_uid").user
+
     assert_nil UserEmail.find_by(user: user)
   end
 end

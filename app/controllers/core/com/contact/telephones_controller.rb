@@ -23,14 +23,20 @@ module Core
           hotp_code = params.dig(:com_contact_telephone, :hotp_code)
 
           if hotp_code.blank?
-            @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.create.hotp_code_required"))
+            @contact_telephone.errors.add(
+              :hotp_code,
+              I18n.t("help.com.contact.telephones.create.hotp_code_required"),
+            )
             render :new, status: :unprocessable_content
             return
           end
 
           # Check if attempts left
           if @contact_telephone.verifier_attempts_left <= 0
-            @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.update.max_attempts"))
+            @contact_telephone.errors.add(
+              :hotp_code,
+              I18n.t("help.com.contact.telephones.update.max_attempts"),
+            )
             render :new, status: :unprocessable_content
             return
           end
@@ -67,7 +73,10 @@ module Core
                 ),
               )
             else
-              @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.update.max_attempts"))
+              @contact_telephone.errors.add(
+                :hotp_code,
+                I18n.t("help.com.contact.telephones.update.max_attempts"),
+              )
             end
             render :new, status: :unprocessable_content
           end

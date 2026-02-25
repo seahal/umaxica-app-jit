@@ -2,6 +2,8 @@
 
 class ValidateCheckConstraintsAndApplyNotNullScavengerRegionals < ActiveRecord::Migration[8.2]
   def up
+    return unless table_exists?(:scavenger_regionals)
+
     validate_check_constraint :scavenger_regionals, name: "scavenger_regionals_region_id_null"
     validate_check_constraint :scavenger_regionals, name: "scavenger_regionals_job_type_null"
     validate_check_constraint :scavenger_regionals, name: "scavenger_regionals_idempotency_key_null"

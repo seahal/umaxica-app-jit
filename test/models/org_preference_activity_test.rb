@@ -62,12 +62,14 @@ class OrgPreferenceActivityTest < ActiveSupport::TestCase
 
   test "org_preference helper method returns nil for other subject types" do
     @audit.subject_type = "OtherType"
+
     assert_nil @audit.org_preference
   end
 
   test "can set org_preference" do
     new_pref = org_preferences(:two)
     @audit.org_preference = new_pref
+
     assert_equal new_pref.id, @audit.subject_id
     assert_equal "OrgPreference", @audit.subject_type
     assert_equal new_pref, @audit.org_preference
@@ -83,12 +85,14 @@ class OrgPreferenceActivityTest < ActiveSupport::TestCase
 
   test "validates presence of subject_id" do
     @audit.subject_id = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_id], I18n.t("errors.messages.blank")
   end
 
   test "validates presence of subject_type" do
     @audit.subject_type = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_type], I18n.t("errors.messages.blank")
   end

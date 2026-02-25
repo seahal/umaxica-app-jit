@@ -32,6 +32,7 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     uri = URI.parse(response.location)
     query = Rack::Utils.parse_query(uri.query)
+
     assert_equal "/verification/setup/new", uri.path
     assert_predicate query["rd"], :present?
   end
@@ -46,6 +47,7 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     uri = URI.parse(response.location)
     query = Rack::Utils.parse_query(uri.query)
+
     assert_equal "/verification", uri.path
     assert_predicate query["rd"], :present?
   end
@@ -61,6 +63,7 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     uri = URI.parse(response.location)
+
     assert_equal "/verification", uri.path
   end
 
@@ -87,7 +90,9 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
 
     return_to = Base64.urlsafe_encode64(sign_org_configuration_passkeys_path(ri: "jp"))
 
-    get sign_org_verification_url(scope: "configuration_passkey", return_to: return_to, ri: "jp"), headers: @headers
+    get sign_org_verification_url(scope: "configuration_passkey", return_to: return_to, ri: "jp"),
+        headers: @headers
+
     assert_response :success
 
     code = ROTP::TOTP.new(private_key).at(Time.current.to_i)

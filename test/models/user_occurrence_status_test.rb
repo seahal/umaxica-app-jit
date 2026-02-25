@@ -21,6 +21,7 @@ class UserOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = UserOccurrenceStatus.new(id: 9)
+
     assert_predicate record, :valid?
   end
 

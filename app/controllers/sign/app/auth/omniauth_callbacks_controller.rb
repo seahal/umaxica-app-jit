@@ -31,7 +31,8 @@ module Sign
         skip_forgery_protection only: %i(omniauth failure)
 
         # Skip preference before_actions that may interfere with OmniAuth callback
-        skip_before_action :set_region, :set_locale, :set_timezone, :set_color_theme, only: %i(omniauth failure)
+        skip_before_action :set_region, :set_locale, :set_timezone, :set_color_theme,
+                           only: %i(omniauth failure)
 
         # GET/POST /auth/:provider/callback
         # Handles successful OmniAuth authentication
@@ -71,7 +72,10 @@ module Sign
             provider_name = SocialIdentifiable.normalize_provider(auth.provider).humanize
             intent = intent.presence || "login"
 
-            handle_successful_auth(user, intent, provider_name, result[:identity], existing_account: existing_account)
+            handle_successful_auth(
+              user, intent, provider_name, result[:identity],
+              existing_account: existing_account,
+            )
           end
         rescue SocialAuth::BaseError => e
           Rails.logger.debug { "[OmniAuth] SocialAuth error: #{e.class.name} - #{e.message}" }
@@ -163,7 +167,10 @@ module Sign
             if existing_account
               issue_checkpoint!
               redirect_to sign_app_in_checkpoint_path(ri: params[:ri]),
-                          notice: I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name)
+                          notice: I18n.t(
+                            "sign.app.social.sessions.create.already_registered",
+                            provider: provider_name,
+                          )
             else
               issue_checkpoint!
               redirect_to sign_app_in_checkpoint_path(ri: params[:ri]),
@@ -214,7 +221,10 @@ module Sign
 
           case status
           when :session_limit_hard_reject
-            render_session_limit_hard_reject(message: login_result[:message], http_status: login_result[:http_status])
+            render_session_limit_hard_reject(
+              message: login_result[:message],
+              http_status: login_result[:http_status],
+            )
           when :session_limit_exceeded
             Rails.logger.debug { "[OmniAuth] Session limit exceeded for user" }
             redirect_to new_sign_app_in_path,

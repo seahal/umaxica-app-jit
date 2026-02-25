@@ -46,6 +46,7 @@ class OccurrenceHmacTest < ActiveSupport::TestCase
       end
 
       digest = Occurrence::Hmac.telephone_hmac("+819012345678")
+
       assert_match(/\A\h{64}\z/, digest)
     end
   end

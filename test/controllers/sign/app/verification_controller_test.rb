@@ -22,6 +22,7 @@ class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
 
   test "should get show" do
     get sign_app_verification_url(ri: "jp"), headers: @headers
+
     assert_response :success
   end
 
@@ -34,6 +35,7 @@ class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     uri = URI.parse(response.location)
     query = Rack::Utils.parse_query(uri.query)
+
     assert_equal "/verification/setup/new", uri.path
     assert_predicate query["rd"], :present?
   end

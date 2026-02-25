@@ -20,6 +20,7 @@ class AppTimelineBehaviorEventTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = AppTimelineBehaviorEvent.new(id: 2)
+
     assert_predicate record, :valid?
   end
 end

@@ -7,37 +7,44 @@ module Auth
   class BaseTokenTest < ActiveSupport::TestCase
     test "Token.encode returns nil for nil resource" do
       result = Auth::Base::Token.encode(nil, host: "example.com")
+
       assert_nil result
     end
 
     test "Token.encode returns nil for blank host" do
       user = users(:one)
       result = Auth::Base::Token.encode(user, host: "")
+
       assert_nil result
     end
 
     test "Token.decode returns nil for blank token" do
       result = Auth::Base::Token.decode("", host: "example.com")
+
       assert_nil result
     end
 
     test "Token.decode returns nil for blank host" do
       result = Auth::Base::Token.decode("some_token", host: "")
+
       assert_nil result
     end
 
     test "Token.extract_subject returns subject from payload" do
       payload = { "sub" => 123 }
+
       assert_equal 123, Auth::Base::Token.extract_subject(payload)
     end
 
     test "Token.extract_type returns act from payload (backward compat alias)" do
       payload = { "act" => "user" }
+
       assert_equal "user", Auth::Base::Token.extract_type(payload)
     end
 
     test "Token.extract_act returns act from payload" do
       payload = { "act" => "staff" }
+
       assert_equal "staff", Auth::Base::Token.extract_act(payload)
     end
 
@@ -47,21 +54,25 @@ module Auth
 
     test "Token.extract_act returns nil for missing claim" do
       payload = { "sub" => "123" }
+
       assert_nil Auth::Base::Token.extract_act(payload)
     end
 
     test "Token.validate_actor_claim! returns true for matching user" do
       payload = { "act" => "user" }
+
       assert Auth::Base::Token.validate_actor_claim!(payload, "user")
     end
 
     test "Token.validate_actor_claim! returns true for matching staff" do
       payload = { "act" => "staff" }
+
       assert Auth::Base::Token.validate_actor_claim!(payload, "staff")
     end
 
     test "Token.validate_actor_claim! returns false for mismatched actor" do
       payload = { "act" => "user" }
+
       assert_not Auth::Base::Token.validate_actor_claim!(payload, "staff")
     end
 
@@ -71,31 +82,37 @@ module Auth
 
     test "Token.validate_actor_claim! returns false for missing claim" do
       payload = { "sub" => "123" }
+
       assert_not Auth::Base::Token.validate_actor_claim!(payload, "user")
     end
 
     test "Token.validate_actor_claim! returns false for blank claim" do
       payload = { "act" => "" }
+
       assert_not Auth::Base::Token.validate_actor_claim!(payload, "user")
     end
 
     test "Token.validate_actor_claim! returns false for unrecognized value" do
       payload = { "act" => "admin" }
+
       assert_not Auth::Base::Token.validate_actor_claim!(payload, "admin")
     end
 
     test "Token.validate_actor_claim! returns false for nil value" do
       payload = { "act" => nil }
+
       assert_not Auth::Base::Token.validate_actor_claim!(payload, "user")
     end
 
     test "Token.extract_session_id returns sid from payload" do
       payload = { "sid" => "abc123" }
+
       assert_equal "abc123", Auth::Base::Token.extract_session_id(payload)
     end
 
     test "Token.extract_jti returns jti from payload" do
       payload = { "jti" => "xyz789" }
+
       assert_equal "xyz789", Auth::Base::Token.extract_jti(payload)
     end
 
@@ -113,7 +130,10 @@ module Auth
         users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
       )
       payload, _header = JWT.decode(token, nil, false)
-      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", { kid: "unknown-kid" })
+      tampered = JWT.encode(
+        payload, Auth::Base::JwtConfiguration.private_key, "ES384",
+        { kid: "unknown-kid" },
+      )
 
       assert_nil Auth::Base::Token.decode(tampered, host: "example.com")
     end

@@ -22,6 +22,7 @@ module Core
         test "should get new" do
           host! @host
           get new_core_com_contact_telephone_url(contact_id: @contact.public_id)
+
           assert_response :success
         end
 
@@ -37,9 +38,11 @@ module Core
           # Check redirect location if necessary, but response :redirect is good start
 
           @contact.reload
+
           assert_equal ComContactStatus::CHECKED_TELEPHONE_NUMBER, @contact.status_id
 
           @contact_telephone.reload
+
           assert @contact_telephone.activated
         end
 
@@ -53,6 +56,7 @@ module Core
 
           assert_response :unprocessable_content
           @contact_telephone.reload
+
           assert_equal 2, @contact_telephone.verifier_attempts_left # Started at 3
         end
 
@@ -120,6 +124,7 @@ module Core
           assert_response :unprocessable_content
 
           @contact_telephone.reload
+
           assert_equal 0, @contact_telephone.verifier_attempts_left
         end
 

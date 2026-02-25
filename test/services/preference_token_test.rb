@@ -27,9 +27,11 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_not_nil token
 
       decoded = Preference::Token.decode(token, host: @host)
+
       assert_not_nil decoded
       assert_equal "dr", decoded.dig("preferences", "ct")
       assert_equal @jti, decoded["jti"]
@@ -51,6 +53,7 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_nil Preference::Token.decode(token, host: "wrong.com")
     end
   end

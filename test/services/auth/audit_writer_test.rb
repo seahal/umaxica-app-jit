@@ -120,6 +120,7 @@ module Auth
           actor: @user,
           ip_address: "127.0.0.1",
         )
+
         assert_not result
       end
     end

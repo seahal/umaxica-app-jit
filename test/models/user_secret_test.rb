@@ -135,12 +135,14 @@ class UserSecretTest < ActiveSupport::TestCase
 
   test "invalid when password_digest is nil" do
     record = UserSecret.new(user: @user, name: "Key", password: nil)
+
     assert_not record.valid?
     assert_not_empty record.errors[:password_digest]
   end
 
   test "name length boundary" do
     record = UserSecret.new(user: @user, name: "a" * 256, password: "SecretPass123!")
+
     assert_not record.valid?
     assert_not_empty record.errors[:name]
   end
@@ -169,9 +171,11 @@ class UserSecretTest < ActiveSupport::TestCase
   test "enabled? reflects active status" do
     record = UserSecret.new(user: @user, name: "Key")
     record.user_secret_status_id = UserSecretStatus::ACTIVE
+
     assert_predicate record, :enabled?
 
     record.user_secret_status_id = UserSecretStatus::REVOKED
+
     assert_not record.enabled?
   end
 
@@ -182,12 +186,14 @@ class UserSecretTest < ActiveSupport::TestCase
       password: secure_secret,
       user_secret_kind_id: nil,
     )
+
     assert_not record.valid?
     assert_not_empty record.errors[:user_secret_kind]
   end
 
   test "login_secret? predicate returns true for LOGIN kind" do
     record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::LOGIN)
+
     assert_predicate record, :login_secret?
     assert_not record.totp_secret?
     assert_not record.recovery_secret?
@@ -196,18 +202,21 @@ class UserSecretTest < ActiveSupport::TestCase
 
   test "totp_secret? predicate returns true for TOTP kind" do
     record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::TOTP)
+
     assert_predicate record, :totp_secret?
     assert_not record.login_secret?
   end
 
   test "recovery_secret? predicate returns true for RECOVERY kind" do
     record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::RECOVERY)
+
     assert_predicate record, :recovery_secret?
     assert_not record.login_secret?
   end
 
   test "api_secret? predicate returns true for API kind" do
     record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::API)
+
     assert_predicate record, :api_secret?
     assert_not record.login_secret?
   end

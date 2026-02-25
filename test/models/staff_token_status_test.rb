@@ -14,6 +14,7 @@ require "test_helper"
 class StaffTokenStatusTest < ActiveSupport::TestCase
   test "accepts integer ids" do
     status = StaffTokenStatus.new(id: 9)
+
     assert_predicate status, :valid?
   end
 

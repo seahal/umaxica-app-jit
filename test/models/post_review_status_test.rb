@@ -14,6 +14,7 @@ require "test_helper"
 class PostReviewStatusTest < ActiveSupport::TestCase
   test "accepts integer ids" do
     status = PostReviewStatus.new(id: 9)
+
     assert_predicate status, :valid?
   end
 

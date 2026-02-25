@@ -19,7 +19,9 @@ module Preference
 
     test "derives device cookie key from refresh cookie key" do
       refresh = "__Secure-jit_preference_refresh"
-      assert_equal "__Secure-jit_preference_device_id", Preference::CookieName.device(refresh_cookie_key: refresh)
+
+      assert_equal "__Secure-jit_preference_device_id",
+                   Preference::CookieName.device(refresh_cookie_key: refresh)
     end
   end
 end

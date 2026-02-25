@@ -42,10 +42,12 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     assert_redirected_to edit_sign_app_configuration_telephones_registration_url(ri: "jp")
 
     user_telephone = UserTelephone.order(created_at: :desc).first
+
     assert_equal @user.id, user_telephone.user_id
     assert_equal UserTelephoneStatus::UNVERIFIED, user_telephone.user_telephone_status_id
     assert_equal 0, UserTelephone.where(user_id: 0).count
     job = enqueued_jobs.last
+
     assert_equal SmsDeliveryJob, job[:job]
     assert_equal "+10000000009", job[:args].first["to"]
   end
@@ -79,6 +81,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     assert_redirected_to edit_sign_app_configuration_telephones_registration_url(ri: "jp")
 
     reused = UserTelephone.find(existing.id)
+
     assert_equal UserTelephoneStatus::UNVERIFIED, reused.user_telephone_status_id
   end
   test "new renders successfully and resets session" do

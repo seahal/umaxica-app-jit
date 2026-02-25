@@ -48,6 +48,7 @@ class OrgTimelineBehaviorLevelTest < ActiveSupport::TestCase
 
   test "accepts integer ids" do
     record = OrgTimelineBehaviorLevel.new(id: 3)
+
     assert_predicate record, :valid?
   end
 end

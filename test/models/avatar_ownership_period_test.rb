@@ -34,6 +34,7 @@ require "test_helper"
 class AvatarOwnershipPeriodTest < ActiveSupport::TestCase
   test "validations" do
     period = AvatarOwnershipPeriod.new
+
     assert_not period.valid?
   end
 
@@ -52,6 +53,7 @@ class AvatarOwnershipPeriodTest < ActiveSupport::TestCase
       owner_organization_id: "org_123",
       valid_from: Time.current,
     )
+
     assert_predicate record, :valid?
     assert_kind_of Integer, record.id
   end

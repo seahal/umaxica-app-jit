@@ -16,6 +16,7 @@ class Sign::App::Configuration::OutsControllerTest < ActionDispatch::Integration
     get edit_sign_app_configuration_out_url(ri: "jp"), headers: { "Host" => @host }
 
     rt = Base64.urlsafe_encode64(edit_sign_app_configuration_out_url(ri: "jp", host: @host))
+
     assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
   end
 
@@ -31,6 +32,7 @@ class Sign::App::Configuration::OutsControllerTest < ActionDispatch::Integration
     delete sign_app_configuration_out_url(ri: "jp"), headers: { "Host" => @host }
 
     rt = Base64.urlsafe_encode64(sign_app_configuration_out_url(ri: "jp", host: @host))
+
     assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
   end
 

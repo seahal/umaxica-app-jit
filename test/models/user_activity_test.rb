@@ -176,6 +176,7 @@ class UserActivityTest < ActiveSupport::TestCase
     audit = UserActivity.new(user_activity_event: @audit_event)
     audit.user = @user
     audit.save!
+
     assert_not_nil audit.timestamp
   end
 

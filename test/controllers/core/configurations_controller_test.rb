@@ -15,13 +15,16 @@ class Core::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get show when logged in" do
     get core_app_configuration_url, headers: @headers
+
     assert_response :success
   end
 
   test "should redirect show when not logged in" do
     get core_app_configuration_url(ri: "jp")
+
     assert_response :redirect
     target_path = new_sign_app_in_path
+
     assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
   end
 end
@@ -37,13 +40,16 @@ class Core::Com::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get show when logged in" do
     get core_com_configuration_url, headers: @headers
+
     assert_response :success
   end
 
   test "should redirect show when not logged in" do
     get core_com_configuration_url(ri: "jp")
+
     assert_response :redirect
     target_path = new_sign_app_in_path
+
     assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
   end
 end
@@ -59,13 +65,16 @@ class Core::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get show when logged in" do
     get core_org_configuration_url, headers: @headers
+
     assert_response :success
   end
 
   test "should redirect show when not logged in" do
     get core_org_configuration_url(ri: "jp")
+
     assert_response :redirect
     target_path = new_sign_org_in_path
+
     assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
   end
 end

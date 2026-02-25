@@ -33,6 +33,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "redirects to canonical path by stripping ri=jp" do
     get news_org_root_url(ri: "jp"), headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+
     assert_redirected_to news_org_root_url
     assert_nil request.path_parameters[:ri]
   end
@@ -116,6 +117,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get news_org_root_url
+
     assert_response :success
     assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
   end

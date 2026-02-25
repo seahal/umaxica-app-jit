@@ -35,6 +35,7 @@ class AvatarAssignmentTest < ActiveSupport::TestCase
 
   test "should validate role inclusion" do
     assignment = AvatarAssignment.new(role: "invalid_role")
+
     assert_not assignment.valid?
     assert_predicate assignment.errors[:role], :present?
   end

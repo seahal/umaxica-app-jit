@@ -37,6 +37,7 @@ class WorkspaceTest < ActiveSupport::TestCase
       name: "Test Workspace",
       domain: "test-workspace",
     )
+
     assert_predicate workspace, :valid?
   end
 

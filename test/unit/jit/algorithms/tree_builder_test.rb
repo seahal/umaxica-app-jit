@@ -20,6 +20,7 @@ module Jit
 
       test "builds a tree with correct root and size" do
         tree = TreeBuilder.build(@records)
+
         assert_equal 1, tree.size
         assert_equal 1, tree.first[:id]
         assert_equal "Root", tree.first[:name]
@@ -28,6 +29,7 @@ module Jit
       test "builds correct children structure" do
         tree = TreeBuilder.build(@records)
         root = tree.first
+
         assert_equal 2, root[:children].size
 
         child1 = root[:children].find { |c| c[:id] == 2 }
@@ -44,6 +46,7 @@ module Jit
 
         assert_equal 1, child1[:children].size
         grandchild = child1[:children].first
+
         assert_equal 4, grandchild[:id]
         assert_equal "Grandchild 1", grandchild[:name]
         assert_empty grandchild[:children]
@@ -56,6 +59,7 @@ module Jit
         ]
 
         tree = TreeBuilder.build(records)
+
         assert_equal 2, tree.size
         assert_equal [1, 2], tree.pluck(:id).sort
       end

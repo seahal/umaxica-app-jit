@@ -54,6 +54,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get help_app_root_url()
+
     assert_response :success
     assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
   end
@@ -61,6 +62,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "sets theme cookie" do
     host! "app.localhost"
     get help_app_root_path
+
     assert_redirected_to help_app_root_url(ri: "jp", host: "app.localhost")
     assert_not_nil cookies["jit_preference_access"]
   end

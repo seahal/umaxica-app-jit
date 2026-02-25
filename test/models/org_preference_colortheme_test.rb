@@ -33,6 +33,7 @@ class OrgPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     colortheme = OrgPreferenceColortheme.new
+
     assert_not colortheme.valid?
     assert_includes colortheme.errors[:preference], "を入力してください"
   end
@@ -40,6 +41,7 @@ class OrgPreferenceColorthemeTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = org_preference_colortheme_options(:light)
     colortheme = OrgPreferenceColortheme.create!(preference: @preference, option: option)
+
     assert_not_nil colortheme.id
     assert_equal @preference, colortheme.preference
     assert_equal option, colortheme.option
@@ -47,6 +49,7 @@ class OrgPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     colortheme = OrgPreferenceColortheme.create!(preference: @preference)
+
     assert_equal OrgPreferenceColorthemeOption::SYSTEM, colortheme.option_id
   end
 end

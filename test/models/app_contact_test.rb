@@ -107,6 +107,7 @@ class AppContactTest < ActiveSupport::TestCase
 
   test "should have valid factory" do
     contact = build_contact
+
     assert_predicate contact, :valid?
     assert_equal AppContactCategory::APPLICATION_INQUIRY, contact.category_id
     assert_equal AppContactStatus::SET_UP, contact.status_id
@@ -114,6 +115,7 @@ class AppContactTest < ActiveSupport::TestCase
 
   test "should set default category and status when nil" do
     contact = AppContact.new(category_id: nil, status_id: nil, confirm_policy: "1")
+
     assert contact.save
     assert_equal AppContactCategory::APPLICATION_INQUIRY, contact.category_id
     assert_equal AppContactStatus::NEYO, contact.status_id
@@ -122,12 +124,14 @@ class AppContactTest < ActiveSupport::TestCase
   test "should generate public_id on create" do
     contact = AppContact.new(confirm_policy: "1")
     contact.save!
+
     assert_not_nil contact.public_id
     assert_equal 21, contact.public_id.length
   end
 
   test "should respond to transition methods" do
     contact = build_contact
+
     assert_respond_to contact, :verify_email!
     assert_respond_to contact, :verify_phone!
     assert_respond_to contact, :complete!
@@ -135,27 +139,34 @@ class AppContactTest < ActiveSupport::TestCase
 
   test "should verify email" do
     contact = build_contact(status_id: AppContactStatus::SET_UP)
+
     assert_predicate contact, :can_verify_email?
     contact.verify_email!
+
     assert_equal AppContactStatus::CHECKED_EMAIL_ADDRESS, contact.status_id
   end
 
   test "should verify phone" do
     contact = build_contact(status_id: AppContactStatus::CHECKED_EMAIL_ADDRESS)
+
     assert_predicate contact, :can_verify_phone?
     contact.verify_phone!
+
     assert_equal AppContactStatus::CHECKED_TELEPHONE_NUMBER, contact.status_id
   end
 
   test "should complete contact" do
     contact = build_contact(status_id: AppContactStatus::CHECKED_TELEPHONE_NUMBER)
+
     assert_predicate contact, :can_complete?
     contact.complete!
+
     assert_equal AppContactStatus::COMPLETED_CONTACT_ACTION, contact.status_id
   end
 
   test "token length boundary" do
     contact = AppContact.new(confirm_policy: "1", token: "a" * 33)
+
     assert_not contact.valid?
     assert_not_empty contact.errors[:token]
   end

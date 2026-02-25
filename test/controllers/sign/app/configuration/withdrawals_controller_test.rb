@@ -19,12 +19,15 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
   test "new requires schedule confirmation to proceed" do
     get new_sign_app_configuration_withdrawal_url(ri: "jp"), headers: @headers
+
     assert_response :success
 
     get new_sign_app_configuration_withdrawal_url(ri: "jp", ack_schedule_purge: "0"), headers: @headers
+
     assert_response :unprocessable_content
 
     get new_sign_app_configuration_withdrawal_url(ri: "jp", ack_schedule_purge: "1"), headers: @headers
+
     assert_response :success
     # Skip label text verification - translation key may be missing
     assert_select "label"
@@ -50,6 +53,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     assert_redirected_to edit_sign_app_configuration_path(ri: "jp")
 
     @user.reload
+
     assert_not_nil @user.withdrawal_started_at
     assert_not_nil @user.deactivated_at
     assert_not_nil @user.scheduled_purge_at
@@ -57,7 +61,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   end
 
   test "edit shows recoverable state within 31 days" do
-    @user.update!(deactivated_at: 10.days.ago, withdrawal_started_at: 10.days.ago, scheduled_purge_at: 21.days.from_now)
+    @user.update!(
+      deactivated_at: 10.days.ago, withdrawal_started_at: 10.days.ago,
+      scheduled_purge_at: 21.days.from_now,
+    )
 
     get edit_sign_app_configuration_withdrawal_url(ri: "jp"), headers: @headers
 
@@ -66,25 +73,33 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   end
 
   test "create recovers account within 31 days" do
-    @user.update!(deactivated_at: 10.days.ago, withdrawal_started_at: 10.days.ago, scheduled_purge_at: 21.days.from_now)
+    @user.update!(
+      deactivated_at: 10.days.ago, withdrawal_started_at: 10.days.ago,
+      scheduled_purge_at: 21.days.from_now,
+    )
 
     post sign_app_configuration_withdrawal_url(ri: "jp"), headers: @headers
 
     assert_response :see_other
     assert_redirected_to sign_app_configuration_path(ri: "jp")
     @user.reload
+
     assert_nil @user.deactivated_at
     assert_nil @user.withdrawal_started_at
     assert_nil @user.scheduled_purge_at
   end
 
   test "create does not recover account after 31 days" do
-    @user.update!(deactivated_at: 31.days.ago, withdrawal_started_at: 31.days.ago, scheduled_purge_at: 1.day.ago)
+    @user.update!(
+      deactivated_at: 31.days.ago, withdrawal_started_at: 31.days.ago,
+      scheduled_purge_at: 1.day.ago,
+    )
 
     post sign_app_configuration_withdrawal_url(ri: "jp"), headers: @headers
 
     assert_response :see_other
     @user.reload
+
     assert_not_nil @user.deactivated_at
   end
 end

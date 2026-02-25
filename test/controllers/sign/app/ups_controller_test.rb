@@ -73,6 +73,7 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
   end
   test "renders specific cta text" do
     get new_sign_app_up_url(format: :html, ri: "jp")
+
     assert_response :success
     Rails.logger.debug response.body # DEBUG
     # Check for Japanese text (since previous test asserted lang=ja)

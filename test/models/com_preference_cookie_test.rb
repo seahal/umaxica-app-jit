@@ -36,12 +36,14 @@ class ComPreferenceCookieTest < ActiveSupport::TestCase
 
   test "belongs to preference" do
     cookie = ComPreferenceCookie.new(targetable: true)
+
     assert_not cookie.valid?
     assert_includes cookie.errors[:preference], "を入力してください"
   end
 
   test "has false as default for all flags" do
     cookie = ComPreferenceCookie.create!(preference: @preference)
+
     assert_not cookie.targetable
     assert_not cookie.performant
     assert_not cookie.functional
@@ -67,6 +69,7 @@ class ComPreferenceCookieTest < ActiveSupport::TestCase
         performant: performant,
         functional: functional,
       )
+
       assert cookie.save, "combo failed: targetable=#{targetable} performant=#{performant} functional=#{functional}"
       cookie.destroy!
     end
