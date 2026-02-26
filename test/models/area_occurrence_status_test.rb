@@ -20,7 +20,7 @@ class AreaOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, AreaOccurrenceStatus::ACTIVE
-    assert_equal 2, AreaOccurrenceStatus::NEYO
+    assert_equal 2, AreaOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

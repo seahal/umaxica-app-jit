@@ -50,12 +50,12 @@ class AppContactTopicTest < ActiveSupport::TestCase
   end
 
   def build_contact
-    AppContactCategory.find_or_create_by!(id: AppContactCategory::NEYO)
-    AppContactStatus.find_or_create_by!(id: AppContactStatus::NEYO)
+    AppContactCategory.find_or_create_by!(id: AppContactCategory::NOTHING)
+    AppContactStatus.find_or_create_by!(id: AppContactStatus::NOTHING)
     contact = AppContact.new
     contact.confirm_policy = "1"
-    contact.category_id = AppContactCategory::NEYO
-    contact.status_id = AppContactStatus::NEYO
+    contact.category_id = AppContactCategory::NOTHING
+    contact.status_id = AppContactStatus::NOTHING
     contact.save!
 
     AppContactEmail.create!(

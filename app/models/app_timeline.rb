@@ -39,7 +39,7 @@ class AppTimeline < NewsRecord
   include ::SlugId
   include Timeline
 
-  attribute :status_id, default: AppTimelineStatus::NEYO
+  attribute :status_id, default: AppTimelineStatus::NOTHING
 
   validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
 

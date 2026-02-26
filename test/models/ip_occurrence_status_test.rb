@@ -20,7 +20,7 @@ class IpOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, IpOccurrenceStatus::ACTIVE
-    assert_equal 2, IpOccurrenceStatus::NEYO
+    assert_equal 2, IpOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

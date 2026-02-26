@@ -42,7 +42,7 @@ class ComPreference < PreferenceRecord
   include ::ConsumeOnceToken
   include ::Preference::Resettable
 
-  attribute :status_id, default: ComPreferenceStatus::NEYO
+  attribute :status_id, default: ComPreferenceStatus::NOTHING
 
   belongs_to :com_preference_status,
              foreign_key: :status_id,

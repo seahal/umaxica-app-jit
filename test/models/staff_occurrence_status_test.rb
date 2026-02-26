@@ -26,7 +26,7 @@ class StaffOccurrenceStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, StaffOccurrenceStatus::NEYO
+    assert_equal 1, StaffOccurrenceStatus::NOTHING
     assert_equal 2, StaffOccurrenceStatus::ACTIVE
     assert_equal 3, StaffOccurrenceStatus::INACTIVE
     assert_equal 4, StaffOccurrenceStatus::DELETED

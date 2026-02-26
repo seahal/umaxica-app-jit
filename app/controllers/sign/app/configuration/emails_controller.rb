@@ -5,6 +5,8 @@ module Sign
   module App
     module Configuration
       class EmailsController < ApplicationController
+        auth_required!
+
         include ::Verification::User
 
         before_action :authenticate_user!
@@ -39,7 +41,7 @@ module Sign
         def create_audit_event!(event_id, subject:)
           ActivityRecord.connected_to(role: :writing) do
             UserActivityEvent.find_or_create_by!(id: event_id)
-            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NOTHING)
           end
 
           UserActivity.create!(

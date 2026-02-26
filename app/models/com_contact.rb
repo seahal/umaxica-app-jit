@@ -60,7 +60,7 @@ class ComContact < GuestRecord
   after_initialize do
     if new_record?
       self.category_id ||= ComContactCategory::SECURITY_ISSUE
-      self.status_id ||= ComContactStatus::NEYO
+      self.status_id ||= ComContactStatus::NOTHING
     end
   end
 

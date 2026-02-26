@@ -19,7 +19,7 @@ class AvatarOwnershipStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, AvatarOwnershipStatus::NEYO
+    assert_equal 1, AvatarOwnershipStatus::NOTHING
     assert_equal 2, AvatarOwnershipStatus::ACTIVE
     assert_equal 3, AvatarOwnershipStatus::INACTIVE
     assert_equal 4, AvatarOwnershipStatus::DELETED

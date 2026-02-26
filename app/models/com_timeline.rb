@@ -39,9 +39,9 @@ class ComTimeline < NewsRecord
   include ::SlugId
   include Timeline
 
-  attribute :status_id, default: ComTimelineStatus::NEYO
+  attribute :status_id, default: ComTimelineStatus::NOTHING
 
-  attribute :status_id, default: ComTimelineStatus::NEYO
+  attribute :status_id, default: ComTimelineStatus::NOTHING
 
   validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
 

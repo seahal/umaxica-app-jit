@@ -42,7 +42,7 @@ class AppPreference < PreferenceRecord
   include ::ConsumeOnceToken
   include ::Preference::Resettable
 
-  attribute :status_id, default: AppPreferenceStatus::NEYO
+  attribute :status_id, default: AppPreferenceStatus::NOTHING
 
   belongs_to :app_preference_status,
              foreign_key: :status_id,

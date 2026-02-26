@@ -11,7 +11,7 @@
 
 class StaffSecretKind < OperatorRecord
   # Fixed IDs - do not modify these values
-  NEYO = 1
+  NOTHING = 1
   LOGIN = 2
   TOTP = 3
 

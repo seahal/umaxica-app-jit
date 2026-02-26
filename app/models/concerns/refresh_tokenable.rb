@@ -33,11 +33,11 @@ module RefreshTokenable
       transaction do
         updated =
           where(
-            id: current_token.id,
-            refresh_token_digest: presented_refresh_digest,
-            rotated_at: nil,
-            revoked_at: nil,
-            compromised_at: nil,
+            :id => current_token.id,
+            :refresh_token_digest => presented_refresh_digest,
+            :rotated_at => nil,
+            expiry_column => nil,
+            :compromised_at => nil,
           ).where(arel_table[:refresh_expires_at].gt(now))
             .update_all(rotated_at: now, last_used_at: now, updated_at: now)
 
@@ -109,7 +109,7 @@ module RefreshTokenable
 
   # Whether the token is revoked.
   def revoked?
-    revoked_at.present? || compromised_at.present?
+    expired? || compromised_at.present?
   end
 
   # Whether the refresh token has expired.
@@ -141,7 +141,21 @@ module RefreshTokenable
 
   # Revoke the token.
   def revoke!
-    update!(revoked_at: Time.current)
+    now = Time.current
+    attrs = {}
+    attrs[:expired_at] = now if has_attribute?(:expired_at)
+    attrs[:revoked_at] = now if has_attribute?(:revoked_at)
+    update!(attrs)
+  end
+
+  def expired?
+    if respond_to?(:expired_at) && has_attribute?(:expired_at)
+      expired_at.present?
+    elsif respond_to?(:revoked_at) && has_attribute?(:revoked_at)
+      revoked_at.present?
+    else
+      false
+    end
   end
 
   def refresh_token=(verifier)

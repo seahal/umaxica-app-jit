@@ -77,12 +77,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY Gemfile Gemfile.lock ./
-RUN --mount=type=cache,target=/usr/local/bundle,uid=${DOCKER_UID},gid=${DOCKER_GID} \
-    --mount=type=cache,target=/tmp/bundle-cache,uid=${DOCKER_UID},gid=${DOCKER_GID} \
+RUN --mount=type=cache,target=/tmp/bundle-cache,uid=${DOCKER_UID},gid=${DOCKER_GID} \
     bundle config set --local cache_path /tmp/bundle-cache \
     && bundle install --jobs "${BUNDLE_JOBS}" --retry "${BUNDLE_RETRY}" \
     && bundle exec bootsnap precompile --gemfile \
-    && bundle config set --local without 'development test' \
     && bundle clean --force \
     && rm -rf /usr/local/bundle/cache
 
@@ -92,7 +90,8 @@ COPY . .
 RUN install -d tmp/pids log \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
-    && rm -f tmp/pids/server.pid
+    && rm -f tmp/pids/server.pid \
+    && bundle exec bootsnap precompile app/ lib/
 
 # ============================================================================
 # ============================================================================
@@ -100,7 +99,7 @@ FROM production-base AS production
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
-ENV PORT=3000 \
+ENV PORT=8080 \
     RUBY_YJIT_ENABLE=1 \
     RAILS_LOG_TO_STDOUT=1 \
     RAILS_SERVE_STATIC_FILES=true \
@@ -108,8 +107,6 @@ ENV PORT=3000 \
 
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} /usr/local/bundle /usr/local/bundle
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} ${APP_HOME} ${APP_HOME}
-
-RUN chown -R ${DOCKER_UID}:${DOCKER_GID} tmp log
 
 USER ${DOCKER_USER}
 
@@ -160,13 +157,12 @@ ARG DOCKER_USER
 ARG DOCKER_GROUP
 ARG GITHUB_ACTIONS
 ENV COMMIT_HASH="${COMMIT_HASH}"
-ENV HOME=/home/jit
-WORKDIR /home/jit/workspace
+ENV HOME=/home/${DOCKER_USER}
+WORKDIR ${HOME}/workspace
 
 # hadolint ignore=DL3008
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
-    bash \
     bat \
     entr \
     fd-find \
@@ -186,7 +182,6 @@ RUN apt-get update -qq \
     sudo \
     tig \
     tree \
-    unzip \
     watch \
     wget \
     zip \

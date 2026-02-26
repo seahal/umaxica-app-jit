@@ -5,7 +5,9 @@
 #
 #  id :bigint           not null, primary key
 #
-NEYO:
+NOTHING:
   id: 0
 ACTIVE:
   id: 1
+EXPIRED:
+  id: 2

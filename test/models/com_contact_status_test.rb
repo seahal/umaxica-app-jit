@@ -14,7 +14,7 @@ require "test_helper"
 class ComContactStatusTest < ActiveSupport::TestCase
   setup do
     @model_class = ComContactStatus
-    @valid_id = ComContactStatus::NEYO
+    @valid_id = ComContactStatus::NOTHING
     @subject = @model_class.new(id: @valid_id)
   end
 

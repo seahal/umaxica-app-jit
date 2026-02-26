@@ -29,7 +29,7 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, AppTimelineStatus::NEYO
+    assert_equal 1, AppTimelineStatus::NOTHING
     assert_equal 2, AppTimelineStatus::ACTIVE
     assert_equal 3, AppTimelineStatus::INACTIVE
     assert_equal 4, AppTimelineStatus::PENDING
@@ -39,8 +39,8 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "can find statuses by numeric id" do
-    status = @model_class.find(AppTimelineStatus::NEYO)
+    status = @model_class.find(AppTimelineStatus::NOTHING)
 
-    assert_equal AppTimelineStatus::NEYO, status.id
+    assert_equal AppTimelineStatus::NOTHING, status.id
   end
 end

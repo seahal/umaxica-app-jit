@@ -20,6 +20,6 @@ class UserTokenStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, UserTokenStatus::ACTIVE
-    assert_equal 0, UserTokenStatus::NEYO
+    assert_equal 0, UserTokenStatus::NOTHING
   end
 end

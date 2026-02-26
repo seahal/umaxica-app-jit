@@ -396,7 +396,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       initial_status = pref.status_id
       initial_audit_count = audit_class.where(subject_id: pref.id).count
 
-      assert_equal 2, initial_status, "Initial status should be NEYO"
+      assert_equal 2, initial_status, "Initial status should be NOTHING"
 
       # Submit reset form with confirmation
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
@@ -458,7 +458,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       # Verify database is unchanged
       pref.reload
 
-      assert_equal 2, pref.status_id, "Status should remain NEYO"
+      assert_equal 2, pref.status_id, "Status should remain NOTHING"
 
       # Verify cookie is still present
       assert_not_nil cookies[cookie_name], "Cookie should still exist"

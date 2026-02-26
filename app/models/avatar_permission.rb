@@ -12,7 +12,7 @@
 class AvatarPermission < AvatarRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
+  NOTHING = 1
   READ = 2
   WRITE = 3
   ADMIN = 4

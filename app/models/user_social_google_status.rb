@@ -14,6 +14,6 @@ class UserSocialGoogleStatus < PrincipalRecord
   PENDING = 3
   DELETED = 4
   REVOKED = 5
-  NEYO = 6
+  NOTHING = 6
   has_many :user_social_googles, inverse_of: :user_social_google_status, dependent: :restrict_with_error
 end

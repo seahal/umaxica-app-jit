@@ -22,8 +22,7 @@ class OrgTimelineCategoryMaster < NewsRecord
   include Treeable
 
   # Fixed IDs - do not modify these values
-  NEYO = 1
-
+  NOTHING = 1
   belongs_to :parent,
              class_name: "OrgTimelineCategoryMaster",
              inverse_of: :children,

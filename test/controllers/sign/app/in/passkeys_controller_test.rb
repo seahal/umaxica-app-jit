@@ -259,7 +259,7 @@ module Sign::App::In
       mismatch_body = response.body
 
       # PII missing user with valid passkey credential
-      user_without_verified_pii = User.create!(status_id: UserStatus::NEYO, multi_factor_enabled: false)
+      user_without_verified_pii = User.create!(status_id: UserStatus::NOTHING, multi_factor_enabled: false)
       email = user_without_verified_pii.user_emails.create!(
         address: "unverified_passkey_#{SecureRandom.hex(4)}@example.com",
         user_email_status_id: UserEmailStatus::VERIFIED,

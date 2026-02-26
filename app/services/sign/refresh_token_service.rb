@@ -65,7 +65,10 @@ module Sign
       actor_scope = actor_tokens_scope(token)
       now = Time.current
       actor_scope.find_each do |actor|
-        actor.update!(revoked_at: now, compromised_at: now)
+        attrs = { compromised_at: now }
+        attrs[:expired_at] = now if actor.has_attribute?(:expired_at)
+        attrs[:revoked_at] = now if actor.has_attribute?(:revoked_at)
+        actor.update!(attrs)
       end
 
       Sign::Risk::Emitter.emit(

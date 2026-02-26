@@ -37,7 +37,7 @@ class UserOccurrence < OccurrenceRecord
   ACTIVE_STATUS_ID = 1
   EXPIRED_STATUS_ID = 2
 
-  attribute :status_id, default: UserOccurrenceStatus::NEYO
+  attribute :status_id, default: UserOccurrenceStatus::NOTHING
 
   belongs_to :user_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :user_occurrences
   has_many :area_user_occurrences, dependent: :destroy, inverse_of: :user_occurrence

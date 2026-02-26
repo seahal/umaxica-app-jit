@@ -48,7 +48,7 @@ class StaffActivityTest < ActiveSupport::TestCase
     @staff = staffs(:one)
     @actor = users(:none_user)
     @audit_event = StaffActivityEvent.find(StaffActivityEvent::LOGIN_SUCCESS)
-    @audit_level = StaffActivityLevel.find(StaffActivityLevel::NEYO)
+    @audit_level = StaffActivityLevel.find(StaffActivityLevel::NOTHING)
     @audit = StaffActivity.create!(
       staff: @staff,
       staff_activity_event: @audit_event,
@@ -87,7 +87,7 @@ class StaffActivityTest < ActiveSupport::TestCase
       staff_activity_level: @audit_level,
     )
 
-    # Defaults to NEYO, so it should be valid
+    # Defaults to NOTHING, so it should be valid
     assert_predicate audit, :valid?
   end
 
@@ -154,7 +154,7 @@ class StaffActivityTest < ActiveSupport::TestCase
     assert_not_empty staff_actors
   end
 
-  test "defaults level_id to NEYO if not provided" do
+  test "defaults level_id to NOTHING if not provided" do
     audit = StaffActivity.create!(
       staff: @staff,
       staff_activity_event: @audit_event,
@@ -162,8 +162,8 @@ class StaffActivityTest < ActiveSupport::TestCase
       timestamp: Time.current,
     )
 
-    assert_equal StaffActivityLevel::NEYO, audit.level_id
-    assert_equal StaffActivityLevel::NEYO, audit.staff_activity_level.id
+    assert_equal StaffActivityLevel::NOTHING, audit.level_id
+    assert_equal StaffActivityLevel::NOTHING, audit.staff_activity_level.id
   end
 
   test "sets timestamp on create when missing" do

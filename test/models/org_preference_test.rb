@@ -41,7 +41,7 @@ require "test_helper"
 
 class OrgPreferenceTest < ActiveSupport::TestCase
   setup do
-    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NOTHING)
   end
 
   test "generates public_id on create" do
@@ -148,7 +148,7 @@ class OrgPreferenceTest < ActiveSupport::TestCase
   test "consume_once_by_digest! is replay-detectable" do
     digest = OrgPreference.digest_refresh_token("org-consume-once")
     preference = OrgPreference.create!(
-      status_id: OrgPreferenceStatus::NEYO,
+      status_id: OrgPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: digest,
       jti: SecureRandom.uuid,
@@ -165,7 +165,7 @@ class OrgPreferenceTest < ActiveSupport::TestCase
 
   test "consume_once_by_digest! rejects revoked compromised and expired rows" do
     revoked = OrgPreference.create!(
-      status_id: OrgPreferenceStatus::NEYO,
+      status_id: OrgPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: OrgPreference.digest_refresh_token("org-revoked"),
       revoked_at: Time.current,
@@ -173,7 +173,7 @@ class OrgPreferenceTest < ActiveSupport::TestCase
       device_id: SecureRandom.uuid,
     )
     compromised = OrgPreference.create!(
-      status_id: OrgPreferenceStatus::NEYO,
+      status_id: OrgPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: OrgPreference.digest_refresh_token("org-compromised"),
       compromised_at: Time.current,
@@ -181,7 +181,7 @@ class OrgPreferenceTest < ActiveSupport::TestCase
       device_id: SecureRandom.uuid,
     )
     expired = OrgPreference.create!(
-      status_id: OrgPreferenceStatus::NEYO,
+      status_id: OrgPreferenceStatus::NOTHING,
       expires_at: 1.minute.ago,
       token_digest: OrgPreference.digest_refresh_token("org-expired"),
       jti: SecureRandom.uuid,
@@ -196,7 +196,7 @@ class OrgPreferenceTest < ActiveSupport::TestCase
   test "rotate! creates replacement row and replacement link" do
     digest = OrgPreference.digest_refresh_token("org-rotate")
     original = OrgPreference.create!(
-      status_id: OrgPreferenceStatus::NEYO,
+      status_id: OrgPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: digest,
       jti: SecureRandom.uuid,

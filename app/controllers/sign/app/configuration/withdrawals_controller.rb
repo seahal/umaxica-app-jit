@@ -5,6 +5,8 @@ module Sign
   module App
     module Configuration
       class WithdrawalsController < ApplicationController
+        auth_required!
+
         include ::Verification::User
         include Common::Redirect
 
@@ -50,6 +52,7 @@ module Sign
             current_user.update!(
               withdrawal_started_at: nil,
               deactivated_at: nil,
+              deletable_at: Float::INFINITY,
               scheduled_purge_at: nil,
               withdrawn_at: nil,
             )
@@ -73,26 +76,10 @@ module Sign
           @deactivate_form = Withdrawal::DeactivateForm.new(deactivate_params)
 
           unless @deactivate_form.valid?
-            @schedule_confirmed = true
-            return render :new, status: :unprocessable_content
+            return render_update_validation_error
           end
 
-          now = Time.current
-
-          User.transaction do
-            current_user.withdrawal_started_at ||= now
-            current_user.deactivated_at ||= now
-            current_user.scheduled_purge_at ||= current_user.deactivated_at + 31.days
-            current_user.save!
-
-            Rails.event.notify(
-              "user.withdrawal.deactivated",
-              user_id: current_user.id,
-              deactivated_at: current_user.deactivated_at,
-              scheduled_purge_at: current_user.scheduled_purge_at,
-              ip_address: request.remote_ip,
-            )
-          end
+          deactivate_user!
 
           safe_redirect_to(
             edit_sign_app_configuration_path(ri: params[:ri]),
@@ -100,14 +87,7 @@ module Sign
             status: :see_other,
           )
         rescue ActiveRecord::RecordInvalid
-          Rails.event.notify(
-            "user.withdrawal.deactivation_failed",
-            user_id: current_user.id,
-            errors: current_user.errors.full_messages,
-            ip_address: request.remote_ip,
-          )
-          @schedule_confirmed = true
-          render :new, status: :unprocessable_content
+          handle_deactivation_failure
         end
 
         # Reserved for future withdrawal cancellation flow.
@@ -137,6 +117,50 @@ module Sign
 
         def deactivate_params
           params.permit(:ack_deactivate_today)
+        end
+
+        def render_update_validation_error
+          @schedule_confirmed = true
+          render :new, status: :unprocessable_content
+        end
+
+        def deactivate_user!
+          now = Time.current
+
+          User.transaction do
+            assign_withdrawal_schedule!(now)
+            current_user.save!
+            notify_deactivation!
+          end
+        end
+
+        def assign_withdrawal_schedule!(now)
+          current_user.withdrawal_started_at ||= now
+          current_user.deactivated_at ||= now
+          current_user.scheduled_purge_at ||= current_user.deactivated_at + 31.days
+          current_user.deletable_at ||= current_user.scheduled_purge_at
+        end
+
+        def notify_deactivation!
+          Rails.event.notify(
+            "user.withdrawal.deactivated",
+            user_id: current_user.id,
+            deactivated_at: current_user.deactivated_at,
+            deletable_at: current_user.deletable_at,
+            scheduled_purge_at: current_user.scheduled_purge_at,
+            ip_address: request.remote_ip,
+          )
+        end
+
+        def handle_deactivation_failure
+          Rails.event.notify(
+            "user.withdrawal.deactivation_failed",
+            user_id: current_user.id,
+            errors: current_user.errors.full_messages,
+            ip_address: request.remote_ip,
+          )
+          @schedule_confirmed = true
+          render :new, status: :unprocessable_content
         end
 
         def verification_required_action?

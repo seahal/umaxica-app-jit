@@ -11,6 +11,7 @@
 
 class AppPreferenceLanguageOption < PreferenceRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0 # I want to set this value.
   JA = 1
   EN = 2
 
@@ -19,7 +20,7 @@ class AppPreferenceLanguageOption < PreferenceRecord
            foreign_key: :option_id,
            inverse_of: :option,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:id) }
+  scope :ordered, -> { all }
 
   def name
     case id

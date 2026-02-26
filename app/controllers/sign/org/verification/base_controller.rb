@@ -103,7 +103,7 @@ module Sign
 
         def verification_audit_level_class = StaffActivityLevel
 
-        def verification_default_activity_level_id = StaffActivityLevel::NEYO
+        def verification_default_activity_level_id = StaffActivityLevel::NOTHING
 
         def verification_activity_model = StaffActivity
 

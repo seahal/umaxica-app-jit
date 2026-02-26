@@ -151,7 +151,7 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
       actor_type: "User",
       actor_id: user.id,
       event_id: event_id,
-      level_id: UserActivityLevel::NEYO,
+      level_id: UserActivityLevel::NOTHING,
       subject_id: user.id,
       subject_type: "User",
       occurred_at: occurred_at,

@@ -159,7 +159,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
 
-    user_without_verified_pii = User.create!(status_id: UserStatus::NEYO)
+    user_without_verified_pii = User.create!(status_id: UserStatus::NOTHING)
     email_for_secret_issue = user_without_verified_pii.user_emails.create!(
       address: "secret_verified_#{SecureRandom.hex(4)}@example.com",
       user_email_status_id: UserEmailStatus::VERIFIED,

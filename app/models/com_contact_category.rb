@@ -9,7 +9,7 @@
 #  id :bigint           not null, primary key
 #
 class ComContactCategory < GuestRecord
-  NEYO = 1
+  NOTHING = 1
   SECURITY_ISSUE = 2
 
   has_many :com_contacts,

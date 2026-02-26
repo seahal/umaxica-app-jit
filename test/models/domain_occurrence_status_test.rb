@@ -22,7 +22,7 @@ class DomainOccurrenceStatusTest < ActiveSupport::TestCase
     assert_equal 1, DomainOccurrenceStatus::ACTIVE
     assert_equal 2, DomainOccurrenceStatus::DELETED
     assert_equal 3, DomainOccurrenceStatus::INACTIVE
-    assert_equal 4, DomainOccurrenceStatus::NEYO
+    assert_equal 4, DomainOccurrenceStatus::NOTHING
     assert_equal 5, DomainOccurrenceStatus::PENDING
   end
 

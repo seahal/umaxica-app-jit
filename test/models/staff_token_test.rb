@@ -8,6 +8,8 @@
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
+#  deletable_at             :datetime         default(Infinity), not null
+#  expired_at               :datetime
 #  last_step_up_at          :datetime
 #  last_step_up_scope       :string
 #  last_used_at             :datetime
@@ -24,12 +26,14 @@
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
 #  staff_token_kind_id      :bigint           default(1), not null
-#  staff_token_status_id    :bigint           default(2), not null
+#  staff_token_status_id    :bigint           default(0), not null
 #
 # Indexes
 #
 #  index_staff_tokens_on_compromised_at                (compromised_at)
+#  index_staff_tokens_on_deletable_at                  (deletable_at)
 #  index_staff_tokens_on_device_id                     (device_id)
+#  index_staff_tokens_on_expired_at                    (expired_at)
 #  index_staff_tokens_on_public_id                     (public_id) UNIQUE
 #  index_staff_tokens_on_refresh_expires_at            (refresh_expires_at)
 #  index_staff_tokens_on_refresh_token_digest          (refresh_token_digest) UNIQUE
@@ -121,7 +125,7 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum concurrent sessions per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
     # Create tokens up to the total max (active + restricted)
     StaffToken::MAX_TOTAL_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
@@ -146,12 +150,12 @@ class StaffTokenTest < ActiveSupport::TestCase
   test "active state reflects revoked and expired refresh tokens" do
     assert_predicate @token, :active?
 
-    @token.update!(revoked_at: Time.current)
+    @token.update!(expired_at: Time.current)
 
     assert_predicate @token, :revoked?
     assert_not @token.active?
 
-    @token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+    @token.update!(expired_at: nil, refresh_expires_at: 1.day.ago)
 
     assert_predicate @token, :expired_refresh?
     assert_not @token.active?
@@ -185,6 +189,42 @@ class StaffTokenTest < ActiveSupport::TestCase
     assert_equal @token.public_id, public_id
     assert_predicate verifier, :present?
   end
+
+  test "deletable_at matches refresh_expires_at on create" do
+    expires_at = 2.hours.from_now
+    token = StaffToken.create!(
+      staff: @staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      refresh_expires_at: expires_at,
+    )
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable_at is updated when refresh_expires_at changes" do
+    token = StaffToken.create!(
+      staff: @staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.hour.from_now,
+    )
+    new_expires_at = 3.hours.from_now
+
+    token.update!(refresh_expires_at: new_expires_at)
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable scope returns only tokens deletable at or before now" do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    past_token = StaffToken.create!(staff: staff, refresh_expires_at: 10.minutes.ago)
+    future_token = StaffToken.create!(staff: staff, refresh_expires_at: 10.minutes.from_now)
+
+    deletable_ids = StaffToken.deletable(Time.current).pluck(:id)
+
+    assert_includes deletable_ids, past_token.id
+    assert_not_includes deletable_ids, future_token.id
+  end
+
   test "sha3 digest matches hexdigest packed bytes" do
     raw1 = @token.send(:digest_refresh_token, "B")
     hex = SHA3::Digest::SHA3_384.hexdigest("B")
@@ -234,14 +274,14 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh! rejects revoked compromised and expired tokens" do
-    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
     revoked = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd1")
     compromised = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd2")
     expired = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd3")
     revoked_raw = revoked.rotate_refresh_token!
     compromised_raw = compromised.rotate_refresh_token!
     expired_raw = expired.rotate_refresh_token!
-    revoked.update!(revoked_at: Time.current)
+    revoked.update!(expired_at: Time.current)
     compromised.update!(compromised_at: Time.current)
     expired.update!(refresh_expires_at: 1.minute.ago)
 

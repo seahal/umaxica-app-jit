@@ -5,6 +5,8 @@ module Sign
   module Org
     module Configuration
       class SecretsController < ApplicationController
+        auth_required!
+
         include ::Verification::Staff
 
         before_action :authenticate_staff!

@@ -25,7 +25,7 @@ module Core
       normalized = normalize_host(value)
       return nil if normalized.blank? || normalized == HOST_ONLY
       return value if value.start_with?(".")
-      return ".localhost" if localhost_host?(normalized)
+      return localhost_cookie_domain(normalized) if localhost_host?(normalized)
 
       apex = best_effort_apex(normalized)
       apex ? ".#{apex}" : nil
@@ -35,7 +35,7 @@ module Core
     def derive_from_host(request_host)
       host = normalize_host(request_host)
       return nil if host.blank? || host == "localhost"
-      return ".localhost" if localhost_host?(host)
+      return localhost_cookie_domain(host) if localhost_host?(host)
 
       apex = best_effort_apex(host)
       apex ? ".#{apex}" : nil
@@ -51,6 +51,16 @@ module Core
       host == "localhost" || host.end_with?(".localhost")
     end
     private_class_method :localhost_host?
+
+    def localhost_cookie_domain(host)
+      return nil if host == "localhost"
+
+      parts = host.split(".")
+      return nil if parts.length < 2
+
+      ".#{parts.last(2).join(".")}"
+    end
+    private_class_method :localhost_cookie_domain
 
     def best_effort_apex(host)
       parts = host.split(".")

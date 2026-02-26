@@ -13,7 +13,7 @@ class UserPasskeyStatus < PrincipalRecord
   DISABLED = 2
   REVOKED = 3
   DELETED = 4
-  NEYO = 5
+  NOTHING = 5
   has_many :user_passkeys,
            foreign_key: :status_id,
            inverse_of: :status,

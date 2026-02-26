@@ -5,11 +5,13 @@ module Sign
   module App
     module Configuration
       class SessionsController < ApplicationController
+        auth_required!
+
         before_action :authenticate_user!
         before_action :set_session, only: %i(destroy)
 
         def index
-          @sessions = current_user.user_tokens.where(revoked_at: nil).order(created_at: :desc)
+          @sessions = current_user.user_tokens.where(expired_at: nil).order(created_at: :desc)
 
           respond_to do |format|
             format.html
@@ -46,7 +48,7 @@ module Sign
         end
 
         def other_active_sessions
-          sessions = current_user.user_tokens.where(revoked_at: nil)
+          sessions = current_user.user_tokens.where(expired_at: nil)
           return sessions if current_session_public_id.blank?
 
           sessions.where.not(public_id: current_session_public_id)

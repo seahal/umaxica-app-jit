@@ -128,7 +128,7 @@ module Core
             legacy_preference =
               AppPreference.create!(
                 public_id: SecureRandom.hex(10),
-                status_id: AppPreferenceStatus::NEYO,
+                status_id: AppPreferenceStatus::NOTHING,
                 expires_at: 1.day.from_now,
                 token_digest: legacy_digest,
                 jti: SecureRandom.uuid,

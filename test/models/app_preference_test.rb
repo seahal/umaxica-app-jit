@@ -41,7 +41,7 @@ require "test_helper"
 
 class AppPreferenceTest < ActiveSupport::TestCase
   setup do
-    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
   end
 
   test "generates public_id on create" do
@@ -156,7 +156,7 @@ class AppPreferenceTest < ActiveSupport::TestCase
   test "consume_once_by_digest! marks token used only once" do
     digest = AppPreference.digest_refresh_token("app-consume-once")
     preference = AppPreference.create!(
-      status_id: AppPreferenceStatus::NEYO,
+      status_id: AppPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: digest,
       jti: SecureRandom.uuid,
@@ -180,7 +180,7 @@ class AppPreferenceTest < ActiveSupport::TestCase
     expired_digest = AppPreference.digest_refresh_token("expired")
 
     AppPreference.create!(
-      status_id: AppPreferenceStatus::NEYO,
+      status_id: AppPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: revoked_digest,
       revoked_at: Time.current,
@@ -188,7 +188,7 @@ class AppPreferenceTest < ActiveSupport::TestCase
       device_id: SecureRandom.uuid,
     )
     AppPreference.create!(
-      status_id: AppPreferenceStatus::NEYO,
+      status_id: AppPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: compromised_digest,
       compromised_at: Time.current,
@@ -196,7 +196,7 @@ class AppPreferenceTest < ActiveSupport::TestCase
       device_id: SecureRandom.uuid,
     )
     AppPreference.create!(
-      status_id: AppPreferenceStatus::NEYO,
+      status_id: AppPreferenceStatus::NOTHING,
       expires_at: 1.minute.ago,
       token_digest: expired_digest,
       jti: SecureRandom.uuid,
@@ -211,7 +211,7 @@ class AppPreferenceTest < ActiveSupport::TestCase
   test "rotate! creates replacement and links replaced_by_id" do
     digest = AppPreference.digest_refresh_token("rotate-me")
     preference = AppPreference.create!(
-      status_id: AppPreferenceStatus::NEYO,
+      status_id: AppPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: digest,
       jti: SecureRandom.uuid,

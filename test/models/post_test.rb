@@ -43,7 +43,7 @@ class PostTest < ActiveSupport::TestCase
         a.active_handle = @handle
       end
     @status =
-      PostStatus.find_or_create_by!(id: PostStatus::NEYO)
+      PostStatus.find_or_create_by!(id: PostStatus::NOTHING)
     @valid_attributes = {
       author_avatar: @avatar,
       post_status: @status,

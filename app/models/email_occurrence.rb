@@ -32,7 +32,7 @@ class EmailOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 
-  attribute :status_id, default: EmailOccurrenceStatus::NEYO
+  attribute :status_id, default: EmailOccurrenceStatus::NOTHING
 
   belongs_to :email_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :email_occurrences
   has_many :area_email_occurrences, dependent: :destroy, inverse_of: :email_occurrence

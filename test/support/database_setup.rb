@@ -19,7 +19,7 @@ ActiveSupport.on_load(:active_record) do
   end
 
   if defined?(StaffActivityLevel)
-    StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NEYO)
+    StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NOTHING)
   end
 
   if defined?(StaffActivityEvent)

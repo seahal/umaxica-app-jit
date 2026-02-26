@@ -8,6 +8,8 @@
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
+#  deletable_at             :datetime         default(Infinity), not null
+#  expired_at               :datetime
 #  last_step_up_at          :datetime
 #  last_step_up_scope       :string
 #  last_used_at             :datetime
@@ -24,12 +26,14 @@
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
 #  staff_token_kind_id      :bigint           default(1), not null
-#  staff_token_status_id    :bigint           default(2), not null
+#  staff_token_status_id    :bigint           default(0), not null
 #
 # Indexes
 #
 #  index_staff_tokens_on_compromised_at                (compromised_at)
+#  index_staff_tokens_on_deletable_at                  (deletable_at)
 #  index_staff_tokens_on_device_id                     (device_id)
+#  index_staff_tokens_on_expired_at                    (expired_at)
 #  index_staff_tokens_on_public_id                     (public_id) UNIQUE
 #  index_staff_tokens_on_refresh_expires_at            (refresh_expires_at)
 #  index_staff_tokens_on_refresh_token_digest          (refresh_token_digest) UNIQUE
@@ -52,6 +56,7 @@ class StaffToken < TokenRecord
   include ::PublicId
   include ::RefreshTokenable
   include ::SignedSessionReference
+  include ::TokenDeletableSync
   include ::TokenStatusManagement
 
   MAX_SESSIONS_PER_STAFF = 2
@@ -61,7 +66,7 @@ class StaffToken < TokenRecord
   belongs_to :staff_token_status
   belongs_to :staff_token_kind, optional: true
   has_many :staff_verifications, dependent: :delete_all, inverse_of: :staff_token
-  attribute :staff_token_status_id, default: StaffTokenStatus::NEYO
+  attribute :staff_token_status_id, default: StaffTokenStatus::NOTHING
   attribute :staff_token_kind_id, default: StaffTokenKind::BROWSER_WEB
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }

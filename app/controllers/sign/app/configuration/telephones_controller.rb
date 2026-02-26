@@ -5,6 +5,8 @@ module Sign
   module App
     module Configuration
       class TelephonesController < ApplicationController
+        auth_required!
+
         include Sign::TelephoneRegistrable
         include ::Verification::User
 
@@ -57,7 +59,7 @@ module Sign
         def create_audit_event!(event_id, subject:)
           ActivityRecord.connected_to(role: :writing) do
             UserActivityEvent.find_or_create_by!(id: event_id)
-            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NOTHING)
           end
 
           UserActivity.create!(

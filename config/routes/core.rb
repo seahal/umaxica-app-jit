@@ -148,5 +148,6 @@ scope module: :core, as: :core do
         end
       end
     end
+    mount MissionControl::Jobs::Engine, at: "/jobs"
   end
 end

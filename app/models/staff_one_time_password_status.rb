@@ -14,7 +14,7 @@ class StaffOneTimePasswordStatus < OperatorRecord
   ACTIVE = 1
   DELETED = 2
   INACTIVE = 3
-  NEYO = 4
+  NOTHING = 4
   REVOKED = 5
 
   has_many :staff_one_time_passwords, dependent: :restrict_with_error

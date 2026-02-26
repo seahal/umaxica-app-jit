@@ -41,7 +41,7 @@ require "test_helper"
 
 class ComPreferenceTest < ActiveSupport::TestCase
   setup do
-    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NOTHING)
   end
 
   test "generates public_id on create" do
@@ -156,7 +156,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
   test "consume_once_by_digest! is replay-detectable" do
     digest = ComPreference.digest_refresh_token("com-consume-once")
     preference = ComPreference.create!(
-      status_id: ComPreferenceStatus::NEYO,
+      status_id: ComPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: digest,
       jti: SecureRandom.uuid,
@@ -173,7 +173,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
 
   test "consume_once_by_digest! rejects revoked compromised and expired rows" do
     revoked = ComPreference.create!(
-      status_id: ComPreferenceStatus::NEYO,
+      status_id: ComPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: ComPreference.digest_refresh_token("com-revoked"),
       revoked_at: Time.current,
@@ -181,7 +181,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
       device_id: SecureRandom.uuid,
     )
     compromised = ComPreference.create!(
-      status_id: ComPreferenceStatus::NEYO,
+      status_id: ComPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: ComPreference.digest_refresh_token("com-compromised"),
       compromised_at: Time.current,
@@ -189,7 +189,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
       device_id: SecureRandom.uuid,
     )
     expired = ComPreference.create!(
-      status_id: ComPreferenceStatus::NEYO,
+      status_id: ComPreferenceStatus::NOTHING,
       expires_at: 1.minute.ago,
       token_digest: ComPreference.digest_refresh_token("com-expired"),
       jti: SecureRandom.uuid,
@@ -204,7 +204,7 @@ class ComPreferenceTest < ActiveSupport::TestCase
   test "rotate! creates replacement row and replacement link" do
     digest = ComPreference.digest_refresh_token("com-rotate")
     original = ComPreference.create!(
-      status_id: ComPreferenceStatus::NEYO,
+      status_id: ComPreferenceStatus::NOTHING,
       expires_at: 1.day.from_now,
       token_digest: digest,
       jti: SecureRandom.uuid,

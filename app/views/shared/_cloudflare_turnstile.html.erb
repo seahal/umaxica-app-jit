@@ -53,7 +53,7 @@
 
               const script = document.createElement('script');
               script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-              script.nonce = <%= content_security_policy_nonce.to_json %>;
+              script.nonce = <%= content_security_policy_nonce.to_json.html_safe %>;
               script.async = true;
               script.onload = function () {
                   console.debug('Turnstile script loaded');

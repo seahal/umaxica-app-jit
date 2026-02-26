@@ -33,9 +33,7 @@
 class Admin < OperatorRecord
   include ::PublicId
 
-  self.ignored_columns += ["workspace_id"]
-
-  attribute :status_id, default: AdminStatus::NEYO
+  attribute :status_id, default: AdminStatus::NOTHING
 
   belongs_to :admin_status,
              foreign_key: :status_id,

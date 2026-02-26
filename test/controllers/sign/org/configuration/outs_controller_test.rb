@@ -28,14 +28,17 @@ class Sign::Org::Configuration::OutsControllerTest < ActionDispatch::Integration
     assert_redirected_to new_sign_org_in_url(rt: rt, host: @host)
   end
 
-  test "should destroy with staff session" do
+  test "should destroy with staff session even without step-up verification" do
     token = StaffToken.create!(staff: @staff)
-    satisfy_staff_verification(token)
+    refresh_plain = token.rotate_refresh_token!
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
     delete sign_org_configuration_out_url(ri: "jp"),
            headers: { "Host" => @host,
                       "X-TEST-CURRENT-STAFF" => @staff.id,
                       "X-TEST-SESSION-PUBLIC-ID" => token.public_id, }
 
     assert_redirected_to sign_org_root_path(ri: "jp")
+    assert_not StaffToken.exists?(id: token.id)
   end
 end

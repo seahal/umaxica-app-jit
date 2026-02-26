@@ -15,7 +15,6 @@ class HandleAssignmentStatus < AvatarRecord
   PENDING = 2
   ACTIVE = 3
   DELETED = 4
-  NEYO = 5
-
+  NOTHING = 5
   has_many :handle_assignments, dependent: :restrict_with_error
 end

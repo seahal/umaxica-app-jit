@@ -8,11 +8,13 @@
 #
 #  id                    :bigint           not null, primary key
 #  deactivated_at        :datetime
+#  deletable_at          :datetime         default(Infinity), not null
 #  last_reauth_at        :datetime
 #  lock_version          :integer          default(0), not null
 #  multi_factor_enabled  :boolean          default(FALSE), not null
 #  purged_at             :datetime
 #  scheduled_purge_at    :datetime
+#  shreddable_at         :datetime         default(Infinity), not null
 #  withdrawal_started_at :datetime
 #  withdrawn_at          :datetime         default(Infinity)
 #  created_at            :datetime         not null
@@ -24,9 +26,11 @@
 # Indexes
 #
 #  index_users_on_deactivated_at         (deactivated_at) WHERE (deactivated_at IS NOT NULL)
+#  index_users_on_deletable_at           (deletable_at)
 #  index_users_on_public_id              (public_id) UNIQUE
 #  index_users_on_purged_at              (purged_at) WHERE (purged_at IS NOT NULL)
 #  index_users_on_scheduled_purge_at     (scheduled_purge_at) WHERE (scheduled_purge_at IS NOT NULL)
+#  index_users_on_shreddable_at          (shreddable_at)
 #  index_users_on_status_id              (status_id)
 #  index_users_on_visibility_id          (visibility_id)
 #  index_users_on_withdrawal_started_at  (withdrawal_started_at) WHERE (withdrawal_started_at IS NOT NULL)
@@ -177,6 +181,36 @@ class UserTest < ActiveSupport::TestCase
     avatar.avatar_assignments.create!(user: @user, role: "owner")
 
     assert_includes @user.owned_avatars, avatar
+  end
+
+  test "deletable scope picks users with past deletable_at" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", deletable_at: 1.hour.ago)
+
+    assert_includes User.deletable, user
+  end
+
+  test "deletable scope excludes users with default deletable_at" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}")
+
+    assert_not_includes User.deletable, user
+  end
+
+  test "deletable scope excludes users with future deletable_at" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", deletable_at: 1.hour.from_now)
+
+    assert_not_includes User.deletable, user
+  end
+
+  test "shreddable scope excludes users with default shreddable_at" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}")
+
+    assert_not_includes User.shreddable(Time.current), user
+  end
+
+  test "shreddable scope includes users with past shreddable_at" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", shreddable_at: 1.day.ago)
+
+    assert_includes User.shreddable(Time.current), user
   end
 
   private

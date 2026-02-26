@@ -20,6 +20,7 @@ class StaffTokenStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, StaffTokenStatus::ACTIVE
-    assert_equal 2, StaffTokenStatus::NEYO
+    assert_equal 0, StaffTokenStatus::NOTHING
+    assert_equal 2, StaffTokenStatus::EXPIRED
   end
 end

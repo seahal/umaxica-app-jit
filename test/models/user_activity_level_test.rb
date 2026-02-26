@@ -26,7 +26,7 @@ class UserActivityLevelTest < ActiveSupport::TestCase
     assert_equal 1, UserActivityLevel::DEBUG
     assert_equal 2, UserActivityLevel::ERROR
     assert_equal 3, UserActivityLevel::INFO
-    assert_equal 4, UserActivityLevel::NEYO
+    assert_equal 4, UserActivityLevel::NOTHING
     assert_equal 5, UserActivityLevel::WARN
   end
 
@@ -38,13 +38,13 @@ class UserActivityLevelTest < ActiveSupport::TestCase
     assert UserActivityLevel.exists?(id: UserActivityLevel::DEBUG)
   end
 
-  test "ordered scope returns ordered records" do
+  test "ordered scope returns all default records" do
     UserActivityLevel.ensure_defaults!
     levels = UserActivityLevel.ordered
 
     assert_kind_of ActiveRecord::Relation, levels
     ordered_ids = levels.pluck(:id)
 
-    assert_equal ordered_ids.sort, ordered_ids
+    assert_equal UserActivityLevel::DEFAULTS.sort, ordered_ids.sort
   end
 end

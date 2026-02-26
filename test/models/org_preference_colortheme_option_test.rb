@@ -13,7 +13,7 @@ require "test_helper"
 
 class OrgPreferenceColorthemeOptionTest < ActiveSupport::TestCase
   setup do
-    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NOTHING)
   end
 
   test "can be created" do

@@ -24,7 +24,7 @@ class UserStatusTest < ActiveSupport::TestCase
       WITHDRAWAL_COMPLETED: 8,
       UNVERIFIED_WITH_SIGN_UP: 9,
       VERIFIED_WITH_SIGN_UP: 10,
-      NEYO: 11,
+      NOTHING: 11,
       GHOST: 12,
       NONE: 13,
     }
@@ -40,7 +40,7 @@ class UserStatusTest < ActiveSupport::TestCase
       WITHDRAWAL_COMPLETED: UserStatus::WITHDRAWAL_COMPLETED,
       UNVERIFIED_WITH_SIGN_UP: UserStatus::UNVERIFIED_WITH_SIGN_UP,
       VERIFIED_WITH_SIGN_UP: UserStatus::VERIFIED_WITH_SIGN_UP,
-      NEYO: UserStatus::NEYO,
+      NOTHING: UserStatus::NOTHING,
       GHOST: UserStatus::GHOST,
       NONE: UserStatus::NONE,
     }

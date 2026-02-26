@@ -78,7 +78,7 @@ class AppContactCategoryTest < ActiveSupport::TestCase
 
   test "destroy is restricted when contacts exist" do
     category = AppContactCategory.create!(id: 102)
-    status = AppContactStatus.find_or_create_by!(id: AppContactStatus::NEYO)
+    status = AppContactStatus.find_or_create_by!(id: AppContactStatus::NOTHING)
     AppContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
     assert_raises(ActiveRecord::DeleteRestrictionError) do

@@ -19,7 +19,7 @@ class AppPreferenceTimezoneOption < PreferenceRecord
            foreign_key: :option_id,
            inverse_of: :option,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:id) }
+  scope :ordered, -> { all }
 
   def name
     case id

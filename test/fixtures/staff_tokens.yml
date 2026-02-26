@@ -5,6 +5,8 @@
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
+#  deletable_at             :datetime         default(Infinity), not null
+#  expired_at               :datetime
 #  last_step_up_at          :datetime
 #  last_step_up_scope       :string
 #  last_used_at             :datetime
@@ -21,12 +23,14 @@
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
 #  staff_token_kind_id      :bigint           default(1), not null
-#  staff_token_status_id    :bigint           default(2), not null
+#  staff_token_status_id    :bigint           default(0), not null
 #
 # Indexes
 #
 #  index_staff_tokens_on_compromised_at                (compromised_at)
+#  index_staff_tokens_on_deletable_at                  (deletable_at)
 #  index_staff_tokens_on_device_id                     (device_id)
+#  index_staff_tokens_on_expired_at                    (expired_at)
 #  index_staff_tokens_on_public_id                     (public_id) UNIQUE
 #  index_staff_tokens_on_refresh_expires_at            (refresh_expires_at)
 #  index_staff_tokens_on_refresh_token_digest          (refresh_token_digest) UNIQUE
@@ -48,6 +52,7 @@ one:
   staff_token_kind_id: 1
   public_id: one_staff_token_00001
   refresh_expires_at: <%= 1.day.from_now %>
+  deletable_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
@@ -56,5 +61,6 @@ two:
   staff_token_kind_id: 1
   public_id: two_staff_token_00001
   refresh_expires_at: <%= 1.day.from_now %>
+  deletable_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

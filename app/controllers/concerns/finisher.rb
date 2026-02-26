@@ -4,6 +4,10 @@
 module Finisher
   extend ActiveSupport::Concern
 
+  included do
+    append_after_action :finish_request
+  end
+
   private
 
   def finish_request

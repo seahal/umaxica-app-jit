@@ -11,6 +11,7 @@ module Docs
       include ::Authorization::User
       include ::Verification::User
       include Pundit::Authorization
+      include ::Current
       include ::Finisher
 
       before_action :check_fuse!
@@ -18,6 +19,7 @@ module Docs
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
+      before_action :set_current
       append_after_action :finish_request
 
       protect_from_forgery with: :exception

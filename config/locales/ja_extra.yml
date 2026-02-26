@@ -111,6 +111,7 @@ ja:
             actions:
               update: "更新する"
               continue: "続行する"
+          forbidden: "アクセス権限がありません"
           timeout: "timeout しました"
         session:
           title: "セッション管理"
@@ -347,6 +348,7 @@ ja:
             actions:
               update: "更新する"
               continue: "続行する"
+          forbidden: "アクセス権限がありません"
           timeout: "timeout しました"
       reauth:
         index:

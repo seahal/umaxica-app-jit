@@ -31,7 +31,7 @@ class AreaOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 
-  attribute :status_id, default: AreaOccurrenceStatus::NEYO
+  attribute :status_id, default: AreaOccurrenceStatus::NOTHING
 
   belongs_to :area_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :area_occurrences
   has_many :area_domain_occurrences, dependent: :destroy, inverse_of: :area_occurrence

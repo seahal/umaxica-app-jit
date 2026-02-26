@@ -50,11 +50,11 @@ class ComContactTopicTest < ActiveSupport::TestCase
   end
 
   def build_contact
-    ComContactCategory.find_or_create_by!(id: ComContactCategory::NEYO)
-    ComContactStatus.find_or_create_by!(id: ComContactStatus::NEYO)
+    ComContactCategory.find_or_create_by!(id: ComContactCategory::NOTHING)
+    ComContactStatus.find_or_create_by!(id: ComContactStatus::NOTHING)
     contact = ComContact.new(confirm_policy: "1")
-    contact.category_id = ComContactCategory::NEYO
-    contact.status_id = ComContactStatus::NEYO
+    contact.category_id = ComContactCategory::NOTHING
+    contact.status_id = ComContactStatus::NOTHING
     contact.save!
 
     ComContactEmail.create!(

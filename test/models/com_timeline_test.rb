@@ -44,7 +44,7 @@ class ComTimelineTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      status_id: ComTimelineStatus::NEYO,
+      status_id: ComTimelineStatus::NOTHING,
     }
   end
 

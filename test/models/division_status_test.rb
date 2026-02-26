@@ -23,7 +23,7 @@ class DivisionStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, DivisionStatus::NEYO
+    assert_equal 1, DivisionStatus::NOTHING
     assert_equal 2, DivisionStatus::ACTIVE
     assert_equal 3, DivisionStatus::INACTIVE
     assert_equal 4, DivisionStatus::DELETED

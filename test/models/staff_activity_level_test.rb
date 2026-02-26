@@ -15,7 +15,7 @@ class StaffActivityLevelTest < ActiveSupport::TestCase
   fixtures :staffs, :staff_statuses, :staff_activity_levels, :staff_activity_events
 
   test "restrict_with_error on destroy when audits exist" do
-    level = StaffActivityLevel.find(StaffActivityLevel::NEYO)
+    level = StaffActivityLevel.find(StaffActivityLevel::NOTHING)
     StaffActivity.create!(
       staff: Staff.find_by!(public_id: "bcde3456"),
       staff_activity_event: StaffActivityEvent.find(StaffActivityEvent::LOGIN_SUCCESS),
@@ -44,8 +44,8 @@ class StaffActivityLevelTest < ActiveSupport::TestCase
     assert_predicate record, :valid?
   end
 
-  test "NEYO constant is defined" do
-    assert_equal 1, StaffActivityLevel::NEYO
+  test "NOTHING constant is defined" do
+    assert_equal 1, StaffActivityLevel::NOTHING
   end
 
   test "has_many association with staff_activities" do

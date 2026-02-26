@@ -13,7 +13,7 @@ require "test_helper"
 
 class AppPreferenceTimezoneOptionTest < ActiveSupport::TestCase
   setup do
-    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
   end
 
   test "can be created" do

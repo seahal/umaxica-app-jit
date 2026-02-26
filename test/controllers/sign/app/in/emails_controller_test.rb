@@ -223,6 +223,34 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
   end
 
+  test "successful OTP verification sets auth cookies with app-localhost domain" do
+    user = users(:one)
+    test_email = user.user_emails.create!(
+      address: "cookie_domain_in_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 67_890
+    valid_pass_code = ROTP::HOTP.new(otp_private_key).at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host }
+
+    set_cookie = response.headers["Set-Cookie"].to_s
+
+    assert_match(/domain=\.app\.localhost/i, set_cookie)
+    assert_no_match(/domain=\.localhost/i, set_cookie)
+  end
+
   test "email sign-in redirects to MFA challenge when MFA is enabled" do
     user = users(:one)
     user.update!(multi_factor_enabled: true)

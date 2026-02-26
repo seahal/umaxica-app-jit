@@ -19,7 +19,7 @@ class PostStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, PostStatus::NEYO
+    assert_equal 1, PostStatus::NOTHING
     assert_equal 2, PostStatus::ACTIVE
     assert_equal 3, PostStatus::INACTIVE
     assert_equal 4, PostStatus::DELETED

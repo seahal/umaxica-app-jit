@@ -17,7 +17,7 @@ class UserSecretStatusTest < ActiveSupport::TestCase
     assert_equal 3, UserSecretStatus::REVOKED
     assert_equal 4, UserSecretStatus::USED
     assert_equal 5, UserSecretStatus::DELETED
-    assert_equal 6, UserSecretStatus::NEYO
+    assert_equal 6, UserSecretStatus::NOTHING
   end
 
   test "status ids are integers" do
@@ -26,6 +26,6 @@ class UserSecretStatusTest < ActiveSupport::TestCase
     assert_kind_of Integer, UserSecretStatus::REVOKED
     assert_kind_of Integer, UserSecretStatus::USED
     assert_kind_of Integer, UserSecretStatus::DELETED
-    assert_kind_of Integer, UserSecretStatus::NEYO
+    assert_kind_of Integer, UserSecretStatus::NOTHING
   end
 end

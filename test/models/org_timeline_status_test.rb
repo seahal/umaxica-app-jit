@@ -21,7 +21,7 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "status constants are defined" do
-    assert_equal 1, OrgTimelineStatus::NEYO
+    assert_equal 1, OrgTimelineStatus::NOTHING
     assert_equal 2, OrgTimelineStatus::ACTIVE
     assert_equal 3, OrgTimelineStatus::INACTIVE
     assert_equal 4, OrgTimelineStatus::PENDING

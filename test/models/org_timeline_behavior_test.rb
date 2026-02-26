@@ -68,8 +68,8 @@ class OrgTimelineBehaviorTest < ActiveSupport::TestCase
       subject_type: "OrgTimeline",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
-      event_id: OrgTimelineBehaviorEvent::NEYO,
-      level_id: OrgTimelineBehaviorLevel::NEYO,
+      event_id: OrgTimelineBehaviorEvent::NOTHING,
+      level_id: OrgTimelineBehaviorLevel::NOTHING,
     )
 
     assert_equal timeline, audit.org_timeline

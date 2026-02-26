@@ -12,8 +12,8 @@ class WorkspaceStatus < OperatorRecord
   self.record_timestamps = false
 
   self.primary_key = "id"
-  # Fixed IDs - do not modify these values
-  NEYO = 1
 
+  # Fixed IDs - do not modify these values
+  NOTHING = 1
   has_many :workspaces, dependent: :restrict_with_error
 end

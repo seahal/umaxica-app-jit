@@ -8,12 +8,12 @@
 #
 #  id :bigint           not null, primary key
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id :string(255)      default("NOTHING"), not null, primary key
 
 class OrgTimelineBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
+  NOTHING = 1
   DEBUG = 2
   INFO = 3
   WARN = 4

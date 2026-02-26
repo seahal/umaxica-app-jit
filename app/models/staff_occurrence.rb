@@ -37,7 +37,7 @@ class StaffOccurrence < OccurrenceRecord
   ACTIVE_STATUS_ID = 1
   EXPIRED_STATUS_ID = 2
 
-  attribute :status_id, default: StaffOccurrenceStatus::NEYO
+  attribute :status_id, default: StaffOccurrenceStatus::NOTHING
 
   belongs_to :staff_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :staff_occurrences
   has_many :area_staff_occurrences, dependent: :destroy, inverse_of: :staff_occurrence

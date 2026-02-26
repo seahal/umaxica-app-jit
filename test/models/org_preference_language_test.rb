@@ -27,8 +27,8 @@ require "test_helper"
 
 class OrgPreferenceLanguageTest < ActiveSupport::TestCase
   setup do
-    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
-    @preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NEYO)
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NOTHING)
+    @preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do

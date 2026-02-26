@@ -71,12 +71,12 @@ class ComContactTest < ActiveSupport::TestCase
   end
 
   def sample_status
-    ComContactStatus::NEYO
+    ComContactStatus::NOTHING
   end
 
   def create_all_statuses
     statuses = [
-      ComContactStatus::NEYO,
+      ComContactStatus::NOTHING,
       ComContactStatus::SET_UP,
       ComContactStatus::NULL_COM_STATUS,
       ComContactStatus::CHECKED_EMAIL_ADDRESS,
@@ -90,7 +90,7 @@ class ComContactTest < ActiveSupport::TestCase
 
   def create_all_categories
     categories = [
-      ComContactCategory::NEYO,
+      ComContactCategory::NOTHING,
       ComContactCategory::SECURITY_ISSUE,
     ]
     categories.each do |id|
@@ -107,7 +107,7 @@ class ComContactTest < ActiveSupport::TestCase
 
     assert contact.save
     assert_equal ComContactCategory::SECURITY_ISSUE, contact.category_id
-    assert_equal ComContactStatus::NEYO, contact.status_id
+    assert_equal ComContactStatus::NOTHING, contact.status_id
   end
 
   test "should generate public_id on create" do

@@ -13,7 +13,7 @@ require "test_helper"
 
 class ComDocumentBehaviorLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = ComDocumentBehaviorLevel.find(ComDocumentBehaviorLevel::NEYO)
+    level = ComDocumentBehaviorLevel.find(ComDocumentBehaviorLevel::NOTHING)
     doc = ComDocument.create!(
       permalink: "audit_doc",
       response_mode: "html",
@@ -21,7 +21,7 @@ class ComDocumentBehaviorLevelTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       position: 0,
       revision_key: "rev_key",
-      status_id: ComDocumentStatus::NEYO,
+      status_id: ComDocumentStatus::NOTHING,
     )
 
     ComDocumentBehavior.create!(

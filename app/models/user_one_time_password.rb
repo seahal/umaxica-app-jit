@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_one_time_passwords
@@ -39,7 +41,7 @@ class UserOneTimePassword < PrincipalRecord
   belongs_to :user, inverse_of: :user_one_time_passwords
   belongs_to :user_one_time_password_status, optional: true, inverse_of: :user_one_time_passwords,
                                              foreign_key: :user_identity_one_time_password_status_id
-  attribute :user_identity_one_time_password_status_id, default: UserOneTimePasswordStatus::NEYO
+  attribute :user_identity_one_time_password_status_id, default: UserOneTimePasswordStatus::NOTHING
 
   validates :private_key, presence: true, length: { maximum: 1024 }
   validates :last_otp_at, presence: true

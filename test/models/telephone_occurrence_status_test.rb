@@ -20,7 +20,7 @@ class TelephoneOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, TelephoneOccurrenceStatus::ACTIVE
-    assert_equal 2, TelephoneOccurrenceStatus::NEYO
+    assert_equal 2, TelephoneOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

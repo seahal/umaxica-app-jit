@@ -32,6 +32,7 @@ en:
             actions:
               update: "Update checkpoint state"
               continue: "Continue"
+          forbidden: "You do not have permission to access this page."
           timeout: "timeout しました"
         session:
           title: "Manage Sessions"
@@ -92,6 +93,7 @@ en:
             actions:
               update: "Update checkpoint state"
               continue: "Continue"
+          forbidden: "You do not have permission to access this page."
           timeout: "timeout しました"
         session:
           title: "Manage Sessions"

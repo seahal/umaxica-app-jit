@@ -26,7 +26,7 @@ class UserOccurrenceStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, UserOccurrenceStatus::NEYO
+    assert_equal 1, UserOccurrenceStatus::NOTHING
     assert_equal 2, UserOccurrenceStatus::ACTIVE
     assert_equal 3, UserOccurrenceStatus::INACTIVE
     assert_equal 4, UserOccurrenceStatus::DELETED

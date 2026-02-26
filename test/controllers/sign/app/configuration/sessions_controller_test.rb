@@ -37,7 +37,7 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
 
     user_token.reload
 
-    assert_not_nil user_token.revoked_at
+    assert_not_nil user_token.expired_at
   end
 
   test "requires authentication" do
@@ -68,9 +68,9 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     token_one.reload
     token_two.reload
 
-    assert_nil current_session.revoked_at
-    assert_not_nil token_one.revoked_at
-    assert_not_nil token_two.revoked_at
+    assert_nil current_session.expired_at
+    assert_not_nil token_one.expired_at
+    assert_not_nil token_two.expired_at
     assert_not response_has_cookie?(::Auth::Base::ACCESS_COOKIE_KEY)
     assert_not response_has_cookie?(::Auth::Base::REFRESH_COOKIE_KEY)
   end

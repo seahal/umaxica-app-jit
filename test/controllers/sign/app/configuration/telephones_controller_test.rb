@@ -101,7 +101,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
   end
 
   test "destroy blocks removal when last method" do
-    user = User.create!(status_id: UserStatus::NEYO)
+    user = User.create!(status_id: UserStatus::NOTHING)
     token = UserToken.create!(
       user_id: user.id,
     )
@@ -126,7 +126,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
   end
 
   test "destroy allows removing last telephone when verified email exists" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "tel_rule_ok_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NOTHING, public_id: "tel_rule_ok_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
     )
@@ -156,7 +156,7 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
   end
 
   test "destroy rejects other user's public_id" do
-    other_user = User.create!(status_id: UserStatus::NEYO)
+    other_user = User.create!(status_id: UserStatus::NOTHING)
     other_telephone = UserTelephone.create!(
       number: "+10000000003",
       user: other_user,

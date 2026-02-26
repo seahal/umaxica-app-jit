@@ -120,7 +120,7 @@ class StaffTelephoneTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum telephones per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
     StaffTelephone::MAX_TELEPHONES_PER_STAFF.times do |i|
       StaffTelephone.create!(
         number: "+1234567890#{i}",

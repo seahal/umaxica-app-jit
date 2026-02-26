@@ -169,7 +169,7 @@ module Sign
 
         def verification_audit_level_class = UserActivityLevel
 
-        def verification_default_activity_level_id = UserActivityLevel::NEYO
+        def verification_default_activity_level_id = UserActivityLevel::NOTHING
 
         def verification_activity_model = UserActivity
 

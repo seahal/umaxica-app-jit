@@ -40,22 +40,22 @@ class UserClientRevocationTest < ActiveSupport::TestCase
   end
 
   def create_client
-    ClientStatus.find_or_create_by!(id: ClientStatus::NEYO)
+    ClientStatus.find_or_create_by!(id: ClientStatus::NOTHING)
     # Need a division for the client
-    DivisionStatus.find_or_create_by!(id: DivisionStatus::NEYO)
-    OrganizationStatus.find_or_create_by!(id: OrganizationStatus::NEYO)
+    DivisionStatus.find_or_create_by!(id: DivisionStatus::NOTHING)
+    OrganizationStatus.find_or_create_by!(id: OrganizationStatus::NOTHING)
     # Workspace/Organization (division -> workspace)
     # Check Division model if needed, but assuming optional or simple setup
     organization =
       Organization.find_or_create_by!(domain: "root.local") do |w|
         w.name = "Root"
-        w.workspace_status_id = OrganizationStatus::NEYO
+        w.workspace_status_id = OrganizationStatus::NOTHING
       end
-    div = Division.create!(organization: organization, division_status_id: DivisionStatus::NEYO, name: "Test Div")
+    div = Division.create!(organization: organization, division_status_id: DivisionStatus::NOTHING, name: "Test Div")
 
     Client.create!(
-      status_id: ClientStatus::NEYO,
-      client_status_id: ClientStatus::NEYO,
+      status_id: ClientStatus::NOTHING,
+      client_status_id: ClientStatus::NOTHING,
       division: div,
     )
   end

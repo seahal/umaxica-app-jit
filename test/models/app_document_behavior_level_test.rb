@@ -15,7 +15,7 @@ class AppDocumentBehaviorLevelTest < ActiveSupport::TestCase
   fixtures :app_document_behavior_levels, :app_document_behavior_events, :app_document_statuses
 
   test "restrict_with_error on destroy when audits exist" do
-    level = AppDocumentBehaviorLevel.find(AppDocumentBehaviorLevel::NEYO)
+    level = AppDocumentBehaviorLevel.find(AppDocumentBehaviorLevel::NOTHING)
     doc = AppDocument.create!(
       permalink: "audit_doc",
       response_mode: "html",
@@ -23,7 +23,7 @@ class AppDocumentBehaviorLevelTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       position: 0,
       revision_key: "rev_key",
-      status_id: AppDocumentStatus::NEYO,
+      status_id: AppDocumentStatus::NOTHING,
     )
 
     AppDocumentBehavior.create!(

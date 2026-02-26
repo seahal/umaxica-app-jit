@@ -31,7 +31,7 @@ class StaffActivityEventTest < ActiveSupport::TestCase
     assert_equal 4, StaffActivityEvent::LOGGED_OUT
     assert_equal 5, StaffActivityEvent::LOGIN_FAILED
     assert_equal 6, StaffActivityEvent::TOKEN_REFRESHED
-    assert_equal 7, StaffActivityEvent::NEYO
+    assert_equal 7, StaffActivityEvent::NOTHING
     assert_equal 8, StaffActivityEvent::STAFF_SECRET_CREATED
     assert_equal 9, StaffActivityEvent::STAFF_SECRET_REMOVED
     assert_equal 10, StaffActivityEvent::STAFF_SECRET_UPDATED

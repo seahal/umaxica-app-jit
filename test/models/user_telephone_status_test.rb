@@ -27,14 +27,14 @@ class UserTelephoneStatusTest < ActiveSupport::TestCase
     assert_equal 2, UserTelephoneStatus::VERIFIED
     assert_equal 3, UserTelephoneStatus::SUSPENDED
     assert_equal 4, UserTelephoneStatus::DELETED
-    assert_equal 5, UserTelephoneStatus::NEYO
+    assert_equal 5, UserTelephoneStatus::NOTHING
   end
   test "status ids are integers" do
     assert_kind_of Integer, UserTelephoneStatus::UNVERIFIED
     assert_kind_of Integer, UserTelephoneStatus::VERIFIED
     assert_kind_of Integer, UserTelephoneStatus::SUSPENDED
     assert_kind_of Integer, UserTelephoneStatus::DELETED
-    assert_kind_of Integer, UserTelephoneStatus::NEYO
+    assert_kind_of Integer, UserTelephoneStatus::NOTHING
   end
 
   test "restrict_with_error prevents deletion when telephones exist" do

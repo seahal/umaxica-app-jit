@@ -32,8 +32,8 @@ require "test_helper"
 
 class UserOneTimePasswordTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
-    UserOneTimePasswordStatus.find_or_create_by!(id: UserOneTimePasswordStatus::NEYO)
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    UserOneTimePasswordStatus.find_or_create_by!(id: UserOneTimePasswordStatus::NOTHING)
     @status = UserOneTimePasswordStatus.find(UserOneTimePasswordStatus::ACTIVE)
 
     @private_key = "test-secret-key-12345"
@@ -114,7 +114,7 @@ class UserOneTimePasswordTest < ActiveSupport::TestCase
 
   test "enforces maximum totp records per user" do
     new_user = User.create!(
-      status_id: UserStatus::NEYO,
+      status_id: UserStatus::NOTHING,
     )
 
     UserOneTimePassword::MAX_TOTPS_PER_USER.times do

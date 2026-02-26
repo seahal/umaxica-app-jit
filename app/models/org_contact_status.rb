@@ -9,7 +9,7 @@
 #  id :bigint           not null, primary key
 #
 class OrgContactStatus < GuestRecord
-  NEYO = 1
+  NOTHING = 1
   CHECKED_EMAIL_ADDRESS = 2
   EMAIL_PENDING = 3
   PHONE_VERIFIED = 4

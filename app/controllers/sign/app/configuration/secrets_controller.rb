@@ -5,6 +5,8 @@ module Sign
   module App
     module Configuration
       class SecretsController < ApplicationController
+        auth_required!
+
         include ::Verification::User
 
         before_action :authenticate_user!

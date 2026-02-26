@@ -48,7 +48,7 @@ module Secret
           "REVOKED" => UserSecretStatus::REVOKED,
           "USED" => UserSecretStatus::USED,
           "DELETED" => UserSecretStatus::DELETED,
-          "NEYO" => UserSecretStatus::NEYO,
+          "NOTHING" => UserSecretStatus::NOTHING,
         }.fetch(status_key)
       when "StaffSecretStatus"
         {

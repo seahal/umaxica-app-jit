@@ -47,7 +47,7 @@ class UserActivity < ActivityRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  attribute :level_id, default: UserActivityLevel::NEYO
+  attribute :level_id, default: UserActivityLevel::NOTHING
   attribute :subject_id, :string
 
   validates :event_id, numericality: { only_integer: true }, allow_nil: true

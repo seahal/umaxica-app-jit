@@ -12,7 +12,6 @@
 class OrgDocumentBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
-
+  NOTHING = 1
   has_many :org_document_behaviors, dependent: :restrict_with_error, inverse_of: :org_document_behavior_level
 end

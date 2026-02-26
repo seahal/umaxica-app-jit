@@ -45,11 +45,11 @@ class ComContactEmailTest < ActiveSupport::TestCase
 
   setup do
     # Seed necessary reference data for tests
-    [ComContactCategory::SECURITY_ISSUE, ComContactCategory::NEYO].each do |id|
+    [ComContactCategory::SECURITY_ISSUE, ComContactCategory::NOTHING].each do |id|
       ComContactCategory.find_or_create_by!(id: id)
     end
     [
-      ComContactStatus::NEYO,
+      ComContactStatus::NOTHING,
       ComContactStatus::SET_UP,
       ComContactStatus::CHECKED_EMAIL_ADDRESS,
       ComContactStatus::CHECKED_TELEPHONE_NUMBER,
@@ -558,7 +558,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
       {
         confirm_policy: "1",
         category_id: ComContactCategory::SECURITY_ISSUE,
-        status_id: ComContactStatus::NEYO,
+        status_id: ComContactStatus::NOTHING,
       }.merge(attrs),
     )
   end

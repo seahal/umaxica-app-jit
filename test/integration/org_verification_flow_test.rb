@@ -18,7 +18,7 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
     @staff = staffs(:one)
     @token = StaffToken.create!(
       staff: @staff,
-      staff_token_status_id: StaffTokenStatus::NEYO,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
       staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
       public_id: "ovf#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,

@@ -80,7 +80,7 @@ class AppContactTest < ActiveSupport::TestCase
 
   def create_all_statuses
     statuses = [
-      AppContactStatus::NEYO,
+      AppContactStatus::NOTHING,
       AppContactStatus::SET_UP,
       AppContactStatus::CHECKED_EMAIL_ADDRESS,
       AppContactStatus::CHECKED_TELEPHONE_NUMBER,
@@ -93,7 +93,7 @@ class AppContactTest < ActiveSupport::TestCase
 
   def create_all_categories
     categories = [
-      AppContactCategory::NEYO,
+      AppContactCategory::NOTHING,
       AppContactCategory::APPLICATION_INQUIRY,
     ]
     categories.each do |id|
@@ -118,7 +118,7 @@ class AppContactTest < ActiveSupport::TestCase
 
     assert contact.save
     assert_equal AppContactCategory::APPLICATION_INQUIRY, contact.category_id
-    assert_equal AppContactStatus::NEYO, contact.status_id
+    assert_equal AppContactStatus::NOTHING, contact.status_id
   end
 
   test "should generate public_id on create" do

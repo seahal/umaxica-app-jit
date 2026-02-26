@@ -14,7 +14,7 @@ class UserActivityLevel < ActivityRecord
   DEBUG = 1
   ERROR = 2
   INFO = 3
-  NEYO = 4
+  NOTHING = 4
   WARN = 5
 
   has_many :user_activities,
@@ -22,9 +22,9 @@ class UserActivityLevel < ActivityRecord
            dependent: :restrict_with_error,
            inverse_of: :user_activity_level
 
-  scope :ordered, -> { order(:id) }
+  scope :ordered, -> { all }
 
-  DEFAULTS = [DEBUG, ERROR, INFO, NEYO, WARN].freeze
+  DEFAULTS = [DEBUG, ERROR, INFO, NOTHING, WARN].freeze
 
   def self.ensure_defaults!
     DEFAULTS.each do |id|

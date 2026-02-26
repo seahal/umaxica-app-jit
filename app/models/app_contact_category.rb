@@ -9,7 +9,7 @@
 #  id :bigint           not null, primary key
 #
 class AppContactCategory < GuestRecord
-  NEYO = 1
+  NOTHING = 1
   APPLICATION_INQUIRY = 2
 
   has_many :app_contacts,

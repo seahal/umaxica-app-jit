@@ -15,7 +15,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Ensure user is active for refresh to work
     # We update status to something active if available, or just rely on 'active?' returning true.
-    # NEYO might be inactive?
+    # NOTHING might be inactive?
     # Let's set it to 'ACTIVE' if possible, or 'ALIVE'.
     # UserStatus constants: ACTIVE, ALIVE, etc.
     # We need to ensure the status exists too? UserStatus::ACTIVE might need seeding?
@@ -193,6 +193,6 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     token_record.reload
 
-    assert_not_nil token_record.revoked_at, "Token should be revoked"
+    assert_not_nil token_record.expired_at, "Token should be revoked"
   end
 end

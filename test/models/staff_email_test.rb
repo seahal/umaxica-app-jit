@@ -132,7 +132,7 @@ class StaffEmailTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum emails per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
     StaffEmail::MAX_EMAILS_PER_STAFF.times do |i|
       StaffEmail.create!(
         address: "staff_limit#{i}@example.com",

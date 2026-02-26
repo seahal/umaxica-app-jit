@@ -8,6 +8,8 @@
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
+#  deletable_at             :datetime         default(Infinity), not null
+#  expired_at               :datetime
 #  last_step_up_at          :datetime
 #  last_step_up_scope       :string
 #  last_used_at             :datetime
@@ -29,7 +31,9 @@
 # Indexes
 #
 #  index_user_tokens_on_compromised_at               (compromised_at)
+#  index_user_tokens_on_deletable_at                 (deletable_at)
 #  index_user_tokens_on_device_id                    (device_id)
+#  index_user_tokens_on_expired_at                   (expired_at)
 #  index_user_tokens_on_public_id                    (public_id) UNIQUE
 #  index_user_tokens_on_refresh_expires_at           (refresh_expires_at)
 #  index_user_tokens_on_refresh_token_digest         (refresh_token_digest) UNIQUE
@@ -52,6 +56,7 @@ class UserToken < TokenRecord
   include ::PublicId
   include ::RefreshTokenable
   include ::SignedSessionReference
+  include ::TokenDeletableSync
   include ::TokenStatusManagement
 
   MAX_SESSIONS_PER_USER = 2
@@ -61,7 +66,7 @@ class UserToken < TokenRecord
   belongs_to :user_token_status
   belongs_to :user_token_kind, optional: true
   has_many :user_verifications, dependent: :delete_all, inverse_of: :user_token
-  attribute :user_token_status_id, default: UserTokenStatus::NEYO
+  attribute :user_token_status_id, default: UserTokenStatus::NOTHING
   attribute :user_token_kind_id, default: UserTokenKind::BROWSER_WEB
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }

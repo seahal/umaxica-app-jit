@@ -47,7 +47,7 @@ class StaffActivity < ActivityRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  attribute :level_id, default: StaffActivityLevel::NEYO
+  attribute :level_id, default: StaffActivityLevel::NOTHING
 
   validates :event_id, numericality: { only_integer: true }, allow_nil: true
   validates :level_id, numericality: { only_integer: true }, allow_nil: true

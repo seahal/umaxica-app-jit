@@ -39,7 +39,7 @@ class OrgTimeline < NewsRecord
   include ::SlugId
   include Timeline
 
-  attribute :status_id, default: OrgTimelineStatus::NEYO
+  attribute :status_id, default: OrgTimelineStatus::NOTHING
 
   belongs_to :org_timeline_status,
              class_name: "OrgTimelineStatus",

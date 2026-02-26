@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_21_100003) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_26_150002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -41,7 +41,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_100003) do
   create_table "staff_tokens", force: :cascade do |t|
     t.datetime "compromised_at"
     t.datetime "created_at", null: false
+    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id", default: "", null: false
+    t.datetime "expired_at"
     t.datetime "last_step_up_at"
     t.string "last_step_up_scope"
     t.datetime "last_used_at"
@@ -58,7 +60,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_100003) do
     t.string "status", limit: 20, default: "active", null: false
     t.datetime "updated_at", null: false
     t.index ["compromised_at"], name: "index_staff_tokens_on_compromised_at"
+    t.index ["deletable_at"], name: "index_staff_tokens_on_deletable_at"
     t.index ["device_id"], name: "index_staff_tokens_on_device_id"
+    t.index ["expired_at"], name: "index_staff_tokens_on_expired_at"
     t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_staff_tokens_on_refresh_expires_at"
     t.index ["refresh_token_digest"], name: "index_staff_tokens_on_refresh_token_digest", unique: true
@@ -94,7 +98,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_100003) do
   create_table "user_tokens", force: :cascade do |t|
     t.datetime "compromised_at"
     t.datetime "created_at", null: false
+    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id", default: "", null: false
+    t.datetime "expired_at"
     t.datetime "last_step_up_at"
     t.string "last_step_up_scope"
     t.datetime "last_used_at"
@@ -111,7 +117,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_100003) do
     t.bigint "user_token_kind_id", default: 0, null: false
     t.bigint "user_token_status_id", default: 0, null: false
     t.index ["compromised_at"], name: "index_user_tokens_on_compromised_at"
+    t.index ["deletable_at"], name: "index_user_tokens_on_deletable_at"
     t.index ["device_id"], name: "index_user_tokens_on_device_id"
+    t.index ["expired_at"], name: "index_user_tokens_on_expired_at"
     t.index ["public_id"], name: "index_user_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_user_tokens_on_refresh_expires_at"
     t.index ["refresh_token_digest"], name: "index_user_tokens_on_refresh_token_digest", unique: true

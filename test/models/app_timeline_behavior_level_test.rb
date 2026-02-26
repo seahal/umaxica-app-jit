@@ -13,14 +13,14 @@ require "test_helper"
 
 class AppTimelineBehaviorLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = AppTimelineBehaviorLevel.find_or_create_by!(id: AppTimelineBehaviorLevel::NEYO)
+    level = AppTimelineBehaviorLevel.find_or_create_by!(id: AppTimelineBehaviorLevel::NOTHING)
     AppTimelineBehaviorEvent.find_or_create_by!(id: AppTimelineBehaviorEvent::CREATED)
     timeline = AppTimeline.create!(
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      status_id: AppTimelineStatus::NEYO,
+      status_id: AppTimelineStatus::NOTHING,
     )
 
     AppTimelineBehavior.create!(

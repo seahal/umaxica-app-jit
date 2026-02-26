@@ -21,7 +21,7 @@ class UserEmailStatusTest < ActiveSupport::TestCase
     assert_equal 2, UserEmailStatus::VERIFIED
     assert_equal 3, UserEmailStatus::SUSPENDED
     assert_equal 4, UserEmailStatus::DELETED
-    assert_equal 5, UserEmailStatus::NEYO
+    assert_equal 5, UserEmailStatus::NOTHING
     assert_equal 6, UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
     assert_equal 7, UserEmailStatus::VERIFIED_WITH_SIGN_UP
   end

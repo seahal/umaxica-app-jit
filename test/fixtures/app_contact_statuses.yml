@@ -6,7 +6,7 @@
 #
 #  id :bigint           not null, primary key
 #
-NEYO:
+NOTHING:
   id: 1
 CHECKED_EMAIL_ADDRESS:
   id: 2

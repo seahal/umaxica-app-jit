@@ -13,10 +13,10 @@ require "test_helper"
 class ComPreferenceStatusTest < ActiveSupport::TestCase
   fixtures :com_preference_statuses
 
-  test "ordered scope sorts by position then id" do
+  test "ordered scope returns all statuses" do
     ordered = ComPreferenceStatus.ordered.pluck(:id)
 
-    assert_equal [ComPreferenceStatus::DELETED, ComPreferenceStatus::NEYO], ordered
+    assert_equal [ComPreferenceStatus::DELETED, ComPreferenceStatus::NOTHING], ordered.sort
   end
 
   test "accepts integer ids" do

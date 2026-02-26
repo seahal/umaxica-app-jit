@@ -72,7 +72,7 @@ class ComContactCategoryTest < ActiveSupport::TestCase
 
   test "destroy is restricted when contacts exist" do
     category = ComContactCategory.create!(id: 101)
-    status = ComContactStatus.find_by(id: ComContactStatus::NEYO) || ComContactStatus.create!(id: ComContactStatus::NEYO)
+    status = ComContactStatus.find_by(id: ComContactStatus::NOTHING) || ComContactStatus.create!(id: ComContactStatus::NOTHING)
     ComContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
     assert_raises(ActiveRecord::DeleteRestrictionError) { category.destroy }

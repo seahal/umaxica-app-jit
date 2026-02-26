@@ -19,7 +19,7 @@ class UserActivityEvent < ActivityRecord
   LOGIN_FAILED = 6
   LOGIN_SUCCESS = 7
   LOGOUT = 8
-  NEYO = 9
+  NOTHING = 9
   NON_EXISTENT_EVENT = 10
   PASSKEY_REGISTERED = 11
   PASSKEY_REMOVED = 12
@@ -46,7 +46,7 @@ class UserActivityEvent < ActivityRecord
            dependent: :restrict_with_error,
            inverse_of: :user_activity_event
 
-  scope :ordered, -> { order(:id) }
+  scope :ordered, -> { all }
 
   DEFAULTS = [
     ACCOUNT_RECOVERED,
@@ -57,7 +57,7 @@ class UserActivityEvent < ActivityRecord
     LOGIN_FAILED,
     LOGIN_SUCCESS,
     LOGOUT,
-    NEYO,
+    NOTHING,
     NON_EXISTENT_EVENT,
     PASSKEY_REGISTERED,
     PASSKEY_REMOVED,

@@ -9,7 +9,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = User.create!(
-      status_id: UserStatus::NEYO,
+      status_id: UserStatus::NOTHING,
       public_id: "secret_user_#{SecureRandom.hex(4)}",
     )
     @token = UserToken.create!(
@@ -63,7 +63,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "new returns forbidden plain message when user has no verified recovery identity" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "u_no_id_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NOTHING, public_id: "u_no_id_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id, last_step_up_at: 1.minute.ago,
       last_step_up_scope: "configuration_secret",
@@ -114,7 +114,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "create returns unprocessable entity plain message when user has no verified recovery identity" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "u_no_id_c_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NOTHING, public_id: "u_no_id_c_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id, last_step_up_at: 1.minute.ago,
       last_step_up_scope: "configuration_secret",

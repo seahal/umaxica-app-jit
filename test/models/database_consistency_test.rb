@@ -51,12 +51,12 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
   test "AppPreference requires unique jti" do
     AppPreference.create!(
       jti: "unique_jti_123",
-      status_id: AppPreferenceStatus::NEYO,
+      status_id: AppPreferenceStatus::NOTHING,
     )
 
     pref2 = AppPreference.new(
       jti: "unique_jti_123",
-      status_id: AppPreferenceStatus::NEYO,
+      status_id: AppPreferenceStatus::NOTHING,
     )
 
     assert_not pref2.valid?
@@ -67,11 +67,11 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
   test "UserZipOccurrence requires unique combination of user_occurrence_id and zip_occurrence_id" do
     user_occ = UserOccurrence.first || UserOccurrence.create!(
       body: "user_occ_#{SecureRandom.hex(6)}",
-      status_id: UserOccurrenceStatus::NEYO,
+      status_id: UserOccurrenceStatus::NOTHING,
     )
     zip_occ = ZipOccurrence.first || ZipOccurrence.create!(
       body: "zip_#{SecureRandom.hex(4)}",
-      status_id: ZipOccurrenceStatus::NEYO,
+      status_id: ZipOccurrenceStatus::NOTHING,
     )
 
     UserZipOccurrence.create!(

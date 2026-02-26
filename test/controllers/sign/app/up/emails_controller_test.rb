@@ -739,6 +739,39 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 
+  test "successful registration sets auth cookies with app-localhost domain" do
+    email = "cookie_domain_up_#{SecureRandom.hex(4)}@example.com"
+
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: email,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    email_id = response.location.match(%r{/up/emails/([^/?]+)})[1]
+    user_email = UserEmail.find_by!(public_id: email_id)
+    otp_data = user_email.get_otp
+    pass_code = ROTP::HOTP.new(otp_data[:otp_private_key]).at(otp_data[:otp_counter]).to_s
+
+    patch sign_app_up_email_url(user_email, ri: "jp"),
+          params: {
+            id: user_email.id,
+            user_email: {
+              pass_code: pass_code,
+            },
+          },
+          headers: default_headers
+
+    set_cookie = response.headers["Set-Cookie"].to_s
+
+    assert_match(/domain=\.app\.localhost/i, set_cookie)
+    assert_no_match(/domain=\.localhost/i, set_cookie)
+  end
+
   test "OTP data is cleared after successful verification" do
     email = "otp_clear@example.com"
 

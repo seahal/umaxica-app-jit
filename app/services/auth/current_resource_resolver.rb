@@ -51,7 +51,14 @@ module Auth
       check_logic =
         lambda do
           scope = @token_class.where(public_id: session_public_id)
-          scope = scope.where(revoked_at: nil) if @token_class.column_names.include?("revoked_at")
+          scope =
+            if @token_class.column_names.include?("expired_at")
+              scope.where(expired_at: nil)
+            elsif @token_class.column_names.include?("revoked_at")
+              scope.where(revoked_at: nil)
+            else
+              scope
+            end
           scope.exists?
         end
 

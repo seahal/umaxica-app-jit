@@ -16,7 +16,7 @@ class AppDocumentStatus < DocumentRecord
   DELETED = 3
   DRAFT = 4
   INACTIVE = 5
-  NEYO = 6
+  NOTHING = 6
   PENDING = 7
 
   has_many :app_documents,

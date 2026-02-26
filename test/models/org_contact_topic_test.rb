@@ -53,7 +53,7 @@ class OrgContactTopicTest < ActiveSupport::TestCase
     contact = OrgContact.new
     contact.confirm_policy = "1"
     contact.category_id = OrgContactCategory::ORGANIZATION_INQUIRY
-    contact.status_id = OrgContactStatus::NEYO
+    contact.status_id = OrgContactStatus::NOTHING
     contact.save!
 
     OrgContactEmail.create!(

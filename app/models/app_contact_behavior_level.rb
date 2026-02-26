@@ -11,7 +11,7 @@
 class AppContactBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
 
-  NEYO = 1
+  NOTHING = 1
   DEBUG = 2
   INFO = 3
   WARN = 4

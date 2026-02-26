@@ -39,7 +39,7 @@ class DepartmentTest < ActiveSupport::TestCase
   test "should be valid" do
     department = Department.new(
       name: "Test Dept",
-      department_status_id: DepartmentStatus::NEYO,
+      department_status_id: DepartmentStatus::NOTHING,
       workspace: @workspace,
     )
 
@@ -47,7 +47,7 @@ class DepartmentTest < ActiveSupport::TestCase
   end
 
   test "requires name" do
-    department = Department.new(department_status_id: DepartmentStatus::NEYO)
+    department = Department.new(department_status_id: DepartmentStatus::NOTHING)
 
     assert_not department.valid?
     assert_includes department.errors[:name], "を入力してください"

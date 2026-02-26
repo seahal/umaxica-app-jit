@@ -41,7 +41,7 @@ class PostReviewTest < ActiveSupport::TestCase
   test "validates length of id" do
     post = Post.create!(
       author_avatar: avatars(:one),
-      post_status_id: PostStatus::NEYO,
+      post_status_id: PostStatus::NOTHING,
       public_id: "pr_test_#{SecureRandom.hex(4)}",
       body: "body",
       created_by_actor_id: "actor",
@@ -49,7 +49,7 @@ class PostReviewTest < ActiveSupport::TestCase
     record = PostReview.new(
       id: 99,
       post: post,
-      post_review_status_id: PostReviewStatus::NEYO,
+      post_review_status_id: PostReviewStatus::NOTHING,
       reviewer_actor_id: "reviewer_actor",
     )
 

@@ -11,6 +11,7 @@
 
 class StaffTokenStatus < TokenRecord
   ACTIVE = 1
-  NEYO = 2
+  NOTHING = 0
+  EXPIRED = 2
   has_many :staff_tokens, dependent: :restrict_with_error
 end

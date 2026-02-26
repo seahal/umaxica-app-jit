@@ -12,8 +12,7 @@
 class EmailOccurrenceStatus < OccurrenceRecord
   # Fixed IDs - do not modify these values
   ACTIVE = 1
-  NEYO = 2
-
+  NOTHING = 2
   include OccurrenceStatus
 
   has_many :email_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,

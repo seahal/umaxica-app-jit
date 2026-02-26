@@ -48,8 +48,8 @@ class AppTimelineBehavior < BehaviorRecord
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
 
-  attribute :event_id, default: AppTimelineBehaviorEvent::NEYO
-  attribute :level_id, default: AppTimelineBehaviorLevel::NEYO
+  attribute :event_id, default: AppTimelineBehaviorEvent::NOTHING
+  attribute :level_id, default: AppTimelineBehaviorLevel::NOTHING
 
   def app_timeline
     AppTimeline.find(subject_id) if subject_type == "AppTimeline"

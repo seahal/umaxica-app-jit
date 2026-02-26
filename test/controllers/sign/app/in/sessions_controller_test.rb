@@ -62,7 +62,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     # Verify the session was revoked
     token.reload
 
-    assert_not_nil token.revoked_at
+    assert_not_nil token.expired_at
     assert_equal UserToken::STATUS_REVOKED, token.status
   end
 
@@ -94,7 +94,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     # The revoked session should be marked as revoked
     active_token1.reload
 
-    assert_not_nil active_token1.revoked_at
+    assert_not_nil active_token1.expired_at
   end
 
   # Test: session promotion with valid Base64 rd param redirects to decoded URL
@@ -155,7 +155,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     active_token = UserToken.create!(
       user: @user,
       status: UserToken::STATUS_ACTIVE,
-      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_status_id: UserTokenStatus::NOTHING,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     active_token.rotate_refresh_token!
@@ -170,7 +170,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     active_token = UserToken.create!(
       user: @user,
       status: UserToken::STATUS_ACTIVE,
-      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_status_id: UserTokenStatus::NOTHING,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     active_token.rotate_refresh_token!
@@ -187,7 +187,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     active_token = UserToken.create!(
       user: @user,
       status: UserToken::STATUS_ACTIVE,
-      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_status_id: UserTokenStatus::NOTHING,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     active_token.rotate_refresh_token!
@@ -225,7 +225,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     token = UserToken.create!(
       user: user,
       status: UserToken::STATUS_RESTRICTED,
-      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_status_id: UserTokenStatus::NOTHING,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     token.rotate_refresh_token!(expires_at: expires_at)

@@ -5,6 +5,8 @@ module Sign
   module Org
     module Configuration
       class SessionsController < ApplicationController
+        auth_required!
+
         before_action :authenticate_staff!
         before_action :load_sessions
         before_action :set_session, only: %i(show edit update destroy)

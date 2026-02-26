@@ -12,9 +12,7 @@
 class StaffStatus < OperatorRecord
   # Fixed IDs - do not modify these values
   ACTIVE = 1
-  NEYO = 2
-
-  # Use Rails convention `status_id` as the foreign key on `staffs`.
+  NOTHING = 2
   has_many :staffs,
            foreign_key: :status_id,
            dependent: :restrict_with_error,

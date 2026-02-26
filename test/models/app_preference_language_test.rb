@@ -27,8 +27,8 @@ require "test_helper"
 
 class AppPreferenceLanguageTest < ActiveSupport::TestCase
   setup do
-    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
-    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NEYO)
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do

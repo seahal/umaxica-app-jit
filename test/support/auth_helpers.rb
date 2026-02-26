@@ -43,7 +43,7 @@ module AuthHelpers
     base = host_headers(host).merge(headers).merge(TEST_USER_HEADER => user.id.to_s)
 
     if user.respond_to?(:persisted?) && user.persisted? && user.class.name == "User"
-      token = UserToken.where(user_id: user.id, revoked_at: nil).order(created_at: :desc).first
+      token = UserToken.where(user_id: user.id, expired_at: nil).order(created_at: :desc).first
       token ||= UserToken.create!(user_id: user.id, user_token_kind_id: UserTokenKind::BROWSER_WEB)
       base["X-TEST-SESSION-PUBLIC-ID"] = token.public_id
     end

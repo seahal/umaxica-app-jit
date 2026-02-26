@@ -144,7 +144,7 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
     TelephoneOccurrence.create!(
       body: "+819012345678",
       public_id: "tel_norm_unique_00001",
-      status_id: TelephoneOccurrenceStatus::NEYO,
+      status_id: TelephoneOccurrenceStatus::NOTHING,
     )
 
     # Try to create duplicate with different formatting

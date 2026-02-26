@@ -263,7 +263,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "new returns forbidden plain message when user has no verified recovery identity" do
-    unverified_user = User.create!(status_id: UserStatus::NEYO, public_id: SecureRandom.hex(10))
+    unverified_user = User.create!(status_id: UserStatus::NOTHING, public_id: SecureRandom.hex(10))
     token = UserToken.create!(user: unverified_user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
     satisfy_user_verification(token)
     headers = as_user_headers(
@@ -281,7 +281,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "create returns unprocessable entity plain message when user has no verified recovery identity" do
-    unverified_user = User.create!(status_id: UserStatus::NEYO, public_id: SecureRandom.hex(10))
+    unverified_user = User.create!(status_id: UserStatus::NOTHING, public_id: SecureRandom.hex(10))
     headers = as_user_headers(unverified_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
 
     assert_no_difference("UserPasskey.count") do
@@ -358,7 +358,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "blocks deleting last passkey when only secret remains" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "ups_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NOTHING, public_id: "ups_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
     )

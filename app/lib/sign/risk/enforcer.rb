@@ -32,9 +32,10 @@ module Sign
         # Also refresh families? update_all on tokens essentially kills the family if query is by user
       end
 
-      def self.revoke_token_set(tokens, now)
-        tokens.where(revoked_at: nil).find_each do |token|
-          token.update!(revoked_at: now)
+      def self.revoke_token_set(tokens, _now)
+        expiry_column = tokens.klass.column_names.include?("expired_at") ? :expired_at : :revoked_at
+        tokens.where(expiry_column => nil).find_each do |token|
+          token.revoke!
         end
       end
 

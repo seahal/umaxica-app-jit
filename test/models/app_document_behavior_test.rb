@@ -75,9 +75,9 @@ class AppDocumentBehaviorTest < ActiveSupport::TestCase
   end
   test "app_document helper method returns document when subject_type is AppDocument" do
     AppDocumentBehaviorEvent.find_or_create_by!(id: AppDocumentBehaviorEvent::CREATED)
-    AppDocumentBehaviorLevel.find_or_create_by!(id: AppDocumentBehaviorLevel::NEYO)
+    AppDocumentBehaviorLevel.find_or_create_by!(id: AppDocumentBehaviorLevel::NOTHING)
     doc = AppDocument.create!(
-      status_id: AppDocumentStatus::NEYO,
+      status_id: AppDocumentStatus::NOTHING,
       slug_id: "test-doc-#{SecureRandom.hex(4)}",
       permalink: "test_perm_#{SecureRandom.hex(4)}",
       revision_key: "rev_#{SecureRandom.hex(4)}",
@@ -90,7 +90,7 @@ class AppDocumentBehaviorTest < ActiveSupport::TestCase
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
       event_id: AppDocumentBehaviorEvent::CREATED,
-      level_id: AppDocumentBehaviorLevel::NEYO,
+      level_id: AppDocumentBehaviorLevel::NOTHING,
     )
 
     assert_equal doc, audit.app_document

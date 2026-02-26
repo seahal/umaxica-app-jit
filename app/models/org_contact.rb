@@ -60,7 +60,7 @@ class OrgContact < GuestRecord
   after_initialize do
     if new_record?
       self.category_id ||= OrgContactCategory::ORGANIZATION_INQUIRY
-      self.status_id ||= OrgContactStatus::NEYO
+      self.status_id ||= OrgContactStatus::NOTHING
     end
   end
 

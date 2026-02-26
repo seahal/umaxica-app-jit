@@ -15,7 +15,7 @@ class ClientStatus < PrincipalRecord
   INACTIVE = 2
   PENDING = 3
   DELETED = 4
-  NEYO = 5
+  NOTHING = 5
   has_many :clients,
            foreign_key: :status_id,
            dependent: :restrict_with_error,

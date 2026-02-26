@@ -38,7 +38,7 @@ class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
 
     token.reload
 
-    assert token.revoked_at, "Original token should be revoked"
+    assert token.expired_at, "Original token should be revoked"
     assert token.compromised_at, "Compromise timestamp should be recorded"
     assert UserToken.where(user_id: user.id).all?(&:revoked?), "All actor tokens should be revoked"
 

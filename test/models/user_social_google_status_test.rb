@@ -17,7 +17,7 @@ class UserSocialGoogleStatusTest < ActiveSupport::TestCase
     assert_equal 3, UserSocialGoogleStatus::PENDING
     assert_equal 4, UserSocialGoogleStatus::DELETED
     assert_equal 5, UserSocialGoogleStatus::REVOKED
-    assert_equal 6, UserSocialGoogleStatus::NEYO
+    assert_equal 6, UserSocialGoogleStatus::NOTHING
   end
 
   test "status ids are integers" do
@@ -26,6 +26,6 @@ class UserSocialGoogleStatusTest < ActiveSupport::TestCase
     assert_kind_of Integer, UserSocialGoogleStatus::PENDING
     assert_kind_of Integer, UserSocialGoogleStatus::DELETED
     assert_kind_of Integer, UserSocialGoogleStatus::REVOKED
-    assert_kind_of Integer, UserSocialGoogleStatus::NEYO
+    assert_kind_of Integer, UserSocialGoogleStatus::NOTHING
   end
 end

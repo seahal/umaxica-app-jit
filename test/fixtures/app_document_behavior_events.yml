@@ -5,5 +5,8 @@
 #
 #  id :bigint           not null, primary key
 #
+nothing:
+  id: 0
+
 created:
   id: 1

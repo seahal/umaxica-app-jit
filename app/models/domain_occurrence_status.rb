@@ -14,7 +14,7 @@ class DomainOccurrenceStatus < OccurrenceRecord
   ACTIVE = 1
   DELETED = 2
   INACTIVE = 3
-  NEYO = 4
+  NOTHING = 4
   PENDING = 5
 
   include OccurrenceStatus

@@ -5,9 +5,9 @@ require "test_helper"
 
 module Core
   class CookieDomainTest < ActiveSupport::TestCase
-    test "normalizes app.localhost env to .localhost" do
+    test "normalizes app.localhost env to .app.localhost" do
       with_env("COOKIE_DOMAIN_APP" => "app.localhost") do
-        assert_equal ".localhost", Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
+        assert_equal ".app.localhost", Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
       end
     end
 
@@ -29,9 +29,15 @@ module Core
       end
     end
 
-    test "derives .localhost when env blank and host is app.localhost" do
+    test "derives .app.localhost when env blank and host is app.localhost" do
       with_env("COOKIE_DOMAIN_APP" => nil) do
-        assert_equal ".localhost", Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
+        assert_equal ".app.localhost", Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
+      end
+    end
+
+    test "derives .app.localhost for nested localhost hosts" do
+      with_env("COOKIE_DOMAIN_APP" => nil) do
+        assert_equal ".app.localhost", Core::CookieDomain.for(surface: :app, request_host: "sign.app.localhost")
       end
     end
 

@@ -27,7 +27,7 @@ class Sign::Org::In::SessionsController < ApplicationController
                          )
     end
 
-    @active_sessions = @pending_staff.staff_tokens.where(revoked_at: nil).order(created_at: :desc)
+    @active_sessions = @pending_staff.staff_tokens.where(expired_at: nil).order(created_at: :desc)
   end
 
   # Revoke selected sessions
@@ -45,7 +45,7 @@ class Sign::Org::In::SessionsController < ApplicationController
 
     if revoke_ids.empty?
       flash[:alert] = I18n.t("session_limit.no_sessions_selected", default: "無効化するセッションを選択してください。")
-      @active_sessions = @pending_staff.staff_tokens.where(revoked_at: nil).order(created_at: :desc)
+      @active_sessions = @pending_staff.staff_tokens.where(expired_at: nil).order(created_at: :desc)
       return render :show, status: :unprocessable_content
     end
 
@@ -96,12 +96,12 @@ class Sign::Org::In::SessionsController < ApplicationController
         staff.lock! if staff.respond_to?(:lock!)
 
         sessions_to_revoke = staff.staff_tokens
-          .where(id: session_ids, revoked_at: nil)
+          .where(id: session_ids, expired_at: nil)
 
         sessions_to_revoke.find_each do |token|
           # Add revoked_reason once the column is added via migration:
           #   add_column :staff_tokens, :revoked_reason, :string
-          token.update!(revoked_at: Time.current)
+          token.revoke!
         end
       end
     end

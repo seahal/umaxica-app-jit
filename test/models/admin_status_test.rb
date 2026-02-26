@@ -23,6 +23,6 @@ class AdminStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, AdminStatus::ACTIVE
-    assert_equal 2, AdminStatus::NEYO
+    assert_equal 2, AdminStatus::NOTHING
   end
 end

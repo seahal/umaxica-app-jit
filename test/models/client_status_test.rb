@@ -17,6 +17,6 @@ class ClientStatusTest < ActiveSupport::TestCase
     assert_equal 2, ClientStatus::INACTIVE
     assert_equal 3, ClientStatus::PENDING
     assert_equal 4, ClientStatus::DELETED
-    assert_equal 5, ClientStatus::NEYO
+    assert_equal 5, ClientStatus::NOTHING
   end
 end

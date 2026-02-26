@@ -19,9 +19,9 @@ class UserStatus < PrincipalRecord
   WITHDRAWAL_COMPLETED = 8
   UNVERIFIED_WITH_SIGN_UP = 9
   VERIFIED_WITH_SIGN_UP = 10
-  NEYO = 11
+  NOTHING = 11
   GHOST = 12
-  NONE = 13
+  NONE = 13 # TODO: i want to rename to NOTHING, or delete this code.
 
   has_many :users,
            foreign_key: :status_id,

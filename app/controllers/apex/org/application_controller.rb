@@ -11,6 +11,7 @@ module Apex
       include ::Authorization::Staff
       include ::Verification::Staff
       include Pundit::Authorization
+      include ::Current
       include ::Finisher
 
       before_action :check_fuse!

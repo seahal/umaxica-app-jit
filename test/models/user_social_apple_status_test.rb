@@ -17,7 +17,7 @@ class UserSocialAppleStatusTest < ActiveSupport::TestCase
     assert_equal 3, UserSocialAppleStatus::PENDING
     assert_equal 4, UserSocialAppleStatus::DELETED
     assert_equal 5, UserSocialAppleStatus::REVOKED
-    assert_equal 6, UserSocialAppleStatus::NEYO
+    assert_equal 6, UserSocialAppleStatus::NOTHING
   end
 
   test "status ids are integers" do
@@ -26,6 +26,6 @@ class UserSocialAppleStatusTest < ActiveSupport::TestCase
     assert_kind_of Integer, UserSocialAppleStatus::PENDING
     assert_kind_of Integer, UserSocialAppleStatus::DELETED
     assert_kind_of Integer, UserSocialAppleStatus::REVOKED
-    assert_kind_of Integer, UserSocialAppleStatus::NEYO
+    assert_kind_of Integer, UserSocialAppleStatus::NOTHING
   end
 end

@@ -12,7 +12,7 @@
 class AppTimelineBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
+  NOTHING = 1
   DEBUG = 2
   INFO = 3
   WARN = 4

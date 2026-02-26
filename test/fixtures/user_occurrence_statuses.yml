@@ -6,5 +6,5 @@
 #  id   :bigint           not null, primary key
 #  name :string           default(""), not null
 #
-NEYO:
+NOTHING:
   id: 1

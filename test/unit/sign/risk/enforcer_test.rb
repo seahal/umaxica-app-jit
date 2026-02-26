@@ -119,7 +119,7 @@ module Sign
         # 3. Check revocation
         token.reload
 
-        assert_not_nil token.revoked_at
+        assert_not_nil token.expired_at
       end
     end
   end

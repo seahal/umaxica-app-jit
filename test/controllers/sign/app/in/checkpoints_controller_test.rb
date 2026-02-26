@@ -18,11 +18,12 @@ class Sign::App::In::CheckpointsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  test "show without checkpoint redirects to default" do
+  test "show without checkpoint returns forbidden" do
     get sign_app_in_checkpoint_url(ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_response :forbidden
+    assert_equal I18n.t("sign.app.in.checkpoints.forbidden"), response.body
   end
 
   test "show with checkpoint returns success" do

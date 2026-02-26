@@ -5,7 +5,9 @@ module Sign
   module App
     module Configuration
       module Telephones
-        class RegistrationsController < ::Sign::App::Configuration::ApplicationController
+        class RegistrationsController < ::Sign::App::ApplicationController
+          auth_required!
+
           include Sign::TelephoneRegistrable
           include ::Verification::User
 

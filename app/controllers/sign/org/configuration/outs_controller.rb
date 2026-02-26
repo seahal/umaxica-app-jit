@@ -19,14 +19,6 @@ module Sign
         end
 
         private
-
-        def verification_required_action?
-          action_name == "destroy"
-        end
-
-        def verification_scope
-          "withdrawal"
-        end
       end
     end
   end

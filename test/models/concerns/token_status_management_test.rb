@@ -5,7 +5,7 @@ require "test_helper"
 
 class TokenStatusManagementTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
     @token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
   end
 
@@ -20,10 +20,10 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_equal 15.minutes, TokenStatusManagement::RESTRICTED_TTL
   end
 
-  test "active_status scope returns only active non-revoked tokens" do
-    @token.update!(status: "active", revoked_at: nil)
+  test "active_status scope returns only active non-expired tokens" do
+    @token.update!(status: "active", expired_at: nil)
     restricted = UserToken.create!(user: @user, status: "restricted")
-    revoked = UserToken.create!(user: @user, revoked_at: Time.current)
+    revoked = UserToken.create!(user: @user, expired_at: Time.current)
 
     results = UserToken.active_status
 
@@ -32,10 +32,10 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_not_includes results, revoked
   end
 
-  test "restricted_status scope returns only restricted non-revoked tokens" do
+  test "restricted_status scope returns only restricted non-expired tokens" do
     active = UserToken.create!(user: @user, status: "active")
-    @token.update!(status: "restricted", revoked_at: nil)
-    revoked = UserToken.create!(user: @user, status: "restricted", revoked_at: Time.current)
+    @token.update!(status: "restricted", expired_at: nil)
+    revoked = UserToken.create!(user: @user, status: "restricted", expired_at: Time.current)
 
     results = UserToken.restricted_status
 
@@ -44,9 +44,9 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_not_includes results, revoked
   end
 
-  test "not_revoked scope returns only non-revoked tokens" do
-    @token.update!(revoked_at: nil)
-    revoked = UserToken.create!(user: @user, revoked_at: Time.current)
+  test "not_revoked scope returns only non-expired tokens" do
+    @token.update!(expired_at: nil)
+    revoked = UserToken.create!(user: @user, expired_at: Time.current)
 
     results = UserToken.not_revoked
 
@@ -64,8 +64,8 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_not_predicate @token, :restricted?
   end
 
-  test "active_status? returns true when status is active and not revoked" do
-    @token.update!(status: "active", revoked_at: nil)
+  test "active_status? returns true when status is active and not expired" do
+    @token.update!(status: "active", expired_at: nil)
 
     assert_predicate @token, :active_status?
 
@@ -73,7 +73,7 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
 
     assert_not_predicate @token, :active_status?
 
-    @token.update!(status: "active", revoked_at: Time.current)
+    @token.update!(status: "active", expired_at: Time.current)
 
     assert_not_predicate @token, :active_status?
   end
@@ -92,12 +92,12 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_equal "active", @token.reload.status
   end
 
-  test "revoke! sets revoked_at and status to revoked" do
+  test "revoke! sets expired_at and status to revoked" do
     freeze_time do
       @token.revoke!
 
-      assert_predicate @token.revoked_at, :present?
-      assert_equal Time.current, @token.revoked_at
+      assert_predicate @token.expired_at, :present?
+      assert_equal Time.current, @token.expired_at
       assert_equal "revoked", @token.status
     end
   end

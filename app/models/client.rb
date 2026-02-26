@@ -36,7 +36,7 @@
 class Client < PrincipalRecord
   include ::PublicId
 
-  attribute :status_id, default: ClientStatus::NEYO
+  attribute :status_id, default: ClientStatus::NOTHING
 
   belongs_to :user, optional: true, inverse_of: :owned_clients
   belongs_to :client_status,

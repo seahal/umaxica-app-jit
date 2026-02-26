@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_13_150001) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_26_150001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -253,12 +253,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_13_150001) do
     t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
     t.string "public_id", null: false
+    t.datetime "shreddable_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "visibility_id", default: 2, null: false
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
     t.index ["public_id"], name: "index_staffs_on_public_id", unique: true
+    t.index ["shreddable_at"], name: "index_staffs_on_shreddable_at"
     t.index ["status_id"], name: "index_staffs_on_status_id"
     t.index ["visibility_id"], name: "index_staffs_on_visibility_id"
     t.index ["withdrawn_at"], name: "index_staffs_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"

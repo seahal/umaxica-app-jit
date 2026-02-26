@@ -42,7 +42,7 @@ class OrgPreference < PreferenceRecord
   include ::ConsumeOnceToken
   include ::Preference::Resettable
 
-  attribute :status_id, default: OrgPreferenceStatus::NEYO
+  attribute :status_id, default: OrgPreferenceStatus::NOTHING
 
   belongs_to :org_preference_status,
              foreign_key: :status_id,

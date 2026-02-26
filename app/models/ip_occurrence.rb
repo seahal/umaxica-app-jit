@@ -32,7 +32,7 @@ class IpOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 
-  attribute :status_id, default: IpOccurrenceStatus::NEYO
+  attribute :status_id, default: IpOccurrenceStatus::NOTHING
 
   belongs_to :ip_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :ip_occurrences
   has_many :area_ip_occurrences, dependent: :destroy, inverse_of: :ip_occurrence

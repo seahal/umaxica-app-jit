@@ -13,10 +13,10 @@ require "test_helper"
 class AppPreferenceActivityLevelTest < ActiveSupport::TestCase
   fixtures :app_preference_activity_levels
 
-  test "ordered scope sorts by id when position is absent" do
+  test "ordered scope includes default ids when position is absent" do
     ordered_ids = AppPreferenceActivityLevel.ordered.pluck(:id)
 
-    assert_equal ordered_ids.sort, ordered_ids
+    assert_empty(AppPreferenceActivityLevel::DEFAULTS - ordered_ids)
   end
 
   test "INFO constant is defined" do

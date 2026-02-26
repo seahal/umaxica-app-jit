@@ -36,11 +36,11 @@ one:
   expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-  status_id: <%= ComTimelineStatus::NEYO %>
+  status_id: <%= ComTimelineStatus::NOTHING %>
 two:
   slug_id: 30 # was two-com-timeline-0002"
   published_at: <%= Time.current %>
   expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-  status_id: <%= ComTimelineStatus::NEYO %>
+  status_id: <%= ComTimelineStatus::NOTHING %>

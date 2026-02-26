@@ -49,7 +49,7 @@ class ComDocumentTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       position: 0,
       revision_key: "rev_key",
-      status_id: ComDocumentStatus::NEYO,
+      status_id: ComDocumentStatus::NOTHING,
     }
   end
 

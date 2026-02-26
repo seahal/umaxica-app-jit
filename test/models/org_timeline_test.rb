@@ -44,7 +44,7 @@ class OrgTimelineTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      status_id: OrgTimelineStatus::NEYO,
+      status_id: OrgTimelineStatus::NOTHING,
     }
   end
 

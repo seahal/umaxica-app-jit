@@ -10,7 +10,8 @@
 #
 
 class UserTokenStatus < TokenRecord
+  NOTHING = 0
   ACTIVE = 1
-  NEYO = 0
+  EXPIRED = 2
   has_many :user_tokens, dependent: :restrict_with_error
 end

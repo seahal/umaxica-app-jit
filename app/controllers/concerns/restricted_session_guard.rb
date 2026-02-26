@@ -36,7 +36,7 @@ module RestrictedSessionGuard
     expired = session.refresh_expires_at.present? && session.refresh_expires_at <= Time.current
     return false unless expired
 
-    return true if session.revoked_at.present?
+    return true if session.respond_to?(:expired_at) ? session.expired_at.present? : session.revoked_at.present?
 
     TokenRecord.connected_to(role: :writing) do
       session.revoke!

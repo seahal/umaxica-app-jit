@@ -74,13 +74,13 @@ class AppTimelineBehaviorTest < ActiveSupport::TestCase
   end
 
   test "app_timeline helper method returns timeline when subject_type is AppTimeline" do
-    AppTimelineBehaviorEvent.find_or_create_by!(id: AppTimelineBehaviorEvent::NEYO)
-    AppTimelineBehaviorLevel.find_or_create_by!(id: AppTimelineBehaviorLevel::NEYO)
+    AppTimelineBehaviorEvent.find_or_create_by!(id: AppTimelineBehaviorEvent::NOTHING)
+    AppTimelineBehaviorLevel.find_or_create_by!(id: AppTimelineBehaviorLevel::NOTHING)
     # Ensure status exists
-    AppTimelineStatus.find_or_create_by!(id: AppTimelineStatus::NEYO)
+    AppTimelineStatus.find_or_create_by!(id: AppTimelineStatus::NOTHING)
 
     timeline = AppTimeline.create!(
-      status_id: AppTimelineStatus::NEYO,
+      status_id: AppTimelineStatus::NOTHING,
       slug_id: "tl-#{SecureRandom.hex(4)}",
       published_at: Time.current,
       expires_at: 1.year.from_now,

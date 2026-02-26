@@ -14,11 +14,11 @@ require "test_helper"
 class StaffStatusTest < ActiveSupport::TestCase
   test "status constants are defined" do
     assert_equal 1, StaffStatus::ACTIVE
-    assert_equal 2, StaffStatus::NEYO
+    assert_equal 2, StaffStatus::NOTHING
   end
 
   test "status ids are integers" do
     assert_kind_of Integer, StaffStatus::ACTIVE
-    assert_kind_of Integer, StaffStatus::NEYO
+    assert_kind_of Integer, StaffStatus::NOTHING
   end
 end

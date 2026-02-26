@@ -14,6 +14,6 @@ class UserSecretStatus < PrincipalRecord
   REVOKED = 3
   USED = 4
   DELETED = 5
-  NEYO = 6
+  NOTHING = 6
   has_many :user_secrets, inverse_of: :user_secret_status, dependent: :restrict_with_error
 end

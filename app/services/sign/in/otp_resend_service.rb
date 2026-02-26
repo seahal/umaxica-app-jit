@@ -181,7 +181,7 @@ module Sign
         end
 
         def email_blocked_status_id
-          status_id_for(EmailOccurrenceStatus, :NEYO)
+          status_id_for(EmailOccurrenceStatus, :NOTHING)
         end
 
         def telephone_issued_status_id
@@ -189,7 +189,7 @@ module Sign
         end
 
         def telephone_blocked_status_id
-          status_id_for(TelephoneOccurrenceStatus, :NEYO)
+          status_id_for(TelephoneOccurrenceStatus, :NOTHING)
         end
 
         private
@@ -200,10 +200,10 @@ module Sign
               status_id =
                 case status_class.name
                 when "EmailOccurrenceStatus"
-                  { ACTIVE: EmailOccurrenceStatus::ACTIVE, NEYO: EmailOccurrenceStatus::NEYO }.fetch(key)
+                  { ACTIVE: EmailOccurrenceStatus::ACTIVE, NOTHING: EmailOccurrenceStatus::NOTHING }.fetch(key)
                 when "TelephoneOccurrenceStatus"
                   { ACTIVE: TelephoneOccurrenceStatus::ACTIVE,
-                    NEYO: TelephoneOccurrenceStatus::NEYO, }.fetch(key)
+                    NOTHING: TelephoneOccurrenceStatus::NOTHING, }.fetch(key)
                 else
                   raise KeyError, "Unsupported occurrence status class: #{status_class.name}"
                 end

@@ -123,7 +123,7 @@ class AvatarTest < ActiveSupport::TestCase
       capability: @capability,
       active_handle: @handle,
     )
-    status = PostStatus.find_or_create_by!(id: PostStatus::NEYO)
+    status = PostStatus.find_or_create_by!(id: PostStatus::NOTHING)
     Post.create!(
       author_avatar: avatar,
       post_status: status,

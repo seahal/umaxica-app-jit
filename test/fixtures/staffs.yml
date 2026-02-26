@@ -6,6 +6,7 @@
 #  id                   :bigint           not null, primary key
 #  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
+#  shreddable_at        :datetime         default(Infinity), not null
 #  withdrawn_at         :datetime
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
@@ -16,6 +17,7 @@
 # Indexes
 #
 #  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_shreddable_at  (shreddable_at)
 #  index_staffs_on_status_id      (status_id)
 #  index_staffs_on_visibility_id  (visibility_id)
 #  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
@@ -26,22 +28,22 @@
 #  fk_rails_...  (visibility_id => staff_visibilities.id)
 #
 placeholder:
-  status_id: <%= StaffStatus::NEYO %>
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "abcd2345"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 one:
-  status_id: <%= StaffStatus::NEYO %>
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "bcde3456"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 none_staff:
-  status_id: <%= StaffStatus::NEYO %>
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "cdef4567"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  status_id: <%= StaffStatus::NEYO %>
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "defh5678"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

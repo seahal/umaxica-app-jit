@@ -31,16 +31,16 @@
 #
 one:
   user: one
-  status_id: <%= ClientStatus::NEYO %>
-  client_status_id: <%= ClientStatus::NEYO %>
+  status_id: <%= ClientStatus::NOTHING %>
+  client_status_id: <%= ClientStatus::NOTHING %>
   public_id: "client_one"
   moniker: "Client One"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
   user: two
-  status_id: <%= ClientStatus::NEYO %>
-  client_status_id: <%= ClientStatus::NEYO %>
+  status_id: <%= ClientStatus::NOTHING %>
+  client_status_id: <%= ClientStatus::NOTHING %>
   public_id: "client_two"
   moniker: "Client Two"
   created_at: <%= Time.current %>

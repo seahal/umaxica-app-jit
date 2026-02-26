@@ -78,11 +78,11 @@ module Treeable
     def tree_root_parent_value = "none"
 
     # Accept multiple root sentinel values for compatibility across models/tables.
-    # The default supports both legacy ("NEYO") and current ("none") sentinels.
+    # The default supports both "NOTHING" and "none" sentinels.
     def tree_root_parent_values
       base = [tree_root_parent_value]
       column_type = columns_hash.fetch(tree_parent_column, nil)&.type
-      return (base + ["NEYO", "none"]).uniq if column_type == :string
+      return (base + ["NOTHING", "none"]).uniq if column_type == :string
 
       values = base.select { |value| value.is_a?(Numeric) || value.to_s.match?(/\A-?\d+\z/) }
       values.uniq!

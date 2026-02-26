@@ -5,6 +5,9 @@
 #
 #  id :bigint           not null, primary key
 #
+nothing:
+  id: 0
+
 us:
   id: 1
 jp:

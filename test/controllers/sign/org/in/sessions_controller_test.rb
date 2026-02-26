@@ -26,7 +26,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "show with gate and pending staff displays active sessions" do
     staff = staffs(:one)
     staff.staff_tokens.create!(
-      refresh_token_digest: "testtoken", revoked_at: nil,
+      refresh_token_digest: "testtoken", expired_at: nil,
       refresh_expires_at: 1.day.from_now,
     )
 
@@ -43,7 +43,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "update without selections flashes alert and re-renders show" do
     staff = staffs(:one)
     staff.staff_tokens.create!(
-      refresh_token_digest: "testtoken", revoked_at: nil,
+      refresh_token_digest: "testtoken", expired_at: nil,
       refresh_expires_at: 1.day.from_now,
     )
 
@@ -63,7 +63,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "update with selections revokes sessions, consumes gate and redirects to return_to" do
     staff = staffs(:one)
     token = staff.staff_tokens.create!(
-      refresh_token_digest: "testtoken", revoked_at: nil,
+      refresh_token_digest: "testtoken", expired_at: nil,
       refresh_expires_at: 1.day.from_now,
     )
 
@@ -77,7 +77,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
           assert_redirected_to "/some/path"
           assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"),
                        flash[:notice]
-          assert_not_nil token.reload.revoked_at
+          assert_not_nil token.reload.expired_at
         end
       end
     end
@@ -86,7 +86,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "update drops to login path if no return_to is set" do
     staff = staffs(:one)
     token = staff.staff_tokens.create!(
-      refresh_token_digest: "testtoken", revoked_at: nil,
+      refresh_token_digest: "testtoken", expired_at: nil,
       refresh_expires_at: 1.day.from_now,
     )
 
@@ -100,7 +100,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
           assert_redirected_to new_sign_org_in_url
           assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"),
                        flash[:notice]
-          assert_not_nil token.reload.revoked_at
+          assert_not_nil token.reload.expired_at
         end
       end
     end

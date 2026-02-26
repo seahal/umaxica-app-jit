@@ -14,14 +14,14 @@ require "test_helper"
 class OrgTimelineBehaviorLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
     I18n.with_locale(:ja) do
-      level = OrgTimelineBehaviorLevel.find_or_create_by!(id: OrgTimelineBehaviorLevel::NEYO)
+      level = OrgTimelineBehaviorLevel.find_or_create_by!(id: OrgTimelineBehaviorLevel::NOTHING)
       OrgTimelineBehaviorEvent.find_or_create_by!(id: OrgTimelineBehaviorEvent::CREATED)
       timeline = OrgTimeline.create!(
         response_mode: "html",
         published_at: 1.hour.ago,
         expires_at: 1.hour.from_now,
         position: 0,
-        status_id: OrgTimelineStatus::NEYO,
+        status_id: OrgTimelineStatus::NOTHING,
       )
 
       OrgTimelineBehavior.create!(

@@ -16,7 +16,7 @@ class UserOneTimePasswordStatusTest < ActiveSupport::TestCase
     assert_equal 2, UserOneTimePasswordStatus::INACTIVE
     assert_equal 3, UserOneTimePasswordStatus::REVOKED
     assert_equal 4, UserOneTimePasswordStatus::DELETED
-    assert_equal 5, UserOneTimePasswordStatus::NEYO
+    assert_equal 5, UserOneTimePasswordStatus::NOTHING
   end
 
   test "status ids are integers" do
@@ -24,6 +24,6 @@ class UserOneTimePasswordStatusTest < ActiveSupport::TestCase
     assert_kind_of Integer, UserOneTimePasswordStatus::INACTIVE
     assert_kind_of Integer, UserOneTimePasswordStatus::REVOKED
     assert_kind_of Integer, UserOneTimePasswordStatus::DELETED
-    assert_kind_of Integer, UserOneTimePasswordStatus::NEYO
+    assert_kind_of Integer, UserOneTimePasswordStatus::NOTHING
   end
 end

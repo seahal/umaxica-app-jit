@@ -11,7 +11,8 @@ module Sign
       include ::Verification::User
       include ::Preference::Global
       include Pundit::Authorization
-      include ::RestrictedSessionGuard
+      include ::RestrictedSessionGuard # TODO: remove this.
+      include ::Current
       include ::Finisher
 
       before_action :check_fuse!

@@ -18,9 +18,9 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     @callback_headers = SocialCallbackTestHelper.callback_headers(@host)
 
     # Create test user
-    UserStatus.find_or_create_by!(id: UserStatus::NEYO)
+    UserStatus.find_or_create_by!(id: UserStatus::NOTHING)
     @user = User.create!(
-      status_id: UserStatus::NEYO,
+      status_id: UserStatus::NOTHING,
       public_id: "reauth_test_#{SecureRandom.hex(4)}",
       last_reauth_at: nil, # Explicitly nil to test update
     )

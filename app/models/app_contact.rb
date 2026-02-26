@@ -60,7 +60,7 @@ class AppContact < GuestRecord
   after_initialize do
     if new_record?
       self.category_id ||= AppContactCategory::APPLICATION_INQUIRY
-      self.status_id ||= AppContactStatus::NEYO
+      self.status_id ||= AppContactStatus::NOTHING
     end
   end
 

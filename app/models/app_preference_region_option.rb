@@ -11,6 +11,7 @@
 
 class AppPreferenceRegionOption < PreferenceRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   US = 1
   JP = 2
 
@@ -19,7 +20,7 @@ class AppPreferenceRegionOption < PreferenceRecord
            foreign_key: :option_id,
            inverse_of: :option,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:id) }
+  scope :ordered, -> { all }
 
   def name
     case id
@@ -29,7 +30,7 @@ class AppPreferenceRegionOption < PreferenceRecord
   end
 
   def self.ensure_defaults!
-    ids = [US, JP]
+    ids = [NOTHING, US, JP]
     existing = where(id: ids).pluck(:id)
     (ids - existing).each { |id| create!(id: id) }
   end

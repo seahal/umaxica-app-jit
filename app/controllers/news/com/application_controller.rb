@@ -11,11 +11,13 @@ module News
       include ::Authorization::Viewer
       include ::Verification::Viewer
       include Pundit::Authorization
+      include ::Current
       include ::Finisher
 
       before_action :check_fuse!
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
+      before_action :set_current
       append_after_action :finish_request
 
       protect_from_forgery with: :exception

@@ -23,6 +23,6 @@ class HandleAssignmentStatusTest < ActiveSupport::TestCase
     assert_equal 2, HandleAssignmentStatus::PENDING
     assert_equal 3, HandleAssignmentStatus::ACTIVE
     assert_equal 4, HandleAssignmentStatus::DELETED
-    assert_equal 5, HandleAssignmentStatus::NEYO
+    assert_equal 5, HandleAssignmentStatus::NOTHING
   end
 end

@@ -15,13 +15,13 @@ class ComTimelineBehaviorLevelTest < ActiveSupport::TestCase
   fixtures :com_timeline_behavior_levels, :com_timeline_behavior_events, :com_timeline_statuses
 
   test "restrict_with_error on destroy when audits exist" do
-    level = ComTimelineBehaviorLevel.find(ComTimelineBehaviorLevel::NEYO)
+    level = ComTimelineBehaviorLevel.find(ComTimelineBehaviorLevel::NOTHING)
     timeline = ComTimeline.create!(
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      status_id: ComTimelineStatus::NEYO,
+      status_id: ComTimelineStatus::NOTHING,
     )
 
     ComTimelineBehavior.create!(

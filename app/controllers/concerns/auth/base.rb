@@ -1094,11 +1094,15 @@ module Auth
 
         now = Time.current
         family_id = token_record.refresh_token_family_id.to_s
+        expiry_column = token_expiry_column(token_record.class)
+        expiry_attrs = { expiry_column => now, :updated_at => now }
+        expiry_attrs[:revoked_at] =
+          now if expiry_column == :expired_at && token_record.class.column_names.include?("revoked_at")
         if family_id.present?
-          token_record.class.where(refresh_token_family_id: family_id, revoked_at: nil)
-            .update_all(revoked_at: now, updated_at: now)
-        elsif token_record.revoked_at.nil?
-          token_record.update!(revoked_at: now)
+          token_record.class.where(:refresh_token_family_id => family_id, expiry_column => nil)
+            .update_all(expiry_attrs)
+        elsif token_record.public_send(expiry_column).nil?
+          token_record.update!(expiry_attrs.except(:updated_at))
         end
       end
       nil
@@ -1236,7 +1240,8 @@ module Auth
     def handle_restricted_refresh_rejected(token_record, refresh_public_id)
       expired = token_record.refresh_expires_at.present? && token_record.refresh_expires_at <= Time.current
 
-      if expired && token_record.revoked_at.nil?
+      expiry_column = token_expiry_column(token_record.class)
+      if expired && token_record.public_send(expiry_column).nil?
         TokenRecord.connected_to(role: :writing) do
           token_record.revoke!
         end
@@ -1819,7 +1824,8 @@ module Auth
       return @current_session if defined?(@current_session)
       return nil unless current_session_public_id
 
-      find_logic = -> { token_class.find_by(public_id: current_session_public_id, revoked_at: nil) }
+      expiry_column = token_expiry_column(token_class)
+      find_logic = -> { token_class.find_by(:public_id => current_session_public_id, expiry_column => nil) }
 
       @current_session =
         if Rails.env.test?
@@ -1833,6 +1839,13 @@ module Auth
     # Check if the current session is restricted
     def current_session_restricted?
       current_session&.restricted?
+    end
+
+    def token_expiry_column(klass)
+      return :expired_at if klass.column_names.include?("expired_at")
+      return :revoked_at if klass.column_names.include?("revoked_at")
+
+      raise "#{klass.name} does not have expired_at/revoked_at column"
     end
 
     def mfa_required_for?(resource)

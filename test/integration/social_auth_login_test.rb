@@ -30,7 +30,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     existing_uid = "existing_google_user_#{SecureRandom.hex(4)}"
 
     # Create existing user with Google identity
-    existing_user = User.create!(status_id: UserStatus::NEYO, public_id: "ex_#{SecureRandom.hex(4)}")
+    existing_user = User.create!(status_id: UserStatus::NOTHING, public_id: "ex_#{SecureRandom.hex(4)}")
     UserSocialGoogle.create!(
       user: existing_user,
       uid: existing_uid,
@@ -61,7 +61,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
     existing_user.reload
 
-    assert_equal UserStatus::NEYO, existing_user.status_id
+    assert_equal UserStatus::NOTHING, existing_user.status_id
 
     follow_redirect!
 
@@ -71,7 +71,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   test "Apple login with existing identity does not create new user" do
     existing_uid = "existing_apple_user_#{SecureRandom.hex(4)}"
 
-    existing_user = User.create!(status_id: UserStatus::NEYO, public_id: "ex_ap_#{SecureRandom.hex(4)}")
+    existing_user = User.create!(status_id: UserStatus::NOTHING, public_id: "ex_ap_#{SecureRandom.hex(4)}")
     UserSocialApple.create!(
       user: existing_user,
       uid: existing_uid,
@@ -178,7 +178,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     existing_uid = "update_auth_time_#{SecureRandom.hex(4)}"
     old_auth_time = 1.week.ago
 
-    existing_user = User.create!(status_id: UserStatus::NEYO, public_id: "at_#{SecureRandom.hex(4)}")
+    existing_user = User.create!(status_id: UserStatus::NOTHING, public_id: "at_#{SecureRandom.hex(4)}")
     identity = UserSocialGoogle.create!(
       user: existing_user,
       uid: existing_uid,

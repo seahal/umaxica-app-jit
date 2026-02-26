@@ -27,8 +27,8 @@ require "test_helper"
 
 class ComPreferenceColorthemeTest < ActiveSupport::TestCase
   setup do
-    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
-    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NEYO)
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NOTHING)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do

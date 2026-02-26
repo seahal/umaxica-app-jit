@@ -11,8 +11,7 @@
 class OrganizationStatus < OperatorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
-
+  NOTHING = 1
   has_many :organizations,
            class_name: "Organization",
            foreign_key: :workspace_status_id,

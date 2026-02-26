@@ -14,7 +14,7 @@ require "test_helper"
 class OrgContactStatusTest < ActiveSupport::TestCase
   setup do
     @model_class = OrgContactStatus
-    @valid_id = OrgContactStatus::NEYO
+    @valid_id = OrgContactStatus::NOTHING
     @subject = @model_class.new(id: @valid_id)
   end
 

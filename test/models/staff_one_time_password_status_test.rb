@@ -24,7 +24,7 @@ class StaffOneTimePasswordStatusTest < ActiveSupport::TestCase
     assert_equal 1, StaffOneTimePasswordStatus::ACTIVE
     assert_equal 2, StaffOneTimePasswordStatus::DELETED
     assert_equal 3, StaffOneTimePasswordStatus::INACTIVE
-    assert_equal 4, StaffOneTimePasswordStatus::NEYO
+    assert_equal 4, StaffOneTimePasswordStatus::NOTHING
     assert_equal 5, StaffOneTimePasswordStatus::REVOKED
   end
 end

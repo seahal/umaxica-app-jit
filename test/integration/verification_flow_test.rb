@@ -18,7 +18,7 @@ class VerificationFlowTest < ActionDispatch::IntegrationTest
     UserEmail.create!(user: @user, address: "vf_#{SecureRandom.hex(4)}@example.com", user_email_status_id: UserEmailStatus::VERIFIED)
     @token = UserToken.create!(
       user: @user,
-      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_status_id: UserTokenStatus::NOTHING,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "vf#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,

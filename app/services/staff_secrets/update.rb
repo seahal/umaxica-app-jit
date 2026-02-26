@@ -51,7 +51,7 @@ module StaffSecrets
     def ensure_audit_dependencies!
       ActivityRecord.connected_to(role: :writing) do
         StaffActivityEvent.find_or_create_by!(id: EVENT_ID)
-        StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NEYO)
+        StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NOTHING)
       end
     end
   end

@@ -13,7 +13,7 @@ class UserOneTimePasswordStatus < PrincipalRecord
   INACTIVE = 2
   REVOKED = 3
   DELETED = 4
-  NEYO = 5
+  NOTHING = 5
   has_many :user_one_time_passwords, dependent: :restrict_with_error,
                                      inverse_of: :user_one_time_password_status
 end

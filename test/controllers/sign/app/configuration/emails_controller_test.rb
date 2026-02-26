@@ -65,7 +65,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
   end
 
   test "destroy allows removing last email when telephone and passkey are present" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "ero_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NOTHING, public_id: "ero_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
     )
@@ -103,7 +103,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
   end
 
   test "destroy blocks removing last email when telephone exists but no passkey or social" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "ern_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NOTHING, public_id: "ern_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id,
     )

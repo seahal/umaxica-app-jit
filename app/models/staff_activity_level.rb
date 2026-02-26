@@ -11,8 +11,7 @@
 
 class StaffActivityLevel < ActivityRecord
   # Fixed IDs - do not modify these values
-  NEYO = 1
-
+  NOTHING = 1
   has_many :staff_activities,
            foreign_key: :level_id,
            dependent: :restrict_with_error,

@@ -36,9 +36,11 @@ class Sign::App::Configuration::OutsControllerTest < ActionDispatch::Integration
     assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
   end
 
-  test "should destroy with user session" do
+  test "should destroy with user session even without step-up verification" do
     token = UserToken.create!(user: @user)
-    satisfy_user_verification(token)
+    refresh_plain = token.rotate_refresh_token!
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
     delete sign_app_configuration_out_url(ri: "jp"),
            headers: { "Host" => @host,
                       "X-TEST-CURRENT-USER" => @user.id,
@@ -46,5 +48,6 @@ class Sign::App::Configuration::OutsControllerTest < ActionDispatch::Integration
 
     assert_redirected_to sign_app_root_path(ri: "jp")
     assert_equal I18n.t("sign.shared.sign_out.success"), flash[:notice]
+    assert_not UserToken.exists?(id: token.id)
   end
 end

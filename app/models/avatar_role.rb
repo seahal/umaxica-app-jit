@@ -12,7 +12,7 @@
 class AvatarRole < AvatarRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
+  NOTHING = 1
   VIEWER = 2
   EDITOR = 3
   ADMIN = 4

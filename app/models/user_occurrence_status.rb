@@ -12,7 +12,7 @@
 
 class UserOccurrenceStatus < OccurrenceRecord
   # Fixed IDs - do not modify these values
-  NEYO = 1
+  NOTHING = 1
   ACTIVE = 2
   INACTIVE = 3
   DELETED = 4

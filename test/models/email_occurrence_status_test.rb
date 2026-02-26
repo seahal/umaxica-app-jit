@@ -20,7 +20,7 @@ class EmailOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, EmailOccurrenceStatus::ACTIVE
-    assert_equal 2, EmailOccurrenceStatus::NEYO
+    assert_equal 2, EmailOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

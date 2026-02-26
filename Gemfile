@@ -63,7 +63,7 @@ gem "rqrcode"
 gem "solid_cache"
 # Solid Queue
 gem "solid_queue"
-# gem "mission_control-jobs" # unused: dashboard is not mounted in routes
+gem "mission_control-jobs"
 # Pagination
 # gem "pagy" # unused: no Pagy usage found
 # WebAuthn (FIDO2)
@@ -91,6 +91,10 @@ gem "nanoid"
 gem "pundit"
 # billing
 gem "stripe"
+# SQL exploration
+gem "blazer"
+# Performance monitoring (APM)
+gem "skylight"
 
 group :development, :test do
   # Test coverage
@@ -99,8 +103,6 @@ group :development, :test do
   gem "minitest-mock"
   # Slow test profiling
   gem "test-prof"
-  # Postgres performance viewer
-  # gem "pghero" # unused: PgHero is not mounted in routes
   # N+1 query detector
   # gem "bullet"
   gem "prosopite"

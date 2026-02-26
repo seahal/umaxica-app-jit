@@ -8,6 +8,8 @@
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
+#  deletable_at             :datetime         default(Infinity), not null
+#  expired_at               :datetime
 #  last_step_up_at          :datetime
 #  last_step_up_scope       :string
 #  last_used_at             :datetime
@@ -29,7 +31,9 @@
 # Indexes
 #
 #  index_user_tokens_on_compromised_at               (compromised_at)
+#  index_user_tokens_on_deletable_at                 (deletable_at)
 #  index_user_tokens_on_device_id                    (device_id)
+#  index_user_tokens_on_expired_at                   (expired_at)
 #  index_user_tokens_on_public_id                    (public_id) UNIQUE
 #  index_user_tokens_on_refresh_expires_at           (refresh_expires_at)
 #  index_user_tokens_on_refresh_token_digest         (refresh_token_digest) UNIQUE
@@ -51,7 +55,7 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for users.
 class UserTokenTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
     @token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
   end
 
@@ -154,12 +158,12 @@ class UserTokenTest < ActiveSupport::TestCase
 
     assert_predicate token, :active?
 
-    token.update!(revoked_at: Time.current)
+    token.update!(expired_at: Time.current)
 
     assert_predicate token, :revoked?
     assert_not token.active?
 
-    token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+    token.update!(expired_at: nil, refresh_expires_at: 1.day.ago)
 
     assert_predicate token, :expired_refresh?
     assert_not token.active?
@@ -222,6 +226,41 @@ class UserTokenTest < ActiveSupport::TestCase
     assert_not_empty @token.errors[:refresh_expires_at]
   end
 
+  test "deletable_at matches refresh_expires_at on create" do
+    expires_at = 2.hours.from_now
+    token = UserToken.create!(
+      user: User.create!,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      refresh_expires_at: expires_at,
+    )
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable_at is updated when refresh_expires_at changes" do
+    token = UserToken.create!(
+      user: User.create!,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.hour.from_now,
+    )
+    new_expires_at = 3.hours.from_now
+
+    token.update!(refresh_expires_at: new_expires_at)
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable scope returns only tokens deletable at or before now" do
+    user = User.create!
+    past_token = UserToken.create!(user: user, refresh_expires_at: 10.minutes.ago)
+    future_token = UserToken.create!(user: user, refresh_expires_at: 10.minutes.from_now)
+
+    deletable_ids = UserToken.deletable(Time.current).pluck(:id)
+
+    assert_includes deletable_ids, past_token.id
+    assert_not_includes deletable_ids, future_token.id
+  end
+
   test "association deletion: destroys when user is destroyed" do
     @token.reload # Ensure it exists
     @user.destroy
@@ -264,14 +303,14 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh! rejects revoked compromised and expired tokens" do
-    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
     revoked = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d1")
     compromised = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d2")
     expired = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d3")
     revoked_raw = revoked.rotate_refresh_token!
     compromised_raw = compromised.rotate_refresh_token!
     expired_raw = expired.rotate_refresh_token!
-    revoked.update!(revoked_at: Time.current)
+    revoked.update!(expired_at: Time.current)
     compromised.update!(compromised_at: Time.current)
     expired.update!(refresh_expires_at: 1.minute.ago)
 

@@ -12,7 +12,6 @@
 class ComDocumentBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
-
+  NOTHING = 1
   has_many :com_document_behaviors, dependent: :restrict_with_error, inverse_of: :com_document_behavior_level
 end

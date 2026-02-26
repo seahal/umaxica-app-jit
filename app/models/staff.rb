@@ -9,6 +9,7 @@
 #  id                   :bigint           not null, primary key
 #  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
+#  shreddable_at        :datetime         default(Infinity), not null
 #  withdrawn_at         :datetime
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
@@ -19,6 +20,7 @@
 # Indexes
 #
 #  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_shreddable_at  (shreddable_at)
 #  index_staffs_on_status_id      (status_id)
 #  index_staffs_on_visibility_id  (visibility_id)
 #  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
@@ -42,7 +44,7 @@ class Staff < OperatorRecord
   PUBLIC_ID_ALPHABET = "abcdefhjklmnpqrtuvwxy23456789".freeze
   PUBLIC_ID_LENGTH = 8
 
-  attribute :status_id, default: StaffStatus::NEYO
+  attribute :status_id, default: StaffStatus::NOTHING
 
   belongs_to :staff_status,
              foreign_key: :status_id,
@@ -99,6 +101,7 @@ class Staff < OperatorRecord
               message: :invalid_format,
             }
   validates :status_id, numericality: { only_integer: true }
+  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
 
   before_validation :normalize_public_id
   before_validation :assign_public_id!, on: :create

@@ -9,6 +9,7 @@
 #  id                   :bigint           not null, primary key
 #  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
+#  shreddable_at        :datetime         default(Infinity), not null
 #  withdrawn_at         :datetime
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
@@ -19,6 +20,7 @@
 # Indexes
 #
 #  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_shreddable_at  (shreddable_at)
 #  index_staffs_on_status_id      (status_id)
 #  index_staffs_on_visibility_id  (visibility_id)
 #  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
@@ -76,7 +78,7 @@ class StaffTest < ActiveSupport::TestCase
 
     staff = Staff.new(
       public_id: valid_public_id,
-      status_id: StaffStatus::NEYO,
+      status_id: StaffStatus::NOTHING,
       visibility_id: 9_999,
     )
     assert_raises(ActiveRecord::InvalidForeignKey) do
@@ -381,7 +383,7 @@ class StaffTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     staff = Staff.create!
 
-    assert_equal StaffStatus::NEYO, staff.status_id
+    assert_equal StaffStatus::NOTHING, staff.status_id
   end
 
   test "association deletion: restriction by dependent emails" do
@@ -410,6 +412,18 @@ class StaffTest < ActiveSupport::TestCase
     )
     staff.destroy
     assert_raise(ActiveRecord::RecordNotFound) { token.reload }
+  end
+
+  test "shreddable scope excludes staffs with default shreddable_at" do
+    staff = Staff.create!
+
+    assert_not_includes Staff.shreddable(Time.current), staff
+  end
+
+  test "shreddable scope includes staffs with past shreddable_at" do
+    staff = Staff.create!(shreddable_at: 1.day.ago)
+
+    assert_includes Staff.shreddable(Time.current), staff
   end
 
   private

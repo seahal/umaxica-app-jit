@@ -22,6 +22,6 @@ class OrganizationStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, OrganizationStatus::NEYO
+    assert_equal 1, OrganizationStatus::NOTHING
   end
 end

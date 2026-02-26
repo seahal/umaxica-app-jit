@@ -36,11 +36,11 @@ class AppContactEmailTest < ActiveSupport::TestCase
 
   setup do
     # Seed necessary reference data for tests
-    [AppContactCategory::APPLICATION_INQUIRY, AppContactCategory::NEYO].each do |id|
+    [AppContactCategory::APPLICATION_INQUIRY, AppContactCategory::NOTHING].each do |id|
       AppContactCategory.find_or_create_by(id: id)
     end
     [
-      AppContactStatus::NEYO,
+      AppContactStatus::NOTHING,
       AppContactStatus::SET_UP,
       AppContactStatus::CHECKED_EMAIL_ADDRESS,
       AppContactStatus::CHECKED_TELEPHONE_NUMBER,
@@ -53,7 +53,7 @@ class AppContactEmailTest < ActiveSupport::TestCase
       public_id: "test_contact_1",
       confirm_policy: "1",
       category_id: AppContactCategory::APPLICATION_INQUIRY,
-      status_id: AppContactStatus::NEYO,
+      status_id: AppContactStatus::NOTHING,
     )
 
     @email = AppContactEmail.new(

@@ -105,7 +105,7 @@ module Core
 
         test "should raise error if contact status is invalid" do
           host! @host
-          @contact.update!(status_id: ComContactStatus::NEYO)
+          @contact.update!(status_id: ComContactStatus::NOTHING)
 
           assert_raises(StandardError) do
             get new_core_com_contact_telephone_url(contact_id: @contact.public_id)

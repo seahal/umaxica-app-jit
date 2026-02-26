@@ -12,11 +12,11 @@
 class PostReviewStatus < AvatarRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NEYO = 1
+  NOTHING = 1
   ACTIVE = 2
   INACTIVE = 3
   DELETED = 4
-  PENDING = NEYO
+  PENDING = NOTHING
 
   has_many :post_reviews, dependent: :restrict_with_error
 end

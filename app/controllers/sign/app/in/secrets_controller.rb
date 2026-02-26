@@ -302,7 +302,7 @@ module Sign
         def audit_recovery_code_used!(user, secret)
           ActivityRecord.connected_to(role: :writing) do
             UserActivityEvent.find_or_create_by!(id: UserActivityEvent::RECOVERY_CODE_USED)
-            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NOTHING)
           end
 
           UserActivity.create!(

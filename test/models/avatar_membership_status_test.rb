@@ -19,7 +19,7 @@ class AvatarMembershipStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, AvatarMembershipStatus::NEYO
+    assert_equal 1, AvatarMembershipStatus::NOTHING
     assert_equal 2, AvatarMembershipStatus::ACTIVE
     assert_equal 3, AvatarMembershipStatus::INACTIVE
     assert_equal 4, AvatarMembershipStatus::DELETED

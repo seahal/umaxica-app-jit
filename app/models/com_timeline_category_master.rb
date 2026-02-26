@@ -22,8 +22,7 @@ class ComTimelineCategoryMaster < NewsRecord
   include Treeable
 
   # Fixed IDs - do not modify these values
-  NEYO = 1
-
+  NOTHING = 1
   belongs_to :parent,
              class_name: "ComTimelineCategoryMaster",
              inverse_of: :children,

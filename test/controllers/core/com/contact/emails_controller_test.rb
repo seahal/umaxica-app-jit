@@ -180,7 +180,7 @@ module Core
 
         test "should handle invalid contact status" do
           host! @host
-          @contact.update!(status_id: ComContactStatus::NEYO)
+          @contact.update!(status_id: ComContactStatus::NOTHING)
           get new_core_com_contact_email_url(contact_id: @contact.public_id)
 
           assert_response :unprocessable_content

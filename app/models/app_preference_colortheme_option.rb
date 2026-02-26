@@ -11,6 +11,7 @@
 
 class AppPreferenceColorthemeOption < PreferenceRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   LIGHT = 1
   DARK = 2
   SYSTEM = 3
@@ -20,7 +21,7 @@ class AppPreferenceColorthemeOption < PreferenceRecord
            foreign_key: :option_id,
            inverse_of: :option,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:id) }
+  scope :ordered, -> { all }
 
   def name
     case id
@@ -31,7 +32,7 @@ class AppPreferenceColorthemeOption < PreferenceRecord
   end
 
   def self.ensure_defaults!
-    ids = [LIGHT, DARK, SYSTEM]
+    ids = [NOTHING, LIGHT, DARK, SYSTEM]
     existing = where(id: ids).pluck(:id)
     (ids - existing).each { |id| create!(id: id) }
   end

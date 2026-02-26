@@ -35,7 +35,7 @@ class TelephoneOccurrence < OccurrenceRecord
 
   HMAC_BODY_FORMAT = /\A\h{64}\z/
 
-  attribute :status_id, default: TelephoneOccurrenceStatus::NEYO
+  attribute :status_id, default: TelephoneOccurrenceStatus::NOTHING
 
   before_validation :normalize_body_unless_hmac
 

@@ -13,7 +13,7 @@ require "test_helper"
 
 class ComPreferenceColorthemeOptionTest < ActiveSupport::TestCase
   setup do
-    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NOTHING)
   end
 
   test "can be created" do

@@ -13,7 +13,7 @@ class UserEmailStatus < PrincipalRecord
   VERIFIED = 2
   SUSPENDED = 3
   DELETED = 4
-  NEYO = 5
+  NOTHING = 5
   UNVERIFIED_WITH_SIGN_UP = 6
   VERIFIED_WITH_SIGN_UP = 7
 

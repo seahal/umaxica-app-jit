@@ -11,7 +11,7 @@
 class AppContactBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
 
-  NEYO = 1
+  NOTHING = 1
   CREATED = 2
   UPDATED = 3
   DELETED = 4

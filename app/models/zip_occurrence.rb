@@ -31,7 +31,7 @@ class ZipOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 
-  attribute :status_id, default: ZipOccurrenceStatus::NEYO
+  attribute :status_id, default: ZipOccurrenceStatus::NOTHING
 
   belongs_to :zip_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :zip_occurrences
   has_many :area_zip_occurrences, dependent: :destroy, inverse_of: :zip_occurrence

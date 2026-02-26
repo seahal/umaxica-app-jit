@@ -21,7 +21,7 @@ class ComTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "status constants are defined" do
-    assert_equal 1, ComTimelineStatus::NEYO
+    assert_equal 1, ComTimelineStatus::NOTHING
     assert_equal 2, ComTimelineStatus::ACTIVE
     assert_equal 3, ComTimelineStatus::INACTIVE
     assert_equal 4, ComTimelineStatus::PENDING

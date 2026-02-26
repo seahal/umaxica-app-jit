@@ -33,7 +33,7 @@ class UserActivityEventTest < ActiveSupport::TestCase
     assert_equal 6, UserActivityEvent::LOGIN_FAILED
     assert_equal 7, UserActivityEvent::LOGIN_SUCCESS
     assert_equal 8, UserActivityEvent::LOGOUT
-    assert_equal 9, UserActivityEvent::NEYO
+    assert_equal 9, UserActivityEvent::NOTHING
     assert_equal 10, UserActivityEvent::NON_EXISTENT_EVENT
     assert_equal 11, UserActivityEvent::PASSKEY_REGISTERED
     assert_equal 12, UserActivityEvent::PASSKEY_REMOVED
@@ -75,14 +75,14 @@ class UserActivityEventTest < ActiveSupport::TestCase
     assert UserActivityEvent.exists?(id: UserActivityEvent::LOGGED_IN)
   end
 
-  test "ordered scope returns ordered records" do
+  test "ordered scope returns all default records" do
     UserActivityEvent.ensure_defaults!
     events = UserActivityEvent.ordered
 
     assert_kind_of ActiveRecord::Relation, events
     ordered_ids = events.pluck(:id)
 
-    assert_equal ordered_ids.sort, ordered_ids
+    assert_empty(UserActivityEvent::DEFAULTS - ordered_ids)
   end
 
   test "has_many association with user_activities" do

@@ -13,7 +13,7 @@ require "test_helper"
 
 class OrgDocumentBehaviorLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = OrgDocumentBehaviorLevel.find(OrgDocumentBehaviorLevel::NEYO)
+    level = OrgDocumentBehaviorLevel.find(OrgDocumentBehaviorLevel::NOTHING)
     doc = OrgDocument.create!(
       permalink: "audit_doc",
       response_mode: "html",
@@ -21,7 +21,7 @@ class OrgDocumentBehaviorLevelTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       position: 0,
       revision_key: "rev_key",
-      status_id: OrgDocumentStatus::NEYO,
+      status_id: OrgDocumentStatus::NOTHING,
     )
 
     OrgDocumentBehavior.create!(

@@ -514,7 +514,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       {
         confirm_policy: "1",
         category_id: ComContactCategory::SECURITY_ISSUE,
-        status_id: ComContactStatus::NEYO,
+        status_id: ComContactStatus::NOTHING,
       }.merge(attrs),
     )
   end

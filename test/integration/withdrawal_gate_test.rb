@@ -20,7 +20,7 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
 
     @token = UserToken.create!(
       user: @deactivated_user,
-      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_status_id: UserTokenStatus::NOTHING,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "deactivated_#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,
@@ -61,11 +61,11 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
 
   test "normal user can access pages without withdrawal gate" do
     normal_user = users(:two)
-    normal_user.update!(status_id: UserStatus::NEYO)
+    normal_user.update!(status_id: UserStatus::NOTHING)
 
     normal_token = UserToken.create!(
       user: normal_user,
-      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_status_id: UserTokenStatus::NOTHING,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "normal_#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,

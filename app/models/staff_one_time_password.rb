@@ -36,7 +36,7 @@ class StaffOneTimePassword < OperatorRecord
   belongs_to :staff, inverse_of: :staff_one_time_passwords
   belongs_to :staff_one_time_password_status, optional: true
 
-  attribute :staff_one_time_password_status_id, default: StaffOneTimePasswordStatus::NEYO
+  attribute :staff_one_time_password_status_id, default: StaffOneTimePasswordStatus::NOTHING
 
   alias_attribute :private_key, :secret_key
 

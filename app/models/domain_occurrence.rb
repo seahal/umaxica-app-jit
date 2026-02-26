@@ -31,7 +31,7 @@ class DomainOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 
-  attribute :status_id, default: DomainOccurrenceStatus::NEYO
+  attribute :status_id, default: DomainOccurrenceStatus::NOTHING
 
   belongs_to :domain_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :domain_occurrences
   has_many :area_domain_occurrences, dependent: :destroy, inverse_of: :domain_occurrence

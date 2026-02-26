@@ -30,7 +30,7 @@ module Sign
         def require_checkpoint_state
           return if checkpoint_state.present?
 
-          redirect_to sign_org_root_path(ri: params[:ri])
+          render plain: I18n.t("sign.org.in.checkpoints.forbidden"), status: :forbidden
         end
 
         def guard_timeout

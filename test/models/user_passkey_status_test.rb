@@ -18,7 +18,7 @@ class UserPasskeyStatusTest < ActiveSupport::TestCase
     assert_equal 2, UserPasskeyStatus::DISABLED
     assert_equal 3, UserPasskeyStatus::REVOKED
     assert_equal 4, UserPasskeyStatus::DELETED
-    assert_equal 5, UserPasskeyStatus::NEYO
+    assert_equal 5, UserPasskeyStatus::NOTHING
   end
 
   test "status ids are integers" do
@@ -26,6 +26,6 @@ class UserPasskeyStatusTest < ActiveSupport::TestCase
     assert_kind_of Integer, UserPasskeyStatus::DISABLED
     assert_kind_of Integer, UserPasskeyStatus::REVOKED
     assert_kind_of Integer, UserPasskeyStatus::DELETED
-    assert_kind_of Integer, UserPasskeyStatus::NEYO
+    assert_kind_of Integer, UserPasskeyStatus::NOTHING
   end
 end

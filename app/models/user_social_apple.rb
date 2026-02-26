@@ -34,8 +34,6 @@
 class UserSocialApple < PrincipalRecord
   include SocialIdentifiable
 
-  self.ignored_columns += ["image"]
-
   alias_attribute :user_social_apple_status_id, :user_identity_social_apple_status_id
   attribute :user_identity_social_apple_status_id, default: UserSocialAppleStatus::ACTIVE
 
@@ -48,8 +46,9 @@ class UserSocialApple < PrincipalRecord
   validates :token, presence: true
   validates :user_id, uniqueness: true
   validates :uid, presence: true, uniqueness: { scope: :provider }
-  validates :expires_at, presence: true
+  validates :expires_at, presence: true # TODO: I want to rename this to revoked_at
   validates :user_identity_social_apple_status_id, numericality: { only_integer: true }
+  # TODO: i want to rename above line to status_at
 
   def self.status_column
     :user_identity_social_apple_status_id

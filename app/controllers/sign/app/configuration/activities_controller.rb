@@ -5,6 +5,8 @@ module Sign
   module App
     module Configuration
       class ActivitiesController < ApplicationController
+        auth_required!
+
         LOGIN_EVENT_IDS = [UserActivityEvent::LOGGED_IN, UserActivityEvent::LOGIN_SUCCESS].freeze
         EVENT_LABELS = {
           UserActivityEvent::LOGGED_IN => "logged_in",

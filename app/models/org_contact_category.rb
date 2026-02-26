@@ -9,7 +9,7 @@
 #  id :bigint           not null, primary key
 #
 class OrgContactCategory < GuestRecord
-  NEYO = 1
+  NOTHING = 1
   ORGANIZATION_INQUIRY = 2
 
   has_many :org_contacts,

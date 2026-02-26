@@ -29,8 +29,8 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
   fixtures :app_preference_region_options
 
   setup do
-    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
-    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NEYO)
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do

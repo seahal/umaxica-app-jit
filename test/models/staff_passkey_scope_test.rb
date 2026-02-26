@@ -5,7 +5,7 @@ require "test_helper"
 
 class StaffPasskeyScopeTest < ActiveSupport::TestCase
   setup do
-    @staff = Staff.create!(public_id: "abcdefhj", status_id: StaffStatus::NEYO)
+    @staff = Staff.create!(public_id: "abcdefhj", status_id: StaffStatus::NOTHING)
 
     @active_passkey = StaffPasskey.create!(
       staff: @staff,

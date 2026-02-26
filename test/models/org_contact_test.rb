@@ -74,7 +74,7 @@ class OrgContactTest < ActiveSupport::TestCase
 
   def create_all_statuses
     statuses = [
-      OrgContactStatus::NEYO,
+      OrgContactStatus::NOTHING,
       OrgContactStatus::SET_UP,
       OrgContactStatus::CHECKED_EMAIL_ADDRESS,
       OrgContactStatus::CHECKED_TELEPHONE_NUMBER,
@@ -87,7 +87,7 @@ class OrgContactTest < ActiveSupport::TestCase
 
   def create_all_categories
     categories = [
-      OrgContactCategory::NEYO,
+      OrgContactCategory::NOTHING,
       OrgContactCategory::ORGANIZATION_INQUIRY,
     ]
     categories.each do |id|
@@ -104,7 +104,7 @@ class OrgContactTest < ActiveSupport::TestCase
 
     assert contact.save
     assert_equal OrgContactCategory::ORGANIZATION_INQUIRY, contact.category_id
-    assert_equal OrgContactStatus::NEYO, contact.status_id
+    assert_equal OrgContactStatus::NOTHING, contact.status_id
   end
 
   test "should generate public_id on create" do

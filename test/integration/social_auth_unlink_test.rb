@@ -19,7 +19,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     # Create test user with recent reauth (required for unlink when REQUIRE_REAUTH_FOR_UNLINK is true)
     @user = User.create!(
-      status_id: UserStatus::NEYO,
+      status_id: UserStatus::NOTHING,
       public_id: "unlink_test_#{SecureRandom.hex(4)}",
       last_reauth_at: 1.minute.ago,
     )

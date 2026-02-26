@@ -34,8 +34,7 @@
 class UserSocialGoogle < PrincipalRecord
   include SocialIdentifiable
 
-  self.ignored_columns += ["image"]
-
+  # TODO: I want to delete those line.
   alias_attribute :user_social_google_status_id, :user_identity_social_google_status_id
   attribute :user_identity_social_google_status_id, default: UserSocialGoogleStatus::ACTIVE
 
@@ -48,8 +47,9 @@ class UserSocialGoogle < PrincipalRecord
   validates :token, presence: true
   validates :user_id, uniqueness: true
   validates :uid, presence: true, uniqueness: { scope: :provider }
-  validates :expires_at, presence: true
+  validates :expires_at, presence: true # TODO: I want to rename this code to revoked_at
   validates :user_identity_social_google_status_id, numericality: { only_integer: true }
+  # TODO: I want to rename upper code to status_id
 
   def self.status_column
     :user_identity_social_google_status_id

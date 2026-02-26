@@ -191,7 +191,7 @@ module Sign
 
           ActivityRecord.connected_to(role: :writing) do
             UserActivityEvent.find_or_create_by!(id: event_id)
-            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NOTHING)
           end
 
           audit = UserActivity.new(

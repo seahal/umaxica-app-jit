@@ -11,6 +11,7 @@ module Core
       include ::Verification::User
       include ::Preference::Regional
       include Pundit::Authorization
+      include ::Current
       include ::Finisher
 
       before_action :check_fuse!
@@ -29,6 +30,7 @@ module Core
       before_action :set_locale
       before_action :set_timezone
       before_action :set_color_theme
+      before_action :set_current
       append_after_action :finish_request
 
       protect_from_forgery with: :exception

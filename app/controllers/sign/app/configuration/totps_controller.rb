@@ -5,6 +5,8 @@ module Sign
   module App
     module Configuration
       class TotpsController < ApplicationController
+        auth_required!
+
         include ::Verification::User
 
         MAX_TOTPS = 2

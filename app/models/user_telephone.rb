@@ -37,6 +37,8 @@
 #
 
 class UserTelephone < PrincipalRecord
+  MAX_TELEPHONES_PER_USER = 4
+  # TODO: refactorize this line!
   alias_attribute :user_telephone_status_id, :user_identity_telephone_status_id
   include Telephone
   include Turnstile
@@ -46,7 +48,6 @@ class UserTelephone < PrincipalRecord
     public_id
   end
 
-  MAX_TELEPHONES_PER_USER = 4
   attribute :user_identity_telephone_status_id, default: UserTelephoneStatus::UNVERIFIED
 
   belongs_to :user_telephone_status, optional: true, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id

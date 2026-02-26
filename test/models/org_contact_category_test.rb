@@ -72,7 +72,7 @@ class OrgContactCategoryTest < ActiveSupport::TestCase
 
   test "destroy is restricted when contacts exist" do
     category = OrgContactCategory.create!(id: 101)
-    status = OrgContactStatus.find_by(id: OrgContactStatus::NEYO) || OrgContactStatus.create!(id: OrgContactStatus::NEYO)
+    status = OrgContactStatus.find_by(id: OrgContactStatus::NOTHING) || OrgContactStatus.create!(id: OrgContactStatus::NOTHING)
     OrgContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
     assert_raises(ActiveRecord::DeleteRestrictionError) do
