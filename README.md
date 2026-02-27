@@ -23,7 +23,7 @@
 - For local development we already set `TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000` inside `docker/core/env`. If you run Ruby commands outside the container, set the same value (or other hosts you use) beforehand.
 
 ## Database IDs
-- PostgreSQL 18 UUID primary keys default to `uuidv7()` so inserts remain time-ordered.
+- PostgreSQL primary keys default to `bigint` so inserts remain time-ordered.
 
 ## Testing
 - Rails test suite (parallelized): `bundle exec rails test`
@@ -43,12 +43,11 @@
 - Default infrastructure ports: Valkey exposed on host port 56379 (override with `VALKEY_HOST_PORT`)
 - Email and Telecomunication:
   - Resend
-  - Twilio
   - AWS SES
 - Content delivery Network
   - Cloudflare (R2)
   - Fastly CDN
-  - Amazon Cloudflnt
+  - Google Cloud Cloud DNS
 - Cloud platforms:
   - Google Cloud (Cloud Run, Cloud Build, Cloud Storage, Artifact Registry, OAuth)
   - Apple (Social login)
@@ -71,9 +70,9 @@
 ## Environments & Endpoints
   - Corporate site:
     - `www.umaxica.com`
-    - `www.[jp|us].news.umaxica.com`
-    - `www.[jp|us].help.umaxica.com`
-    - `www.[jp|us].docs.umaxica.com`
+    - `www.news.[jp|us].umaxica.com`
+    - `www.help.[jp|us].umaxica.com`
+    - `www.docs.[jp|us].umaxica.com`
   - Service endpoints:
     - `www.umaxica.app`
     - `sign.umaxica.app`
