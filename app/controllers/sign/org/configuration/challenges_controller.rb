@@ -1,26 +1,32 @@
 # typed: false
 # frozen_string_literal: true
 
-class Sign::Org::Configuration::ChallengesController < ApplicationController
-  auth_required!
+module Sign
+  module Org
+    module Configuration
+      class ChallengesController < ApplicationController
+        auth_required!
 
-  include ::Verification::Staff
+        include ::Verification::Staff
 
-  before_action :authenticate_staff!
+        before_action :authenticate_staff!
 
-  def show
-  end
+        def show
+        end
 
-  def update
-  end
+        def update
+        end
 
-  private
+        private
 
-  def verification_required_action?
-    action_name == "update"
-  end
+        def verification_required_action?
+          action_name == "update"
+        end
 
-  def verification_scope
-    "configuration_mfa"
+        def verification_scope
+          "configuration_mfa"
+        end
+      end
+    end
   end
 end
