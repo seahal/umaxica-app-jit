@@ -1,9 +1,10 @@
+# typed: false
 # frozen_string_literal: true
 
 module UserSecrets
   class Create
     ACTION = "user_secret.create"
-    EVENT_ID = "USER_IDENTITY_SECRET_CREATE"
+    EVENT_ID = UserActivityEvent::USER_SECRET_CREATED
 
     Result = Struct.new(:secret, :raw_secret, keyword_init: true)
 
@@ -20,22 +21,14 @@ module UserSecrets
 
     def call
       raw_secret = @raw_secret.presence || UserSecret.generate_raw_secret
-
-      # Generate name from raw_secret prefix (first 4 chars)
-      # Ignore params[:name] as it's a security risk to allow user-controlled names
-      name = raw_secret.first(4)
-
-      secret = @user.user_secrets.new(name: name)
+      secret = @user.user_secrets.new(name: @params[:name].to_s.strip)
       secret.raw_secret = raw_secret
       secret.password = raw_secret
-
-      # Always set to ACTIVE status (ignore params[:enabled])
-      # Always set to UNLIMITED kind (only kind currently issued via UI)
-      secret.user_secret_status_id = UserSecret.status_id_for(:active)
-      secret.user_secret_kind_id = UserSecretKind::UNLIMITED
+      secret.user_secret_status_id = status_id_for(@params[:enabled])
 
       audit_class.transaction do
         UserSecret.transaction do
+          ensure_audit_dependencies!
           secret.save!
           audit_class.create!(
             actor: @actor,
@@ -53,8 +46,21 @@ module UserSecrets
 
     private
 
-      def audit_class
-        @audit_class ||= @actor.is_a?(Staff) ? StaffAudit : UserAudit
+    def audit_class
+      @audit_class ||= @actor.is_a?(Staff) ? StaffActivity : UserActivity
+    end
+
+    def status_id_for(enabled_param)
+      enabled = ActiveModel::Type::Boolean.new.cast(enabled_param)
+      status = enabled ? :active : :revoked
+      UserSecret.status_id_for(status)
+    end
+
+    def ensure_audit_dependencies!
+      ActivityRecord.connected_to(role: :writing) do
+        UserActivityEvent.find_or_create_by!(id: EVENT_ID)
+        UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NOTHING)
       end
+    end
   end
 end

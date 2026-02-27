@@ -1,14 +1,15 @@
+# typed: false
 # == Schema Information
 #
 # Table name: avatar_assignments
 # Database name: avatar
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  role       :string(50)       default("viewer"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  avatar_id  :string(255)      not null
-#  user_id    :uuid             not null
+#  avatar_id  :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -28,12 +29,13 @@ require "test_helper"
 
 class AvatarAssignmentTest < ActiveSupport::TestCase
   test "should have ROLES constant" do
-    assert_equal %w[owner affiliation administrator editor reviewer viewer],
+    assert_equal %w(owner affiliation administrator editor reviewer viewer),
                  AvatarAssignment::ROLES
   end
 
   test "should validate role inclusion" do
     assignment = AvatarAssignment.new(role: "invalid_role")
+
     assert_not assignment.valid?
     assert_predicate assignment.errors[:role], :present?
   end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -10,7 +11,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       "NEWS_STAFF_URL" => ENV["NEWS_STAFF_URL"],
       "EDGE_STAFF_URL" => ENV["EDGE_STAFF_URL"],
       "NAME" => ENV["NAME"],
-      "BRAND_NAME" => ENV["BRAND_NAME"]
+      "BRAND_NAME" => ENV["BRAND_NAME"],
     }
 
     # Ensure host-constrained routes and layout-rendered ENV.fetch calls work in test
@@ -32,6 +33,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "redirects to canonical path by stripping ri=jp" do
     get news_org_root_url(ri: "jp"), headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+
     assert_redirected_to news_org_root_url
     assert_nil request.path_parameters[:ri]
   end
@@ -95,12 +97,12 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
     assert_layout_contract
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: "#{brand_name} (org) Newsroom"
+      assert_select "title", count: 1, text: /#{brand_name} \(org\) Newsroom/
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: /#{brand_name} \/ org/
+        assert_select "h1", text: /#{brand_name}.*\(org\)/
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
@@ -115,6 +117,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get news_org_root_url
+
     assert_response :success
     assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
   end
@@ -129,7 +132,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

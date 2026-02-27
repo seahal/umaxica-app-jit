@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_preference_timezones
 # Database name: preference
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :string           not null
-#  preference_id :uuid             not null
+#  option_id     :bigint           not null
+#  preference_id :bigint           not null
 #
 # Indexes
 #
@@ -16,8 +17,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (option_id => com_preference_timezone_options.id)
-#  fk_rails_...  (preference_id => com_preferences.id)
+#  fk_com_preference_timezones_on_option_id  (option_id => com_preference_timezone_options.id)
+#  fk_rails_...                              (preference_id => com_preferences.id)
 #
 
 # frozen_string_literal: true
@@ -26,11 +27,13 @@ require "test_helper"
 
 class ComPreferenceTimezoneTest < ActiveSupport::TestCase
   setup do
-    @preference = ComPreference.create!
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NOTHING)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do
     timezone = ComPreferenceTimezone.new
+
     assert_not timezone.valid?
     assert_includes timezone.errors[:preference], "を入力してください"
   end
@@ -38,6 +41,7 @@ class ComPreferenceTimezoneTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = com_preference_timezone_options(:asia_tokyo)
     timezone = ComPreferenceTimezone.create!(preference: @preference, option: option)
+
     assert_not_nil timezone.id
     assert_equal @preference, timezone.preference
     assert_equal option, timezone.option
@@ -45,6 +49,7 @@ class ComPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     timezone = ComPreferenceTimezone.create!(preference: @preference)
-    assert_equal "Asia/Tokyo", timezone.option_id
+
+    assert_equal ComPreferenceTimezoneOption::ASIA_TOKYO, timezone.option_id
   end
 end

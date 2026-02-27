@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,31 +6,24 @@
 # Table name: user_one_time_password_statuses
 # Database name: principal
 #
-#  id :string           default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_otp_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class UserOneTimePasswordStatusTest < ActiveSupport::TestCase
-  test "valid status" do
-    status = UserOneTimePasswordStatus.new(id: "TEST_STATUS")
-    assert_predicate status, :valid?
-    assert status.save
-    assert_equal "TEST_STATUS", status.id
+  test "status constants are defined" do
+    assert_equal 1, UserOneTimePasswordStatus::ACTIVE
+    assert_equal 2, UserOneTimePasswordStatus::INACTIVE
+    assert_equal 3, UserOneTimePasswordStatus::REVOKED
+    assert_equal 4, UserOneTimePasswordStatus::DELETED
+    assert_equal 5, UserOneTimePasswordStatus::NOTHING
   end
 
-  test "upcases id" do
-    status = UserOneTimePasswordStatus.new(id: "lower")
-    status.valid?
-    assert_equal "LOWER", status.id
-  end
-
-  test "validates length of id" do
-    record = UserOneTimePasswordStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "status ids are integers" do
+    assert_kind_of Integer, UserOneTimePasswordStatus::ACTIVE
+    assert_kind_of Integer, UserOneTimePasswordStatus::INACTIVE
+    assert_kind_of Integer, UserOneTimePasswordStatus::REVOKED
+    assert_kind_of Integer, UserOneTimePasswordStatus::DELETED
+    assert_kind_of Integer, UserOneTimePasswordStatus::NOTHING
   end
 end

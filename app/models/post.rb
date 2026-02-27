@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,22 +6,24 @@
 # Table name: posts
 # Database name: avatar
 #
-#  id                    :string           not null, primary key
+#  id                    :bigint           not null, primary key
 #  body                  :text             not null
 #  published_at          :timestamptz
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  author_avatar_id      :string           not null
-#  created_by_actor_id   :string           not null
-#  post_status_id        :string           not null
+#  author_avatar_id      :bigint           not null
+#  created_by_actor_id   :bigint           not null
+#  post_status_id        :bigint           default(0), not null
 #  public_id             :string           not null
-#  published_by_actor_id :string
+#  published_by_actor_id :bigint
 #
 # Indexes
 #
 #  index_posts_on_author_avatar_id_and_created_at  (author_avatar_id,created_at DESC)
+#  index_posts_on_created_by_actor_id              (created_by_actor_id)
 #  index_posts_on_post_status_id                   (post_status_id)
 #  index_posts_on_public_id                        (public_id) UNIQUE
+#  index_posts_on_published_by_actor_id            (published_by_actor_id)
 #
 # Foreign Keys
 #
@@ -29,7 +32,6 @@
 #
 
 class Post < AvatarRecord
-  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :author_avatar, class_name: "Avatar", inverse_of: :posts

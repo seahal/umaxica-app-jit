@@ -1,16 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_document_category_masters
 # Database name: document
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  parent_id  :string(255)      default("NEYO"), not null
+#  id        :bigint           not null, primary key
+#  parent_id :bigint           not null
 #
 # Indexes
 #
-#  index_app_document_category_masters_on_lower_id   (lower((id)::text)) UNIQUE
 #  index_app_document_category_masters_on_parent_id  (parent_id)
 #
 # Foreign Keys
@@ -21,7 +19,8 @@
 # frozen_string_literal: true
 
 class AppDocumentCategoryMaster < DocumentRecord
-  include StringPrimaryKey
+  # Fixed IDs - do not modify these values
+  NOTHING = 1
   include Treeable
 
   belongs_to :parent,
@@ -35,17 +34,20 @@ class AppDocumentCategoryMaster < DocumentRecord
            dependent: :restrict_with_error
   has_many :app_document_categories, dependent: :restrict_with_error
   has_many :app_documents, through: :app_document_categories
-  validates :id, uniqueness: { case_sensitive: false }
 
   self.primary_key = "id"
 
-  validates :parent_id, presence: true, length: { maximum: 255 }
+  attribute :parent_id, default: 0
+
+  validates :parent_id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+  def self.tree_root_parent_value = 0
 
   def name
     I18n.t("app_document_categories.%{id}", id: id)
   end
 
   def root?
-    parent_id == "NEYO"
+    parent_id.zero?
   end
 end

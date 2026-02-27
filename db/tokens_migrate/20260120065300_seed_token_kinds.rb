@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SeedTokenKinds < ActiveRecord::Migration[8.2]
-  TOKEN_KINDS = %w[BROWSER_WEB CLIENT_IOS CLIENT_ANDROID].freeze
+  TOKEN_KINDS = %w(BROWSER_WEB CLIENT_IOS CLIENT_ANDROID).freeze
 
   def up
     safety_assured do

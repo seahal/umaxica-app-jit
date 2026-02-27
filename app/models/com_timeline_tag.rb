@@ -1,23 +1,24 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_timeline_tags
 # Database name: news
 #
-#  id                         :uuid             not null, primary key
+#  id                         :bigint           not null, primary key
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
-#  com_timeline_id            :uuid             not null
-#  com_timeline_tag_master_id :string(255)      not null
+#  com_timeline_id            :bigint           not null
+#  com_timeline_tag_master_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_com_timeline_tags_on_com_timeline_tag_master_id  (com_timeline_tag_master_id)
-#  index_com_timeline_tags_unique                         (com_timeline_id,com_timeline_tag_master_id) UNIQUE
+#  idx_com_timeline_tags_on_master_and_timeline  (com_timeline_tag_master_id,com_timeline_id) UNIQUE
+#  index_com_timeline_tags_on_com_timeline_id    (com_timeline_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_timeline_id => com_timelines.id) ON DELETE => cascade
-#  fk_rails_...  (com_timeline_tag_master_id => com_timeline_tag_masters.id)
+#  fk_com_timeline_tags_on_com_timeline_tag_master_id  (com_timeline_tag_master_id => com_timeline_tag_masters.id)
+#  fk_rails_...                                        (com_timeline_id => com_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true
@@ -29,7 +30,6 @@ class ComTimelineTag < NewsRecord
              inverse_of: :com_timeline_tags
 
   validates :com_timeline_tag_master_id,
-            length: { maximum: 255 },
             uniqueness: { scope: :com_timeline_id,
-                          message: :already_tagged }
+                          message: :already_tagged, }
 end

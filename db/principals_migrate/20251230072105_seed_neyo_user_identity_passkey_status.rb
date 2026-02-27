@@ -11,15 +11,15 @@ class SeedNeyoUserIdentityPasskeyStatus < ActiveRecord::Migration[8.2]
 
   private
 
-    def seed_id(table_name, _id)
-      return unless table_exists?(table_name)
+  def seed_id(table_name, _id)
+    return unless table_exists?(table_name)
 
-      has_timestamps = column_exists?(table_name, :created_at)
+    has_timestamps = column_exists?(table_name, :created_at)
 
-      safety_assured do
-        if has_timestamps
-        else
-        end
+    safety_assured do
+      if has_timestamps
+      else
       end
     end
+  end
 end

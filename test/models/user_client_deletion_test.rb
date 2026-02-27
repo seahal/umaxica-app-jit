@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: user_client_deletions
 # Database name: principal
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  client_id  :uuid             not null
-#  user_id    :uuid             not null
+#  client_id  :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -25,11 +26,14 @@
 require "test_helper"
 
 class UserClientDeletionTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses, :clients, :client_statuses, :user_client_deletions
+
   test "fixture is valid" do
     # Fixture accessor might be broken, finding by user and client
     user = User.find_by!(public_id: "one_id")
     client = Client.find_by!(public_id: "client_one")
     deletion = UserClientDeletion.find_by!(user: user, client: client)
+
     assert_predicate deletion, :valid?
   end
 end

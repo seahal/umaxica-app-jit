@@ -40,14 +40,14 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :handle_assignment_status, type: :string, foreign_key: true
-      t.string :assigned_by_actor_id
+      t.bigint :assigned_by_actor_id
       t.timestamps
     end
 
     add_index :handle_assignments, :handle_id, unique: true, where: "valid_to = 'infinity'"
     add_index :handle_assignments, :avatar_id, unique: true, where: "valid_to = 'infinity'"
-    add_index :handle_assignments, [ :avatar_id, :valid_from ], order: { valid_from: :desc }
-    add_index :handle_assignments, [ :handle_id, :valid_from ], order: { valid_from: :desc }
+    add_index :handle_assignments, [:avatar_id, :valid_from], order: { valid_from: :desc }
+    add_index :handle_assignments, [:handle_id, :valid_from], order: { valid_from: :desc }
     add_foreign_key :handle_assignments, :avatars
     add_foreign_key :handle_assignments, :handles
 
@@ -57,26 +57,26 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :avatar_moniker_status, type: :string, foreign_key: true
-      t.string :set_by_actor_id
+      t.bigint :set_by_actor_id
       t.timestamps
     end
 
     add_index :avatar_monikers, :avatar_id, unique: true, where: "valid_to = 'infinity'"
-    add_index :avatar_monikers, [ :avatar_id, :valid_from ], order: { valid_from: :desc }
+    add_index :avatar_monikers, [:avatar_id, :valid_from], order: { valid_from: :desc }
     add_foreign_key :avatar_monikers, :avatars
 
     create_table :avatar_memberships, id: :string do |t|
       t.string :avatar_id, null: false
-      t.string :actor_id, null: false
+      t.bigint :actor_id, null: false
       t.string :role_id, null: false
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :avatar_membership_status, type: :string, foreign_key: true
-      t.string :granted_by_actor_id
+      t.bigint :granted_by_actor_id
       t.timestamps
     end
 
-    add_index :avatar_memberships, [ :avatar_id, :actor_id ], unique: true, where: "valid_to = 'infinity'"
+    add_index :avatar_memberships, [:avatar_id, :actor_id], unique: true, where: "valid_to = 'infinity'"
     add_index :avatar_memberships, :actor_id, where: "valid_to = 'infinity'"
     add_index :avatar_memberships, :avatar_id, where: "valid_to = 'infinity'"
     add_foreign_key :avatar_memberships, :avatars
@@ -87,7 +87,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :avatar_ownership_status, type: :string, foreign_key: true
-      t.string :transferred_by_actor_id
+      t.bigint :transferred_by_actor_id
       t.timestamps
     end
 
@@ -100,26 +100,26 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.string :author_avatar_id, null: false
       t.references :post_status, type: :string, null: false, foreign_key: true
       t.text :body, null: false
-      t.string :created_by_actor_id, null: false
-      t.string :published_by_actor_id
+      t.bigint :created_by_actor_id, null: false
+      t.bigint :published_by_actor_id
       t.timestamptz :published_at
       t.timestamps
     end
 
     add_index :posts, :public_id, unique: true
-    add_index :posts, [ :author_avatar_id, :created_at ], order: { created_at: :desc }
+    add_index :posts, [:author_avatar_id, :created_at], order: { created_at: :desc }
     add_foreign_key :posts, :avatars, column: :author_avatar_id
 
     create_table :post_reviews, id: :string do |t|
       t.string :post_id, null: false
-      t.string :reviewer_actor_id, null: false
+      t.bigint :reviewer_actor_id, null: false
       t.references :post_review_status, type: :string, null: false, foreign_key: true
       t.text :comment
       t.timestamptz :decided_at
       t.timestamps
     end
 
-    add_index :post_reviews, [ :post_id, :reviewer_actor_id ], unique: true
+    add_index :post_reviews, [:post_id, :reviewer_actor_id], unique: true
     add_index :post_reviews, :reviewer_actor_id, where: "decided_at IS NULL"
     add_foreign_key :post_reviews, :posts
   end

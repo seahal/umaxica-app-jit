@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,38 +6,48 @@
 # Table name: staff_tokens
 # Database name: token
 #
-#  id                       :uuid             not null, primary key
+#  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
+#  deletable_at             :datetime         default(Infinity), not null
+#  expired_at               :datetime
+#  last_step_up_at          :datetime
+#  last_step_up_scope       :string
 #  last_used_at             :datetime
 #  refresh_expires_at       :datetime         not null
 #  refresh_token_digest     :binary
 #  refresh_token_generation :integer          default(0), not null
 #  revoked_at               :datetime
 #  rotated_at               :datetime
+#  status                   :string(20)       default("active"), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  device_id                :string           default(""), not null
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
-#  staff_id                 :uuid             not null
-#  staff_token_kind_id      :string           default("BROWSER_WEB"), not null
-#  staff_token_status_id    :string           default("NEYO"), not null
+#  staff_id                 :bigint           not null
+#  staff_token_kind_id      :bigint           default(1), not null
+#  staff_token_status_id    :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_staff_tokens_on_compromised_at           (compromised_at)
-#  index_staff_tokens_on_public_id                (public_id) UNIQUE
-#  index_staff_tokens_on_refresh_expires_at       (refresh_expires_at)
-#  index_staff_tokens_on_refresh_token_digest     (refresh_token_digest) UNIQUE
-#  index_staff_tokens_on_refresh_token_family_id  (refresh_token_family_id)
-#  index_staff_tokens_on_revoked_at               (revoked_at)
-#  index_staff_tokens_on_staff_id                 (staff_id)
-#  index_staff_tokens_on_staff_token_kind_id      (staff_token_kind_id)
-#  index_staff_tokens_on_staff_token_status_id    (staff_token_status_id)
+#  index_staff_tokens_on_compromised_at                (compromised_at)
+#  index_staff_tokens_on_deletable_at                  (deletable_at)
+#  index_staff_tokens_on_device_id                     (device_id)
+#  index_staff_tokens_on_expired_at                    (expired_at)
+#  index_staff_tokens_on_public_id                     (public_id) UNIQUE
+#  index_staff_tokens_on_refresh_expires_at            (refresh_expires_at)
+#  index_staff_tokens_on_refresh_token_digest          (refresh_token_digest) UNIQUE
+#  index_staff_tokens_on_refresh_token_family_id       (refresh_token_family_id)
+#  index_staff_tokens_on_revoked_at                    (revoked_at)
+#  index_staff_tokens_on_staff_id_and_last_step_up_at  (staff_id,last_step_up_at)
+#  index_staff_tokens_on_staff_token_kind_id           (staff_token_kind_id)
+#  index_staff_tokens_on_staff_token_status_id         (staff_token_status_id)
+#  index_staff_tokens_on_status                        (status)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (staff_token_kind_id => staff_token_kinds.id)
-#  fk_rails_...  (staff_token_status_id => staff_token_statuses.id)
+#  fk_staff_tokens_on_staff_token_kind_id    (staff_token_kind_id => staff_token_kinds.id)
+#  fk_staff_tokens_on_staff_token_status_id  (staff_token_status_id => staff_token_statuses.id)
 #
 
 require "test_helper"
@@ -46,7 +57,7 @@ class StaffTokenTest < ActiveSupport::TestCase
   def setup
     @staff = Staff.find_by!(public_id: "bcde3456")
 
-    @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
+    @token = StaffToken.create!(staff: @staff, staff_token_status_id: StaffTokenStatus::ACTIVE)
   end
 
   test "inherits from TokenRecord" do
@@ -65,10 +76,9 @@ class StaffTokenTest < ActiveSupport::TestCase
     assert_equal @staff.id, @token.staff_id
   end
 
-  test "generates UUID id automatically" do
+  test "assigns numeric id automatically" do
     assert_not_nil @token.id
-    assert_equal 36, @token.id.length
-    assert_match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, @token.id)
+    assert_kind_of Integer, @token.id
   end
 
   test "has created_at timestamp" do
@@ -115,15 +125,17 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum concurrent sessions per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
-    StaffToken::MAX_SESSIONS_PER_STAFF.times do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    # Create tokens up to the total max (active + restricted)
+    StaffToken::MAX_TOTAL_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
     end
 
     extra_token = StaffToken.new(staff: staff)
 
     assert_not extra_token.valid?
-    assert_includes extra_token.errors[:base], "exceeds maximum concurrent sessions per staff (#{StaffToken::MAX_SESSIONS_PER_STAFF})"
+    assert_includes extra_token.errors[:base],
+                    "exceeds maximum concurrent sessions per staff (#{StaffToken::MAX_TOTAL_SESSIONS_PER_STAFF})"
   end
 
   test "refresh token digest updates and authenticates" do
@@ -138,11 +150,13 @@ class StaffTokenTest < ActiveSupport::TestCase
   test "active state reflects revoked and expired refresh tokens" do
     assert_predicate @token, :active?
 
-    @token.update!(revoked_at: Time.current)
+    @token.update!(expired_at: Time.current)
+
     assert_predicate @token, :revoked?
     assert_not @token.active?
 
-    @token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+    @token.update!(expired_at: nil, refresh_expires_at: 1.day.ago)
+
     assert_predicate @token, :expired_refresh?
     assert_not @token.active?
   end
@@ -175,11 +189,136 @@ class StaffTokenTest < ActiveSupport::TestCase
     assert_equal @token.public_id, public_id
     assert_predicate verifier, :present?
   end
+
+  test "deletable_at matches refresh_expires_at on create" do
+    expires_at = 2.hours.from_now
+    token = StaffToken.create!(
+      staff: @staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      refresh_expires_at: expires_at,
+    )
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable_at is updated when refresh_expires_at changes" do
+    token = StaffToken.create!(
+      staff: @staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.hour.from_now,
+    )
+    new_expires_at = 3.hours.from_now
+
+    token.update!(refresh_expires_at: new_expires_at)
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable scope returns only tokens deletable at or before now" do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    past_token = StaffToken.create!(staff: staff, refresh_expires_at: 10.minutes.ago)
+    future_token = StaffToken.create!(staff: staff, refresh_expires_at: 10.minutes.from_now)
+
+    deletable_ids = StaffToken.deletable(Time.current).pluck(:id)
+
+    assert_includes deletable_ids, past_token.id
+    assert_not_includes deletable_ids, future_token.id
+  end
+
   test "sha3 digest matches hexdigest packed bytes" do
     raw1 = @token.send(:digest_refresh_token, "B")
     hex = SHA3::Digest::SHA3_384.hexdigest("B")
-    raw2 = [ hex ].pack("H*")
+    raw2 = [hex].pack("H*")
 
     assert ActiveSupport::SecurityUtils.secure_compare(raw1, raw2)
+  end
+
+  test "rotate_refresh! consumes old row and creates new generation in same family" do
+    token = StaffToken.create!(
+      staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "device-staff",
+    )
+    raw = token.rotate_refresh_token!
+    _, verifier = StaffToken.parse_refresh_token(raw)
+    digest = StaffToken.digest_refresh_token(verifier)
+
+    result = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+
+    assert_equal :rotated, result[:status]
+    new_token = result[:token]
+
+    assert_predicate new_token, :present?
+    assert_not_equal token.id, new_token.id
+    assert_equal token.refresh_token_family_id, new_token.refresh_token_family_id
+    assert_equal token.refresh_token_generation + 1, new_token.refresh_token_generation
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! classifies second attempt as replay" do
+    token = StaffToken.create!(
+      staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "device-staff",
+    )
+    raw = token.rotate_refresh_token!
+    _, verifier = StaffToken.parse_refresh_token(raw)
+    digest = StaffToken.digest_refresh_token(verifier)
+
+    first = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+
+    assert_equal :rotated, first[:status]
+
+    second = StaffToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-staff", now: Time.current)
+
+    assert_equal :replay, second[:status]
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! rejects revoked compromised and expired tokens" do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    revoked = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd1")
+    compromised = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd2")
+    expired = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd3")
+    revoked_raw = revoked.rotate_refresh_token!
+    compromised_raw = compromised.rotate_refresh_token!
+    expired_raw = expired.rotate_refresh_token!
+    revoked.update!(expired_at: Time.current)
+    compromised.update!(compromised_at: Time.current)
+    expired.update!(refresh_expires_at: 1.minute.ago)
+
+    revoked_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(revoked_raw).last)
+    compromised_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(compromised_raw).last)
+    expired_digest = StaffToken.digest_refresh_token(StaffToken.parse_refresh_token(expired_raw).last)
+
+    assert_equal :invalid,
+                 StaffToken.rotate_refresh!(
+                   presented_refresh_digest: revoked_digest, device_id: "sd1",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 StaffToken.rotate_refresh!(
+                   presented_refresh_digest: compromised_digest, device_id: "sd2",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 StaffToken.rotate_refresh!(
+                   presented_refresh_digest: expired_digest, device_id: "sd3",
+                   now: Time.current,
+                 )[:status]
+  end
+
+  test "find_from_signed_ref resolves token when verifier payload has string keys" do
+    token = StaffToken.create!(staff: @staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB)
+    signed_ref = Rails.application.message_verifier(:session_ref).generate(
+      { "id" => token.id, "pid" => token.public_id },
+      expires_in: 1.hour,
+    )
+
+    found = StaffToken.find_from_signed_ref(signed_ref)
+
+    assert_equal token.id, found&.id
+  end
+
+  test "find_from_signed_ref returns nil for invalid signature" do
+    assert_nil StaffToken.find_from_signed_ref("invalid-signed-ref")
   end
 end

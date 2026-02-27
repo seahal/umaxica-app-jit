@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module CloudflareTurnstile
@@ -11,17 +12,18 @@ module CloudflareTurnstile
 
   private
 
-    def cloudflare_turnstile_validation
-      # In test mode, return the mock response
-      if CloudflareTurnstile.test_mode
-        Jit::Security::TurnstileVerifier.test_mode = true
-        Jit::Security::TurnstileVerifier.test_response = CloudflareTurnstile.test_validation_response
-        return CloudflareTurnstile.test_validation_response || { "success" => true }
-      end
-
-      Jit::Security::TurnstileVerifier.verify(
-        token: params["cf-turnstile-response"].to_s,
-        remote_ip: request.remote_ip,
-      )
+  def cloudflare_turnstile_validation
+    # In test mode, return the mock response
+    if CloudflareTurnstile.test_mode
+      Jit::Security::TurnstileVerifier.test_mode = true
+      Jit::Security::TurnstileVerifier.test_response = CloudflareTurnstile.test_validation_response
+      return CloudflareTurnstile.test_validation_response || { "success" => true }
     end
+
+    Jit::Security::TurnstileVerifier.verify(
+      token: params["cf-turnstile-response"].to_s,
+      remote_ip: request.remote_ip,
+      mode: :default,
+    )
+  end
 end

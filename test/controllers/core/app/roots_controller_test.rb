@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -6,7 +7,10 @@ module Core::App
   class RootsControllerTest < ActionDispatch::IntegrationTest
     include RootThemeCookieHelper
 
-    CORE_SERVICE_URL = ENV.fetch("CORE_SERVICE_URL", ENV.fetch("BACK_SERVICE_URL", "back-service.example.com"))
+    CORE_SERVICE_URL = ENV.fetch(
+      "CORE_SERVICE_URL",
+      ENV.fetch("BACK_SERVICE_URL", "back-service.example.com"),
+    )
 
     test "should redirect to CORE_SERVICE_URL" do
       get core_app_root_url
@@ -23,6 +27,7 @@ module Core::App
 
     test "generates sha3-384 token digest on root" do
       get core_app_root_url
+
       assert_response :success
       assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
     end

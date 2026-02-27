@@ -4,21 +4,16 @@
 # Table name: client_statuses
 # Database name: principal
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
+#  id :bigint           not null, primary key
 #
 #  index_client_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
 neyo:
-  id: NEYO
+  id: 5
 active:
-  id: ACTIVE
-inactive:
-  id: INACTIVE
-pending:
-  id: PENDING
+  id: 1
 deleted:
-  id: DELETED
+  id: 4
+inactive:
+  id: 2
+pending:
+  id: 3

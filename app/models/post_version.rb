@@ -1,9 +1,10 @@
+# typed: false
 # == Schema Information
 #
 # Table name: post_versions
 # Database name: avatar
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  body           :text
 #  description    :string
 #  edited_by_type :string
@@ -15,18 +16,19 @@
 #  title          :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  edited_by_id   :string
-#  post_id        :string           not null
+#  edited_by_id   :bigint
+#  post_id        :bigint           not null
 #  public_id      :string           default(""), not null
 #
 # Indexes
 #
+#  index_post_versions_on_edited_by_id            (edited_by_id)
 #  index_post_versions_on_post_id_and_created_at  (post_id,created_at DESC)
 #  index_post_versions_on_public_id               (public_id) UNIQUE
 #
 # Foreign Keys
 #
-#  fk_rails_...  (post_id => posts.id)
+#  fk_rails_...  (post_id => posts.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

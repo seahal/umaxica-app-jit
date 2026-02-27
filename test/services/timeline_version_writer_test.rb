@@ -1,8 +1,13 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class TimelineVersionWriterTest < ActiveSupport::TestCase
+  fixtures :com_timelines, :com_timeline_statuses,
+           :app_timelines, :app_timeline_statuses,
+           :org_timelines, :org_timeline_statuses
+
   test "writes com timeline version" do
     timeline = com_timelines(:one)
 
@@ -13,7 +18,7 @@ class TimelineVersionWriterTest < ActiveSupport::TestCase
         attrs: { title: "Title",
                  description: "Desc",
                  body: "Body",
-                 permalink: "test-permalink" },
+                 permalink: "test-permalink", },
       )
     end
 
@@ -33,7 +38,7 @@ class TimelineVersionWriterTest < ActiveSupport::TestCase
         attrs: { title: "Title",
                  description: "Desc",
                  body: "Body",
-                 permalink: "test-permalink" },
+                 permalink: "test-permalink", },
       )
     end
 
@@ -51,7 +56,7 @@ class TimelineVersionWriterTest < ActiveSupport::TestCase
         attrs: { title: "Title",
                  description: "Desc",
                  body: "Body",
-                 permalink: "test-permalink" },
+                 permalink: "test-permalink", },
       )
     end
 

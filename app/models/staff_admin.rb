@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: staff_admins
 # Database name: operator
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  admin_id   :uuid             not null
-#  staff_id   :uuid             not null
+#  admin_id   :bigint           not null
+#  staff_id   :bigint           not null
 #
 # Indexes
 #

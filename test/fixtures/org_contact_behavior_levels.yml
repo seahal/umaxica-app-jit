@@ -1,0 +1,18 @@
+# Fixed IDs - do not modify these values
+# == Schema Information
+#
+# Table name: org_contact_behavior_levels
+# Database name: behavior
+#
+#  id :bigint           not null, primary key
+#
+neyo:
+  id: 1
+debug:
+  id: 2
+info:
+  id: 3
+warn:
+  id: 4
+error:
+  id: 5

@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: user_client_impersonations
 # Database name: principal
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  client_id  :uuid             not null
-#  user_id    :uuid             not null
+#  client_id  :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -25,38 +26,26 @@
 require "test_helper"
 
 class UserClientImpersonationTest < ActiveSupport::TestCase
+  fixtures :users,
+           :user_statuses,
+           :clients,
+           :client_statuses,
+           :divisions,
+           :division_statuses,
+           :organizations,
+           :organization_statuses
+
   setup do
-    UserStatus.find_or_create_by!(id: "NONE")
-    create_user_and_status
-    @user = User.find_by!(public_id: "one_id")
-  end
-
-  def create_user_and_status
-    UserStatus.find_or_create_by!(id: "NONE")
-    User.find_or_create_by!(public_id: "one_id") do |u|
-      u.status_id = "NONE"
-    end
-  end
-
-  def create_client
-    ClientStatus.find_or_create_by!(id: "NEYO")
-    DivisionStatus.find_or_create_by!(id: "NEYO")
-    Organization.find_or_create_by!(id: "00000000-0000-0000-0000-000000000000") do |w|
-      w.name = "Root"
-      w.domain = "root.local"
-      w.parent_organization = "00000000-0000-0000-0000-000000000000"
-    end
-    div = Division.create!(organization_id: "00000000-0000-0000-0000-000000000000", division_status_id: "NEYO")
-    Client.create!(status_id: "NEYO", division: div)
+    @user = users(:one)
+    @client = clients(:one)
   end
 
   test "can create valid record" do
-    create_user_and_status
-    client = create_client
     impersonation = UserClientImpersonation.new(
       user: @user,
-      client: client,
+      client: @client,
     )
+
     assert_predicate impersonation, :valid?
   end
 end

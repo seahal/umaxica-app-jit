@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,30 +6,41 @@
 # Table name: telephone_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(32)       default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_telephone_occurrences_on_body        (body) UNIQUE
-#  index_telephone_occurrences_on_expires_at  (expires_at)
-#  index_telephone_occurrences_on_public_id   (public_id) UNIQUE
-#  index_telephone_occurrences_on_status_id   (status_id)
+#  index_telephone_occurrences_on_body             (body) UNIQUE
+#  index_telephone_occurrences_on_body_created_at  (body,created_at)
+#  index_telephone_occurrences_on_expires_at       (expires_at)
+#  index_telephone_occurrences_on_public_id        (public_id) UNIQUE
+#  index_telephone_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => telephone_occurrence_statuses.id)
+#  fk_telephone_occurrences_on_status_id  (status_id => telephone_occurrence_statuses.id)
 #
 
 class TelephoneOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
+  include TelephoneNormalization
+
+  HMAC_BODY_FORMAT = /\A\h{64}\z/
+
+  attribute :status_id, default: TelephoneOccurrenceStatus::NOTHING
+
+  before_validation :normalize_body_unless_hmac
+
+  validates :body, presence: true, length: { maximum: 255 }
+  validate :validate_body_format_unless_hmac
 
   belongs_to :telephone_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :telephone_occurrences
   has_many :area_telephone_occurrences, dependent: :destroy, inverse_of: :telephone_occurrence
@@ -46,6 +58,33 @@ class TelephoneOccurrence < OccurrenceRecord
   has_many :telephone_zip_occurrences, dependent: :destroy, inverse_of: :telephone_occurrence
   has_many :zip_occurrences, through: :telephone_zip_occurrences
 
-  validates :body, length: { maximum: 32 }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
+
+  private
+
+  def hmac_body?
+    body.to_s.match?(HMAC_BODY_FORMAT)
+  end
+
+  def normalize_body_unless_hmac
+    return if hmac_body?
+
+    self.body = TelephoneNormalization.normalize_to_e164(body)
+  end
+
+  def validate_body_format_unless_hmac
+    return if hmac_body?
+
+    return errors.add(:body, :invalid_e164_format) if body.blank?
+
+    errors.add(:body, :invalid_e164_format) unless body.match?(TelephoneNormalization::E164_FORMAT)
+    errors.add(:body, :country_code_cannot_start_with_zero) if body.start_with?("+0")
+
+    digit_count = body.delete("+").length
+    if digit_count > TelephoneNormalization::MAX_E164_DIGITS
+      errors.add(:body, :exceeds_e164_length, max: TelephoneNormalization::MAX_E164_DIGITS)
+    end
+
+    errors.add(:body, :too_long, count: 16) if body.length > 16
+  end
 end

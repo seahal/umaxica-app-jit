@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,22 +6,24 @@
 # Table name: posts
 # Database name: avatar
 #
-#  id                    :string           not null, primary key
+#  id                    :bigint           not null, primary key
 #  body                  :text             not null
 #  published_at          :timestamptz
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  author_avatar_id      :string           not null
-#  created_by_actor_id   :string           not null
-#  post_status_id        :string           not null
+#  author_avatar_id      :bigint           not null
+#  created_by_actor_id   :bigint           not null
+#  post_status_id        :bigint           default(0), not null
 #  public_id             :string           not null
-#  published_by_actor_id :string
+#  published_by_actor_id :bigint
 #
 # Indexes
 #
 #  index_posts_on_author_avatar_id_and_created_at  (author_avatar_id,created_at DESC)
+#  index_posts_on_created_by_actor_id              (created_by_actor_id)
 #  index_posts_on_post_status_id                   (post_status_id)
 #  index_posts_on_public_id                        (public_id) UNIQUE
+#  index_posts_on_published_by_actor_id            (published_by_actor_id)
 #
 # Foreign Keys
 #
@@ -32,7 +35,7 @@ require "test_helper"
 
 class PostTest < ActiveSupport::TestCase
   setup do
-    @capability = AvatarCapability.find_or_create_by!(key: "post_test_cap", name: "Post Test")
+    @capability = AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL)
     @handle = Handle.find_or_create_by!(handle: "post_test_handle") { |h| h.cooldown_until = Time.current }
     @avatar =
       Avatar.find_or_create_by!(moniker: "Post Author") do |a|
@@ -40,17 +43,18 @@ class PostTest < ActiveSupport::TestCase
         a.active_handle = @handle
       end
     @status =
-      PostStatus.find_or_create_by!(id: "DRAFT")
+      PostStatus.find_or_create_by!(id: PostStatus::NOTHING)
     @valid_attributes = {
       author_avatar: @avatar,
       post_status: @status,
       body: "Valid post body content",
-      created_by_actor_id: "user-1"
+      created_by_actor_id: "user-1",
     }.freeze
   end
 
   test "valid post creation" do
     post = Post.new(@valid_attributes)
+
     assert_predicate post, :valid?
     assert post.save
     assert_not_nil post.public_id
@@ -58,18 +62,21 @@ class PostTest < ActiveSupport::TestCase
 
   test "body is invalid when nil" do
     post = Post.new(@valid_attributes.merge(body: nil))
+
     assert_not post.valid?
     assert_not_empty post.errors[:body]
   end
 
   test "body is invalid when empty" do
     post = Post.new(@valid_attributes.merge(body: ""))
+
     assert_not post.valid?
     assert_not_empty post.errors[:body]
   end
 
   test "body is invalid when only whitespace" do
     post = Post.new(@valid_attributes.merge(body: "   "))
+
     assert_not post.valid?
     assert_not_empty post.errors[:body]
   end
@@ -77,23 +84,27 @@ class PostTest < ActiveSupport::TestCase
   test "public_id uniqueness" do
     Post.create!(@valid_attributes)
     duplicate = Post.new(@valid_attributes.merge(public_id: Post.last.public_id))
+
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:public_id]
   end
 
   test "public_id length maximum boundary" do
     post = Post.new(@valid_attributes.merge(public_id: "a" * 22))
+
     assert_not post.valid?
     assert_not_empty post.errors[:public_id]
   end
 
   test "association: belongs_to author_avatar" do
     post = Post.create!(@valid_attributes)
+
     assert_equal @avatar, post.author_avatar
   end
 
   test "association: belongs_to post_status" do
     post = Post.create!(@valid_attributes)
+
     assert_equal @status, post.post_status
   end
 
@@ -101,9 +112,9 @@ class PostTest < ActiveSupport::TestCase
     post = Post.create!(@valid_attributes)
     # PostReview might require more fields, assuming basic creation works for now
     # Create status if not exists
-    PostReviewStatus.find_or_create_by!(id: "PENDING") { |s| s.key = "pending"; s.name = "Pending" }
+    PostReviewStatus.find_or_create_by!(id: PostReviewStatus::PENDING)
     PostReview.create!(
-      post: post, reviewer_actor_id: @avatar.id, post_review_status_id: "PENDING",
+      post: post, reviewer_actor_id: @avatar.id, post_review_status_id: PostReviewStatus::PENDING,
       decided_at: Time.current,
     )
 
@@ -149,9 +160,12 @@ class PostTest < ActiveSupport::TestCase
     assert_equal "Latest version", post.latest_version.body
   end
 
-  test "validates length of id" do
-    record = Post.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "validates id is numeric" do
+    # With bigint ID, length validation is irrelevant
+    # Test that record with explicit id validates with all required fields
+    record = Post.new(@valid_attributes.merge(id: 99))
+
+    assert_predicate record, :valid?
+    assert_kind_of Integer, record.id
   end
 end

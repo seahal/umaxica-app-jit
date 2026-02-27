@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,49 +6,19 @@
 # Table name: staff_statuses
 # Database name: operator
 #
-#  id :string(255)      default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class StaffStatusTest < ActiveSupport::TestCase
-  def setup
-    @status = StaffStatus.new(id: "VALID_ID")
+  test "status constants are defined" do
+    assert_equal 1, StaffStatus::ACTIVE
+    assert_equal 2, StaffStatus::NOTHING
   end
 
-  test "should be valid" do
-    assert_predicate @status, :valid?
-  end
-
-  test "id should be present" do
-    @status.id = nil
-
-    assert_not @status.valid?
-    @status.id = "   "
-
-    assert_not @status.valid?
-    @status.id = ""
-
-    assert_not @status.valid?
-  end
-
-  test "id should not be too long" do
-    @status.id = "a" * 255
-
-    assert_predicate @status, :valid?
-    @status.id = "a" * 256
-
-    assert_not @status.valid?
-  end
-
-  test "id should be unique" do
-    duplicate_status = @status.dup
-    @status.save
-
-    assert_not duplicate_status.valid?
+  test "status ids are integers" do
+    assert_kind_of Integer, StaffStatus::ACTIVE
+    assert_kind_of Integer, StaffStatus::NOTHING
   end
 end

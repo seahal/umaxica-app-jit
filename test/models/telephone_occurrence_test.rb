@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,30 +6,33 @@
 # Table name: telephone_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(32)       default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_telephone_occurrences_on_body        (body) UNIQUE
-#  index_telephone_occurrences_on_expires_at  (expires_at)
-#  index_telephone_occurrences_on_public_id   (public_id) UNIQUE
-#  index_telephone_occurrences_on_status_id   (status_id)
+#  index_telephone_occurrences_on_body             (body) UNIQUE
+#  index_telephone_occurrences_on_body_created_at  (body,created_at)
+#  index_telephone_occurrences_on_expires_at       (expires_at)
+#  index_telephone_occurrences_on_public_id        (public_id) UNIQUE
+#  index_telephone_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => telephone_occurrence_statuses.id)
+#  fk_telephone_occurrences_on_status_id  (status_id => telephone_occurrence_statuses.id)
 #
 
 require "test_helper"
 
 class TelephoneOccurrenceTest < ActiveSupport::TestCase
+  fixtures :telephone_occurrences, :telephone_occurrence_statuses
+
   test "public_id length" do
     record = build_occurrence(TelephoneOccurrence, body: "+819012345678", public_id: "A" * 20)
 
@@ -90,5 +94,63 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
     record = build_occurrence(TelephoneOccurrence, body: "+819012300000", public_id: "Y" * 21)
 
     assert_expires_at_default(record)
+  end
+
+  # E.164 normalization tests
+  test "normalizes domestic Japanese number to E.164 in body field" do
+    record = build_occurrence(TelephoneOccurrence, body: "090-1234-5678", public_id: "tel_norm_test_0000001")
+
+    assert_predicate record, :valid?, "Record should be valid: #{record.errors.full_messages}"
+    assert_equal "+819012345678", record.body
+  end
+
+  test "normalizes international prefix 00 to E.164 in body field" do
+    record = build_occurrence(TelephoneOccurrence, body: "0081 90 1234 5678", public_id: "tel_norm_test_0000002")
+
+    assert_predicate record, :valid?
+    assert_equal "+819012345678", record.body
+  end
+
+  test "preserves already E.164 formatted body" do
+    record = build_occurrence(TelephoneOccurrence, body: "+819012345678", public_id: "tel_norm_test_0000003")
+
+    assert_predicate record, :valid?
+    assert_equal "+819012345678", record.body
+  end
+
+  test "rejects body without leading 0 or + (ambiguous)" do
+    record = build_occurrence(TelephoneOccurrence, body: "9012345678", public_id: "tel_norm_test_0000004")
+
+    assert_not record.valid?
+    assert_predicate record.errors[:body], :any?
+  end
+
+  test "rejects body with country code starting with 0" do
+    record = build_occurrence(TelephoneOccurrence, body: "+0123456789", public_id: "tel_norm_test_0000005")
+
+    assert_not record.valid?
+    assert_predicate record.errors[:body], :any?
+  end
+
+  test "accepts maximum length E.164 body" do
+    record = build_occurrence(TelephoneOccurrence, body: "+999999999999999", public_id: "tel_norm_test_0000006")
+
+    assert_predicate record, :valid?
+    assert_equal "+999999999999999", record.body
+  end
+
+  test "body uniqueness works with normalized values" do
+    # Create first occurrence with normalized number
+    TelephoneOccurrence.create!(
+      body: "+819012345678",
+      public_id: "tel_norm_unique_00001",
+      status_id: TelephoneOccurrenceStatus::NOTHING,
+    )
+
+    # Try to create duplicate with different formatting
+    duplicate = build_occurrence(TelephoneOccurrence, body: "090-1234-5678", public_id: "tel_norm_unique_00002")
+
+    assert_not duplicate.valid?
+    assert_predicate duplicate.errors[:body], :any?
   end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Preference
@@ -17,10 +18,10 @@ module Preference
 
     private
 
-      def confirm_reset_accepted
-        return if confirm_reset == "1"
+    def confirm_reset_accepted
+      return if confirm_reset == "1"
 
-        errors.add(:confirm_reset, :accepted)
-      end
+      errors.add(:confirm_reset, :accepted)
+    end
   end
 end

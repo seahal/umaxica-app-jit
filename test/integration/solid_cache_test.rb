@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -76,8 +77,8 @@ class SolidCacheTest < ActiveSupport::TestCase
     complex_object = {
       string: "hello",
       number: 42,
-      array: [ 1, 2, 3 ],
-      nested: { key: "value" }
+      array: [1, 2, 3],
+      nested: { key: "value" },
     }
 
     @cache.write("complex_key", complex_object)

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,33 +6,25 @@
 # Table name: user_statuses
 # Database name: principal
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_user_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
-
 class UserStatus < PrincipalRecord
-  include StringPrimaryKey
+  ACTIVE = 1
+  INACTIVE = 2
+  PENDING = 3
+  DELETED = 4
+  WITHDRAWN = 5
+  PENDING_DELETION = 6
+  PRE_WITHDRAWAL_CONDITION = 7
+  WITHDRAWAL_COMPLETED = 8
+  UNVERIFIED_WITH_SIGN_UP = 9
+  VERIFIED_WITH_SIGN_UP = 10
+  NOTHING = 11
+  GHOST = 12
+  NONE = 13 # TODO: i want to rename to NOTHING, or delete this code.
 
-  # Status constants
-  NONE = "NONE"
-  GHOST = "GHOST"
-  ALIVE = "ALIVE"
-  NEYO = "NEYO"
-  ACTIVE = "ACTIVE"
-  INACTIVE = "INACTIVE"
-  PENDING = "PENDING"
-  DELETED = "DELETED"
-  WITHDRAWN = "WITHDRAWN"
-  PRE_WITHDRAWAL_CONDITION = "PRE_WITHDRAWAL_CONDITION"
-  WITHDRAWAL_COMPLETED = "WITHDRAWAL_COMPLETED"
-  UNVERIFIED_WITH_SIGN_UP = "UNVERIFIED_WITH_SIGN_UP"
-  VERIFIED_WITH_SIGN_UP = "VERIFIED_WITH_SIGN_UP"
   has_many :users,
            foreign_key: :status_id,
            dependent: :restrict_with_error,
            inverse_of: :user_status
-  validates :id, uniqueness: { case_sensitive: false }
 end

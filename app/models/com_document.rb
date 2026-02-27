@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,22 +6,26 @@
 # Table name: com_documents
 # Database name: document
 #
-#  id            :uuid             not null, primary key
-#  expires_at    :datetime         default(Infinity), not null
-#  lock_version  :integer          default(0), not null
-#  permalink     :string(200)      default(""), not null
-#  position      :integer          default(0), not null
-#  published_at  :datetime         default(Infinity), not null
-#  redirect_url  :string
-#  response_mode :string           default("html"), not null
-#  revision_key  :string           default(""), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  slug_id       :string(32)       default(""), not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  id                 :bigint           not null, primary key
+#  expires_at         :datetime         default(Infinity), not null
+#  lock_version       :integer          default(0), not null
+#  permalink          :string(200)      default(""), not null
+#  position           :integer          default(0), not null
+#  published_at       :datetime         default(Infinity), not null
+#  redirect_url       :string
+#  response_mode      :string           default("html"), not null
+#  revision_key       :string           default(""), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  latest_revision_id :bigint
+#  latest_version_id  :bigint
+#  slug_id            :string(32)       default(""), not null
+#  status_id          :bigint           default(0), not null
 #
 # Indexes
 #
+#  index_com_documents_on_latest_revision_id           (latest_revision_id) UNIQUE
+#  index_com_documents_on_latest_version_id            (latest_version_id) UNIQUE
 #  index_com_documents_on_permalink                    (permalink) UNIQUE
 #  index_com_documents_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_com_documents_on_slug_id                      (slug_id)
@@ -28,6 +33,8 @@
 #
 # Foreign Keys
 #
+#  fk_rails_...  (latest_revision_id => com_document_revisions.id) ON DELETE => nullify
+#  fk_rails_...  (latest_version_id => com_document_versions.id) ON DELETE => nullify
 #  fk_rails_...  (status_id => com_document_statuses.id)
 #
 
@@ -35,16 +42,22 @@ class ComDocument < DocumentRecord
   include ::SlugId
   include Document
 
+  validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
+
   belongs_to :com_document_status,
              class_name: "ComDocumentStatus",
              foreign_key: :status_id,
              inverse_of: :com_documents
+
+  validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
 
   belongs_to :latest_version_record,
              class_name: "ComDocumentVersion",
              foreign_key: :latest_version_id,
              inverse_of: :latest_document,
              optional: true
+  validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
+
   belongs_to :latest_revision_record,
              class_name: "ComDocumentRevision",
              foreign_key: :latest_revision_id,
@@ -53,8 +66,8 @@ class ComDocument < DocumentRecord
 
   has_many :com_document_versions, dependent: :delete_all, inverse_of: :com_document
   has_many :com_document_revisions, dependent: :delete_all, inverse_of: :com_document
-  has_many :com_document_audits,
-           class_name: "ComDocumentAudit",
+  has_many :com_document_behaviors,
+           class_name: "ComDocumentBehavior",
            foreign_key: :subject_id,
            inverse_of: :com_document,
            dependent: :delete_all
@@ -69,7 +82,7 @@ class ComDocument < DocumentRecord
   has_one :category_master,
           through: :category,
           source: :com_document_category_master
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 
   def latest_version
     com_document_versions.order(created_at: :desc).first!

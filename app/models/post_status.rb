@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,13 +6,15 @@
 # Table name: post_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-
 class PostStatus < AvatarRecord
-  include StringPrimaryKey
+  self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NOTHING = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  DELETED = 4
 
   has_many :posts, dependent: :restrict_with_error
 end

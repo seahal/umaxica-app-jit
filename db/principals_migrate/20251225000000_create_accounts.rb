@@ -4,10 +4,10 @@
 class CreateAccounts < ActiveRecord::Migration[8.0]
   def change
     # Account is the canonical identity record.
-    create_table :accounts, id: :uuid do |t|
+    create_table :accounts do |t|
       # Columns for delegated types.
       t.string :accountable_type, null: false
-      t.uuid   :accountable_id,   null: false
+      t.bigint :accountable_id,   null: false
 
       # Shared attributes (NULL not allowed).
       t.string :email, null: false, index: { unique: true }

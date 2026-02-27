@@ -1,9 +1,10 @@
+# typed: false
 # frozen_string_literal: true
 
 module Secret
   extend ActiveSupport::Concern
 
-  SECRET_PASSWORD_LENGTH = 36
+  SECRET_PASSWORD_LENGTH = 32
 
   included do
     has_secure_password algorithm: :argon2, validations: false
@@ -11,7 +12,7 @@ module Secret
     validates :password,
               length: {
                 is: SECRET_PASSWORD_LENGTH,
-                message: "must be #{SECRET_PASSWORD_LENGTH} characters"
+                message: "must be #{SECRET_PASSWORD_LENGTH} characters",
               },
               allow_nil: true
   end
@@ -19,13 +20,14 @@ module Secret
   class_methods do
     def issue!(name:, length: SECRET_PASSWORD_LENGTH, expires_at: nil, uses: 1, status: :active, **attributes)
       raw_secret = SecureRandom.base58(length)
-      record_attributes = attributes.merge(name: name, uses_remaining: uses)
-      record_attributes[:expires_at] = expires_at if expires_at
+      record_attributes = attributes.merge(name: name)
+      record_attributes[:uses_remaining] = uses if supports_uses_remaining?
+      record_attributes[:expires_at] = expires_at if expires_at && supports_expiration?
       record = new(record_attributes)
       record[identity_secret_status_id_column] = status_id_for(status)
       record.password = raw_secret
       record.save!
-      [ record, raw_secret ]
+      [record, raw_secret]
     end
 
     def identity_secret_status_class
@@ -38,7 +40,47 @@ module Secret
 
     def status_id_for(status)
       status_key = status.to_s.upcase
-      identity_secret_status_class.find(status_key).id
+      case identity_secret_status_class.name
+      when "UserSecretStatus"
+        {
+          "ACTIVE" => UserSecretStatus::ACTIVE,
+          "EXPIRED" => UserSecretStatus::EXPIRED,
+          "REVOKED" => UserSecretStatus::REVOKED,
+          "USED" => UserSecretStatus::USED,
+          "DELETED" => UserSecretStatus::DELETED,
+          "NOTHING" => UserSecretStatus::NOTHING,
+        }.fetch(status_key)
+      when "StaffSecretStatus"
+        {
+          "ACTIVE" => StaffSecretStatus::ACTIVE,
+          "DELETED" => StaffSecretStatus::DELETED,
+          "EXPIRED" => StaffSecretStatus::EXPIRED,
+          "REVOKED" => StaffSecretStatus::REVOKED,
+          "USED" => StaffSecretStatus::USED,
+        }.fetch(status_key)
+      else
+        raise KeyError, "Unknown identity secret status class: #{identity_secret_status_class.name}"
+      end
+    end
+
+    def supports_uses_remaining?
+      if respond_to?(:column_names)
+        column_names.include?("uses_remaining")
+      elsif respond_to?(:attribute_types)
+        attribute_types.key?("uses_remaining")
+      else
+        false
+      end
+    end
+
+    def supports_expiration?
+      if respond_to?(:column_names)
+        column_names.include?("expires_at")
+      elsif respond_to?(:attribute_types)
+        attribute_types.key?("expires_at")
+      else
+        false
+      end
     end
   end
 
@@ -52,13 +94,20 @@ module Secret
       # Then check other conditions
       return false unless active?
       return false if expire_if_needed!(now: now)
-      return false unless uses_remaining.to_i.positive?
+
+      if uses_remaining_available?
+        return false unless uses_remaining.to_i.positive?
+      end
       return false unless auth_result
 
-      self.uses_remaining -= 1
       self.last_used_at = now
-
-      if uses_remaining.zero?
+      if uses_remaining_available?
+        self.uses_remaining -= 1
+        if uses_remaining.zero?
+          self[self.class.identity_secret_status_id_column] = self.class.status_id_for(:used)
+        end
+      else
+        # Fallback for secrets without uses_remaining persistence: mark as used after first success.
         self[self.class.identity_secret_status_id_column] = self.class.status_id_for(:used)
       end
 
@@ -78,40 +127,45 @@ module Secret
   end
 
   def active?
-    secret_status_id == "ACTIVE"
+    secret_status_id == self.class.identity_secret_status_class::ACTIVE
   end
 
   def used?
-    secret_status_id == "USED"
+    secret_status_id == self.class.identity_secret_status_class::USED
   end
 
   def revoked?
-    secret_status_id == "REVOKED"
+    secret_status_id == self.class.identity_secret_status_class::REVOKED
   end
 
   def expired?
-    secret_status_id == "EXPIRED"
+    secret_status_id == self.class.identity_secret_status_class::EXPIRED
   end
 
   def deleted?
-    secret_status_id == "DELETED"
+    secret_status_id == self.class.identity_secret_status_class::DELETED
   end
 
   private
 
-    def secret_status_id
-      self[self.class.identity_secret_status_id_column]
-    end
+  def secret_status_id
+    self[self.class.identity_secret_status_id_column]
+  end
 
-    def expired_by_time?(now)
-      return false if expires_at.nil?
+  def uses_remaining_available?
+    respond_to?(:uses_remaining) && self.class.supports_uses_remaining?
+  end
 
-      # PostgreSQL infinity/-infinity are used as sentinels for "never expires"
-      # When read from DB, they may be converted to Float::INFINITY/-Float::INFINITY
-      return false if expires_at.is_a?(Float) && expires_at.infinite?
+  def expired_by_time?(now)
+    return false unless respond_to?(:expires_at)
+    return false if expires_at.nil?
 
-      # Convert to comparable type if needed (unix timestamp to Time)
-      comparable_time = expires_at.is_a?(Float) ? Time.zone.at(expires_at) : expires_at
-      comparable_time <= now
-    end
+    # PostgreSQL infinity/-infinity are used as sentinels for "never expires"
+    # When read from DB, they may be converted to Float::INFINITY/-Float::INFINITY
+    return false if expires_at.is_a?(Float) && expires_at.infinite?
+
+    # Convert to comparable type if needed (unix timestamp to Time)
+    comparable_time = expires_at.is_a?(Float) ? Time.zone.at(expires_at) : expires_at
+    comparable_time <= now
+  end
 end

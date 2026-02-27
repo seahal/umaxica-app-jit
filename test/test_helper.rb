@@ -1,66 +1,68 @@
+# typed: false
 # frozen_string_literal: true
 
-# To AI assistants: This file is sensitive. Avoid modifying it unless you fully understand the impact.
+require "active_model"
+
+coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+require_relative "support/simplecov_setup" if coverage_enabled
 
 ENV["RAILS_ENV"] ||= "test"
-ENV["SIGN_SERVICE_URL"] = "sign.app.localhost"
-ENV["SIGN_STAFF_URL"] = "sign.org.localhost"
-ENV["CORE_SERVICE_URL"] = "www.app.localhost"
-ENV["CORE_STAFF_URL"] = "www.org.localhost"
-ENV["APEX_SERVICE_URL"] = "app.localhost"
-ENV["APEX_STAFF_URL"] = "org.localhost"
-ENV["APEX_CORPORATE_URL"] = "com.localhost"
+ENV["SIGN_SERVICE_URL"] ||= "sign.app.localhost"
+ENV["SIGN_STAFF_URL"] ||= "sign.org.localhost"
+ENV["CORE_SERVICE_URL"] ||= "www.app.localhost"
+ENV["CORE_STAFF_URL"] ||= "www.org.localhost"
+ENV["CORE_CORPORATE_URL"] ||= "www.com.localhost"
+ENV["APEX_SERVICE_URL"] ||= "app.localhost"
+ENV["APEX_STAFF_URL"] ||= "org.localhost"
+ENV["APEX_CORPORATE_URL"] ||= "com.localhost"
+ENV["DOCS_SERVICE_URL"] ||= "docs.app.localhost"
+ENV["DOCS_STAFF_URL"] ||= "docs.org.localhost"
+ENV["DOCS_CORPORATE_URL"] ||= "docs.com.localhost"
+ENV["NEWS_SERVICE_URL"] ||= "news.app.localhost"
+ENV["NEWS_STAFF_URL"] ||= "news.org.localhost"
+ENV["NEWS_CORPORATE_URL"] ||= "news.com.localhost"
+ENV["HELP_SERVICE_URL"] ||= "help.app.localhost"
+ENV["HELP_STAFF_URL"] ||= "help.org.localhost"
+ENV["HELP_CORPORATE_URL"] ||= "help.com.localhost"
+ENV["COOKIE_DOMAIN_APP"] ||= "app.localhost"
+ENV["COOKIE_DOMAIN_COM"] ||= "com.localhost"
+ENV["COOKIE_DOMAIN_ORG"] ||= "org.localhost"
+ENV["REGION_CODE"] ||= "jp"
+ENV["TRUSTED_ORIGINS"] ||= "http://sign.app.localhost:3001,http://sign.org.localhost:3001"
+ENV["PREFERENCE_JWT_AUDIENCES"] ||= "app.localhost,org.localhost,com.localhost"
+
 require_relative "../config/environment"
-
-if ENV["SKIP_DB"] == "1" && defined?(ActiveRecord::Migration)
-  class << ActiveRecord::Migration
-    def maintain_test_schema!
-    end
-  end
-end
-
 require "rails/test_help"
-require_relative "../app/controllers/concerns/auth/base"
-require_relative "../app/controllers/concerns/auth/user"
-require_relative "../app/controllers/concerns/auth/staff"
 
+# Load all support files
 Rails.root.glob("test/support/**/*.rb").each { |f| require f }
-if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
-  require "simplecov"
 
-  SimpleCov.start "rails" do
-    enable_coverage :branch
-    filters.clear
-    add_filter ".bundle/"
-    add_filter "vendor/"
-    add_filter "app/views/"
-    add_filter "test/"
-    add_filter "config/"
-    add_filter "db/"
-    add_filter "tmp/"
-    add_filter "bin/"
-    add_filter "docs/"
-    add_filter "log/"
-    add_filter "docker/"
+module ActiveSupport
+  class TestCase
+    coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+
+    # Use a single worker for coverage runs to keep SimpleCov results deterministic.
+    # Respect PARALLEL_WORKERS when provided, otherwise use max available CPU workers.
+    # NOTE: Multi-process parallelism (the default) forks the process. Each worker gets
+    # its own database connection pool and transaction, so fixture isolation is maintained.
+    # If you observe flaky tests with shared state (e.g. Rails.cache, ENV), consider
+    # running with PARALLEL_WORKERS=1 to isolate the issue.
+    requested_workers = Integer(ENV["PARALLEL_WORKERS"], exception: false)
+    workers =
+      if coverage_enabled
+        1
+      elsif requested_workers&.positive?
+        requested_workers
+      else
+        :number_of_processors
+      end
+    parallelize(workers: workers)
+
+    self.use_transactional_tests = true
+
+    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
+    fixtures :all unless ENV["SKIP_DB"] == "1"
+
+    include ActiveJob::TestHelper
   end
-end
-class ActiveSupport::TestCase
-  include ActiveJob::TestHelper
-
-  self.use_transactional_tests = false if ENV["SKIP_DB"] == "1" && respond_to?(:use_transactional_tests=)
-
-  # Load fixtures only when explicitly needed in individual test files
-  # instead of loading all fixtures globally
-  # To use fixtures in a specific test file, add:
-  fixtures :all unless ENV["SKIP_DB"] == "1"
-end
-
-if ENV["SKIP_DB"] == "1"
-  module SkipDbTests
-    def before_setup
-      skip "SKIP_DB=1 (database unavailable in this environment)"
-    end
-  end
-
-  ActiveSupport.on_load(:active_support_test_case) { prepend SkipDbTests }
 end

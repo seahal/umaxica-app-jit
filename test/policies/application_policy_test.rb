@@ -1,10 +1,30 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class ApplicationPolicyTest < ActiveSupport::TestCase
   class TestRecord
+    attr_reader :marker
+
     def initialize
+      @marker = :test_record
+    end
+  end
+
+  class RecordWithOrganization
+    attr_reader :organization
+
+    def initialize(organization)
+      @organization = organization
+    end
+  end
+
+  class RecordWithOrganizationId
+    attr_reader :organization_id
+
+    def initialize(organization_id)
+      @organization_id = organization_id
     end
   end
 
@@ -70,5 +90,169 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
     policy = ApplicationPolicy.new(@user, @record)
 
     assert_equal @record, policy.record
+  end
+
+  def test_organization_uses_record_organization_when_available
+    org = Object.new
+    policy = ApplicationPolicy.new(nil, RecordWithOrganization.new(org))
+
+    assert_equal org, policy.send(:organization)
+  end
+
+  def test_organization_uses_record_organization_id_when_organization_method_is_missing
+    policy = ApplicationPolicy.new(nil, RecordWithOrganizationId.new("org-1"))
+
+    assert_equal "org-1", policy.send(:organization)
+  end
+
+  def test_organization_returns_nil_when_record_has_no_organization_methods
+    policy = ApplicationPolicy.new(nil, TestRecord.new)
+
+    assert_nil policy.send(:organization)
+  end
+
+  def test_owner_returns_false_without_actor
+    assert_not @policy.send(:owner?)
+  end
+
+  def test_owner_returns_true_for_user_owner
+    actor = build_actor(User, 10)
+    record = Struct.new(:user_id).new(10)
+    policy = ApplicationPolicy.new(actor, record)
+
+    assert policy.send(:owner?)
+  end
+
+  def test_owner_returns_false_for_user_non_owner
+    actor = build_actor(User, 10)
+    record = Struct.new(:user_id).new(11)
+    policy = ApplicationPolicy.new(actor, record)
+
+    assert_not policy.send(:owner?)
+  end
+
+  def test_owner_returns_true_for_staff_owner
+    actor = build_actor(Staff, 20)
+    record = Struct.new(:staff_id).new(20)
+    policy = ApplicationPolicy.new(actor, record)
+
+    assert policy.send(:owner?)
+  end
+
+  def test_owner_returns_false_for_unknown_actor_type
+    actor = build_actor(String, 1)
+    record = Struct.new(:user_id, :staff_id).new(1, 1)
+    policy = ApplicationPolicy.new(actor, record)
+
+    assert_not policy.send(:owner?)
+  end
+
+  def test_role_helpers_pass_organization_to_actor
+    org = Object.new
+    actor = RoleActor.new
+    policy = ApplicationPolicy.new(actor, RecordWithOrganization.new(org))
+
+    assert policy.send(:admin?)
+    assert policy.send(:manager?)
+    assert policy.send(:editor?)
+    assert policy.send(:contributor?)
+    assert policy.send(:viewer?)
+    assert policy.send(:admin_or_manager?)
+    assert policy.send(:can_edit?)
+    assert policy.send(:can_view?)
+    assert policy.send(:can_contribute?)
+
+    assert_equal(
+      [
+        [:has_role?, "admin", org],
+        [:has_role?, "manager", org],
+        [:has_role?, "editor", org],
+        [:has_role?, "contributor", org],
+        [:has_role?, "viewer", org],
+        [:admin_or_manager?, org],
+        [:can_edit?, org],
+        [:can_view?, org],
+        [:can_contribute?, org],
+      ],
+      actor.calls,
+    )
+  end
+
+  def test_scope_helpers_delegate_to_actor_with_organization
+    actor = ScopeActor.new
+    scope_obj = ApplicationPolicy::Scope.new(actor, [])
+
+    assert scope_obj.send(:has_role?, "admin", organization: "org-1")
+    assert scope_obj.send(:admin_or_manager?, organization: "org-2")
+    assert_equal [[:has_role?, "admin", "org-1"], [:admin_or_manager?, "org-2"]], actor.calls
+  end
+
+  def test_scope_helpers_return_nil_without_actor
+    scope_obj = ApplicationPolicy::Scope.new(nil, [])
+
+    assert_nil scope_obj.send(:has_role?, "admin", organization: "org-1")
+    assert_nil scope_obj.send(:admin_or_manager?, organization: "org-1")
+  end
+
+  private
+
+  def build_actor(type_class, id)
+    actor = Object.new
+    actor.define_singleton_method(:id) { id }
+    actor.define_singleton_method(:is_a?) do |klass|
+      klass == type_class || super(klass)
+    end
+    actor
+  end
+
+  class RoleActor
+    attr_reader :calls
+
+    def initialize
+      @calls = []
+    end
+
+    def has_role?(role_key, organization:)
+      @calls << [:has_role?, role_key, organization]
+      true
+    end
+
+    def admin_or_manager?(organization:)
+      @calls << [:admin_or_manager?, organization]
+      true
+    end
+
+    def can_edit?(organization:)
+      @calls << [:can_edit?, organization]
+      true
+    end
+
+    def can_view?(organization:)
+      @calls << [:can_view?, organization]
+      true
+    end
+
+    def can_contribute?(organization:)
+      @calls << [:can_contribute?, organization]
+      true
+    end
+  end
+
+  class ScopeActor
+    attr_reader :calls
+
+    def initialize
+      @calls = []
+    end
+
+    def has_role?(role_key, organization:)
+      @calls << [:has_role?, role_key, organization]
+      true
+    end
+
+    def admin_or_manager?(organization:)
+      @calls << [:admin_or_manager?, organization]
+      true
+    end
   end
 end

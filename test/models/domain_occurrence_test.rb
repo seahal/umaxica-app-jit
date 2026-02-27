@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,14 +6,14 @@
 # Table name: domain_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(253)      default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(4), not null
 #
 # Indexes
 #
@@ -23,12 +24,13 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => domain_occurrence_statuses.id)
+#  fk_domain_occurrences_on_status_id  (status_id => domain_occurrence_statuses.id)
 #
 
 require "test_helper"
 
 class DomainOccurrenceTest < ActiveSupport::TestCase
+  fixtures :ip_occurrences, :ip_occurrence_statuses
   fixtures :domain_occurrences, :domain_occurrence_statuses
 
   test "public_id length" do

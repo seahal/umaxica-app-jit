@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_preference_timezones
 # Database name: preference
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :string           not null
-#  preference_id :uuid             not null
+#  option_id     :bigint           not null
+#  preference_id :bigint           not null
 #
 # Indexes
 #
@@ -16,8 +17,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (option_id => app_preference_timezone_options.id)
-#  fk_rails_...  (preference_id => app_preferences.id)
+#  fk_app_preference_timezones_on_option_id  (option_id => app_preference_timezone_options.id)
+#  fk_rails_...                              (preference_id => app_preferences.id)
 #
 
 # frozen_string_literal: true
@@ -26,11 +27,13 @@ require "test_helper"
 
 class AppPreferenceTimezoneTest < ActiveSupport::TestCase
   setup do
-    @preference = AppPreference.create!
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do
     timezone = AppPreferenceTimezone.new
+
     assert_not timezone.valid?
     assert_includes timezone.errors[:preference], "を入力してください"
   end
@@ -38,6 +41,7 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = app_preference_timezone_options(:asia_tokyo)
     timezone = AppPreferenceTimezone.create!(preference: @preference, option: option)
+
     assert_not_nil timezone.id
     assert_equal @preference, timezone.preference
     assert_equal option, timezone.option
@@ -45,32 +49,25 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     timezone = AppPreferenceTimezone.create!(preference: @preference)
-    assert_equal "Asia/Tokyo", timezone.option_id
+
+    assert_equal AppPreferenceTimezoneOption::ASIA_TOKYO, timezone.option_id
   end
 
   test "validates uniqueness of preference" do
     option = app_preference_timezone_options(:asia_tokyo)
     AppPreferenceTimezone.create!(preference: @preference, option: option)
     duplicate_timezone = AppPreferenceTimezone.new(preference: @preference, option: option)
+
     assert_not duplicate_timezone.valid?
     assert_includes duplicate_timezone.errors[:preference_id], "はすでに存在します"
   end
 
-  test "permits IANA timezone string as option_id and associates with valid option" do
-    timezone = AppPreferenceTimezone.create!(preference: @preference, option_id: "Asia/Tokyo")
-    assert_equal "Asia/Tokyo", timezone.option_id
-    # "Asia/Tokyo" exists in fixtures and matches relaxed regex
-    assert_equal app_preference_timezone_options(:asia_tokyo), timezone.option
-  end
+  test "AppPreferenceTimezoneOption accepts numeric ids" do
+    option = AppPreferenceTimezoneOption.create!(id: 99)
 
-  test "AppPreferenceTimezoneOption accepts IANA format with relaxed regex" do
-    option = AppPreferenceTimezoneOption.new(id: "Mars/Phobos")
-    assert_predicate option, :valid?, option.errors.full_messages.to_sentence
-  end
+    assert_predicate option, :persisted?
+    timezone = AppPreferenceTimezone.create!(preference: @preference, option_id: 99)
 
-  test "AppPreferenceTimezoneOption rejects invalid characters" do
-    option = AppPreferenceTimezoneOption.new(id: "BadVal$ue")
-    assert_not option.valid?
-    assert_includes option.errors[:id], "は不正な値です"
+    assert_equal option, timezone.option
   end
 end

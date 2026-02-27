@@ -3,20 +3,12 @@
 # Table name: app_preference_region_options
 # Database name: preference
 #
-#  id         :string           not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  app_preference_region_options_position_unique  (position) UNIQUE
-#
+nothing:
+  id: 0
 
 us:
-  id: "US"
-  position: 1
-
+  id: 1
 jp:
-  id: "JP"
-  position: 2
+  id: 2

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,16 +6,16 @@
 # Table name: avatars
 # Database name: avatar
 #
-#  id                           :string           not null, primary key
+#  id                           :bigint           not null, primary key
 #  image_data                   :jsonb            not null
 #  lock_version                 :integer          default(0), not null
 #  moniker                      :string           not null
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
-#  active_handle_id             :string           not null
+#  active_handle_id             :bigint           not null
 #  avatar_status_id             :string
-#  capability_id                :string           not null
-#  client_id                    :uuid
+#  capability_id                :bigint           default(0), not null
+#  client_id                    :bigint
 #  owner_organization_id        :string
 #  public_id                    :string           not null
 #  representing_organization_id :string
@@ -35,7 +36,6 @@
 #
 
 class Avatar < AvatarRecord
-  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :client, optional: true, inverse_of: :avatars
@@ -172,7 +172,7 @@ class Avatar < AvatarRecord
   def self.create_with_owner(attributes, user)
     transaction do
       avatar = create!(attributes)
-      avatar.avatar_assignments.create!(user: user, role: "owner")
+      avatar.avatar_assignments.create!(user_id: user.id, role: "owner")
       avatar
     end
   end

@@ -5,10 +5,10 @@ class AddLatestVersionAndRevisionIdsToAppDocuments < ActiveRecord::Migration[8.2
     safety_assured do
       add_reference :app_documents, :latest_version,
                     foreign_key: { to_table: :app_document_versions },
-                    type: :uuid
+                    type: :bigint
       add_reference :app_documents, :latest_revision,
                     foreign_key: { to_table: :app_document_revisions },
-                    type: :uuid
+                    type: :bigint
     end
   end
 end

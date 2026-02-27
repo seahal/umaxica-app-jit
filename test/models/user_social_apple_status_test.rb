@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,31 +6,26 @@
 # Table name: user_social_apple_statuses
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_apple_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class UserSocialAppleStatusTest < ActiveSupport::TestCase
-  test "valid status" do
-    status = UserSocialAppleStatus.new(id: "TEST_STATUS")
-    assert_predicate status, :valid?
-    assert status.save
-    assert_equal "TEST_STATUS", status.id
+  test "status constants are defined" do
+    assert_equal 1, UserSocialAppleStatus::ACTIVE
+    assert_equal 2, UserSocialAppleStatus::INACTIVE
+    assert_equal 3, UserSocialAppleStatus::PENDING
+    assert_equal 4, UserSocialAppleStatus::DELETED
+    assert_equal 5, UserSocialAppleStatus::REVOKED
+    assert_equal 6, UserSocialAppleStatus::NOTHING
   end
 
-  test "upcases id" do
-    status = UserSocialAppleStatus.new(id: "lower")
-    status.valid?
-    assert_equal "LOWER", status.id
-  end
-
-  test "validates length of id" do
-    record = UserSocialAppleStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "status ids are integers" do
+    assert_kind_of Integer, UserSocialAppleStatus::ACTIVE
+    assert_kind_of Integer, UserSocialAppleStatus::INACTIVE
+    assert_kind_of Integer, UserSocialAppleStatus::PENDING
+    assert_kind_of Integer, UserSocialAppleStatus::DELETED
+    assert_kind_of Integer, UserSocialAppleStatus::REVOKED
+    assert_kind_of Integer, UserSocialAppleStatus::NOTHING
   end
 end

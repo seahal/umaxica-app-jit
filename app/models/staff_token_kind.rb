@@ -1,18 +1,19 @@
+# typed: false
 # == Schema Information
 #
 # Table name: staff_token_kinds
 # Database name: token
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-
 # frozen_string_literal: true
 
 class StaffTokenKind < TokenRecord
-  # id is a string, manually managed
-  self.primary_key = :id
+  self.record_timestamps = false
+
+  BROWSER_WEB = 1
+  CLIENT_IOS = 2
+  CLIENT_ANDROID = 3
 
   has_many :staff_tokens, dependent: :restrict_with_error
 end

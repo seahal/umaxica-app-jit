@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -18,7 +19,7 @@ class RefreshTokenSharedTest < ActiveSupport::TestCase
   test "parse_refresh_token returns public_id and verifier" do
     parsed = DummyToken.parse_refresh_token("abc.def")
 
-    assert_equal [ "abc", "def" ], parsed
+    assert_equal ["abc", "def"], parsed
   end
 
   test "parse_refresh_token returns nil for invalid tokens" do

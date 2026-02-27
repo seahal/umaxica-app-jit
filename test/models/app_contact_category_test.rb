@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,11 +6,7 @@
 # Table name: app_contact_categories
 # Database name: guest
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_app_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
@@ -24,62 +21,25 @@ class AppContactCategoryTest < ActiveSupport::TestCase
   end
 
   test "should create contact category with id" do
-    category = AppContactCategory.new(id: "app_inquiry")
+    category = AppContactCategory.new(id: 99)
 
     assert category.save
-    assert_equal "APP_INQUIRY", category.id
+    assert_equal 99, category.id
   end
 
   test "should find contact category by id" do
-    category = AppContactCategory.create!(id: "app_support")
-    found = AppContactCategory.find("APP_SUPPORT")
+    category = AppContactCategory.create!(id: 100)
+    found = AppContactCategory.find(100)
 
     assert_equal category.id, found.id
   end
 
   test "should have unique id" do
-    AppContactCategory.create!(id: "unique_app_category_#{SecureRandom.hex(4)}")
-    category_title = "duplicate_app_test_#{SecureRandom.hex(4)}"
-    AppContactCategory.create!(id: category_title)
+    AppContactCategory.create!(id: 101)
 
-    assert_raises(ActiveRecord::RecordInvalid) do
-      AppContactCategory.create!(id: category_title)
+    assert_raises(ActiveRecord::RecordNotUnique) do
+      AppContactCategory.create!(id: 101)
     end
-  end
-
-  test "id is invalid when nil or blank" do
-    category = AppContactCategory.new(id: nil)
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = AppContactCategory.new(id: "")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = AppContactCategory.new(id: " ")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-  end
-
-  test "id enforces length and format boundaries" do
-    category = AppContactCategory.new(id: "A" * 255)
-    assert_predicate category, :valid?
-
-    category = AppContactCategory.new(id: "A" * 256)
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = AppContactCategory.new(id: "BAD-ID")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-  end
-
-  test "id uniqueness is case-insensitive" do
-    AppContactCategory.create!(id: "CASE_CHECK")
-
-    duplicate = AppContactCategory.new(id: "case_check")
-    assert_not duplicate.valid?
-    assert_predicate duplicate.errors[:id], :any?
   end
 
   # parent_id column has been removed from app_contact_categories
@@ -117,12 +77,13 @@ class AppContactCategoryTest < ActiveSupport::TestCase
   # end
 
   test "destroy is restricted when contacts exist" do
-    category = AppContactCategory.create!(id: "CONTACT_PARENT")
-    status = AppContactStatus.find_or_create_by!(id: "ACTIVE")
+    category = AppContactCategory.create!(id: 102)
+    status = AppContactStatus.find_or_create_by!(id: AppContactStatus::NOTHING)
     AppContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
-    assert_not category.destroy
-    assert_predicate category.errors[:base], :any?
+    assert_raises(ActiveRecord::DeleteRestrictionError) do
+      category.destroy
+    end
   end
 
   # rubocop:disable Minitest/MultipleAssertions

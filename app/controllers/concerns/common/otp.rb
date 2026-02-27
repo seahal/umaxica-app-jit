@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Common
@@ -29,7 +30,7 @@ module Common
       sec = ROTP::Base32.random
       hotp = ROTP::HOTP.new(sec)
       counter = rand(1...1_000_000) * 2
-      [ sec, counter, hotp.at(counter) ]
+      [sec, counter, hotp.at(counter)]
     end
 
     # Verify the submitted pass code by recreating the HOTP value from the stored secret and counter.
@@ -180,22 +181,22 @@ module Common
 
     private
 
-      # Generates a secure random counter for OTP
-      # Combines timestamp with random number for uniqueness
-      #
-      # @return [Integer] A unique counter value
-      def generate_otp_counter
-        [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
-      end
+    # Generates a secure random counter for OTP
+    # Combines timestamp with random number for uniqueness
+    #
+    # @return [Integer] A unique counter value
+    def generate_otp_counter
+      [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
+    end
 
-      # Performs constant-time comparison of OTP codes
-      # Wrapper around ActiveSupport::SecurityUtils.secure_compare
-      #
-      # @param expected [String] The expected OTP code
-      # @param submitted [String] The submitted OTP code
-      # @return [Boolean] true if codes match, false otherwise
-      def secure_compare_otp(expected, submitted)
-        ActiveSupport::SecurityUtils.secure_compare(expected.to_s, submitted.to_s)
-      end
+    # Performs constant-time comparison of OTP codes
+    # Wrapper around ActiveSupport::SecurityUtils.secure_compare
+    #
+    # @param expected [String] The expected OTP code
+    # @param submitted [String] The submitted OTP code
+    # @return [Boolean] true if codes match, false otherwise
+    def secure_compare_otp(expected, submitted)
+      ActiveSupport::SecurityUtils.secure_compare(expected.to_s, submitted.to_s)
+    end
   end
 end

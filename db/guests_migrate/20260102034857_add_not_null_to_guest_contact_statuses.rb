@@ -9,11 +9,11 @@ class AddNotNullToGuestContactStatuses < ActiveRecord::Migration[8.2]
 
   private
 
-    def add_not_null_check(table, column, name)
-      return unless table_exists?(table) && column_exists?(table, column)
+  def add_not_null_check(table, column, name)
+    return unless table_exists?(table) && column_exists?(table, column)
 
-      add_check_constraint table, "#{column} IS NOT NULL",
-                           name: name,
-                           validate: false
-    end
+    add_check_constraint table, "#{column} IS NOT NULL",
+                         name: name,
+                         validate: false
+  end
 end

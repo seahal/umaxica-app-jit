@@ -1,13 +1,10 @@
-
 # == Schema Information
 #
 # Table name: user_social_googles
 # Database name: principal
 #
-#  id                                    :uuid             not null, primary key
-#  email                                 :string           default(""), not null
+#  id                                    :bigint           not null, primary key
 #  expires_at                            :integer          not null
-#  image                                 :string           default(""), not null
 #  last_authenticated_at                 :datetime
 #  provider                              :string           default("google_oauth2"), not null
 #  refresh_token                         :string           default(""), not null
@@ -15,8 +12,8 @@
 #  uid                                   :string           default(""), not null
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
-#  user_id                               :uuid             not null
-#  user_identity_social_google_status_id :string(255)      default("ACTIVE"), not null
+#  user_id                               :bigint           not null
+#  user_identity_social_google_status_id :bigint           default(1), not null
 #
 # Indexes
 #

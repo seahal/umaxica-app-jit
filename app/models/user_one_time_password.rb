@@ -1,3 +1,6 @@
+# typed: false
+# frozen_string_literal: true
+
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,15 +8,15 @@
 # Table name: user_one_time_passwords
 # Database name: principal
 #
-#  id                                        :uuid             not null, primary key
+#  id                                        :bigint           not null, primary key
 #  last_otp_at                               :datetime         default(-Infinity), not null
 #  private_key                               :string(1024)     default(""), not null
 #  title                                     :string(32)
 #  created_at                                :datetime         not null
 #  updated_at                                :datetime         not null
-#  public_id                                 :string(21)
-#  user_id                                   :uuid             not null
-#  user_identity_one_time_password_status_id :string           default("NEYO"), not null
+#  public_id                                 :string(21)       not null
+#  user_id                                   :bigint           not null
+#  user_identity_one_time_password_status_id :bigint           default(5), not null
 #
 # Indexes
 #
@@ -38,7 +41,7 @@ class UserOneTimePassword < PrincipalRecord
   belongs_to :user, inverse_of: :user_one_time_passwords
   belongs_to :user_one_time_password_status, optional: true, inverse_of: :user_one_time_passwords,
                                              foreign_key: :user_identity_one_time_password_status_id
-  attribute :user_identity_one_time_password_status_id, default: "NEYO"
+  attribute :user_identity_one_time_password_status_id, default: UserOneTimePasswordStatus::NOTHING
 
   validates :private_key, presence: true, length: { maximum: 1024 }
   validates :last_otp_at, presence: true
@@ -50,22 +53,22 @@ class UserOneTimePassword < PrincipalRecord
 
   private
 
-    def generate_public_id_if_blank
-      return unless has_attribute?(:public_id)
+  def generate_public_id_if_blank
+    return unless has_attribute?(:public_id)
 
-      self.public_id = Nanoid.generate(size: 21) if self[:public_id].blank?
-    end
+    self.public_id = Nanoid.generate(size: 21) if self[:public_id].blank?
+  end
 
-    def enforce_user_totp_limit
-      return unless user_id
+  def enforce_user_totp_limit
+    return unless user_id
 
-      count = self.class.where(user_id: user_id).count
-      return if count < MAX_TOTPS_PER_USER
+    count = self.class.where(user_id: user_id).count
+    return if count < MAX_TOTPS_PER_USER
 
-      errors.add(:base, :too_many, message: "exceeds maximum totps per user (#{MAX_TOTPS_PER_USER})")
-    end
+    errors.add(:base, :too_many, message: "exceeds maximum totps per user (#{MAX_TOTPS_PER_USER})")
+  end
 
-    def generate_private_key_if_blank
-      self.private_key = ROTP::Base32.random_base32 if private_key.blank?
-    end
+  def generate_private_key_if_blank
+    self.private_key = ROTP::Base32.random_base32 if private_key.blank?
+  end
 end

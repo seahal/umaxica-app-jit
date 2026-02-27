@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class PreferenceRecord < ApplicationRecord
@@ -9,9 +10,9 @@ class PreferenceRecord < ApplicationRecord
 
   private
 
-    def set_next_position
-      # Always calculate next position to ensure uniqueness
-      # This prevents conflicts with fixtures and parallel test runs
-      self.position = (self.class.maximum(:position) || 0) + 1
-    end
+  def set_next_position
+    # Always calculate next position to ensure uniqueness
+    # This prevents conflicts with fixtures and parallel test runs
+    self.position = (self.class.maximum(:position) || 0) + 1
+  end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module CustomAssertions
@@ -15,6 +16,7 @@ module CustomAssertions
 
   def assert_invalid_attribute(record, attribute, msg = nil)
     record.valid?
+
     assert_not_empty record.errors[attribute], msg || "Expected error on #{attribute}"
   end
 
@@ -33,12 +35,14 @@ module CustomAssertions
     record = record_or_class.is_a?(Class) ? record_or_class.new : record_or_class
     record.id = "lower"
     record.valid?
+
     assert_equal "LOWER", record.id
   end
 
   def assert_status_association(record_or_class, association_name = nil)
     record = record_or_class.is_a?(Class) ? record_or_class.new : record_or_class
     association_name ||= record.class.name.underscore.sub(/_status$/, "").pluralize
+
     assert_respond_to record, association_name, "Expected association #{association_name}"
   end
 end

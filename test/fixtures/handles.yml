@@ -3,13 +3,13 @@
 # Table name: handles
 # Database name: avatar
 #
-#  id               :string           not null, primary key
+#  id               :bigint           not null, primary key
 #  cooldown_until   :timestamptz      not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  handle_status_id :string
+#  handle_status_id :bigint
 #  public_id        :string           not null
 #
 # Indexes
@@ -24,3 +24,11 @@
 #
 #  fk_rails_...  (handle_status_id => handle_statuses.id)
 #
+one:
+  handle: "handle_one"
+  public_id: "handle_pk_123"
+  handle_status_id: 3
+  cooldown_until: <%= Time.current %>
+  is_system: false
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

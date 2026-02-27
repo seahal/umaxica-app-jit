@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # config/initializers/session_store.rb
@@ -11,8 +12,8 @@ non_local_host =
 # Avoid secure-only cookies in test to keep session state across HTTP requests.
 force_secure_cookies =
   (Rails.env.production? ||
-   ENV["FORCE_SECURE_COOKIES"] == "1" ||
-   non_local_host) &&
+    ENV["FORCE_SECURE_COOKIES"] == "1" ||
+    non_local_host) &&
   !Rails.env.test?
 
 Rails.application.config.session_store :cookie_store,

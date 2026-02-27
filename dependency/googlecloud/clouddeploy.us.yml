@@ -6,7 +6,7 @@ metadata:
   labels:
     # Cloud Deploy / rollout tracking
     delivery-pipeline-id: umaxica-app-jit-staging
-    release-id: release-buqmsfh            # パイプライン側で適宜上書きされる想定
+    release-id: release-buqmsfh # パイプライン側で適宜上書きされる想定
     target-id: us
     managed-by: google-cloud-deploy
     project-id: umaxica-454904

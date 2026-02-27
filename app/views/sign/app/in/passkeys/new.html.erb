@@ -1,55 +1,41 @@
 <% title t("sign.app.authentication.passkey.new.page_title") %>
 
-<div class="mx-auto max-w-md">
-  <div class="text-center mb-8">
-    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
-      <svg class="h-7 w-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.2-2.858.571-4.175m5.3 1.25a2 2 0 011.66 0"/>
-      </svg>
-    </div>
-    <h1 class="text-2xl font-bold text-slate-900"><%= t("sign.app.authentication.passkey.new.page_title") %></h1>
-    <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.authentication.passkey.new.description") %></p>
+<div>
+  <div>
+    <h1><%= t("sign.app.authentication.passkey.new.page_title") %></h1>
+    <p><%= t("sign.app.authentication.passkey.new.description") %></p>
   </div>
 
-  <div class="mb-6 text-left">
-    <%= link_to new_sign_app_in_path(rd: params[:rd]),
-                class: "inline-flex items-center gap-2 text-sm font-semibold text-zinc-500 hover:text-blue-600 transition-colors duration-300" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-      </svg>
-      <span><%= t("sign.app.authentication.new.back") %></span>
-    <% end %>
-  </div>
-
-  <div class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-       data-controller="passkey-authentication"
-       data-passkey-authentication-options-url-value="<%= options_sign_app_in_passkeys_path %>"
-       data-passkey-authentication-verification-url-value="<%= verification_sign_app_in_passkeys_path %>"
-       data-passkey-authentication-identifier-param-value="email">
+  <div
+    data-controller="passkey-authentication"
+    data-passkey-authentication-options-url-value="<%= options_sign_app_in_passkeys_path %>"
+    data-passkey-authentication-verification-url-value="<%= verification_sign_app_in_passkeys_path %>"
+    data-passkey-authentication-identifier-param-value="identifier"
+    data-passkey-authentication-turnstile-site-key-value="<%= Jit::Security::TurnstileConfig.stealth_site_key.to_s %>"
+    data-passkey-authentication-turnstile-error-message-value="<%= t("turnstile_error") %>">
 
     <div>
-      <label for="identifier" class="block text-sm font-medium text-slate-700 mb-1">
-        <%= t("sign.app.authentication.passkey.new.identifier_label") %>
+      <label for="identifier">
+        <%= t("sign.app.authentication.passkey.new.pii_label") %>
       </label>
       <input type="text"
              id="identifier"
              data-passkey-authentication-target="identifier"
-             class="styled w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-             placeholder="<%= t("sign.app.authentication.passkey.new.identifier_placeholder") %>"
-             data-passkey-authentication-identifier-param-value="identifier"
-             autocomplete="email tel webauthn"
+             placeholder="<%= t("sign.app.authentication.passkey.new.pii_placeholder") %>"
+             autocomplete="username webauthn"
              required>
     </div>
 
-    <p data-passkey-authentication-target="error" class="hidden text-sm text-red-600"></p>
-    <p data-passkey-authentication-target="status" class="hidden text-sm text-slate-600"></p>
+    <p data-passkey-authentication-target="error" class="hidden"></p>
+    <p data-passkey-authentication-target="status" class="hidden"></p>
+    <input type="hidden" data-passkey-authentication-target="turnstileResponse" autocomplete="off">
 
-    <div class="flex flex-col gap-3 pt-2">
+    <div>
       <button type="button"
-              data-action="click->passkey-authentication#authenticate"
-              class="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:shadow-md active:scale-[0.98]">
+              data-action="click->passkey-authentication#authenticate">
         <%= t("sign.app.authentication.passkey.new.submit") %>
       </button>
+      <%= link_to t("sign.app.authentication.new.back"), new_sign_app_in_path %>
     </div>
   </div>
 </div>

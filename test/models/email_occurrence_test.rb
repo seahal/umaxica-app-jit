@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,30 +6,32 @@
 # Table name: email_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(255)      default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_email_occurrences_on_body        (body) UNIQUE
-#  index_email_occurrences_on_expires_at  (expires_at)
-#  index_email_occurrences_on_public_id   (public_id) UNIQUE
-#  index_email_occurrences_on_status_id   (status_id)
+#  index_email_occurrences_on_body             (body) UNIQUE
+#  index_email_occurrences_on_body_created_at  (body,created_at)
+#  index_email_occurrences_on_expires_at       (expires_at)
+#  index_email_occurrences_on_public_id        (public_id) UNIQUE
+#  index_email_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => email_occurrence_statuses.id)
+#  fk_email_occurrences_on_status_id  (status_id => email_occurrence_statuses.id)
 #
 
 require "test_helper"
 
 class EmailOccurrenceTest < ActiveSupport::TestCase
+  fixtures :email_occurrences, :email_occurrence_statuses
   test "public_id length" do
     record = build_occurrence(EmailOccurrence, body: "user@example.com", public_id: "A" * 20)
 

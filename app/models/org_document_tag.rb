@@ -1,18 +1,19 @@
+# typed: false
 # == Schema Information
 #
 # Table name: org_document_tags
 # Database name: document
 #
-#  id                         :uuid             not null, primary key
+#  id                         :bigint           not null, primary key
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
-#  org_document_id            :uuid             not null
-#  org_document_tag_master_id :string(255)      not null
+#  org_document_id            :bigint           not null
+#  org_document_tag_master_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_org_document_taggers_on_document_and_tag         (org_document_id,org_document_tag_master_id) UNIQUE
-#  index_org_document_tags_on_org_document_tag_master_id  (org_document_tag_master_id)
+#  idx_org_document_tags_on_master_and_document  (org_document_tag_master_id,org_document_id) UNIQUE
+#  index_org_document_tags_on_org_document_id    (org_document_id)
 #
 # Foreign Keys
 #
@@ -33,5 +34,5 @@ class OrgDocumentTag < DocumentRecord
   validates :org_document_tag_master_id,
             length: { maximum: 255 },
             uniqueness: { scope: :org_document_id,
-                          message: :already_tagged }
+                          message: :already_tagged, }
 end

@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_25_230629) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_01_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "billing_stripe_events", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "billing_stripe_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "event_id", null: false
     t.string "event_type", null: false

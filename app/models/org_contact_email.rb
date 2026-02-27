@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,28 +6,23 @@
 # Table name: org_contact_emails
 # Database name: guest
 #
-#  id                     :string           not null, primary key
+#  id                     :bigint           not null, primary key
 #  activated              :boolean          default(FALSE), not null
-#  deletable              :boolean          default(FALSE), not null
 #  email_address          :string(1000)     default(""), not null
-#  expires_at             :timestamptz      not null
-#  remaining_views        :integer          default(0), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
 #  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  org_contact_id         :uuid             not null
+#  org_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_org_contact_emails_on_email_address        (email_address)
-#  index_org_contact_emails_on_expires_at           (expires_at)
-#  index_org_contact_emails_on_org_contact_id       (org_contact_id)
-#  index_org_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#  index_org_contact_emails_on_email_address   (email_address)
+#  index_org_contact_emails_on_org_contact_id  (org_contact_id)
 #
 # Foreign Keys
 #
@@ -40,8 +36,7 @@ class OrgContactEmail < GuestRecord
   validates :email_address, presence: true, length: { maximum: 1000 }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :token_digest, length: { maximum: 255 }
   validates :verifier_digest, length: { maximum: 255 }
-  before_create :generate_id
-  before_save { self.email_address&.downcase! }
+  before_save { email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true
 
   # Generate and store email verification code
@@ -78,8 +73,4 @@ class OrgContactEmail < GuestRecord
   end
 
   private
-
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
 end

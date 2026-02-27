@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign::Org::UpsHelper
@@ -8,7 +9,7 @@ module Sign::Org::UpsHelper
       new_core_org_contact_url(
         {
           host: ENV.fetch("CORE_STAFF_URL", "core.org.localhost"),
-          category: "recruit"
+          category: "recruit",
         }.merge(preference_params),
       ),
       class: "font-semibold text-slate-900 underline",

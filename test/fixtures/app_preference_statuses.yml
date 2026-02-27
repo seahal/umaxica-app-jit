@@ -3,20 +3,9 @@
 # Table name: app_preference_statuses
 # Database name: preference
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  app_preference_statuses_position_unique  (position) UNIQUE
-#
-
 neyo:
-  id: NEYO
-  position: 1
-
+  id: 2
 deleted:
-  id: DELETED
-  position: 2
+  id: 1

@@ -1,37 +1,28 @@
+# typed: false
 # == Schema Information
 #
 # Table name: org_preference_statuses
 # Database name: preference
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  org_preference_statuses_position_unique  (position) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
 class OrgPreferenceStatus < PreferenceRecord
-  include StringPrimaryKey
-
+  # Fixed IDs - do not modify these values
+  DELETED = 1
+  NOTHING = 2
   has_many :org_preferences,
            class_name: "OrgPreference",
            foreign_key: "status_id",
            primary_key: "id",
            inverse_of: :org_preference_status,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:position, :id) }
+  scope :ordered, -> { all }
 
-  validates :position,
-            presence: true,
-            numericality: { only_integer: true, greater_than: 0 },
-            uniqueness: true
-
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
-                 format: { with: /\A[A-Z0-9_]+\z/ }
-  before_validation { self.id = id&.upcase }
+  def self.ensure_defaults!
+    find_or_create_by!(id: DELETED)
+    find_or_create_by!(id: NOTHING)
+  end
 end

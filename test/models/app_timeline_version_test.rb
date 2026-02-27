@@ -1,9 +1,10 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_timeline_versions
 # Database name: news
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -15,13 +16,14 @@
 #  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  app_timeline_id :uuid             not null
+#  app_timeline_id :bigint           not null
 #  edited_by_id    :bigint
 #  public_id       :string(255)      default(""), not null
 #
 # Indexes
 #
 #  index_app_timeline_versions_on_app_timeline_id_and_created_at  (app_timeline_id,created_at)
+#  index_app_timeline_versions_on_edited_by_id                    (edited_by_id)
 #  index_app_timeline_versions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys
@@ -34,6 +36,7 @@
 require "test_helper"
 
 class AppTimelineVersionTest < ActiveSupport::TestCase
+  fixtures :app_timelines
   test "includes Version concern" do
     assert_includes AppTimelineVersion.included_modules, Version
   end

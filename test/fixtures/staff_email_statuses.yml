@@ -1,26 +1,21 @@
-# Auto-generated minimal fixture
 # == Schema Information
 #
 # Table name: staff_email_statuses
 # Database name: operator
 #
-#  id :string(255)      default("UNVERIFIED"), not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_email_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 neyo:
-  id: NEYO
+  id: 4
 active:
-  id: ACTIVE
+  id: 1
 inactive:
-  id: INACTIVE
+  id: 3
 pending:
-  id: PENDING
+  id: 5
 deleted:
-  id: DELETED
+  id: 2
 unverified:
-  id: UNVERIFIED
+  id: 6
 verified:
-  id: VERIFIED
+  id: 7

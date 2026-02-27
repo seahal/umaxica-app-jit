@@ -3,13 +3,9 @@
 # Table name: org_contact_categories
 # Database name: guest
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_org_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 neyo:
-  id: NEYO
+  id: 1
 organization_inquiry:
-  id: ORGANIZATION_INQUIRY
+  id: 2

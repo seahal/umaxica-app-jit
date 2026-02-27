@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,27 +6,25 @@
 # Table name: departments
 # Database name: operator
 #
-#  id                   :uuid             not null, primary key
+#  id                   :bigint           not null, primary key
 #  name                 :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  department_status_id :string(255)      default("NEYO"), not null
-#  parent_id            :uuid
-#  workspace_id         :uuid
+#  department_status_id :bigint           default(0), not null
+#  parent_id            :bigint
+#  workspace_id         :bigint
 #
 # Indexes
 #
-#  index_departments_on_department_status_id                (department_status_id)
 #  index_departments_on_department_status_id_and_parent_id  (department_status_id,parent_id) UNIQUE
 #  index_departments_on_parent_id                           (parent_id)
-#  index_departments_on_status_and_parent                   (department_status_id,parent_id) UNIQUE
 #  index_departments_on_workspace_id                        (workspace_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (department_status_id => organization_statuses.id) ON DELETE => restrict
-#  fk_rails_...  (parent_id => departments.id) ON DELETE => restrict
-#  fk_rails_...  (workspace_id => organizations.id) ON DELETE => restrict
+#  fk_departments_on_department_status_id  (department_status_id => department_statuses.id)
+#  fk_rails_...                            (parent_id => departments.id)
+#  fk_rails_...                            (workspace_id => organizations.id) ON DELETE => nullify
 #
 
 class Department < OperatorRecord
@@ -40,7 +39,7 @@ class Department < OperatorRecord
            dependent: :restrict_with_error
 
   belongs_to :department_status,
-             class_name: "OrganizationStatus",
+             class_name: "DepartmentStatus",
              primary_key: :id,
              inverse_of: :departments
 
@@ -51,5 +50,5 @@ class Department < OperatorRecord
   validates :department_status_id,
             length: { maximum: 255 },
             uniqueness: { scope: :parent_id,
-                          message: :already_tagged }
+                          message: :already_tagged, }
 end

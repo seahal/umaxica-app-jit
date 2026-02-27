@@ -1,10 +1,12 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 # Test with UserEmail which includes Email
 class EmailTest < ActiveSupport::TestCase
-  # rubocop:disable Minitest/MultipleAssertions
+  fixtures :users, :staffs, :user_statuses, :staff_statuses
+
   setup do
     @user = users(:none_user)
   end
@@ -49,10 +51,10 @@ class EmailTest < ActiveSupport::TestCase
 
     # Different emails should have different encrypted values
     raw1 = UserEmail.connection.execute(
-      UserEmail.sanitize_sql_array([ sql, { id: email1.id } ]),
+      UserEmail.sanitize_sql_array([sql, { id: email1.id }]),
     ).first
     raw2 = UserEmail.connection.execute(
-      UserEmail.sanitize_sql_array([ sql, { id: email2.id } ]),
+      UserEmail.sanitize_sql_array([sql, { id: email2.id }]),
     ).first
 
     assert_not_equal raw1["address"], raw2["address"]
@@ -173,12 +175,7 @@ class EmailTest < ActiveSupport::TestCase
     email.clear_otp
 
     assert_equal 0, email.otp_attempts_count
-    # Fixed expectation for locked_at
-    assert(
-      email.locked_at.is_a?(Time) ||
-      email.locked_at.to_s == "-infinity" ||
-      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
-    )
+    assert_not email.locked?
   end
 
   test "increment_attempts! is thread-safe under concurrent access" do
@@ -204,6 +201,7 @@ class EmailTest < ActiveSupport::TestCase
   end
 
   # OTP method tests
+  # rubocop:disable Minitest/MultipleAssertions
   test "store_otp stores OTP configuration" do
     email = create_email(address: "otp@example.com", confirm_policy: true)
     otp_key = "secret_key_123"
@@ -215,13 +213,9 @@ class EmailTest < ActiveSupport::TestCase
     assert_equal otp_key, email.otp_private_key
     assert_equal otp_counter.to_s, email.otp_counter.to_s
     assert_equal 0, email.otp_attempts_count
-    # Expect -infinity
-    assert(
-      email.locked_at.is_a?(Time) ||
-      email.locked_at.to_s == "-infinity" ||
-      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
-    )
+    assert_not email.locked?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "get_otp returns OTP configuration when valid" do
     email = create_email(address: "otp2@example.com", confirm_policy: true)
@@ -312,6 +306,7 @@ class EmailTest < ActiveSupport::TestCase
     assert_not email.otp_active?
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "clear_otp clears all OTP data" do
     email = create_email(address: "otp12@example.com", confirm_policy: true)
     email.store_otp("key", 50, 1.hour.from_now.to_i)
@@ -350,12 +345,9 @@ class EmailTest < ActiveSupport::TestCase
       (email.otp_expires_at.is_a?(Float) && email.otp_expires_at == -Float::INFINITY),
     )
     assert_equal 0, email.otp_attempts_count
-    assert(
-      email.locked_at.is_a?(Time) ||
-      email.locked_at.to_s == "-infinity" ||
-      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
-    )
+    assert_not email.locked?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "validates pass_code presence when pass_code is not nil" do
     email = build_email(address: nil, pass_code: nil)
@@ -388,16 +380,19 @@ class EmailTest < ActiveSupport::TestCase
 
     # Active after send
     email.update!(otp_last_sent_at: Time.current)
+
     assert_predicate email, :otp_cooldown_active?
     assert_operator email.otp_cooldown_remaining, :>, 0
 
     # Not active after cooldown period
     email.update!(otp_last_sent_at: 2.minutes.ago)
+
     assert_not email.otp_cooldown_active?
     assert_equal 0, email.otp_cooldown_remaining
 
     # Handles sentinel -infinity
     email.update!(otp_last_sent_at: "-infinity")
+
     assert_not email.otp_cooldown_active?
   end
 end

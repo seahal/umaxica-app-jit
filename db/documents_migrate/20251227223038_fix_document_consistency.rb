@@ -2,7 +2,7 @@
 
 class FixDocumentConsistency < ActiveRecord::Migration[8.2]
   def change
-    %i[org com app].each do |prefix|
+    %i(org com app).each do |prefix|
       # Tags - Add missing index for reverse association if needed
       # The checker complained about "associated model should have proper index"
       # explicitly for the has_many side usually, but let's stick to the ones likely missing.

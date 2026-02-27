@@ -1,25 +1,41 @@
+# typed: false
 # frozen_string_literal: true
 
 module UserSecret::Kinds
   extend ActiveSupport::Concern
 
-  # Lifetime-based kind constants (UPPER_SNAKE_CASE)
-  UNLIMITED = "UNLIMITED"
-  ONE_TIME = "ONE_TIME"
-  TIME_BOUND = "TIME_BOUND"
+  # Kind constants
+  LOGIN = UserSecretKind::LOGIN
+  TOTP = UserSecretKind::TOTP
+  RECOVERY = UserSecretKind::RECOVERY
+  API = UserSecretKind::API
+  PERMANENT = UserSecretKind::PERMANENT
+  ONE_TIME = UserSecretKind::ONE_TIME
 
-  ALL = [ UNLIMITED, ONE_TIME, TIME_BOUND ].freeze
+  ALL = [LOGIN, TOTP, RECOVERY, API].freeze
 
   # Predicates using string equality on user_secret_kind_id column (no JOINs)
-  def unlimited?
-    user_secret_kind_id == UNLIMITED
+  def login_secret?
+    user_secret_kind_id == LOGIN
   end
 
-  def one_time?
+  def totp_secret?
+    user_secret_kind_id == TOTP
+  end
+
+  def recovery_secret?
+    user_secret_kind_id == RECOVERY
+  end
+
+  def api_secret?
+    user_secret_kind_id == API
+  end
+
+  def permanent_secret?
+    user_secret_kind_id == PERMANENT
+  end
+
+  def one_time_secret?
     user_secret_kind_id == ONE_TIME
-  end
-
-  def time_bound?
-    user_secret_kind_id == TIME_BOUND
   end
 end

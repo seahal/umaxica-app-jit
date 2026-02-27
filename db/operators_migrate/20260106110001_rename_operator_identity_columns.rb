@@ -23,11 +23,11 @@ class RenameOperatorIdentityColumns < ActiveRecord::Migration[8.2]
 
   private
 
-    def safe_rename_column(table, old_col, new_col)
-      return unless table_exists?(table)
-      return unless connection.column_exists?(table, old_col)
-      return if connection.column_exists?(table, new_col)
+  def safe_rename_column(table, old_col, new_col)
+    return unless table_exists?(table)
+    return unless connection.column_exists?(table, old_col)
+    return if connection.column_exists?(table, new_col)
 
-      rename_column table, old_col, new_col
-    end
+    rename_column table, old_col, new_col
+  end
 end

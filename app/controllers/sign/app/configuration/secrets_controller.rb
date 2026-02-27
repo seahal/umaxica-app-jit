@@ -1,11 +1,17 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
   module App
     module Configuration
       class SecretsController < ApplicationController
+        auth_required!
+
+        include ::Verification::User
+
         before_action :authenticate_user!
-        before_action :set_secret, only: %i[show edit destroy]
+        before_action :set_secret, only: %i(show edit destroy regenerate)
+        before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
 
         def index
           @secrets = current_user.user_secrets.order(created_at: :desc)
@@ -25,55 +31,61 @@ module Sign
         end
 
         def create
-          # Require acknowledgement checkbox
-          unless params[:acknowledged] == "1"
-            @secret = current_user.user_secrets.new
-            @secret.errors.add(:base, I18n.t("sign.app.configuration.secrets.errors.acknowledgement_required"))
-            @raw_secret = session[:user_secret_raw] || UserSecret.generate_raw_secret
-            session[:user_secret_raw] = @raw_secret
-            render :new, status: :unprocessable_content
-            return
-          end
-
           raw_secret = session.delete(:user_secret_raw)
-          result = UserSecrets::Create.call(
+          UserSecrets::Create.call(
             actor: current_user,
             user: current_user,
-            params: {}, # Don't pass any params - service handles everything
+            params: secret_params,
             raw_secret: raw_secret,
           )
 
-          session[:last_issued_secret] = {
-            prefix: result.secret.name,
-            raw_secret: result.raw_secret
-          }
-
-          redirect_to sign_app_configuration_secrets_path, status: :see_other
+          flash[:notice] = t(".created")
+          redirect_to sign_app_configuration_secrets_path
         rescue ActiveRecord::RecordInvalid => e
-          @secret = e.record
-          @raw_secret = raw_secret.presence || UserSecret.generate_raw_secret
-          session[:user_secret_raw] = @raw_secret
-          render :new, status: :unprocessable_content
+          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_content
         end
 
         def destroy
+          if AuthMethodGuard.last_method?(current_user, excluding: @secret)
+            flash[:alert] = t(".last_method")
+            return redirect_to sign_app_configuration_secrets_path
+          end
+
           UserSecrets::Destroy.call(actor: current_user, secret: @secret)
+          flash[:notice] = t(".destroyed")
           redirect_to sign_app_configuration_secrets_path, status: :see_other
+        end
+
+        # Reserved for future secret rotation support.
+        def regenerate
+          redirect_to sign_app_configuration_secret_path(@secret.public_id),
+                      alert: t("messages.not_implemented"),
+                      status: :see_other
         end
 
         private
 
-          def set_secret
-            @secret = current_user.user_secrets.find(params[:id])
-          end
+        def set_secret
+          @secret = current_user.user_secrets.find_by!(public_id: params[:id])
+        end
 
-          def secret_params
-            # Empty params - we don't accept any user input for secret creation
-            # Name is auto-generated from secret prefix
-            # Kind is always UNLIMITED
-            # Status is always ACTIVE
-            {}
-          end
+        def secret_params
+          params.fetch(:user_secret, {}).permit(:name, :enabled)
+        end
+
+        def ensure_verified_recovery_identity_for_registration!
+          return if current_user.has_verified_recovery_identity?
+
+          render plain: User::RECOVERY_IDENTITY_REQUIRED_MESSAGE, status: :forbidden
+        end
+
+        def verification_required_action?
+          %w(destroy regenerate).include?(action_name)
+        end
+
+        def verification_scope
+          "configuration_secret"
+        end
       end
     end
   end

@@ -2,8 +2,8 @@
 
 class CreateOrgTimelineVersions < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_timeline_versions, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.references :org_timeline, null: false, foreign_key: true, type: :uuid
+    create_table :org_timeline_versions do |t|
+      t.references :org_timeline, null: false, foreign_key: true, type: :bigint
       t.string :permalink, null: false, limit: 200
       t.string :response_mode, null: false
       t.string :redirect_url
@@ -17,6 +17,6 @@ class CreateOrgTimelineVersions < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :org_timeline_versions, [ :org_timeline_id, :created_at ]
+    add_index :org_timeline_versions, [:org_timeline_id, :created_at]
   end
 end

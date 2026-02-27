@@ -2,9 +2,9 @@
 
 class CreateAvatarAssignments < ActiveRecord::Migration[8.2]
   def change
-    create_table :avatar_assignments, id: :uuid do |t|
+    create_table :avatar_assignments do |t|
       t.string :avatar_id, null: false, limit: 255
-      t.uuid :user_id, null: false
+      t.bigint :user_id, null: false
       t.string :role, null: false, default: "viewer", limit: 50
 
       t.timestamps
@@ -17,7 +17,7 @@ class CreateAvatarAssignments < ActiveRecord::Migration[8.2]
                     column: :user_id, primary_key: :id, on_delete: :cascade if table_exists?(:users)
 
     # Composite unique index for avatar_id + user_id + role
-    add_index :avatar_assignments, %i[avatar_id user_id role],
+    add_index :avatar_assignments, %i(avatar_id user_id role),
               unique: true, name: "index_avatar_assignments_unique"
 
     # Conditional unique indexes for owner and affiliation (only one per avatar)

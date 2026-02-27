@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,31 +6,26 @@
 # Table name: user_social_google_statuses
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_google_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class UserSocialGoogleStatusTest < ActiveSupport::TestCase
-  test "valid status" do
-    status = UserSocialGoogleStatus.new(id: "TEST_STATUS")
-    assert_predicate status, :valid?
-    assert status.save
-    assert_equal "TEST_STATUS", status.id
+  test "status constants are defined" do
+    assert_equal 1, UserSocialGoogleStatus::ACTIVE
+    assert_equal 2, UserSocialGoogleStatus::INACTIVE
+    assert_equal 3, UserSocialGoogleStatus::PENDING
+    assert_equal 4, UserSocialGoogleStatus::DELETED
+    assert_equal 5, UserSocialGoogleStatus::REVOKED
+    assert_equal 6, UserSocialGoogleStatus::NOTHING
   end
 
-  test "upcases id" do
-    status = UserSocialGoogleStatus.new(id: "lower")
-    status.valid?
-    assert_equal "LOWER", status.id
-  end
-
-  test "validates length of id" do
-    record = UserSocialGoogleStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "status ids are integers" do
+    assert_kind_of Integer, UserSocialGoogleStatus::ACTIVE
+    assert_kind_of Integer, UserSocialGoogleStatus::INACTIVE
+    assert_kind_of Integer, UserSocialGoogleStatus::PENDING
+    assert_kind_of Integer, UserSocialGoogleStatus::DELETED
+    assert_kind_of Integer, UserSocialGoogleStatus::REVOKED
+    assert_kind_of Integer, UserSocialGoogleStatus::NOTHING
   end
 end

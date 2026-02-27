@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: user_client_discoveries
 # Database name: principal
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  client_id  :uuid             not null
-#  user_id    :uuid             not null
+#  client_id  :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -25,6 +26,9 @@
 require "test_helper"
 
 class UserClientDiscoveryTest < ActiveSupport::TestCase
+  fixtures :user_client_discoveries, :users, :user_statuses, :clients, :client_statuses, :divisions,
+           :division_statuses, :organizations, :organization_statuses
+
   test "fixture is valid" do
     assert_predicate user_client_discoveries(:one), :valid?
   end

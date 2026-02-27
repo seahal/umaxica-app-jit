@@ -3,8 +3,7 @@
 # ============================================================================
 # Shared build arguments
 # ============================================================================
-ARG RUBY_VERSION=4.0.0-preview3
-ARG BUN_VERSION=1.3.5
+ARG RUBY_VERSION=4.0.1
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
@@ -15,11 +14,11 @@ ARG GITHUB_ACTIONS=""
 # Production image (multi-stage build)
 # ============================================================================
 FROM ruby:${RUBY_VERSION}-slim-trixie AS production-base
+SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
-SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV HOME=/home/${DOCKER_USER}
 ENV APP_HOME=${HOME}/main
 ENV LANG=C.UTF-8 \
@@ -46,6 +45,7 @@ RUN if ! getent group "${DOCKER_GROUP}" >/dev/null; then \
 
 # hadolint ignore=DL3008
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
     ca-certificates \
     libpq5 \
@@ -60,13 +60,9 @@ RUN apt-get update \
 # ============================================================================
 
 FROM production-base AS production-build
-
+# Install build tools required for gems
 ARG DOCKER_UID
 ARG DOCKER_GID
-ARG DOCKER_USER
-ARG DOCKER_GROUP
-
-# Install build tools required for gems
 # hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -81,11 +77,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY Gemfile Gemfile.lock ./
-RUN --mount=type=cache,target=/usr/local/bundle \
-    --mount=type=cache,target=/root/.cache/bundle \
-    bundle install --jobs "${BUNDLE_JOBS}" --retry "${BUNDLE_RETRY}" \
+RUN --mount=type=cache,target=/tmp/bundle-cache,uid=${DOCKER_UID},gid=${DOCKER_GID} \
+    bundle config set --local cache_path /tmp/bundle-cache \
+    && bundle install --jobs "${BUNDLE_JOBS}" --retry "${BUNDLE_RETRY}" \
     && bundle exec bootsnap precompile --gemfile \
-    && bundle config set --local without 'development test' \
     && bundle clean --force \
     && rm -rf /usr/local/bundle/cache
 
@@ -95,7 +90,8 @@ COPY . .
 RUN install -d tmp/pids log \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
-    && rm -f tmp/pids/server.pid
+    && rm -f tmp/pids/server.pid \
+    && bundle exec bootsnap precompile app/ lib/
 
 # ============================================================================
 # ============================================================================
@@ -103,9 +99,7 @@ FROM production-base AS production
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
-ARG DOCKER_GROUP
-
-ENV PORT=3000 \
+ENV PORT=8080 \
     RUBY_YJIT_ENABLE=1 \
     RAILS_LOG_TO_STDOUT=1 \
     RAILS_SERVE_STATIC_FILES=true \
@@ -113,8 +107,6 @@ ENV PORT=3000 \
 
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} /usr/local/bundle /usr/local/bundle
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} ${APP_HOME} ${APP_HOME}
-
-RUN chown -R ${DOCKER_UID}:${DOCKER_GID} tmp log
 
 USER ${DOCKER_USER}
 
@@ -130,7 +122,6 @@ SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV TZ=UTC \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
-    BUNDLE_FORCE_RUBY_PLATFORM=1 \
     BUNDLE_FORCE_RUBY_PLATFORM=1
 
 # hadolint ignore=DL3008
@@ -150,82 +141,71 @@ RUN apt-get update -qq \
     unzip \
     zlib1g-dev \
     graphviz \
+    python3 \
+    python-is-python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
 # ============================================================================
 # ============================================================================
 FROM development-base AS development
+SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ARG COMMIT_HASH
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
-ARG BUN_VERSION
 ARG GITHUB_ACTIONS
-SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV COMMIT_HASH="${COMMIT_HASH}"
-ENV HOME=/home/jit
-ENV BUN_INSTALL=/usr/local
-WORKDIR /home/jit/workspace
+ENV HOME=/home/${DOCKER_USER}
+WORKDIR ${HOME}/workspace
 
 # hadolint ignore=DL3008
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
-    vim \
-    bash \
-    openssl \
-    iproute2 \
+    bat \
+    entr \
+    fd-find \
     fontconfig \
+    fzf \
+    htop \
+    iproute2 \
+    jq \
+    yq \
     lsb-release \
-    dbus \
-    zsh \
+    ncdu \
+    nodejs \
+    npm \
+    openssl \
+    ripgrep \
+    silversearcher-ag \
     sudo \
-    udev \
-    unzip \
-    xserver-xorg-core \
-    xvfb \
+    tig \
+    tree \
+    watch \
+    wget \
     zip \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libdrm2 \
-    libgbm1 \
-    libglib2.0-0 \
-    libgtk-3-0 \
-    libnss3 \
-    libnspr4 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libsecret-1-0 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxkbcommon0 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
+    socat \
+    netcat-openbsd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
-COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
-
-RUN curl -fsSL https://bun.sh/install -o /tmp/bun.sh \
-    && bash /tmp/bun.sh "bun-v${BUN_VERSION}"
+COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json pnpm-lock.yaml ./
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
-        groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
-        useradd -l -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
-        echo "${DOCKER_USER}:hogehoge" | chpasswd; \
-        echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
-        chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
+    groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
+    useradd -l -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
+    echo "${DOCKER_USER}:${DOCKER_USER_PASSWORD:-devpassword}" | chpasswd; \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     else \
-        chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     fi
+
+# Install pnpm for development use only (available by default on PATH).
+RUN npm install -g pnpm@10.27.0
+
+
+RUN rm -rf "${HOME}/.cache" "${HOME}/.local"
 
 USER ${DOCKER_USER}

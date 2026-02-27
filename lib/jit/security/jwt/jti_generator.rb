@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "base64"
@@ -12,7 +13,7 @@ module Jit
 
         BYTE_LENGTH_MAPPING = {
           16 => 22,
-          20 => 27
+          20 => 27,
         }.freeze
 
         BASE64URL_REGEX = /\A[A-Za-z0-9_-]+\z/.freeze

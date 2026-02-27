@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class UserWebauthnCredentialPolicy < ApplicationPolicy
@@ -23,7 +24,7 @@ class UserWebauthnCredentialPolicy < ApplicationPolicy
 
   private
 
-    def record_owner?
-      record.user_id == user&.id
-    end
+  def record_owner?
+    record.user_id == user&.id
+  end
 end

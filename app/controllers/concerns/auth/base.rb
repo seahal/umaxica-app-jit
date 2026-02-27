@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "jwt"
@@ -5,6 +6,23 @@ require "jwt"
 module Auth
   module Base
     extend ActiveSupport::Concern
+    include Common::Redirect
+
+    # ==========================================================================
+    # TOC (approximate)
+    # 1) JWT & Token primitives ....................................... L40-L210
+    # 2) Request guards (public API, I/O boundary) .................... L215-L275
+    # 3) Redirect/checkpoint session flows (I/O boundary) ............. L277-L462
+    # 4) Session auth lifecycle (public API, I/O boundary) ............ L464-L775
+    # 5) Abstract contract & policy DSL ............................... L778-L907
+    # 6) Private request/cookie/token I/O ............................. L909-L1505
+    # 7) Policy/domain decisions ...................................... L1514-L1869
+    # 8) MFA/session helper decisions ................................. L1873-L1966
+    # ==========================================================================
+
+    # ==========================================================================
+    # 1) JWT & Token primitives
+    # ==========================================================================
 
     # --- Policy errors ---
     class MissingPolicyError < StandardError; end
@@ -13,30 +31,35 @@ module Auth
 
     class SkipNotAllowedError < StandardError; end
 
-    VALID_POLICIES = %i[
+    VALID_POLICIES = %i(
       public_strict
       auth_required
       guest_only
-    ].freeze
+    ).freeze
 
     ACCESS_POLICY_RULES = Concurrent::Map.new
 
     # Cookie keys - environment-dependent naming
     # Production: "__Secure-" prefix for secure cookies
     # Dev/Test: no prefix (String, not Symbol)
-    ACCESS_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_access" : "jit_auth_access"
-    REFRESH_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_refresh" : "jit_auth_refresh"
+    ACCESS_COOKIE_KEY = Auth::CookieName.access
+    REFRESH_COOKIE_KEY = Auth::CookieName.refresh
+    DEVICE_COOKIE_KEY = Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
 
     # Token TTLs
     ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
     REFRESH_TOKEN_TTL = 30.days
+    RESTRICTED_SESSION_TTL = 15.minutes
+    SESSION_LIMIT_HARD_REJECT_MESSAGE = "セッション数上限に達しています"
 
     AUDIT_EVENTS = {
       logged_in: "LOGGED_IN",
       logged_out: "LOGGED_OUT",
       login_failed: "LOGIN_FAILED",
-      token_refreshed: "TOKEN_REFRESHED"
+      token_refreshed: "TOKEN_REFRESHED",
     }.freeze
+
+    VALID_ACTOR_TYPES = %w(user staff).freeze
 
     module JwtConfiguration
       def self.issuer
@@ -47,12 +70,12 @@ module Auth
         raw = ENV["AUTH_JWT_AUDIENCES"].to_s
         audiences = raw.split(",").map(&:strip)
         audiences.reject!(&:empty?)
-        audiences.presence || [ "umaxica-api" ]
+        audiences.presence || ["umaxica-api"]
       end
 
       def self.private_key
         private_key_base64 = ENV["JWT_PRIVATE_KEY"] ||
-                             Rails.application.credentials.dig(:JWT, :PRIVATE_KEY)
+          Rails.application.credentials.dig(:JWT, :PRIVATE_KEY)
         raise "Auth JWT private key not configured in credentials" if private_key_base64.blank?
 
         private_key_der = Base64.decode64(private_key_base64)
@@ -61,7 +84,7 @@ module Auth
 
       def self.public_key
         public_key_base64 = ENV["JWT_PUBLIC_KEY"] ||
-                            Rails.application.credentials.dig(:JWT, :PUBLIC_KEY)
+          Rails.application.credentials.dig(:JWT, :PUBLIC_KEY)
         raise "Auth JWT public key not configured in credentials" if public_key_base64.blank?
 
         public_key_der = Base64.decode64(public_key_base64)
@@ -74,105 +97,39 @@ module Auth
 
       class << self
         def encode(resource, host:, session_public_id: nil, resource_type: nil)
-          return nil unless valid_encode_params?(resource, host)
-
-          # Use provided resource_type or fallback to class name
-          type = resource_type || resource.class.name.downcase
-          payload = build_payload(resource, session_public_id, type)
-          JWT.encode(payload, JwtConfiguration.private_key, JWT_ALGORITHM)
-        rescue StandardError => error
-          Rails.event.notify(
-            "authentication.token.generation.failed",
-            error_class: error.class.name,
-            error_message: error.message,
-            backtrace: error.backtrace.first(5),
-            resource_type: resource.class.name,
-            resource_id: resource.id,
+          Auth::TokenService.encode(
+            resource, host: host, session_public_id: session_public_id,
+                      resource_type: resource_type,
           )
-          nil
         end
 
-        # rubocop:disable Metrics/MethodLength
         def decode(token, host:)
-          return nil if token.blank? || host.blank?
-
-          payload, = JWT.decode(token, JwtConfiguration.public_key, true, decode_options)
-          payload
-        rescue JWT::ExpiredSignature
-          Rails.event.notify("authentication.token.verification.expired", host: host)
-          nil
-        rescue JWT::DecodeError, JWT::VerificationError => error
-          Rails.event.notify(
-            "authentication.token.verification.failed",
-            error_class: error.class.name,
-            host: host,
-          )
-          nil
-        rescue StandardError => error
-          Rails.event.notify(
-            "authentication.token.verification.error",
-            error_class: error.class.name,
-            error_message: error.message,
-            host: host,
-          )
-          nil
+          Auth::TokenService.decode(token, host: host)
         end
-
-        # rubocop:enable Metrics/MethodLength
 
         def extract_subject(payload)
-          payload&.dig("sub")
+          Auth::TokenService.extract_subject(payload)
+        end
+
+        def extract_act(payload)
+          Auth::TokenService.extract_act(payload)
         end
 
         def extract_type(payload)
-          payload&.dig("type")
+          Auth::TokenService.extract_type(payload)
+        end
+
+        def validate_actor_claim!(payload, expected_act)
+          Auth::TokenService.validate_actor_claim!(payload, expected_act)
         end
 
         def extract_session_id(payload)
-          payload&.dig("sid")
+          Auth::TokenService.extract_session_id(payload)
         end
 
         def extract_jti(payload)
-          payload&.dig("jti")
+          Auth::TokenService.extract_jti(payload)
         end
-
-        private
-
-          def valid_encode_params?(resource, host)
-            return false if resource.nil? || host.blank?
-            return false unless resource.respond_to?(:id)
-            return false if resource.id.blank?
-
-            true
-          end
-
-          def build_payload(resource, session_public_id, type)
-            now = Time.current
-
-            payload = {
-              "iat" => now.to_i,
-              "exp" => (now + Auth::Base::ACCESS_TOKEN_TTL).to_i,
-              "jti" => Jit::Security::Jwt::JtiGenerator.generate,
-              "iss" => JwtConfiguration.issuer,
-              "aud" => JwtConfiguration.audiences,
-              "sub" => resource.id,
-              "type" => type
-            }
-            payload["sid"] = session_public_id if session_public_id.present?
-            payload
-          end
-
-          def decode_options
-            {
-              algorithms: [ JWT_ALGORITHM ],
-              verify_iat: true,
-              verify_exp: true,
-              verify_iss: true,
-              iss: JwtConfiguration.issuer,
-              verify_aud: true,
-              aud: JwtConfiguration.audiences
-            }
-          end
       end
     end
 
@@ -181,7 +138,8 @@ module Auth
     end
 
     # ======================================================================
-    # Pre-Authentication Guards
+    # 2) Request guards (public API, Request I/O boundary)
+    # - Reads request format and writes HTTP response
     # ======================================================================
 
     # Ensures user is not already logged in
@@ -233,27 +191,30 @@ module Auth
 
     # Reject if user/staff is already logged in with 401 Unauthorized
     def reject_logged_in_session
-      if logged_in?
-        render plain: "権限がありません", status: :unauthorized
-      end
+      return unless logged_in?
+
+      render plain: "権限がありません", status: :unauthorized
     end
 
     # ======================================================================
-    # Redirect Parameter Handling
+    # 3) Redirect/checkpoint session flows (Session/params I/O boundary)
+    # - Reads/writes params, flash, session
     # ======================================================================
 
     # Default session key for storing redirect parameter
-    DEFAULT_RD_SESSION_KEY = :user_email_authentication_rd
+    DEFAULT_RD_SESSION_KEY = Auth::IoKeys::Session::DEFAULT_RD
+    CHECKPOINT_SESSION_KEY = Auth::IoKeys::Session::CHECKPOINT
+    CHECKPOINT_TIMEOUT = 2.hours
 
     # Preserves the redirect parameter in session and returns it for immediate use
     #
     # @param session_key [Symbol] The session key to store rd parameter in
     # @return [String, nil] The rd parameter value if present
     def preserve_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
-      if params[:rd].present?
-        session[session_key] = params[:rd]
-        params[:rd]
-      end
+      return if params[Auth::IoKeys::Params::RD].blank?
+
+      session[session_key] = params[Auth::IoKeys::Params::RD]
+      params[Auth::IoKeys::Params::RD]
     end
 
     # Retrieves and clears the redirect parameter from session
@@ -262,7 +223,7 @@ module Auth
     # @param session_key [Symbol] The session key to retrieve from
     # @return [String, nil] The rd parameter value
     def retrieve_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
-      rd_param = params[:rd].presence || session[session_key]
+      rd_param = params[Auth::IoKeys::Params::RD].presence || session[session_key]
       session[session_key] = nil
       rd_param
     end
@@ -272,7 +233,7 @@ module Auth
     # @param session_key [Symbol] The session key to retrieve from
     # @return [String, nil] The rd parameter value
     def peek_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
-      params[:rd].presence || session[session_key]
+      params[Auth::IoKeys::Params::RD].presence || session[session_key]
     end
 
     # Builds redirect params hash with optional rd parameter
@@ -285,7 +246,7 @@ module Auth
     def build_redirect_params(message_key, message_value, session_key = DEFAULT_RD_SESSION_KEY)
       redirect_params = { message_key => message_value }
       rd_value = peek_redirect_parameter(session_key)
-      redirect_params[:rd] = rd_value if rd_value.present?
+      redirect_params[Auth::IoKeys::Params::RD] = rd_value if rd_value.present?
       redirect_params
     end
 
@@ -314,7 +275,8 @@ module Auth
     # @param message_key [Symbol] Either :notice or :alert
     # @param message_value [String] Flash message value
     # @param session_key [Symbol] The session key for rd parameter
-    def redirect_with_rd_handling(default_path, message_key, message_value, session_key = DEFAULT_RD_SESSION_KEY)
+    def redirect_with_rd_handling(default_path, message_key, message_value,
+                                  session_key = DEFAULT_RD_SESSION_KEY)
       rd_param = retrieve_redirect_parameter(session_key)
 
       if rd_param.present?
@@ -351,12 +313,80 @@ module Auth
     # @return [Hash] The modified redirect_params hash
     def add_rd_to_params!(redirect_params, session_key = DEFAULT_RD_SESSION_KEY)
       rd_value = peek_redirect_parameter(session_key)
-      redirect_params[:rd] = rd_value if rd_value.present?
+      redirect_params[Auth::IoKeys::Params::RD] = rd_value if rd_value.present?
       redirect_params
     end
 
     # ======================================================================
-    # Session Authentication
+    # 3-1) Checkpoint flow (Session/header I/O boundary + test hook)
+    # ======================================================================
+
+    def issue_checkpoint!(kind: "mock", state: "new", payload: {})
+      session[CHECKPOINT_SESSION_KEY] = {
+        "issued_at" => Time.current.to_i,
+        "kind" => kind.to_s,
+        "state" => state.to_s,
+      }.merge(payload.stringify_keys)
+    end
+
+    # Injects checkpoint state from a test header (X-TEST-CHECKPOINT).
+    # Used as a before_action in checkpoint controllers to seed session
+    # state for integration tests that cannot set session directly.
+    def maybe_inject_test_checkpoint!
+      return unless Rails.env.test?
+
+      raw = request.headers[Auth::IoKeys::Headers::TEST_CHECKPOINT]
+      return if raw.blank?
+      return if session[CHECKPOINT_SESSION_KEY].present?
+
+      session[CHECKPOINT_SESSION_KEY] = JSON.parse(raw)
+    end
+
+    def checkpoint_state
+      raw = session[CHECKPOINT_SESSION_KEY]
+      return nil unless raw.is_a?(Hash)
+
+      raw.with_indifferent_access
+    end
+
+    def checkpoint_active?
+      checkpoint_state.present? && !checkpoint_expired?
+    end
+
+    def checkpoint_expired?
+      data = checkpoint_state
+      return true if data.blank?
+
+      issued_at = data[:issued_at].to_i
+      return true if issued_at <= 0
+
+      Time.current.to_i >= issued_at + CHECKPOINT_TIMEOUT.to_i
+    end
+
+    def refresh_checkpoint_dimension!(state: "updated")
+      data = checkpoint_state
+      return unless data
+
+      session[CHECKPOINT_SESSION_KEY] = data.merge(
+        "issued_at" => Time.current.to_i,
+        "state" => state.to_s,
+      )
+    end
+
+    def consume_checkpoint!
+      session.delete(CHECKPOINT_SESSION_KEY)
+    end
+
+    def safe_redirect_to_rd_or_default!(rd_param, default_path:)
+      if rd_param.present?
+        jump_to_generated_url(rd_param, fallback: default_path)
+      else
+        redirect_to default_path
+      end
+    end
+
+    # ======================================================================
+    # 4) Session auth lifecycle (public API, Cookie/session/request I/O boundary)
     # ======================================================================
 
     # Loads authentication session data and validates expiry
@@ -470,29 +500,60 @@ module Auth
       @current_resource = load_current_resource
     end
 
-    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
       reset_session
 
-      resource.enforce_withdrawal_on_login! if resource.respond_to?(:enforce_withdrawal_on_login!)
+      # Clear any existing auth cookies to prevent conflicts with old sessions
+      # This ensures we don't have duplicate cookies with different domains/paths
+      # Note: We clear cookies before setting new ones, but preserve @current_resource
+      # which will be set to the logged-in user after successful authentication
+      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      clear_device_id_cookie!
 
       if require_totp_check
         totp_result = check_totp_requirement(resource)
         return totp_result if totp_result
       end
 
-      max_sessions = max_sessions_for_resource(resource)
-      active_sessions = count_active_sessions(resource)
+      session_limit_state = session_limit_state_for(resource)
 
-      if active_sessions >= max_sessions
-        mark_session_limit_pending!(resource)
-        return { status: :session_limit_pending, resource: resource }
+      if session_limit_state == :hard_reject
+        Rails.event.notify(
+          "session.limit.hard_reject",
+          "#{resource_type}_id": resource.id,
+          ip_address: request_ip_address,
+        )
+        return {
+          status: :session_limit_hard_reject,
+          http_status: :conflict,
+          message: SESSION_LIMIT_HARD_REJECT_MESSAGE,
+        }
       end
 
-      token_record = create_login_token_record(resource, token_kind_id)
+      is_restricted = session_limit_state == :issue_restricted
+      store_pending_login_resource(resource) if is_restricted
+
+      kind_id = resolve_token_kind_id(token_kind_id)
+
+      # Create token with appropriate status
+      token_status = is_restricted ? token_class::STATUS_RESTRICTED : token_class::STATUS_ACTIVE
+      token_record = create_login_token_record(resource, kind_id, status: token_status)
 
       # Generate SHA3-based refresh token
-      refresh_plain = token_record.rotate_refresh_token!
+      restricted_expires_at = is_restricted ? restricted_session_expires_at : nil
+      refresh_plain = token_record.rotate_refresh_token!(expires_at: restricted_expires_at)
+
+      if is_restricted
+        Rails.event.notify(
+          "session.restricted.issued",
+          "#{resource_type}_id": resource.id,
+          user_token_id: token_record.public_id,
+          expires_at: restricted_expires_at&.iso8601,
+          ip_address: request_ip_address,
+        )
+      end
 
       # Generate JWT access token with explicit resource_type
       access_token = Token.encode(
@@ -503,102 +564,87 @@ module Auth
       )
 
       # Always set cookies (even for JSON responses - required for Edge/SPA)
-      set_auth_cookies(access_token: access_token, refresh_token: refresh_plain)
+      set_auth_cookies(
+        access_token: access_token, refresh_token: refresh_plain,
+        device_id: token_record.device_id,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "session_issued",
+        user_id: resource.id,
+        user_token_id: token_record.public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { auth_method: token_kind_id, restricted: is_restricted },
+      )
 
       record_audit(AUDIT_EVENTS[:logged_in], resource: resource) if record_login_audit
 
-      pending_session_limit = active_sessions >= max_sessions
-
-      if pending_session_limit
-        mark_session_limit_pending!(resource)
-        status = :session_limit_pending
-      else
-        clear_pending_login_resource!
-        status = :success
-      end
-
-      {
-        status: status,
+      result = {
+        status: :success,
         access_token: access_token,
         refresh_token: refresh_plain,
         token_type: "Bearer",
-        expires_in: ACCESS_TOKEN_TTL.to_i
+        expires_in: ACCESS_TOKEN_TTL.to_i,
       }
+
+      # If session is restricted, issue session limit gate and indicate need for session management
+      if is_restricted
+        result[:restricted] = true
+        result[:session_management_required] = true
+        issue_session_limit_gate!(
+          return_to: request.fullpath,
+          flow: "#{controller_path}.session",
+        )
+      end
+
+      result
     end
 
     def refresh_access_token(refresh_plain)
+      clear_refresh_failure!
+
       refresh_public_id, = token_class.parse_refresh_token(refresh_plain.to_s)
+      token_record = find_refresh_token_record(refresh_public_id)
+      return handle_restricted_refresh_rejected(token_record, refresh_public_id) if token_record&.restricted?
+
+      return handle_refresh_device_denied(
+        token_record,
+        refresh_public_id,
+      ) unless refresh_device_allowed?(token_record)
+
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
+      previous_token_record = result[:previous_token] || token_record
       token_record = result[:token]
       new_refresh_plain = result[:refresh_token]
 
-      unless token_record.is_a?(token_class)
-        Rails.event.notify(
-          "#{resource_type}.token.refresh.failed",
-          refresh_token_id: refresh_public_id,
-          reason: "token_not_found",
-          ip_address: request_ip_address,
-        )
-        return nil
-      end
+      return handle_missing_refresh_token(refresh_public_id) unless token_record.is_a?(token_class)
 
+      # Load resource from token record
+      # No special test handling - same code path for all environments
       resource = token_record.public_send(resource_type)
 
-      unless resource&.active?
-        Rails.event.notify(
-          "#{resource_type}.token.refresh.failed",
-          "#{resource_type}_id": resource&.id,
-          refresh_token_id: refresh_public_id,
-          reason: "#{resource_type}_inactive",
-          ip_address: request_ip_address,
-        )
-        TokenRecord.connected_to(role: :writing) { token_record.destroy! }
-        return nil
-      end
+      return handle_inactive_resource(resource, refresh_public_id, token_record) unless resource&.active?
 
-      new_access_token = Token.encode(
-        resource,
-        host: request.host,
-        session_public_id: token_record.public_id,
-        resource_type: resource_type,
+      build_refreshed_session(
+        resource, token_record, new_refresh_plain,
+        previous_token_record: previous_token_record,
       )
-
-      # Always set cookies (even for JSON responses - required for Edge/SPA)
-      set_auth_cookies(access_token: new_access_token, refresh_token: new_refresh_plain)
-
-      Rails.event.notify(
-        "#{resource_type}.token.refreshed",
-        "#{resource_type}_id": resource.id,
-        old_refresh_token_id: token_record.public_id,
-        new_refresh_token_id: token_record.public_id,
-        ip_address: request_ip_address,
-      )
-      record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
-
-      {
-        access_token: new_access_token,
-        refresh_token: new_refresh_plain,
-        token_type: "Bearer",
-        expires_in: ACCESS_TOKEN_TTL.to_i
-      }
     rescue Sign::InvalidRefreshToken => e
-      Rails.event.notify(
-        "#{resource_type}.token.refresh.failed",
-        refresh_token_id: refresh_public_id,
-        reason: e.class.name,
-        ip_address: request_ip_address,
-      )
-      nil
+      handle_invalid_refresh_token(e, refresh_public_id, token_record)
     rescue StandardError => e
-      Rails.event.notify(
-        "#{resource_type}.token.refresh.error",
-        "#{resource_type}_id": resource&.id,
-        refresh_token_id: refresh_public_id,
-        error_class: e.class.name,
-        error_message: e.message,
-        ip_address: request_ip_address,
-      )
-      nil
+      Rails.logger.error "[Auth] Refresh Error: #{e.class}: #{e.message}"
+      Rails.logger.error e.backtrace.first(10).join("\n")
+      handle_refresh_error(e, refresh_public_id, resource)
+    end
+
+    def refresh_failure_status
+      @refresh_failure_status || :unauthorized
+    end
+
+    def refresh_failure_code
+      @refresh_failure_code || "invalid_refresh_token"
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -606,39 +652,53 @@ module Auth
     def log_out
       resource = current_resource
 
-      revoke_refresh_token_from_cookie
-
-      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
-      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      destroy_refresh_token_from_cookie
+      clear_auth_cookies!
 
       record_audit(AUDIT_EVENTS[:logged_out], resource: resource) if resource
-      clear_pending_login_resource!
       reset_session
-      @current_resource = nil
     end
 
     def transparent_refresh_access_token
       return if logged_in?
 
+      # Loop guard: prevents infinite refresh loops within the same request
+      return if request.env[Auth::IoKeys::Env::AUTH_REFRESHED_FLAG]
+
       refresh_plain = cookies[REFRESH_COOKIE_KEY]
       return if refresh_plain.blank?
 
+      # Mark as refreshed to prevent recursion
+      request.env[Auth::IoKeys::Env::AUTH_REFRESHED_FLAG] = true
+
       refreshed = refresh_access_token(refresh_plain)
       unless refreshed
-        cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
-        cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+        Rails.logger.debug { "[Auth] transparent_refresh: FAILURE" }
+        clear_auth_cookies!
         return
       end
 
-      remove_instance_variable(:@current_resource) if defined?(@current_resource)
+      Rails.logger.debug { "[Auth] transparent_refresh: SUCCESS. User: #{refreshed[:user].present?}" }
+      @current_resource = refreshed[:user]
     end
 
     def authenticate!
-      return if logged_in?
+      if logged_in?
+        Sign::Risk::Enforcer.call(current_resource)
+        return
+      end
 
       if request.format.json?
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
+        Sign::Risk::Emitter.emit(
+          "auth_required",
+          ip: request&.remote_ip,
+          user_agent: request&.user_agent,
+          request_id: request&.request_id,
+          path: request&.fullpath,
+          method: request&.request_method,
+        )
         rt = Base64.urlsafe_encode64(request.original_url)
         redirect_to(
           sign_in_url_with_return(rt),
@@ -670,7 +730,21 @@ module Auth
     end
 
     def test_header_key
-      raise NotImplementedError, "test_header_key must be implemented"
+      return Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE unless Rails.env.test?
+
+      actor_type = resource_type if respond_to?(:resource_type, true)
+      case actor_type
+      when "user"
+        Auth::IoKeys::Headers::TEST_CURRENT_USER
+      when "staff"
+        Auth::IoKeys::Headers::TEST_CURRENT_STAFF
+      when "viewer"
+        Auth::IoKeys::Headers::TEST_CURRENT_VIEWER
+      else
+        Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE
+      end
+    rescue StandardError
+      Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE
     end
 
     def sign_in_url_with_return(return_to)
@@ -691,11 +765,17 @@ module Auth
     end
 
     included do
-      # Important: prepend first so this runs before other before_action hooks.
-      prepend_before_action :enforce_access_policy! if respond_to?(:prepend_before_action)
-      helper_method :current_account, :current_session_public_id if respond_to?(:helper_method)
+      include ::Sign::ErrorResponses
+      include ::SessionLimitGate
+
+      if respond_to?(:helper_method)
+        helper_method :current_account, :current_session_public_id, :current_session_restricted?
+      end
     end
 
+    # ==========================================================================
+    # 5) Abstract contract & policy DSL (controller class API)
+    # ==========================================================================
     class_methods do
       # Declare policy for controller or specific actions (only/except).
       def access_policy_rules
@@ -718,10 +798,10 @@ module Auth
           policy: policy,
           only: Array(only).map(&:to_s).presence,
           except: Array(except).map(&:to_s).presence,
-          options: options
+          options: options,
         }
 
-        ACCESS_POLICY_RULES[self] = access_policy_rules + [ rule ]
+        ACCESS_POLICY_RULES[self] = access_policy_rules + [rule]
       end
 
       # Readable shortcuts.
@@ -763,447 +843,1095 @@ module Auth
 
     private
 
-      def cookie_options
-        opts = {
-          httponly: true,
-          secure: Rails.env.production?,
-          same_site: :lax,
-          path: "/"
-        }
-        opts[:domain] = shared_cookie_domain if shared_cookie_domain
-        opts
+    # ======================================================================
+    # 6) Private request/cookie/token I/O helpers
+    # ======================================================================
+
+    # ----------------------------------------------------------------------
+    # 6-1) Withdrawal gate (Request I/O boundary)
+    # ----------------------------------------------------------------------
+
+    def enforce_withdrawal_gate!
+      return unless logged_in?
+      return unless current_resource
+      return unless current_resource.respond_to?(:deactivated?)
+      return unless current_resource.deactivated?
+
+      # Allowlist: configuration edit and withdrawal flow
+      return if withdrawal_gate_allowlisted?
+
+      # API/JSON: return 403 Forbidden
+      if request.format.json? || !request.format.html?
+        render json: { error: "WITHDRAWAL_REQUIRED" }, status: :forbidden
+        return
       end
 
-      def cookie_deletion_options
-        opts = { path: "/" }
-        opts[:domain] = shared_cookie_domain if shared_cookie_domain
-        opts
+      # HTML: redirect to configuration edit page
+      safe_redirect_to(withdrawal_gate_redirect_path, fallback: "/configuration/edit", status: :found)
+    end
+
+    def withdrawal_gate_allowlisted?
+      # Allowlist: configuration edit
+      return true if controller_path.end_with?("/configurations") && action_name == "edit"
+
+      # Allowlist: withdrawal controller actions
+      return true if controller_path.end_with?("configuration/withdrawals") && %w(new edit update
+                                                                                  create).include?(action_name)
+
+      # Allowlist: health/assets (rarely needed but safe)
+      return true if controller_path == "rails/health"
+
+      false
+    end
+
+    def withdrawal_gate_redirect_path
+      if respond_to?(:edit_sign_app_configuration_path, true)
+        edit_sign_app_configuration_path(ri: params[Auth::IoKeys::Params::RI])
+      elsif respond_to?(:edit_sign_org_configuration_path, true)
+        edit_sign_org_configuration_path(ri: params[Auth::IoKeys::Params::RI])
+      else
+        "/configuration/edit"
+      end
+    rescue StandardError => e
+      Rails.logger.error("Failed to resolve configuration edit path: #{e.message}")
+      "/configuration/edit"
+    end
+
+    # ----------------------------------------------------------------------
+    # 6-2) Cookie/session/header accessors (I/O boundary)
+    # ----------------------------------------------------------------------
+    def cookie_options
+      Core::CookieOptions.for(
+        surface: Core::Surface.current(request),
+        request: request,
+        httponly: true,
+        secure: Rails.env.production?,
+        same_site: :lax,
+        path: "/",
+      )
+    end
+
+    def cookie_deletion_options
+      Core::CookieOptions.for(
+        surface: Core::Surface.current(request),
+        request: request,
+        same_site: :lax,
+        path: "/",
+      ).except(:expires, :httponly, :secure, :same_site)
+    end
+
+    def device_cookie_key
+      Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
+    end
+
+    def device_cookie_options
+      cookie_options.merge(expires: REFRESH_TOKEN_TTL.from_now)
+    end
+
+    def set_device_id_cookie!(device_id)
+      cookies.encrypted[device_cookie_key] = device_cookie_options.merge(value: device_id)
+    end
+
+    def clear_device_id_cookie!
+      cookies.delete(device_cookie_key, cookie_deletion_options)
+    end
+
+    def clear_auth_cookies!
+      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      clear_device_id_cookie!
+      @current_resource = nil
+    end
+
+    def read_device_id_cookie
+      cookies.encrypted[device_cookie_key].to_s.presence
+    end
+
+    def set_auth_cookies(access_token:, refresh_token:, device_id:)
+      # Access cookie
+      cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
+        value: access_token,
+        expires: ACCESS_TOKEN_TTL.from_now,
+      )
+      # Refresh cookie - use regular cookies (not encrypted)
+      cookies[REFRESH_COOKIE_KEY] = cookie_options.merge(
+        value: refresh_token,
+        expires: REFRESH_TOKEN_TTL.from_now,
+      )
+      set_device_id_cookie!(device_id)
+    end
+
+    def extract_access_token(cookie_key)
+      return nil unless respond_to?(:request, true) && request
+
+      auth_header = request.headers[Auth::IoKeys::Headers::AUTHORIZATION]
+      if auth_header.present?
+        prefix, token = auth_header.split(" ", 2)
+        return token if prefix.casecmp("Bearer").zero? && token.present?
       end
 
-      def set_auth_cookies(access_token:, refresh_token:)
-        # Access cookie
-        cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
-          value: access_token,
-          expires: ACCESS_TOKEN_TTL.from_now,
+      cookies[cookie_key]
+    end
+
+    # ----------------------------------------------------------------------
+    # 6-3) Audit/occurrence writing (side-effect boundary)
+    # ----------------------------------------------------------------------
+    def record_audit(event_id, resource:, actor: resource)
+      return unless resource && event_id
+
+      Rails.logger.debug { "[Auth] record_audit: Event #{event_id}, Resource #{resource&.id}" }
+
+      # Delegate to AuditWriter with best-effort semantics
+      # This ensures audit failures do not block authentication
+      Auth::AuditWriter.write(
+        audit_class,
+        event_id,
+        resource: resource,
+        actor: actor,
+        ip_address: request_ip_address,
+      )
+    end
+
+    def write_refresh_occurrence(event_type:, token_record:, reason:, device_source:)
+      model_class = occurrence_model_class
+      return unless model_class
+
+      body = SecureRandom.uuid
+      token_record_id = token_record&.public_id
+
+      model_class.create!(
+        body: body,
+        event_type: event_type,
+        status_id: 1,
+        context: {
+          host: request.host,
+          request_id: request.request_id,
+          ip_hash: occurrence_ip_hash,
+          device_source: device_source,
+          token_family_id: token_record&.refresh_token_family_id,
+          token_id: token_record_id,
+          generation: token_record&.refresh_token_generation,
+          reason: reason,
+        },
+      )
+    rescue StandardError => e
+      Rails.event.notify(
+        "#{resource_type}.occurrence.write_failed",
+        event_type: event_type,
+        reason: reason,
+        error_class: e.class.name,
+        error_message: e.message,
+      )
+    end
+
+    def occurrence_model_class
+      return UserOccurrence if resource_type == "user"
+      return StaffOccurrence if resource_type == "staff"
+
+      nil
+    end
+
+    def occurrence_ip_hash
+      ip = request_ip_address.to_s
+      secret = ENV["OCCURRENCE_HMAC_SECRET"].presence || Rails.application.secret_key_base
+      OpenSSL::HMAC.hexdigest("SHA256", secret, ip)
+    end
+
+    # ----------------------------------------------------------------------
+    # 6-4) Refresh error handling and token/device guards
+    # ----------------------------------------------------------------------
+    def handle_missing_refresh_token(refresh_public_id)
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: "token_not_found",
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { reason: "token_not_found" },
+      )
+
+      nil
+    end
+
+    def handle_inactive_resource(resource, refresh_public_id, token_record)
+      if resource.respond_to?(:deactivated?) && resource.deactivated?
+        set_refresh_failure!(:forbidden, "withdrawal_required")
+      else
+        set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+      end
+
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        "#{resource_type}_id": resource&.id,
+        refresh_token_id: refresh_public_id,
+        reason: "#{resource_type}_inactive",
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_id: resource&.id,
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { reason: "#{resource_type}_inactive" },
+      )
+
+      # S3: Do not destroy token - only revoke it
+      # This prevents destructive behavior in transparent refresh
+      TokenRecord.connected_to(role: :writing) do
+        next if token_record.blank?
+
+        now = Time.current
+        family_id = token_record.refresh_token_family_id.to_s
+        expiry_column = token_expiry_column(token_record.class)
+        expiry_attrs = { expiry_column => now, :updated_at => now }
+        expiry_attrs[:revoked_at] =
+          now if expiry_column == :expired_at && token_record.class.column_names.include?("revoked_at")
+        if family_id.present?
+          token_record.class.where(:refresh_token_family_id => family_id, expiry_column => nil)
+            .update_all(expiry_attrs)
+        elsif token_record.public_send(expiry_column).nil?
+          token_record.update!(expiry_attrs.except(:updated_at))
+        end
+      end
+      nil
+    end
+
+    def build_refreshed_session(resource, token_record, new_refresh_plain, previous_token_record: nil)
+      new_access_token = Token.encode(
+        resource,
+        host: request.host,
+        session_public_id: token_record.public_id,
+        resource_type: resource_type,
+      )
+
+      set_auth_cookies(
+        access_token: new_access_token,
+        refresh_token: new_refresh_plain,
+        device_id: token_record.device_id,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "refresh_rotated",
+        user_id: resource.id,
+        user_token_id: token_record.public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+      )
+
+      Rails.event.notify(
+        "#{resource_type}.token.refreshed",
+        "#{resource_type}_id": resource.id,
+        old_refresh_token_id: previous_token_record&.public_id || token_record.public_id,
+        new_refresh_token_id: token_record.public_id,
+        ip_address: request_ip_address,
+      )
+
+      # S1: Audit with best-effort semantics - failure does not block refresh
+      # AuditWriter.write handles exceptions internally and notifies observers
+      record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
+
+      Sign::Risk::Enforcer.call(resource)
+
+      {
+        access_token: new_access_token,
+        refresh_token: new_refresh_plain,
+        token_type: "Bearer",
+        expires_in: ACCESS_TOKEN_TTL.to_i,
+        user: resource,
+      }
+    end
+
+    def request_ip_address
+      (respond_to?(:request, true) && request) ? request.remote_ip : nil
+    end
+
+    def handle_invalid_refresh_token(exception, refresh_public_id, token_record = nil)
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+
+      if exception.message == "refresh_token_reuse_detected"
+        write_refresh_occurrence(
+          event_type: "refresh_reuse_detected",
+          token_record: token_record || find_refresh_token_record(refresh_public_id),
+          reason: "reuse",
+          device_source: refresh_device_source,
         )
-        # Refresh cookie - use regular cookies (not encrypted)
-        cookies[REFRESH_COOKIE_KEY] = cookie_options.merge(
-          value: refresh_token,
-          expires: REFRESH_TOKEN_TTL.from_now,
-        )
       end
 
-      def shared_cookie_domain
-        @shared_cookie_domain ||= resolve_cookie_domain
-      end
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: exception.class.name,
+        ip_address: request_ip_address,
+      )
 
-      def derive_cookie_domain_from_host
-        return nil unless request&.host
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { reason: exception.class.name },
+      )
 
-        host_parts = request.host.split(".")
-        return nil if host_parts.length < 2
+      nil
+    end
 
-        host_parts.last(2).join(".")
-      end
+    def handle_refresh_device_denied(token_record, refresh_public_id)
+      reason = @refresh_device_reason || "missing"
+      event_type = (reason == "mismatch") ? "refresh_device_mismatch" : "refresh_device_missing"
+      write_refresh_occurrence(
+        event_type: event_type,
+        token_record: token_record,
+        reason: reason,
+        device_source: refresh_device_source,
+      )
 
-      def formatted_domain(value)
-        return nil if value.blank?
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+      destroy_refresh_token_from_cookie
+      clear_auth_cookies!
 
-        value.start_with?(".") ? value : ".#{value}"
-      end
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: "device_#{reason}",
+        ip_address: request_ip_address,
+      )
 
-      def extract_access_token(cookie_key)
-        return nil unless respond_to?(:request, true) && request
+      nil
+    end
 
-        auth_header = request.headers["Authorization"]
-        if auth_header.present?
-          prefix, token = auth_header.split(" ", 2)
-          return token if prefix.casecmp("Bearer").zero? && token.present?
-        end
+    def handle_refresh_error(exception, refresh_public_id, resource)
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
 
-        cookies[cookie_key]
-      end
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.error",
+        "#{resource_type}_id": resource&.id,
+        refresh_token_id: refresh_public_id,
+        error_message: exception.message,
+        ip_address: request_ip_address,
+      )
 
-      def record_audit(event_id, resource:, actor: resource)
-        return unless resource && event_id
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_id: resource&.id,
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { error_class: exception.class.name },
+      )
 
-        audit = audit_class.new(
-          actor: actor,
-          event_id: event_id,
-          ip_address: request_ip_address,
-          occurred_at: Time.current,
-        )
-        audit.public_send("#{resource_type}=", resource)
-        audit.save!
-      end
+      nil
+    end
 
-      def request_ip_address
-        (respond_to?(:request, true) && request) ? request.remote_ip : nil
-      end
+    def handle_restricted_refresh_rejected(token_record, refresh_public_id)
+      expired = token_record.refresh_expires_at.present? && token_record.refresh_expires_at <= Time.current
 
-      def load_current_resource
-        if Rails.env.test?
-          resource = load_from_test_header
-          return resource if resource
-        end
-
-        resource = load_from_token
-        return nil if resource_withdrawn?(resource)
-
-        resource
-      end
-
-      def load_from_test_header
-        return nil unless respond_to?(:request, true) && request
-
-        test_id = request.headers[test_header_key]
-        return nil unless test_id
-
-        resource = resource_class.find_by(id: test_id)
-        @bypass_withdrawn_check = true if resource
-        resource
-      end
-
-      # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      def load_from_token
-        access_token = extract_access_token(ACCESS_COOKIE_KEY)
-        return nil if access_token.blank?
-
-        payload = Token.decode(access_token, host: request.host)
-        return nil if payload.blank?
-        return nil unless Token.extract_type(payload) == resource_type
-
-        sid = Token.extract_session_id(payload)
-        return nil if sid.blank?
-
-        # Use replica for reading, but skip connected_to in tests to ensure transaction visibility
-        check_logic =
-          -> {
-            scope = token_class.where(public_id: sid)
-            scope = scope.where(revoked_at: nil) if token_class.column_names.include?("revoked_at")
-            scope.exists?
-          }
-
-        token_exists =
-          if Rails.env.test?
-            check_logic.call
-          else
-            TokenRecord.connected_to(role: :reading, &check_logic)
-          end
-        return nil unless token_exists
-
-        @current_session_public_id = sid
-
-        resource_class.find_by(id: Token.extract_subject(payload))
-      end
-
-      # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-
-      def resource_withdrawn?(resource)
-        return false unless resource&.respond_to?(:active?)
-        return false if @bypass_withdrawn_check
-
-        !resource.active?
-      end
-
-      def refresh_token_from_cookie
-        token_value = cookies[REFRESH_COOKIE_KEY]
-        return if token_value.blank?
-
-        public_id, = token_class.parse_refresh_token(token_value)
-        return if public_id.blank?
-
-        finder =
-          -> {
-            token_class.find_by(public_id: public_id)
-          }
-
-        if Rails.env.test?
-          finder.call
-        else
-          TokenRecord.connected_to(role: :writing, &finder)
-        end
-      end
-
-      def revoke_refresh_token_from_cookie(reason: "logout")
-        token = refresh_token_from_cookie
-        return unless token
-        return if token.respond_to?(:revoked?) && token.revoked?
-
-        token.revoke!(reason: reason)
-      rescue ActiveRecord::RecordInvalid => e
-        Rails.event.notify(
-          "#{resource_type}.token.revoke.failed",
-          token_id: token&.public_id,
-          error_message: e.message,
-          ip_address: request_ip_address,
-        )
-      end
-
-      def resolve_cookie_domain
-        configured = ENV["SIGN_COOKIE_DOMAIN"]&.strip
-        return formatted_domain(configured) if configured.present?
-
-        derived = derive_cookie_domain_from_host
-        formatted_domain(derived)
-      end
-
-      # Handles session expiry by redirecting with appropriate message
-      #
-      # @param redirect_path [String, Symbol] Where to redirect
-      # @param message_key [String] Translation key for the expiry message
-      def handle_session_expiry(redirect_path, message_key)
-        redirect_params = { notice: t(message_key) }
-        # Preserve redirect parameter if present
-        redirect_params[:rd] = session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
-        redirect_to redirect_path, redirect_params
-      end
-
-      # --- Policy enforcement methods ---
-
-      def enforce_access_policy!
-        rule = resolve_policy_rule
-
-        policy = rule[:policy]
-        options = rule[:options] || {}
-
-        Rails.logger.warn(
-          "AUTH_POLICY: Resolved #{policy} for #{self.class.name}##{action_name} " \
-          "(Rules: #{self.class.access_policy_rules.size})",
-        )
-
-        case policy
-        when :public_strict
-          enforce_public_strict!(options)
-        when :auth_required
-          enforce_auth_required!(options)
-        when :guest_only
-          enforce_guest_only!(options)
-        else
-          raise InvalidPolicyError, "Unexpected policy: #{policy.inspect}"
-        end
-      end
-
-      def resolve_policy_rule
-        rule = resolve_access_policy_for(action_name)
-
-        if rule.nil?
-          Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
-          raise MissingPolicyError,
-                "Missing access_policy for #{self.class.name}##{action_name}. " \
-                "Declare one of: #{VALID_POLICIES.join(", ")}"
-        end
-        rule
-      end
-
-      def resolve_access_policy_for(action)
-        action = action.to_s
-
-        # Last rule wins so controller-wide policies can be overridden per action.
-        rules = self.class.access_policy_rules
-        return nil if rules.blank?
-
-        rules.reverse_each do |rule|
-          next if rule[:only].present? && rule[:only].exclude?(action)
-          next if rule[:except].present? && rule[:except].include?(action)
-
-          return rule
-        end
-
-        nil
-      end
-
-      # --- Behavior implementation (align with your auth stack) ---
-
-      def enforce_public_strict!(_options = {})
-        # If you avoid touching current_user/current_resource here,
-        # the safest default is to do nothing.
-        true
-      end
-
-      def enforce_auth_required!(options = {})
-        # Example: use Auth::Base logged_in? / current_resource.
-        return true if respond_to?(:logged_in?) && logged_in?
-
-        # Branch HTML vs API (or delegate to your responder).
-        if request.format.json? || options[:request_format] == :json
-          handle_auth_required_json(options)
-        else
-          handle_auth_required_html(options)
-        end
-      end
-
-      def enforce_guest_only!(options = {})
-        # Guest-only policy: block logged-in users.
-        return true unless respond_to?(:logged_in?) && logged_in?
-
-        if request.format.json? || options[:request_format] == :json
-          handle_guest_only_json(options)
-        else
-          handle_guest_only_with_status_checks(options)
-        end
-      end
-
-      def create_login_token_record(resource, token_kind_id)
+      expiry_column = token_expiry_column(token_record.class)
+      if expired && token_record.public_send(expiry_column).nil?
         TokenRecord.connected_to(role: :writing) do
-          token_attributes = { resource_foreign_key => resource.id }
-          # Determine kind column based on resource type (user_token_kind_id or staff_token_kind_id)
-          kind_column = "#{resource_type}_token_kind_id"
-          token_attributes[kind_column] = token_kind_id if token_class.column_names.include?(kind_column)
+          token_record.revoke!
+        end
+        Rails.event.notify(
+          "session.restricted.expired",
+          user_token_id: token_record.public_id,
+          "#{resource_type}_id": token_record.public_send("#{resource_type}_id"),
+        )
+      end
 
-          token_class.create!(token_attributes)
+      set_refresh_failure!(:forbidden, "restricted_session")
+
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: expired ? "restricted_expired" : "restricted_session",
+        ip_address: request_ip_address,
+      )
+
+      nil
+    end
+
+    def find_refresh_token_record(refresh_public_id)
+      return nil if refresh_public_id.blank?
+
+      find_logic = -> { token_class.find_by(public_id: refresh_public_id) }
+      TokenRecord.connected_to(role: :reading, &find_logic)
+    end
+
+    def set_refresh_failure!(status, code)
+      @refresh_failure_status = status
+      @refresh_failure_code = code
+    end
+
+    def clear_refresh_failure!
+      @refresh_failure_status = nil
+      @refresh_failure_code = nil
+      @refresh_device_reason = nil
+    end
+
+    def refresh_device_allowed?(token_record)
+      header_device_id = request.headers[Auth::IoKeys::Headers::DEVICE_ID].to_s.presence
+      cookie_device_id = read_device_id_cookie
+
+      if header_device_id.blank? && cookie_device_id.blank?
+        # In test environment, allow missing device ID to simplify tests
+        # ONLY if not explicitly requested via a strict-check header.
+        if Rails.env.test? && request.headers[Auth::IoKeys::Headers::STRICT_DEVICE_CHECK].blank?
+          return true
+        end
+
+        @refresh_device_reason = "missing"
+        return false
+      end
+
+      if header_device_id.present? && cookie_device_id.present? && header_device_id != cookie_device_id
+        @refresh_device_reason = "mismatch"
+        return false
+      end
+
+      extracted_device_id = header_device_id || cookie_device_id
+      return true if token_record.blank?
+
+      token_device_id = token_record.device_id.to_s
+      if token_device_id.blank? || token_device_id != extracted_device_id
+        @refresh_device_reason = "mismatch"
+        return false
+      end
+
+      true
+    end
+
+    def refresh_device_source
+      header_present = request.headers[Auth::IoKeys::Headers::DEVICE_ID].to_s.present?
+      cookie_present = read_device_id_cookie.present?
+      return "both" if header_present && cookie_present
+      return "header" if header_present
+      return "cookie" if cookie_present
+
+      "none"
+    end
+
+    def load_current_resource
+      if Rails.env.test?
+        resource = load_from_test_header
+        return resource if resource
+      end
+
+      resource = load_from_token
+      return nil if resource_withdrawn?(resource)
+
+      resource
+    end
+
+    def load_from_test_header
+      return nil unless respond_to?(:request, true) && request
+
+      header_key = test_header_key
+      test_id = request.headers[header_key]
+      if test_id.blank? && header_key == Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE
+        test_id = request.headers[Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE] ||
+          request.headers[Auth::IoKeys::Headers::TEST_CURRENT_USER] ||
+          request.headers[Auth::IoKeys::Headers::TEST_CURRENT_STAFF] ||
+          request.headers[Auth::IoKeys::Headers::TEST_CURRENT_VIEWER]
+      end
+      return nil unless test_id
+
+      resource = resource_class.find_by(id: test_id)
+      if resource
+        @bypass_withdrawn_check = true
+        test_session_id = request.headers[Auth::IoKeys::Headers::TEST_SESSION_PUBLIC_ID]
+        @current_session_public_id = test_session_id if test_session_id.present?
+      end
+      resource
+    end
+
+    def load_from_token
+      access_token = extract_access_token(ACCESS_COOKIE_KEY)
+      request_host = request&.host
+      return nil if request_host.blank?
+
+      result = Auth::CurrentResourceResolver.new(
+        access_token: access_token,
+        request_host: request_host,
+        resource_type: resource_type,
+        resource_class: resource_class,
+        token_class: token_class,
+        test_env: Rails.env.test?,
+      ).call
+
+      emit_actor_mismatch_event(result.payload) if result.failure_reason == :actor_mismatch
+      @current_session_public_id = result.session_public_id if result.session_public_id.present?
+      result.resource
+    end
+
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+
+    def emit_actor_mismatch_event(payload)
+      act = Token.extract_act(payload)
+      sub = Token.extract_subject(payload)
+
+      Rails.event.notify(
+        "authentication.actor_mismatch",
+        expected: resource_type,
+        actual: act,
+        subject: sub,
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "actor_mismatch",
+        user_id: sub,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { expected: resource_type, actual: act },
+      )
+    end
+
+    def resource_withdrawn?(resource)
+      return false unless resource&.respond_to?(:withdrawn?)
+      return false if @bypass_withdrawn_check
+
+      resource.withdrawn?
+    end
+
+    def destroy_refresh_token_from_cookie
+      # Use regular cookies (not encrypted)
+      token_value = cookies[REFRESH_COOKIE_KEY]
+      return unless token_value
+
+      public_id, = token_class.parse_refresh_token(token_value)
+      return unless public_id
+
+      destroy_logic =
+        -> {
+          token_class.find_by(public_id: public_id)&.destroy
+        }
+
+      if Rails.env.test?
+        destroy_logic.call
+      else
+        TokenRecord.connected_to(role: :writing, &destroy_logic)
+      end
+    rescue ActiveRecord::RecordNotDestroyed => e
+      Rails.event.notify(
+        "#{resource_type}.token.destroy.failed",
+        token_id: public_id,
+        error_message: e.message,
+        ip_address: request_ip_address,
+      )
+    end
+
+    # Handles session expiry by redirecting with appropriate message
+    #
+    # @param redirect_path [String, Symbol] Where to redirect
+    # @param message_key [String] Translation key for the expiry message
+    def handle_session_expiry(redirect_path, message_key)
+      redirect_params = { notice: t(message_key) }
+      # Preserve redirect parameter if present
+      default_rd_key = Auth::IoKeys::Session::DEFAULT_RD
+      redirect_params[Auth::IoKeys::Params::RD] = session[default_rd_key] if session[default_rd_key].present?
+      redirect_to redirect_path, redirect_params
+    end
+
+    # ======================================================================
+    # 7) Policy/domain decisions
+    # ======================================================================
+    # --- Policy enforcement methods ---
+
+    def enforce_access_policy!
+      rule = resolve_policy_rule
+
+      policy = rule[:policy]
+      options = rule[:options] || {}
+
+      Rails.logger.warn(
+        "AUTH_POLICY: Resolved #{policy} for #{self.class.name}##{action_name} " \
+        "(Rules: #{self.class.access_policy_rules.size})",
+      )
+
+      case policy
+      when :public_strict
+        enforce_public_strict!(options)
+      when :auth_required
+        enforce_auth_required!(options)
+      when :guest_only
+        enforce_guest_only!(options)
+      else
+        raise InvalidPolicyError, "Unexpected policy: #{policy.inspect}"
+      end
+    end
+
+    def resolve_policy_rule
+      rule = resolve_access_policy_for(action_name)
+
+      if rule.nil?
+        Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
+        raise MissingPolicyError,
+              "Missing access_policy for #{self.class.name}##{action_name}. " \
+              "Declare one of: #{VALID_POLICIES.join(", ")}"
+      end
+      rule
+    end
+
+    def resolve_access_policy_for(action)
+      action = action.to_s
+
+      # Last rule wins so controller-wide policies can be overridden per action.
+      rules = self.class.access_policy_rules
+      return nil if rules.blank?
+
+      rules.reverse_each do |rule|
+        next if rule[:only].present? && rule[:only].exclude?(action)
+        next if rule[:except].present? && rule[:except].include?(action)
+
+        return rule
+      end
+
+      nil
+    end
+
+    # --- Behavior implementation (align with your auth stack) ---
+
+    def enforce_public_strict!(_options = {})
+      # If you avoid touching current_user/current_resource here,
+      # the safest default is to do nothing.
+      true
+    end
+
+    def enforce_auth_required!(options = {})
+      # Example: use Auth::Base logged_in? / current_resource.
+      return true if respond_to?(:logged_in?) && logged_in?
+
+      # Branch HTML vs API (or delegate to your responder).
+      if request.format.json? || options[:request_format] == :json
+        handle_auth_required_json(options)
+      else
+        handle_auth_required_html(options)
+      end
+    end
+
+    def enforce_guest_only!(options = {})
+      # Guest-only policy: block logged-in users.
+      return true unless respond_to?(:logged_in?) && logged_in?
+
+      # Exception: deactivated users should be handled by withdrawal gate, not guest_only
+      if current_resource.respond_to?(:deactivated?) && current_resource.deactivated?
+        return true
+      end
+
+      if request.format.json? || options[:request_format] == :json
+        handle_guest_only_json(options)
+      else
+        handle_guest_only_with_status_checks(options)
+      end
+    end
+
+    def create_login_token_record(resource, token_kind_id, status: nil)
+      TokenRecord.connected_to(role: :writing) do
+        token_attributes = { resource_foreign_key => resource.id }
+        # Determine kind column based on resource type (user_token_kind_id or staff_token_kind_id)
+        kind_column = "#{resource_type}_token_kind_id"
+        if token_class.column_names.include?(kind_column)
+          ensure_token_kind_exists!(token_kind_id)
+          token_attributes[kind_column] = token_kind_id
+        end
+
+        # Set status if provided (for restricted sessions)
+        token_attributes[:status] = status if status.present?
+
+        token_class.create!(token_attributes)
+      end
+    end
+
+    def resolve_token_kind_id(raw_kind_id)
+      return raw_kind_id unless raw_kind_id.is_a?(String)
+
+      kind_column = "#{resource_type}_token_kind_id"
+      return raw_kind_id unless token_class.columns_hash[kind_column]&.type == :integer
+
+      kind_model = token_kind_model
+      if kind_model.column_names.include?("code")
+        begin
+          return kind_model.find_by!(code: raw_kind_id).id
+        rescue ActiveRecord::RecordNotFound
+          Rails.logger.error(
+            "AUTH_TOKEN_KIND_MISSING: #{kind_model.name} code=#{raw_kind_id} resource_type=#{resource_type}",
+          )
+          raise ActiveRecord::RecordNotFound,
+                "Missing #{kind_model.name} code=#{raw_kind_id} for #{resource_type} login"
         end
       end
 
-      def check_totp_requirement(resource)
-        return unless resource.respond_to?(:totp_enabled?) && resource.totp_enabled?
+      resolved =
+        case [resource_type, raw_kind_id]
+        when ["staff", "BROWSER_WEB"] then StaffTokenKind::BROWSER_WEB
+        when ["staff", "CLIENT_IOS"] then StaffTokenKind::CLIENT_IOS
+        when ["staff", "CLIENT_ANDROID"] then StaffTokenKind::CLIENT_ANDROID
+        when ["user", "BROWSER_WEB"] then UserTokenKind::BROWSER_WEB
+        when ["user", "CLIENT_IOS"] then UserTokenKind::CLIENT_IOS
+        when ["user", "CLIENT_ANDROID"] then UserTokenKind::CLIENT_ANDROID
+        end
 
-        session[:mfa_user_id] = resource.id
-        { status: :totp_required }
+      return resolved if resolved
+
+      raise ActiveRecord::RecordNotFound, "Missing #{kind_model.name} for code=#{raw_kind_id}"
+    end
+
+    def ensure_token_kind_exists!(token_kind_id)
+      return if token_kind_id.blank?
+
+      kind_model = token_kind_model
+      kind_model.find(token_kind_id)
+    rescue ActiveRecord::RecordNotFound
+      Rails.logger.error(
+        "AUTH_TOKEN_KIND_MISSING: #{kind_model.name} id=#{token_kind_id} resource_type=#{resource_type}",
+      )
+      raise ActiveRecord::RecordNotFound,
+            "Missing #{kind_model.name} id=#{token_kind_id} for #{resource_type} login"
+    end
+
+    def token_kind_model
+      case resource_type
+      when "user" then UserTokenKind
+      when "staff" then StaffTokenKind
+      else
+        raise ActiveRecord::RecordNotFound, "Missing token kind model for resource_type=#{resource_type}"
+      end
+    end
+
+    # ----------------------------------------------------------------------
+    # 7-1) MFA/session-limit domain decisions
+    # ----------------------------------------------------------------------
+    def check_totp_requirement(resource)
+      return unless mfa_required_for?(resource)
+
+      set_pending_mfa!(resource: resource, primary: "mfa")
+      { status: :mfa_required }
+    end
+
+    def set_pending_mfa!(resource:, primary:, return_to: nil, ri: nil, auth_method: nil)
+      issued_at = Time.current.to_i
+      expires_at = pending_mfa_ttl.from_now.to_i
+      session[:pending_mfa] = {
+        "public_id" => SecureRandom.hex(16),
+        "user_id" => resource.id,
+        "resource_type" => resource_type,
+        "primary" => primary.to_s,
+        "auth_method" => auth_method.to_s.presence || primary.to_s,
+        "return_to" => return_to.presence,
+        "ri" => ri.to_s.presence,
+        "issued_at" => issued_at,
+        "expires_at" => expires_at,
+        "attempts" => 0,
+      }
+      # Backward compatibility for existing controllers still using mfa_user_id.
+      session[:mfa_user_id] = resource.id
+    end
+
+    def pending_mfa
+      raw = session[:pending_mfa]
+      return nil unless raw.is_a?(Hash)
+
+      raw.with_indifferent_access
+    end
+
+    def pending_mfa_ttl
+      10.minutes
+    end
+
+    def pending_mfa_valid?
+      data = pending_mfa
+      return false unless data
+
+      expires_at = data[:expires_at].to_i
+      if expires_at.positive?
+        return false if Time.current.to_i >= expires_at
+      else
+        issued_at = data[:issued_at].to_i
+        return false if issued_at <= 0
+        return false if Time.zone.at(issued_at) < pending_mfa_ttl.ago
       end
 
-      # Check if the resource has reached their concurrent session limit
-      def session_limit_exceeded?(resource)
-        max_sessions = max_sessions_for_resource(resource)
-        active_count = count_active_sessions(resource)
-        active_count >= max_sessions
-      end
+      true
+    end
 
-      # Returns the maximum allowed concurrent sessions for a resource
-      def max_sessions_for_resource(resource)
-        if resource.is_a?(User)
-          UserToken::MAX_SESSIONS_PER_USER
-        elsif resource.is_a?(Staff)
-          StaffToken::MAX_SESSIONS_PER_STAFF
+    def pending_mfa_user
+      return nil unless pending_mfa_valid?
+
+      user_id = pending_mfa[:user_id]
+      return nil if user_id.blank?
+
+      klass = respond_to?(:resource_class, true) ? resource_class : ::User
+      klass.find_by(id: user_id)
+    end
+
+    def clear_pending_mfa!
+      session.delete(:pending_mfa)
+      session.delete(:mfa_user_id)
+    end
+
+    # Completes login after successful MFA verification.
+    # Consumes the pending MFA session, logs in the user, and returns a result hash
+    # with redirect information.
+    #
+    # @param user [User] the user to log in
+    # @return [Hash] result with :status, :redirect_path, etc.
+    def finalize_mfa_login!(user)
+      return_to = pending_mfa&.dig(:return_to)
+      clear_pending_mfa!
+
+      result = log_in(user, require_totp_check: false)
+
+      if result[:status] == :session_limit_hard_reject
+        { status: :session_limit_hard_reject, message: result[:message], http_status: result[:http_status] }
+      elsif result[:restricted]
+        { status: :restricted, redirect_path: session_management_path }
+      else
+        { status: :success, redirect_path: return_to.presence }
+      end
+    end
+
+    def session_management_path
+      if respond_to?(:sign_app_in_session_path, true)
+        sign_app_in_session_path
+      elsif respond_to?(:sign_org_in_session_path, true)
+        sign_org_in_session_path
+      else
+        "/in/session"
+      end
+    rescue StandardError
+      "/in/session"
+    end
+
+    # Default redirect destination after login for guest_only! policy.
+    # Override in controllers to customize (e.g. to preserve ri parameter).
+    def after_login_path
+      default_after_login_path
+    end
+
+    def default_after_login_path
+      if respond_to?(:sign_app_root_path, true)
+        sign_app_root_path
+      elsif respond_to?(:sign_org_root_path, true)
+        sign_org_root_path
+      else
+        "/"
+      end
+    rescue StandardError
+      "/"
+    end
+
+    def complete_sign_in_or_start_mfa!(resource, rt:, ri:, auth_method:, token_kind_id: "BROWSER_WEB",
+                                       record_login_audit: true)
+      auth_method = auth_method.to_s
+      return log_in(
+        resource, record_login_audit: record_login_audit, token_kind_id: token_kind_id,
+                  require_totp_check: false,
+      ) if mfa_bypassed_for_auth_method?(auth_method) || !mfa_required_for?(resource)
+
+      return_to = resolve_mfa_return_to(rt)
+      set_pending_mfa!(
+        resource: resource, primary: auth_method, return_to: return_to, ri: ri,
+        auth_method: auth_method,
+      )
+
+      {
+        status: :mfa_required,
+        redirect_path: mfa_entry_path(ri: ri),
+        return_to: return_to,
+      }
+    end
+
+    # Determine concurrent-session handling state for the resource.
+    def session_limit_state_for(resource)
+      max_sessions = max_sessions_for_resource(resource)
+      active_count = count_active_sessions(resource)
+
+      return :within_limit if active_count < max_sessions
+      return :hard_reject if restricted_session_exists?(resource)
+
+      :issue_restricted
+    end
+
+    # Returns the maximum allowed concurrent sessions for a resource
+    def max_sessions_for_resource(resource)
+      if resource.is_a?(::User)
+        ::UserToken::MAX_SESSIONS_PER_USER
+      elsif resource.is_a?(::Staff)
+        ::StaffToken::MAX_SESSIONS_PER_STAFF
+      else
+        2 # Default fallback
+      end
+    end
+
+    # Count active (non-revoked, non-restricted) sessions for a resource
+    def count_active_sessions(resource)
+      if resource.is_a?(::User)
+        ::UserToken.active_status.where(user_id: resource.id).count
+      elsif resource.is_a?(::Staff)
+        ::StaffToken.active_status.where(staff_id: resource.id).count
+      else
+        0
+      end
+    end
+
+    def restricted_session_exists?(resource)
+      scope = find_restricted_sessions_scope(resource)
+      scope.present? && scope.exists?
+    end
+
+    def find_restricted_sessions_scope(resource)
+      if resource.is_a?(::User)
+        ::UserToken.restricted_status.where(user_id: resource.id)
+      elsif resource.is_a?(::Staff)
+        ::StaffToken.restricted_status.where(staff_id: resource.id)
+      end
+    end
+
+    def restricted_session_expires_at
+      ttl = token_class.const_defined?(:RESTRICTED_TTL) ? token_class::RESTRICTED_TTL : RESTRICTED_SESSION_TTL
+      Time.current + ttl
+    end
+
+    # Store the pending login resource ID for session management
+    def store_pending_login_resource(resource)
+      if resource.is_a?(::User)
+        session[:pending_login_user_id] = resource.id
+      elsif resource.is_a?(::Staff)
+        session[:pending_login_staff_id] = resource.id
+      end
+    end
+
+    # ======================================================================
+    # 8) Session/MFA helper reads + response shapers
+    # ======================================================================
+    # Get the current session token record
+    def current_session
+      return @current_session if defined?(@current_session)
+      return nil unless current_session_public_id
+
+      expiry_column = token_expiry_column(token_class)
+      find_logic = -> { token_class.find_by(:public_id => current_session_public_id, expiry_column => nil) }
+
+      @current_session =
+        if Rails.env.test?
+          # Ensure visibility by using writing connection which holds the test transaction
+          TokenRecord.connected_to(role: :writing, &find_logic)
         else
-          2 # Default fallback
+          TokenRecord.connected_to(role: :reading, &find_logic)
         end
-      end
+    end
 
-      # Count active (non-revoked) sessions for a resource
-      def count_active_sessions(resource)
-        if resource.is_a?(User)
-          UserToken.where(user_id: resource.id, revoked_at: nil).count
-        elsif resource.is_a?(Staff)
-          StaffToken.where(staff_id: resource.id, revoked_at: nil).count
+    # Check if the current session is restricted
+    def current_session_restricted?
+      current_session&.restricted?
+    end
+
+    def token_expiry_column(klass)
+      return :expired_at if klass.column_names.include?("expired_at")
+      return :revoked_at if klass.column_names.include?("revoked_at")
+
+      raise "#{klass.name} does not have expired_at/revoked_at column"
+    end
+
+    def mfa_required_for?(resource)
+      return false unless resource.is_a?(::User)
+      return false unless resource.respond_to?(:multi_factor_enabled?)
+
+      resource.multi_factor_enabled?
+    end
+
+    def mfa_bypassed_for_auth_method?(auth_method)
+      %w(passkey social google apple).include?(auth_method.to_s)
+    end
+
+    def resolve_mfa_return_to(raw_value)
+      return nil if raw_value.blank?
+
+      decoded = decode_base64_urlsafe(raw_value)
+      candidate = decoded.presence || raw_value
+
+      safe_internal_path(candidate)
+    end
+
+    def decode_base64_urlsafe(value)
+      Base64.urlsafe_decode64(value.to_s)
+    rescue ArgumentError
+      nil
+    end
+
+    def mfa_entry_path(ri: nil)
+      if respond_to?(:sign_app_in_challenge_path, true)
+        sign_app_in_challenge_path(ri: ri)
+      elsif respond_to?(:sign_org_in_challenge_path, true)
+        sign_org_in_challenge_path(ri: ri)
+      else
+        "/in/challenge"
+      end
+    rescue StandardError
+      "/in/challenge"
+    end
+
+    def handle_auth_required_json(options)
+      status = options[:status] || :unauthorized
+      render json: { error: (options[:message] || "unauthorized") }, status: status
+    end
+
+    def handle_auth_required_html(options)
+      path =
+        if respond_to?(:sign_in_url_with_return, true)
+          rt = Base64.urlsafe_encode64(request.original_url)
+          sign_in_url_with_return(rt)
+        elsif main_app.respond_to?(:sign_in_path)
+          main_app.sign_in_path
         else
-          0
+          "/sign/in"
         end
+      message = options[:message] || I18n.t("errors.messages.login_required")
+      redirect_to(path, allow_other_host: true, alert: message)
+    end
+
+    def handle_guest_only_json(options)
+      status = options[:status] || :forbidden
+      render json: { error: (options[:message] || "already_authenticated") }, status: status
+    end
+
+    def handle_guest_only_with_status_checks(options)
+      if options[:status] == :unauthorized
+        return render plain: (options[:message] || "権限がありません"), status: :unauthorized
+      end
+      if options[:status] == :bad_request
+        return render plain: (options[:message] || "リクエストが不正です"), status: :bad_request
       end
 
-      # Store the pending login resource ID for session management
-      SESSION_LIMIT_PENDING_FLAG = :session_limit_pending
-      SESSION_LIMIT_PENDING_USER_KEY = :session_limit_pending_user_id
-      SESSION_LIMIT_PENDING_STAFF_KEY = :session_limit_pending_staff_id
+      handle_guest_only_html(options)
+    end
 
-      def store_pending_login_resource(resource)
-        if resource.is_a?(User)
-          session[:pending_login_user_id] = resource.id
-        elsif resource.is_a?(Staff)
-          session[:pending_login_staff_id] = resource.id
-        end
-      end
-
-      def mark_session_limit_pending!(resource)
-        store_pending_login_resource(resource)
-        if resource.is_a?(User)
-          session[SESSION_LIMIT_PENDING_USER_KEY] = resource.id
-        elsif resource.is_a?(Staff)
-          session[SESSION_LIMIT_PENDING_STAFF_KEY] = resource.id
-        end
-        session[SESSION_LIMIT_PENDING_FLAG] = true
-      end
-
-      def clear_pending_login_resource!
-        session.delete(:pending_login_user_id)
-        session.delete(:pending_login_staff_id)
-        clear_session_limit_pending!
-      end
-
-      def clear_session_limit_pending!
-        session.delete(SESSION_LIMIT_PENDING_FLAG)
-        session.delete(SESSION_LIMIT_PENDING_USER_KEY)
-        session.delete(SESSION_LIMIT_PENDING_STAFF_KEY)
-      end
-
-      def session_limit_pending?
-        session[SESSION_LIMIT_PENDING_FLAG].present?
-      end
-
-      def session_limit_pending_user_id
-        session[SESSION_LIMIT_PENDING_USER_KEY]
-      end
-
-      def session_limit_pending_staff_id
-        session[SESSION_LIMIT_PENDING_STAFF_KEY]
-      end
-
-      def session_limit_pending_user
-        return unless session_limit_pending_user_id
-
-        if defined?(@session_limit_pending_user)
-          @session_limit_pending_user
+    def handle_guest_only_html(options)
+      path =
+        if respond_to?(:after_login_path, true)
+          after_login_path
+        elsif main_app.respond_to?(:after_login_path)
+          main_app.after_login_path
         else
-          @session_limit_pending_user = User.find_by(id: session_limit_pending_user_id)
+          "/"
         end
-      end
-
-      def session_limit_pending_staff
-        return unless session_limit_pending_staff_id
-
-        if defined?(@session_limit_pending_staff)
-          @session_limit_pending_staff
-        else
-          @session_limit_pending_staff = Staff.find_by(id: session_limit_pending_staff_id)
-        end
-      end
-
-      def handle_auth_required_json(options)
-        status = options[:status] || :unauthorized
-        render json: { error: (options[:message] || "unauthorized") }, status: status
-      end
-
-      def handle_auth_required_html(options)
-        path =
-          if respond_to?(:sign_in_url_with_return, true)
-            rt = Base64.urlsafe_encode64(request.original_url)
-            sign_in_url_with_return(rt)
-          elsif main_app.respond_to?(:sign_in_path)
-            main_app.sign_in_path
-          else
-            "/sign/in"
-          end
-        message = options[:message] || I18n.t("errors.messages.login_required")
-        redirect_to(path, allow_other_host: true, alert: message)
-      end
-
-      def handle_guest_only_json(options)
-        status = options[:status] || :forbidden
-        render json: { error: (options[:message] || "already_authenticated") }, status: status
-      end
-
-      def handle_guest_only_with_status_checks(options)
-        if options[:status] == :unauthorized
-          return render plain: (options[:message] || "権限がありません"), status: :unauthorized
-        end
-        if options[:status] == :bad_request
-          return render plain: (options[:message] || "リクエストが不正です"), status: :bad_request
-        end
-
-        handle_guest_only_html(options)
-      end
-
-      def handle_guest_only_html(options)
-        path =
-          if respond_to?(:after_login_path, true)
-            after_login_path
-          elsif main_app.respond_to?(:after_login_path)
-            main_app.after_login_path
-          else
-            "/"
-          end
-        message = options[:message] || I18n.t("errors.messages.already_authenticated")
-        redirect_to(path, allow_other_host: true, alert: message)
-      end
+      message = options[:message] || I18n.t("errors.messages.already_authenticated")
+      redirect_to(path, allow_other_host: false, alert: message)
+    end
   end
 end

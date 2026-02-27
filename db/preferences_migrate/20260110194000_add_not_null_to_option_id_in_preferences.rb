@@ -1,44 +1,22 @@
 # frozen_string_literal: true
 
 class AddNotNullToOptionIdInPreferences < ActiveRecord::Migration[8.2]
-  disable_ddl_transaction!
-  TABLES = %i[
-    org_preference_timezones
-    org_preference_regions
-    org_preference_languages
-    org_preference_colorthemes
+  def change
+    safety_assured do
+      change_column_null :org_preference_timezones, :option_id, false, "Asia/Tokyo"
+      change_column_null :org_preference_regions, :option_id, false, "JP"
+      change_column_null :org_preference_languages, :option_id, false, "JA"
+      change_column_null :org_preference_colorthemes, :option_id, false, "system"
 
-    com_preference_timezones
-    com_preference_regions
-    com_preference_languages
-    com_preference_colorthemes
+      change_column_null :com_preference_timezones, :option_id, false, "Asia/Tokyo"
+      change_column_null :com_preference_regions, :option_id, false, "JP"
+      change_column_null :com_preference_languages, :option_id, false, "JA"
+      change_column_null :com_preference_colorthemes, :option_id, false, "system"
 
-    app_preference_timezones
-    app_preference_regions
-    app_preference_languages
-    app_preference_colorthemes
-  ].freeze
-
-  def up
-    TABLES.each do |table_name|
-      constraint = "#{table_name}_option_id_null"
-
-      add_check_constraint table_name, "option_id IS NOT NULL",
-                           name: constraint, validate: false
-      validate_check_constraint table_name, name: constraint
-      change_column_null table_name, :option_id, false
-      remove_check_constraint table_name, name: constraint
-    end
-  end
-
-  def down
-    TABLES.each do |table_name|
-      constraint = "#{table_name}_option_id_null"
-
-      add_check_constraint table_name, "option_id IS NOT NULL",
-                           name: constraint, validate: false
-      change_column_null table_name, :option_id, true
-      remove_check_constraint table_name, name: constraint
+      change_column_null :app_preference_timezones, :option_id, false, "Asia/Tokyo"
+      change_column_null :app_preference_regions, :option_id, false, "JP"
+      change_column_null :app_preference_languages, :option_id, false, "JA"
+      change_column_null :app_preference_colorthemes, :option_id, false, "system"
     end
   end
 end

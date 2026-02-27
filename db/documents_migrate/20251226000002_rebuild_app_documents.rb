@@ -4,7 +4,7 @@ class RebuildAppDocuments < ActiveRecord::Migration[8.2]
   def up
     drop_table :app_documents, if_exists: true
 
-    create_table :app_documents, id: :uuid, default: -> { "uuidv7()" } do |t|
+    create_table :app_documents do |t|
       t.string :permalink, null: false, limit: 200
       t.string :response_mode, null: false, default: "html"
       t.string :redirect_url
@@ -16,20 +16,20 @@ class RebuildAppDocuments < ActiveRecord::Migration[8.2]
     end
 
     add_index :app_documents, :permalink, unique: true
-    add_index :app_documents, [ :published_at, :expires_at ]
+    add_index :app_documents, [:published_at, :expires_at]
   end
 
   def down
     drop_table :app_documents, if_exists: true
 
-    create_table :app_documents, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.uuid :parent_id, null: false, default: "00000000-0000-0000-0000-000000000000"
-      t.uuid :prev_id, null: false, default: "00000000-0000-0000-0000-000000000000"
-      t.uuid :succ_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+    create_table :app_documents do |t|
+      t.bigint :parent_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :prev_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :succ_id, null: false, default: "00000000-0000-0000-0000-000000000000"
       t.string :title, null: false, default: ""
       t.string :description, null: false, default: ""
       t.string :app_document_status_id, limit: 255, null: false, default: "NONE"
-      t.uuid :staff_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :staff_id, null: false, default: "00000000-0000-0000-0000-000000000000"
       t.string :public_id, limit: 21, null: false, default: ""
       t.timestamps
     end

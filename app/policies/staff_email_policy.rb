@@ -1,6 +1,13 @@
+<<<<<<<< HEAD:app/policies/owner_policy.rb
+# frozen_string_literal: true
+
+class OwnerPolicy < ApplicationPolicy
+========
+# typed: false
 # frozen_string_literal: true
 
 class StaffEmailPolicy < ApplicationPolicy
+>>>>>>>> develop:app/policies/staff_email_policy.rb
   # NOTE: Up to Pundit v2.3.1, the inheritance was declared as
   # `Scope < Scope` rather than `Scope < ApplicationPolicy::Scope`.
   # In most cases the behavior will be identical, but if updating existing

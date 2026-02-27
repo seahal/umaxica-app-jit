@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Preview all emails at http://localhost:3000/rails/mailers/email/com/service_site_contact_mailer

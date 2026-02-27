@@ -23,6 +23,10 @@ class EnforceUserTokenLimit < ActiveRecord::Migration[8.2]
     SQL
 
     execute <<~SQL.squish
+      DROP TRIGGER IF EXISTS #{TRIGGER_NAME} ON user_tokens;
+    SQL
+
+    execute <<~SQL.squish
       CREATE TRIGGER #{TRIGGER_NAME}
       BEFORE INSERT ON user_tokens
       FOR EACH ROW EXECUTE FUNCTION #{FUNCTION_NAME}();

@@ -1,14 +1,20 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class DocumentVersionWriterTest < ActiveSupport::TestCase
+  fixtures :com_documents, :app_documents, :org_documents
+
   test "writes com document version" do
     doc = com_documents(:one)
 
     version = nil
     assert_difference "ComDocumentVersion.count", 1 do
-      version = DocumentVersionWriter.write!(doc, attrs: { title: "Title", description: "Desc", body: "Body" })
+      version = DocumentVersionWriter.write!(
+        doc,
+        attrs: { title: "Title", description: "Desc", body: "Body" },
+      )
     end
 
     assert_equal doc, version.com_document
@@ -22,7 +28,10 @@ class DocumentVersionWriterTest < ActiveSupport::TestCase
 
     version = nil
     assert_difference "AppDocumentVersion.count", 1 do
-      version = DocumentVersionWriter.write!(doc, attrs: { title: "Title", description: "Desc", body: "Body" })
+      version = DocumentVersionWriter.write!(
+        doc,
+        attrs: { title: "Title", description: "Desc", body: "Body" },
+      )
     end
 
     assert_equal doc, version.app_document
@@ -34,7 +43,10 @@ class DocumentVersionWriterTest < ActiveSupport::TestCase
 
     version = nil
     assert_difference "OrgDocumentVersion.count", 1 do
-      version = DocumentVersionWriter.write!(doc, attrs: { title: "Title", description: "Desc", body: "Body" })
+      version = DocumentVersionWriter.write!(
+        doc,
+        attrs: { title: "Title", description: "Desc", body: "Body" },
+      )
     end
 
     assert_equal doc, version.org_document

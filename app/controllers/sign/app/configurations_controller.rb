@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -7,6 +8,12 @@ module Sign
       before_action :authenticate_user!
 
       def show
+      end
+
+      def edit
+        return if current_user.deactivated?
+
+        redirect_to sign_app_configuration_path(ri: params[:ri])
       end
     end
   end

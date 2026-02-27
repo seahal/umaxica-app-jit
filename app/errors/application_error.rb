@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Base exception class for application-wide custom errors

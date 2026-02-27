@@ -1,8 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :staffs, :user_statuses, :staff_statuses, :user_email_statuses
+
   include ActiveSupport::Testing::TimeHelpers
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -82,6 +85,25 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 
+  test "POST create responds the same for existing and missing emails" do
+    user = users(:one)
+    existing_email = user.user_emails.create!(address: "enum_test@example.com")
+
+    existing_session = open_session
+    existing_session.post sign_app_in_email_url(ri: "jp"),
+                          params: { user_email: { address: existing_email.address } },
+                          headers: { "Host" => @host }
+
+    missing_session = open_session
+    missing_session.post sign_app_in_email_url(ri: "jp"),
+                         params: { user_email: { address: "missing-enum@example.com" } },
+                         headers: { "Host" => @host }
+
+    assert_equal existing_session.response.status, missing_session.response.status
+    assert_equal existing_session.response.location, missing_session.response.location
+    assert_equal existing_session.flash[:notice], missing_session.flash[:notice]
+  end
+
   test "POST create with existing email generates OTP and redirects to edit" do
     # Create a test email in the database
     user = users(:one)
@@ -93,7 +115,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_email_url(ri: "jp"),
          params: {
            :user_email => { address: test_email },
-           "cf-turnstile-response" => "test_token"
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -111,7 +133,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_email_url(ri: "jp"),
          params: {
            :user_email => { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -127,12 +149,14 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Reset for invalid code test
     test_email.update!(pass_code: "123456", otp_attempts_count: 0)
-    post sign_app_in_email_url(ri: "jp"),
-         params: {
-           :user_email => { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
-         },
-         headers: { "Host" => @host }
+    travel Common::OtpPolicy::SEND_COOLDOWN + 1.second do
+      post sign_app_in_email_url(ri: "jp"),
+           params: {
+             :user_email => { address: test_email.address },
+             "cf-turnstile-response" => "test_token",
+           },
+           headers: { "Host" => @host }
+    end
 
     follow_redirect!
     session_id = cookies["user_email_authentication_id"]
@@ -146,7 +170,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Times should be similar (within 50% tolerance for timing attack protection)
     time_difference = (valid_time - invalid_time).abs
-    max_allowed_difference = [ valid_time, invalid_time ].max * 1
+    max_allowed_difference = [valid_time, invalid_time].max * 1
 
     assert_operator time_difference, :<=, max_allowed_difference,
                     "Response times differ too much: valid=#{valid_time.round(4)}s, invalid=#{invalid_time.round(4)}s"
@@ -162,7 +186,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   # Login Tests
   # rubocop:disable Minitest/MultipleAssertions
-  test "successful OTP verification redirects to root" do
+  test "successful OTP verification redirects to configuration" do
     # Create email with user association
     user = users(:one)
     test_email = user.user_emails.create!(
@@ -173,12 +197,12 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_email_url(ri: "jp"),
          params: {
            :user_email => { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
     assert_response :found
-    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+    assert_equal test_email.id, session[:user_email_authentication_id]
 
     # Generate valid OTP code
     otp_private_key = ROTP::Base32.random_base32
@@ -194,11 +218,67 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
           params: { user_email: { pass_code: valid_pass_code } },
           headers: { "Host" => @host }
 
-    # Should redirect to root on success
+    # Should redirect to checkpoint on success
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
   end
 
+  test "successful OTP verification sets auth cookies with app-localhost domain" do
+    user = users(:one)
+    test_email = user.user_emails.create!(
+      address: "cookie_domain_in_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 67_890
+    valid_pass_code = ROTP::HOTP.new(otp_private_key).at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host }
+
+    set_cookie = response.headers["Set-Cookie"].to_s
+
+    assert_match(/domain=\.app\.localhost/i, set_cookie)
+    assert_no_match(/domain=\.localhost/i, set_cookie)
+  end
+
+  test "email sign-in redirects to MFA challenge when MFA is enabled" do
+    user = users(:one)
+    user.update!(multi_factor_enabled: true)
+    test_email = user.user_emails.create!(
+      address: "mfa_email_login_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 55_555
+    valid_pass_code = ROTP::HOTP.new(otp_private_key).at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host }
+
+    assert_response :found
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
   test "otp resend enforces cooldown" do
     user = users(:one)
     test_email = user.user_emails.create!(
@@ -210,40 +290,63 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
         post sign_app_in_email_url(ri: "jp"),
              params: {
                :user_email => { address: test_email.address },
-               "cf-turnstile-response" => "test_token"
+               "cf-turnstile-response" => "test_token",
              },
              headers: { "Host" => @host }
       end
     end
 
+    assert_response :found
     initial_sent_at = test_email.reload.otp_last_sent_at
 
     assert_not_nil initial_sent_at
 
+    # Second attempt immediately -- rejected with 429
     assert_no_difference -> { ActionMailer::Base.deliveries.count } do
       post sign_app_in_email_url(ri: "jp"),
            params: {
              :user_email => { address: test_email.address },
-             "cf-turnstile-response" => "test_token"
+             "cf-turnstile-response" => "test_token",
            },
            headers: { "Host" => @host }
     end
+
+    assert_response :too_many_requests
+    assert_includes @response.body, I18n.t("sign.app.authentication.email.create.cooldown")
     assert_equal initial_sent_at, test_email.reload.otp_last_sent_at
 
-    travel Email::OTP_COOLDOWN_PERIOD + 1.second do
+    # At 29 seconds -- still in cooldown
+    travel 29.seconds do
+      assert_no_difference -> { ActionMailer::Base.deliveries.count } do
+        post sign_app_in_email_url(ri: "jp"),
+             params: {
+               :user_email => { address: test_email.address },
+               "cf-turnstile-response" => "test_token",
+             },
+             headers: { "Host" => @host }
+      end
+
+      assert_response :too_many_requests
+    end
+
+    # At 31 seconds -- cooldown expired, OTP sent again
+    travel 31.seconds do
       assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
         perform_enqueued_jobs do
           post sign_app_in_email_url(ri: "jp"),
                params: {
                  :user_email => { address: test_email.address },
-                 "cf-turnstile-response" => "test_token"
+                 "cf-turnstile-response" => "test_token",
                },
                headers: { "Host" => @host }
         end
       end
+
+      assert_response :found
       assert_operator test_email.reload.otp_last_sent_at, :>, initial_sent_at
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "successful OTP verification records login audit event" do
     user = users(:one)
@@ -252,11 +355,11 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_email_url(ri: "jp"),
          params: {
            :user_email => { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
-    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+    assert_equal test_email.id, session[:user_email_authentication_id]
 
     otp_private_key = ROTP::Base32.random_base32
     otp_counter = 12_345
@@ -264,15 +367,15 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     valid_pass_code = hotp.at(otp_counter).to_s
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
 
-    assert_difference -> { UserAudit.where(event_id: "LOGGED_IN").count }, 1 do
+    assert_difference -> { UserActivity.where(event_id: UserActivityEvent::LOGGED_IN).count }, 1 do
       patch sign_app_in_email_url(ri: "jp"),
             params: { user_email: { pass_code: valid_pass_code } },
             headers: { "Host" => @host }
     end
 
-    audit = UserAudit.order(created_at: :desc).first
+    audit = UserActivity.order(created_at: :desc).first
 
-    assert_equal "LOGGED_IN", audit.event_id
+    assert_equal UserActivityEvent::LOGGED_IN, audit.event_id
     assert_equal user, audit.user
   end
   # rubocop:enable Minitest/MultipleAssertions
@@ -287,11 +390,11 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_email_url(ri: "jp"),
          params: {
            :user_email => { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
-    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+    assert_equal test_email.id, session[:user_email_authentication_id]
 
     # Set up valid OTP but provide wrong code
     otp_private_key = ROTP::Base32.random_base32
@@ -318,25 +421,25 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_email_url(ri: "jp"),
          params: {
            :user_email => { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
-    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+    assert_equal test_email.id, session[:user_email_authentication_id]
 
     otp_private_key = ROTP::Base32.random_base32
     otp_counter = 56_789
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
 
-    assert_difference -> { UserAudit.where(event_id: "LOGIN_FAILED").count }, 1 do
+    assert_difference -> { UserActivity.where(event_id: UserActivityEvent::LOGIN_FAILED).count }, 1 do
       patch sign_app_in_email_url(ri: "jp"),
             params: { user_email: { pass_code: "000000" } },
             headers: { "Host" => @host }
     end
 
-    audit = UserAudit.order(created_at: :desc).first
+    audit = UserActivity.order(created_at: :desc).first
 
-    assert_equal "LOGIN_FAILED", audit.event_id
+    assert_equal UserActivityEvent::LOGIN_FAILED, audit.event_id
     assert_equal user, audit.user
   end
   # rubocop:enable Minitest/MultipleAssertions
@@ -366,13 +469,13 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
          params: {
            :user_email => { address: test_email.address },
            "cf-turnstile-response" => "test_token",
-           :rd => encoded_rd
+           :rd => encoded_rd,
          },
          headers: { "Host" => @host }
 
     assert_response :found
     assert_includes response.location, "rd=#{CGI.escape(encoded_rd)}"
-    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+    assert_equal test_email.id, session[:user_email_authentication_id]
     assert_equal encoded_rd, session[:user_email_authentication_rd]
 
     # Generate valid OTP code
@@ -388,14 +491,13 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     patch sign_app_in_email_url(ri: "jp"),
           params: {
             user_email: { pass_code: valid_pass_code },
-            rd: encoded_rd
+            rd: encoded_rd,
           },
           headers: { "Host" => @host }
 
-    # Should redirect to the encoded URL
+    # Should redirect to checkpoint with rd preserved
     assert_response :found
-    assert_redirected_to redirect_url
-    assert_nil session[:user_email_authentication_rd]
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -412,7 +514,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
          params: {
            :user_email => { address: test_email.address },
            "cf-turnstile-response" => "test_token",
-           :rd => encoded_rd
+           :rd => encoded_rd,
          },
          headers: { "Host" => @host }
 
@@ -429,12 +531,12 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     patch sign_app_in_email_url(ri: "jp"),
           params: {
             user_email: { pass_code: valid_pass_code },
-            rd: encoded_rd
+            rd: encoded_rd,
           },
           headers: { "Host" => @host }
 
     assert_response :found
-    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
   # rubocop:enable Minitest/MultipleAssertions
   test "resets session ID after successful email login" do
@@ -448,7 +550,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_in_email_url(ri: "jp"),
          params: {
            :user_email => { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -472,5 +574,160 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :found
     assert_not_nil session.id
     assert_not_equal old_session_id, session.id
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "email login with session limit exceeded redirects to session management" do
+    user = users(:one)
+    UserToken.where(user_id: user.id).delete_all
+
+    # Create 2 active sessions to hit the limit
+    2.times do
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    test_email = user.user_emails.create!(
+      address: "session_limit_email_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    # Start authentication
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    # Generate valid OTP code
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12_345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    # Verify OTP - should redirect to session management, not "/"
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host }
+
+    assert_response :found
+    assert_redirected_to sign_app_in_session_path(ri: "jp")
+    assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
+
+    # A restricted token should have been created
+    restricted = UserToken.where(user_id: user.id, status: UserToken::STATUS_RESTRICTED)
+
+    assert_equal 1, restricted.count
+
+    # Session limit gate should be issued
+    assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
+  end
+
+  test "email login (JSON) with session limit exceeded returns session_restricted" do
+    user = users(:one)
+    UserToken.where(user_id: user.id).delete_all
+
+    2.times do
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    test_email = user.user_emails.create!(
+      address: "session_limit_json_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12_345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host, "Accept" => "application/json" },
+          as: :json
+
+    assert_response :ok
+    json = response.parsed_body
+
+    assert_equal "session_restricted", json["status"]
+    assert_equal sign_app_in_session_path(ri: "jp"), json["redirect_url"]
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "cooldown applies identically for non-existing emails (anti-enumeration)" do
+    non_existing = "does_not_exist_#{SecureRandom.hex(4)}@example.com"
+
+    # First attempt -- redirect (same as existing email)
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: non_existing },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    assert_response :found
+
+    # Second attempt immediately -- 429 (same as existing email)
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: non_existing },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    assert_response :too_many_requests
+    assert_includes @response.body, I18n.t("sign.app.authentication.email.create.cooldown")
+
+    # After cooldown -- allowed again
+    travel Common::OtpPolicy::SEND_COOLDOWN + 1.second do
+      post sign_app_in_email_url(ri: "jp"),
+           params: {
+             :user_email => { address: non_existing },
+             "cf-turnstile-response" => "test_token",
+           },
+           headers: { "Host" => @host }
+
+      assert_response :found
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "cooldown does not block different email addresses" do
+    first_email = "first_signin_#{SecureRandom.hex(4)}@example.com"
+    second_email = "second_signin_#{SecureRandom.hex(4)}@example.com"
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: first_email },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    assert_response :found
+
+    # Different email should not be blocked
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: second_email },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    assert_response :found
+  end
+
+  test "sign-in cooldown i18n keys exist in both locales" do
+    assert_not_nil I18n.t("sign.app.authentication.email.create.cooldown", locale: :ja, default: nil)
+    assert_not_nil I18n.t("sign.app.authentication.email.create.cooldown", locale: :en, default: nil)
   end
 end

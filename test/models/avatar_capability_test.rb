@@ -1,18 +1,10 @@
+# typed: false
 # == Schema Information
 #
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id          :string           not null, primary key
-#  description :text
-#  key         :string           not null
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#
-# Indexes
-#
-#  index_avatar_capabilities_on_key  (key) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
@@ -21,33 +13,11 @@ require "test_helper"
 
 class AvatarCapabilityTest < ActiveSupport::TestCase
   setup do
-    @capability = AvatarCapability.new(
-      key: "test_cap",
-      name: "Test Capability",
-    )
+    @capability = AvatarCapability.new(id: 99)
   end
 
   test "valid capability" do
     assert_predicate @capability, :valid?
-  end
-
-  test "requires key" do
-    @capability.key = nil
-    assert_not @capability.valid?
-    assert_not_empty @capability.errors[:key]
-  end
-
-  test "requires name" do
-    @capability.name = nil
-    assert_not @capability.valid?
-    assert_not_empty @capability.errors[:name]
-  end
-
-  test "key uniqueness" do
-    @capability.save!
-    duplicate = AvatarCapability.new(key: @capability.key, name: "Other")
-    assert_not duplicate.valid?
-    assert_not_empty duplicate.errors[:key]
   end
 
   test "association deletion: restriction by avatars" do
@@ -63,9 +33,13 @@ class AvatarCapabilityTest < ActiveSupport::TestCase
     assert_includes @capability.errors[:base], "avatarsが存在しているので削除できません"
   end
 
-  test "validates length of id" do
-    record = AvatarCapability.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "accepts integer ids" do
+    record = AvatarCapability.new(id: 9)
+
+    assert_predicate record, :valid?
+  end
+
+  test "constants are defined" do
+    assert_equal 1, AvatarCapability::NORMAL
   end
 end

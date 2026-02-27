@@ -4,31 +4,33 @@ services:
     environment:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=false
-    restart: unless-stopped
-    ports:  !reset [3002:3000]
-    tty: true
-    stdin_open: true
   primary:
     container_name: jit-devcontainer-primary
-    ports:  !reset []
+    ports: !reset []
   replica:
     container_name: jit-devcontainer-replica
-    ports:  !reset []
+    ports: !reset []
   valkey:
     container_name: jit-devcontainer-valkey
-    ports:  !reset []
-  zookeeper:
-    container_name: jit-devcontainer-zookeeper
-    ports:  !reset []
-  minio:
-    container_name: jit-devcontainer-minio
-    ports:  !reset []
+    ports: !reset []
+  master:
+    container_name: jit-devcontainer-seaweedfs-master
+    ports: !reset []
+  volume:
+    container_name: jit-devcontainer-seaweedfs-volume
+    ports: !reset []
+  filer:
+    container_name: jit-devcontainer-seaweedfs-filer
+    ports: !reset []
+  s3:
+    container_name: jit-devcontainer-seaweedfs-s3
+    ports: !reset []
   loki:
     container_name: jit-devcontainer-loki
-    ports:  !reset []
+    ports: !reset []
   tempo:
     container_name: jit-devcontainer-tempo
-    ports:  !reset []
+    ports: !reset []
   grafana:
     container_name: jit-devcontainer-grafana
-    ports:  !reset []
+    ports: !reset []

@@ -8,12 +8,13 @@ services:
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
     env_file: docker/core/env
-    entrypoint: [ "/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh" ]
-    command: [ "sleep", "infinity" ]
+    entrypoint: ["/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh"]
+    command: ["sleep", "infinity"]
     restart: always
-    tty: true
-    stdin_open: true
     user: "${UID:-1000}:${GID:-1000}"
+    tmpfs:
+      - /home/jit/workspace/tmp:uid=1000,gid=1000
+      - /home/jit/workspace/log:uid=1000,gid=1000
     ports:
       - "3001:3000"
     volumes:
@@ -21,12 +22,12 @@ services:
         source: .
         target: /home/jit/workspace
     networks:
-      backend: { }
+      backend: {}
       frontend:
         aliases:
           - sign.app.localhost
           - sign.org.localhost
-      observability: { }
+      observability: {}
     depends_on:
       primary:
         condition: service_healthy
@@ -63,7 +64,7 @@ services:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U root -d db -h 127.0.0.1" ]
+      test: ["CMD-SHELL", "pg_isready -U root -d db -h 127.0.0.1"]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -103,19 +104,37 @@ services:
       - valkey-volume:/data
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "valkey-cli", "ping" ]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 3s
       timeout: 2s
       retries: 20
       start_period: 3s
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.9.0
+  kafka:
+    image: confluentinc/cp-kafka:7.9.0
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      CLUSTER_ID: UmaxicaCluster01
+    ports:
+      - "127.0.0.1:9092:9092"
     networks:
       - backend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   loki:
     image: grafana/loki:latest
@@ -168,7 +187,7 @@ services:
     ports:
       - "127.0.0.1:9333:9333"
       - "127.0.0.1:19333:19333"
-    command: 'master -ip=master -ip.bind=0.0.0.0'
+    command: "master -ip=master -ip.bind=0.0.0.0"
     volumes:
       - master_data:/data
     networks:
@@ -216,29 +235,29 @@ services:
       - filer
     restart: unless-stopped
 
-  cloudflare-tunnel:
-   image: cloudflare/cloudflared:latest
-   depends_on:
-     - core
-   command: tunnel run --token ${CLOUDFLARED_TOKEN}
-   environment:
-     CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
-   networks:
-     - frontend
-   extra_hosts:
-     - "host.docker.internal:host-gateway"
-   restart: unless-stopped
+#  cloudflare-tunnel:
+#   image: cloudflare/cloudflared:latest
+#   depends_on:
+#     - core
+#   command: tunnel run --token ${CLOUDFLARED_TOKEN}
+#   environment:
+#     CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
+#   networks:
+#     - frontend
+#   extra_hosts:
+#     - "host.docker.internal:host-gateway"
+#   restart: unless-stopped
 
 networks:
-  backend: { }
-  frontend: { }
-  observability: { }
+  backend: {}
+  frontend: {}
+  observability: {}
 
 volumes:
-  valkey-volume: { }
-  loki-volume: { }
-  tempo-volume: { }
-  grafana-volume: { }
+  valkey-volume: {}
+  loki-volume: {}
+  tempo-volume: {}
+  grafana-volume: {}
   master_data: {}
   volume_data: {}
   filer_data: {}

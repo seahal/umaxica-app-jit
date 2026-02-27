@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Apex
@@ -19,6 +20,8 @@ module Apex
             return
           end
 
+          # delete_preference_cookie calls delete_preference_cookies which removes
+          # jit_ct, jit_lx, jit_tz, and clears the preference auth cookie.
           delete_preference_cookie
 
           # Preserve ri parameter on redirect

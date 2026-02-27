@@ -13,11 +13,13 @@ class AddLimitsToComContactFields < ActiveRecord::Migration[8.2]
   end
 
   def down
-    change_column :com_contact_audits, :actor_type, :string, limit: nil
-    change_column :com_contact_audits, :level_id, :string, limit: nil
-    change_column :com_contact_emails, :hotp_secret, :string, limit: nil
-    change_column :com_contact_telephones, :hotp_secret, :string, limit: nil
-    change_column :com_contact_topics, :description, :text, limit: nil
-    change_column :com_contact_topics, :title, :string, limit: nil
+    safety_assured do
+      change_column :com_contact_audits, :actor_type, :string, limit: nil
+      change_column :com_contact_audits, :level_id, :string, limit: nil
+      change_column :com_contact_emails, :hotp_secret, :string, limit: nil
+      change_column :com_contact_telephones, :hotp_secret, :string, limit: nil
+      change_column :com_contact_topics, :description, :text, limit: nil
+      change_column :com_contact_topics, :title, :string, limit: nil
+    end
   end
 end

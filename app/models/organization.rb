@@ -1,18 +1,18 @@
+# typed: false
 # == Schema Information
 #
 # Table name: organizations
 # Database name: operator
 #
-#  id                  :uuid             not null, primary key
+#  id                  :bigint           not null, primary key
 #  domain              :string           default(""), not null
 #  name                :string           default(""), not null
-#  parent_organization :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  admin_id            :uuid
-#  department_id       :uuid
-#  parent_id           :uuid
-#  workspace_status_id :string(255)
+#  admin_id            :bigint
+#  department_id       :bigint
+#  parent_id           :bigint
+#  workspace_status_id :bigint           default(0), not null
 #
 # Indexes
 #
@@ -24,7 +24,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (workspace_status_id => workspace_statuses.id) ON DELETE => restrict
+#  fk_rails_...  (workspace_status_id => organization_statuses.id)
 #
 
 # frozen_string_literal: true
@@ -45,5 +45,5 @@ class Organization < OperatorRecord
   has_many :user_memberships, dependent: :destroy, inverse_of: :workspace
 
   validates :domain, uniqueness: true
-  validates :workspace_status_id, length: { maximum: 255 }, allow_nil: true
+  validates :workspace_status_id, numericality: { only_integer: true }, allow_nil: true
 end

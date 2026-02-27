@@ -2,7 +2,7 @@
 
 class FixNewsConsistency < ActiveRecord::Migration[8.2]
   def change
-    %i[org com app].each do |prefix|
+    %i(org com app).each do |prefix|
       # Tags
       add_index "#{prefix}_timeline_tags", "#{prefix}_timeline_tag_master_id"
       add_foreign_key "#{prefix}_timeline_tag_masters", "#{prefix}_timeline_tag_masters", column: :parent_id, if_not_exists: true

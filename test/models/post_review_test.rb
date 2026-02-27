@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,14 +6,14 @@
 # Table name: post_reviews
 # Database name: avatar
 #
-#  id                    :string           not null, primary key
+#  id                    :bigint           not null, primary key
 #  comment               :text
 #  decided_at            :timestamptz
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  post_id               :string           not null
-#  post_review_status_id :string           not null
-#  reviewer_actor_id     :string           not null
+#  post_id               :bigint           not null
+#  post_review_status_id :bigint           default(0), not null
+#  reviewer_actor_id     :bigint           not null
 #
 # Indexes
 #
@@ -29,14 +30,29 @@
 require "test_helper"
 
 class PostReviewTest < ActiveSupport::TestCase
+  fixtures :avatars, :post_statuses, :post_review_statuses, :handles, :avatar_capabilities, :handle_statuses
+
   test "validations" do
     review = PostReview.new
+
     assert_not review.valid?
   end
 
   test "validates length of id" do
-    record = PostReview.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+    post = Post.create!(
+      author_avatar: avatars(:one),
+      post_status_id: PostStatus::NOTHING,
+      public_id: "pr_test_#{SecureRandom.hex(4)}",
+      body: "body",
+      created_by_actor_id: "actor",
+    )
+    record = PostReview.new(
+      id: 99,
+      post: post,
+      post_review_status_id: PostReviewStatus::NOTHING,
+      reviewer_actor_id: "reviewer_actor",
+    )
+
+    assert_predicate record, :valid?
   end
 end

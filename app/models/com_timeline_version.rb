@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,7 +6,7 @@
 # Table name: com_timeline_versions
 # Database name: news
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -17,13 +18,14 @@
 #  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  com_timeline_id :uuid             not null
+#  com_timeline_id :bigint           not null
 #  edited_by_id    :bigint
 #  public_id       :string(255)      default(""), not null
 #
 # Indexes
 #
 #  index_com_timeline_versions_on_com_timeline_id_and_created_at  (com_timeline_id,created_at)
+#  index_com_timeline_versions_on_edited_by_id                    (edited_by_id)
 #  index_com_timeline_versions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys

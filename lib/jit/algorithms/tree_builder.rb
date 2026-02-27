@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Jit
@@ -16,7 +17,7 @@ module Jit
               id: extract_value(record, :id),
               parent_id: extract_value(record, :parent_id),
               name: extract_value(record, :name),
-              children: []
+              children: [],
             }
             nodes_by_id[node[:id]] = node
             node

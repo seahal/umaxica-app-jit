@@ -1,29 +1,28 @@
+# typed: false
 # == Schema Information
 #
 # Table name: departments
 # Database name: operator
 #
-#  id                   :uuid             not null, primary key
+#  id                   :bigint           not null, primary key
 #  name                 :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  department_status_id :string(255)      default("NEYO"), not null
-#  parent_id            :uuid
-#  workspace_id         :uuid
+#  department_status_id :bigint           default(0), not null
+#  parent_id            :bigint
+#  workspace_id         :bigint
 #
 # Indexes
 #
-#  index_departments_on_department_status_id                (department_status_id)
 #  index_departments_on_department_status_id_and_parent_id  (department_status_id,parent_id) UNIQUE
 #  index_departments_on_parent_id                           (parent_id)
-#  index_departments_on_status_and_parent                   (department_status_id,parent_id) UNIQUE
 #  index_departments_on_workspace_id                        (workspace_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (department_status_id => organization_statuses.id) ON DELETE => restrict
-#  fk_rails_...  (parent_id => departments.id) ON DELETE => restrict
-#  fk_rails_...  (workspace_id => organizations.id) ON DELETE => restrict
+#  fk_departments_on_department_status_id  (department_status_id => department_statuses.id)
+#  fk_rails_...                            (parent_id => departments.id)
+#  fk_rails_...                            (workspace_id => organizations.id) ON DELETE => nullify
 #
 
 # frozen_string_literal: true
@@ -31,6 +30,8 @@
 require "test_helper"
 
 class DepartmentTest < ActiveSupport::TestCase
+  fixtures :organizations, :organization_statuses, :department_statuses
+
   setup do
     @workspace = organizations(:one)
   end
@@ -38,14 +39,16 @@ class DepartmentTest < ActiveSupport::TestCase
   test "should be valid" do
     department = Department.new(
       name: "Test Dept",
-      department_status_id: "NEYO",
+      department_status_id: DepartmentStatus::NOTHING,
       workspace: @workspace,
     )
+
     assert_predicate department, :valid?, department.errors.full_messages.to_sentence
   end
 
   test "requires name" do
-    department = Department.new(department_status_id: "NEYO")
+    department = Department.new(department_status_id: DepartmentStatus::NOTHING)
+
     assert_not department.valid?
     assert_includes department.errors[:name], "を入力してください"
   end

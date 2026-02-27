@@ -1,15 +1,17 @@
+# typed: false
 # frozen_string_literal: true
 
 module Email
   extend ActiveSupport::Concern
 
   MAX_OTP_ATTEMPTS = 3
-  OTP_COOLDOWN_PERIOD = 1.minute
+  OTP_COOLDOWN_PERIOD = Common::OtpPolicy::SEND_COOLDOWN
 
   attr_accessor :confirm_policy, :pass_code
+  attr_writer :raw_address
 
   included do
-    before_save { self.address&.downcase! }
+    before_validation :normalize_address_from_raw
 
     after_initialize do
       self.otp_counter = "0" if otp_counter.blank?
@@ -19,34 +21,26 @@ module Email
 
     encrypts :address, downcase: true, deterministic: true
 
-    validates :address, format: { with: URI::MailTo::EMAIL_REGEXP },
-                        presence: true,
-                        uniqueness: { case_sensitive: false },
-                        unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
+    validate :validate_email_address
     validates :confirm_policy, acceptance: true, on: :create,
-                               unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
+                               unless: Proc.new { |a| a.raw_address.blank? && a.pass_code.present? }
     validates :pass_code, numericality: { only_integer: true },
                           length: { is: 6 },
                           presence: true,
-                          unless: Proc.new { |a| a.pass_code.blank? && a.address.present? }
+                          unless: Proc.new { |a| a.pass_code.blank? && a.raw_address.present? }
   end
 
   # OTP-related methods for email authentication
   # Stores OTP secret on this email record
-  # FIXME: minus -> plus
   def store_otp(otp_private_key, otp_counter, expires_at)
-    with_lock do
-      attrs = {
-        otp_private_key: otp_private_key,
-        otp_counter: otp_counter,
-        otp_expires_at: Time.zone.at(expires_at),
-        otp_attempts_count: 0,
-        locked_at: "-infinity", # Sentinel for unlocked
-        otp_last_sent_at: Time.current
-      }
-      attrs[:otp_nonce] = otp_nonce.to_i + 1 if has_attribute?(:otp_nonce)
-      update!(attrs)
-    end
+    update!(
+      otp_private_key: otp_private_key,
+      otp_counter: otp_counter,
+      otp_expires_at: Time.zone.at(expires_at),
+      otp_attempts_count: 0,
+      locked_at: "infinity", # Sentinel for unlocked: "locks at infinity" = never locked
+      otp_last_sent_at: Time.current,
+    )
   end
 
   # Retrieves OTP secret from this email record
@@ -56,24 +50,19 @@ module Email
     {
       otp_private_key: otp_private_key,
       otp_counter: otp_counter.to_i,
-      otp_expires_at: otp_expires_at.to_i
+      otp_expires_at: otp_expires_at.to_i,
     }
   end
 
   # Clears OTP secret after verification
-  # FIXME: minus -> plus
   def clear_otp
-    with_lock do
-      attrs = {
-        otp_counter: "0",
-        otp_expires_at: "-infinity",
-        otp_attempts_count: 0,
-        locked_at: "-infinity",
-        otp_last_sent_at: "-infinity"
-      }
-      attrs[:otp_nonce] = otp_nonce.to_i + 1 if has_attribute?(:otp_nonce)
-      update!(attrs)
-    end
+    update!(
+      otp_counter: "0",
+      otp_expires_at: "-infinity",
+      otp_attempts_count: 0,
+      locked_at: "infinity", # Sentinel for unlocked: "locks at infinity" = never locked
+      otp_last_sent_at: "-infinity",
+    )
   end
 
   # Checks if OTP has expired
@@ -89,7 +78,12 @@ module Email
   end
 
   def locked?
-    is_locked_by_time = locked_at.present? && locked_at != -Float::INFINITY
+    # locked_at == Float::INFINITY  -> new sentinel for "unlocked" (set by store_otp/clear_otp)
+    # locked_at == -Float::INFINITY -> old sentinel for "unlocked" (backward-compatible with existing rows)
+    # Any real timestamp in the past means the account is locked by time.
+    is_locked_by_time = locked_at.present? &&
+      locked_at != -Float::INFINITY &&
+      locked_at != Float::INFINITY
     is_locked_by_attempts = otp_attempts_count >= MAX_OTP_ATTEMPTS
     is_locked_by_time || is_locked_by_attempts
   end
@@ -114,13 +108,47 @@ module Email
     # Atomically set locked_at only when attempts reached threshold and not already locked
     # Check for both NULL and -infinity as sentinel values for "not locked"
     affected = self.class.where(id: id)
-                   .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
-                   .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
-                   # Skip model validations intentionally: this is a guarded atomic DB update
-                   # to avoid race conditions when multiple processes increment simultaneously.
-                   # rubocop:disable Rails/SkipsModelValidations
-                   .update_all(locked_at: Time.current)
+      .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp")
+      .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
+      # Skip model validations intentionally: this is a guarded atomic DB update
+      # to avoid race conditions when multiple processes increment simultaneously.
+      # rubocop:disable Rails/SkipsModelValidations
+      .update_all(locked_at: Time.current)
     # rubocop:enable Rails/SkipsModelValidations
     reload if affected.positive?
+  end
+
+  def raw_address
+    @raw_address.presence || address
+  end
+
+  private
+
+  def normalize_address_from_raw
+    value = raw_address
+    return if value.blank?
+
+    normalized = Jit::Utils::EmailValidator.normalize(value)
+    self.address = normalized if normalized.present?
+  end
+
+  def validate_email_address
+    return if raw_address.blank? && pass_code.present?
+
+    if raw_address.blank?
+      errors.add(:address, :blank)
+      return
+    end
+
+    normalized = Jit::Utils::EmailValidator.normalize(raw_address)
+    unless normalized
+      errors.add(:address, :invalid)
+      return
+    end
+
+    return unless normalized.length > 255
+
+    errors.add(:address, :too_long, count: 255)
+
   end
 end

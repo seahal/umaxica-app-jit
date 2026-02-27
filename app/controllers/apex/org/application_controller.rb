@@ -1,29 +1,35 @@
+# typed: false
 # frozen_string_literal: true
 
 module Apex
   module Org
     class ApplicationController < ActionController::Base
-      include Pundit::Authorization
+      include ::Fuse
       include ::RateLimit
       include ::Preference::Global
-      include ::Auth::Staff
+      include ::Authentication::Staff
+      include ::Authorization::Staff
+      include ::Verification::Staff
+      include Pundit::Authorization
+      include ::Current
+      include ::Finisher
 
-      auth_required!
+      before_action :check_fuse!
+      before_action :set_preferences_cookie
+      before_action :resolve_param_context
+      before_action :set_region
+      before_action :set_locale
+      before_action :set_timezone
+      before_action :set_color_theme
+      before_action :enforce_access_policy!
+      before_action :enforce_verification_if_required
+      append_after_action :finish_request
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
-      rescue_from Pundit::NotAuthorizedError, with: :staff_not_authorized
-
-      private
-
-        def staff_not_authorized
-          respond_to do |format|
-            format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-            format.any { head :forbidden }
-          end
-        end
+      auth_required!
     end
   end
 end

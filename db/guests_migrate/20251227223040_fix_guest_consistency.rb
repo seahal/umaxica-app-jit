@@ -2,7 +2,7 @@
 
 class FixGuestConsistency < ActiveRecord::Migration[8.2]
   def change
-    %i[org com app].each do |prefix|
+    %i(org com app).each do |prefix|
       # Status Nullify
       remove_foreign_key "#{prefix}_contacts", "#{prefix}_contact_statuses", column: :status_id, if_exists: true
       add_foreign_key "#{prefix}_contacts", "#{prefix}_contact_statuses", column: :status_id, on_delete: :nullify

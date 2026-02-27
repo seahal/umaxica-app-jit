@@ -13,27 +13,27 @@ class SeedContactCategories < ActiveRecord::Migration[8.2]
 
   private
 
-    def upsert_categories(table_name, categories)
-      now = Time.current
+  def upsert_categories(table_name, categories)
+    now = Time.current
 
-      categories.each do |category|
-        category[:created_at] ||= now
-        category[:updated_at] ||= now
+    categories.each do |category|
+      category[:created_at] ||= now
+      category[:updated_at] ||= now
 
-        cols = category.keys.join(", ")
-        vals = category.values.map { |v| connection.quote(v) }.join(", ")
+      cols = category.keys.join(", ")
+      vals = category.values.map { |v| connection.quote(v) }.join(", ")
 
-        updates = category.keys.map do |k|
-          "#{k} = EXCLUDED.#{k}"
-        end.join(", ")
+      updates = category.keys.map do |k|
+        "#{k} = EXCLUDED.#{k}"
+      end.join(", ")
 
-        sql = <<~SQL.squish
-          INSERT INTO #{table_name} (#{cols})
-          VALUES (#{vals})
-          ON CONFLICT (id) DO UPDATE SET #{updates}
-        SQL
+      sql = <<~SQL.squish
+        INSERT INTO #{table_name} (#{cols})
+        VALUES (#{vals})
+        ON CONFLICT (id) DO UPDATE SET #{updates}
+      SQL
 
-        execute sql
-      end
+      execute sql
     end
+  end
 end

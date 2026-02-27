@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,13 +6,15 @@
 # Table name: handle_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-
 class HandleStatus < AvatarRecord
-  include StringPrimaryKey
-
+  self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  INACTIVE = 1
+  PENDING = 2
+  ACTIVE = 3
+  DELETED = 4
+  NOTHING = 5
   has_many :handles, dependent: :restrict_with_error
 end

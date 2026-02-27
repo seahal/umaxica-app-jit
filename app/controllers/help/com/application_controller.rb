@@ -1,29 +1,30 @@
+# typed: false
 # frozen_string_literal: true
 
 module Help
   module Com
     class ApplicationController < ActionController::Base
+      include ::Fuse
       include ::RateLimit
-      include ::Auth::Base
-
-      public_strict!
       include ::Preference::Regional
+      include ::Authentication::Viewer
+      include ::Authorization::Viewer
+      include ::Verification::Viewer
       include Pundit::Authorization
+      include ::Current
+      include ::Finisher
+
+      before_action :check_fuse!
+      before_action :enforce_access_policy!
+      before_action :enforce_verification_if_required
+      before_action :set_current
+      append_after_action :finish_request
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
-      rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
-      private
-
-        def user_not_authorized
-          respond_to do |format|
-            format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-            format.any { head :forbidden }
-          end
-        end
+      public_strict!
     end
   end
 end

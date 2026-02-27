@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 Rails.application.configure do
@@ -39,7 +40,7 @@ Rails.application.configure do
   STDERR.sync = true
   logger = ActiveSupport::Logger.new $stdout
   config.logger = ActiveSupport::TaggedLogging.new logger
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!).
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
@@ -60,18 +61,19 @@ Rails.application.configure do
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.delivery_method = :smtp
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = { host: "sign.umaxica.app" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  config.action_mailer.smtp_settings = {
+    address: ENV["RESEND_SMTP_ENDPOINT"],
+    user_name: ENV["RESEND_SMTP_USER_NAME"],
+    password: Rails.application.credentials.dig(:RESEND_SMTP_PASSWORD),
+    port: 465,
+    tls: true,
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -81,7 +83,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
+  config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
@@ -95,4 +97,7 @@ Rails.application.configure do
   ### Added by owner
   # We've configured this production environment to prevent the delivery of public static content.
   config.public_file_server.enabled = false
+
+  # Enable Gzip compression
+  config.middleware.use Rack::Deflater
 end

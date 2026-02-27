@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,27 +6,25 @@
 # Table name: com_contact_telephones
 # Database name: guest
 #
-#  id                     :string           not null, primary key
+#  id                     :bigint           not null, primary key
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
 #  expires_at             :timestamptz      not null
-#  hotp_counter           :integer          default(0), not null
-#  hotp_secret            :string(255)      default(""), not null
+#  hotp_counter           :integer
+#  hotp_secret            :string
 #  remaining_views        :integer          default(10), not null
 #  telephone_number       :string(1000)     default(""), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  com_contact_id         :uuid             not null
+#  com_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_com_contact_telephones_on_com_contact_id       (com_contact_id) UNIQUE
-#  index_com_contact_telephones_on_expires_at           (expires_at)
-#  index_com_contact_telephones_on_telephone_number     (telephone_number)
-#  index_com_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
+#  index_com_contact_telephones_on_com_contact_id_unique  (com_contact_id) UNIQUE
+#  index_com_contact_telephones_on_telephone_number       (telephone_number)
 #
 # Foreign Keys
 #
@@ -33,16 +32,19 @@
 #
 
 class ComContactTelephone < GuestRecord
+  include TelephoneNormalization
+
   belongs_to :com_contact, inverse_of: :com_contact_telephone
 
-  # Validations
-  validates :telephone_number, presence: true, length: { maximum: 1000 },
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  # E.164 normalization and validation
+  normalize_telephone_field :telephone_number
+
   validates :verifier_digest, length: { maximum: 255 }
   validates :com_contact_id, uniqueness: true
-  before_create :generate_id
+
   encrypts :telephone_number, deterministic: true
   encrypts :hotp_secret
+
   # Bridge OTP helpers to stored verifier_* columns
   alias_attribute :otp_digest, :verifier_digest
   alias_attribute :otp_expires_at, :verifier_expires_at
@@ -62,7 +64,8 @@ class ComContactTelephone < GuestRecord
   def verify_otp(raw_otp)
     return false if otp_attempts_left <= 0
     return false if otp_expires_at && Time.current >= otp_expires_at
-    return false unless otp_digest
+
+    # return false unless otp_digest # Handled by Argon2 check
 
     if Argon2::Password.verify_password(raw_otp.to_s, otp_digest)
       update!(activated: true, otp_attempts_left: 0)
@@ -113,10 +116,4 @@ class ComContactTelephone < GuestRecord
       false
     end
   end
-
-  private
-
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
 end

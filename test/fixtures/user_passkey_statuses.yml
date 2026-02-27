@@ -3,19 +3,15 @@
 # Table name: user_passkey_statuses
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_user_identity_passkey_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
-active:
-  id: ACTIVE
-disabled:
-  id: DISABLED
-deleted:
-  id: DELETED
 neyo:
-  id: NEYO
+  id: 5
+active:
+  id: 1
+deleted:
+  id: 4
+disabled:
+  id: 2
 revoked:
-  id: REVOKED
+  id: 3

@@ -1,56 +1,46 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="mb-6">
-    <%= link_to sign_app_configuration_passkeys_path, class: "inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors duration-300" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-      </svg>
-      <span><%= t("sign.app.configuration.show.back") %></span>
-    <% end %>
+<% content_for :page_title, t("sign.app.configuration.passkeys.edit.title") %>
+<div>
+  <div>
+    <h1><%= t("sign.app.configuration.passkeys.edit.title") %></h1>
+    <p><%= t("sign.app.configuration.passkeys.edit.description") %></p>
   </div>
 
-  <div class="sm:flex sm:items-center mb-8">
-    <div class="sm:flex-auto">
-      <h1 class="text-xl font-semibold text-gray-900 dark:text-white"><%= t('sign.app.configuration.passkey.edit.title') %></h1>
-      <p class="mt-2 text-sm text-gray-700 dark:text-gray-400"><%= t('sign.app.configuration.passkey.edit.description') %></p>
-    </div>
-  </div>
-
-  <div class="bg-white dark:bg-gray-900 shadow sm:rounded-lg">
-    <div class="px-4 py-5 sm:p-6">
-      <%= form_with model: @passkey, url: sign_app_configuration_passkey_path(@passkey), method: :patch, local: true, class: "space-y-6" do |f| %>
+  <%= form_with model: @passkey, url: sign_app_configuration_passkey_path(@passkey), method: :patch do |form| %>
+    <% if @passkey.errors.any? %>
+      <div>
         <div>
-          <%= f.label :description, t('activerecord.attributes.user_passkey.description'), class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-          <div class="mt-1">
-            <%= f.text_field :description, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white", maxlength: 255, required: true %>
+          <div>
+            <h3>
+              <%= t('errors.messages.validation_errors', count: @passkey.errors.count) %>
+            </h3>
+            <div>
+              <ul>
+                <% @passkey.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
           </div>
-          <% if @passkey.errors[:description].any? %>
-            <p class="mt-2 text-sm text-red-600 dark:text-red-400"><%= @passkey.errors[:description].join(', ') %></p>
-          <% end %>
         </div>
-
-        <div class="flex items-center gap-3">
-          <%= f.submit t('actions.save'), class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
-          <%= link_to t('actions.cancel'), sign_app_configuration_passkeys_path, class: "inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-
-  <div class="mt-6 bg-gray-50 dark:bg-gray-800 shadow sm:rounded-lg">
-    <div class="px-4 py-5 sm:p-6">
-      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white"><%= t('sign.app.configuration.passkey.show.info_title') %></h3>
-      <div class="mt-4 space-y-3">
-        <div class="flex justify-between text-sm">
-          <span class="text-gray-500 dark:text-gray-400"><%= t('activerecord.attributes.user_passkey.created_at') %>:</span>
-          <span class="font-medium text-gray-900 dark:text-gray-100"><%= l(@passkey.created_at, format: :long) %></span>
-        </div>
-        <% if @passkey.respond_to?(:last_used_at) && @passkey.last_used_at %>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400"><%= t('activerecord.attributes.user_passkey.last_used_at') %>:</span>
-            <span class="font-medium text-gray-900 dark:text-gray-100"><%= l(@passkey.last_used_at, format: :long) %></span>
-          </div>
-        <% end %>
       </div>
+    <% end %>
+
+    <div>
+      <%= form.label :description, t('activerecord.attributes.user_passkey.description') %>
+      <%= form.text_field :description,
+                          maxlength: 100 %>
     </div>
+
+    <div>
+      <%= form.submit t('actions.save') %>
+      <%= link_to t('sign.common.cancel'), sign_app_configuration_passkeys_path %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= button_to t('actions.delete'),
+                  sign_app_configuration_passkey_path(@passkey),
+                  method: :delete,
+                  form: { data: { turbo_confirm: t('messages.confirm_destroy') } } %>
   </div>
 </div>

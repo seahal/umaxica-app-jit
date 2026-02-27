@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,30 +6,38 @@
 # Table name: staff_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(36)       default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
+#  context    :jsonb            not null
+#  event_type :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(1), not null
 #
 # Indexes
 #
-#  index_staff_occurrences_on_body        (body) UNIQUE
-#  index_staff_occurrences_on_expires_at  (expires_at)
-#  index_staff_occurrences_on_public_id   (public_id) UNIQUE
-#  index_staff_occurrences_on_status_id   (status_id)
+#  index_staff_occurrences_on_body                       (body) UNIQUE
+#  index_staff_occurrences_on_event_type_and_created_at  (event_type,created_at)
+#  index_staff_occurrences_on_expires_at                 (expires_at)
+#  index_staff_occurrences_on_public_id                  (public_id) UNIQUE
+#  index_staff_occurrences_on_status_id_and_created_at   (status_id,created_at)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => staff_occurrence_statuses.id)
+#  fk_staff_occurrences_on_status_id  (status_id => staff_occurrence_statuses.id)
 #
 
 class StaffOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
+
+  ACTIVE_STATUS_ID = 1
+  EXPIRED_STATUS_ID = 2
+
+  attribute :status_id, default: StaffOccurrenceStatus::NOTHING
 
   belongs_to :staff_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :staff_occurrences
   has_many :area_staff_occurrences, dependent: :destroy, inverse_of: :staff_occurrence
@@ -46,6 +55,10 @@ class StaffOccurrence < OccurrenceRecord
   has_many :staff_zip_occurrences, dependent: :destroy, inverse_of: :staff_occurrence
   has_many :zip_occurrences, through: :staff_zip_occurrences
 
+  scope :active, -> { where(status_id: ACTIVE_STATUS_ID) }
+  scope :expired, -> { where(status_id: EXPIRED_STATUS_ID) }
+
   validates :body, length: { maximum: 36 }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
+  validates :event_type, length: { maximum: 255 }, allow_nil: true
 end

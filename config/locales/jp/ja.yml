@@ -11,35 +11,37 @@ ja:
 
       既存のpositionを確認しています:'
   turnstile_error: セキュリティ検証に失敗しました。もう一度お試しください。
-  errors:
-    webauthn:
-      origin_invalid: "このサイトからの認証は許可されていません"
-      challenge_id_required: "チャレンジIDが必要です"
   common:
     ok: OK
     unsaved_changes: 変更は保存されていません。移動しますか？
+  errors:
+    messages:
+      validation_failed: 入力内容を確認してください。
   actions:
     submit: 送信
     cancel: キャンセル
     save: 保存
-    edit: 編集
-    delete: 削除
-    destroy: 削除
-    verify: 確認
-    actions: アクション
+    back: もどる
   sign:
+    telephone_verification:
+      sms_message: "確認コード: %{code}"
     default_user_name: ユーザー
     default_staff_name: スタッフ
     default_passkey_description: パスキー
+    shared:
+      sign_out:
+        title: "ログアウトしますか？"
+        button: "ログアウトします"
+        success: "ログアウトします"
     app:
-      common:
-        cancel: キャンセル
       authentication:
         passkey:
           already_logged_in: 既にログインしています。
           new:
             page_title: パスキーでログイン
             description: パスキーを使って安全にログインします。
+            pii_label: メールアドレスまたは電話番号
+            pii_placeholder: "user@example.com または +81 90 1234 5678"
             submit: パスキーでログイン
         new:
           page_title: サインイン方法を選ぶ
@@ -59,14 +61,13 @@ ja:
         secret:
           new:
             page_title: シークレットでサインイン
-            description: 保存しているシークレットを入力してログインします。
-            hints: シークレットは保存された使い捨て文字列です。必要に応じて新しいものを生成してください。
-            pii_label: 本人確認情報
-            pii_placeholder: メールアドレスまたは電話番号
+            pii_label: メールアドレスまたは電話番号
+            pii_placeholder: "user@example.com または +81 90 1234 5678"
             secret_label: シークレット
-            confirm_label: シークレットを保存しました
-            confirm_hint: このシークレットは他の認証方法が使えないときに必要になります。
-            use_totp: TOTP を使う
+            hints: 利用可能なシークレット
+          create:
+            success: ログインしました。
+            invalid: 認証に失敗しました。入力内容をご確認ください。
         email:
           new:
             page_title: メールでログイン
@@ -77,6 +78,7 @@ ja:
             email_not_found: 登録済みのメールアドレスが見つかりませんでした。
             verification_code_sent: 確認コードをメールアドレスに送信しました。
             turnstile_error: セキュリティ検証に失敗しました。ページを更新して再度お試しください。
+            cooldown: しばらくしてから再度お試しください。
           edit:
             page_title: 認証コードの入力
             description: 完了まであと少しです。メールに送信された6桁の認証コードを入力してください。
@@ -135,17 +137,17 @@ ja:
           create:
             verification_code_sent: 確認コードをメールアドレスに送信しました。
             success: "登録が完了しました。"
-            failure: "登録処理に失敗しました。もう一度やり直してください。"
             turnstile_validation_failed: セキュリティ検証に失敗しました。もう一度お試しください。
+            otp_resend_too_soon: しばらく時間をおいてから再度お試しください。
           edit:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
+            code_required: 確認コードを入力してください。
             invalid_code: パスコードが正しくありません
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
             success: 登録が完了しました。
+            sign_in_required: 登録を続行できませんでした。ログインをお試しください。
             failed: 登録処理に失敗しました。もう一度やり直してください。
-            session_expired: セッションの有効期限が切れました。最初からやり直してください。
-            already_verified: この認証コードは既に使用されています。最初からやり直してください。
         telephone:
           new:
             page_title: 電話番号で登録
@@ -158,10 +160,11 @@ ja:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
             success: 電話番号の確認が完了しました。
-            invalid_code: パスコードが正しくありません
-            session_expired: セッションの有効期限が切れました。最初からやり直してください。
+            passkey_required: 電話番号が確認されました。パスキーを登録してください。
+            code_required: 確認コードを入力してください。
+            invalid_code: パスコードが正しくありません。
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
-            already_verified: この認証コードは既に使用されています。最初からやり直してください。
+            sign_in_required: 登録を続行できませんでした。ログインをお試しください。
           complete:
             page_title: 登録が完了しました
             description: アカウントの登録が正常に完了しました。引き続きサービスをご利用ください。
@@ -173,15 +176,58 @@ ja:
           description: アカウントの高度なセキュリティ設定を管理します。
           withdrawal: 退会
           back: もどる
-        index:
-          totp: TOTP
-          passkey: パスキー
-          secret: シークレット・キー
-          email: メールアドレス
-          telephone: 電話番号
-          session: セッション
-          google: Google
-          apple: Apple
+          logout: ログアウト
+          logout_desc: アカウントからログアウトします
+        activity:
+          index:
+            page_title: アクティビティ
+            description: アカウントに関連するログイン履歴を表示します。
+            empty: 表示できるログはありません。
+            table:
+              occurred_at: 発生時刻
+              event: イベント
+              ip_address: IPアドレス
+              context: コンテキスト
+          events:
+            logged_in: ログイン成功
+            login_success: ログイン成功
+            unknown: "不明なイベント (%{event_id})"
+        email:
+          edit:
+            title: "メールアドレスの削除"
+          index:
+            title: "メールアドレス"
+            description: "メールアドレスを管理します"
+            new_link: "メールアドレスを追加"
+            delete: "削除"
+            delete_confirm: "このメールアドレスを削除しますか？"
+          destroy:
+            success: "メールアドレスを削除しました。"
+            last_method: "最後のログイン手段のため削除できません。"
+        telephone:
+          edit:
+            title: "電話番号の削除"
+          index:
+            title: "電話番号"
+            description: "電話番号を管理します"
+            new_link: "電話番号を追加"
+            delete: "削除"
+            delete_confirm: "この電話番号を削除しますか？"
+          destroy:
+            success: "電話番号を削除しました。"
+            last_method: "最後のログイン手段のため削除できません。"
+        secrets:
+          update:
+            last_method: "最後のログイン手段のため無効化できません。"
+          destroy:
+            last_method: "最後のログイン手段のため削除できません。"
+        emergency_key:
+          missing: "緊急キーの表示期限が切れました。"
+          show:
+            title: "緊急キー"
+            description: "緊急時に利用できるキーを発行しました。安全な場所に保管してください。"
+            one_time_notice: "このキーは一度しか表示されません。スクリーンショットまたは安全な保管場所に保存してください。"
+            back_to_settings: "設定に戻る"
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -194,156 +240,9 @@ ja:
             submit: リカバリーコードを生成する
         totp:
           index:
-            page_title: TOTP の一覧
             description: ワンタイムパスワード（TOTP）の設定を管理します。
             new_link: TOTP を新規作成
-            return_page: 戻る
-          new:
-            page_title: TOTP認証の設定
-            description: 認証アプリでQRコードをスキャンし、生成されたコードを入力して設定を完了します。
-            title_hint: '識別しやすい名前を付けてください（例: 個人用iPhone）'
-        email:
-          index:
-            title: メール設定
-            description: アカウントに関連付けられたメールアドレスを管理します。
-            new_link: メールアドレスを追加
-          new:
-            page_title: メールアドレスを追加
-            description: 新しいメールアドレスを追加して、アカウントの管理をより柔軟にします。
-            help_text: 入力されたメールアドレスに確認コードを送信します。
-          edit:
-            title: メールアドレスの確認
-            description: メールに送信された確認コードを入力してください。
-            link_verified: メールアドレスを確認しました。
-            pass_code_label: 確認コード
-            pass_code_hint: 6桁の確認コードを入力してください。
-          show:
-            title: メール詳細
-            not_found: メールアドレスが見つかりません。
-          create:
-            verification_code_sent: 確認コードをメールアドレスに送信しました。
-          update:
-            success: メールアドレスを確認しました。
-          destroy:
-            success: メールアドレスを削除しました。
-            last_email: 最後のメールアドレスは削除できません。
-            not_found: メールアドレスが見つかりません。
-        passkey:
-          index:
-            title: パスキーの一覧
-            description: 登録済みのパスキーを管理します。
-        passkeys:
-          new:
-            page_title: パスキーを登録
-        telephone:
-          index:
-            title: 電話番号の一覧
-            description: 登録済みの電話番号を管理します。
-            new_link: 電話番号を追加
-            verified: 認証済み
-            unverified: 未認証
-            empty: 電話番号は登録されていません。
-          new:
-            title: 電話番号を追加
-            description: 新しい電話番号を追加して、アカウントの管理をより安全にします。
-            help_text: 入力された電話番号にSMSで確認コードを送信します。
-          create:
-            verification_code_sent: 確認コードを送信しました。
-            already_registered: この電話番号は既に登録されています。
-            turnstile_validation_failed: ボット検証に失敗しました。もう一度お試しください。
-          edit:
-            title: 電話番号の確認
-            description: SMSに送信された確認コードを入力してください。
-            pass_code_label: 確認コード
-            pass_code_hint: 6桁の確認コードを入力してください。
-            sms_sent: "%{number} に確認コードを送信しました。"
-            session_expired: セッションの有効期限が切れました。最初からやり直してください。
-          update:
-            success: 電話番号が認証されました。
-            invalid_code: 確認コードが正しくありません。もう一度お試しください。
-            session_expired: セッションの有効期限が切れました。最初からやり直してください。
-            attempts_exceeded: 試行回数が上限を超えました。最初からやり直してください。
-          show:
-            title: 電話番号を認証しました
-            description: 電話番号の認証が完了しました。
-            verified: 認証済み
-            back_to_list: 電話番号の一覧に戻る
-            not_found: 電話番号が見つかりません。
-          destroy:
-            success: 電話番号を削除しました。
-            not_found: 電話番号が見つかりません。
-            confirm: この電話番号を削除してもよろしいですか？
-            last_telephone: 最後の認証済み電話番号は削除できません。
-        secrets:
-          index:
-            title: シークレット・キーの一覧
-            description: シークレットキーを管理します。
-            new: 新しいシークレットを作成
-            last_issued_prefix: "プレフィックス:"
-            last_issued_secret: "シークレット:"
-            last_issued_notice: この値は一度しか表示されません。必ず安全な場所に保管してください。
-          new:
-            title: シークレットを作成
-            description: 新しいシークレットを作成します。
-            acknowledgement_label: シークレットを控えました（再表示できません）
-            secret_display_notice: この値は一度しか表示されません。
-          edit:
-            title: シークレットを編集
-            description: シークレット名を更新します。
-          show:
-            title: シークレットの詳細
-            description: シークレットの情報を確認できます。
-          errors:
-            acknowledgement_required: シークレットを控えたことを確認してください
-        sessions:
-          index:
-            title: アクティブなセッション
-            description: ここに表示されるセッションはすぐに無効化できます。「現在」と表示されているセッションは今使用中のブラウザです。
-            table:
-              session: セッション
-              kind: 種別
-              last_activity: 最終アクティビティ
-              created: 作成日時
-              refresh_expires: リフレッシュ有効期限
-              action: アクション
-            current: 現在
-            revoke: 無効化
-            revoke_confirm: このセッションを無効化しますか？
-            empty: アクティブなセッションはありません。
-        google:
-          show:
-            title: Google
-            description: Googleアカウントを使用してこのアカウントにログインできます。
-            linked: 連携済み
-            unlinked: 未連携
-        apple:
-          show:
-            title: Apple
-            description: Apple IDを使用してこのアカウントにログインできます。
-            linked: 連携済み
-            unlinked: 未連携
         withdrawal:
-          show:
-            title: 退会ステータス
-            description: アカウントの利用停止または完全な削除を行えます。
-            withdrawn: あなたのアカウントは退会済みです
-            withdrawn_date: '退会日時: %{date}'
-            recovery: アカウント復旧
-            recovery_notice: 復旧期間内であればアカウントを復旧できます。
-            recover_button: アカウントを復旧する
-            recovery_expired: 復旧期間が終了しています。
-            active: あなたのアカウントはアクティブです
-            withdrawal_actions: 退会オプション
-            temporary_withdrawal: 一時退会
-            temporary_notice: アカウントが一時的に無効化され、復旧期間内は復帰できます。
-            temporary_warning: 利用停止中は、サービスのすべての機能が制限されます。
-            withdraw_button: アカウントを退会する
-            confirm_withdrawal: 本当に退会してよろしいですか？
-            permanent_deletion: 永久削除
-            permanent_notice: アカウントと関連するすべてのデータが永久に削除されます。この操作は取り消せません。
-            permanent_warning: "警告: この操作は二度と元に戻せません。"
-            delete_button: アカウントを永久削除する
-            confirm_deletion: この操作は取り消せません。本当に削除してよろしいですか？
           new:
             title: 退会
             description: アカウントを退会しようとしています。この操作でアカウントが一時的に無効化され、復旧期間中は復帰できます。
@@ -354,16 +253,144 @@ ja:
             description: あなたのアカウントは現在退会状態です。下のボタンをクリックしてアカウントを復旧してください。
             recovery_code_label: リカバリーコード確認
             submit: アカウントを復旧する
-      exits:
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "再認証"
+          description: "続行するには再認証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        show:
+          title: "再認証セッション"
+          list: "一覧"
+          to_edit: "入力画面へ"
+          cancel: "キャンセル"
+          confirm_cancel: "キャンセルしますか？"
         edit:
-          title: ログアウトしますか？
-        destroy:
-          success: ログアウトします
+          title: "再認証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          cancel: "キャンセル"
+          confirm_cancel: "キャンセルしますか？"
+        success:
+          complete: "再認証が完了しました"
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        edit:
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
     token_refresh:
       errors:
         missing_refresh_token: リフレッシュトークンが必要です
         invalid_refresh_token: 無効または期限切れのリフレッシュトークンです
     org:
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "再認証"
+          description: "続行するには再認証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        show:
+          title: "再認証セッション"
+          list: "一覧"
+          to_edit: "入力画面へ"
+          cancel: "キャンセル"
+          confirm_cancel: "キャンセルしますか？"
+        edit:
+          title: "再認証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          cancel: "キャンセル"
+          confirm_cancel: "キャンセルしますか？"
+        success:
+          complete: "再認証が完了しました"
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+          submit: "続行"
+          back: "戻る"
+        edit:
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
       layout:
         nav:
           sign_up: 新規登録
@@ -410,13 +437,14 @@ ja:
           new:
             page_title: シークレットでサインイン
             pii_label: 本人確認情報
+            pii_placeholder: 電話番号またはメールアドレス
             secret_label: シークレット
             confirm_label: シークレットを保存しました
         passkey:
           new:
-            page_title: ログイン
+            page_title: パスキーでログイン
             description: パスキーを使って安全にログインします。
-            submit: ログイン
+            submit: パスキーでログイン
         email:
           new:
             page_title: email で登録します
@@ -456,11 +484,36 @@ ja:
           description: アカウントの高度なセキュリティ設定を管理します。
           withdrawal: 退会
           back: もどる
+          mfa: MFA設定
+          mfa_desc: 多要素認証の有効化と管理
         passkeys:
           new:
             page_title: "パスキーを登録"
           index:
             title: "パスキー管理"
+          edit:
+            title: "パスキーを編集"
+            description: "パスキーの名称を変更できます。"
+          show:
+            title: "パスキーの詳細"
+            description: "登録済みパスキーの情報を確認します。"
+        mfa:
+          show:
+            title: "MFA設定"
+            description: "多要素認証の利用状況を確認し、設定を変更できます。"
+            toggle_title: "多要素認証を有効化"
+            toggle_description: "有効にすると追加認証が要求されます。"
+            enabled: "有効"
+            disabled: "無効"
+            passkeys: "パスキー"
+            passkeys_desc: "登録済み %{count} 件"
+            totps: "認証アプリ（TOTP）"
+            totps_desc: "登録済み %{count} 件"
+            secrets: "シークレット"
+            secrets_desc: "有効 %{count} 件"
+          update:
+            success: "MFA設定を更新しました。"
+            failure: "MFA設定の更新に失敗しました。"
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -518,6 +571,7 @@ ja:
           edit:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
+            code_required: 確認コードを入力してください。
             invalid_code: パスコードが正しくありません
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
             success: 登録が完了しました。
@@ -533,11 +587,10 @@ ja:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
             success: 電話番号の確認が完了しました。
-      exits:
-        edit:
-          title: ログアウトしますか？
-        destroy:
-          success: ログアウトします
+            passkey_required: 電話番号が確認されました。パスキーを登録してください。
+            code_required: 確認コードを入力してください。
+            invalid_code: パスコードが正しくありません。
+            attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
   languages:
     english: English
     japanese: 日本語
@@ -565,69 +618,21 @@ ja:
             updated: 管理テーマを%{theme}に更新しました
     sign:
       app:
-        configuration:
+        setting:
           show:
             page_title: 設定
             withdrawal: 退会
-          security:
-            edit:
-              title: "セキュリティ設定"
-              description: "認証要素、アクティブセッション、リカバリーコードをまとめて確認できます。"
-            cards:
-              totp:
-                title: "二段階認証"
-                description: "認証アプリが生成するワンタイムコードでログインを二重に保護します。"
-              passkeys:
-                title: "パスキー"
-                description: "WebAuthn 対応デバイスでパスワードなしのログインを維持します。"
-                stats_label: "件登録済"
-              secrets:
-                title: "リカバリーコード"
-                description: "主要な認証要素が使えないときに使える使い捨てコードです。"
-                stats_label: "件保存済"
-              sessions:
-                title: "アクティブセッション"
-                description: "現在ログイン中のデバイスを確認してください。"
-                stats_label: "件アクティブ"
-            states:
-              enabled: "有効"
-              disabled: "未設定"
-            actions:
-              manage: "管理"
-              review: "再確認"
-            review:
-              heading: "セキュリティレビュー"
-              last_reauth: "直近の再認証:"
-              last_review: "レビュー更新:"
-            never: "記録なし"
-            update:
-              success: "セキュリティダッシュボードを更新しました。"
           index:
             totp: TOTP
             passkey: パスキー
-            secret: シークレット・キー
+            secret: リカバリーコード
             google: Google
             apple: Apple
-        setting:
-          index:
-            totp: TOTP
-            passkey: パスキー
-            secret: シークレット・キー
-            email: メールアドレス
+            email: メール
             telephone: 電話番号
             session: セッション
-            google: Google
-            apple: Apple
+            activity: アクティビティ
           passkey:
-            index:
-              return_page: 戻る
-          totp:
-            index:
-              page_title: TOTP の一覧
-              return_page: 戻る
-        v1:
-          passkey:
-            new: パスキーを登録
             index:
               page_title: パスキーの一覧
               return_page: 戻る
@@ -693,21 +698,18 @@ ja:
               cannot_recover: 復旧期間が終了しています。サポートにお問い合わせください。
               failed: 復旧処理に失敗しました。後でもう一度お試しください。
             destroy:
+              permanent_unavailable: 永久消去機能は現在利用できません。
               success: アカウントを完全に削除しました。
               deleted: アカウントを完全に削除しました。
               not_withdrawn: 退会済みでないため、削除できません。
               failed: アカウント削除処理に失敗しました。後でもう一度お試しください。
-            errors:
-              cooldown_active: クールダウン中のため退会操作を行えません。
-              recovery_not_available: アカウント復旧は利用できません。
-              invalid_state: "この操作は実行できません。現在の状態: %{current_status}"
-              finalized: 退会が確定しているため操作できません。
-              deletion_failed: アカウント削除に失敗しました。
             authenticate_error: 認証が必要です。ログインしてください。
         sessions:
           revoke:
             success: セッションを破棄しました。
             failure: 現在のセッションは破棄できません。
+            others_button: 他のセッションをすべて削除
+            others_confirm: その他のセッションをすべて消しますか？
         registration:
           google:
             new:
@@ -731,17 +733,18 @@ ja:
             label: 電話で登録
             create:
               verification_code_sent: 確認コードをSMSで送信しました。
+              turnstile_validation_failed: 認証に失敗しました。もう一度お試しください。
               locked: アカウントがロックされています。しばらく経ってから再度お試しください。
             edit:
               return_page: 戻る
               session_expired: セッションの有効期限が切れました。最初からやり直してください。
+              resend_code: 確認コードを再送する
+            resend:
+              sent: 確認コードをSMSで再送しました。
+              rate_limited: 短時間での再送はできません。しばらくしてから再度お試しください。
             update:
               success: 電話番号が確認されました。
-        exits:
-          edit:
-            title: ログアウトしますか？
-          destroy:
-            success: ログアウトします
+              passkey_required: 電話番号の確認が完了しました。パスキーの登録を続けてください。
         authentication:
           edit:
             title: 認証情報の編集
@@ -756,38 +759,7 @@ ja:
               invalid_code: Invalid verification code
               success: ログインしました。
           destroy:
-              jump_obj: sign in with email
-      org:
-        configuration:
-          security:
-            edit:
-              title: "セキュリティ設定"
-              description: "スタッフのパスキーやセッションをまとめて確認できます。"
-            cards:
-              passkeys:
-                title: "パスキー"
-                description: "スタッフ用のパスキーでパスワードレス認証を強化します。"
-                stats_label: "件登録済"
-              secrets:
-                title: "リカバリーコード"
-                description: "一次認証が使えないときに利用するコードです。"
-                stats_label: "件保存済"
-              sessions:
-                title: "アクティブセッション"
-                description: "現在ログイン中のスタッフセッションを確認できます。"
-                stats_label: "件アクティブ"
-            states:
-              enabled: "有効"
-              disabled: "未設定"
-            actions:
-              manage: "管理"
-              review: "再確認"
-            review:
-              heading: "セキュリティレビュー"
-              last_review: "レビュー更新:"
-            never: "記録なし"
-            update:
-              success: "セキュリティダッシュボードを更新しました。"
+            jump_obj: sign in with email
       preferences:
         title: プリファレンス
         footer:
@@ -842,15 +814,15 @@ ja:
           confirm_policy: プライバシーポリシーに同意します
           confirm_policy_note: ポリシーに同意いただけない場合は送信できません。
           category_id: お問い合わせ種別
-          email_address: メールアドレス
-          telephone_number: 電話番号
+          title: タイトル
+          body: お問い合わせ内容
           submit: 次へ
           cancel: キャンセル
           error_heading: '%{count}件のエラーがあるため送信できません。'
           heading: お問い合わせフォーム
           contact_category_title: お問い合わせ種別
         create:
-          success: お問い合わせを受け付けました。メールアドレスを確認してください。
+          success: お問い合わせを受け付けました
           failure: お問い合わせを送信できませんでした。入力内容をご確認ください。
           turnstile_error: セキュリティ検証に失敗しました。ページを更新して再度お試しください。
           confirm_policy_error: 続行するには、プライバシーポリシーに同意する必要があります。
@@ -870,6 +842,8 @@ ja:
           category_id: お問い合わせ種別
           email_address: メールアドレス
           telephone_number: 電話番号
+          title: タイトル
+          body: お問い合わせ内容
           submit: 次へ
           cancel: キャンセル
           error_heading: '%{count}件のエラーがあるため送信できません。'
@@ -950,11 +924,13 @@ ja:
           confirm_policy: プライバシーポリシーに同意します
           confirm_policy_note: ポリシーに同意いただけない場合は送信できません。
           category_id: お問い合わせ種別
-          email_address: メールアドレス
-          telephone_number: 電話番号
+          title: タイトル
+          body: お問い合わせ内容
           submit: 送信
           cancel: キャンセル
           error_heading: '%{count}件のエラーがあるため送信できません。'
+        create:
+          success: お問い合わせを受け付けました
       preference:
         cookie:
           edit:
@@ -986,6 +962,8 @@ ja:
         not_found: お問い合わせが見つかりません
         invalid_status: '無効なお問い合わせステータス: SET_UPが予想されていますが、%{current_status}です'
   shared:
+    page_header:
+      up_label_fallback: もどる
     links:
       apex_preference: Apexの設定
   root:
@@ -1146,10 +1124,18 @@ ja:
     totp_title_placeholder: タイトル（任意）
   activerecord:
     attributes:
+      user_email:
+        address: メールアドレス
+      user_telephone:
+        number: 電話番号
       user_identity_email:
         address: メールアドレス
     errors:
       models:
+        staff:
+          attributes:
+            public_id:
+              invalid_format: 英小文字と数字のみ（i, o, 0, 1, s, z, g を除く）で8文字にしてください
         org_document_tagger:
           attributes:
             org_document_tag_id:
@@ -1160,59 +1146,62 @@ ja:
           has_one: '%{record}が存在しているので削除できません'
           has_many: '%{record}が存在しているので削除できません'
         identity_audit_event_format_invalid: は大文字とアンダースコアのみで構成される必要があります
+        invalid_e164_format: はE.164形式（例：+819012345678）である必要があります
+        exceeds_e164_length: はE.164形式の最大桁数（%{max}桁）を超えています
+        country_code_cannot_start_with_zero: の国番号は0から始めることができません
   date:
     abbr_day_names:
-    - 日
-    - 月
-    - 火
-    - 水
-    - 木
-    - 金
-    - 土
+      - 日
+      - 月
+      - 火
+      - 水
+      - 木
+      - 金
+      - 土
     abbr_month_names:
-    - null
-    - 1月
-    - 2月
-    - 3月
-    - 4月
-    - 5月
-    - 6月
-    - 7月
-    - 8月
-    - 9月
-    - 10月
-    - 11月
-    - 12月
+      - null
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
     day_names:
-    - 日曜日
-    - 月曜日
-    - 火曜日
-    - 水曜日
-    - 木曜日
-    - 金曜日
-    - 土曜日
+      - 日曜日
+      - 月曜日
+      - 火曜日
+      - 水曜日
+      - 木曜日
+      - 金曜日
+      - 土曜日
     formats:
       default: '%Y/%m/%d'
       long: '%Y年%m月%d日(%a)'
       short: '%m/%d'
     month_names:
-    - null
-    - 1月
-    - 2月
-    - 3月
-    - 4月
-    - 5月
-    - 6月
-    - 7月
-    - 8月
-    - 9月
-    - 10月
-    - 11月
-    - 12月
+      - null
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
     order:
-    - :year
-    - :month
-    - :day
+      - :year
+      - :month
+      - :day
   datetime:
     distance_in_words:
       about_x_hours: 約%{count}時間
@@ -1236,11 +1225,15 @@ ja:
       month: 月
       year: 年
   errors:
+    otp_locked: 試行回数の上限を超えました。最初からやり直してください。
     unauthorized: 不正なアクセスです
     not_implemented: 機能はまだ実装されていません
     webauthn:
+      origin_invalid: "このサイトからの認証は許可されていません"
+      challenge_id_required: "チャレンジIDが必要です"
       challenge_invalid: WebAuthn認証に失敗しました。もう一度やり直してください。
       credential_not_found: パスキーが見つかりませんでした。
+      credential_already_registered: このパスキーは既に登録されています。
       verification_failed: パスキーの検証に失敗しました。
       sign_count_mismatch: パスキーのセキュリティカウンターに問題があります。
     login_failed: ログインに失敗しました。
@@ -1852,67 +1845,3 @@ ja:
       preferences:
         footer:
           preference: 設定
-  controller:
-    sign:
-      app:
-        configuration:
-          security:
-            edit:
-              title: "セキュリティの概要"
-              description: "アカウントの保護状況を確認し、すぐに管理画面へアクセスできます。"
-            cards:
-              passkeys:
-                title: "パスキー"
-                description: "登録済みのパスキーを管理します。"
-                stats_label: "件登録"
-              secrets:
-                title: "リカバリーコード"
-                description: "リカバリーコードを確認し、新しいコードを作成できます。"
-                stats_label: "件利用可能"
-              sessions:
-                title: "セッション"
-                description: "アクティブなセッションを確認し、不要な端末からサインアウトできます。"
-                stats_label: "件アクティブ"
-            states:
-              enabled: "有効"
-              disabled: "無効"
-            actions:
-              manage: "管理"
-              review: "確認済みとして記録"
-            review:
-              heading: "セキュリティレビュー"
-              last_review: "最終確認"
-              never: "まだ確認されていません"
-            update:
-              success: "セキュリティレビューの記録に成功しました。"
-      org:
-        configuration:
-          security:
-            edit:
-              title: "セキュリティ設定"
-              description: "組織のパスキー、リカバリーコード、セッション履歴をチェックできます。"
-            cards:
-              passkeys:
-                title: "パスキー"
-                description: "スタッフ向けパスキーをパネル上で管理します。"
-                stats_label: "件登録"
-              secrets:
-                title: "リカバリーコード"
-                description: "主力の認証方法に障害があった時のためのコードです。"
-                stats_label: "件保管"
-              sessions:
-                title: "アクティブセッション"
-                description: "現在サインイン中のセッション情報を確認できます。"
-                stats_label: "件アクティブ"
-            states:
-              enabled: "有効"
-              disabled: "未設定"
-            actions:
-              manage: "管理"
-              review: "確認を更新"
-            review:
-              heading: "セキュリティレビュー"
-              last_review: "最終確認日時"
-            never: "まだ記録されていません"
-            update:
-              success: "セキュリティダッシュボードを更新しました。"

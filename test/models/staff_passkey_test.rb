@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,27 +6,31 @@
 # Table name: staff_passkeys
 # Database name: operator
 #
-#  id                      :uuid             not null, primary key
-#  description             :string           default(""), not null
-#  public_key              :text             not null
-#  sign_count              :bigint           default(0), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  external_id             :uuid             not null
-#  staff_id                :uuid             not null
-#  staff_passkey_status_id :string(255)      default("ACTIVE"), not null
-#  webauthn_id             :string           default(""), not null
+#  id           :bigint           not null, primary key
+#  last_used_at :datetime
+#  name         :string           not null
+#  public_key   :text             not null
+#  sign_count   :integer          not null
+#  transports   :string
+#  user_handle  :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  external_id  :string           not null
+#  staff_id     :bigint           not null
+#  status_id    :bigint           default(1), not null
+#  webauthn_id  :string           default(""), not null
 #
 # Indexes
 #
-#  idx_on_staff_identity_passkey_status_id_159c890738  (staff_passkey_status_id)
-#  index_staff_identity_passkeys_on_staff_id           (staff_id)
-#  index_staff_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
+#  index_staff_passkeys_on_external_id  (external_id)
+#  index_staff_passkeys_on_staff_id     (staff_id)
+#  index_staff_passkeys_on_status_id    (status_id)
+#  index_staff_passkeys_on_webauthn_id  (webauthn_id) UNIQUE
 #
 # Foreign Keys
 #
 #  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (staff_passkey_status_id => staff_passkey_statuses.id)
+#  fk_rails_...  (status_id => staff_passkey_statuses.id)
 #
 
 require "test_helper"
@@ -34,26 +39,55 @@ class StaffPasskeyTest < ActiveSupport::TestCase
   test "should create passkey with valid attributes" do
     passkey = StaffPasskey.new(
       staff: Staff.find_by!(public_id: "bcde3456"),
-      description: "Staff Passkey",
+      name: "Staff Passkey",
       public_key: "test_staff_public_key",
       sign_count: 1,
       external_id: SecureRandom.uuid,
       webauthn_id: SecureRandom.hex(32),
     )
 
-    assert_equal "Staff Passkey", passkey.description
+    assert_equal "Staff Passkey", passkey.name
     assert_equal "test_staff_public_key", passkey.public_key
     assert_equal 1, passkey.sign_count
+  end
+
+  test "defaults status_id to active" do
+    passkey = StaffPasskey.new(
+      staff: Staff.find_by!(public_id: "bcde3456"),
+      name: "Staff Passkey",
+      public_key: "test_staff_public_key",
+      sign_count: 1,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_equal StaffPasskeyStatus::ACTIVE, passkey.status_id
+  end
+
+  test "status association uses status_id" do
+    status = StaffPasskeyStatus.find(StaffPasskeyStatus::ACTIVE)
+    passkey = StaffPasskey.create!(
+      staff: Staff.find_by!(public_id: "bcde3456"),
+      name: "Staff Passkey",
+      public_key: "test_staff_public_key",
+      sign_count: 1,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+      status: status,
+    )
+
+    assert_equal status, passkey.reload.status
+    assert_equal status.id, passkey.status_id
   end
 
   test "should belong to staff" do
     assert_respond_to StaffPasskey.new, :staff
   end
 
-  test "should have description field" do
-    passkey = StaffPasskey.new(description: "Example Description")
+  test "should have name field" do
+    passkey = StaffPasskey.new(name: "Example Name")
 
-    assert_equal "Example Description", passkey.description
+    assert_equal "Example Name", passkey.name
   end
 
   test "should have public_key field" do
@@ -67,7 +101,7 @@ class StaffPasskeyTest < ActiveSupport::TestCase
   end
 
   test "should have required database columns" do
-    required_columns = %w[description public_key sign_count external_id staff_id webauthn_id]
+    required_columns = %w(name public_key sign_count external_id staff_id webauthn_id)
 
     required_columns.each do |column|
       assert_includes StaffPasskey.column_names, column
@@ -81,7 +115,7 @@ class StaffPasskeyTest < ActiveSupport::TestCase
     StaffPasskey.stub(:where, relation_stub) do
       extra_passkey = StaffPasskey.new(
         staff: staff,
-        description: "Overflow Staff Key",
+        name: "Overflow Staff Key",
         public_key: "overflow-key",
         sign_count: 0,
         external_id: SecureRandom.uuid,

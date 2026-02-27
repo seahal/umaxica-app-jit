@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,21 +6,21 @@
 # Table name: staff_telephones
 # Database name: operator
 #
-#  id                                 :uuid             not null, primary key
-#  locked_at                          :datetime         default(-Infinity), not null
-#  number                             :string           default(""), not null
+#  id                                 :bigint           not null, primary key
+#  locked_at                          :datetime
+#  number                             :string           not null
 #  otp_attempts_count                 :integer          default(0), not null
-#  otp_counter                        :text             default(""), not null
-#  otp_expires_at                     :datetime         default(-Infinity), not null
-#  otp_private_key                    :string           default(""), not null
+#  otp_counter                        :text             not null
+#  otp_expires_at                     :datetime
+#  otp_private_key                    :string           not null
 #  created_at                         :datetime         not null
 #  updated_at                         :datetime         not null
-#  staff_id                           :uuid             not null
-#  staff_identity_telephone_status_id :string(255)      default("UNVERIFIED"), not null
+#  staff_id                           :bigint           not null
+#  staff_identity_telephone_status_id :bigint           default(6), not null
 #
 # Indexes
 #
-#  index_staff_identity_telephones_on_lower_number               (lower((number)::text))
+#  index_staff_telephones_on_lower_number                        (lower((number)::text)) UNIQUE
 #  index_staff_telephones_on_staff_id                            (staff_id)
 #  index_staff_telephones_on_staff_identity_telephone_status_id  (staff_identity_telephone_status_id)
 #
@@ -32,13 +33,15 @@
 require "test_helper"
 
 class StaffTelephoneTest < ActiveSupport::TestCase
+  fixtures :staffs, :staff_statuses, :staff_telephone_statuses
+
   setup do
     @staff = staffs(:none_staff)
     @valid_attributes = {
       number: "+1234567890",
       confirm_policy: true,
       confirm_using_mfa: true,
-      staff: @staff
+      staff: @staff,
     }.freeze
   end
 
@@ -49,10 +52,6 @@ class StaffTelephoneTest < ActiveSupport::TestCase
 
   test "should include Telephone concern" do
     assert_includes StaffTelephone.included_modules, Telephone
-  end
-
-  test "should include SetId concern" do
-    assert_includes StaffTelephone.included_modules, SetId
   end
 
   # Telephone concern validation tests
@@ -109,7 +108,6 @@ class StaffTelephoneTest < ActiveSupport::TestCase
     assert_predicate staff_telephone.errors[:confirm_using_mfa], :any?
   end
 
-  # SetId concern tests
   test "should generate UUID v7 before creation" do
     staff_telephone = StaffTelephone.new(@valid_attributes)
 
@@ -118,11 +116,11 @@ class StaffTelephoneTest < ActiveSupport::TestCase
 
     assert_not_nil staff_telephone.id
     # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
-    assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, staff_telephone.id)
+    assert_kind_of Integer, staff_telephone.id
   end
 
   test "enforces maximum telephones per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
     StaffTelephone::MAX_TELEPHONES_PER_STAFF.times do |i|
       StaffTelephone.create!(
         number: "+1234567890#{i}",

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,24 +6,19 @@
 # Table name: user_occurrence_statuses
 # Database name: occurrence
 #
-#  id :string(255)      default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_user_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id   :bigint           not null, primary key
+#  name :string           default(""), not null
 #
 
 class UserOccurrenceStatus < OccurrenceRecord
-  include StringPrimaryKey
+  # Fixed IDs - do not modify these values
+  NOTHING = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  DELETED = 4
 
   include OccurrenceStatus
 
-  # Status constants
-  NEYO = "NEYO"
-  ACTIVE = "ACTIVE"
-  INACTIVE = "INACTIVE"
-  BLOCKED = "BLOCKED"
   has_many :user_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                               inverse_of: :user_occurrence_status
-  validates :id, uniqueness: { case_sensitive: false }
 end

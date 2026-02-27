@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,38 +6,48 @@
 # Table name: user_tokens
 # Database name: token
 #
-#  id                       :uuid             not null, primary key
+#  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
+#  deletable_at             :datetime         default(Infinity), not null
+#  expired_at               :datetime
+#  last_step_up_at          :datetime
+#  last_step_up_scope       :string
 #  last_used_at             :datetime
 #  refresh_expires_at       :datetime         not null
 #  refresh_token_digest     :binary
 #  refresh_token_generation :integer          default(0), not null
 #  revoked_at               :datetime
 #  rotated_at               :datetime
+#  status                   :string(20)       default("active"), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  device_id                :string           default(""), not null
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
-#  user_id                  :uuid             not null
-#  user_token_kind_id       :string           default("BROWSER_WEB"), not null
-#  user_token_status_id     :string           default("NEYO"), not null
+#  user_id                  :bigint           not null
+#  user_token_kind_id       :bigint           default(11), not null
+#  user_token_status_id     :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_user_tokens_on_compromised_at           (compromised_at)
-#  index_user_tokens_on_public_id                (public_id) UNIQUE
-#  index_user_tokens_on_refresh_expires_at       (refresh_expires_at)
-#  index_user_tokens_on_refresh_token_digest     (refresh_token_digest) UNIQUE
-#  index_user_tokens_on_refresh_token_family_id  (refresh_token_family_id)
-#  index_user_tokens_on_revoked_at               (revoked_at)
-#  index_user_tokens_on_user_id                  (user_id)
-#  index_user_tokens_on_user_token_kind_id       (user_token_kind_id)
-#  index_user_tokens_on_user_token_status_id     (user_token_status_id)
+#  index_user_tokens_on_compromised_at               (compromised_at)
+#  index_user_tokens_on_deletable_at                 (deletable_at)
+#  index_user_tokens_on_device_id                    (device_id)
+#  index_user_tokens_on_expired_at                   (expired_at)
+#  index_user_tokens_on_public_id                    (public_id) UNIQUE
+#  index_user_tokens_on_refresh_expires_at           (refresh_expires_at)
+#  index_user_tokens_on_refresh_token_digest         (refresh_token_digest) UNIQUE
+#  index_user_tokens_on_refresh_token_family_id      (refresh_token_family_id)
+#  index_user_tokens_on_revoked_at                   (revoked_at)
+#  index_user_tokens_on_status                       (status)
+#  index_user_tokens_on_user_id_and_last_step_up_at  (user_id,last_step_up_at)
+#  index_user_tokens_on_user_token_kind_id           (user_token_kind_id)
+#  index_user_tokens_on_user_token_status_id         (user_token_status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_token_kind_id => user_token_kinds.id)
-#  fk_rails_...  (user_token_status_id => user_token_statuses.id)
+#  fk_user_tokens_on_user_token_kind_id    (user_token_kind_id => user_token_kinds.id)
+#  fk_user_tokens_on_user_token_status_id  (user_token_status_id => user_token_statuses.id)
 #
 
 require "test_helper"
@@ -44,8 +55,8 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for users.
 class UserTokenTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::ACTIVE)
-    @token = UserToken.create!(user: @user)
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    @token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
   end
 
   test "inherits from TokenRecord" do
@@ -64,10 +75,9 @@ class UserTokenTest < ActiveSupport::TestCase
     assert_equal @user.id, @token.user_id
   end
 
-  test "generates UUID id automatically" do
+  test "assigns numeric id automatically" do
     assert_not_nil @token.id
-    assert_equal 36, @token.id.length
-    assert_match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, @token.id)
+    assert_kind_of Integer, @token.id
   end
 
   test "has created_at timestamp" do
@@ -86,14 +96,14 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "can load one fixture" do
-    token_one = UserToken.find_by!(public_id: "one_user_token_000001")
+    token_one = UserToken.find_by!(public_id: "651")
 
     assert_not_nil token_one
     assert_not_nil token_one.user_id
   end
 
   test "can load two fixture" do
-    token_two = UserToken.find_by!(public_id: "two_user_token_000001")
+    token_two = UserToken.find_by!(public_id: "615")
 
     assert_not_nil token_two
     assert_not_nil token_two.user_id
@@ -101,7 +111,7 @@ class UserTokenTest < ActiveSupport::TestCase
 
   test "timestamp is set on creation" do
     user = User.create!
-    token = UserToken.create!(user: user)
+    token = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
 
     assert_not_nil token.created_at
     assert_not_nil token.updated_at
@@ -119,21 +129,16 @@ class UserTokenTest < ActiveSupport::TestCase
   test "enforces maximum concurrent sessions per user" do
     user = User.create!
 
-    # Create MAX_SESSIONS_PER_USER tokens
-    UserToken::MAX_SESSIONS_PER_USER.times do
+    # Create tokens up to the total max (active + restricted)
+    UserToken::MAX_TOTAL_SESSIONS_PER_USER.times do
       UserToken.create!(user: user)
     end
 
-    # Relaxed limit: allows MAX + 1 (active + pending)
-    # So 3rd token should be valid (if MAX_SESSIONS_PER_USER is 2, this is the 3rd)
-    token = UserToken.new(user: user)
-    assert_predicate token, :valid?
-    token.save!
+    extra_token = UserToken.new(user: user)
 
-    # 4th token should fail
-    token4 = UserToken.new(user: user)
-    assert_not token4.valid?
-    assert_includes token4.errors[:base], "exceeds maximum concurrent sessions per user (#{UserToken::MAX_SESSIONS_PER_USER})"
+    assert_not extra_token.valid?
+    assert_includes extra_token.errors[:base],
+                    "exceeds maximum concurrent sessions per user (#{UserToken::MAX_TOTAL_SESSIONS_PER_USER})"
   end
 
   test "refresh token digest updates and authenticates" do
@@ -153,11 +158,13 @@ class UserTokenTest < ActiveSupport::TestCase
 
     assert_predicate token, :active?
 
-    token.update!(revoked_at: Time.current)
+    token.update!(expired_at: Time.current)
+
     assert_predicate token, :revoked?
     assert_not token.active?
 
-    token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+    token.update!(expired_at: nil, refresh_expires_at: 1.day.ago)
+
     assert_predicate token, :expired_refresh?
     assert_not token.active?
   end
@@ -201,24 +208,146 @@ class UserTokenTest < ActiveSupport::TestCase
     user = User.create!
     token1 = UserToken.create!(user: user)
     token2 = UserToken.create!(user: user)
+
     assert_not_equal token1.public_id, token2.public_id
   end
 
   test "public_id length boundary" do
     @token.public_id = "a" * 22
+
     assert_not @token.valid?
     assert_not_empty @token.errors[:public_id]
   end
 
   test "refresh_expires_at is required" do
     @token.refresh_expires_at = nil
+
     assert_not @token.valid?
     assert_not_empty @token.errors[:refresh_expires_at]
+  end
+
+  test "deletable_at matches refresh_expires_at on create" do
+    expires_at = 2.hours.from_now
+    token = UserToken.create!(
+      user: User.create!,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      refresh_expires_at: expires_at,
+    )
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable_at is updated when refresh_expires_at changes" do
+    token = UserToken.create!(
+      user: User.create!,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.hour.from_now,
+    )
+    new_expires_at = 3.hours.from_now
+
+    token.update!(refresh_expires_at: new_expires_at)
+
+    assert_equal token.refresh_expires_at, token.deletable_at
+  end
+
+  test "deletable scope returns only tokens deletable at or before now" do
+    user = User.create!
+    past_token = UserToken.create!(user: user, refresh_expires_at: 10.minutes.ago)
+    future_token = UserToken.create!(user: user, refresh_expires_at: 10.minutes.from_now)
+
+    deletable_ids = UserToken.deletable(Time.current).pluck(:id)
+
+    assert_includes deletable_ids, past_token.id
+    assert_not_includes deletable_ids, future_token.id
   end
 
   test "association deletion: destroys when user is destroyed" do
     @token.reload # Ensure it exists
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { @token.reload }
+  end
+
+  test "rotate_refresh! consumes old row and creates new generation in same family" do
+    token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "device-user")
+    raw = token.rotate_refresh_token!
+    _, verifier = UserToken.parse_refresh_token(raw)
+    digest = UserToken.digest_refresh_token(verifier)
+
+    result = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+
+    assert_equal :rotated, result[:status]
+    new_token = result[:token]
+
+    assert_predicate new_token, :present?
+    assert_not_equal token.id, new_token.id
+    assert_equal token.refresh_token_family_id, new_token.refresh_token_family_id
+    assert_equal token.refresh_token_generation + 1, new_token.refresh_token_generation
+    assert_nil new_token.rotated_at
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! classifies second attempt as replay" do
+    token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "device-user")
+    raw = token.rotate_refresh_token!
+    _, verifier = UserToken.parse_refresh_token(raw)
+    digest = UserToken.digest_refresh_token(verifier)
+
+    first = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+
+    assert_equal :rotated, first[:status]
+
+    second = UserToken.rotate_refresh!(presented_refresh_digest: digest, device_id: "device-user", now: Time.current)
+
+    assert_equal :replay, second[:status]
+    assert_predicate token.reload.rotated_at, :present?
+  end
+
+  test "rotate_refresh! rejects revoked compromised and expired tokens" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    revoked = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d1")
+    compromised = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d2")
+    expired = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB, device_id: "d3")
+    revoked_raw = revoked.rotate_refresh_token!
+    compromised_raw = compromised.rotate_refresh_token!
+    expired_raw = expired.rotate_refresh_token!
+    revoked.update!(expired_at: Time.current)
+    compromised.update!(compromised_at: Time.current)
+    expired.update!(refresh_expires_at: 1.minute.ago)
+
+    revoked_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(revoked_raw).last)
+    compromised_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(compromised_raw).last)
+    expired_digest = UserToken.digest_refresh_token(UserToken.parse_refresh_token(expired_raw).last)
+
+    assert_equal :invalid,
+                 UserToken.rotate_refresh!(
+                   presented_refresh_digest: revoked_digest, device_id: "d1",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 UserToken.rotate_refresh!(
+                   presented_refresh_digest: compromised_digest, device_id: "d2",
+                   now: Time.current,
+                 )[:status]
+    assert_equal :invalid,
+                 UserToken.rotate_refresh!(
+                   presented_refresh_digest: expired_digest, device_id: "d3",
+                   now: Time.current,
+                 )[:status]
+  end
+
+  test "find_from_signed_ref resolves token when verifier payload has string keys" do
+    token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    signed_ref = Rails.application.message_verifier(:session_ref).generate(
+      { "id" => token.id, "pid" => token.public_id },
+      expires_in: 1.hour,
+    )
+
+    found = UserToken.find_from_signed_ref(signed_ref)
+
+    assert_equal token.id, found&.id
+  end
+
+  test "find_from_signed_ref returns nil for invalid signature" do
+    assert_nil UserToken.find_from_signed_ref("invalid-signed-ref")
   end
 end

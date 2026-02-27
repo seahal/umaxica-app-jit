@@ -1,162 +1,207 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
+import { normalizePublicKeyOptions } from "controllers/webauthn_utils";
 
+// Passkey Registration Controller
+// Handles WebAuthn credential creation for passkey registration.
+//
+// Usage:
+//   <div data-controller="passkey-registration"
+//        data-passkey-registration-options-url-value="/configuration/passkeys/options"
+//        data-passkey-registration-verification-url-value="/configuration/passkeys/verification">
+//     <input type="text" data-passkey-registration-target="description" placeholder="Passkey name">
+//     <button data-action="click->passkey-registration#register">Register Passkey</button>
+//     <p data-passkey-registration-target="error" class="hidden text-red-600"></p>
+//     <p data-passkey-registration-target="status" class="hidden text-gray-600"></p>
+//   </div>
 export default class extends Controller {
-    static values = {
-        optionsUrl: String,
-        verificationUrl: String,
-        updateUrl: String,
-        destroyUrl: String
+  static targets = ["description", "error", "status"];
+  static values = {
+    beginUrl: String,
+    finishUrl: String,
+    successRedirectUrl: String,
+    optionsUrl: String,
+    verificationUrl: String,
+  };
+
+  get csrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.content : "";
+  }
+
+  get descriptionValue() {
+    if (this.hasDescriptionTarget) {
+      return this.descriptionTarget.value || "";
     }
-    static targets = ["status", "error", "description"]
+    return "";
+  }
 
-    get csrfToken() {
-        return document.querySelector('meta[name="csrf-token"]')?.content
+  get requestBeginUrl() {
+    if (this.hasBeginUrlValue) {
+      return this.beginUrlValue;
+    }
+    return this.optionsUrlValue;
+  }
+
+  get requestFinishUrl() {
+    if (this.hasFinishUrlValue) {
+      return this.finishUrlValue;
+    }
+    return this.verificationUrlValue;
+  }
+
+  get redirectUrl() {
+    if (this.hasSuccessRedirectUrlValue) {
+      return this.successRedirectUrlValue;
+    }
+    return "";
+  }
+
+  async register(event) {
+    event.preventDefault();
+    this.clearMessages();
+
+    // Check WebAuthn support
+    if (!window.PublicKeyCredential) {
+      this.showError("このブラウザはPasskeyに対応していません");
+      return;
     }
 
-    async register(event) {
-        await this.performRegistration(event, this.verificationUrlValue, "POST")
-    }
+    try {
+      this.showStatus("認証オプションを取得中...");
 
-    async update(event) {
-        if (!confirm("This will replace your existing passkey. Continue?")) return
-        await this.performRegistration(event, this.updateUrlValue, "PATCH")
-    }
+      // Step 1: Get registration options from server
+      const optionsResponse = await fetch(this.requestBeginUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-CSRF-Token": this.csrfToken,
+        },
+      });
 
-    async destroy(event) {
-        event.preventDefault()
-        if (!confirm("Are you sure you want to remove your passkey?")) return
-
-        this.statusTarget.textContent = "Removing..."
-        this.statusTarget.classList.remove("hidden")
-
-        try {
-            const resp = await fetch(this.destroyUrlValue, {
-                method: "DELETE",
-                headers: {
-                    "X-CSRF-Token": this.csrfToken,
-                    "Content-Type": "application/json"
-                }
-            })
-
-            if (!resp.ok) throw new Error("Failed to remove passkey")
-
-            this.statusTarget.textContent = "Removed!"
-            window.location.reload()
-        } catch (e) {
-            this.showError(e.message)
+      if (!optionsResponse.ok) {
+        const contentType = optionsResponse.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const data = await optionsResponse.json();
+          throw new Error(data.error || "オプションの取得に失敗しました");
         }
-    }
-
-    async performRegistration(event, url, method) {
-        event.preventDefault()
-        this.clearMessages()
-        this.statusTarget.textContent = "Prepare your authenticator..."
-        this.statusTarget.classList.remove("hidden")
-
-        try {
-            const optionsResp = await fetch(this.optionsUrlValue, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": this.csrfToken
-                }
-            })
-
-            if (!optionsResp.ok) throw new Error("Failed to get options")
-            const responseJson = await optionsResp.json()
-            const { challenge_id, options } = responseJson
-
-            options.challenge = this.base64urlToBuffer(options.challenge)
-
-            // WebAuthn requires user.id to be a Buffer.
-            // We assume server sends string (e.g. UUID), so we convert it.
-            if (options.user && options.user.id) {
-                options.user.id = this.stringToBuffer(options.user.id)
-            }
-
-            if (options.excludeCredentials) {
-                options.excludeCredentials = options.excludeCredentials.map(c => ({
-                    ...c,
-                    id: this.base64urlToBuffer(c.id)
-                }))
-            }
-
-            const credential = await navigator.credentials.create({ publicKey: options })
-
-            // Flatten structure for server
-            const body = {
-                challenge_id: challenge_id,
-                credential: {
-                    id: credential.id,
-                    rawId: this.bufferToBase64url(credential.rawId),
-                    type: credential.type,
-                    response: {
-                        clientDataJSON: this.bufferToBase64url(credential.response.clientDataJSON),
-                        attestationObject: this.bufferToBase64url(credential.response.attestationObject)
-                    }
-                },
-                description: this.descriptionTarget ? this.descriptionTarget.value : ""
-            }
-
-            const resp = await fetch(url, {
-                method: method,
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": this.csrfToken
-                },
-                body: JSON.stringify(body)
-            })
-
-            const respJson = await resp.json()
-            if (!resp.ok) {
-                throw new Error(respJson.error || "Registration failed")
-            }
-
-            this.statusTarget.textContent = "Success!"
-            if (respJson.redirect_url) {
-                window.location.href = respJson.redirect_url
-            } else {
-                window.location.reload()
-            }
-
-        } catch (e) {
-            console.error(e)
-            this.showError(e.message)
+        if (optionsResponse.status === 401 || optionsResponse.status === 302) {
+          window.location.reload();
+          return;
         }
-    }
+        throw new Error("オプションの取得に失敗しました");
+      }
 
-    showError(msg) {
-        this.errorTarget.textContent = msg
-        this.errorTarget.classList.remove("hidden")
-        this.statusTarget.classList.add("hidden")
-    }
+      const { challenge_id, options } = await optionsResponse.json();
 
-    clearMessages() {
-        this.errorTarget.classList.add("hidden")
-        this.statusTarget.classList.add("hidden")
-    }
+      this.showStatus("認証器でPasskeyを作成中...");
 
-    base64urlToBuffer(base64url) {
-        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
-        const padding = '='.repeat((4 - base64.length % 4) % 4)
-        const binary = atob(base64 + padding)
-        const bytes = new Uint8Array(binary.length)
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i)
+      // Step 2: Create credential with authenticator
+      const publicKeyOptions = normalizePublicKeyOptions(options);
+      const credential = await navigator.credentials.create({
+        publicKey: publicKeyOptions,
+      });
+
+      this.showStatus("サーバーで検証中...");
+
+      // Step 3: Send credential to server for verification
+      const verificationResponse = await fetch(this.requestFinishUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-CSRF-Token": this.csrfToken,
+        },
+        body: JSON.stringify({
+          challenge_id: challenge_id,
+          credential: this.encodeCredential(credential),
+          description: this.descriptionValue,
+        }),
+      });
+
+      if (!verificationResponse.ok) {
+        const contentType = verificationResponse.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const data = await verificationResponse.json();
+          throw new Error(data.error || "登録に失敗しました");
         }
-        return bytes.buffer
-    }
-
-    bufferToBase64url(buffer) {
-        const bytes = new Uint8Array(buffer)
-        let binary = ''
-        for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i])
+        if (verificationResponse.status === 401 || verificationResponse.status === 302) {
+          window.location.reload();
+          return;
         }
-        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-    }
+        throw new Error("登録に失敗しました");
+      }
 
-    stringToBuffer(str) {
-        return new TextEncoder().encode(str)
+      const result = await verificationResponse.json();
+
+      // Step 4: Success - redirect
+      this.showStatus("登録完了！リダイレクト中...");
+      if (result.redirect_url || this.redirectUrl) {
+        window.location.href = result.redirect_url || this.redirectUrl;
+      } else {
+        window.location.reload();
+      }
+    } catch (error) {
+      if (error.name === "NotAllowedError") {
+        this.showError("認証がキャンセルされました");
+      } else if (error.name === "InvalidStateError") {
+        this.showError("このPasskeyは既に登録されています");
+      } else {
+        this.showError(error.message || "登録中にエラーが発生しました");
+      }
     }
+  }
+
+  encodeCredential(credential) {
+    const { response } = credential;
+
+    return {
+      id: credential.id,
+      rawId: this.bufferToBase64url(credential.rawId),
+      type: credential.type,
+      authenticatorAttachment: credential.authenticatorAttachment || null,
+      response: {
+        clientDataJSON: this.bufferToBase64url(response.clientDataJSON),
+        attestationObject: this.bufferToBase64url(response.attestationObject),
+      },
+      clientExtensionResults: credential.getClientExtensionResults(),
+    };
+  }
+
+  bufferToBase64url(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+  }
+
+  showError(message) {
+    if (this.hasErrorTarget) {
+      this.errorTarget.textContent = message;
+      this.errorTarget.classList.remove("hidden");
+    }
+    if (this.hasStatusTarget) {
+      this.statusTarget.classList.add("hidden");
+    }
+  }
+
+  showStatus(message) {
+    if (this.hasStatusTarget) {
+      this.statusTarget.textContent = message;
+      this.statusTarget.classList.remove("hidden");
+    }
+  }
+
+  clearMessages() {
+    if (this.hasErrorTarget) {
+      this.errorTarget.textContent = "";
+      this.errorTarget.classList.add("hidden");
+    }
+    if (this.hasStatusTarget) {
+      this.statusTarget.textContent = "";
+      this.statusTarget.classList.add("hidden");
+    }
+  }
 }

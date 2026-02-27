@@ -2,17 +2,17 @@
 
 <p>Thank you for submitting your message. We've recorded the details below and will be in touch with you shortly.</p>
 
-<h2 style="margin-top: 1rem;">Inquiry details</h2>
+<h2>Inquiry details</h2>
 <p><strong>Reference ID:</strong> <%= @contact.public_id %></p>
 <p><strong>Title:</strong> <%= @topic.title.presence || "-" %></p>
 <p><strong>Description:</strong></p>
-<div style="background-color: #f3f4f6; padding: 12px; border-radius: 8px;">
+<div>
   <%= simple_format(@topic.description.presence || "No description provided.") %>
 </div>
 
-<p class="mt-4">We'll reply to this address once we have an update.</p>
+<p>We'll reply to this address once we have an update.</p>
 
 <hr>
-<p style="color: #6b7280; font-size: 12px;">
+<p>
   This is an automated email from <%= ENV.fetch("BRAND_NAME", "Umaxica") %>. Please do not reply.
 </p>

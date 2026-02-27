@@ -28,13 +28,13 @@ class AddIdFormatConstraintsToPreferenceTables < ActiveRecord::Migration[8.2]
 
   private
 
-    def tables_to_constrain
-      [
-        # Only Status tables should have uppercase alphanumeric constraints
-        # Option tables contain timezone IDs, language codes, etc. which may have different formats
-        "org_preference_statuses",
-        "com_preference_statuses",
-        "app_preference_statuses"
-      ]
-    end
+  def tables_to_constrain
+    [
+      # Only Status tables should have uppercase alphanumeric constraints
+      # Option tables contain timezone IDs, language codes, etc. which may have different formats
+      "org_preference_statuses",
+      "com_preference_statuses",
+      "app_preference_statuses",
+    ]
+  end
 end

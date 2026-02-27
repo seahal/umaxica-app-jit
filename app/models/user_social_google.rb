@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,10 +6,8 @@
 # Table name: user_social_googles
 # Database name: principal
 #
-#  id                                    :uuid             not null, primary key
-#  email                                 :string           default(""), not null
+#  id                                    :bigint           not null, primary key
 #  expires_at                            :integer          not null
-#  image                                 :string           default(""), not null
 #  last_authenticated_at                 :datetime
 #  provider                              :string           default("google_oauth2"), not null
 #  refresh_token                         :string           default(""), not null
@@ -16,8 +15,8 @@
 #  uid                                   :string           default(""), not null
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
-#  user_id                               :uuid             not null
-#  user_identity_social_google_status_id :string(255)      default("ACTIVE"), not null
+#  user_id                               :bigint           not null
+#  user_identity_social_google_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -35,7 +34,10 @@
 class UserSocialGoogle < PrincipalRecord
   include SocialIdentifiable
 
+  # TODO: I want to delete those line.
   alias_attribute :user_social_google_status_id, :user_identity_social_google_status_id
+  attribute :user_identity_social_google_status_id, default: UserSocialGoogleStatus::ACTIVE
+
   belongs_to :user, inverse_of: :user_social_google
   belongs_to :user_social_google_status,
              inverse_of: :user_social_googles,
@@ -45,11 +47,16 @@ class UserSocialGoogle < PrincipalRecord
   validates :token, presence: true
   validates :user_id, uniqueness: true
   validates :uid, presence: true, uniqueness: { scope: :provider }
-  validates :expires_at, presence: true
-  validates :user_identity_social_google_status_id, length: { maximum: 255 }
+  validates :expires_at, presence: true # TODO: I want to rename this code to revoked_at
+  validates :user_identity_social_google_status_id, numericality: { only_integer: true }
+  # TODO: I want to rename upper code to status_id
 
   def self.status_column
     :user_identity_social_google_status_id
+  end
+
+  def self.status_class
+    UserSocialGoogleStatus
   end
 
   def self.find_or_create_from_auth_hash(auth)
@@ -57,8 +64,6 @@ class UserSocialGoogle < PrincipalRecord
     identity = find_or_initialize_by(uid: auth.uid, provider: auth.provider)
 
     # Update attributes
-    identity.email = auth.info.email.presence || ""
-    identity.image = auth.info.image.presence || ""
     identity.token = auth.credentials.token
     identity.refresh_token = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
     identity.expires_at = auth.credentials.expires_at
@@ -76,8 +81,6 @@ class UserSocialGoogle < PrincipalRecord
   # Update from OmniAuth hash (for link/reauth scenarios)
   def update_from_auth_hash!(auth)
     update!(
-      email: auth.info.email.presence || email.presence || "",
-      image: auth.info.image.presence || image.presence || "",
       token: auth.credentials.token,
       refresh_token: auth.credentials.refresh_token.presence || refresh_token,
       expires_at: auth.credentials.expires_at,

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,23 +6,21 @@
 # Table name: com_timeline_statuses
 # Database name: news
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_com_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class ComTimelineStatus < NewsRecord
-  include StringPrimaryKey
+  # Fixed IDs - do not modify these values
+  NOTHING = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  PENDING = 4
+  DELETED = 5
+  DRAFT = 6
+  ARCHIVED = 7
 
   has_many :com_timelines,
            foreign_key: :status_id,
            inverse_of: :com_timeline_status,
            dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
-
-  validates :description, length: { maximum: 255 }
 end

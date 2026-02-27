@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "committee/rails/test/methods"
@@ -19,7 +20,7 @@ module CommitteeHelper
       schema_path: Rails.public_path.join("openapi.yml").to_s,
       prefix: prefix,
       parse_response_by_content_type: true,
-      strict_reference_validation: true
+      strict_reference_validation: true,
     }
   end
 

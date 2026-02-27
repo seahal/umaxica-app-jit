@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "i18n/backend/fallbacks"
@@ -15,15 +16,21 @@ unless region_dir.directory?
         "Valid values are: #{locale_root.children.filter_map { |child| child.basename if child.directory? }.join(", ")}"
 end
 
-config_locale_files = Dir[locale_root.join("**", "*.{rb,yml}")]
+Dir[locale_root.join("**", "*.{rb,yml}")]
 region_locale_files = Dir[region_dir.join("**", "*.{rb,yml}")]
 
-I18n.load_path.reject! { |path| config_locale_files.include?(path.to_s) }
+# Identify all region directories to exclude others
+all_region_dirs = locale_root.children.select(&:directory?)
+other_region_dirs = all_region_dirs.reject { |dir| dir == region_dir }
+other_region_files = other_region_dirs.flat_map { |dir| Dir[dir.join("**", "*.{rb,yml}")] }.map(&:to_s)
+
+# Reject only files from other regions
+I18n.load_path.reject! { |path| other_region_files.include?(path.to_s) }
 I18n.load_path += region_locale_files
 I18n.load_path.uniq!
 
 I18n.load_path += Rails.root.glob("lib/locale/*.{rb,yml}")
-I18n.available_locales = [ :en, :ja ]
+I18n.available_locales = [:en, :ja]
 I18n.default_locale = :ja
-I18n.fallbacks = { en: [ :en, :ja ], ja: [ :ja, :en ] }
+I18n.fallbacks = { en: [:en, :ja], ja: [:ja, :en] }
 I18n.backend.reload!

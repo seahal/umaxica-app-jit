@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,25 +6,20 @@
 # Table name: org_contact_telephones
 # Database name: guest
 #
-#  id                     :string           not null, primary key
+#  id                     :bigint           not null, primary key
 #  activated              :boolean          default(FALSE), not null
-#  deletable              :boolean          default(FALSE), not null
-#  expires_at             :timestamptz      not null
-#  remaining_views        :integer          default(0), not null
 #  telephone_number       :string(1000)     default(""), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  org_contact_id         :uuid             not null
+#  org_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_org_contact_telephones_on_expires_at           (expires_at)
-#  index_org_contact_telephones_on_org_contact_id       (org_contact_id)
-#  index_org_contact_telephones_on_telephone_number     (telephone_number)
-#  index_org_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
+#  index_org_contact_telephones_on_org_contact_id    (org_contact_id)
+#  index_org_contact_telephones_on_telephone_number  (telephone_number)
 #
 # Foreign Keys
 #
@@ -31,11 +27,13 @@
 #
 
 class OrgContactTelephone < GuestRecord
+  include TelephoneNormalization
+
   belongs_to :org_contact, inverse_of: :org_contact_telephones
 
-  # Validations
-  validates :telephone_number, presence: true, length: { maximum: 1000 },
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  # E.164 normalization and validation
+  normalize_telephone_field :telephone_number
+
   validates :verifier_digest, length: { maximum: 255 }
   before_create :generate_id
   encrypts :telephone_number, deterministic: true
@@ -79,7 +77,7 @@ class OrgContactTelephone < GuestRecord
 
   private
 
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
+  def generate_id
+    self.id ||= Nanoid.generate(size: 21)
+  end
 end

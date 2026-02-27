@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,14 +6,14 @@
 # Table name: area_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(255)      default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
@@ -23,12 +24,14 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => area_occurrence_statuses.id)
+#  fk_area_occurrences_on_status_id  (status_id => area_occurrence_statuses.id)
 #
 
 require "test_helper"
 
 class AreaOccurrenceTest < ActiveSupport::TestCase
+  fixtures :area_occurrences, :area_occurrence_statuses
+
   test "public_id length" do
     record = build_occurrence(AreaOccurrence, body: "JP/Tokyo/Shinjuku", public_id: "A" * 20)
 
@@ -74,14 +77,14 @@ class AreaOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "public_id auto generated on create" do
-    record = build_occurrence(AreaOccurrence, body: "JP/Tokyo/Shinjuku", public_id: nil)
+    record = build_occurrence(AreaOccurrence, body: "JP/Tokyo/#{SecureRandom.hex(6)}", public_id: nil)
 
     assert_public_id_generated(record)
   end
 
   test "public_id preserved when provided" do
     custom_public_id = "Z" * 21
-    record = build_occurrence(AreaOccurrence, body: "JP/Tokyo/Shinjuku", public_id: custom_public_id)
+    record = build_occurrence(AreaOccurrence, body: "JP/Tokyo/#{SecureRandom.hex(6)}", public_id: custom_public_id)
 
     assert_public_id_preserved(record, custom_public_id)
   end

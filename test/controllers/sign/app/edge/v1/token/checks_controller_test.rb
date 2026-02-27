@@ -1,13 +1,15 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_tokens
+  fixtures :users
 
   setup do
     @user = users(:one)
     @host = ENV.fetch("SIGN_SERVICE_URL", "test.umaxica.com")
+    UserToken.where(user: @user).delete_all
   end
 
   test "GET check with valid JWT access token returns 200" do
@@ -31,6 +33,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["authenticated"], "User should be authenticated"
     assert_equal "user", json["type"]
     assert_equal @user.id, json["id"]
@@ -44,6 +47,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -57,6 +61,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -86,6 +91,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -111,6 +117,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_not json["authenticated"]
     assert_equal({ "authenticated" => false }, json)
   end
@@ -143,12 +150,13 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
         headers: {
           "Host" => @host,
           "Accept" => "application/json",
-          "Authorization" => "Bearer #{access_token}"
+          "Authorization" => "Bearer #{access_token}",
         },
         as: :json
 
     assert_response :ok
     json = response.parsed_body
+
     assert json["authenticated"], "Bearer token should take precedence"
     assert_equal "user", json["type"]
     assert_equal @user.id, json["id"]
@@ -167,7 +175,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
         headers: {
           "Host" => @host,
           "Accept" => "application/json",
-          "Authorization" => "Bearer #{access_token}"
+          "Authorization" => "Bearer #{access_token}",
         },
         as: :json
 
@@ -199,7 +207,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
         headers: {
           "Host" => @host,
           "Accept" => "application/json",
-          "Authorization" => "Bearer #{access_token}"
+          "Authorization" => "Bearer #{access_token}",
         },
         as: :json
 

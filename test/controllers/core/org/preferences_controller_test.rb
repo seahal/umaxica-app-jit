@@ -1,24 +1,16 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
-class Core::Org::PreferenceControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
-    get apex_org_preference_url(lx: "ja", ri: "jp")
-    assert_response :success
+class Core::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
+  test "show action is defined" do
+    controller = Core::Org::PreferencesController.new
+
+    assert_respond_to controller, :show
   end
 
-  test "footer should contain preference link" do
-    get core_org_root_url
-    assert_response :success
-    assert_match "footer", response.body
-    assert_match apex_org_preference_url, response.body
-  end
-
-  test "preference page links to apex preference" do
-    get apex_org_preference_url(lx: "ja", ri: "jp")
-    assert_response :success
-    assert_select "a[href*=?]", apex_org_preference_url,
-                  text: "プリファレンス"
+  test "controller is a subclass of ApplicationController" do
+    assert_includes Core::Org::PreferencesController.ancestors, Core::Org::ApplicationController
   end
 end

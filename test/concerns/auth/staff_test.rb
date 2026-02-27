@@ -1,8 +1,10 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class Auth::StaffTest < ActiveSupport::TestCase
+  fixtures :staffs, :staff_statuses, :staff_tokens, :staff_token_kinds, :staff_token_statuses
   class FormatMock
     attr_accessor :format_type
 
@@ -23,7 +25,10 @@ class Auth::StaffTest < ActiveSupport::TestCase
     def initialize
       @session = {}
       @cookies = CookieMock.new
-      @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent", format: FormatMock.new)
+      @request = OpenStruct.new(
+        host: "test.host", headers: {}, user_agent: "TestAgent",
+        format: FormatMock.new,
+      )
     end
 
     def reset_session
@@ -89,11 +94,14 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     access_opts = @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)
     refresh_opts = @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)
+    device_opts = @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)
 
     assert_operator access_opts[:expires], :>, 10.minutes.from_now
     assert_operator access_opts[:expires], :<, 2.hours.from_now
     assert_operator refresh_opts[:expires], :>, 29.days.from_now
     assert_operator refresh_opts[:expires], :<, 31.days.from_now
+    assert_operator device_opts[:expires], :>, 29.days.from_now
+    assert_operator device_opts[:expires], :<, 31.days.from_now
   end
 
   test "log_out clears session and current_staff" do
@@ -108,22 +116,15 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
   test "log_out removes refresh token and cookies" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
-    # Clear any existing tokens for the staff
-    StaffToken.where(staff: @staff).delete_all
     @obj.send(:log_in, @staff)
-    # Get the token created by log_in
-    token = StaffToken.where(staff: @staff).order(created_at: :desc).first
-    assert_not_nil token, "log_in should create a token"
-    assert_not_predicate token, :revoked?
 
-    @obj.send(:log_out)
-    token.reload
-    assert_predicate token, :revoked?
+    assert_difference("StaffToken.count", -1) { @obj.send(:log_out) }
     assert_nil @obj.cookies[::Auth::Staff::ACCESS_COOKIE_KEY]
     assert_nil @obj.cookies.encrypted[::Auth::Staff::REFRESH_COOKIE_KEY]
+    assert_nil @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY]
   end
 
-  test "log_in derives shared cookie domain from host" do
+  test "log_in derives shared cookie domain from localhost host" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
     @obj.request.host = "sign.org.localhost"
 
@@ -131,6 +132,7 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)[:domain]
     assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)[:domain]
   end
 
   test "log_in returns tokens hash" do
@@ -141,6 +143,7 @@ class Auth::StaffTest < ActiveSupport::TestCase
     assert_kind_of Hash, tokens
     assert tokens[:access_token]
     assert tokens[:refresh_token]
+    assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
     assert_equal "Bearer", tokens[:token_type]
     assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
   end

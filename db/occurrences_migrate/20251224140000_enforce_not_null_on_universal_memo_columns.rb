@@ -3,7 +3,7 @@
 class EnforceNotNullOnUniversalMemoColumns < ActiveRecord::Migration[8.2]
   def change
     # All occurrence tables have memo columns that should not be null
-    tables = %w[
+    tables = %w(
       area_occurrences
       domain_occurrences
       email_occurrences
@@ -12,7 +12,7 @@ class EnforceNotNullOnUniversalMemoColumns < ActiveRecord::Migration[8.2]
       telephone_occurrences
       user_occurrences
       zip_occurrences
-    ]
+    )
 
     tables.each do |table|
       reversible do |dir|

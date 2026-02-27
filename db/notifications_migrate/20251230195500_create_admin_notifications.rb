@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 class CreateAdminNotifications < ActiveRecord::Migration[8.2]
-  NIL_UUID = "00000000-0000-0000-0000-000000000000"
-
   def change
-    create_table :admin_notifications, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.uuid :public_id, default: NIL_UUID, null: false
-      t.uuid :staff_notification_id, default: NIL_UUID, null: false
+    create_table :admin_notifications do |t|
+      t.string :public_id, null: false, default: ""
+      t.bigint :staff_notification_id, null: false
 
       t.timestamps
     end

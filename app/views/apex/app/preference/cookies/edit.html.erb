@@ -1,37 +1,36 @@
 <% content_for :page_title, t('apex.app.preferences.cookie_settings') %>
 
-<section class="mx-auto mt-8 max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" data-controller="cookie-toggle">
-  <h1 class="text-2xl font-semibold text-slate-900">
+<section data-controller="cookie-toggle">
+  <h1>
     <%= t('apex.app.preference.cookie.edit.h1') %>
   </h1>
-  <p class="mt-2 text-sm text-slate-600">
+  <p>
     <%= t('apex.app.preference.cookie.edit.description') rescue t('apex.app.preference.cookie.edit.description') %>
   </p>
 
-  <div data-cookie-toggle-target="status" class="mt-4 rounded-lg bg-blue-50 p-4 text-center font-bold text-blue-700">
+  <div data-cookie-toggle-target="status">
     <!-- Stimulus renders the status here. -->
   </div>
 
-  <%= form_with scope: :preference_cookie, url: apex_app_preference_cookie_url, method: :patch, class: "mt-6 space-y-6" do |f| %>
-    <div class="space-y-3">
-      <div class="flex items-center gap-3">
-        <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" %>
-        <%= label_tag :accept_necessary_cookies, t('apex.app.preference.cookie.edit.accept_necessary_cookies'), class: "text-sm font-medium text-slate-700" %>
+  <%= form_with model: @preference_cookie, scope: :preference_cookie, url: apex_app_preference_cookie_url, method: :patch do |f| %>
+    <div>
+      <div>
+        <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true %>
+        <%= label_tag :accept_necessary_cookies, t('apex.app.preference.cookie.edit.accept_necessary_cookies') %>
       </div>
 
       <% { functional: 'accept_functional_cookies', performant: 'accept_performance_cookies', targetable: 'accept_targeting_cookies', consented: 'accept_consent_cookies' }.each do |field, label_key| %>
-        <div class="flex items-center gap-3">
-          <%= f.check_box field, { checked: @preference_cookie.public_send(field), data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" }, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" } %>
-          <%= f.label field, t("apex.app.preference.cookie.edit.#{label_key}"), class: "text-sm font-medium text-slate-700" %>
+        <div>
+          <%= f.check_box field, { data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" } } %>
+          <%= f.label field, t("apex.app.preference.cookie.edit.#{label_key}") %>
         </div>
       <% end %>
     </div>
 
-    <div class="flex flex-wrap items-center gap-3">
+    <div>
       <%= f.submit t('apex.app.preferences.update_settings'),
-                   data: { turbo_submits_with: t("apex.app.preferences.submitting") },
-                   class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
-      <%= link_to t('apex.app.preferences.back_to_settings'), apex_app_preference_url, class: "text-sm font-semibold text-slate-700 transition hover:text-slate-900" %>
+                   data: { turbo_submits_with: t("apex.app.preferences.submitting") } %>
+      <%= link_to t('apex.app.preferences.back_to_settings'), apex_app_preference_url %>
     </div>
   <% end %>
 </section>

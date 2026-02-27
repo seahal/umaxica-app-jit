@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,32 +6,40 @@
 # Table name: org_timelines
 # Database name: news
 #
-#  id            :uuid             not null, primary key
-#  expires_at    :datetime         default(Infinity), not null
-#  lock_version  :integer          default(0), not null
-#  position      :integer          default(0), not null
-#  published_at  :datetime         default(Infinity), not null
-#  redirect_url  :string
-#  response_mode :string           default("html"), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  slug_id       :string(32)       default(""), not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  id                 :bigint           not null, primary key
+#  expires_at         :datetime         default(Infinity), not null
+#  lock_version       :integer          default(0), not null
+#  position           :integer          default(0), not null
+#  published_at       :datetime         default(Infinity), not null
+#  redirect_url       :string
+#  response_mode      :string           default("html"), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  latest_revision_id :bigint
+#  latest_version_id  :bigint
+#  slug_id            :string(32)       default(""), not null
+#  status_id          :bigint           default(1), not null
 #
 # Indexes
 #
+#  index_org_timelines_on_latest_revision_id           (latest_revision_id) UNIQUE
+#  index_org_timelines_on_latest_version_id            (latest_version_id) UNIQUE
 #  index_org_timelines_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_org_timelines_on_slug_id                      (slug_id)
 #  index_org_timelines_on_status_id                    (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => org_timeline_statuses.id)
+#  fk_org_timelines_on_status_id  (status_id => org_timeline_statuses.id)
+#  fk_rails_...                   (latest_revision_id => org_timeline_revisions.id) ON DELETE => nullify
+#  fk_rails_...                   (latest_version_id => org_timeline_versions.id) ON DELETE => nullify
 #
 
 class OrgTimeline < NewsRecord
   include ::SlugId
   include Timeline
+
+  attribute :status_id, default: OrgTimelineStatus::NOTHING
 
   belongs_to :org_timeline_status,
              class_name: "OrgTimelineStatus",
@@ -48,11 +57,13 @@ class OrgTimeline < NewsRecord
              inverse_of: :latest_timeline,
              optional: true
 
+  validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
+
   has_many :org_timeline_versions, dependent: :delete_all, inverse_of: :org_timeline
   has_many :org_timeline_revisions, dependent: :delete_all, inverse_of: :org_timeline
-  has_many :org_timeline_audits,
+  has_many :org_timeline_behaviors,
            -> { where(subject_type: "OrgTimeline") },
-           class_name: "OrgTimelineAudit",
+           class_name: "OrgTimelineBehavior",
            foreign_key: :subject_id,
            inverse_of: :org_timeline,
            dependent: :delete_all
@@ -67,7 +78,6 @@ class OrgTimeline < NewsRecord
   has_one :category_master,
           through: :category,
           source: :org_timeline_category_master
-  validates :status_id, length: { maximum: 255 }
 
   def latest_version
     org_timeline_versions.order(created_at: :desc).first!

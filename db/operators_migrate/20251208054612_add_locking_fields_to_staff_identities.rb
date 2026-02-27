@@ -2,10 +2,10 @@
 
 class AddLockingFieldsToStaffIdentities < ActiveRecord::Migration[8.2]
   def change
-    tables = %i[
+    tables = %i(
       staff_identity_emails
       staff_identity_telephones
-    ]
+    )
 
     tables.each do |table|
       change_table table, bulk: true do |t|

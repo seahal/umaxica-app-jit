@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Sequential Flow Enforcement Concern
@@ -102,67 +103,67 @@ module SequentialFlow
 
   private
 
-    # Get the current flow definition (uses controller's defined flow)
-    def current_flow
-      self.class.flow_definitions.values.first
-    end
+  # Get the current flow definition (uses controller's defined flow)
+  def current_flow
+    self.class.flow_definitions.values.first
+  end
 
-    # Get flow name for session key
-    def flow_session_key
-      "flows_#{current_flow.name}"
-    end
+  # Get flow name for session key
+  def flow_session_key
+    "flows_#{current_flow.name}"
+  end
 
-    # Current step from session (defaults to initial step)
-    def current_step
-      session[flow_session_key] || current_flow.initial_step
-    end
+  # Current step from session (defaults to initial step)
+  def current_step
+    session[flow_session_key] || current_flow.initial_step
+  end
 
-    # Set the current step
-    def current_step=(step)
-      session[flow_session_key] = step
-    end
+  # Set the current step
+  def current_step=(step)
+    session[flow_session_key] = step
+  end
 
-    # Check if the current action is allowed at the current step
-    def action_allowed?
-      flow = current_flow
-      return true if flow.nil?
+  # Check if the current action is allowed at the current step
+  def action_allowed?
+    flow = current_flow
+    return true if flow.nil?
 
-      required_step = flow.step_for_action(action_name)
-      return true if required_step.nil? # Action not part of flow
+    required_step = flow.step_for_action(action_name)
+    return true if required_step.nil? # Action not part of flow
 
-      current_step == required_step
-    end
+    current_step == required_step
+  end
 
-    # Enforce the flow: redirect if action not allowed
-    # Override `flow_violation_redirect` to customize behavior
-    def enforce_flow!
-      return if action_allowed?
+  # Enforce the flow: redirect if action not allowed
+  # Override `flow_violation_redirect` to customize behavior
+  def enforce_flow!
+    return if action_allowed?
 
-      flow_violation_redirect
-    end
+    flow_violation_redirect
+  end
 
-    # Advance to the next step (call after successful create/update)
-    def advance_step!
-      flow = current_flow
-      return unless flow
+  # Advance to the next step (call after successful create/update)
+  def advance_step!
+    flow = current_flow
+    return unless flow
 
-      next_step = current_step + 1
-      self.current_step = next_step if flow.valid_step?(next_step)
-    end
+    next_step = current_step + 1
+    self.current_step = next_step if flow.valid_step?(next_step)
+  end
 
-    # Reset flow to initial step (call on destroy or explicit reset)
-    def reset_flow!
-      session.delete(flow_session_key)
-    end
+  # Reset flow to initial step (call on destroy or explicit reset)
+  def reset_flow!
+    session.delete(flow_session_key)
+  end
 
-    # Override in controller to customize redirect behavior
-    def flow_violation_redirect
-      flash[:alert] = t("sequential_flow.invalid_step")
-      redirect_to flow_initial_path
-    end
+  # Override in controller to customize redirect behavior
+  def flow_violation_redirect
+    flash[:alert] = t("sequential_flow.invalid_step")
+    redirect_to flow_initial_path
+  end
 
-    # Override in controller to specify the initial path
-    def flow_initial_path
-      raise NotImplementedError, "Define #flow_initial_path in your controller"
-    end
+  # Override in controller to specify the initial path
+  def flow_initial_path
+    raise NotImplementedError, "Define #flow_initial_path in your controller"
+  end
 end

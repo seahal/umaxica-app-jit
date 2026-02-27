@@ -1,29 +1,34 @@
+# typed: false
 # == Schema Information
 #
 # Table name: clients
 # Database name: principal
 #
-#  id           :uuid             not null, primary key
-#  lock_version :integer          default(0), not null
-#  moniker      :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  division_id  :uuid
-#  public_id    :string
-#  status_id    :string(255)      default("NEYO"), not null
-#  user_id      :uuid
+#  id               :bigint           not null, primary key
+#  lock_version     :integer          default(0), not null
+#  moniker          :string
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  client_status_id :bigint           default(0), not null
+#  division_id      :bigint
+#  public_id        :string           not null
+#  status_id        :bigint           default(5), not null
+#  user_id          :bigint
 #
 # Indexes
 #
-#  index_clients_on_division_id  (division_id)
-#  index_clients_on_public_id    (public_id) UNIQUE
-#  index_clients_on_status_id    (status_id)
-#  index_clients_on_user_id      (user_id)
+#  index_clients_on_client_status_id  (client_status_id)
+#  index_clients_on_division_id       (division_id)
+#  index_clients_on_public_id         (public_id) UNIQUE
+#  index_clients_on_status_id         (status_id)
+#  index_clients_on_user_id           (user_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => client_statuses.id)
-#  fk_rails_...  (user_id => users.id)
+#  fk_clients_on_client_status_id  (client_status_id => client_statuses.id)
+#  fk_clients_on_status_id         (status_id => client_statuses.id)
+#  fk_rails_...                    (client_status_id => client_statuses.id)
+#  fk_rails_...                    (user_id => users.id) ON DELETE => nullify
 #
 
 # frozen_string_literal: true
@@ -31,7 +36,7 @@
 class Client < PrincipalRecord
   include ::PublicId
 
-  attribute :status_id, default: ClientStatus::NEYO
+  attribute :status_id, default: ClientStatus::NOTHING
 
   belongs_to :user, optional: true, inverse_of: :owned_clients
   belongs_to :client_status,
@@ -73,5 +78,5 @@ class Client < PrincipalRecord
   has_many :user_clients, dependent: :destroy
   has_many :users, through: :user_clients
   validates :public_id, uniqueness: true, allow_nil: true
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 end

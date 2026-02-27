@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "ostruct"
@@ -17,8 +18,8 @@ class Email::Com::TopicMailerTest < ActionMailer::TestCase
 
     assert_equal [
       "#{ENV.fetch("BRAND_NAME", "Umaxica")} - We received your inquiry",
-      [ recipient ]
-    ], [ mail.subject, mail.to ]
+      [recipient],
+    ], [mail.subject, mail.to]
     body_text = mail.text_part&.decoded || mail.body.decoded
 
     assert_match "Inq title", body_text

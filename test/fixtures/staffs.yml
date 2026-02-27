@@ -3,46 +3,47 @@
 # Table name: staffs
 # Database name: operator
 #
-#  id           :uuid             not null, primary key
-#  lock_version :integer          default(0), not null
-#  withdrawn_at :datetime         default(Infinity)
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  public_id    :string(8)        not null
-#  status_id    :string(255)      default("NEYO"), not null
+#  id                   :bigint           not null, primary key
+#  lock_version         :integer          default(0), not null
+#  multi_factor_enabled :boolean          default(FALSE), not null
+#  shreddable_at        :datetime         default(Infinity), not null
+#  withdrawn_at         :datetime
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  public_id            :string           not null
+#  status_id            :bigint           default(2), not null
+#  visibility_id        :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_staffs_on_public_id     (public_id) UNIQUE
-#  index_staffs_on_status_id     (status_id)
-#  index_staffs_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_shreddable_at  (shreddable_at)
+#  index_staffs_on_status_id      (status_id)
+#  index_staffs_on_visibility_id  (visibility_id)
+#  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => staff_statuses.id)
+#  fk_rails_...  (visibility_id => staff_visibilities.id)
 #
-
 placeholder:
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "abcd2345"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 one:
-  id: "9bc9480f-36cf-4c3a-ac81-7ed2f68867e9"
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "bcde3456"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 none_staff:
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "cdef4567"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 two:
-  id: "8ddacb1b-a68b-4f5f-a570-055b0e8260fc"
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NOTHING %>
   public_id: "defh5678"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-

@@ -2,7 +2,7 @@
 
 class ClearPermalinkAndRevisionKeyOnTimelines < ActiveRecord::Migration[8.2]
   def up
-    %i[app_timelines com_timelines org_timelines].each do |table_name|
+    %i(app_timelines com_timelines org_timelines).each do |table_name|
       next unless table_exists?(table_name)
 
       safety_assured do

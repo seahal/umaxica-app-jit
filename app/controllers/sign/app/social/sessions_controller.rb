@@ -1,6 +1,5 @@
+# typed: false
 # frozen_string_literal: true
-
-require "cgi"
 
 module Sign
   module App
@@ -8,28 +7,26 @@ module Sign
       # Controller for social auth entry points and account management
       #
       # Routes:
-      #   POST   /social/start          -> #start (entry point with intent)
+      #   GET    /social/start          -> #start (entry point with intent)
       #   DELETE /social/:provider/unlink -> #unlink (remove linked identity)
       #
       # The actual OmniAuth callbacks are handled by:
       #   Sign::App::Auth::OmniauthCallbacksController
       class SessionsController < Sign::App::ApplicationController
+        include ::Verification::User
         include SocialAuthConcern
-        include Sign::App::SignUpGuard
 
-        REQUIRE_REAUTH_FOR_UNLINK = true
-
-        SUPPORTED_PROVIDERS = %w[google_oauth2 apple].freeze
+        SUPPORTED_PROVIDERS = %w(google_oauth2 apple).freeze
 
         # Public access for start (login intent doesn't require auth)
         # For link/reauth intents, auth is checked in prepare_social_auth_intent!
-        public_strict! only: %i[start]
-        auth_required! only: %i[unlink]
-        prepend_before_action :enforce_logged_out_for_signup!, only: %i[start], if: -> { params[:intent].to_s == "signup" }
+        public_strict! only: %i(start)
+        auth_required! only: %i(unlink)
+        before_action -> { require_step_up!(scope: "social_unlink") }, only: :unlink
 
-        # POST /social/start?provider=google_oauth2&intent=login
+        # GET /social/start?provider=google_oauth2&intent=login
         # Entry point for social auth flow.
-        # Prepares session with intent/state, then POSTs to OmniAuth.
+        # Prepares session with intent/state, then redirects to OmniAuth.
         #
         # Params:
         #   - provider: "google_oauth2" or "apple"
@@ -38,7 +35,7 @@ module Sign
         # Flow:
         #   1. Validate provider
         #   2. Prepare intent in session (generates state)
-        #   3. Render auto-submit form that POSTs to /auth/:provider
+        #   3. Redirect to /auth/:provider?state=...
         def start
           provider = params[:provider]
           intent = params[:intent] || "login"
@@ -48,15 +45,10 @@ module Sign
                                alert: I18n.t("sign.app.social.sessions.invalid_provider")
           end
 
-          preserve_redirect_parameter
+          # Prepare session with intent context (OmniAuth manages OAuth state)
+          state = prepare_social_auth_intent!(intent, provider: provider)
 
-          # Prepare session with intent and state
-          state = prepare_social_auth_intent!(intent)
-
-          # Redirect to OmniAuth with preserved state. A 307 redirect
-          # keeps the original POST so OmniAuth still sees POST requests.
-          redirect_to "/auth/#{provider}?state=#{CGI.escape(state)}",
-                      status: :temporary_redirect
+          redirect_to omniauth_authorize_path(provider, state: state)
         rescue SocialAuth::BaseError => e
           handle_social_auth_error(e)
         end
@@ -69,8 +61,6 @@ module Sign
         #   - Optionally requires recent re-authentication (REQUIRE_REAUTH_FOR_UNLINK)
         #   - Cannot unlink last remaining identity
         def unlink
-          require_recent_reauth! if REQUIRE_REAUTH_FOR_UNLINK
-
           provider = params[:provider]
           normalized_provider = SocialIdentifiable.normalize_provider(provider)
 

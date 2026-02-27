@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class Sign::Org::Edge::V1::Token::ChecksController < Sign::Org::Edge::V1::BaseController
@@ -14,7 +15,7 @@ class Sign::Org::Edge::V1::Token::ChecksController < Sign::Org::Edge::V1::BaseCo
           authenticated: true,
           type: resource_type,
           id: current_resource.id,
-          sid: current_session_public_id
+          sid: current_session_public_id,
         }
       else
         { authenticated: false }

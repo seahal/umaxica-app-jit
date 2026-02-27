@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Authorization policy for ComTimeline resources (Corporate timeline)

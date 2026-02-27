@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -11,7 +12,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
       "lx" => "en",
       "ri" => "us",
       "tz" => "utc",
-      "ct" => "dr"
+      "ct" => "dr",
     }.freeze
     @preference_type = "AppPreference".freeze
     @public_id = "pref_public_id".freeze
@@ -19,7 +20,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     @private_key = OpenSSL::PKey::EC.generate("secp384r1")
     @public_key = @private_key
     @issuer = "jit-preference".freeze
-    @audiences = [ "example.com" ].freeze
+    @audiences = ["example.com"].freeze
   end
 
   test "encode returns a token string" do
@@ -31,6 +32,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_not_nil token
       assert_kind_of String, token
     end
@@ -84,6 +86,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_nil Preference::Token.decode(token, host: "other.com")
     end
   end
@@ -99,6 +102,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
       )
 
       payload = Preference::Token.decode(token, host: "app.example.com")
+
       assert_kind_of Hash, payload
     end
   end
@@ -118,6 +122,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
 
   test "extract_preferences returns preferences hash from payload" do
     payload = { "preferences" => @preferences }
+
     assert_equal @preferences, Preference::Token.extract_preferences(payload)
   end
 
@@ -147,6 +152,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
 
   test "extract_jti returns jti from payload" do
     payload = { "jti" => @jti }
+
     assert_equal @jti, Preference::Token.extract_jti(payload)
   end
 
@@ -209,41 +215,41 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
 
   private
 
-    def with_jwt_keys
-      # Manually stub using define_singleton_method to avoid Minitest stub issues with modules
-      # if methods are missing or weirdly defined.
+  def with_jwt_keys
+    # Manually stub using define_singleton_method to avoid Minitest stub issues with modules
+    # if methods are missing or weirdly defined.
 
-      methods = %i[private_key public_key issuer audiences]
-      originals = {}
+    methods = %i(private_key public_key issuer audiences)
+    originals = {}
 
-      methods.each do |m|
-        originals[m] =
-          if Preference::JwtConfiguration.respond_to?(m)
-            Preference::JwtConfiguration.method(m)
-          else
-            proc { raise "Method #{m} was missing!" }
-          end
-      end
-
-      # Capture values in local variables for block closure
-      priv_key = @private_key
-      pub_key = @public_key
-      iss = @issuer
-      auds = @audiences
-
-      # Define stubs
-      Preference::JwtConfiguration.define_singleton_method(:private_key) { priv_key }
-      Preference::JwtConfiguration.define_singleton_method(:public_key) { pub_key }
-      Preference::JwtConfiguration.define_singleton_method(:issuer) { iss }
-      Preference::JwtConfiguration.define_singleton_method(:audiences) { auds }
-
-      yield
-    ensure
-      # Restore originals
-      methods.each do |m|
-        if originals[m]
-          Preference::JwtConfiguration.define_singleton_method(m, &originals[m])
+    methods.each do |m|
+      originals[m] =
+        if Preference::JwtConfiguration.respond_to?(m)
+          Preference::JwtConfiguration.method(m)
+        else
+          proc { raise "Method #{m} was missing!" }
         end
+    end
+
+    # Capture values in local variables for block closure
+    priv_key = @private_key
+    pub_key = @public_key
+    iss = @issuer
+    auds = @audiences
+
+    # Define stubs
+    Preference::JwtConfiguration.define_singleton_method(:private_key) { priv_key }
+    Preference::JwtConfiguration.define_singleton_method(:public_key) { pub_key }
+    Preference::JwtConfiguration.define_singleton_method(:issuer) { iss }
+    Preference::JwtConfiguration.define_singleton_method(:audiences) { auds }
+
+    yield
+  ensure
+    # Restore originals
+    methods.each do |m|
+      if originals[m]
+        Preference::JwtConfiguration.define_singleton_method(m, &originals[m])
       end
     end
+  end
 end

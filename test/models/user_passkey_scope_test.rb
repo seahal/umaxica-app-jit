@@ -1,10 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class UserPasskeyScopeTest < ActiveSupport::TestCase
   setup do
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::ACTIVE)
+    @user = create_verified_user_with_email(email_address: "passkey_scope_test@example.com")
 
     @active_passkey = UserPasskey.create!(
       user: @user,
@@ -12,7 +13,7 @@ class UserPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Active Key",
-      user_passkey_status_id: "ACTIVE",
+      status_id: UserPasskeyStatus::ACTIVE,
     )
 
     @inactive_passkey = UserPasskey.create!(
@@ -21,7 +22,7 @@ class UserPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Inactive Key",
-      user_passkey_status_id: "REVOKED", # Assuming REVOKED is a valid status other than ACTIVE
+      status_id: UserPasskeyStatus::DISABLED,
     )
   end
 

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,16 +6,16 @@
 # Table name: avatars
 # Database name: avatar
 #
-#  id                           :string           not null, primary key
+#  id                           :bigint           not null, primary key
 #  image_data                   :jsonb            not null
 #  lock_version                 :integer          default(0), not null
 #  moniker                      :string           not null
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
-#  active_handle_id             :string           not null
+#  active_handle_id             :bigint           not null
 #  avatar_status_id             :string
-#  capability_id                :string           not null
-#  client_id                    :uuid
+#  capability_id                :bigint           default(0), not null
+#  client_id                    :bigint
 #  owner_organization_id        :string
 #  public_id                    :string           not null
 #  representing_organization_id :string
@@ -37,9 +38,11 @@
 require "test_helper"
 
 class AvatarTest < ActiveSupport::TestCase
+  fixtures :avatar_capabilities, :avatars, :handles
+
   setup do
     create_user_and_status
-    @capability = AvatarCapability.create!(key: "user-#{SecureRandom.hex(4)}", name: "User")
+    @capability = avatar_capabilities(:normal)
     @handle = Handle.create!(
       handle: "test_handle-#{SecureRandom.hex(4)}",
       cooldown_until: Time.current,
@@ -53,25 +56,29 @@ class AvatarTest < ActiveSupport::TestCase
       moniker: "Test User",
       image_data: { url: "http://example.com/img.png" },
     )
+
     assert_predicate avatar, :valid?
     assert avatar.save
     assert_not_nil avatar.public_id
   end
 
   test "requires capability" do
-    avatar = Avatar.new(active_handle: @handle, moniker: "No Cap")
+    avatar = Avatar.new(active_handle: @handle, moniker: "No Cap", capability_id: nil)
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:capability]
   end
 
   test "requires active_handle" do
     avatar = Avatar.new(capability: @capability, moniker: "No Handle")
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:active_handle]
   end
 
   test "requires moniker" do
     avatar = Avatar.new(capability: @capability, active_handle: @handle, moniker: "")
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:moniker]
   end
@@ -82,11 +89,13 @@ class AvatarTest < ActiveSupport::TestCase
       active_handle: @handle,
       moniker: "Default Image",
     )
+
     assert_empty(avatar.image_data)
   end
 
   test "moniker is invalid when only whitespace" do
     avatar = Avatar.new(capability: @capability, active_handle: @handle, moniker: "   ")
+
     assert_not avatar.valid?
     assert_not_empty avatar.errors[:moniker]
   end
@@ -103,6 +112,7 @@ class AvatarTest < ActiveSupport::TestCase
       moniker: "Another Moniker",
       public_id: @avatar.public_id,
     )
+
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:public_id]
   end
@@ -113,7 +123,7 @@ class AvatarTest < ActiveSupport::TestCase
       capability: @capability,
       active_handle: @handle,
     )
-    status = PostStatus.find_or_create_by!(id: "DRAFT")
+    status = PostStatus.find_or_create_by!(id: PostStatus::NOTHING)
     Post.create!(
       author_avatar: avatar,
       post_status: status,
@@ -129,12 +139,12 @@ class AvatarTest < ActiveSupport::TestCase
     create_user_and_status
     user = User.find_by!(public_id: "one_id")
     avatar = nil
-    assert_difference [ "Avatar.count", "AvatarAssignment.count" ], 1 do
+    assert_difference ["Avatar.count", "AvatarAssignment.count"], 1 do
       avatar = Avatar.create_with_owner(
         {
           capability: @capability,
           active_handle: @handle,
-          moniker: "Owned Avatar"
+          moniker: "Owned Avatar",
         }, user,
       )
     end
@@ -148,23 +158,28 @@ class AvatarTest < ActiveSupport::TestCase
     avatar = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Role Test")
 
     # Affiliation
-    avatar.avatar_assignments.create!(user: user, role: "affiliation")
+    avatar.avatar_assignments.create!(user_id: user.id, role: "affiliation")
+
     assert_equal user, avatar.affiliation_user
 
     # Administrators
-    avatar.avatar_assignments.create!(user: user, role: "administrator")
+    avatar.avatar_assignments.create!(user_id: user.id, role: "administrator")
+
     assert_includes avatar.administrators, user
 
     # Editors
-    avatar.avatar_assignments.create!(user: user, role: "editor")
+    avatar.avatar_assignments.create!(user_id: user.id, role: "editor")
+
     assert_includes avatar.editors, user
 
     # Reviewers
-    avatar.avatar_assignments.create!(user: user, role: "reviewer")
+    avatar.avatar_assignments.create!(user_id: user.id, role: "reviewer")
+
     assert_includes avatar.reviewers, user
 
     # Viewers
-    avatar.avatar_assignments.create!(user: user, role: "viewer")
+    avatar.avatar_assignments.create!(user_id: user.id, role: "viewer")
+
     assert_includes avatar.viewers, user
   end
 
@@ -201,7 +216,7 @@ class AvatarTest < ActiveSupport::TestCase
     user = User.find_by!(public_id: "one_id")
 
     # Assignments
-    avatar.avatar_assignments.create!(user: user, role: "viewer")
+    avatar.avatar_assignments.create!(user_id: user.id, role: "viewer")
     # Follows
     other = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Other")
     avatar.outgoing_follows.create!(followed_avatar: other)
@@ -223,15 +238,9 @@ class AvatarTest < ActiveSupport::TestCase
   end
 
   def create_user_and_status
-    UserStatus.find_or_create_by!(id: "NONE")
+    UserStatus.find_or_create_by!(id: UserStatus::NONE)
     User.find_or_create_by!(public_id: "one_id") do |u|
-      u.status_id = "NONE"
+      u.status_id = UserStatus::NONE
     end
-  end
-
-  test "validates length of id" do
-    record = Avatar.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
   end
 end

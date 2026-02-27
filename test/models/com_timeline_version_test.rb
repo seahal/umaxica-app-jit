@@ -1,9 +1,10 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_timeline_versions
 # Database name: news
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -15,13 +16,14 @@
 #  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  com_timeline_id :uuid             not null
+#  com_timeline_id :bigint           not null
 #  edited_by_id    :bigint
 #  public_id       :string(255)      default(""), not null
 #
 # Indexes
 #
 #  index_com_timeline_versions_on_com_timeline_id_and_created_at  (com_timeline_id,created_at)
+#  index_com_timeline_versions_on_edited_by_id                    (edited_by_id)
 #  index_com_timeline_versions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys
@@ -41,7 +43,7 @@ class ComTimelineVersionTest < ActiveSupport::TestCase
   test "encrypts title, description, and body" do
     timeline = ComTimeline.create!(
       response_mode: "html",
-      status_id: "NEYO",
+      status_id: ComTimelineStatus::NOTHING,
       published_at: Time.zone.parse("2024-01-01 00:00:00"),
       expires_at: Time.zone.parse("2999-12-31 00:00:00"),
     )
@@ -67,6 +69,7 @@ class ComTimelineVersionTest < ActiveSupport::TestCase
   end
   test "validates presence of required fields" do
     version = ComTimelineVersion.new
+
     assert_not version.valid?
     assert_not_empty version.errors[:permalink]
     assert_not_empty version.errors[:response_mode]

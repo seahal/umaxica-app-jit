@@ -1,11 +1,11 @@
 <% scope = local_assigns.fetch(:scope, :com).to_s %>
 <% content_for :page_title, t("apex.#{scope}.preferences.locale_settings") %>
 
-<section class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm mb-10">
-  <h1 class="text-2xl font-semibold text-slate-900">
+<section>
+  <h1>
     <%= t("apex.#{scope}.preference.locale.edit.title") %>
   </h1>
-  <p class="mt-2 text-sm text-slate-600">
+  <p>
     <%= t("apex.#{scope}.preference.locale.edit.description") %>
   </p>
 
@@ -19,45 +19,38 @@
   <% selected_timezone = @current_timezone_identifier.presence || PreferenceRegions::DEFAULT_TIMEZONE %>
 
   <%= form_with url: public_send("apex_#{scope}_preference_locale_path"),
-                method: :patch,
-                class: "mt-6 space-y-6" do |f| %>
-    <div class="space-y-3">
-      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                method: :patch do |f| %>
+    <div>
+      <h2>
         <%= t("apex.#{scope}.preference.locale.edit.language_section") %>
       </h2>
-      <div class="space-y-2">
+      <div>
         <%= f.label :language,
-                    t("apex.#{scope}.preference.locale.edit.language_label"),
-                    class: "text-sm font-medium text-slate-700" %>
+                    t("apex.#{scope}.preference.locale.edit.language_label") %>
         <%= f.select :language,
                      options_for_select(language_options, selected_language),
-                     { prompt: t("apex.#{scope}.preference.locale.edit.language_prompt") },
-                     class: "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200" %>
+                     { prompt: t("apex.#{scope}.preference.locale.edit.language_prompt") } %>
       </div>
     </div>
 
-    <div class="space-y-3">
-      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">
+    <div>
+      <h2>
         <%= t("apex.#{scope}.preference.locale.edit.timezone_section") %>
       </h2>
-      <div class="space-y-2">
+      <div>
         <%= f.label :timezone,
-                    t("apex.#{scope}.preference.locale.edit.timezone_label"),
-                    class: "text-sm font-medium text-slate-700" %>
+                    t("apex.#{scope}.preference.locale.edit.timezone_label") %>
         <%= f.select :timezone,
                      options_for_select(timezone_options, selected_timezone),
-                     { prompt: t("apex.#{scope}.preference.locale.edit.timezone_prompt") },
-                     class: "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200" %>
+                     { prompt: t("apex.#{scope}.preference.locale.edit.timezone_prompt") } %>
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div>
       <%= f.submit t("apex.#{scope}.preference.locale.edit.submit"),
-                   data: { turbo_submits_with: t("apex.com.preferences.submitting") },
-                   class: "inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" %>
+                   data: { turbo_submits_with: t("apex.com.preferences.submitting") } %>
       <%= link_to t("apex.#{scope}.preferences.back_to_settings"),
-                  public_send("apex_#{scope}_preference_path"),
-                  class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                  public_send("apex_#{scope}_preference_path") %>
     </div>
   <% end %>
 </section>

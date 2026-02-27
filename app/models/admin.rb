@@ -1,17 +1,18 @@
+# typed: false
 # == Schema Information
 #
 # Table name: admins
 # Database name: operator
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  lock_version  :integer          default(0), not null
 #  moniker       :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  department_id :uuid
-#  public_id     :string
-#  staff_id      :uuid             not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  department_id :bigint
+#  public_id     :string           not null
+#  staff_id      :bigint           not null
+#  status_id     :bigint           default(2), not null
 #
 # Indexes
 #
@@ -32,9 +33,7 @@
 class Admin < OperatorRecord
   include ::PublicId
 
-  self.ignored_columns += [ "workspace_id" ]
-
-  attribute :status_id, default: AdminStatus::NEYO
+  attribute :status_id, default: AdminStatus::NOTHING
 
   belongs_to :admin_status,
              foreign_key: :status_id,
@@ -47,5 +46,5 @@ class Admin < OperatorRecord
   has_many :staffs,
            through: :staff_admins
   validates :public_id, uniqueness: true, allow_nil: true
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 end

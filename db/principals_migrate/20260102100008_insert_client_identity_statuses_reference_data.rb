@@ -2,7 +2,7 @@
 
 class InsertClientIdentityStatusesReferenceData < ActiveRecord::Migration[8.2]
   def up
-    statuses = %w[
+    statuses = %w(
       NEYO ACTIVE USED REVOKED UNVERIFIED VERIFIED
       UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP
       PRE_WITHDRAWAL_CONDITION WITHDRAWN RECORDED LOCKED
@@ -21,7 +21,7 @@ class InsertClientIdentityStatusesReferenceData < ActiveRecord::Migration[8.2]
       ALERT_LEVEL NOTICE_LEVEL INFO_LEVEL DEBUG_LEVEL TRACE_LEVEL
       NONE_LEVEL ALL_LEVEL ANY_LEVEL DEFAULT_LEVEL UNKNOWN_LEVEL
       OTHER_LEVEL CUSTOM_LEVEL TEST_LEVEL
-    ]
+    )
 
     safety_assured do
       statuses.each do |status_id|

@@ -1,8 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class SocialIdentifiableTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses
+
   class DummySocial < ApplicationRecord
     self.table_name = "users"
     include SocialIdentifiable
@@ -37,6 +40,7 @@ class SocialIdentifiableTest < ActiveSupport::TestCase
     )
 
     found = UserSocialApple.find_by_uid_with_lock("lock-uid", lock: true)
+
     assert_equal identity.id, found.id
   end
 

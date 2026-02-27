@@ -3,11 +3,11 @@
 # Table name: user_client_observations
 # Database name: principal
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  client_id  :uuid             not null
-#  user_id    :uuid             not null
+#  client_id  :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -19,13 +19,12 @@
 #  fk_rails_...  (client_id => clients.id)
 #  fk_rails_...  (user_id => users.id)
 #
-
 one:
-  user_id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
+  user: one
   client: one
 # column: value
 #
 two:
-  user_id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
+  user: two
   client: two
 # column: value

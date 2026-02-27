@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddExpiresAtIndexesToContactTables < ActiveRecord::Migration[8.2]
-  TABLES = %i[
+  TABLES = %i(
     app_contact_emails
     app_contact_telephones
     app_contact_topics
@@ -11,7 +11,7 @@ class AddExpiresAtIndexesToContactTables < ActiveRecord::Migration[8.2]
     org_contact_emails
     org_contact_telephones
     org_contact_topics
-  ].freeze
+  ).freeze
 
   def up
     TABLES.each do |table|
@@ -29,7 +29,7 @@ class AddExpiresAtIndexesToContactTables < ActiveRecord::Migration[8.2]
 
   private
 
-    def index_name_for(table)
-      "index_#{table}_on_expires_at"
-    end
+  def index_name_for(table)
+    "index_#{table}_on_expires_at"
+  end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,35 +6,26 @@
 # Table name: user_secret_statuses
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_secret_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class UserSecretStatusTest < ActiveSupport::TestCase
-  test "ACTIVE status exists" do
-    assert UserSecretStatus.exists?(id: UserSecretStatus::ACTIVE)
+  test "status constants are defined" do
+    assert_equal 1, UserSecretStatus::ACTIVE
+    assert_equal 2, UserSecretStatus::EXPIRED
+    assert_equal 3, UserSecretStatus::REVOKED
+    assert_equal 4, UserSecretStatus::USED
+    assert_equal 5, UserSecretStatus::DELETED
+    assert_equal 6, UserSecretStatus::NOTHING
   end
 
-  test "valid status" do
-    status = UserSecretStatus.new(id: "TEST_STATUS")
-    assert_predicate status, :valid?
-    assert status.save
-    assert_equal "TEST_STATUS", status.id
-  end
-
-  test "upcases id" do
-    status = UserSecretStatus.new(id: "lower")
-    status.valid?
-    assert_equal "LOWER", status.id
-  end
-
-  test "validates length of id" do
-    record = UserSecretStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "status ids are integers" do
+    assert_kind_of Integer, UserSecretStatus::ACTIVE
+    assert_kind_of Integer, UserSecretStatus::EXPIRED
+    assert_kind_of Integer, UserSecretStatus::REVOKED
+    assert_kind_of Integer, UserSecretStatus::USED
+    assert_kind_of Integer, UserSecretStatus::DELETED
+    assert_kind_of Integer, UserSecretStatus::NOTHING
   end
 end

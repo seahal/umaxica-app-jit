@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -9,9 +10,30 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   end
 
   DOMAINS = [
-    { name: "app", host: "app.localhost", scope: "apex.app.preferences", preference_model: AppPreference },
-    { name: "org", host: "org.localhost", scope: "apex.org.preferences", preference_model: OrgPreference },
-    { name: "com", host: "com.localhost", scope: "apex.com.preferences", preference_model: ComPreference }
+    {
+      name: "app",
+      host: "app.localhost",
+      scope: "apex.app.preferences",
+      preference_model: AppPreference,
+      audit_class: AppPreferenceActivity,
+      audit_event_class: AppPreferenceActivityEvent,
+    },
+    {
+      name: "org",
+      host: "org.localhost",
+      scope: "apex.org.preferences",
+      preference_model: OrgPreference,
+      audit_class: OrgPreferenceActivity,
+      audit_event_class: OrgPreferenceActivityEvent,
+    },
+    {
+      name: "com",
+      host: "com.localhost",
+      scope: "apex.com.preferences",
+      preference_model: ComPreference,
+      audit_class: ComPreferenceActivity,
+      audit_event_class: ComPreferenceActivityEvent,
+    },
   ].freeze
 
   DOMAINS.each do |domain|
@@ -19,7 +41,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       pref, _token, _cookie_name = assert_preference_created(domain)
-      assert_equal "NEYO", pref.status_id
+      assert_equal 2, pref.status_id
     end
 
     test "#{domain[:name]} domain redirects to add ri param when missing" do
@@ -58,6 +80,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       pref, = assert_preference_created(domain)
 
       state = default_state.merge(ri: "us")
+
       assert_preference_update(
         domain,
         :region,
@@ -66,7 +89,8 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal "US", pref.try("#{domain[:name]}_preference_region").option_id
+
+      assert_equal 1, pref.try("#{domain[:name]}_preference_region").option_id
     end
 
     test "#{domain[:name]} domain updates timezone" do
@@ -75,6 +99,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       state = default_state.merge(tz: "etc/utc")
       update_option_id = "Etc/UTC"
+
       assert_preference_update(
         domain,
         :timezone,
@@ -83,7 +108,8 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal update_option_id, pref.try("#{domain[:name]}_preference_timezone").option_id
+
+      assert_equal 1, pref.try("#{domain[:name]}_preference_timezone").option_id
     end
 
     test "#{domain[:name]} domain updates language" do
@@ -91,6 +117,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       pref, = assert_preference_created(domain)
 
       state = default_state.merge(lx: "en")
+
       assert_preference_update(
         domain,
         :language,
@@ -99,11 +126,13 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal "EN", pref.try("#{domain[:name]}_preference_language").option_id
+
+      assert_equal 2, pref.try("#{domain[:name]}_preference_language").option_id
     end
 
     test "#{domain[:name]} domain applies language setting to locale" do
       host!(domain[:host])
+
       assert_preference_created(domain)
 
       # Update language to English
@@ -113,6 +142,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Visit a page without language param to verify DB preference is applied
       get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+
       assert_response :success
 
       # Check that the locale was set to English
@@ -120,6 +150,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       # Verify the page content is in English
       translation_key = "apex.#{domain[:name]}.preferences.title"
       english_title = I18n.t(translation_key, locale: :en)
+
       assert_select "h1", text: english_title
 
       # Update language to Japanese
@@ -129,12 +160,14 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Visit a page without language param to verify DB preference is applied
       get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+
       assert_response :success
 
       # Check that the locale was set to Japanese
       assert_equal :ja, I18n.locale
       # Verify the page content is in Japanese
       japanese_title = I18n.t(translation_key, locale: :ja)
+
       assert_select "h1", text: japanese_title
 
       # Verify the translations are actually different
@@ -152,6 +185,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
     test "#{domain[:name]} domain applies timezone setting to Time.zone" do
       host!(domain[:host])
+
       assert_preference_created(domain)
 
       # Update timezone to UTC
@@ -161,6 +195,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Visit a page to verify DB preference is applied to Time.zone
       get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+
       assert_response :success
       assert_equal "Etc/UTC", Time.zone.name
 
@@ -171,6 +206,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Visit a page to verify DB preference is applied to Time.zone
       get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+
       assert_response :success
       assert_equal "Asia/Tokyo", Time.zone.name
     end
@@ -190,7 +226,8 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
       pref, = assert_preference_created(domain)
 
-      state = default_state.merge(ct: "dr")
+      state = default_state
+
       assert_preference_update(
         domain,
         :theme,
@@ -199,12 +236,14 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal "dark", pref.try("#{domain[:name]}_preference_colortheme").option_id
+
+      assert_equal 2, pref.try("#{domain[:name]}_preference_colortheme").option_id
     end
 
     test "#{domain[:name]} domain timezone select omits blank option" do
       host!(domain[:host])
       get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+
       assert_select "select[name='preference_timezone[option_id]'] option[value='']", count: 0
     end
 
@@ -220,6 +259,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
+
       assert pref.try("#{domain[:name]}_preference_cookie").functional
     end
 
@@ -228,9 +268,12 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       pref, = assert_preference_created(domain)
 
       get public_send("edit_apex_#{domain[:name]}_preference_reset_url", default_state)
+
       assert_response :success
 
-      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"), params: { confirm_reset: "1" }
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
+             params: { confirm_reset: "1" }
+
       assert_redirected_to public_send(
         "edit_apex_#{domain[:name]}_preference_reset_url",
         default_state,
@@ -240,7 +283,8 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal I18n.t("apex." + domain[:name] + ".preference.resets.destroyed"), flash[:notice]
 
       pref.reload
-      assert_equal "DELETED", pref.status_id
+
+      assert_equal 1, pref.status_id
       assert_not_nil pref.expires_at
     end
 
@@ -250,14 +294,14 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       original_expires_at = pref.expires_at
 
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp")
+
       assert_response :unprocessable_content
 
-      assert_select ".bg-red-50" do
-        assert_select "li"
-      end
+      assert_select "form ul li", minimum: 1
 
       pref.reload
-      assert_equal "NEYO", pref.status_id
+
+      assert_equal 2, pref.status_id
       assert_operator pref.expires_at, :>=, original_expires_at
     end
 
@@ -265,18 +309,22 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
       pref, token, cookie_name = assert_preference_created(domain)
 
-      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"), params: { confirm_reset: "1" }
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
+             params: { confirm_reset: "1" }
 
       get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+
       assert_response :success
 
       new_token = cookies[cookie_name]
+
       assert_not_equal token, new_token
 
       new_token_digest = refresh_token_digest_for(new_token)
       new_pref = domain[:preference_model].find_by(token_digest: new_token_digest)
+
       assert_not_equal pref.id, new_pref.id
-      assert_equal "NEYO", new_pref.status_id
+      assert_equal 2, new_pref.status_id
     end
 
     test "#{domain[:name]} domain surfaces localized timezone errors" do
@@ -294,6 +342,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+
       assert_response :success
 
       assert_select "a[href^=?]", public_send("edit_apex_#{domain[:name]}_preference_region_path")
@@ -303,6 +352,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       get public_send("edit_apex_#{domain[:name]}_preference_region_language_url", default_state)
+
       assert_response :success
 
       assert_select "a[href^=?]", public_send("edit_apex_#{domain[:name]}_preference_region_path")
@@ -313,19 +363,24 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       state = { ri: "jp", lx: "ja" }
 
       get public_send("edit_apex_#{domain[:name]}_preference_region_url", state)
+
       assert_response :success
 
-      assert_select "a[href=?]", public_send("edit_apex_#{domain[:name]}_preference_region_timezone_path", state)
-      assert_select "a[href=?]", public_send("edit_apex_#{domain[:name]}_preference_region_language_path", state)
+      assert_select "a[href=?]",
+                    public_send("edit_apex_#{domain[:name]}_preference_region_timezone_path", state)
+      assert_select "a[href=?]",
+                    public_send("edit_apex_#{domain[:name]}_preference_region_language_path", state)
     end
   end
 
   DOMAINS.each do |domain|
     test "#{domain[:name]} domain reset edit page has confirmation checkbox" do
       host!(domain[:host])
+
       assert_preference_created(domain)
 
       get public_send("edit_apex_#{domain[:name]}_preference_reset_url", ri: "jp")
+
       assert_response :success
 
       assert_select "input[type='checkbox'][name='confirm_reset'][required]"
@@ -334,14 +389,14 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
     test "#{domain[:name]} domain reset destroy updates preference status to DELETED" do
       host!(domain[:host])
-      pref, _token, cookie_name = assert_preference_created(domain)
-      audit_class = "#{domain[:name].capitalize}PreferenceAudit".constantize
+      pref, _token, _cookie_name = assert_preference_created(domain)
+      audit_class = domain[:audit_class]
 
       # Record initial state
       initial_status = pref.status_id
-      initial_audit_count = audit_class.where(subject_id: pref.id.to_s).count
+      initial_audit_count = audit_class.where(subject_id: pref.id).count
 
-      assert_equal "NEYO", initial_status, "Initial status should be NEYO"
+      assert_equal 2, initial_status, "Initial status should be NOTHING"
 
       # Submit reset form with confirmation
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
@@ -351,18 +406,42 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Verify database changes
       pref.reload
-      final_audit_count = audit_class.where(subject_id: pref.id.to_s).count
+      final_audit_count = audit_class.where(subject_id: pref.id).count
 
-      assert_equal "DELETED", pref.status_id, "Status should be DELETED after reset"
+      assert_equal 1, pref.status_id, "Status should be DELETED after reset"
       assert_operator final_audit_count, :>, initial_audit_count,
                       "Audit log should be created"
 
       # Verify audit log event
-      audit = audit_class.where(subject_id: pref.id.to_s).order(created_at: :desc).first
-      assert_equal "RESET_BY_USER_DECISION", audit.event_id
+      event_class = domain[:audit_event_class]
+      audit = audit_class.where(subject_id: pref.id).order(id: :desc).first
 
-      # Verify cookies are deleted
-      assert_empty cookies[cookie_name].to_s, "Refresh token cookie should be deleted"
+      assert_equal event_class::RESET_BY_USER_DECISION, audit.event_id
+    end
+
+    test "#{domain[:name]} domain reset destroy deletes preference cookies" do
+      host!(domain[:host])
+      _pref, _token, cookie_name = assert_preference_created(domain)
+
+      cookies[Preference::Base::THEME_COOKIE_KEY] = "dr"
+      cookies[Preference::Base::LEGACY_THEME_COOKIE_KEY] = "dark"
+      cookies[Preference::Base::LANGUAGE_COOKIE_KEY] = "en"
+      cookies[Preference::Base::TIMEZONE_COOKIE_KEY] = "etc/utc"
+
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
+             params: { confirm_reset: "1" }
+
+      cookie_names = [
+        cookie_name,
+        preference_access_cookie_name,
+        Preference::Base::THEME_COOKIE_KEY,
+        Preference::Base::LEGACY_THEME_COOKIE_KEY,
+        Preference::Base::LANGUAGE_COOKIE_KEY,
+        Preference::Base::TIMEZONE_COOKIE_KEY,
+      ].uniq
+
+      assert cookie_names.all? { |name| cookies[name].to_s.empty? },
+             "Preference-related cookies should be deleted"
     end
 
     test "#{domain[:name]} domain reset destroy fails without confirmation" do
@@ -378,7 +457,8 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Verify database is unchanged
       pref.reload
-      assert_equal "NEYO", pref.status_id, "Status should remain NEYO"
+
+      assert_equal 2, pref.status_id, "Status should remain NOTHING"
 
       # Verify cookie is still present
       assert_not_nil cookies[cookie_name], "Cookie should still exist"
@@ -387,7 +467,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} domain reset logs database operations" do
       host!(domain[:host])
       _, _token, _cookie_name = assert_preference_created(domain)
-      "#{domain[:name].capitalize}PreferenceAudit".constantize
+      domain[:audit_class]
 
       # Capture SQL queries
       queries = []
@@ -403,11 +483,13 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Verify UPDATE query was executed on preferences table
       update_queries = queries.select { |q| q.include?("UPDATE") && q.include?("preferences") }
+
       assert_not_empty update_queries, "Should have UPDATE query on preferences table"
 
-      # Verify INSERT query was executed on audit table
-      insert_queries = queries.select { |q| q.include?("INSERT") && q.include?("audit") }
-      assert_not_empty insert_queries, "Should have INSERT query on audit table"
+      # Verify INSERT query was executed on activity table
+      insert_queries = queries.select { |q| q.include?("INSERT") && q.include?("activit") }
+
+      assert_not_empty insert_queries, "Should have INSERT query on activity table"
 
       # Log for debugging
       Rails.logger.info "=== #{domain[:name]} reset DB operations ==="
@@ -418,48 +500,53 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
   private
 
-    def default_state
-      { ri: "jp" }
+  def default_state
+    { ri: "jp" }
+  end
+
+  def assert_preference_created(domain)
+    get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+
+    assert_response :success
+
+    cookie_name = preference_refresh_cookie_name
+    token = cookies[cookie_name]
+
+    assert_not_nil token
+    token_digest = refresh_token_digest_for(token)
+    pref = domain[:preference_model].find_by(token_digest: token_digest)
+
+    assert_not_nil pref
+    [pref, token, cookie_name]
+  end
+
+  def refresh_token_digest_for(token)
+    return nil if token.blank?
+
+    verifier = token.include?(".") ? token.split(".", 2).last : token
+    SHA3::Digest::SHA3_384.digest(verifier)
+  end
+
+  def assert_preference_update(domain, kind, params, state)
+    suffix = preference_route_suffix(kind)
+    get public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
+
+    assert_response :success
+
+    patch public_send("apex_#{domain[:name]}_preference_#{suffix}_url", state), params: params
+
+    assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
+    follow_redirect!
+
+    expect_notice = !(domain[:name] == "com" && %i(language timezone).include?(kind))
+    if expect_notice
+      assert_equal I18n.t(domain[:scope] + ".update_success"), flash[:notice]
+    else
+      assert_nil flash[:notice]
     end
+  end
 
-    def assert_preference_created(domain)
-      get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
-      assert_response :success
-
-      cookie_name = preference_refresh_cookie_name
-      token = cookies[cookie_name]
-      assert_not_nil token
-      token_digest = refresh_token_digest_for(token)
-      pref = domain[:preference_model].find_by(token_digest: token_digest)
-      assert_not_nil pref
-      [ pref, token, cookie_name ]
-    end
-
-    def refresh_token_digest_for(token)
-      return nil if token.blank?
-
-      verifier = token.include?(".") ? token.split(".", 2).last : token
-      SHA3::Digest::SHA3_384.digest(verifier)
-    end
-
-    def assert_preference_update(domain, kind, params, state)
-      suffix = preference_route_suffix(kind)
-      get public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
-      assert_response :success
-
-      patch public_send("apex_#{domain[:name]}_preference_#{suffix}_url", state), params: params
-      assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
-      follow_redirect!
-
-      expect_notice = !(domain[:name] == "com" && %i[language timezone].include?(kind))
-      if expect_notice
-        assert_equal I18n.t(domain[:scope] + ".update_success"), flash[:notice]
-      else
-        assert_nil flash[:notice]
-      end
-    end
-
-    def preference_route_suffix(kind)
-      %i[language timezone].include?(kind) ? "region_#{kind}" : kind.to_s
-    end
+  def preference_route_suffix(kind)
+    %i(language timezone).include?(kind) ? "region_#{kind}" : kind.to_s
+  end
 end

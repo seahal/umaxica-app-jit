@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -6,12 +7,22 @@ class SecretTest < ActiveSupport::TestCase
   class SecretStatus
     attr_reader :id
 
+    ACTIVE = 1
+    USED = 2
+    REVOKED = 3
+    EXPIRED = 4
+    DELETED = 5
+
     def self.find(id)
       new(id)
     end
 
     def initialize(id)
       @id = id
+    end
+
+    def self.name
+      "UserSecretStatus"
     end
   end
 
@@ -26,7 +37,7 @@ class SecretTest < ActiveSupport::TestCase
     attribute :uses_remaining, :integer
     attribute :expires_at, :datetime
     attribute :last_used_at, :datetime
-    attribute :secret_status_id, :string
+    attribute :secret_status_id, :integer
     attribute :password_digest, :string
 
     # We need to include Secret LAST so it can override/use methods
@@ -90,7 +101,7 @@ class SecretTest < ActiveSupport::TestCase
 
     assert_kind_of DummySecret, record
     assert_equal "test", record.name
-    assert_equal 36, raw_secret.length
+    assert_equal 32, raw_secret.length
     assert_equal DummySecret.status_id_for(:active), record[:secret_status_id]
   end
 
@@ -130,7 +141,7 @@ class SecretTest < ActiveSupport::TestCase
 
   private
 
-    def assert_defined_constant(constant)
-      assert defined?(constant)
-    end
+  def assert_defined_constant(constant)
+    assert defined?(constant)
+  end
 end

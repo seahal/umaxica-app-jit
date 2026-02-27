@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -14,7 +15,7 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
     @private_key = OpenSSL::PKey::EC.generate("secp384r1")
     @public_key = @private_key
     @issuer = "jit-preference".freeze
-    @audiences = [ "example.com" ].freeze
+    @audiences = ["example.com"].freeze
   end
 
   test "encodes and decodes token" do
@@ -26,9 +27,11 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_not_nil token
 
       decoded = Preference::Token.decode(token, host: @host)
+
       assert_not_nil decoded
       assert_equal "dr", decoded.dig("preferences", "ct")
       assert_equal @jti, decoded["jti"]
@@ -50,21 +53,22 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
         public_id: @public_id,
         jti: @jti,
       )
+
       assert_nil Preference::Token.decode(token, host: "wrong.com")
     end
   end
 
   private
 
-    def with_jwt_keys
-      Preference::JwtConfiguration.stub(:private_key, @private_key) do
-        Preference::JwtConfiguration.stub(:public_key, @public_key) do
-          Preference::JwtConfiguration.stub(:issuer, @issuer) do
-            Preference::JwtConfiguration.stub(:audiences, @audiences) do
-              yield
-            end
+  def with_jwt_keys
+    Preference::JwtConfiguration.stub(:private_key, @private_key) do
+      Preference::JwtConfiguration.stub(:public_key, @public_key) do
+        Preference::JwtConfiguration.stub(:issuer, @issuer) do
+          Preference::JwtConfiguration.stub(:audiences, @audiences) do
+            yield
           end
         end
       end
     end
+  end
 end

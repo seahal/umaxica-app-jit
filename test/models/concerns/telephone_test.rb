@@ -1,8 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class TelephoneConcernTest < ActiveSupport::TestCase
+  fixtures :staffs, :staff_statuses
+
   setup do
     @telephone = StaffTelephone.new(
       number: "+1234567890",
@@ -22,6 +25,7 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     assert_equal 0, @telephone.otp_attempts_count
     # unlocked sentinel
     locked = @telephone.locked_at
+
     assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
   end
   # rubocop:enable Minitest/MultipleAssertions
@@ -66,11 +70,13 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     assert_equal "0", @telephone.otp_counter
     # Expect -infinity logic
     expires = @telephone.otp_expires_at
+
     assert expires.nil? || expires.to_s == "-infinity" || (expires.is_a?(Float) && expires == -Float::INFINITY)
 
     assert_equal 0, @telephone.otp_attempts_count
 
     locked = @telephone.locked_at
+
     assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
   end
   # rubocop:enable Minitest/MultipleAssertions

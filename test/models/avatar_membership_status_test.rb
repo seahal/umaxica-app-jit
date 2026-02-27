@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,22 +6,22 @@
 # Table name: avatar_membership_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class AvatarMembershipStatusTest < ActiveSupport::TestCase
   test "validations" do
-    status = AvatarMembershipStatus.new(id: "TEST_STATUS")
+    status = AvatarMembershipStatus.new(id: 9)
+
     assert_predicate status, :valid?
   end
 
-  test "validates length of id" do
-    record = AvatarMembershipStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "constants are defined" do
+    assert_equal 1, AvatarMembershipStatus::NOTHING
+    assert_equal 2, AvatarMembershipStatus::ACTIVE
+    assert_equal 3, AvatarMembershipStatus::INACTIVE
+    assert_equal 4, AvatarMembershipStatus::DELETED
   end
 end

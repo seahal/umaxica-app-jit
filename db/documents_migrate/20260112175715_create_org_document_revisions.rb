@@ -2,8 +2,8 @@
 
 class CreateOrgDocumentRevisions < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_document_revisions, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.references :org_document, null: false, foreign_key: true, type: :uuid
+    create_table :org_document_revisions do |t|
+      t.references :org_document, null: false, foreign_key: true, type: :bigint
       t.string :permalink, null: false, limit: 200
       t.string :response_mode, null: false
       t.string :redirect_url
@@ -19,7 +19,7 @@ class CreateOrgDocumentRevisions < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :org_document_revisions, [ :org_document_id, :created_at ]
+    add_index :org_document_revisions, [:org_document_id, :created_at]
     add_index :org_document_revisions, :public_id, unique: true
   end
 end

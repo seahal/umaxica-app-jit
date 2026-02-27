@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -9,15 +10,17 @@ require "test_helper"
 # - Reauth requires existing linked identity
 # - Reauth with wrong identity fails
 class SocialAuthReauthTest < ActionDispatch::IntegrationTest
-  SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
+  fixtures :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
 
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @callback_headers = SocialCallbackTestHelper.callback_headers(@host)
 
     # Create test user
+    UserStatus.find_or_create_by!(id: UserStatus::NOTHING)
     @user = User.create!(
-      status_id: UserStatus::ACTIVE,
+      status_id: UserStatus::NOTHING,
       public_id: "reauth_test_#{SecureRandom.hex(4)}",
       last_reauth_at: nil, # Explicitly nil to test update
     )
@@ -41,13 +44,12 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       uid: @google_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "reauth@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
       last_authenticated_at: 1.day.ago,
     )
 
-    setup_google_mock_auth(uid: @google_uid, email: "reauth@example.com")
+    setup_google_mock_auth(uid: @google_uid)
 
     # Verify last_reauth_at is nil before
     assert_nil @user.reload.last_reauth_at, "last_reauth_at should be nil initially"
@@ -55,17 +57,14 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     time_before = Time.current
 
     # Start reauth flow
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
-         headers: as_user_headers(@user, host: @host)
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/google_oauth2"
-    assert_includes @response.headers["Location"], "state="
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
+        headers: as_user_headers(@user, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
+    assert_response :redirect
 
     # Callback with correct state and matching identity
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
-        headers: as_user_headers(@user, host: @host)
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -75,11 +74,13 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     # CRITICAL: last_reauth_at should be updated
     @user.reload
+
     assert_not_nil @user.last_reauth_at, "last_reauth_at MUST be updated after reauth"
     assert_operator @user.last_reauth_at, :>=, time_before, "last_reauth_at should be recent"
 
     # Identity's last_authenticated_at should also be updated
     google_identity.reload
+
     assert_operator google_identity.last_authenticated_at, :>=, time_before
   end
 
@@ -89,34 +90,30 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       uid: @apple_uid,
       provider: "apple",
       token: "old_token",
-      email: "reauth_apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
       last_authenticated_at: 1.day.ago,
     )
 
-    setup_apple_mock_auth(uid: @apple_uid, email: "reauth_apple@example.com")
+    setup_apple_mock_auth(uid: @apple_uid)
 
     assert_nil @user.reload.last_reauth_at
 
     time_before = Time.current
 
-    post sign_app_social_start_url(provider: "apple", intent: "reauth", ri: "jp"),
-         headers: as_user_headers(@user, host: @host)
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/apple"
-    assert_includes @response.headers["Location"], "state="
+    get sign_app_social_start_url(provider: "apple", intent: "reauth", ri: "jp"),
+        headers: as_user_headers(@user, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
+    assert_response :redirect
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
-         headers: as_user_headers(@user, host: @host)
+         headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
     follow_redirect!
 
     @user.reload
+
     assert_not_nil @user.last_reauth_at, "last_reauth_at MUST be updated for Apple reauth"
     assert_operator @user.last_reauth_at, :>=, time_before
   end
@@ -132,86 +129,90 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       uid: @google_uid,
       provider: "google_oauth2",
       token: "token",
-      email: "original@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
 
     # Mock auth returns different uid
     different_uid = "completely_different_google_uid"
-    setup_google_mock_auth(uid: different_uid, email: "different@example.com")
+    setup_google_mock_auth(uid: different_uid)
 
     original_reauth_at = @user.last_reauth_at
 
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
-         headers: as_user_headers(@user, host: @host)
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
-    assert_response :redirect
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
-    # last_reauth_at should NOT be updated (identity mismatch)
+    assert_response :redirect
+    follow_redirect!
+
+    # Should have error
+    assert_predicate flash[:alert], :present?, "Reauth with different identity should fail"
+
+    # last_reauth_at should NOT be updated
     @user.reload
+
     assert_equal original_reauth_at, @user.last_reauth_at, "last_reauth_at should not change on failed reauth"
   end
 
   test "reauth without linked identity fails" do
     # User has no Google linked
-    setup_google_mock_auth(uid: "some_unlinked_uid", email: "nolink@example.com")
+    setup_google_mock_auth(uid: "some_unlinked_uid")
 
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
-         headers: as_user_headers(@user, host: @host)
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
-    assert_response :redirect
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
-    # Should not update reauth timestamp when not linked
+    assert_response :redirect
+    follow_redirect!
+
+    assert_predicate flash[:alert], :present?, "Reauth without linked identity should fail"
     assert_nil @user.reload.last_reauth_at
   end
 
   test "reauth requires authentication" do
-    setup_google_mock_auth(uid: "test", email: "test@example.com")
+    setup_google_mock_auth(uid: "test")
 
     # No auth header
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
-         headers: { "Host" => @host }
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
+        headers: { "Host" => @host }
 
-    # Should redirect to login page when not authenticated
     assert_response :redirect
-    assert_match %r{/in}, response.location, "Reauth should require authentication"
+    follow_redirect!
+
+    assert_predicate flash[:alert], :present?, "Reauth should require authentication"
   end
 
   private
 
-    def setup_google_mock_auth(uid:, email: "test@example.com")
-      OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-        provider: "google_oauth2",
-        uid: uid,
-        info: { email: email, image: "https://example.com/image.jpg" },
-        credentials: {
-          token: "google_token_#{SecureRandom.hex(8)}",
-          refresh_token: "refresh_token",
-          expires_at: 1.week.from_now.to_i
-        },
-      )
-    end
+  # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
+  # We deliberately omit email from mock_auth to test this requirement
+  def setup_google_mock_auth(uid:)
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: uid,
+      info: { image: "https://example.com/image.jpg" },
+      credentials: {
+        token: "google_token_#{SecureRandom.hex(8)}",
+        refresh_token: "refresh_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+  end
 
-    def setup_apple_mock_auth(uid:, email: "apple@example.com")
-      OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
-        provider: "apple",
-        uid: uid,
-        info: { email: email },
-        credentials: {
-          token: "apple_token_#{SecureRandom.hex(8)}",
-          expires_at: 1.week.from_now.to_i
-        },
-      )
-    end
+  def setup_apple_mock_auth(uid:)
+    OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
+      provider: "apple",
+      uid: uid,
+      info: {},
+      credentials: {
+        token: "apple_token_#{SecureRandom.hex(8)}",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+  end
 end

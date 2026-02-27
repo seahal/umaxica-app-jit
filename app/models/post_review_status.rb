@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,22 +6,17 @@
 # Table name: post_review_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  key        :string           not null
-#  name       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_post_review_statuses_on_key  (key) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class PostReviewStatus < AvatarRecord
-  include StringPrimaryKey
+  self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NOTHING = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  DELETED = 4
+  PENDING = NOTHING
 
   has_many :post_reviews, dependent: :restrict_with_error
-
-  validates :key, presence: true, uniqueness: true
-  validates :name, presence: true
 end

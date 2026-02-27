@@ -51,28 +51,67 @@ en:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+    shared:
+      sign_out:
+        title: "Do you want to sign out?"
+        button: "Sign out"
+        success: "You have been signed out."
     app:
-      common:
-        cancel: "Cancel"
       title_suffix: "(app)"
       header:
         sign: "Sign"
+      reauth:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
       layout:
         nav:
           sign_up: "Sign Up"
           log_in: "Log In"
           configuration: "Settings"
           logout: "Log Out"
-    preferences:
-      title: "Preference settings"
-      footer:
-        home: "Home"
-        preference: "Preferences"
-        configuration: "Settings"
-      configuration:
-        sessions:
-          index:
-            revoke_confirm: "Revoke this session?"
+      preferences:
+        title: "Preference settings"
+        footer:
+          home: "Home"
+          preference: "Preferences"
+          configuration: "Settings"
     org:
       layout:
         nav:
@@ -177,42 +216,6 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
-        exits:
-          edit:
-            title: "Do you want to sign out?"
-          destroy:
-            success: "You have been signed out."
-      org:
-        configuration:
-          security:
-            edit:
-              title: "Security settings"
-              description: "Monitor your organization's passkeys, recovery secrets, and session history."
-            cards:
-              passkeys:
-                title: "Passkeys"
-                description: "Staff passkeys simplify passwordless authentication for the console."
-                stats_label: "registered"
-              secrets:
-                title: "Recovery codes"
-                description: "Single-use secrets that restore access if your primary keys fail."
-                stats_label: "stored"
-              sessions:
-                title: "Active sessions"
-                description: "Currently signed-in sessions for your staff account."
-                stats_label: "active"
-            states:
-              enabled: "Enabled"
-              disabled: "Not configured"
-            actions:
-              manage: "Manage"
-              review: "Refresh review"
-            review:
-              heading: "Security review"
-              last_review: "Last review refreshed:"
-            never: "Not yet recorded"
-            update:
-              success: "Security dashboard refreshed."
       social:
         sessions:
           create:
@@ -243,78 +246,6 @@ en:
           revoke:
             success: "Session revoked."
             failure: "Cannot revoke current session."
-        telephone:
-          index:
-            title: "Phone numbers"
-            description: "Manage phone numbers linked to your account."
-            new_link: "Add a phone number"
-            verified: "Verified"
-            unverified: "Unverified"
-            empty: "No phone numbers registered."
-          new:
-            title: "Add a phone number"
-            description: "Add a phone number to make your account more secure."
-            help_text: "We will send a verification code via SMS."
-          create:
-            verification_code_sent: "A verification code has been sent to your phone."
-            already_registered: "This phone number is already registered."
-            turnstile_validation_failed: "Bot verification failed. Please try again."
-          edit:
-            title: "Verify phone number"
-            description: "Enter the verification code we sent to your phone."
-            pass_code_label: "Verification code"
-            pass_code_hint: "Enter the 6-digit verification code."
-            sms_sent: "A verification code has been sent to %{number}."
-            session_expired: "Your session has expired. Please start again."
-          update:
-            success: "Phone number verified successfully."
-            invalid_code: "Invalid verification code. Please try again."
-            session_expired: "Your session has expired. Please start again."
-            attempts_exceeded: "Too many failed attempts. Please start again."
-          show:
-            title: "Phone number verified"
-            description: "Your phone number has been successfully verified."
-            verified: "Verified"
-            back_to_list: "Back to phone numbers"
-            not_found: "Phone number not found."
-          destroy:
-            success: "Phone number removed successfully."
-            not_found: "Phone number not found."
-            confirm: "Are you sure you want to remove this phone number?"
-            last_telephone: "Cannot remove the last verified phone number."
-        security:
-          edit:
-            title: "Security settings"
-            description: "Review your authentication factors, active sessions, and recovery keys."
-          cards:
-            totp:
-              title: "Two-factor authentication"
-              description: "TOTP apps generate rotating codes that add a second layer to your login."
-            passkeys:
-              title: "Passkeys"
-              description: "WebAuthn credentials you can use instead of a password."
-              stats_label: "registered"
-            secrets:
-              title: "Recovery codes"
-              description: "Single-use secrets that help you regain access if primary factors fail."
-              stats_label: "stored"
-            sessions:
-              title: "Active sessions"
-              description: "Device sessions that are currently signed into your account."
-              stats_label: "active"
-          states:
-            enabled: "Enabled"
-            disabled: "Not configured"
-          actions:
-            manage: "Manage"
-            review: "Mark as reviewed"
-          review:
-            heading: "Security review"
-            last_reauth: "Last reauthentication:"
-            last_review: "Last review refreshed:"
-          never: "Not yet recorded"
-          update:
-            success: "Security dashboard refreshed."
       registration:
         new:
           page_title: "Create your account"
@@ -423,14 +354,11 @@ en:
             cannot_recover: "Recovery period has expired. Please contact support."
             failed: "Failed to recover account. Please try again later."
           destroy:
+            permanent_unavailable: "Permanent deletion is currently unavailable."
             deleted: "Account has been permanently deleted."
             not_withdrawn: "Account is not withdrawn; cannot delete."
           errors:
-            cooldown_active: "Withdrawal cooldown is still active."
-            recovery_not_available: "Account recovery is not available."
             invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
-            finalized: "Your account withdrawal has been finalized."
-            deletion_failed: "Failed to delete account."
             recovery_not_available: "Your account cannot be recovered at this time. The recovery period has expired."
             deletion_failed: "Failed to delete your account. Please try again or contact support."
       preferences:
@@ -502,11 +430,6 @@ en:
           log_in: "Log In"
           configuration: "Settings"
           logout: "Log Out"
-      exits:
-        edit:
-          title: "Do you want to sign out?"
-        destroy:
-          success: "You have been signed out."
       withdrawal:
         create:
           already_withdrawn: "You have already withdrawn your account."
@@ -1212,6 +1135,47 @@ en:
             accept_targeting_cookies: "Allow targeting cookies"
             accept_consent_cookies: "Allow consent cookies"
   sign:
+    app:
+      reauth:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
     org:
       root:
         registration: "Sign Up"

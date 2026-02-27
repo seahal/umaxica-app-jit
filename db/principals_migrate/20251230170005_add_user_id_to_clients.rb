@@ -6,7 +6,7 @@ class AddUserIdToClients < ActiveRecord::Migration[8.2]
       add_reference :clients,
                     :user,
                     foreign_key: { to_table: :users, validate: false },
-                    type: :uuid
+                    type: :bigint
     end
   end
 end

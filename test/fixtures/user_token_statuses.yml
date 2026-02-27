@@ -3,11 +3,11 @@
 # Table name: user_token_statuses
 # Database name: token
 #
-#  id :string(255)      default(""), not null, primary key
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_user_token_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
-NEYO:
-  id: NEYO
+NOTHING:
+  id: 0
+ACTIVE:
+  id: 1
+EXPIRED:
+  id: 2

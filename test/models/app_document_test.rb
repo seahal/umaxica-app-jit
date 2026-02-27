@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,7 +6,7 @@
 # Table name: app_documents
 # Database name: document
 #
-#  id                 :uuid             not null, primary key
+#  id                 :bigint           not null, primary key
 #  expires_at         :datetime         default(Infinity), not null
 #  lock_version       :integer          default(0), not null
 #  permalink          :string(200)      default(""), not null
@@ -16,15 +17,15 @@
 #  revision_key       :string           default(""), not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
-#  latest_revision_id :uuid
-#  latest_version_id  :uuid
+#  latest_revision_id :bigint
+#  latest_version_id  :bigint
 #  slug_id            :string(32)       default(""), not null
-#  status_id          :string(255)      default("NEYO"), not null
+#  status_id          :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_app_documents_on_latest_revision_id           (latest_revision_id)
-#  index_app_documents_on_latest_version_id            (latest_version_id)
+#  index_app_documents_on_latest_revision_id           (latest_revision_id) UNIQUE
+#  index_app_documents_on_latest_version_id            (latest_version_id) UNIQUE
 #  index_app_documents_on_permalink                    (permalink) UNIQUE
 #  index_app_documents_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_app_documents_on_slug_id                      (slug_id)
@@ -32,8 +33,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (latest_revision_id => app_document_revisions.id)
-#  fk_rails_...  (latest_version_id => app_document_versions.id)
+#  fk_rails_...  (latest_revision_id => app_document_revisions.id) ON DELETE => nullify
+#  fk_rails_...  (latest_version_id => app_document_versions.id) ON DELETE => nullify
 #  fk_rails_...  (status_id => app_document_statuses.id)
 #
 
@@ -48,18 +49,21 @@ class AppDocumentTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       position: 0,
       revision_key: "rev_key",
-      status_id: "NEYO"
+      status_id: AppDocumentStatus::NOTHING,
     }
   end
 
   test "permalink validation rejects slash, accepts underscore, rejects long length" do
     doc = AppDocument.new(base_attrs.merge(permalink: "bad/slug"))
+
     assert_not doc.valid?
 
     doc = AppDocument.new(base_attrs.merge(permalink: "good_slug"))
+
     assert_predicate doc, :valid?
 
     doc = AppDocument.new(base_attrs.merge(permalink: "a" * 201))
+
     assert_not doc.valid?
   end
 
@@ -74,14 +78,16 @@ class AppDocumentTest < ActiveSupport::TestCase
     AppDocument.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
     AppDocument.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
 
-    assert_equal [ available.id ], AppDocument.available.pluck(:id)
+    assert_equal [available.id], AppDocument.available.pluck(:id)
   end
 
   test "redirect_url is required when response_mode is redirect" do
     doc = AppDocument.new(base_attrs.merge(response_mode: "redirect", redirect_url: nil))
+
     assert_not doc.valid?
 
     doc = AppDocument.new(base_attrs.merge(response_mode: "redirect", redirect_url: "https://example.com"))
+
     assert_predicate doc, :valid?
   end
 
@@ -113,21 +119,26 @@ class AppDocumentTest < ActiveSupport::TestCase
 
   test "permalink is required and must not be empty" do
     doc = AppDocument.new(base_attrs.merge(permalink: nil))
+
     assert_not doc.valid?
     doc = AppDocument.new(base_attrs.merge(permalink: ""))
+
     assert_not doc.valid?
     doc = AppDocument.new(base_attrs.merge(permalink: "   "))
+
     assert_not doc.valid?
   end
 
   test "published_at must be before expires_at" do
     doc = AppDocument.new(base_attrs.merge(published_at: 1.day.from_now, expires_at: 1.day.ago))
+
     assert_not doc.valid?
     assert_not_empty doc.errors[:published_at]
   end
 
   test "revision_key is ensured before validation" do
     doc = AppDocument.new(base_attrs.merge(revision_key: nil))
+
     assert_predicate doc, :valid?
     assert_not_nil doc.revision_key
   end

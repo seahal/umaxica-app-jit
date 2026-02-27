@@ -1,8 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class EmailDeliveryTest < ActionDispatch::IntegrationTest
+  fixtures :user_email_statuses, :user_statuses
+
   setup do
     # Use the solid_queue adapter for this test to verify DB persistence
     @previous_adapter = ActiveJob::Base.queue_adapter
@@ -28,10 +31,10 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
-               confirm_policy: "1"
+               raw_address: email,
+               confirm_policy: "1",
              },
-             "cf-turnstile-response": "test_token"
+             "cf-turnstile-response": "test_token",
            },
            headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
 
@@ -40,6 +43,7 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
 
     # Find the job and verify it's a mail delivery job
     job = SolidQueue::Job.where(class_name: "ActionMailer::MailDeliveryJob").order(:created_at).last
+
     assert_equal "ActionMailer::MailDeliveryJob", job.class_name
     assert_equal "default", job.queue_name
 

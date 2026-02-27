@@ -2,8 +2,8 @@
 
 class CreateOrgTimelineCategories < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_timeline_categories, id: :uuid do |t|
-      t.references :org_timeline, null: false, foreign_key: true, type: :uuid
+    create_table :org_timeline_categories do |t|
+      t.references :org_timeline, null: false, foreign_key: true, type: :bigint
       t.string :org_timeline_category_master_id, null: false, limit: 255
 
       t.timestamps

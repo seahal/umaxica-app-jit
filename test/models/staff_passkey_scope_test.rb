@@ -1,10 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class StaffPasskeyScopeTest < ActiveSupport::TestCase
   setup do
-    @staff = Staff.create!(public_id: "abcdefhj", status_id: "NEYO")
+    @staff = Staff.create!(public_id: "abcdefhj", status_id: StaffStatus::NOTHING)
 
     @active_passkey = StaffPasskey.create!(
       staff: @staff,
@@ -12,7 +13,7 @@ class StaffPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Active Key",
-      staff_passkey_status_id: "ACTIVE",
+      status_id: StaffPasskeyStatus::ACTIVE,
     )
 
     @inactive_passkey = StaffPasskey.create!(
@@ -21,7 +22,7 @@ class StaffPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Inactive Key",
-      staff_passkey_status_id: "REVOKED",
+      status_id: StaffPasskeyStatus::REVOKED,
     )
   end
 

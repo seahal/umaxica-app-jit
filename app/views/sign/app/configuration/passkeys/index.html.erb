@@ -1,59 +1,48 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="mb-6">
-    <%= link_to sign_app_configuration_path, class: "inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors duration-300" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-      </svg>
-      <span><%= t("sign.app.configuration.show.back") %></span>
-    <% end %>
-  </div>
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-xl font-semibold text-gray-900 dark:text-white"><%= t('sign.app.configuration.passkey.index.title') %></h1>
-      <p class="mt-2 text-sm text-gray-700 dark:text-gray-400"><%= t('sign.app.configuration.passkey.index.description') %></p>
-    </div>
-    <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-      <%= link_to t('controller.sign.app.v1.passkey.new'), new_sign_app_configuration_passkey_path, class: "inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" %>
-    </div>
-  </div>
+<% content_for :page_title, 'Passkeys' %>
+<%= link_to t('sign.app.configuration.show.back'), sign_app_configuration_path %>
 
-  <div class="mt-8 flex flex-col">
-    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 dark:ring-white/10 md:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800">
+<div>
+  <div>
+    <%= link_to t('controller.sign.app.v1.passkey.new'), new_sign_app_configuration_passkey_path %>
+  </div>
+</div>
+
+<div>
+  <div>
+    <div>
+      <div>
+        <table>
+          <thead>
+          <tr>
+            <th scope="col"><%= t('activerecord.attributes.user_passkey.description') %></th>
+            <th scope="col"><%= t('activerecord.attributes.user_passkey.created_at') %></th>
+            <th scope="col"><%= t('activerecord.attributes.user_passkey.last_used_at') %></th>
+            <th scope="col">
+              <span>アクション</span>
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @passkeys.each do |passkey| %>
             <tr>
-              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 sm:pl-6"><%= t('activerecord.attributes.user_passkey.description') %></th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100"><%= t('activerecord.attributes.user_passkey.created_at') %></th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100"><%= t('activerecord.attributes.user_passkey.last_used_at') %></th>
-              <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span class="sr-only">アクション</span>
-              </th>
+              <td><%= passkey.description %></td>
+              <td><%= l(passkey.created_at, format: :short) %></td>
+              <td><%= passkey.respond_to?(:last_used_at) && passkey.last_used_at ? l(passkey.last_used_at, format: :short) : '-' %></td>
+              <td>
+                <%= link_to t('actions.edit'), edit_sign_app_configuration_passkey_path(passkey) %>
+                <%= link_to t('actions.destroy'), sign_app_configuration_passkey_path(passkey), data: { turbo_method: :delete, turbo_confirm: t('messages.confirm_destroy') } %>
+              </td>
             </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
-            <% @passkeys.each do |passkey| %>
-              <tr>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6"><%= passkey.description %></td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400"><%= l(passkey.created_at, format: :short) %></td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400"><%= passkey.respond_to?(:last_used_at) && passkey.last_used_at ? l(passkey.last_used_at, format: :short) : '-' %></td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                  <%= link_to t('actions.edit'), edit_sign_app_configuration_passkey_path(passkey), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-4" %>
-                  <%= link_to t('actions.destroy'), sign_app_configuration_passkey_path(passkey), data: { turbo_method: :delete, turbo_confirm: t('messages.confirm_destroy') }, class: "text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" %>
-                </td>
-              </tr>
-            <% end %>
-            <% if @passkeys.empty? %>
-              <tr>
-                <td colspan="4" class="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400 italic">
-                  パスキーは登録されていません。
-                </td>
-              </tr>
-            <% end %>
-            </tbody>
-          </table>
-        </div>
+          <% end %>
+          <% if @passkeys.empty? %>
+            <tr>
+              <td colspan="4" class="italic">
+                パスキーは登録されていません。
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

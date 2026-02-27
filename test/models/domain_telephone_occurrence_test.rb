@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,15 +6,15 @@
 # Table name: domain_telephone_occurrences
 # Database name: occurrence
 #
-#  id                      :uuid             not null, primary key
+#  id                      :bigint           not null, primary key
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  domain_occurrence_id    :uuid             not null
-#  telephone_occurrence_id :uuid             not null
+#  domain_occurrence_id    :bigint           not null
+#  telephone_occurrence_id :bigint           not null
 #
 # Indexes
 #
-#  index_domain_telephone_occurrences_on_domain_occurrence_id     (domain_occurrence_id)
+#  idx_domain_telephone_occ_on_ids                                (domain_occurrence_id,telephone_occurrence_id) UNIQUE
 #  index_domain_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 # Foreign Keys

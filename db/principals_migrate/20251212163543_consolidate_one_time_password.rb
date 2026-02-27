@@ -21,7 +21,7 @@ class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
           occurrence_conn = ActiveRecord::Base.connection_handler.retrieve_connection("occurrence")
           hmac = occurrence_conn.execute(
             "SELECT private_key, last_otp_at FROM hmac_based_one_time_passwords WHERE id = $1",
-            [ record.hmac_based_one_time_password_id ],
+            [record.hmac_based_one_time_password_id],
           ).first
 
           if hmac

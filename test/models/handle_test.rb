@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,13 +6,13 @@
 # Table name: handles
 # Database name: avatar
 #
-#  id               :string           not null, primary key
+#  id               :bigint           not null, primary key
 #  cooldown_until   :timestamptz      not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  handle_status_id :string
+#  handle_status_id :bigint
 #  public_id        :string           not null
 #
 # Indexes
@@ -44,12 +45,14 @@ class HandleTest < ActiveSupport::TestCase
 
   test "requires handle" do
     @handle.handle = nil
+
     assert_not @handle.valid?
     assert_not_empty @handle.errors[:handle]
   end
 
   test "requires cooldown_until" do
     @handle.cooldown_until = nil
+
     assert_not @handle.valid?
     assert_not_empty @handle.errors[:cooldown_until]
   end
@@ -57,18 +60,21 @@ class HandleTest < ActiveSupport::TestCase
   test "handle uniqueness for non-system" do
     Handle.create!(handle: "taken", cooldown_until: Time.current)
     duplicate = Handle.new(handle: "taken", cooldown_until: Time.current)
+
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:handle]
   end
 
   test "handle is invalid when empty" do
     @handle.handle = ""
+
     assert_not @handle.valid?
     assert_not_empty @handle.errors[:handle]
   end
 
   test "handle is invalid when only whitespace" do
     @handle.handle = "   "
+
     assert_not @handle.valid?
     assert_not_empty @handle.errors[:handle]
   end
@@ -80,13 +86,14 @@ class HandleTest < ActiveSupport::TestCase
       cooldown_until: Time.current,
       public_id: @handle.public_id,
     )
+
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:public_id]
   end
 
   test "association deletion: restriction by active_avatars" do
     @handle.save!
-    capability = AvatarCapability.find_or_create_by!(key: "handle_test_cap", name: "Test Cap")
+    capability = AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL)
     Avatar.create!(
       moniker: "Avatar with Handle",
       active_handle: @handle,
@@ -95,11 +102,5 @@ class HandleTest < ActiveSupport::TestCase
 
     assert_not @handle.destroy
     assert_includes @handle.errors[:base], "active avatarsが存在しているので削除できません"
-  end
-
-  test "validates length of id" do
-    record = Handle.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
   end
 end

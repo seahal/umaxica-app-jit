@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,11 +6,8 @@
 # Table name: user_occurrence_statuses
 # Database name: occurrence
 #
-#  id :string(255)      default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_user_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id   :bigint           not null, primary key
+#  name :string           default(""), not null
 #
 
 require "test_helper"
@@ -21,9 +19,16 @@ class UserOccurrenceStatusTest < ActiveSupport::TestCase
   #     assert_expires_at_default(record)
   #   end
 
-  test "validates length of id" do
-    record = UserOccurrenceStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "accepts integer ids" do
+    record = UserOccurrenceStatus.new(id: 9)
+
+    assert_predicate record, :valid?
+  end
+
+  test "constants are defined" do
+    assert_equal 1, UserOccurrenceStatus::NOTHING
+    assert_equal 2, UserOccurrenceStatus::ACTIVE
+    assert_equal 3, UserOccurrenceStatus::INACTIVE
+    assert_equal 4, UserOccurrenceStatus::DELETED
   end
 end

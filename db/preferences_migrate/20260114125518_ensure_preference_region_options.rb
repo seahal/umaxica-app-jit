@@ -2,12 +2,12 @@
 
 class EnsurePreferenceRegionOptions < ActiveRecord::Migration[8.2]
   def up
-    safety_assured do
-      region_ids = %w[US JP]
+    region_ids = %w(US JP)
 
-      %w[app com org].each do |namespace|
-        table_name = "#{namespace}_preference_region_options"
+    %w(app com org).each do |namespace|
+      table_name = "#{namespace}_preference_region_options"
 
+      safety_assured do
         values_sql = region_ids.map { |id| "('#{id}')" }.join(", ")
 
         execute <<~SQL.squish
@@ -28,10 +28,10 @@ class EnsurePreferenceRegionOptions < ActiveRecord::Migration[8.2]
   end
 
   def down
-    region_ids = %w[US JP]
+    region_ids = %w(US JP)
     ids_sql = region_ids.map { |id| "'#{id}'" }.join(", ")
 
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       table_name = "#{namespace}_preference_region_options"
 
       safety_assured do

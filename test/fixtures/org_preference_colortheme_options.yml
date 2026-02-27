@@ -3,24 +3,11 @@
 # Table name: org_preference_colortheme_options
 # Database name: preference
 #
-#  id         :string           not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  org_preference_colortheme_options_position_unique  (position) UNIQUE
-#
-
 light:
-  id: "light"
-  position: 1
-
+  id: 1
 dark:
-  id: "dark"
-  position: 2
-
+  id: 2
 system:
-  id: "system"
-  position: 3
+  id: 3

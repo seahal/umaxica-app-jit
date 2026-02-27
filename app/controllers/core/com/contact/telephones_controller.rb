@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Core
@@ -22,14 +23,20 @@ module Core
           hotp_code = params.dig(:com_contact_telephone, :hotp_code)
 
           if hotp_code.blank?
-            @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.create.hotp_code_required"))
+            @contact_telephone.errors.add(
+              :hotp_code,
+              I18n.t("help.com.contact.telephones.create.hotp_code_required"),
+            )
             render :new, status: :unprocessable_content
             return
           end
 
           # Check if attempts left
           if @contact_telephone.verifier_attempts_left <= 0
-            @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.update.max_attempts"))
+            @contact_telephone.errors.add(
+              :hotp_code,
+              I18n.t("help.com.contact.telephones.update.max_attempts"),
+            )
             render :new, status: :unprocessable_content
             return
           end
@@ -45,7 +52,7 @@ module Core
             # Update contact status to CHECKED_TELEPHONE_NUMBER
             @contact.verify_phone!
 
-            redirect_url = edit_core_com_contact_url(
+            redirect_url = core_com_contact_url(
               @contact,
               **preserved_locale_query_params,
               **core_corporate_redirect_options,
@@ -66,7 +73,10 @@ module Core
                 ),
               )
             else
-              @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.update.max_attempts"))
+              @contact_telephone.errors.add(
+                :hotp_code,
+                I18n.t("help.com.contact.telephones.update.max_attempts"),
+              )
             end
             render :new, status: :unprocessable_content
           end
@@ -74,48 +84,48 @@ module Core
 
         private
 
-          def load_and_validate_contact
-            contact_id = params[:contact_id]
+        def load_and_validate_contact
+          contact_id = params[:contact_id]
 
-            if contact_id.blank?
-              raise StandardError, "Contact ID is required"
-            end
-
-            @contact = ComContact.find_by(public_id: contact_id)
-
-            if @contact.nil?
-              raise StandardError, "Contact not found"
-            end
-
-            unless @contact.status_id == "CHECKED_EMAIL_ADDRESS"
-              raise StandardError,
-                    "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
-            end
+          if contact_id.blank?
+            raise StandardError, "Contact ID is required"
           end
 
-          def core_corporate_redirect_options
-            {
-              host: core_corporate_host,
-              port: request.port,
-              protocol: request.protocol.delete_suffix("://")
-            }.compact
+          @contact = ComContact.find_by(public_id: contact_id)
+
+          if @contact.nil?
+            raise StandardError, "Contact not found"
           end
 
-          def core_corporate_host
-            host_value = ENV["CORE_CORPORATE_URL"].presence || request.host
-            return request.host if host_value.blank?
+          return if @contact.status_id == ComContactStatus::CHECKED_EMAIL_ADDRESS
 
-            begin
-              uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-              uri.host || host_value.split(":").first
-            rescue URI::InvalidURIError
-              host_value.split(":").first
-            end
-          end
+          raise StandardError,
+                "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
+        end
 
-          def preserved_locale_query_params
-            request.query_parameters.slice("ct", "lx", "ri", "tz").compact
+        def core_corporate_redirect_options
+          {
+            host: core_corporate_host,
+            port: request.port,
+            protocol: request.protocol.delete_suffix("://"),
+          }.compact
+        end
+
+        def core_corporate_host
+          env_url = ENV["CORE_CORPORATE_URL"].presence
+          return request.host unless env_url
+
+          begin
+            uri = URI.parse(env_url.start_with?("http") ? env_url : "http://#{env_url}")
+            uri.host || env_url.split(":").first
+          rescue URI::InvalidURIError
+            env_url.split(":").first
           end
+        end
+
+        def preserved_locale_query_params
+          request.query_parameters.slice("ct", "lx", "ri", "tz").compact
+        end
       end
     end
   end

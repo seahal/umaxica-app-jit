@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -7,7 +8,9 @@ module Sign::App
     test "includes expected concerns" do
       controller = ApplicationController.new
 
-      assert_includes controller.class, ::Auth::User
+      assert_includes controller.class, ::Authentication::User
+      assert_includes controller.class, ::Authorization::User
+      assert_includes controller.class, ::Verification::User
     end
 
     test "includes expected concerns 2nd" do

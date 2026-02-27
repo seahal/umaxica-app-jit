@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Apex
@@ -13,9 +14,7 @@ module Apex
 
         def update
           set_colortheme_preferences_update
-          redirect_to edit_apex_org_preference_theme_url(
-            ct: colortheme_short_code(@preference_colortheme.option_id),
-          ),
+          redirect_to edit_apex_org_preference_theme_url,
                       notice: t("apex.org.preferences.update_success")
         end
       end

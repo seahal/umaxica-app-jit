@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -27,20 +28,22 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select "head", count: 1 do
       assert_select "link[rel=?]", "icon", count: 1
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
-      assert_select "title", /UMAXICA.*\(app\)/
     end
     assert_select "body", count: 1 do
       assert_select "header" do
-        assert_select "h1"
+        assert_select "h1", text: /#{brand_name}.*\(app\)/
       end
       assert_select "main", count: 1
-      assert_select "footer", count: 1
+      assert_select "footer", count: 1 do
+        assert_select "small", text: /^©/
+      end
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get docs_app_root_url
+
     assert_response :success
     assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
   end
@@ -56,7 +59,7 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

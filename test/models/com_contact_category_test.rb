@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,11 +6,7 @@
 # Table name: com_contact_categories
 # Database name: guest
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_com_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
@@ -24,62 +21,25 @@ class ComContactCategoryTest < ActiveSupport::TestCase
   end
 
   test "should create contact category with id" do
-    category = ComContactCategory.new(id: "com_inquiry")
+    category = ComContactCategory.new(id: 99)
 
     assert category.save
-    assert_equal "COM_INQUIRY", category.id
+    assert_equal 99, category.id
   end
 
   test "should find contact category by id" do
-    category = ComContactCategory.create!(id: "com_support")
-    found = ComContactCategory.find("COM_SUPPORT")
+    category = ComContactCategory.create!(id: 100)
+    found = ComContactCategory.find(100)
 
     assert_equal category.id, found.id
   end
 
   test "should have unique id" do
-    ComContactCategory.create!(id: "unique_com_category_#{SecureRandom.hex(4)}")
-    category_title = "duplicate_com_test_#{SecureRandom.hex(4)}"
-    ComContactCategory.create!(id: category_title)
+    ComContactCategory.create!(id: 99)
 
-    assert_raises(ActiveRecord::RecordInvalid) do
-      ComContactCategory.create!(id: category_title)
+    assert_raises(ActiveRecord::RecordNotUnique) do
+      ComContactCategory.create!(id: 99)
     end
-  end
-
-  test "id is invalid when nil or blank" do
-    category = ComContactCategory.new(id: nil)
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = ComContactCategory.new(id: "")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = ComContactCategory.new(id: " ")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-  end
-
-  test "id enforces length and format boundaries" do
-    category = ComContactCategory.new(id: "A" * 255)
-    assert_predicate category, :valid?
-
-    category = ComContactCategory.new(id: "A" * 256)
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = ComContactCategory.new(id: "BAD-ID")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-  end
-
-  test "id uniqueness is case-insensitive" do
-    ComContactCategory.create!(id: "CASE_CHECK")
-
-    duplicate = ComContactCategory.new(id: "case_check")
-    assert_not duplicate.valid?
-    assert_predicate duplicate.errors[:id], :any?
   end
 
   # parent_id column has been removed from com_contact_categories
@@ -111,12 +71,11 @@ class ComContactCategoryTest < ActiveSupport::TestCase
   # end
 
   test "destroy is restricted when contacts exist" do
-    category = ComContactCategory.create!(id: "CONTACT_PARENT")
-    status = ComContactStatus.create!(id: "ACTIVE_TEST")
+    category = ComContactCategory.create!(id: 101)
+    status = ComContactStatus.find_by(id: ComContactStatus::NOTHING) || ComContactStatus.create!(id: ComContactStatus::NOTHING)
     ComContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
-    assert_not category.destroy
-    assert_predicate category.errors[:base], :any?
+    assert_raises(ActiveRecord::DeleteRestrictionError) { category.destroy }
   end
 
   # rubocop:disable Minitest/MultipleAssertions

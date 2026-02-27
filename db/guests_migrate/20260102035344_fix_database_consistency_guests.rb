@@ -42,14 +42,15 @@ class FixDatabaseConsistencyGuests < ActiveRecord::Migration[8.2]
       validate_foreign_key :com_contacts, :com_contact_categories
     end
 
-    unless foreign_key_exists?(:app_contacts, :app_contact_categories, column: :category_id)
-      add_foreign_key :app_contacts, :app_contact_categories,
-                      column: :category_id,
-                      primary_key: :id,
-                      on_delete: :restrict,
-                      validate: false
-      validate_foreign_key :app_contacts, :app_contact_categories
-    end
+    return if foreign_key_exists?(:app_contacts, :app_contact_categories, column: :category_id)
+
+    add_foreign_key :app_contacts, :app_contact_categories,
+                    column: :category_id,
+                    primary_key: :id,
+                    on_delete: :restrict,
+                    validate: false
+    validate_foreign_key :app_contacts, :app_contact_categories
+
   end
 
   def down

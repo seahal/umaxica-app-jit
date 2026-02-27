@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: org_preference_languages
 # Database name: preference
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :string           not null
-#  preference_id :uuid             not null
+#  option_id     :bigint           not null
+#  preference_id :bigint           not null
 #
 # Indexes
 #
@@ -16,8 +17,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (option_id => org_preference_language_options.id)
-#  fk_rails_...  (preference_id => org_preferences.id)
+#  fk_org_preference_languages_on_option_id  (option_id => org_preference_language_options.id)
+#  fk_rails_...                              (preference_id => org_preferences.id)
 #
 
 # frozen_string_literal: true
@@ -36,7 +37,7 @@ class OrgPreferenceLanguage < PreferenceRecord
 
   private
 
-    def set_option_id
-      self.option_id ||= "JA"
-    end
+  def set_option_id
+    self.option_id ||= OrgPreferenceLanguageOption::JA
+  end
 end

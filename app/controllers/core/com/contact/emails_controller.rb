@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Core
@@ -50,7 +51,7 @@ module Core
         end
 
         def process_verification
-          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: ComContactStatus::CHECKED_EMAIL_ADDRESS)
 
           redirect_url = new_core_com_contact_telephone_url(
             @contact,
@@ -93,45 +94,45 @@ module Core
 
         private
 
-          def load_and_validate_contact
-            contact_id = params[:contact_id]
+        def load_and_validate_contact
+          contact_id = params[:contact_id]
 
-            raise Help::ContactIdRequiredError if contact_id.blank?
+          raise Help::ContactIdRequiredError if contact_id.blank?
 
-            @contact = ComContact.find_by(public_id: contact_id)
+          @contact = ComContact.find_by(public_id: contact_id)
 
-            raise Help::ContactNotFoundError if @contact.nil?
+          raise Help::ContactNotFoundError if @contact.nil?
 
-            raise Help::InvalidContactStatusError.new(@contact.status_id) unless @contact.status_id == "SET_UP"
+          raise Help::InvalidContactStatusError.new(@contact.status_id) unless @contact.status_id == ComContactStatus::SET_UP
+        end
+
+        def handle_contact_error(error)
+          render plain: error.message, status: error.status_code
+        end
+
+        def core_corporate_redirect_options
+          {
+            host: core_corporate_host,
+            port: request.port,
+            protocol: request.protocol.delete_suffix("://"),
+          }.compact
+        end
+
+        def core_corporate_host
+          env_url = ENV["CORE_CORPORATE_URL"].presence
+          return request.host unless env_url
+
+          begin
+            uri = URI.parse(env_url.start_with?("http") ? env_url : "http://#{env_url}")
+            uri.host || env_url.split(":").first
+          rescue URI::InvalidURIError
+            env_url.split(":").first
           end
+        end
 
-          def handle_contact_error(error)
-            render plain: error.message, status: error.status_code
-          end
-
-          def core_corporate_redirect_options
-            {
-              host: core_corporate_host,
-              port: request.port,
-              protocol: request.protocol.delete_suffix("://")
-            }.compact
-          end
-
-          def core_corporate_host
-            host_value = ENV["CORE_CORPORATE_URL"].presence || request.host
-            return request.host if host_value.blank?
-
-            begin
-              uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-              uri.host || host_value.split(":").first
-            rescue URI::InvalidURIError
-              host_value.split(":").first
-            end
-          end
-
-          def preserved_locale_query_params
-            request.query_parameters.slice("ct", "lx", "ri", "tz").compact
-          end
+        def preserved_locale_query_params
+          request.query_parameters.slice("ct", "lx", "ri", "tz").compact
+        end
       end
     end
   end

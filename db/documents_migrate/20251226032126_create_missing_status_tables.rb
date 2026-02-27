@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class CreateMissingStatusTables < ActiveRecord::Migration[8.2]
-  PREFIXES = %w[org com app].freeze
-  TYPES = %w[document].freeze
+  PREFIXES = %w(org com app).freeze
+  TYPES = %w(document).freeze
 
   def change
     PREFIXES.each do |prefix|

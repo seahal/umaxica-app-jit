@@ -2,7 +2,7 @@
 
 class CreateAvatarMutes < ActiveRecord::Migration[8.2]
   def change
-    create_table :avatar_mutes, id: :uuid do |t|
+    create_table :avatar_mutes do |t|
       t.references :muter_avatar,
                    null: false,
                    foreign_key: { to_table: :avatars, validate: false },

@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: user_client_revocations
 # Database name: principal
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  client_id  :uuid             not null
-#  user_id    :uuid             not null
+#  client_id  :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -26,32 +27,35 @@ require "test_helper"
 
 class UserClientRevocationTest < ActiveSupport::TestCase
   setup do
-    UserStatus.find_or_create_by!(id: "NONE")
+    UserStatus.find_or_create_by!(id: UserStatus::NONE)
     create_user_and_status
     @user = User.find_by!(public_id: "one_id")
   end
 
   def create_user_and_status
-    UserStatus.find_or_create_by!(id: "NONE")
+    UserStatus.find_or_create_by!(id: UserStatus::NONE)
     User.find_or_create_by!(public_id: "one_id") do |u|
-      u.status_id = "NONE"
+      u.status_id = UserStatus::NONE
     end
   end
 
   def create_client
-    ClientStatus.find_or_create_by!(id: "NEYO")
+    ClientStatus.find_or_create_by!(id: ClientStatus::NOTHING)
     # Need a division for the client
-    DivisionStatus.find_or_create_by!(id: "NEYO")
+    DivisionStatus.find_or_create_by!(id: DivisionStatus::NOTHING)
+    OrganizationStatus.find_or_create_by!(id: OrganizationStatus::NOTHING)
     # Workspace/Organization (division -> workspace)
     # Check Division model if needed, but assuming optional or simple setup
-    Organization.find_or_create_by!(id: "00000000-0000-0000-0000-000000000000") do |w|
-      w.name = "Root"
-      w.domain = "root.local"
-    end
-    div = Division.create!(organization_id: "00000000-0000-0000-0000-000000000000", division_status_id: "NEYO")
+    organization =
+      Organization.find_or_create_by!(domain: "root.local") do |w|
+        w.name = "Root"
+        w.workspace_status_id = OrganizationStatus::NOTHING
+      end
+    div = Division.create!(organization: organization, division_status_id: DivisionStatus::NOTHING, name: "Test Div")
 
     Client.create!(
-      status_id: "NEYO",
+      status_id: ClientStatus::NOTHING,
+      client_status_id: ClientStatus::NOTHING,
       division: div,
     )
   end
@@ -63,6 +67,7 @@ class UserClientRevocationTest < ActiveSupport::TestCase
       user: @user,
       client: client,
     )
+
     assert_predicate revocation, :valid?
   end
 end

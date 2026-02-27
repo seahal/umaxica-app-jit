@@ -28,12 +28,12 @@ class AddUniqueConstraintsToPreferences < ActiveRecord::Migration[8.2]
 
   private
 
-    def replace_index(table, column)
-      old_index_name = "index_#{table}_on_#{column}"
-      remove_index table, column, name: old_index_name, algorithm: :concurrently if index_exists?(
-        table, column,
-        name: old_index_name,
-      )
-      add_index table, column, name: old_index_name, unique: true, algorithm: :concurrently
-    end
+  def replace_index(table, column)
+    old_index_name = "index_#{table}_on_#{column}"
+    remove_index table, column, name: old_index_name, algorithm: :concurrently if index_exists?(
+      table, column,
+      name: old_index_name,
+    )
+    add_index table, column, name: old_index_name, unique: true, algorithm: :concurrently
+  end
 end

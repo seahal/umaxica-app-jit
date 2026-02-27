@@ -2,7 +2,7 @@
 
 class CreateAdmins < ActiveRecord::Migration[8.2]
   def change
-    create_table :admins, id: :uuid do |t|
+    create_table :admins do |t|
       t.string :public_id
       t.string :moniker
 

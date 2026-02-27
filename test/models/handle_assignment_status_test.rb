@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,22 +6,23 @@
 # Table name: handle_assignment_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class HandleAssignmentStatusTest < ActiveSupport::TestCase
-  test "validations" do
-    status = HandleAssignmentStatus.new(id: "VALID_STATUS")
+  test "accepts integer ids" do
+    status = HandleAssignmentStatus.new(id: 9)
+
     assert_predicate status, :valid?
   end
 
-  test "validates length of id" do
-    record = HandleAssignmentStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "constants are defined" do
+    assert_equal 1, HandleAssignmentStatus::INACTIVE
+    assert_equal 2, HandleAssignmentStatus::PENDING
+    assert_equal 3, HandleAssignmentStatus::ACTIVE
+    assert_equal 4, HandleAssignmentStatus::DELETED
+    assert_equal 5, HandleAssignmentStatus::NOTHING
   end
 end

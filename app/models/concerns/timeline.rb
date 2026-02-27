@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Timeline
@@ -8,7 +9,7 @@ module Timeline
       html: "html",
       text: "text",
       pdf: "pdf",
-      redirect: "redirect"
+      redirect: "redirect",
     }, suffix: true
 
     validates :response_mode, presence: true
@@ -26,10 +27,10 @@ module Timeline
 
   private
 
-    def published_at_before_expires_at
-      return if published_at.blank? || expires_at.blank?
-      return if published_at < expires_at
+  def published_at_before_expires_at
+    return if published_at.blank? || expires_at.blank?
+    return if published_at < expires_at
 
-      errors.add(:published_at, "must be before expires_at")
-    end
+    errors.add(:published_at, "must be before expires_at")
+  end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,23 +6,29 @@
 # Table name: staffs
 # Database name: operator
 #
-#  id           :uuid             not null, primary key
-#  lock_version :integer          default(0), not null
-#  withdrawn_at :datetime         default(Infinity)
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  public_id    :string(8)        not null
-#  status_id    :string(255)      default("NEYO"), not null
+#  id                   :bigint           not null, primary key
+#  lock_version         :integer          default(0), not null
+#  multi_factor_enabled :boolean          default(FALSE), not null
+#  shreddable_at        :datetime         default(Infinity), not null
+#  withdrawn_at         :datetime
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  public_id            :string           not null
+#  status_id            :bigint           default(2), not null
+#  visibility_id        :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_staffs_on_public_id     (public_id) UNIQUE
-#  index_staffs_on_status_id     (status_id)
-#  index_staffs_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_shreddable_at  (shreddable_at)
+#  index_staffs_on_status_id      (status_id)
+#  index_staffs_on_visibility_id  (visibility_id)
+#  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => staff_statuses.id)
+#  fk_rails_...  (visibility_id => staff_visibilities.id)
 #
 
 require "test_helper"
@@ -30,9 +37,10 @@ class StaffTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    StaffTelephoneStatus.find_or_create_by!(id: "UNVERIFIED")
-    StaffEmailStatus.find_or_create_by!(id: "UNVERIFIED")
-    StaffTokenStatus.find_or_create_by!(id: "ACTIVE")
+    [0, 1, 2, 3].each { |id| StaffVisibility.find_or_create_by!(id: id) }
+    StaffTelephoneStatus.find_or_create_by!(id: StaffTelephoneStatus::UNVERIFIED)
+    StaffEmailStatus.find_or_create_by!(id: StaffEmailStatus::UNVERIFIED)
+    StaffTokenStatus.find_or_create_by!(id: StaffTokenStatus::ACTIVE)
   end
 
   # ==========================================================================
@@ -49,6 +57,33 @@ class StaffTest < ActiveSupport::TestCase
     staff = Staff.create!
 
     assert_equal 8, staff.public_id.length
+  end
+
+  test "default visibility_id is staff (2)" do
+    staff = Staff.create!
+
+    assert_equal StaffVisibility::STAFF, staff.visibility_id
+  end
+
+  test "visibility association resolves to StaffVisibility with id 2 by default" do
+    staff = Staff.create!
+
+    assert_equal StaffVisibility::STAFF, staff.visibility.id
+  end
+
+  test "invalid visibility_id is rejected by foreign key" do
+    valid_public_id = Array.new(8) {
+      Staff::PUBLIC_ID_ALPHABET[SecureRandom.random_number(Staff::PUBLIC_ID_ALPHABET.length)]
+    }.join
+
+    staff = Staff.new(
+      public_id: valid_public_id,
+      status_id: StaffStatus::NOTHING,
+      visibility_id: 9_999,
+    )
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      staff.save!(validate: false)
+    end
   end
 
   test "auto-generated public_id is lowercase" do
@@ -273,7 +308,7 @@ class StaffTest < ActiveSupport::TestCase
     ) do
       new_staff = Staff.new
       # Stub generate_public_id to return existing_public_id first, then a different one
-      generated_ids = [ existing_public_id, "newvalid" ]
+      generated_ids = [existing_public_id, "newvalid"]
       new_staff.stub(:generate_public_id, -> { generated_ids.shift || "fallback8" }) do
         new_staff.valid?
 
@@ -320,9 +355,9 @@ class StaffTest < ActiveSupport::TestCase
     assert_equal :restrict_with_error,
                  Staff.reflect_on_association(:staff_telephones).options[:dependent]
     assert_equal :nullify,
-                 Staff.reflect_on_association(:staff_audits).options[:dependent]
+                 Staff.reflect_on_association(:staff_activities).options[:dependent]
     assert_equal :nullify,
-                 Staff.reflect_on_association(:user_audits).options[:dependent]
+                 Staff.reflect_on_association(:user_activities).options[:dependent]
     assert_equal :destroy,
                  Staff.reflect_on_association(:staff_secrets).options[:dependent]
     assert_equal :destroy,
@@ -348,7 +383,7 @@ class StaffTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     staff = Staff.create!
 
-    assert_equal StaffStatus::NEYO, staff.status_id
+    assert_equal StaffStatus::NOTHING, staff.status_id
   end
 
   test "association deletion: restriction by dependent emails" do
@@ -379,13 +414,25 @@ class StaffTest < ActiveSupport::TestCase
     assert_raise(ActiveRecord::RecordNotFound) { token.reload }
   end
 
+  test "shreddable scope excludes staffs with default shreddable_at" do
+    staff = Staff.create!
+
+    assert_not_includes Staff.shreddable(Time.current), staff
+  end
+
+  test "shreddable scope includes staffs with past shreddable_at" do
+    staff = Staff.create!(shreddable_at: 1.day.ago)
+
+    assert_includes Staff.shreddable(Time.current), staff
+  end
+
   private
 
-    def root_workspace
-      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
-        workspace.name = "Root Workspace"
-        workspace.domain = "root.example.com"
-        workspace.parent_organization = NIL_UUID
-      end
+  def root_workspace
+    Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+      workspace.name = "Root Workspace"
+      workspace.domain = "root.example.com"
+      workspace.parent_organization = NIL_UUID
     end
+  end
 end

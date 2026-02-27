@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,10 +6,8 @@
 # Table name: user_social_apples
 # Database name: principal
 #
-#  id                                   :uuid             not null, primary key
-#  email                                :string           default(""), not null
+#  id                                   :bigint           not null, primary key
 #  expires_at                           :integer          not null
-#  image                                :string           default(""), not null
 #  last_authenticated_at                :datetime
 #  provider                             :string           default("apple"), not null
 #  refresh_token                        :string           default(""), not null
@@ -16,8 +15,8 @@
 #  uid                                  :string           default(""), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
-#  user_id                              :uuid             not null
-#  user_identity_social_apple_status_id :string(255)      default("ACTIVE"), not null
+#  user_id                              :bigint           not null
+#  user_identity_social_apple_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -45,7 +44,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "uid-1",
       token: "token-1",
       expires_at: 1.week.from_now.to_i,
-      user_social_apple_status: UserSocialAppleStatus.find("ACTIVE"),
+      user_social_apple_status: UserSocialAppleStatus.find(UserSocialAppleStatus::ACTIVE),
     )
 
     duplicate = UserSocialApple.new(
@@ -59,18 +58,21 @@ class UserSocialAppleTest < ActiveSupport::TestCase
 
   test "token is required" do
     identity = UserSocialApple.new(user: User.find_by!(public_id: "one_id"), uid: "uid", expires_at: 123)
+
     assert_not identity.valid?
     assert_not_empty identity.errors[:token]
   end
 
   test "uid is required" do
     identity = UserSocialApple.new(user: User.find_by!(public_id: "one_id"), token: "token", expires_at: 123)
+
     assert_not identity.valid?
     assert_not_empty identity.errors[:uid]
   end
 
   test "expires_at is required" do
     identity = UserSocialApple.new(user: User.find_by!(public_id: "one_id"), uid: "uid", token: "token")
+
     assert_not identity.valid?
     assert_not_empty identity.errors[:expires_at]
   end
@@ -91,7 +93,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     auth = MockAuth.new(
       uid: "new-uid",
       provider: "apple",
-      info: OpenStruct.new(email: "test@example.com", image: "http://example.com"),
+      info: OpenStruct.new(email: "test@example.com"),
       credentials: OpenStruct.new(token: "new-token", expires_at: 123),
     )
 
@@ -100,23 +102,8 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     assert_predicate identity, :new_record?
     assert_equal "new-uid", identity.uid
     assert_equal "apple", identity.provider
-    assert_equal "test@example.com", identity.email
-    assert_equal "http://example.com", identity.image
     assert_equal "new-token", identity.token
     assert_equal 123, identity.expires_at
-  end
-
-  test "find_or_create_from_auth_hash handles missing image" do
-    auth = MockAuth.new(
-      uid: "no-image-uid",
-      provider: "apple",
-      info: OpenStruct.new(email: "test@example.com"),
-      credentials: OpenStruct.new(token: "new-token", expires_at: 123),
-    )
-
-    identity = UserSocialApple.find_or_create_from_auth_hash(auth)
-
-    assert_equal "", identity.image
   end
 
   test "find_or_create_from_auth_hash returns existing record with updated attributes" do
@@ -126,7 +113,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "existing-uid",
       token: "old-token",
       expires_at: 123,
-      user_social_apple_status: UserSocialAppleStatus.find("ACTIVE"),
+      user_social_apple_status: UserSocialAppleStatus.find(UserSocialAppleStatus::ACTIVE),
     )
 
     auth = MockAuth.new(
@@ -166,7 +153,6 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       token: "old-token",
       refresh_token: "old-refresh",
       expires_at: 123,
-      image: "old-image",
     )
 
     auth = MockAuth.new(
@@ -179,8 +165,6 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     assert_nil identity.last_authenticated_at
     identity.update_from_auth_hash!(auth)
 
-    assert_equal "new-apple@example.com", identity.email
-    assert_equal "old-image", identity.image
     assert_equal "new-token", identity.token
     assert_equal "new-refresh", identity.refresh_token
     assert_equal 456, identity.expires_at
@@ -193,7 +177,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "active-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: "ACTIVE",
+      user_identity_social_apple_status_id: UserSocialAppleStatus::ACTIVE,
     )
 
     inactive = UserSocialApple.create!(
@@ -201,7 +185,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "inactive-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: "REVOKED",
+      user_identity_social_apple_status_id: UserSocialAppleStatus::REVOKED,
     )
 
     assert_includes UserSocialApple.active, active
@@ -212,6 +196,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
 
   test "normalized_provider maps provider" do
     identity = UserSocialApple.new(provider: "apple")
+
     assert_equal "apple", identity.normalized_provider
   end
 

@@ -1,4 +1,76 @@
-<div>
-  <h1 class="font-bold text-4xl">Sign::Org::In::Sessions#show</h1>
-  <p>Find me in app/views/sign/org/in/sessions/show.html.erb</p>
-</div>
+<% content_for :page_title, t("session_limit.edit.title", default: "セッション管理") %>
+
+<section>
+  <div>
+    <div></div>
+
+    <div>
+      <div>
+        <h1>
+          <%= t("session_limit.edit.title", default: "セッション上限に達しました") %>
+        </h1>
+      </div>
+      <p>
+        <%= t("session_limit.edit.description", default: "同時にログインできるセッション数の上限に達しています。ログインを続行するには、無効化するセッションを選択してください。") %>
+      </p>
+    </div>
+
+    <% if flash[:alert].present? %>
+      <div>
+        <div>
+          <p><%= flash[:alert] %></p>
+        </div>
+      </div>
+
+      <%= form_with url: sign_org_in_secret_path, method: :post do |f| %>
+        <div>
+          <h2>
+            <%= t("session_limit.edit.active_sessions", default: "アクティブなセッション") %>
+          </h2>
+
+          <% if @active_sessions.present? %>
+            <div>
+              <% @active_sessions.each do |session| %>
+                <label data-session-checkbox class="ring-2 ring-transparent checked:ring-amber-500">
+                  <input type="checkbox"
+                         name="revoke_session_ids[]"
+                         value="<%= session.id %>">
+                  <div>
+                    <div>
+                    <span>
+                      <%= t("session_limit.edit.session_label", default: "セッション") %>
+                      #<%= "#{session.public_id.first(8)}..." %>
+                    </span>
+                    </div>
+                    <div>
+                    <span>
+                      <%= t("session_limit.edit.created_at", default: "作成日時") %>:
+                      <%= l(session.created_at, format: :short) rescue session.created_at.strftime("%Y/%m/%d %H:%M") %>
+                    </span>
+                      <% if session.last_used_at %>
+                      <span>
+                        <%= t("session_limit.edit.last_used", default: "最終使用") %>:
+                        <%= l(session.last_used_at, format: :short) rescue session.last_used_at.strftime("%Y/%m/%d %H:%M") %>
+                      </span>
+                      <% end %>
+                    </div>
+                  </div>
+                </label>
+              <% end %>
+            </div>
+          <% else %>
+            <p>
+              <%= t("session_limit.edit.no_sessions", default: "アクティブなセッションがありません。") %>
+            </p>
+          <% end %>
+        </div>
+
+        <div>
+          <%= f.submit t("session_limit.edit.submit", default: "選択したセッションを無効化してログイン") %>
+          <%= link_to t("session_limit.edit.cancel", default: "キャンセル"),
+                      new_sign_org_in_path %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</section>

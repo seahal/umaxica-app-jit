@@ -3,20 +3,9 @@
 # Table name: app_preference_timezone_options
 # Database name: preference
 #
-#  id         :string           not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  app_preference_timezone_options_position_unique  (position) UNIQUE
-#
-
 utc:
-  id: "Etc/UTC"
-  position: 1
-
+  id: 1
 asia_tokyo:
-  id: "Asia/Tokyo"
-  position: 2
+  id: 2

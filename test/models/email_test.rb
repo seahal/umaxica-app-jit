@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -14,12 +15,13 @@
 require "test_helper"
 
 class IdentityEmailTest < ActiveSupport::TestCase
-  [ StaffEmail, UserEmail ].each do |model|
+  [StaffEmail, UserEmail].each do |model|
     test "#{model} valid with address and confirm_policy" do
-      record = model.new(
-        address: "eg@example.com",
-        confirm_policy: true,
-      ).tap { |instance| assign_owner(instance) }
+      record =
+        model.new(
+          address: "eg@example.com",
+          confirm_policy: true,
+        ).tap { |instance| assign_owner(instance) }
 
       assert_predicate record, :valid?
       assert_difference "#{model}.count", +1 do
@@ -75,6 +77,7 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
       assert_not m.valid?
       m.pass_code = nil
+
       assert_predicate m, :valid?
     end
     # rubocop:enable Minitest/MultipleAssertions
@@ -89,12 +92,12 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
   private
 
-    def assign_owner(record)
-      case record
-      when UserEmail
-        record.user = User.find_by!(public_id: "none_id")
-      when StaffEmail
-        record.staff = Staff.find_by!(public_id: "cdef4567")
-      end
+  def assign_owner(record)
+    case record
+    when UserEmail
+      record.user = User.find_by!(public_id: "none_id")
+    when StaffEmail
+      record.staff = Staff.find_by!(public_id: "cdef4567")
     end
+  end
 end

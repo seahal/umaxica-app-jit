@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,28 +6,23 @@
 # Table name: app_contact_emails
 # Database name: guest
 #
-#  id                     :string           not null, primary key
+#  id                     :bigint           not null, primary key
 #  activated              :boolean          default(FALSE), not null
-#  deletable              :boolean          default(FALSE), not null
 #  email_address          :string(1000)     default(""), not null
-#  expires_at             :timestamptz      not null
-#  remaining_views        :integer          default(0), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
 #  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  app_contact_id         :uuid             not null
+#  app_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_app_contact_emails_on_app_contact_id       (app_contact_id)
-#  index_app_contact_emails_on_email_address        (email_address)
-#  index_app_contact_emails_on_expires_at           (expires_at)
-#  index_app_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#  index_app_contact_emails_on_app_contact_id  (app_contact_id)
+#  index_app_contact_emails_on_email_address   (email_address)
 #
 # Foreign Keys
 #
@@ -36,18 +32,28 @@
 require "test_helper"
 
 class AppContactEmailTest < ActiveSupport::TestCase
+  fixtures :app_contact_categories, :app_contact_statuses
+
   setup do
     # Seed necessary reference data for tests
-    %w[APPLICATION_INQUIRY NEYO].each do |id|
-      AppContactCategory.create_with(created_at: Time.current, updated_at: Time.current).find_or_create_by(id: id)
+    [AppContactCategory::APPLICATION_INQUIRY, AppContactCategory::NOTHING].each do |id|
+      AppContactCategory.find_or_create_by(id: id)
     end
-    %w[NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION].each do |id|
+    [
+      AppContactStatus::NOTHING,
+      AppContactStatus::SET_UP,
+      AppContactStatus::CHECKED_EMAIL_ADDRESS,
+      AppContactStatus::CHECKED_TELEPHONE_NUMBER,
+      AppContactStatus::COMPLETED_CONTACT_ACTION,
+    ].each do |id|
       AppContactStatus.find_or_create_by(id: id)
     end
 
     @app_contact = AppContact.create!(
       public_id: "test_contact_1",
       confirm_policy: "1",
+      category_id: AppContactCategory::APPLICATION_INQUIRY,
+      status_id: AppContactStatus::NOTHING,
     )
 
     @email = AppContactEmail.new(
@@ -67,14 +73,14 @@ class AppContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should validate email format" do
-    valid_addresses = %w[user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp alice+bob@baz.cn]
+    valid_addresses = %w(user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp alice+bob@baz.cn)
     valid_addresses.each do |valid_address|
       @email.email_address = valid_address
 
       assert_predicate @email, :valid?, "#{valid_address.inspect} should be valid"
     end
 
-    invalid_addresses = %w[user@example,com user_at_foo.org user.name@example. foo@bar_baz.com foo@bar+baz.com]
+    invalid_addresses = %w(user@example,com user_at_foo.org user.name@example. foo@bar_baz.com foo@bar+baz.com)
     invalid_addresses.each do |invalid_address|
       @email.email_address = invalid_address
 

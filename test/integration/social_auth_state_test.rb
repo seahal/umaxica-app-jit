@@ -1,25 +1,13 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
-# Integration tests for social auth state validation (CSRF protection)
-#
-# These tests verify that:
-# 1. State parameter is validated for both Google and Apple callbacks
-# 2. State mismatch returns redirect with error (401 via SocialAuth::UnauthorizedError)
-# 3. Missing state returns redirect with error
-# 4. Expired state returns redirect with error
-#
-# Both Google and Apple MUST validate state. If either is exempted,
-# the corresponding tests will FAIL.
-#
-# Routes used:
-#   GET  /social/start?provider=...&intent=...  -> prepares intent, redirects to OmniAuth
-#   GET  /auth/:provider/callback?state=...     -> Google callback
-#   POST /auth/:provider/callback (state in body) -> Apple callback
-#   GET  /auth/failure                          -> OmniAuth failure
 class SocialAuthStateTest < ActionDispatch::IntegrationTest
-  SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
+  include ActiveSupport::Testing::TimeHelpers
+
+  SOCIAL_FLOW_ID_SESSION_KEY = :social_auth_flow_id
+  fixtures :users, :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
 
   setup do
     OmniAuth.config.test_mode = true
@@ -31,250 +19,83 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
-  # ============================================================================
-  # MANDATORY TEST 1: Google state mismatch -> 401
-  # ============================================================================
-  test "Google callback with state mismatch returns error and clears session" do
-    setup_google_mock_auth(uid: "google_mismatch_test")
+  test "login callbacks succeed without app-managed state" do
+    uid = "google_login_no_state_#{SecureRandom.hex(4)}"
+    setup_google_mock_auth(uid: uid)
 
-    # Start OAuth flow to establish session with valid state
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/google_oauth2"
-    assert_includes @response.headers["Location"], "state="
-
-    # Verify session has state stored
-    assert_predicate session[SOCIAL_INTENT_SESSION_KEY], :present?, "Intent should be in session after start"
-    original_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-    assert_predicate original_state, :present?, "State should be set"
-
-    # Callback with WRONG state (simulating CSRF attack)
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: "completely_wrong_state"),
-        headers: { "Host" => @host }
-
-    # Should redirect with error
-    assert_response :redirect
-
-    # Session should be cleared on mismatch (security: prevent reuse of bad state)
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY], "Intent session should be cleared on state mismatch"
-  end
-
-  # ============================================================================
-  # MANDATORY TEST 2: Apple POST callback with state mismatch -> 401
-  # This test MUST FAIL if Apple is exempted from state validation
-  # ============================================================================
-  test "Apple POST callback with state mismatch returns error and clears session" do
-    setup_apple_mock_auth(uid: "apple_mismatch_test")
-
-    # Start OAuth flow
-    post sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/apple"
-    assert_includes @response.headers["Location"], "state="
-
-    # Verify session
-    assert_predicate session[SOCIAL_INTENT_SESSION_KEY], :present?, "Intent should be in session"
-    original_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-    assert_predicate original_state, :present?, "State should be set for Apple too"
-
-    # Apple uses POST callback - simulate with WRONG state
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: "wrong_apple_state_csrf_attempt" },
-         headers: { "Host" => @host }
-
-    # If Apple properly validates state, this should be a redirect with error
-    assert_response :redirect, "Apple callback should redirect on state mismatch"
-
-    # Session should be cleared
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY],
-               "Intent session should be cleared on Apple state mismatch (state validation is required)"
-  end
-
-  test "Apple GET callback with state mismatch also returns error" do
-    setup_apple_mock_auth(uid: "apple_get_mismatch")
-
-    post sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/apple"
-    assert_includes @response.headers["Location"], "state="
-
-    # GET callback with wrong state
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp", state: "wrong_get_state"),
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY]
-  end
 
-  test "Google callback without state parameter returns error" do
-    setup_google_mock_auth(uid: "google_no_state")
+    user_count_before = User.count
 
-    # Start flow
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/google_oauth2"
-    assert_includes @response.headers["Location"], "state="
-    assert_predicate session[SOCIAL_INTENT_SESSION_KEY], :present?
-
-    # Callback without state
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: { "Host" => @host }
-    # Note: state is nil/empty
+        headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY], "Session should be cleared when state is missing"
+    assert_equal user_count_before + 1, User.count
+    assert UserSocialGoogle.exists?(uid: uid)
   end
 
-  test "Apple callback without state parameter returns error" do
-    setup_apple_mock_auth(uid: "apple_no_state")
-
-    post sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/apple"
-    assert_includes @response.headers["Location"], "state="
-    assert_predicate session[SOCIAL_INTENT_SESSION_KEY], :present?
-
-    # POST callback without state
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: {},
-         headers: { "Host" => @host }
-
-    assert_response :redirect
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY], "Session should be cleared when Apple state is missing"
-  end
-
-  # ============================================================================
-  # OPTIONAL: State expired tests
-  # ============================================================================
-  test "Google callback with expired state returns error" do
-    setup_google_mock_auth(uid: "google_expired")
-
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/google_oauth2"
-    assert_includes @response.headers["Location"], "state="
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    # Manually expire the session
-    session[SOCIAL_INTENT_SESSION_KEY]["expires_at"] = 10.minutes.ago.iso8601
-
-    # Callback with correct but expired state
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
-        headers: { "Host" => @host }
-
-    assert_response :redirect
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY], "Expired session should be cleared"
-  end
-
-  test "Apple callback with expired state returns error" do
-    setup_apple_mock_auth(uid: "apple_expired")
-
-    post sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/apple"
-    assert_includes @response.headers["Location"], "state="
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-    session[SOCIAL_INTENT_SESSION_KEY]["expires_at"] = 10.minutes.ago.iso8601
+  test "link fails when flow context is missing" do
+    user = users(:one)
+    setup_apple_mock_auth(uid: "apple_link_missing_flow_#{SecureRandom.hex(4)}")
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
-         headers: { "Host" => @host }
+         headers: SocialCallbackTestHelper.callback_headers(@host).merge(as_user_headers(user, host: @host))
 
     assert_response :redirect
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY]
+    assert_includes(
+      [sign_app_configuration_apple_url(ri: "jp"), sign_app_configuration_url(ri: "jp")],
+      response.location,
+    )
+    follow_redirect!
+
+    assert_predicate flash[:alert], :present?
   end
 
-  # ============================================================================
-  # Success case: Valid state passes validation
-  # ============================================================================
-  test "Google callback with valid state succeeds and creates user" do
-    uid = "google_success_#{SecureRandom.hex(4)}"
-    setup_google_mock_auth(uid: uid, email: "success@example.com")
+  test "link fails when flow context is expired" do
+    user = users(:one)
+    setup_apple_mock_auth(uid: "apple_link_expired_flow_#{SecureRandom.hex(4)}")
 
-    # Start flow
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/google_oauth2"
-    assert_includes @response.headers["Location"], "state="
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    user_count_before = User.count
-
-    # Callback with correct state
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
-        headers: { "Host" => @host }
+    get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
+        headers: as_user_headers(user, host: @host)
 
     assert_response :redirect
 
-    # Session should be cleared after success
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY], "Intent should be cleared after successful callback"
+    travel_to 6.minutes.from_now do
+      post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+           headers: SocialCallbackTestHelper.callback_headers(@host).merge(as_user_headers(user, host: @host))
+    end
 
-    # User should be created (this is the critical assertion)
-    assert_equal user_count_before + 1, User.count, "New user should be created"
-    assert UserSocialGoogle.exists?(uid: uid), "Google identity should exist"
-  end
-
-  test "Apple callback with valid state succeeds and creates user" do
-    uid = "apple_success_#{SecureRandom.hex(4)}"
-    setup_apple_mock_auth(uid: uid, email: "apple_success@example.com")
-
-    post sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
-         headers: { "Host" => @host }
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/apple"
-    assert_includes @response.headers["Location"], "state="
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    user_count_before = User.count
-
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
-         headers: { "Host" => @host }
-
-    assert_response :redirect
-    assert_nil session[SOCIAL_INTENT_SESSION_KEY]
-
-    # User should be created (critical assertions)
-    assert_equal user_count_before + 1, User.count, "New user should be created"
-    assert UserSocialApple.exists?(uid: uid), "Apple identity should exist"
+    assert_response :forbidden
   end
 
   private
 
-    def setup_google_mock_auth(uid:, email: "test@example.com")
-      OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-        provider: "google_oauth2",
-        uid: uid,
-        info: { email: email, image: "https://example.com/image.jpg" },
-        credentials: {
-          token: "google_token_#{SecureRandom.hex(8)}",
-          refresh_token: "refresh_token",
-          expires_at: 1.week.from_now.to_i
-        },
-      )
-    end
+  def setup_google_mock_auth(uid:)
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: uid,
+      info: { image: "https://example.com/image.jpg" },
+      credentials: {
+        token: "google_token_#{SecureRandom.hex(8)}",
+        refresh_token: "refresh_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+  end
 
-    def setup_apple_mock_auth(uid:, email: "apple@example.com")
-      OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
-        provider: "apple",
-        uid: uid,
-        info: { email: email },
-        credentials: {
-          token: "apple_token_#{SecureRandom.hex(8)}",
-          expires_at: 1.week.from_now.to_i
-        },
-      )
-    end
+  def setup_apple_mock_auth(uid:)
+    OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
+      provider: "apple",
+      uid: uid,
+      info: {},
+      credentials: {
+        token: "apple_token_#{SecureRandom.hex(8)}",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+  end
 end

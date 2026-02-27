@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # =============================================================================
@@ -14,7 +15,7 @@
 # - Failure:  GET/POST /auth/failure
 #
 # Our custom entry point:
-# - POST /social/start?provider=...&intent=... -> prepares intent, auto-submits POST to /auth/:provider
+# - GET /social/start?provider=...&intent=... -> prepares intent, redirects to /auth/:provider
 #
 # State Parameter:
 # - All providers use state validation (via SocialAuthConcern)
@@ -57,12 +58,13 @@ Rails.application.config.middleware.use OmniAuth::Builder do
            {
              # OmniAuth standard callback path
              callback_path: "/auth/google_oauth2/callback",
-             # Request email for registration flow
-             scope: "openid email",
+             # IMPORTANT: We authenticate by provider+uid only, NOT email
+             # Request minimal scope - openid gives us the user identifier (sub claim)
+             scope: "openid",
              # Include access_type for refresh token (optional)
              access_type: "offline",
              # Always show account picker
-             prompt: "select_account"
+             prompt: "select_account",
            }
 
   # ---------------------------------------------------------------------------
@@ -81,34 +83,32 @@ Rails.application.config.middleware.use OmniAuth::Builder do
            {
              # OmniAuth standard callback path
              callback_path: "/auth/apple/callback",
-             # Minimal scope - we only need user identifier (sub)
-             scope: "email",
+             # IMPORTANT: We authenticate by provider+uid only, NOT email
+             # Empty scope means we only get the user identifier (sub claim in id_token)
+             scope: "",
              team_id: apple_team_id,
              key_id: apple_key_id,
              pem: apple_pem,
              # NOTE:
-             # - Apple requires `response_mode=form_post` when requesting `email`/`name` scopes.
+             # - We use `response_mode=form_post` for security (prevents token leakage in URL)
              # - Because this is a POST callback, SameSite cookies must be `None` + `Secure`
              #   to preserve the session (nonce validation).
              authorize_params: {
                response_mode: "form_post",
-               response_type: "code"
+               response_type: "code",
              },
-             # We handle state validation ourselves in SocialAuthConcern
-             # This prevents OmniAuth's built-in validation from interfering
-             # IMPORTANT: We still validate state - see SocialAuthConcern#validate_social_auth_state!
-             provider_ignores_state: true,
              # Nonce for id_token replay protection (omniauth-apple handles this)
-             nonce: true
+             nonce: true,
            }
 end
 
-# Only allow POST for initiating OAuth (security best practice)
-# - All OAuth flows now use POST method for CSRF protection
-# - Login flow: Direct POST to /auth/:provider (via button_to)
-# - Link/reauth flow: POST to /social/start -> auto-submit form -> POST to /auth/:provider
-# This prevents CSRF attacks via malicious GET requests
-OmniAuth.config.allowed_request_methods = %i[post]
+# Allow both GET and POST for initiating OAuth
+# - GET: Used by our custom /social/start entry point (CSRF protected by state validation)
+# - POST: Traditional form submission (CSRF protected by Rails token)
+# State validation in SocialAuthConcern provides CSRF protection for both methods
+OmniAuth.config.silence_get_warning = true
+OmniAuth.config.allowed_request_methods = %i(get post)
+OmniAuth.config.after_request_phase = proc { |env| SocialCallbackGuard.capture_request_state!(env) }
 
 # =============================================================================
 # Failure Handling
@@ -132,5 +132,5 @@ OmniAuth.config.on_failure =
     # Build failure URL with query parameters (OmniAuth standard path)
     failure_path = "/auth/failure?message=#{CGI.escape(message)}&strategy=#{CGI.escape(strategy)}"
 
-    Rack::Response.new([ "302 Found" ], 302, "Location" => failure_path).finish
+    Rack::Response.new(["302 Found"], 302, "Location" => failure_path).finish
   end

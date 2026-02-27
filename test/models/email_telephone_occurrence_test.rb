@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,15 +6,15 @@
 # Table name: email_telephone_occurrences
 # Database name: occurrence
 #
-#  id                      :uuid             not null, primary key
+#  id                      :bigint           not null, primary key
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  email_occurrence_id     :uuid             not null
-#  telephone_occurrence_id :uuid             not null
+#  email_occurrence_id     :bigint           not null
+#  telephone_occurrence_id :bigint           not null
 #
 # Indexes
 #
-#  index_email_telephone_occurrences_on_email_occurrence_id      (email_occurrence_id)
+#  idx_email_telephone_occ_on_ids                                (email_occurrence_id,telephone_occurrence_id) UNIQUE
 #  index_email_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 # Foreign Keys

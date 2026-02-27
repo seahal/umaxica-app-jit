@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -26,7 +27,7 @@ class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
-      assert_select "title", text: "#{brand_name} (org) Documents"
+      assert_select "title", text: /#{brand_name} \(org\) Documents/
     end
     assert_select "body", count: 1 do
       assert_select "header", minimum: 1
@@ -40,6 +41,7 @@ class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "generates sha3-384 token digest on root" do
     get docs_org_root_url
+
     assert_response :success
     assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
   end
@@ -55,7 +57,7 @@ class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

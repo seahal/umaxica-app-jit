@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,13 +6,13 @@
 # Table name: handles
 # Database name: avatar
 #
-#  id               :string           not null, primary key
+#  id               :bigint           not null, primary key
 #  cooldown_until   :timestamptz      not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  handle_status_id :string
+#  handle_status_id :bigint
 #  public_id        :string           not null
 #
 # Indexes
@@ -28,7 +29,6 @@
 #
 
 class Handle < AvatarRecord
-  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :handle_status, optional: true

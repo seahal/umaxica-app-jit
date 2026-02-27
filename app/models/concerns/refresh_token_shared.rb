@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Shared refresh-token primitives for both auth and preference paths.
@@ -18,7 +19,7 @@ module RefreshTokenShared
 
     def generate_refresh_token(public_id:, verifier: nil)
       verifier ||= SecureRandom.urlsafe_base64(refresh_token_verifier_bytes)
-      [ build_refresh_token(public_id, verifier), verifier ]
+      [build_refresh_token(public_id, verifier), verifier]
     end
 
     def build_refresh_token(public_id, verifier)
@@ -31,7 +32,7 @@ module RefreshTokenShared
       public_id, verifier = token.split(refresh_token_separator, 2)
       return nil if public_id.blank? || verifier.blank?
 
-      [ public_id, verifier ]
+      [public_id, verifier]
     end
 
     def digest_refresh_token(verifier)

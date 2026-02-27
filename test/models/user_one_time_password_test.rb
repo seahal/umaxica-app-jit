@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,15 +6,15 @@
 # Table name: user_one_time_passwords
 # Database name: principal
 #
-#  id                                        :uuid             not null, primary key
+#  id                                        :bigint           not null, primary key
 #  last_otp_at                               :datetime         default(-Infinity), not null
 #  private_key                               :string(1024)     default(""), not null
 #  title                                     :string(32)
 #  created_at                                :datetime         not null
 #  updated_at                                :datetime         not null
-#  public_id                                 :string(21)
-#  user_id                                   :uuid             not null
-#  user_identity_one_time_password_status_id :string           default("NEYO"), not null
+#  public_id                                 :string(21)       not null
+#  user_id                                   :bigint           not null
+#  user_identity_one_time_password_status_id :bigint           default(5), not null
 #
 # Indexes
 #
@@ -31,12 +32,9 @@ require "test_helper"
 
 class UserOneTimePasswordTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::ACTIVE)
-    @status = UserOneTimePasswordStatus.find("ACTIVE")
-    # Ensure NEYO status exists for defaults
-    unless UserOneTimePasswordStatus.exists?("NEYO")
-      UserOneTimePasswordStatus.create!(id: "NEYO")
-    end
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    UserOneTimePasswordStatus.find_or_create_by!(id: UserOneTimePasswordStatus::NOTHING)
+    @status = UserOneTimePasswordStatus.find(UserOneTimePasswordStatus::ACTIVE)
 
     @private_key = "test-secret-key-12345"
     @last_otp_at = Time.current
@@ -116,7 +114,7 @@ class UserOneTimePasswordTest < ActiveSupport::TestCase
 
   test "enforces maximum totp records per user" do
     new_user = User.create!(
-      status_id: "NEYO",
+      status_id: UserStatus::NOTHING,
     )
 
     UserOneTimePassword::MAX_TOTPS_PER_USER.times do

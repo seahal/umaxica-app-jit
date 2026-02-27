@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_preference_colorthemes
 # Database name: preference
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :string           not null
-#  preference_id :uuid             not null
+#  option_id     :bigint           not null
+#  preference_id :bigint           not null
 #
 # Indexes
 #
@@ -16,8 +17,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (option_id => com_preference_colortheme_options.id)
-#  fk_rails_...  (preference_id => com_preferences.id)
+#  fk_com_preference_colorthemes_on_option_id  (option_id => com_preference_colortheme_options.id)
+#  fk_rails_...                                (preference_id => com_preferences.id)
 #
 
 # frozen_string_literal: true
@@ -26,11 +27,13 @@ require "test_helper"
 
 class ComPreferenceColorthemeTest < ActiveSupport::TestCase
   setup do
-    @preference = ComPreference.create!
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NOTHING)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do
     colortheme = ComPreferenceColortheme.new
+
     assert_not colortheme.valid?
     assert_predicate colortheme.errors[:preference], :any?, "Expected preference error to be present"
   end
@@ -38,6 +41,7 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = com_preference_colortheme_options(:light)
     colortheme = ComPreferenceColortheme.create!(preference: @preference, option: option)
+
     assert_not_nil colortheme.id
     assert_equal @preference, colortheme.preference
     assert_equal option, colortheme.option
@@ -45,6 +49,7 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     colortheme = ComPreferenceColortheme.create!(preference: @preference)
-    assert_equal "system", colortheme.option_id
+
+    assert_equal ComPreferenceColorthemeOption::SYSTEM, colortheme.option_id
   end
 end

@@ -3,11 +3,8 @@
 # Table name: user_occurrence_statuses
 # Database name: occurrence
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id   :bigint           not null, primary key
+#  name :string           default(""), not null
 #
-# Indexes
-#
-#  index_user_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
-NEYO:
-  id: NEYO
+NOTHING:
+  id: 1

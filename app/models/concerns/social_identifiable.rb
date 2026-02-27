@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Shared concern for social identity models (UserSocialGoogle, UserSocialApple, etc.)
@@ -8,11 +9,11 @@ module SocialIdentifiable
   PROVIDER_MAP = {
     "google_oauth2" => "google",
     "apple" => "apple",
-    "microsoft_graph" => "microsoft"
+    "microsoft_graph" => "microsoft",
   }.freeze
 
   included do
-    scope :active, -> { where(status_column => "ACTIVE") }
+    scope :active, -> { where(status_column => status_class::ACTIVE) }
   end
 
   # Module-level utility methods
@@ -51,6 +52,10 @@ module SocialIdentifiable
     def status_column
       raise NotImplementedError, "Subclass must define status_column"
     end
+
+    def status_class
+      raise NotImplementedError, "Subclass must define status_class"
+    end
   end
 
   # Update last_authenticated_at timestamp
@@ -60,7 +65,7 @@ module SocialIdentifiable
 
   # Check if this identity is active
   def active?
-    public_send(self.class.status_column) == "ACTIVE"
+    public_send(self.class.status_column) == self.class.status_class::ACTIVE
   end
 
   # Normalized provider name

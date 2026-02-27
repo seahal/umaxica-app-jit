@@ -50,27 +50,27 @@ class ChangeStaffPasskeyWebauthnIdToString < ActiveRecord::Migration[8.0]
 
   private
 
-    def backfill_webauthn_id_string
-      StaffPasskey.reset_column_information
-      StaffPasskey.in_batches(of: 500) do |batch|
-        batch.each do |passkey|
-          raw_id = passkey[:webauthn_id]
-          next if raw_id.blank?
+  def backfill_webauthn_id_string
+    StaffPasskey.reset_column_information
+    StaffPasskey.in_batches(of: 500) do |batch|
+      batch.each do |passkey|
+        raw_id = passkey[:webauthn_id]
+        next if raw_id.blank?
 
-          encoded = Base64.urlsafe_encode64(raw_id, padding: false)
-          passkey.update!(webauthn_id_string: encoded)
-        end
+        encoded = Base64.urlsafe_encode64(raw_id, padding: false)
+        passkey.update!(webauthn_id_string: encoded)
       end
     end
+  end
 
-    def add_external_id_if_missing
-      return if column_exists?(:staff_passkeys, :external_id)
+  def add_external_id_if_missing
+    return if column_exists?(:staff_passkeys, :external_id)
 
-      add_column :staff_passkeys, :external_id, :uuid
-      StaffPasskey.reset_column_information
-      StaffPasskey.find_each do |passkey|
-        passkey.update!(external_id: SecureRandom.uuid)
-      end
-      change_column_null :staff_passkeys, :external_id, false
+    add_column :staff_passkeys, :external_id, :bigint
+    StaffPasskey.reset_column_information
+    StaffPasskey.find_each do |passkey|
+      passkey.update!(external_id: SecureRandom.uuid)
     end
+    change_column_null :staff_passkeys, :external_id, false
+  end
 end

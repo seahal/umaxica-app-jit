@@ -1,9 +1,10 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_document_versions
 # Database name: document
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -15,13 +16,14 @@
 #  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  app_document_id :uuid             not null
+#  app_document_id :bigint           not null
 #  edited_by_id    :bigint
 #  public_id       :string(255)      default(""), not null
 #
 # Indexes
 #
 #  index_app_document_versions_on_app_document_id_and_created_at  (app_document_id,created_at)
+#  index_app_document_versions_on_edited_by_id                    (edited_by_id)
 #  index_app_document_versions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys
@@ -40,7 +42,7 @@ class AppDocumentVersionTest < ActiveSupport::TestCase
 
   test "encrypts title, description, and body" do
     record = AppDocumentVersion.create!(
-      app_document: AppDocument.find_by!(slug_id: "one-app-document-0001"),
+      app_document: AppDocument.find_by!(slug_id: "one_slug_id"),
       permalink: "permalink_#{SecureRandom.hex(4)}",
       response_mode: "html",
       published_at: Time.zone.parse("2999-01-01 00:00:00"),

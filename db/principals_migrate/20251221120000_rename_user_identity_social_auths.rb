@@ -84,30 +84,31 @@ class RenameUserIdentitySocialAuths < ActiveRecord::Migration[8.2]
       rename_table :user_identity_social_apples, :user_apple_auths
     end
 
-    if table_exists?(:user_identity_social_googles) && !table_exists?(:user_google_auths)
-      rename_table :user_identity_social_googles, :user_google_auths
-    end
+    return unless table_exists?(:user_identity_social_googles) && !table_exists?(:user_google_auths)
+
+    rename_table :user_identity_social_googles, :user_google_auths
+
   end
 
   private
 
-    def rename_social_indexes(table, old_table:, old_status_column:, new_status_column:, new_table: nil)
-      new_table ||= table
+  def rename_social_indexes(table, old_table:, old_status_column:, new_status_column:, new_table: nil)
+    new_table ||= table
 
-      uid_provider_old = "index_#{old_table}_on_uid_and_provider"
-      uid_provider_new = "index_#{new_table}_on_uid_and_provider"
-      rename_index table, uid_provider_old, uid_provider_new if index_exists?(table, name: uid_provider_old)
+    uid_provider_old = "index_#{old_table}_on_uid_and_provider"
+    uid_provider_new = "index_#{new_table}_on_uid_and_provider"
+    rename_index table, uid_provider_old, uid_provider_new if index_exists?(table, name: uid_provider_old)
 
-      user_id_unique_old = "index_#{old_table}_on_user_id_unique"
-      user_id_unique_new = "index_#{new_table}_on_user_id_unique"
-      rename_index table, user_id_unique_old, user_id_unique_new if index_exists?(table, name: user_id_unique_old)
+    user_id_unique_old = "index_#{old_table}_on_user_id_unique"
+    user_id_unique_new = "index_#{new_table}_on_user_id_unique"
+    rename_index table, user_id_unique_old, user_id_unique_new if index_exists?(table, name: user_id_unique_old)
 
-      user_id_old = "index_#{old_table}_on_user_id"
-      user_id_new = "index_#{new_table}_on_user_id"
-      rename_index table, user_id_old, user_id_new if index_exists?(table, name: user_id_old)
+    user_id_old = "index_#{old_table}_on_user_id"
+    user_id_new = "index_#{new_table}_on_user_id"
+    rename_index table, user_id_old, user_id_new if index_exists?(table, name: user_id_old)
 
-      status_old = "index_#{old_table}_on_#{old_status_column}"
-      status_new = "index_#{new_table}_on_#{new_status_column}"
-      rename_index table, status_old, status_new if index_exists?(table, name: status_old)
-    end
+    status_old = "index_#{old_table}_on_#{old_status_column}"
+    status_new = "index_#{new_table}_on_#{new_status_column}"
+    rename_index table, status_old, status_new if index_exists?(table, name: status_old)
+  end
 end

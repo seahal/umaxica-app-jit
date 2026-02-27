@@ -1,91 +1,99 @@
-<div class="flex flex-col items-center justify-center min-h-[60vh]">
-  <div class="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 transition-all hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5 duration-500">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-6 group transition-transform duration-500 hover:scale-110">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
+<% content_for :page_title, t("sign.app.authentication.email.edit.page_title") %>
+<div>
+  <div>
+    <div>
+      <div>
+        <h1>
+          <%= t("sign.app.authentication.email.edit.page_title") %>
+        </h1>
+        <p>
+          <%= t("sign.app.authentication.email.edit.description") %>
+        </p>
       </div>
-      <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-3 tracking-tight font-outfit">
-        <%= t("sign.app.authentication.email.edit.page_title") %>
-      </h1>
-      <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed max-w-[280px] mx-auto">
-        <%= t("sign.app.authentication.email.edit.description") %>
-      </p>
-    </div>
 
-    <%= form_with model: @user_email, url: sign_app_in_email_path, method: :patch, data: { turbo: false }, class: "space-y-6" do |form| %>
-      <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
+      <%= form_with model: @user_email,
+                    url: sign_app_in_email_path,
+                    method: :patch,
+                    data: {
+                      turbo: false,
+                      controller: "otp-resend",
+                      otp_resend_endpoint_value: sign_app_web_v1_in_email_otp_path,
+                      otp_resend_state_value: @otp_resend_state,
+                      otp_resend_button_label_value: t("otp.resend.button"),
+                      otp_resend_sent_message_value: t("otp.resend.sent"),
+                      otp_resend_too_soon_message_value: t("otp.resend.too_soon"),
+                      otp_resend_failed_message_value: t("otp.resend.failed"),
+                    } do |form| %>
+        <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
 
-      <% if @user_email.errors.any? %>
-        <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-2xl animate-shake">
-          <ul class="text-sm text-red-600 dark:text-red-400 list-none p-0 m-0">
-            <% @user_email.errors.each do |error| %>
-              <li class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span><%= error.full_message %></span>
-              </li>
-            <% end %>
-          </ul>
+        <% if @user_email.errors.any? %>
+          <div class="animate-shake">
+            <ul>
+              <% @user_email.errors.each do |error| %>
+                <li>
+                  <span><%= error.full_message %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :pass_code %>
+          <div>
+            <%= form.text_field :pass_code,
+                                placeholder: "● ● ● ● ● ●",
+                                maxlength: 6,
+                                autocomplete: "one-time-code",
+                                inputmode: "numeric",
+                                pattern: "[0-9]*",
+                                data: { otp_resend_target: "input" },
+                                required: true %>
+            <div></div>
+          </div>
+        </div>
+
+        <div>
+          <button type="button" data-action="otp-resend#resend" data-otp-resend-target="button">
+            <%= t("otp.resend.button") %>
+          </button>
+          <p data-otp-resend-target="status"></p>
+        </div>
+
+        <div>
+          <%= form.submit t("sign.app.authentication.passkey.new.submit") %>
         </div>
       <% end %>
 
-      <div class="relative group">
-        <%= form.label :pass_code, class: "sr-only" %>
-        <div class="relative">
-          <%= form.text_field :pass_code,
-                              placeholder: "● ● ● ● ● ●",
-                              maxlength: 6,
-                              autocomplete: "one-time-code",
-                              inputmode: "numeric",
-                              pattern: "[0-9]*",
-                              class: "w-full px-6 py-5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-2xl text-center text-3xl font-bold tracking-[0.75em] indent-[0.75em] text-zinc-900 dark:text-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all duration-300 placeholder:text-zinc-300 dark:placeholder:text-zinc-600 shadow-sm",
-                              required: true %>
-          <div class="absolute inset-y-0 left-0 w-1 bg-transparent group-focus-within:bg-blue-500 rounded-full transition-all duration-300"></div>
-        </div>
+      <div>
+        <%= link_to new_sign_app_in_email_path(rd: params[:rd]) do %>
+          <span><%= t("sign.app.authentication.email.edit.return_page") %></span>
+        <% end %>
       </div>
-
-      <div class="pt-2">
-        <%= form.submit t("sign.app.authentication.passkey.new.submit"),
-                        class: "w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer" %>
-      </div>
-    <% end %>
-
-    <div class="mt-10 pt-8 border-t border-zinc-100 dark:border-zinc-800 text-center">
-      <%= link_to new_sign_app_in_email_path(rd: params[:rd]),
-                  class: "inline-flex items-center gap-2 text-sm font-semibold text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        <span><%= t("sign.app.authentication.email.edit.return_page") %></span>
-      <% end %>
     </div>
   </div>
-</div>
 
-<style>
-    @keyframes shake {
-        0%, 100% {
-            transform: translateX(0);
-        }
-        25% {
-            transform: translateX(-4px);
-        }
-        75% {
-            transform: translateX(4px);
-        }
-    }
+  <style>
+      @keyframes shake {
+          0%, 100% {
+              transform: translateX(0);
+          }
+          25% {
+              transform: translateX(-4px);
+          }
+          75% {
+              transform: translateX(4px);
+          }
+      }
 
-    .animate-shake {
-        animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
-    }
+      .animate-shake {
+          animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+      }
 
-    /* Center code in input with tracking by using indent of same amount */
-    .indent-\[0\.75em\] {
-        text-indent: 0.75em;
-    }
-</style>
+      /* Center code in input with tracking by using indent of same amount */
+      .indent-\[0\.75em\] {
+          text-indent: 0.75em;
+      }
+  </style>
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">

@@ -1,55 +1,17 @@
+# typed: false
 # frozen_string_literal: true
 
 require_relative "boot"
 
 require "rails/all"
 
-# Silence ActiveSupport::Configurable deprecation warning from omniauth-rails_csrf_protection
-# Temporarily wrap $stderr to filter the specific deprecation message
-class DeprecationFilter
-  def initialize(original_stderr)
-    @original_stderr = original_stderr
-  end
-
-  def write(message)
-    # Filter out the ActiveSupport::Configurable deprecation
-    msg_str = message.to_s
-    return if msg_str.include?("ActiveSupport::Configurable is deprecated") ||
-              msg_str.include?("You can emulate the previous behavior with")
-
-    @original_stderr.write(message)
-  end
-
-  def puts(*messages)
-    messages.each do |message|
-      msg_str = message.to_s
-      next if msg_str.include?("ActiveSupport::Configurable is deprecated") ||
-              msg_str.include?("You can emulate the previous behavior with")
-
-      @original_stderr.puts(message)
-    end
-  end
-
-  def method_missing(method, *, &)
-    @original_stderr.send(method, *, &)
-  end
-
-  def respond_to_missing?(method, include_private = false)
-    @original_stderr.respond_to?(method, include_private) || super
-  end
-end
-
-original_stderr = $stderr
-$stderr = DeprecationFilter.new(original_stderr)
-
 Bundler.require(*Rails.groups)
-
-# Restore original stderr
-$stderr = original_stderr
 
 # Ensure custom middleware is loaded only if present
 subdomain_static_files_path = File.expand_path("../lib/subdomain_static_files.rb", __dir__)
 require_relative "../lib/subdomain_static_files" if File.exist?(subdomain_static_files_path)
+surface_middleware_path = File.expand_path("../app/middleware/core/surface_middleware.rb", __dir__)
+require_relative "../app/middleware/core/surface_middleware" if File.exist?(surface_middleware_path)
 
 module Jit
   class Application < Rails::Application
@@ -59,7 +21,7 @@ module Jit
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # CommonHelper ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: %w(assets tasks))
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -82,10 +44,8 @@ module Jit
         nil
       end
 
-    # Rack Attack Middleware
-    config.middleware.use Rack::Attack
     # Active Record Encryption Configuration
-    if %w[test production development].include? Rails.env
+    if %w(test production development).include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
       config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
       config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
@@ -106,11 +66,13 @@ module Jit
 
     # Load translations from nested locale directories (e.g., config/locales/jp/**/*.yml)
     config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
+    # Prioritize root ja.yml to ensure our fixes are applied
+    config.i18n.load_path.push(Rails.root.join("config/locales/ja.yml").to_s)
     config.i18n.default_locale = :ja
 
-    # Set UUID as default primary key for new tables
+    # Set bigserial as default primary key for new tables
     config.generators do |g|
-      g.orm :active_record, primary_key_type: :uuid
+      g.orm :active_record, primary_key_type: :bigserial
     end
 
     # Enable structured logging in all environments.

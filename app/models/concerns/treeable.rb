@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Treeable
@@ -25,8 +26,8 @@ module Treeable
 
       relation =
         self.class
-            .where(parent_col => raw_parent)
-            .then { |r| self.class.tree_order_scope(r) }
+          .where(parent_col => raw_parent)
+          .then { |r| self.class.tree_order_scope(r) }
 
       include_self ? relation : relation.where.not(self.class.primary_key => id)
     end
@@ -55,17 +56,17 @@ module Treeable
 
     private
 
-      def children_exists?
-        if respond_to?(:children)
-          children.exists?
-        else
-          self.class.exists?(tree_parent_column => id)
-        end
+    def children_exists?
+      if respond_to?(:children)
+        children.exists?
+      else
+        self.class.exists?(tree_parent_column => id)
       end
+    end
 
-      def tree_parent_id_raw
-        self[tree_parent_column]
-      end
+    def tree_parent_id_raw
+      self[tree_parent_column]
+    end
   end
 
   class_methods do
@@ -77,9 +78,15 @@ module Treeable
     def tree_root_parent_value = "none"
 
     # Accept multiple root sentinel values for compatibility across models/tables.
-    # The default supports both legacy ("NEYO") and current ("none") sentinels.
+    # The default supports both "NOTHING" and "none" sentinels.
     def tree_root_parent_values
-      [ tree_root_parent_value, "NEYO", "none" ].uniq
+      base = [tree_root_parent_value]
+      column_type = columns_hash.fetch(tree_parent_column, nil)&.type
+      return (base + ["NOTHING", "none"]).uniq if column_type == :string
+
+      values = base.select { |value| value.is_a?(Numeric) || value.to_s.match?(/\A-?\d+\z/) }
+      values.uniq!
+      values
     end
 
     # Sibling order: prefers `position` when present; otherwise uses `id`.
@@ -92,7 +99,7 @@ module Treeable
       order_col = tree_order_column
 
       if order_col
-        relation.order(Arel.sql("#{order_col} ASC NULLS LAST"), pk => :asc)
+        relation.order(arel_table[order_col].asc.nulls_last, pk => :asc)
       else
         relation.order(pk => :asc)
       end
@@ -101,17 +108,19 @@ module Treeable
     def tree_relation_in_ids_order(ids)
       return none if ids.blank?
 
-      pk = primary_key
-      quoted = ids.map { |v| connection.quote(v) }.join(",")
-      where(pk => ids).order(Arel.sql("array_position(ARRAY[#{quoted}]::text[], #{table_name}.#{pk}::text)"))
+      q_pk = connection.quote_column_name(primary_key)
+      q_table = connection.quote_table_name(table_name)
+      order_sql = sanitize_sql_array(["array_position(ARRAY[?]::text[], #{q_table}.#{q_pk}::text)", ids])
+
+      where(primary_key => ids).order(Arel.sql(order_sql))
     end
 
     # Descendant ids (including self).
     def subtree_ids(root_id, include_self: true, max_depth: nil)
-      parent = tree_parent_column
+      q_pk = connection.quote_column_name(primary_key)
+      q_parent = connection.quote_column_name(tree_parent_column)
+      q_table = connection.quote_table_name(table_name)
       root_vals = tree_root_parent_values
-      quoted_root_vals = root_vals.map { |v| connection.quote(v) }.join(",")
-      exclude_sentinels = "id NOT IN (#{quoted_root_vals})"
 
       if root_vals.include?(root_id)
         # Treat passing the sentinel as "roots"; including self in this case is ambiguous,
@@ -119,23 +128,21 @@ module Treeable
         include_self = false
       end
 
-      quoted_root_id = connection.quote(root_id)
-      where_anchor = include_self ? "id = #{quoted_root_id}" : "#{parent} = #{quoted_root_id}"
-      where_anchor = "(#{where_anchor} AND #{exclude_sentinels})"
+      where_anchor_sql = include_self ? "#{q_pk} = ?" : "#{q_parent} = ?"
       depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
       # rubocop:disable I18n/RailsI18n/DecorateString
-      sql = <<~SQL.squish
+      sql = sanitize_sql_array([<<~SQL.squish, root_id, root_vals])
         WITH RECURSIVE tree AS (
-          SELECT id, #{parent}, 0 AS depth
-          FROM #{table_name}
-          WHERE #{where_anchor}
+          SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
+          FROM #{q_table}
+          WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
 
           UNION ALL
 
-          SELECT t.id, t.#{parent}, tree.depth + 1
-          FROM #{table_name} t
-          JOIN tree ON t.#{parent} = tree.id
+          SELECT t.#{q_pk}, t.#{q_parent}, tree.depth + 1
+          FROM #{q_table} t
+          JOIN tree ON t.#{q_parent} = tree.id
           #{depth_guard}
         )
         SELECT id FROM tree;
@@ -147,36 +154,33 @@ module Treeable
 
     # Ancestor ids (including self).
     def ancestor_ids(node_id, include_self: true, max_depth: nil)
-      parent = tree_parent_column
+      q_pk = connection.quote_column_name(primary_key)
+      q_parent = connection.quote_column_name(tree_parent_column)
+      q_table = connection.quote_table_name(table_name)
       root_vals = tree_root_parent_values
-      quoted_root_vals = root_vals.map { |v| connection.quote(v) }.join(",")
-      exclude_sentinels = "id NOT IN (#{quoted_root_vals})"
-      quoted_node_id = connection.quote(node_id)
-      where_anchor =
+
+      where_anchor_sql =
         if include_self
-          "id = #{quoted_node_id}"
+          "#{q_pk} = ?"
         else
-          "id = (SELECT #{parent} FROM #{table_name} WHERE id = #{quoted_node_id})"
+          "#{q_pk} = (SELECT #{q_parent} FROM #{q_table} WHERE #{q_pk} = ?)"
         end
-      where_anchor = "(#{where_anchor} AND #{exclude_sentinels})"
+
       depth_guard = max_depth ? " AND tree.depth < #{Integer(max_depth)}" : ""
-      # rubocop:disable I18n/RailsI18n/DecorateString
-      step_where = "WHERE tree.#{parent} NOT IN (#{quoted_root_vals})#{depth_guard}"
-      # rubocop:enable I18n/RailsI18n/DecorateString
 
       # rubocop:disable I18n/RailsI18n/DecorateString
-      sql = <<~SQL.squish
+      sql = sanitize_sql_array([<<~SQL.squish, node_id, root_vals, root_vals])
         WITH RECURSIVE tree AS (
-          SELECT id, #{parent}, 0 AS depth
-          FROM #{table_name}
-          WHERE #{where_anchor}
+          SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
+          FROM #{q_table}
+          WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
 
           UNION ALL
 
-          SELECT p.id, p.#{parent}, tree.depth + 1
-          FROM #{table_name} p
-          JOIN tree ON tree.#{parent} = p.id
-          #{step_where}
+          SELECT p.#{q_pk}, p.#{q_parent}, tree.depth + 1
+          FROM #{q_table} p
+          JOIN tree ON tree.parent_id = p.#{q_pk}
+          WHERE tree.parent_id NOT IN (?)#{depth_guard}
         )
         SELECT id FROM tree
         ORDER BY depth DESC;
@@ -193,41 +197,43 @@ module Treeable
     # - Stores position as integer in `path` (if missing, uses id only)
     # - Returns a Relation preserving the `ids` order
     def subtree_in_tree_order(root_id, include_self: true, max_depth: nil)
-      parent = tree_parent_column
-      order = tree_order_column
+      q_pk = connection.quote_column_name(primary_key)
+      q_parent = connection.quote_column_name(tree_parent_column)
+      q_table = connection.quote_table_name(table_name)
+      order_col = tree_order_column
+      pk_type = columns_hash.fetch(primary_key, nil)&.type
+      pk_sort_expr = pk_type.in?([:integer, :bigint]) ? "#{q_pk}::bigint" : "#{q_pk}::text"
       root_vals = tree_root_parent_values
-      quoted_root_vals = root_vals.map { |v| connection.quote(v) }.join(",")
-      exclude_sentinels = "id NOT IN (#{quoted_root_vals})"
-      quoted_root_id = connection.quote(root_id)
 
       include_self = false if include_self && root_vals.include?(root_id)
-      where_anchor = include_self ? "id = #{quoted_root_id}" : "#{parent} = #{quoted_root_id}"
-      where_anchor = "(#{where_anchor} AND #{exclude_sentinels})"
+      where_anchor_sql = include_self ? "#{q_pk} = ?" : "#{q_parent} = ?"
       depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
       anchor_path =
-        if order
-          "ARRAY[ROW(#{order}::int, id::text)]::record[]"
+        if order_col
+          q_order = connection.quote_column_name(order_col)
+          "ARRAY[ROW(#{q_order}::int, #{pk_sort_expr})]::record[]"
         else
-          "ARRAY[ROW(id::text)]::record[]"
+          "ARRAY[ROW(#{pk_sort_expr})]::record[]"
         end
 
       step_path =
-        if order
-          "tree.path || ARRAY[ROW(t.#{order}::int, t.id::text)]::record[]"
+        if order_col
+          q_order = connection.quote_column_name(order_col)
+          "tree.path || ARRAY[ROW(t.#{q_order}::int, t.#{pk_sort_expr})]::record[]"
         else
-          "tree.path || ARRAY[ROW(t.id::text)]::record[]"
+          "tree.path || ARRAY[ROW(t.#{pk_sort_expr})]::record[]"
         end
 
       # rubocop:disable I18n/RailsI18n/DecorateString
-      sql = <<~SQL.squish
+      sql = sanitize_sql_array([<<~SQL.squish, root_id, root_vals])
         WITH RECURSIVE tree AS (
           SELECT
-            #{table_name}.*,
+            #{q_table}.*,
             0 AS depth,
             #{anchor_path} AS path
-          FROM #{table_name}
-          WHERE #{where_anchor}
+          FROM #{q_table}
+          WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
 
           UNION ALL
 
@@ -235,11 +241,11 @@ module Treeable
             t.*,
             tree.depth + 1 AS depth,
             #{step_path} AS path
-          FROM #{table_name} t
-          JOIN tree ON t.#{parent} = tree.id
+          FROM #{q_table} t
+          JOIN tree ON t.#{q_parent} = tree.#{q_pk}
           #{depth_guard}
         )
-        SELECT id
+        SELECT #{q_pk}
         FROM tree
         ORDER BY path;
       SQL
@@ -248,9 +254,7 @@ module Treeable
       ids = connection.exec_query(sql, "subtree_in_tree_order_ids").rows.flatten
 
       # Preserve `ids` order using Postgres `array_position`.
-      quoted = ids.map { |v| connection.quote(v) }.join(",")
-      order_sql =
-        "array_position(ARRAY[#{quoted}]::text[], #{table_name}.#{primary_key}::text)"
+      order_sql = sanitize_sql_array(["array_position(ARRAY[?]::text[], #{q_table}.#{q_pk}::text)", ids])
       where(primary_key => ids).order(Arel.sql(order_sql))
     end
   end
@@ -265,9 +269,10 @@ module Treeable
     raw = self[parent_col]
 
     # Normalize blank values to the configured sentinel.
-    if raw.blank?
-      self[parent_col] = root_val
-    end
+    return if raw.present?
+
+    self[parent_col] = root_val
+
   end
 
   def tree_parent_must_not_create_cycle

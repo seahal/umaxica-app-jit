@@ -1,45 +1,70 @@
 <!DOCTYPE html>
 <html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
-<%= render "layouts/shared/head",
-           namespace: "org",
-           stylesheets: ["apex/main", "apex/org/main"],
-           title: "#{ENV['BRAND_NAME']} (org) Apex" %>
+<head>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) Apex", title: (content_for(:page_title) if content_for?(:page_title)) %>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-method" content="morph">
+  <meta name="turbo-refresh-scroll" content="preserve">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "apex/main" %>
+  <%= stylesheet_link_tag "apex/org/main" %>
+  <%= javascript_importmap_tags %>
+  <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
+</head>
+<body>
+<div>
+  <div></div>
+  <div></div>
+</div>
 
-<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-<div class="min-h-screen">
-  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
-    <%= render "concern/flash_messages" %>
+<div>
+  <%= render "shared/flash_messages" %>
 
-    <%= render "layouts/shared/header",
-               service_name: "APEX",
-               namespace: "org",
-               home_path: "http://org.localhost:3000/" do %>
-      <% unless logged_in? %>
-        <%= link_to t("sign.org.layout.nav.sign_up"), new_sign_org_up_url(host: ENV['SIGN_STAFF_URL']),
-                    class: "inline-flex h-9 items-center justify-center rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[hsl(var(--ring))]" %>
-        <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_in_url(host: ENV['SIGN_STAFF_URL']),
-                    class: "inline-flex h-9 items-center justify-center rounded-md bg-[hsl(var(--primary))] px-4 py-2 text-sm font-medium text-[hsl(var(--primary-foreground))] shadow transition-colors hover:bg-[hsl(var(--primary))]/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[hsl(var(--ring))]" %>
-      <% else %>
-        <%= link_to t("sign.org.layout.nav.configuration"), sign_org_configuration_url(host: ENV['SIGN_STAFF_URL']),
-                    class: "inline-flex h-9 items-center justify-center rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[hsl(var(--ring))]" %>
-        <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_out_url(host: ENV['SIGN_STAFF_URL']),
-                    class: "inline-flex h-9 items-center justify-center rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[hsl(var(--ring))]" %>
-      <% end %>
-    <% end %>
+  <header>
+    <div>
+      <div>
+        <span>APEX</span>
+        <h1>
 
-    <main class="flex-1 py-10">
-      <%= yield %>
-    </main>
+          <a href="http://org.localhost:3000/">Umaxica (org)</a>
+        </h1>
+      </div>
+      <nav>
+        <% unless logged_in? %>
+          <%= link_to t("sign.org.layout.nav.sign_up"), new_sign_org_up_url(host: ENV['SIGN_STAFF_URL']) %>
+          <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_in_url(host: ENV['SIGN_STAFF_URL']) %>
+        <% else %>
+          <%= link_to t("sign.org.layout.nav.configuration"), sign_org_configuration_url(host: ENV['SIGN_STAFF_URL']) %>
+          <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_configuration_out_url(host: ENV['SIGN_STAFF_URL']) %>
+        <% end %>
+      </nav>
+    </div>
+  </header>
 
-    <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
+  <hr>
+
+  <main>
+    <%= yield %>
+  </main>
+
+  <nav id="app">
+  </nav>
+
+  <hr>
+
+  <footer>
+    <nav>
+      <a href="http://org.localhost:3000/"><%= t('apex.org.preferences.footer.home') %></a>
+      <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_url %>
+      <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path %>
     </nav>
-
-    <%= render "layouts/shared/footer" do %>
-      <a class="font-semibold text-[hsl(var(--foreground))]" href="http://org.localhost:3000/"><%= t('apex.org.preferences.footer.home') %></a>
-      <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_url, class: "font-semibold text-[hsl(var(--foreground))]" %>
-      <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
-    <% end %>
-  </div>
+    <div>
+      <%= render "shared/copyright" %>
+    </div>
+  </footer>
 </div>
 </body>
 </html>

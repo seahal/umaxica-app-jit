@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "aws-sdk-sns"
@@ -21,17 +22,17 @@ module Jit
             {
               phone_number: to,
               message: message,
-              subject: subject || "SMS"
+              subject: subject || "SMS",
             },
           )
         end
 
         private
 
-          def validate_params(to:, message:)
-            raise ArgumentError, "Phone number is required" if to.blank?
-            raise ArgumentError, "Message is required" if message.blank?
-          end
+        def validate_params(to:, message:)
+          raise ArgumentError, "Phone number is required" if to.blank?
+          raise ArgumentError, "Message is required" if message.blank?
+        end
       end
     end
   end

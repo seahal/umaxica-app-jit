@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,28 +6,22 @@
 # Table name: org_preference_statuses
 # Database name: preference
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  org_preference_statuses_position_unique  (position) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class OrgPreferenceStatusTest < ActiveSupport::TestCase
   fixtures :org_preference_statuses
 
-  test "ordered scope sorts by position then id" do
+  test "ordered scope returns all statuses" do
     ordered = OrgPreferenceStatus.ordered.pluck(:id)
-    assert_equal [ "NEYO", "DELETED" ], ordered
+
+    assert_equal [1, 2], ordered.sort
   end
 
-  test "upcases id before validation" do
-    status = OrgPreferenceStatus.new(id: "custom", position: 3)
-    status.valid?
-    assert_equal "CUSTOM", status.id
+  test "accepts integer ids" do
+    status = OrgPreferenceStatus.new(id: 3)
+
+    assert_predicate status, :valid?
   end
 end

@@ -31,13 +31,13 @@ class CreateStaffIdentityPasskeyStatuses < ActiveRecord::Migration[8.2]
 
   private
 
-    def constraint_name(table, column)
-      base = "chk_#{table}_#{column}_format"
-      return base if base.length <= 63
+  def constraint_name(table, column)
+    base = "chk_#{table}_#{column}_format"
+    return base if base.length <= 63
 
-      digest = Digest::SHA256.hexdigest(base)[0, 10]
-      "chk_#{table}_#{column}_#{digest}"
-    end
+    digest = Digest::SHA256.hexdigest(base)[0, 10]
+    "chk_#{table}_#{column}_#{digest}"
+  end
 end
 
 # rubocop:enable Rails/CreateTableWithTimestamps

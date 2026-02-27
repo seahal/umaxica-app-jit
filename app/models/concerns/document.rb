@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Document
@@ -8,7 +9,7 @@ module Document
       html: "html",
       text: "text",
       pdf: "pdf",
-      redirect: "redirect"
+      redirect: "redirect",
     }, suffix: true
 
     before_validation :ensure_revision_key
@@ -31,14 +32,14 @@ module Document
 
   private
 
-    def ensure_revision_key
-      self.revision_key ||= SecureRandom.urlsafe_base64(32)
-    end
+  def ensure_revision_key
+    self.revision_key ||= SecureRandom.urlsafe_base64(32)
+  end
 
-    def published_at_before_expires_at
-      return if published_at.blank? || expires_at.blank?
-      return if published_at < expires_at
+  def published_at_before_expires_at
+    return if published_at.blank? || expires_at.blank?
+    return if published_at < expires_at
 
-      errors.add(:published_at, "must be before expires_at")
-    end
+    errors.add(:published_at, "must be before expires_at")
+  end
 end

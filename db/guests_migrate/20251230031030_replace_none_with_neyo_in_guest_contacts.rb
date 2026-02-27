@@ -2,7 +2,7 @@
 
 class ReplaceNoneWithNeyoInGuestContacts < ActiveRecord::Migration[8.2]
   def up
-    %w[app com org].each do |prefix|
+    %w(app com org).each do |prefix|
       contact_table = "#{prefix}_contacts"
 
       update_column_value(contact_table, :status_id, from: "NONE", to: "NEYO")
@@ -12,8 +12,8 @@ class ReplaceNoneWithNeyoInGuestContacts < ActiveRecord::Migration[8.2]
       change_column_default_if_exists(contact_table, :category_id, from: "NONE", to: "NEYO")
     end
 
-    %w[app com org].each do |prefix|
-      histories = [ "#{prefix}_contact_histories" ]
+    %w(app com org).each do |prefix|
+      histories = ["#{prefix}_contact_histories"]
       histories << "#{prefix}_contact_audits" if prefix == "com"
 
       histories.each do |table|
@@ -26,7 +26,7 @@ class ReplaceNoneWithNeyoInGuestContacts < ActiveRecord::Migration[8.2]
   end
 
   def down
-    %w[app com org].each do |prefix|
+    %w(app com org).each do |prefix|
       contact_table = "#{prefix}_contacts"
 
       update_column_value(contact_table, :status_id, from: "NEYO", to: "NONE")
@@ -36,8 +36,8 @@ class ReplaceNoneWithNeyoInGuestContacts < ActiveRecord::Migration[8.2]
       change_column_default_if_exists(contact_table, :category_id, from: "NEYO", to: "NONE")
     end
 
-    %w[app com org].each do |prefix|
-      histories = [ "#{prefix}_contact_histories" ]
+    %w(app com org).each do |prefix|
+      histories = ["#{prefix}_contact_histories"]
       histories << "#{prefix}_contact_audits" if prefix == "com"
 
       histories.each do |table|
@@ -51,21 +51,21 @@ class ReplaceNoneWithNeyoInGuestContacts < ActiveRecord::Migration[8.2]
 
   private
 
-    def update_column_value(table, column, from:, to:)
-      return unless table_exists?(table) && column_exists?(table, column)
+  def update_column_value(table, column, from:, to:)
+    return unless table_exists?(table) && column_exists?(table, column)
 
-      safety_assured do
-        execute <<~SQL.squish
-          UPDATE #{table}
-          SET #{column} = '#{to}'
-          WHERE #{column} = '#{from}'
-        SQL
-      end
+    safety_assured do
+      execute <<~SQL.squish
+        UPDATE #{table}
+        SET #{column} = '#{to}'
+        WHERE #{column} = '#{from}'
+      SQL
     end
+  end
 
-    def change_column_default_if_exists(table, column, from:, to:)
-      return unless table_exists?(table) && column_exists?(table, column)
+  def change_column_default_if_exists(table, column, from:, to:)
+    return unless table_exists?(table) && column_exists?(table, column)
 
-      change_column_default table, column, from: from, to: to
-    end
+    change_column_default table, column, from: from, to: to
+  end
 end

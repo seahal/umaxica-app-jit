@@ -2,14 +2,14 @@
 
 class CreateStaffAdmins < ActiveRecord::Migration[8.2]
   def change
-    create_table :staff_admins, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.uuid :staff_id, null: false
-      t.uuid :admin_id, null: false
+    create_table :staff_admins do |t|
+      t.bigint :staff_id, null: false
+      t.bigint :admin_id, null: false
 
       t.timestamps
     end
 
-    add_index :staff_admins, [ :staff_id, :admin_id ], unique: true
+    add_index :staff_admins, [:staff_id, :admin_id], unique: true
     add_index :staff_admins, :staff_id
     add_index :staff_admins, :admin_id
 

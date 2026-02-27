@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,15 +6,15 @@
 # Table name: ip_zip_occurrences
 # Database name: occurrence
 #
-#  id                :uuid             not null, primary key
+#  id                :bigint           not null, primary key
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  ip_occurrence_id  :uuid             not null
-#  zip_occurrence_id :uuid             not null
+#  ip_occurrence_id  :bigint           not null
+#  zip_occurrence_id :bigint           not null
 #
 # Indexes
 #
-#  index_ip_zip_occurrences_on_ip_occurrence_id   (ip_occurrence_id)
+#  idx_ip_zip_occ_on_ids                          (ip_occurrence_id,zip_occurrence_id) UNIQUE
 #  index_ip_zip_occurrences_on_zip_occurrence_id  (zip_occurrence_id)
 #
 # Foreign Keys
@@ -25,4 +26,6 @@
 class IpZipOccurrence < OccurrenceRecord
   belongs_to :ip_occurrence, inverse_of: :ip_zip_occurrences
   belongs_to :zip_occurrence, inverse_of: :ip_zip_occurrences
+
+  validates :ip_occurrence_id, uniqueness: { scope: :zip_occurrence_id }
 end

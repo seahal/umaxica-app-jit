@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,11 +6,7 @@
 # Table name: com_contact_statuses
 # Database name: guest
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_com_contact_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
@@ -17,13 +14,13 @@ require "test_helper"
 class ComContactStatusTest < ActiveSupport::TestCase
   setup do
     @model_class = ComContactStatus
-    @valid_id = "ACTIVE".freeze
+    @valid_id = ComContactStatus::NOTHING
     @subject = @model_class.new(id: @valid_id)
   end
 
-  test "validates length of id" do
-    record = ComContactStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "accepts integer ids" do
+    record = ComContactStatus.new(id: 2)
+
+    assert_predicate record, :valid?
   end
 end

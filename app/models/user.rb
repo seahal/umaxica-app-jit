@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,40 +6,69 @@
 # Table name: users
 # Database name: principal
 #
-#  id                      :uuid             not null, primary key
-#  last_reauth_at          :datetime
-#  lock_version            :integer          default(0), not null
-#  withdraw_cooldown_until :datetime
-#  withdraw_requested_at   :datetime
-#  withdraw_scheduled_at   :datetime
-#  withdrawn_at            :datetime         default(Infinity)
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  public_id               :string(255)      default("")
-#  status_id               :string(255)      default("ACTIVE"), not null
+#  id                    :bigint           not null, primary key
+#  deactivated_at        :datetime
+#  deletable_at          :datetime         default(Infinity), not null
+#  last_reauth_at        :datetime
+#  lock_version          :integer          default(0), not null
+#  multi_factor_enabled  :boolean          default(FALSE), not null
+#  purged_at             :datetime
+#  scheduled_purge_at    :datetime
+#  shreddable_at         :datetime         default(Infinity), not null
+#  withdrawal_started_at :datetime
+#  withdrawn_at          :datetime         default(Infinity)
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  public_id             :string(255)      default(""), not null
+#  status_id             :bigint           default(13), not null
+#  visibility_id         :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_users_on_public_id                (public_id) UNIQUE
-#  index_users_on_status_id                (status_id)
-#  index_users_on_withdraw_cooldown_until  (withdraw_cooldown_until)
-#  index_users_on_withdraw_scheduled_at    (withdraw_scheduled_at)
-#  index_users_on_withdrawn_at             (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#  index_users_on_deactivated_at         (deactivated_at) WHERE (deactivated_at IS NOT NULL)
+#  index_users_on_deletable_at           (deletable_at)
+#  index_users_on_public_id              (public_id) UNIQUE
+#  index_users_on_purged_at              (purged_at) WHERE (purged_at IS NOT NULL)
+#  index_users_on_scheduled_purge_at     (scheduled_purge_at) WHERE (scheduled_purge_at IS NOT NULL)
+#  index_users_on_shreddable_at          (shreddable_at)
+#  index_users_on_status_id              (status_id)
+#  index_users_on_visibility_id          (visibility_id)
+#  index_users_on_withdrawal_started_at  (withdrawal_started_at) WHERE (withdrawal_started_at IS NOT NULL)
+#  index_users_on_withdrawn_at           (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => user_statuses.id)
+#  fk_rails_...  (visibility_id => user_visibilities.id)
 #
 
 class User < PrincipalRecord
-  self.ignored_columns += [ "webauthn_id" ]
   include ::PublicId
   include ::Accountably
+  include ::Withdrawable
 
-  attribute :status_id, default: UserStatus::ACTIVE
+  # what is this?
+  VERIFIED_RECOVERY_EMAIL_STATUS_IDS = [
+    UserEmailStatus::VERIFIED,
+    UserEmailStatus::VERIFIED_WITH_SIGN_UP,
+  ].freeze
+  VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS = [
+    UserTelephoneStatus::VERIFIED,
+    UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
+  ].freeze
+  RECOVERY_IDENTITY_REQUIRED_MESSAGE = "パスキー/シークレットを登録するには、先にメールアドレスまたは電話番号を1つ以上登録（確認）してください。"
+
+  # Legacy column scheduled for removal after passkeys table migration.
+  # Remove this line as well after DROP COLUMN migration is completed.
+  self.ignored_columns += ["webauthn_id"]
+
+  attribute :status_id, default: UserStatus::NONE
 
   belongs_to :user_status,
              foreign_key: :status_id,
+             inverse_of: :users
+  belongs_to :visibility,
+             class_name: "UserVisibility",
              inverse_of: :users
   has_one :user_social_apple,
           dependent: :destroy,
@@ -58,13 +88,10 @@ class User < PrincipalRecord
   has_many :user_passkeys,
            dependent: :destroy,
            inverse_of: :user
-  has_one :passkey,
-          dependent: :destroy,
-          inverse_of: :user
   has_many :user_one_time_passwords,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_audits,
+  has_many :user_activities,
            foreign_key: :subject_id,
            dependent: :destroy,
            inverse_of: false
@@ -74,7 +101,7 @@ class User < PrincipalRecord
   has_many :user_memberships,
            dependent: :destroy,
            inverse_of: :user
-  has_many :staff_audits,
+  has_many :staff_activities,
            as: :actor,
            dependent: :destroy
   has_many :user_messages,
@@ -123,69 +150,12 @@ class User < PrincipalRecord
            through: :avatar_assignments,
            source: :avatar
   validates :public_id, uniqueness: true, length: { maximum: 21 }
-  validates :status_id, length: { maximum: 255 }
-
-  WITHDRAWAL_SCHEDULE_PERIOD = 31.days
-  WITHDRAWAL_COOLDOWN_PERIOD = 24.hours
+  validates :status_id, numericality: { only_integer: true }
+  scope :deletable, ->(now = Time.current) { where(deletable_at: ..now) }
+  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
 
   def totp_enabled?
-    user_one_time_passwords.exists?(user_one_time_password_status_id: "ACTIVE")
-  end
-
-  def active?
-    !pre_withdrawal_condition? && !withdrawn?
-  end
-
-  def pre_withdrawal_condition?
-    status_id == UserStatus::PRE_WITHDRAWAL_CONDITION
-  end
-
-  def withdrawn?
-    status_id == UserStatus::WITHDRAWN
-  end
-
-  def withdrawal_cooldown_active?(now = Time.current)
-    withdraw_cooldown_until.present? && now < withdraw_cooldown_until
-  end
-
-  def request_withdrawal!(requested_at: Time.current)
-    ensure_withdrawal_requestable!(requested_at)
-    apply_withdrawal_request!(requested_at)
-  end
-
-  def finalize_withdrawal!(finalized_at: Time.current)
-    ensure_withdrawal_finalizable!(finalized_at)
-    apply_permanent_withdrawal!(finalized_at)
-  end
-
-  def enforce_withdrawal_on_login!(now = Time.current)
-    return if active?
-
-    if pre_withdrawal_condition?
-      if withdrawal_cooldown_active?(now)
-        raise Sign::WithdrawalCooldownError.new(withdraw_cooldown_until: withdraw_cooldown_until)
-      end
-
-      apply_permanent_withdrawal!(now)
-      raise Sign::WithdrawalFinalizedError.new
-    end
-
-    raise Sign::WithdrawalFinalizedError.new if withdrawn?
-
-    raise Sign::InvalidWithdrawalStateError.new(status_id)
-  end
-
-  def destroy_withdrawal_account!(now: Time.current)
-    ensure_withdrawal_deletable!(now)
-    destroy!
-  end
-
-  def self.finalize_scheduled_withdrawals!(now = Time.current)
-    where(status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
-      .where(withdraw_scheduled_at: ..now)
-      .find_each do |user|
-        user.send(:apply_permanent_withdrawal!, now)
-      end
+    user_one_time_passwords.exists?(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
   end
 
   def staff?
@@ -196,41 +166,72 @@ class User < PrincipalRecord
     true
   end
 
-  private
+  # Compatibility shim for legacy pluralized callers.
+  # Association remains has_one.
+  def user_social_googles
+    user_social_google ? [user_social_google] : []
+  end
 
-    def ensure_withdrawal_requestable!(now)
-      raise Sign::WithdrawalCooldownError.new(withdraw_cooldown_until: withdraw_cooldown_until) if withdrawal_cooldown_active?(now)
-      raise Sign::InvalidWithdrawalStateError.new(status_id) unless active?
-    end
+  # what is this?
+  def has_verified_recovery_identity?
+    has_verified_pii?
+  end
 
-    def ensure_withdrawal_finalizable!(now)
-      raise Sign::WithdrawalCooldownError.new(withdraw_cooldown_until: withdraw_cooldown_until) if withdrawal_cooldown_active?(now)
-      raise Sign::InvalidWithdrawalStateError.new(status_id) unless pre_withdrawal_condition?
-    end
+  def has_verified_pii?
+    verified_email? || verified_telephone?
+  end
 
-    def ensure_withdrawal_deletable!(now)
-      raise Sign::WithdrawalCooldownError.new(withdraw_cooldown_until: withdraw_cooldown_until) if withdrawal_cooldown_active?(now)
-    end
+  def login_methods_remaining?(excluding_provider: nil)
+    remaining_login_methods(excluding_provider: excluding_provider).any?
+  end
 
-    def apply_withdrawal_request!(requested_at)
-      update!(
-        status_id: UserStatus::PRE_WITHDRAWAL_CONDITION,
-        withdraw_requested_at: requested_at,
-        withdraw_scheduled_at: requested_at + WITHDRAWAL_SCHEDULE_PERIOD,
-        withdraw_cooldown_until: requested_at + WITHDRAWAL_COOLDOWN_PERIOD,
-      )
-    end
+  def remaining_login_methods(excluding_provider: nil)
+    excluded = excluding_provider.present? ? SocialIdentifiable.normalize_provider(excluding_provider) : nil
+    methods = []
 
-    def apply_permanent_withdrawal!(finalized_at)
-      transaction do
-        update!(status_id: UserStatus::WITHDRAWN)
-        invalidate_all_sessions!(finalized_at)
-      end
-    end
+    methods << :google if active_social_provider?("google") && excluded != "google"
+    methods << :apple if active_social_provider?("apple") && excluded != "apple"
+    methods << :email if verified_email?
+    methods << :passkey if passkey_login_available?
 
-    def invalidate_all_sessions!(revoked_at)
-      TokenRecord.connected_to(role: :writing) do
-        user_tokens.where(revoked_at: nil).update_all(revoked_at: revoked_at) # rubocop:disable Rails/SkipsModelValidations
-      end
+    methods
+  end
+
+  def active_social_provider?(provider)
+    normalized = SocialIdentifiable.normalize_provider(provider)
+    case normalized
+    when "google"
+      user_social_google&.user_identity_social_google_status_id == UserSocialGoogleStatus::ACTIVE
+    when "apple"
+      user_social_apple&.user_identity_social_apple_status_id == UserSocialAppleStatus::ACTIVE
+    else
+      false
     end
+  end
+
+  def verified_email?
+    user_emails.exists?(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS)
+  end
+
+  def verified_telephone?
+    user_telephones.exists?(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+  end
+
+  def passkey_login_available?
+    return false unless user_passkeys.active.exists?
+
+    verified_telephone?
+  end
+
+  def withdrawal_started?
+    withdrawal_started_at.present?
+  end
+
+  def deactivated?
+    deactivated_at.present?
+  end
+
+  def withdrawal_in_progress?
+    withdrawal_started? || deactivated?
+  end
 end

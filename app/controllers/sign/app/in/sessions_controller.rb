@@ -1,107 +1,210 @@
+# typed: false
 # frozen_string_literal: true
 
-# Manages session (refresh token) limits for App users.
-# When a user exceeds their maximum concurrent sessions during login,
-# they are redirected here to revoke existing sessions before proceeding.
+# Manages session limits for App users.
+#
+# When a user exceeds their maximum concurrent sessions (2 active) during login,
+# they are logged in with a "restricted" session that only allows session management.
+# This controller handles:
+#   - show: Display active and restricted sessions
+#   - update: Promote restricted session to active (after revoking an active session)
+#   - destroy: Cancel the restricted session (logout) or revoke a specific session
 #
 # Routes:
-#   GET  /in/email/session/edit    -> #edit
-#   PATCH /in/email/session        -> #update
-#   GET  /in/secret/session/edit   -> #edit
-#   PATCH /in/secret/session       -> #update
-#   GET  /in/passkeys/:passkey_id/sessions/edit -> #edit
-#   PATCH /in/passkeys/:passkey_id/sessions     -> #update
-class Sign::App::In::SessionsController < ApplicationController
+#   GET    /in/session  -> #show
+#   PATCH  /in/session  -> #update
+#   DELETE /in/session  -> #destroy
+#
+# The restricted session approach avoids blocking login while ensuring users
+# can manage their sessions. Invariant: max 1 restricted session per user.
+class Sign::App::In::SessionsController < Sign::App::ApplicationController
   include SessionLimitGate
 
-  # The gate is required for both edit and update actions
-  before_action :require_valid_gate
+  # This controller handles session management for both authenticated users
+  # and users who are in the process of logging in (with a pending gate).
+  # Override the default guest_only! policy to allow access.
+  public_strict!
 
-  # Display active sessions for the user to select which to revoke
-  def edit
-    @pending_user = load_pending_user
-    unless @pending_user
-      return redirect_to login_path,
-                         alert: I18n.t("session_limit.user_not_found", default: "ユーザーが見つかりません。もう一度ログインしてください。")
-    end
+  # For show/update/destroy, user must be logged in (even if restricted)
+  before_action :require_authentication_or_gate
 
-    @active_sessions = @pending_user.user_tokens.where(revoked_at: nil).order(created_at: :desc)
+  # Display active and restricted sessions for the user
+  def show
+    load_session_data
   end
 
-  # Revoke selected sessions
+  # Revoke selected sessions and optionally promote restricted to active
   def update
-    @pending_user = load_pending_user
-    unless @pending_user
-      return redirect_to login_path,
-                         alert: I18n.t("session_limit.user_not_found", default: "ユーザーが見つかりません。もう一度ログインしてください。")
-    end
+    @current_user = resolve_current_user
+    return redirect_to_login unless @current_user
 
-    revoke_ids = Array(params[:revoke_session_ids]).compact_blank
+    ref = params[:ref]
 
-    if revoke_ids.empty?
-      flash[:alert] = I18n.t("session_limit.no_sessions_selected", default: "無効化するセッションを選択してください。")
-      @active_sessions = @pending_user.user_tokens.where(revoked_at: nil).order(created_at: :desc)
-      return render :edit, status: :unprocessable_content
-    end
-
-    revoke_sessions_for_user(@pending_user, revoke_ids)
-    consume_session_limit_gate!
-    resolve_pending_sessions_for(@pending_user)
-
-    # Redirect back to the original login flow
-    return_path = session_limit_return_to
-    if return_path.present?
-      redirect_to return_path, notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
+    if ref.present?
+      # Revoke a specific session by signed reference
+      revoke_session_by_ref(@current_user, ref)
     else
-      redirect_to login_path, notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
+      # Revoke selected sessions by signed references
+      refs = Array(params[:revoke_refs]).compact_blank
+      if refs.empty?
+        flash[:alert] = I18n.t("sign.app.in.session.no_sessions_selected")
+        load_session_data
+        return render :show, status: :unprocessable_content
+      end
+
+      revoke_sessions_by_refs(@current_user, refs)
+    end
+
+    # Check if we can promote restricted session to active
+    if current_session_restricted? && can_promote_session?(@current_user)
+      promote_current_session!
+      consume_session_limit_gate!
+      session.delete(:pending_login_user_id)
+      return redirect_to_return_path(notice: I18n.t("sign.app.in.session.promoted"))
+    end
+
+    # Still restricted, stay on session management
+    flash[:notice] = I18n.t("sign.app.in.session.sessions_revoked")
+    load_session_data
+    render :show
+  end
+
+  # Cancel the restricted session (logout) or revoke a specific session
+  def destroy
+    @current_user = resolve_current_user
+    return redirect_to_login unless @current_user
+
+    ref = params[:ref]
+
+    if ref.present?
+      # Revoke a specific session by signed reference
+      revoke_session_by_ref(@current_user, ref)
+      load_session_data
+      render :show
+    else
+      # Cancel: revoke current restricted session and logout
+      if current_session&.restricted?
+        current_session.revoke!
+      end
+      consume_session_limit_gate!
+      session.delete(:pending_login_user_id)
+      log_out
+      redirect_to new_sign_app_in_path, notice: I18n.t("sign.app.in.session.cancelled")
     end
   end
 
   private
 
-    def require_valid_gate
-      require_session_limit_gate!(login_path: login_path)
+  def require_authentication_or_gate
+    # If logged in with a restricted session, allow access (this is the intended user)
+    if logged_in? && current_session_restricted?
+      return
     end
 
-    def login_path
-      new_sign_app_in_path
+    # If logged in with an active (non-restricted) session, deny access.
+    # This page is only for users in the restricted session state (3rd login).
+    if logged_in?
+      head :forbidden
+      return
     end
 
-    # Load the user whose session we're managing.
-    # The user ID is stored in the session during the login flow.
-    def load_pending_user
-      return session_limit_pending_user if defined?(session_limit_pending_user) && session_limit_pending_user
-
-      user_id = session[:pending_login_user_id]
-      return nil unless user_id
-
-      User.find_by(id: user_id)
+    # If not logged in but has a valid gate, try to load pending user
+    if session_limit_gate_valid? && session[:pending_login_user_id].present?
+      return
     end
 
-    # Revoke selected sessions in a transaction with row locking
-    def revoke_sessions_for_user(user, session_ids)
+    redirect_to_login
+  end
+
+  def redirect_to_login
+    redirect_to new_sign_app_in_path,
+                alert: I18n.t("sign.app.in.session.login_required")
+  end
+
+  def redirect_to_return_path(notice:)
+    return_path = retrieve_redirect_parameter || session_limit_return_to
+    consume_session_limit_gate!
+
+    if return_path.present?
+      flash[:notice] = notice
+      jump_to_generated_url(return_path, fallback: sign_app_configuration_path)
+    else
+      redirect_to sign_app_configuration_path, notice: notice
+    end
+  end
+
+  def resolve_current_user
+    # Prefer current_resource (logged in user)
+    return current_resource if current_resource
+
+    # Fall back to pending user from gate
+    user_id = session[:pending_login_user_id]
+    User.find_by(id: user_id) if user_id
+  end
+
+  def load_session_data
+    @current_user = resolve_current_user
+    return unless @current_user
+
+    @active_sessions = @current_user.user_tokens.active_status.order(created_at: :desc)
+    @restricted_sessions = @current_user.user_tokens.restricted_status.order(created_at: :desc)
+    @current_session_public_id = current_session_public_id
+  end
+
+  def can_promote_session?(user)
+    # Can promote if active session count is below limit
+    active_count =
       TokenRecord.connected_to(role: :writing) do
-        UserToken.transaction do
-          # Lock the user row to serialize concurrent operations
-          user.lock! if user.respond_to?(:lock!)
+        UserToken.active_status.where(user_id: user.id).count
+      end
+    active_count < UserToken::MAX_SESSIONS_PER_USER
+  end
 
-          sessions_to_revoke = user.user_tokens
-                                   .where(id: session_ids, revoked_at: nil)
+  def promote_current_session!
+    return unless current_session&.restricted?
 
-          sessions_to_revoke.find_each do |token|
-            token.update!(revoked_at: Time.current)
-            # TODO: Add revoked_reason if column exists
-            # token.update!(revoked_at: Time.current, revoked_reason: "concurrent_sessions_limit")
-          end
+    TokenRecord.connected_to(role: :writing) do
+      current_session.promote_to_active!
+    end
+    @current_session = nil # Clear cached session
+  end
 
-          def resolve_pending_sessions_for(user)
-            return unless session_limit_pending?
+  def revoke_session_by_ref(user, ref)
+    token = UserToken.find_from_signed_ref(ref)
+    unless token && token.user_id == user.id
+      flash[:alert] = I18n.t("sign.app.in.session.invalid_session")
+      return
+    end
 
-            remaining = count_active_sessions(user)
+    # Don't allow revoking the current session via ref (use destroy without ref for that)
+    if token.public_id == current_session_public_id
+      flash[:alert] = I18n.t("sign.app.in.session.cannot_revoke_current")
+      return
+    end
 
-            clear_pending_login_resource! if remaining <= max_sessions_for_resource(user)
-          end
+    TokenRecord.connected_to(role: :writing) do
+      token.revoke!
+    end
+
+    flash[:notice] = I18n.t("sign.app.in.session.session_revoked")
+  end
+
+  def revoke_sessions_by_refs(user, refs)
+    revoked_count = 0
+
+    TokenRecord.connected_to(role: :writing) do
+      UserToken.transaction do
+        refs.each do |ref|
+          token = UserToken.find_from_signed_ref(ref)
+          next unless token && token.user_id == user.id
+          next if token.public_id == current_session_public_id # Skip current session
+
+          token.revoke!
+          revoked_count += 1
         end
       end
     end
+
+    revoked_count
+  end
 end

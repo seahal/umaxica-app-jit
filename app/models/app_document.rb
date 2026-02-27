@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,7 +6,7 @@
 # Table name: app_documents
 # Database name: document
 #
-#  id                 :uuid             not null, primary key
+#  id                 :bigint           not null, primary key
 #  expires_at         :datetime         default(Infinity), not null
 #  lock_version       :integer          default(0), not null
 #  permalink          :string(200)      default(""), not null
@@ -16,15 +17,15 @@
 #  revision_key       :string           default(""), not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
-#  latest_revision_id :uuid
-#  latest_version_id  :uuid
+#  latest_revision_id :bigint
+#  latest_version_id  :bigint
 #  slug_id            :string(32)       default(""), not null
-#  status_id          :string(255)      default("NEYO"), not null
+#  status_id          :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_app_documents_on_latest_revision_id           (latest_revision_id)
-#  index_app_documents_on_latest_version_id            (latest_version_id)
+#  index_app_documents_on_latest_revision_id           (latest_revision_id) UNIQUE
+#  index_app_documents_on_latest_version_id            (latest_version_id) UNIQUE
 #  index_app_documents_on_permalink                    (permalink) UNIQUE
 #  index_app_documents_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_app_documents_on_slug_id                      (slug_id)
@@ -32,8 +33,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (latest_revision_id => app_document_revisions.id)
-#  fk_rails_...  (latest_version_id => app_document_versions.id)
+#  fk_rails_...  (latest_revision_id => app_document_revisions.id) ON DELETE => nullify
+#  fk_rails_...  (latest_version_id => app_document_versions.id) ON DELETE => nullify
 #  fk_rails_...  (status_id => app_document_statuses.id)
 #
 
@@ -41,15 +42,21 @@ class AppDocument < DocumentRecord
   include ::SlugId
   include Document
 
+  validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
+
   belongs_to :app_document_status,
              class_name: "AppDocumentStatus",
              foreign_key: :status_id,
              inverse_of: :app_documents
+  validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
+
   belongs_to :latest_version_record,
              class_name: "AppDocumentVersion",
              foreign_key: :latest_version_id,
              inverse_of: :latest_document,
              optional: true
+  validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
+
   belongs_to :latest_revision_record,
              class_name: "AppDocumentRevision",
              foreign_key: :latest_revision_id,
@@ -58,8 +65,8 @@ class AppDocument < DocumentRecord
 
   has_many :app_document_versions, dependent: :delete_all, inverse_of: :app_document
   has_many :app_document_revisions, dependent: :delete_all, inverse_of: :app_document
-  has_many :app_document_audits,
-           class_name: "AppDocumentAudit",
+  has_many :app_document_behaviors,
+           class_name: "AppDocumentBehavior",
            foreign_key: :subject_id,
            inverse_of: :app_document,
            dependent: :delete_all
@@ -74,7 +81,7 @@ class AppDocument < DocumentRecord
   has_one :category_master,
           through: :category,
           source: :app_document_category_master
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 
   def latest_version
     app_document_versions.order(created_at: :desc).first!

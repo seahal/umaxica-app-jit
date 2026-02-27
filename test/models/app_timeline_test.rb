@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,27 +6,33 @@
 # Table name: app_timelines
 # Database name: news
 #
-#  id            :uuid             not null, primary key
-#  expires_at    :datetime         default(Infinity), not null
-#  lock_version  :integer          default(0), not null
-#  position      :integer          default(0), not null
-#  published_at  :datetime         default(Infinity), not null
-#  redirect_url  :string
-#  response_mode :string           default("html"), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  slug_id       :string(32)       default(""), not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  id                 :bigint           not null, primary key
+#  expires_at         :datetime         default(Infinity), not null
+#  lock_version       :integer          default(0), not null
+#  position           :integer          default(0), not null
+#  published_at       :datetime         default(Infinity), not null
+#  redirect_url       :string
+#  response_mode      :string           default("html"), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  latest_revision_id :bigint
+#  latest_version_id  :bigint
+#  slug_id            :string(32)       default(""), not null
+#  status_id          :bigint           default(1), not null
 #
 # Indexes
 #
+#  index_app_timelines_on_latest_revision_id           (latest_revision_id) UNIQUE
+#  index_app_timelines_on_latest_version_id            (latest_version_id) UNIQUE
 #  index_app_timelines_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_app_timelines_on_slug_id                      (slug_id)
 #  index_app_timelines_on_status_id                    (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => app_timeline_statuses.id)
+#  fk_app_timelines_on_status_id  (status_id => app_timeline_statuses.id)
+#  fk_rails_...                   (latest_revision_id => app_timeline_revisions.id) ON DELETE => nullify
+#  fk_rails_...                   (latest_version_id => app_timeline_versions.id) ON DELETE => nullify
 #
 
 require "test_helper"
@@ -36,7 +43,7 @@ class AppTimelineTest < ActiveSupport::TestCase
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
-      position: 0
+      position: 0,
     }
   end
 
@@ -68,9 +75,11 @@ class AppTimelineTest < ActiveSupport::TestCase
 
   test "redirect_url is required when response_mode is redirect" do
     timeline = AppTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: nil))
+
     assert_not timeline.valid?
 
     timeline = AppTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: "https://example.com"))
+
     assert_predicate timeline, :valid?
   end
 
@@ -112,6 +121,7 @@ class AppTimelineTest < ActiveSupport::TestCase
 
   test "published_at must be before expires_at" do
     timeline = AppTimeline.new(base_attrs.merge(published_at: 1.day.from_now, expires_at: 1.day.ago))
+
     assert_not timeline.valid?
     assert_not_empty timeline.errors[:published_at]
   end

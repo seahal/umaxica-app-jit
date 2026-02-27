@@ -3,14 +3,14 @@
 # Table name: zip_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(16)       default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
@@ -21,19 +21,13 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => zip_occurrence_statuses.id)
+#  fk_zip_occurrences_on_status_id  (status_id => zip_occurrence_statuses.id)
 #
 one:
-  status_id: "NEYO"
-  public_id: "one_zip_occ_id_000001"
+  public_id: one_zip_occ_id_000001
   body: "90210"
-  expires_at: <%= 1.year.from_now %>
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-one:
-  status_id: "NEYO"
-  public_id: "one_zip_occ_id_000001"
-  body: "90210"
+  memo: ""
+  status_id: <%= ZipOccurrenceStatus::ACTIVE %>
   expires_at: <%= 1.year.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

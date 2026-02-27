@@ -1,61 +1,60 @@
+# typed: false
 # frozen_string_literal: true
 
-Rails.application.routes.draw do
-  scope module: :news, as: :news do
-    constraints host: ENV["NEWS_CORPORATE_URL"] do
-      scope module: :com, as: :com do
-        root to: "roots#index"
-        # health check for html/json
-        resource :health, only: :show
-        # Edge API endpoint (browser/SPA)
-        namespace :edge do
-          namespace :v1, defaults: { format: :json } do
-            resource :health, only: :show
-            resources :posts, only: [ :index, :show ] do
-              resources :versions, only: [ :index, :show ]
-            end
-            resources :tags, only: :index
-            resources :categories, only: :index
+scope module: :news, as: :news do
+  constraints host: ENV["NEWS_CORPORATE_URL"] do
+    scope module: :com, as: :com do
+      root to: "roots#index"
+      # health check for html/json
+      resource :health, only: :show
+      # Edge API endpoint (browser/SPA)
+      namespace :edge do
+        namespace :v1, defaults: { format: :json } do
+          resource :health, only: :show
+          resources :posts, only: [:index, :show] do
+            resources :versions, only: [:index, :show]
           end
+          resources :tags, only: :index
+          resources :categories, only: :index
         end
       end
     end
+  end
 
-    constraints host: ENV["NEWS_SERVICE_URL"] do
-      scope module: :app, as: :app do
-        root to: "roots#index"
-        # health check for html/json
-        resource :health, only: :show
-        # Edge API endpoint (browser/SPA)
-        namespace :edge do
-          namespace :v1, defaults: { format: :json } do
-            resource :health, only: :show
-            resources :posts, only: [ :index, :show ] do
-              resources :versions, only: [ :index, :show ]
-            end
-            resources :tags, only: :index
-            resources :categories, only: :index
+  constraints host: ENV["NEWS_SERVICE_URL"] do
+    scope module: :app, as: :app do
+      root to: "roots#index"
+      # health check for html/json
+      resource :health, only: :show
+      # Edge API endpoint (browser/SPA)
+      namespace :edge do
+        namespace :v1, defaults: { format: :json } do
+          resource :health, only: :show
+          resources :posts, only: [:index, :show] do
+            resources :versions, only: [:index, :show]
           end
+          resources :tags, only: :index
+          resources :categories, only: :index
         end
       end
     end
+  end
 
-    # For Staff's webpages api.jp.example.org
-    constraints host: ENV["NEWS_STAFF_URL"] do
-      scope module: :org, as: :org do
-        root to: "roots#index"
-        # health check for html/json
-        resource :health, only: :show
-        # Edge API endpoint (browser/SPA)
-        namespace :edge do
-          namespace :v1, defaults: { format: :json } do
-            resource :health, only: :show
-            resources :posts, only: [ :index, :show ] do
-              resources :versions, only: [ :index, :show ]
-            end
-            resources :tags, only: :index
-            resources :categories, only: :index
+  # For Staff's webpages api.jp.example.org
+  constraints host: ENV["NEWS_STAFF_URL"] do
+    scope module: :org, as: :org do
+      root to: "roots#index"
+      # health check for html/json
+      resource :health, only: :show
+      # Edge API endpoint (browser/SPA)
+      namespace :edge do
+        namespace :v1, defaults: { format: :json } do
+          resource :health, only: :show
+          resources :posts, only: [:index, :show] do
+            resources :versions, only: [:index, :show]
           end
+          resources :tags, only: :index
+          resources :categories, only: :index
         end
       end
     end

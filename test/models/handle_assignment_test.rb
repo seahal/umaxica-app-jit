@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,18 +6,19 @@
 # Table name: handle_assignments
 # Database name: avatar
 #
-#  id                          :string           not null, primary key
+#  id                          :bigint           not null, primary key
 #  valid_from                  :timestamptz      not null
 #  valid_to                    :timestamptz      default(Infinity), not null
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
-#  assigned_by_actor_id        :string
-#  avatar_id                   :string           not null
-#  handle_assignment_status_id :string
-#  handle_id                   :string           not null
+#  assigned_by_actor_id        :bigint
+#  avatar_id                   :bigint           not null
+#  handle_assignment_status_id :bigint
+#  handle_id                   :bigint           not null
 #
 # Indexes
 #
+#  index_handle_assignments_on_assigned_by_actor_id         (assigned_by_actor_id)
 #  index_handle_assignments_on_avatar_id                    (avatar_id) UNIQUE WHERE (valid_to = 'infinity'::timestamp with time zone)
 #  index_handle_assignments_on_avatar_id_and_valid_from     (avatar_id,valid_from DESC)
 #  index_handle_assignments_on_handle_assignment_status_id  (handle_assignment_status_id)
@@ -35,7 +37,7 @@ require "test_helper"
 class HandleAssignmentTest < ActiveSupport::TestCase
   setup do
     unique_suffix = SecureRandom.hex(4)
-    @capability = AvatarCapability.create!(key: "normal-#{unique_suffix}", name: "Normal")
+    @capability = AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL)
     @system_handle = Handle.create!(
       handle: "__unassigned__#{unique_suffix}",
       is_system: true,
@@ -57,6 +59,7 @@ class HandleAssignmentTest < ActiveSupport::TestCase
     )
 
     valid_to = assignment.reload.valid_to
+
     assert_predicate valid_to, :present?
     assert valid_to.to_s == "infinity" || (valid_to.is_a?(Float) && valid_to == Float::INFINITY)
   end
@@ -83,11 +86,5 @@ class HandleAssignmentTest < ActiveSupport::TestCase
         valid_from: Time.current,
       )
     end
-  end
-
-  test "validates length of id" do
-    record = HandleAssignment.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
   end
 end

@@ -14,9 +14,9 @@ class ValidateMissingNotificationForeignKeys < ActiveRecord::Migration[8.2]
 
   private
 
-    def validate_notification_fk(from_table, to_table, column:)
-      return unless foreign_key_exists?(from_table, to_table, column: column)
+  def validate_notification_fk(from_table, to_table, column:)
+    return unless foreign_key_exists?(from_table, to_table, column: column)
 
-      validate_foreign_key from_table, to_table
-    end
+    validate_foreign_key from_table, to_table
+  end
 end

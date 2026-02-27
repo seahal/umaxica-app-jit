@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,17 +6,12 @@
 # Table name: organization_statuses
 # Database name: operator
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_department_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 class OrganizationStatus < OperatorRecord
-  include StringPrimaryKey
-
+  self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NOTHING = 1
   has_many :organizations,
            class_name: "Organization",
            foreign_key: :workspace_status_id,
@@ -25,7 +21,6 @@ class OrganizationStatus < OperatorRecord
            class_name: "Department",
            dependent: :restrict_with_error,
            inverse_of: :department_status
-  validates :id, uniqueness: { case_sensitive: false }
 
   self.primary_key = "id"
 end

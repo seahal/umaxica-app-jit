@@ -60,43 +60,43 @@ class ConstrainStaffPublicIdToLowercase8Chars < ActiveRecord::Migration[8.2]
 
   private
 
-    # Backfill rows with invalid public_id (empty, wrong length, invalid chars)
-    # Uses raw SQL to avoid model dependency and ensure migration stability
-    def backfill_invalid_public_ids
-      safety_assured do
-        # Find all staffs with invalid public_id
-        invalid_rows = execute(<<~SQL.squish)
-          SELECT id, public_id FROM staffs
-          WHERE public_id IS NULL
-             OR public_id = ''
-             OR char_length(public_id) != #{PUBLIC_ID_LENGTH}
-             OR public_id !~ '^[abcdefhjklmnpqrtuvwxy23456789]+$'
+  # Backfill rows with invalid public_id (empty, wrong length, invalid chars)
+  # Uses raw SQL to avoid model dependency and ensure migration stability
+  def backfill_invalid_public_ids
+    safety_assured do
+      # Find all staffs with invalid public_id
+      invalid_rows = execute(<<~SQL.squish)
+        SELECT id, public_id FROM staffs
+        WHERE public_id IS NULL
+           OR public_id = ''
+           OR char_length(public_id) != #{PUBLIC_ID_LENGTH}
+           OR public_id !~ '^[abcdefhjklmnpqrtuvwxy23456789]+$'
+      SQL
+
+      return if invalid_rows.ntuples.zero?
+
+      # Collect existing public_ids to avoid collision
+      existing_ids = Set.new(
+        execute("SELECT public_id FROM staffs WHERE public_id IS NOT NULL AND public_id != ''")
+          .pluck("public_id"),
+      )
+
+      invalid_rows.each do |row|
+        new_id = generate_unique_public_id(existing_ids)
+        existing_ids.add(new_id)
+
+        execute(<<~SQL.squish)
+          UPDATE staffs SET public_id = '#{new_id}' WHERE id = '#{row["id"]}'
         SQL
-
-        return if invalid_rows.ntuples.zero?
-
-        # Collect existing public_ids to avoid collision
-        existing_ids = Set.new(
-          execute("SELECT public_id FROM staffs WHERE public_id IS NOT NULL AND public_id != ''")
-            .pluck("public_id"),
-        )
-
-        invalid_rows.each do |row|
-          new_id = generate_unique_public_id(existing_ids)
-          existing_ids.add(new_id)
-
-          execute(<<~SQL.squish)
-            UPDATE staffs SET public_id = '#{new_id}' WHERE id = '#{row["id"]}'
-          SQL
-        end
       end
     end
+  end
 
-    # Generate a unique 8-char public_id not in existing_ids set
-    def generate_unique_public_id(existing_ids)
-      loop do
-        candidate = Array.new(PUBLIC_ID_LENGTH) { ALLOWED_CHARS[SecureRandom.random_number(ALLOWED_CHARS.length)] }.join
-        return candidate unless existing_ids.include?(candidate)
-      end
+  # Generate a unique 8-char public_id not in existing_ids set
+  def generate_unique_public_id(existing_ids)
+    loop do
+      candidate = Array.new(PUBLIC_ID_LENGTH) { ALLOWED_CHARS[SecureRandom.random_number(ALLOWED_CHARS.length)] }.join
+      return candidate unless existing_ids.include?(candidate)
     end
+  end
 end

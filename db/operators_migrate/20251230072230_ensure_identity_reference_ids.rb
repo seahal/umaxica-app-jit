@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class EnsureIdentityReferenceIds < ActiveRecord::Migration[8.2]
-  PASSKEY_STATUSES = %w[ACTIVE DISABLED DELETED NEYO].freeze
-  NEYO_ONLY_TABLES = %w[
+  PASSKEY_STATUSES = %w(ACTIVE DISABLED DELETED NEYO).freeze
+  NEYO_ONLY_TABLES = %w(
     user_identity_email_statuses
     user_identity_audit_levels
     staff_identity_audit_levels
-  ].freeze
+  ).freeze
 
   def up
     PASSKEY_STATUSES.each do |id|
@@ -24,15 +24,15 @@ class EnsureIdentityReferenceIds < ActiveRecord::Migration[8.2]
 
   private
 
-    def seed_id(table_name, _id)
-      return unless table_exists?(table_name)
+  def seed_id(table_name, _id)
+    return unless table_exists?(table_name)
 
-      has_timestamps = column_exists?(table_name, :created_at) && column_exists?(table_name, :updated_at)
+    has_timestamps = column_exists?(table_name, :created_at) && column_exists?(table_name, :updated_at)
 
-      safety_assured do
-        if has_timestamps
-        else
-        end
+    safety_assured do
+      if has_timestamps
+      else
       end
     end
+  end
 end

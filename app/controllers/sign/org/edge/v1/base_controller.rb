@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -11,15 +12,15 @@ module Sign
 
           private
 
-            def authenticate!
-              return if logged_in?
+          def authenticate!
+            return if logged_in?
 
-              render json: { error: "Unauthorized" }, status: :unauthorized
-            end
+            render json: { error: "Unauthorized" }, status: :unauthorized
+          end
 
-            def ensure_json_request
-              request.format = :json
-            end
+          def ensure_json_request
+            request.format = :json
+          end
         end
       end
     end

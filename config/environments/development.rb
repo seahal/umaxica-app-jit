@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "active_support/core_ext/integer/time"
@@ -100,18 +101,10 @@ Rails.application.configure do
   config.hosts << "news.app.localhost"
   config.hosts << "news.com.localhost"
   config.hosts << "news.org.localhost"
+  # Production hostnames allowed in development for Cloudflare Tunnel testing.
+  # Remove once local-only development is sufficient.
   config.hosts << "sign.umaxica.app"
   config.hosts << "sign.umaxica.org"
-
-  # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
-  # config.after_initialize do
-  #   Bullet.enable = true
-  #   Bullet.alert = true
-  #   Bullet.bullet_logger = true
-  #   Bullet.console = true
-  #   Bullet.rails_logger = true
-  #   Bullet.add_footer = true
-  # end
 
   ## file watcher
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
@@ -125,7 +118,7 @@ Rails.application.configure do
     user_name: ENV["RESEND_SMTP_USER_NAME"],
     password: Rails.application.credentials.dig(:RESEND_SMTP_PASSWORD),
     port: 465,
-    tls: true
+    tls: true,
   }
 
   # static file serve
@@ -136,7 +129,10 @@ Rails.application.configure do
 
   # Use Solid Queue in Development.
   config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
+  config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
 
   config.active_support.structured_logging = true # Enable structured logging
+
+  # Enable Gzip compression
+  config.middleware.use Rack::Deflater
 end

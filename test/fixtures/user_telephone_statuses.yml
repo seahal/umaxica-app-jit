@@ -4,29 +4,19 @@
 # Table name: user_telephone_statuses
 # Database name: principal
 #
-#  id :string(255)      default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_telephone_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 neyo:
-  id: NEYO
-unverified:
-  id: UNVERIFIED
-verified:
-  id: VERIFIED
-suspended:
-  id: SUSPENDED
+  id: 5
 deleted:
-  id: DELETED
-
+  id: 4
+suspended:
+  id: 3
+unverified:
+  id: 1
+verified:
+  id: 2
 unverified_with_sign_up:
-  id: UNVERIFIED_WITH_SIGN_UP
-
+  id: 6
 verified_with_sign_up:
-  id: VERIFIED_WITH_SIGN_UP
-
-active:
-  id: ACTIVE
-
+  id: 7

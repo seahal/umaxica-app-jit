@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,30 +6,28 @@
 # Table name: com_contact_emails
 # Database name: guest
 #
-#  id                     :string           not null, primary key
+#  id                     :bigint           not null, primary key
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
 #  email_address          :string(1000)     default(""), not null
 #  expires_at             :timestamptz      not null
-#  hotp_counter           :integer          default(0), not null
-#  hotp_secret            :string(255)      default(""), not null
-#  remaining_views        :integer          default(0), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  hotp_counter           :integer
+#  hotp_secret            :string
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
 #  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  com_contact_id         :uuid             not null
+#  com_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_com_contact_emails_on_com_contact_id       (com_contact_id) UNIQUE
-#  index_com_contact_emails_on_email_address        (email_address)
-#  index_com_contact_emails_on_expires_at           (expires_at)
-#  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#  index_com_contact_emails_on_com_contact_id_unique  (com_contact_id) UNIQUE
+#  index_com_contact_emails_on_email_address          (email_address)
 #
 # Foreign Keys
 #
@@ -43,15 +42,14 @@ class ComContactEmail < GuestRecord
   validates :token_digest, length: { maximum: 255 }
   validates :verifier_digest, length: { maximum: 255 }
   validates :com_contact_id, uniqueness: true
-  before_create :generate_id
-  before_save { self.email_address&.downcase! }
+
+  before_save { email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true
 
   # Encryptions
   encrypts :hotp_secret
 
   # Generate and store email verification code
-  # TODO: Rewrite this code to otp generator
   def generate_verifier!
     raw_code = SecureRandom.random_number(100_000..999_999).to_s # 6-digit code
     self.verifier_digest = Argon2::Password.create(raw_code)
@@ -62,11 +60,11 @@ class ComContactEmail < GuestRecord
   end
 
   # Verify the code
-  # TODO: Rewrite this code to otp verifier
   def verify_code(raw_code)
     return false if verifier_attempts_left <= 0
     return false if verifier_expires_at && Time.current >= verifier_expires_at
-    return false unless verifier_digest
+
+    # return false unless verifier_digest # Handled by Argon2 check
 
     if Argon2::Password.verify_password(raw_code.to_s, verifier_digest)
       update!(activated: true, verifier_attempts_left: 0)
@@ -77,12 +75,10 @@ class ComContactEmail < GuestRecord
     end
   end
 
-  # TODO: Rewrite this code to otp verifier
   def verifier_expired?
     verifier_expires_at && Time.current >= verifier_expires_at
   end
 
-  # TODO: Rewrite this code to otp verifier
   def can_resend_verifier?
     !activated && (verifier_expired? || verifier_attempts_left <= 0)
   end
@@ -118,12 +114,4 @@ class ComContactEmail < GuestRecord
       false
     end
   end
-
-  private
-
-    # TODO: rewrite this code to be concerned ... how about public_id.rb ?
-    #     : rename to generate_public_id
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
 end

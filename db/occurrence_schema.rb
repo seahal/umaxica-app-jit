@@ -10,501 +10,476 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_09_141217) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_21_100001) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "area_domain_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "area_occurrence_id", null: false
+  create_table "area_domain_occurrences", force: :cascade do |t|
+    t.bigint "area_occurrence_id", null: false
     t.datetime "created_at", null: false
-    t.uuid "domain_occurrence_id", null: false
+    t.bigint "domain_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["area_occurrence_id"], name: "index_area_domain_occurrences_on_area_occurrence_id"
+    t.index ["area_occurrence_id", "domain_occurrence_id"], name: "idx_area_domain_occ_on_ids", unique: true
     t.index ["domain_occurrence_id"], name: "index_area_domain_occurrences_on_domain_occurrence_id"
   end
 
-  create_table "area_email_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "area_occurrence_id", null: false
+  create_table "area_email_occurrences", force: :cascade do |t|
+    t.bigint "area_occurrence_id", null: false
     t.datetime "created_at", null: false
-    t.uuid "email_occurrence_id", null: false
+    t.bigint "email_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["area_occurrence_id"], name: "index_area_email_occurrences_on_area_occurrence_id"
+    t.index ["area_occurrence_id", "email_occurrence_id"], name: "idx_area_email_occ_on_ids", unique: true
     t.index ["email_occurrence_id"], name: "index_area_email_occurrences_on_email_occurrence_id"
   end
 
-  create_table "area_ip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "area_occurrence_id", null: false
+  create_table "area_ip_occurrences", force: :cascade do |t|
+    t.bigint "area_occurrence_id", null: false
     t.datetime "created_at", null: false
-    t.uuid "ip_occurrence_id", null: false
+    t.bigint "ip_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["area_occurrence_id"], name: "index_area_ip_occurrences_on_area_occurrence_id"
+    t.index ["area_occurrence_id", "ip_occurrence_id"], name: "idx_area_ip_occ_on_ids", unique: true
     t.index ["ip_occurrence_id"], name: "index_area_ip_occurrences_on_ip_occurrence_id"
   end
 
-  create_table "area_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_area_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_area_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "area_occurrence_statuses_id_format_check"
+  create_table "area_occurrence_statuses", force: :cascade do |t|
   end
 
-  create_table "area_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 255, default: "", null: false
+  create_table "area_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_area_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_area_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_area_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_area_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_area_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_area_occurrences_public_id_format"
   end
 
-  create_table "area_staff_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "area_occurrence_id", null: false
+  create_table "area_staff_occurrences", force: :cascade do |t|
+    t.bigint "area_occurrence_id", null: false
     t.datetime "created_at", null: false
-    t.uuid "staff_occurrence_id", null: false
+    t.bigint "staff_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["area_occurrence_id"], name: "index_area_staff_occurrences_on_area_occurrence_id"
+    t.index ["area_occurrence_id", "staff_occurrence_id"], name: "idx_area_staff_occ_on_ids", unique: true
     t.index ["staff_occurrence_id"], name: "index_area_staff_occurrences_on_staff_occurrence_id"
   end
 
-  create_table "area_telephone_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "area_occurrence_id", null: false
+  create_table "area_telephone_occurrences", force: :cascade do |t|
+    t.bigint "area_occurrence_id", null: false
     t.datetime "created_at", null: false
-    t.uuid "telephone_occurrence_id", null: false
+    t.bigint "telephone_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["area_occurrence_id"], name: "index_area_telephone_occurrences_on_area_occurrence_id"
+    t.index ["area_occurrence_id", "telephone_occurrence_id"], name: "idx_area_telephone_occ_on_ids", unique: true
     t.index ["telephone_occurrence_id"], name: "index_area_telephone_occurrences_on_telephone_occurrence_id"
   end
 
-  create_table "area_user_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "area_occurrence_id", null: false
+  create_table "area_user_occurrences", force: :cascade do |t|
+    t.bigint "area_occurrence_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_occurrence_id", null: false
-    t.index ["area_occurrence_id"], name: "index_area_user_occurrences_on_area_occurrence_id"
+    t.bigint "user_occurrence_id", null: false
+    t.index ["area_occurrence_id", "user_occurrence_id"], name: "idx_area_user_occ_on_ids", unique: true
     t.index ["user_occurrence_id"], name: "index_area_user_occurrences_on_user_occurrence_id"
   end
 
-  create_table "area_zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "area_occurrence_id", null: false
+  create_table "area_zip_occurrences", force: :cascade do |t|
+    t.bigint "area_occurrence_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "zip_occurrence_id", null: false
-    t.index ["area_occurrence_id"], name: "index_area_zip_occurrences_on_area_occurrence_id"
+    t.bigint "zip_occurrence_id", null: false
+    t.index ["area_occurrence_id", "zip_occurrence_id"], name: "idx_area_zip_occ_on_ids", unique: true
     t.index ["zip_occurrence_id"], name: "index_area_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "domain_email_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "domain_email_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "domain_occurrence_id", null: false
-    t.uuid "email_occurrence_id", null: false
+    t.bigint "domain_occurrence_id", null: false
+    t.bigint "email_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["domain_occurrence_id"], name: "index_domain_email_occurrences_on_domain_occurrence_id"
+    t.index ["domain_occurrence_id", "email_occurrence_id"], name: "idx_domain_email_occ_on_ids", unique: true
     t.index ["email_occurrence_id"], name: "index_domain_email_occurrences_on_email_occurrence_id"
   end
 
-  create_table "domain_ip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "domain_ip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "domain_occurrence_id", null: false
-    t.uuid "ip_occurrence_id", null: false
+    t.bigint "domain_occurrence_id", null: false
+    t.bigint "ip_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["domain_occurrence_id"], name: "index_domain_ip_occurrences_on_domain_occurrence_id"
+    t.index ["domain_occurrence_id", "ip_occurrence_id"], name: "idx_domain_ip_occ_on_ids", unique: true
     t.index ["ip_occurrence_id"], name: "index_domain_ip_occurrences_on_ip_occurrence_id"
   end
 
-  create_table "domain_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_domain_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_domain_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "domain_occurrence_statuses_id_format_check"
+  create_table "domain_occurrence_statuses", force: :cascade do |t|
   end
 
-  create_table "domain_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 253, default: "", null: false
+  create_table "domain_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_domain_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_domain_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_domain_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_domain_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_domain_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_domain_occurrences_public_id_format"
   end
 
-  create_table "domain_staff_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "domain_staff_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "domain_occurrence_id", null: false
-    t.uuid "staff_occurrence_id", null: false
+    t.bigint "domain_occurrence_id", null: false
+    t.bigint "staff_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["domain_occurrence_id"], name: "index_domain_staff_occurrences_on_domain_occurrence_id"
+    t.index ["domain_occurrence_id", "staff_occurrence_id"], name: "idx_domain_staff_occ_on_ids", unique: true
     t.index ["staff_occurrence_id"], name: "index_domain_staff_occurrences_on_staff_occurrence_id"
   end
 
-  create_table "domain_telephone_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "domain_telephone_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "domain_occurrence_id", null: false
-    t.uuid "telephone_occurrence_id", null: false
+    t.bigint "domain_occurrence_id", null: false
+    t.bigint "telephone_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["domain_occurrence_id"], name: "index_domain_telephone_occurrences_on_domain_occurrence_id"
+    t.index ["domain_occurrence_id", "telephone_occurrence_id"], name: "idx_domain_telephone_occ_on_ids", unique: true
     t.index ["telephone_occurrence_id"], name: "index_domain_telephone_occurrences_on_telephone_occurrence_id"
   end
 
-  create_table "domain_user_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "domain_user_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "domain_occurrence_id", null: false
+    t.bigint "domain_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_occurrence_id", null: false
-    t.index ["domain_occurrence_id"], name: "index_domain_user_occurrences_on_domain_occurrence_id"
+    t.bigint "user_occurrence_id", null: false
+    t.index ["domain_occurrence_id", "user_occurrence_id"], name: "idx_domain_user_occ_on_ids", unique: true
     t.index ["user_occurrence_id"], name: "index_domain_user_occurrences_on_user_occurrence_id"
   end
 
-  create_table "domain_zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "domain_zip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "domain_occurrence_id", null: false
+    t.bigint "domain_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "zip_occurrence_id", null: false
-    t.index ["domain_occurrence_id"], name: "index_domain_zip_occurrences_on_domain_occurrence_id"
+    t.bigint "zip_occurrence_id", null: false
+    t.index ["domain_occurrence_id", "zip_occurrence_id"], name: "idx_domain_zip_occ_on_ids", unique: true
     t.index ["zip_occurrence_id"], name: "index_domain_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "email_ip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "email_ip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "email_occurrence_id", null: false
-    t.uuid "ip_occurrence_id", null: false
+    t.bigint "email_occurrence_id", null: false
+    t.bigint "ip_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["email_occurrence_id"], name: "index_email_ip_occurrences_on_email_occurrence_id"
+    t.index ["email_occurrence_id", "ip_occurrence_id"], name: "idx_email_ip_occ_on_ids", unique: true
     t.index ["ip_occurrence_id"], name: "index_email_ip_occurrences_on_ip_occurrence_id"
   end
 
-  create_table "email_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_email_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_email_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "email_occurrence_statuses_id_format_check"
+  create_table "email_occurrence_statuses", force: :cascade do |t|
   end
 
-  create_table "email_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 255, default: "", null: false
+  create_table "email_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["body", "created_at"], name: "index_email_occurrences_on_body_created_at"
     t.index ["body"], name: "index_email_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_email_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_email_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_email_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_email_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_email_occurrences_public_id_format"
+    t.check_constraint "char_length(memo::text) <= 1000", name: "chk_email_occurrences_memo_length"
   end
 
-  create_table "email_staff_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "email_staff_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "email_occurrence_id", null: false
-    t.uuid "staff_occurrence_id", null: false
+    t.bigint "email_occurrence_id", null: false
+    t.bigint "staff_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["email_occurrence_id"], name: "index_email_staff_occurrences_on_email_occurrence_id"
+    t.index ["email_occurrence_id", "staff_occurrence_id"], name: "idx_email_staff_occ_on_ids", unique: true
     t.index ["staff_occurrence_id"], name: "index_email_staff_occurrences_on_staff_occurrence_id"
   end
 
-  create_table "email_telephone_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "email_telephone_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "email_occurrence_id", null: false
-    t.uuid "telephone_occurrence_id", null: false
+    t.bigint "email_occurrence_id", null: false
+    t.bigint "telephone_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["email_occurrence_id"], name: "index_email_telephone_occurrences_on_email_occurrence_id"
+    t.index ["email_occurrence_id", "telephone_occurrence_id"], name: "idx_email_telephone_occ_on_ids", unique: true
     t.index ["telephone_occurrence_id"], name: "index_email_telephone_occurrences_on_telephone_occurrence_id"
   end
 
-  create_table "email_user_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "email_user_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "email_occurrence_id", null: false
+    t.bigint "email_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_occurrence_id", null: false
-    t.index ["email_occurrence_id"], name: "index_email_user_occurrences_on_email_occurrence_id"
+    t.bigint "user_occurrence_id", null: false
+    t.index ["email_occurrence_id", "user_occurrence_id"], name: "idx_email_user_occ_on_ids", unique: true
     t.index ["user_occurrence_id"], name: "index_email_user_occurrences_on_user_occurrence_id"
   end
 
-  create_table "email_zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "email_zip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "email_occurrence_id", null: false
+    t.bigint "email_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "zip_occurrence_id", null: false
-    t.index ["email_occurrence_id"], name: "index_email_zip_occurrences_on_email_occurrence_id"
+    t.bigint "zip_occurrence_id", null: false
+    t.index ["email_occurrence_id", "zip_occurrence_id"], name: "idx_email_zip_occ_on_ids", unique: true
     t.index ["zip_occurrence_id"], name: "index_email_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "ip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_ip_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_ip_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "ip_occurrence_statuses_id_format_check"
+  create_table "ip_occurrence_statuses", force: :cascade do |t|
   end
 
-  create_table "ip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 64, default: "", null: false
+  create_table "ip_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["body", "created_at"], name: "index_ip_occurrences_on_body_created_at"
     t.index ["body"], name: "index_ip_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_ip_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_ip_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_ip_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_ip_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_ip_occurrences_public_id_format"
+    t.check_constraint "char_length(memo::text) <= 1000", name: "chk_ip_occurrences_memo_length"
   end
 
-  create_table "ip_staff_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "ip_staff_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "ip_occurrence_id", null: false
-    t.uuid "staff_occurrence_id", null: false
+    t.bigint "ip_occurrence_id", null: false
+    t.bigint "staff_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["ip_occurrence_id"], name: "index_ip_staff_occurrences_on_ip_occurrence_id"
+    t.index ["ip_occurrence_id", "staff_occurrence_id"], name: "idx_ip_staff_occ_on_ids", unique: true
     t.index ["staff_occurrence_id"], name: "index_ip_staff_occurrences_on_staff_occurrence_id"
   end
 
-  create_table "ip_telephone_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "ip_telephone_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "ip_occurrence_id", null: false
-    t.uuid "telephone_occurrence_id", null: false
+    t.bigint "ip_occurrence_id", null: false
+    t.bigint "telephone_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["ip_occurrence_id"], name: "index_ip_telephone_occurrences_on_ip_occurrence_id"
+    t.index ["ip_occurrence_id", "telephone_occurrence_id"], name: "idx_ip_telephone_occ_on_ids", unique: true
     t.index ["telephone_occurrence_id"], name: "index_ip_telephone_occurrences_on_telephone_occurrence_id"
   end
 
-  create_table "ip_user_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "ip_user_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "ip_occurrence_id", null: false
+    t.bigint "ip_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_occurrence_id", null: false
-    t.index ["ip_occurrence_id"], name: "index_ip_user_occurrences_on_ip_occurrence_id"
+    t.bigint "user_occurrence_id", null: false
+    t.index ["ip_occurrence_id", "user_occurrence_id"], name: "idx_ip_user_occ_on_ids", unique: true
     t.index ["user_occurrence_id"], name: "index_ip_user_occurrences_on_user_occurrence_id"
   end
 
-  create_table "ip_zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "ip_zip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "ip_occurrence_id", null: false
+    t.bigint "ip_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "zip_occurrence_id", null: false
-    t.index ["ip_occurrence_id"], name: "index_ip_zip_occurrences_on_ip_occurrence_id"
+    t.bigint "zip_occurrence_id", null: false
+    t.index ["ip_occurrence_id", "zip_occurrence_id"], name: "idx_ip_zip_occ_on_ids", unique: true
     t.index ["zip_occurrence_id"], name: "index_ip_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "staff_occurrence_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_staff_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "staff_occurrence_statuses_id_format_check"
+  create_table "staff_occurrence_statuses", force: :cascade do |t|
+    t.string "name", default: "", null: false
   end
 
-  create_table "staff_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 36, default: "", null: false
+  create_table "staff_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
+    t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
+    t.string "event_type", default: "", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_staff_occurrences_on_body", unique: true
+    t.index ["event_type", "created_at"], name: "index_staff_occurrences_on_event_type_and_created_at"
     t.index ["expires_at"], name: "index_staff_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_staff_occurrences_on_public_id", unique: true
-    t.index ["status_id"], name: "index_staff_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_staff_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_staff_occurrences_public_id_format"
+    t.index ["status_id", "created_at"], name: "index_staff_occurrences_on_status_id_and_created_at"
   end
 
-  create_table "staff_telephone_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "staff_telephone_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "staff_occurrence_id", null: false
-    t.uuid "telephone_occurrence_id", null: false
+    t.bigint "staff_occurrence_id", null: false
+    t.bigint "telephone_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["staff_occurrence_id"], name: "index_staff_telephone_occurrences_on_staff_occurrence_id"
+    t.index ["staff_occurrence_id", "telephone_occurrence_id"], name: "idx_staff_telephone_occ_on_ids", unique: true
     t.index ["telephone_occurrence_id"], name: "index_staff_telephone_occurrences_on_telephone_occurrence_id"
   end
 
-  create_table "staff_user_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "staff_user_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "staff_occurrence_id", null: false
+    t.bigint "staff_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_occurrence_id", null: false
-    t.index ["staff_occurrence_id"], name: "index_staff_user_occurrences_on_staff_occurrence_id"
+    t.bigint "user_occurrence_id", null: false
+    t.index ["staff_occurrence_id", "user_occurrence_id"], name: "idx_staff_user_occ_on_ids", unique: true
     t.index ["user_occurrence_id"], name: "index_staff_user_occurrences_on_user_occurrence_id"
   end
 
-  create_table "staff_zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "staff_zip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "staff_occurrence_id", null: false
+    t.bigint "staff_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "zip_occurrence_id", null: false
-    t.index ["staff_occurrence_id"], name: "index_staff_zip_occurrences_on_staff_occurrence_id"
+    t.bigint "zip_occurrence_id", null: false
+    t.index ["staff_occurrence_id", "zip_occurrence_id"], name: "idx_staff_zip_occ_on_ids", unique: true
     t.index ["zip_occurrence_id"], name: "index_staff_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "telephone_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_telephone_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_telephone_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "telephone_occurrence_statuses_id_format_check"
+  create_table "telephone_occurrence_statuses", force: :cascade do |t|
   end
 
-  create_table "telephone_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 32, default: "", null: false
+  create_table "telephone_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["body", "created_at"], name: "index_telephone_occurrences_on_body_created_at"
     t.index ["body"], name: "index_telephone_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_telephone_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_telephone_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_telephone_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_telephone_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_telephone_occurrences_public_id_format"
+    t.check_constraint "char_length(memo::text) <= 1000", name: "chk_telephone_occurrences_memo_length"
   end
 
-  create_table "telephone_user_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "telephone_user_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "telephone_occurrence_id", null: false
+    t.bigint "telephone_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_occurrence_id", null: false
-    t.index ["telephone_occurrence_id"], name: "index_telephone_user_occurrences_on_telephone_occurrence_id"
+    t.bigint "user_occurrence_id", null: false
+    t.index ["telephone_occurrence_id", "user_occurrence_id"], name: "idx_telephone_user_occ_on_ids", unique: true
     t.index ["user_occurrence_id"], name: "index_telephone_user_occurrences_on_user_occurrence_id"
   end
 
-  create_table "telephone_zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "telephone_zip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "telephone_occurrence_id", null: false
+    t.bigint "telephone_occurrence_id", null: false
     t.datetime "updated_at", null: false
-    t.uuid "zip_occurrence_id", null: false
-    t.index ["telephone_occurrence_id"], name: "index_telephone_zip_occurrences_on_telephone_occurrence_id"
+    t.bigint "zip_occurrence_id", null: false
+    t.index ["telephone_occurrence_id", "zip_occurrence_id"], name: "idx_telephone_zip_occ_on_ids", unique: true
     t.index ["zip_occurrence_id"], name: "index_telephone_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "user_occurrence_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_user_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "user_occurrence_statuses_id_format_check"
+  create_table "user_occurrence_statuses", force: :cascade do |t|
+    t.string "name", default: "", null: false
   end
 
-  create_table "user_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 36, default: "", null: false
+  create_table "user_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
+    t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
+    t.string "event_type", default: "", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_user_occurrences_on_body", unique: true
+    t.index ["event_type", "created_at"], name: "index_user_occurrences_on_event_type_and_created_at"
     t.index ["expires_at"], name: "index_user_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_user_occurrences_on_public_id", unique: true
-    t.index ["status_id"], name: "index_user_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_user_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_user_occurrences_public_id_format"
+    t.index ["status_id", "created_at"], name: "index_user_occurrences_on_status_id_and_created_at"
   end
 
-  create_table "user_zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "user_zip_occurrences", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_occurrence_id", null: false
-    t.uuid "zip_occurrence_id", null: false
-    t.index ["user_occurrence_id"], name: "index_user_zip_occurrences_on_user_occurrence_id"
+    t.bigint "user_occurrence_id", null: false
+    t.bigint "zip_occurrence_id", null: false
+    t.index ["user_occurrence_id", "zip_occurrence_id"], name: "idx_user_zip_occ_on_ids", unique: true
     t.index ["zip_occurrence_id"], name: "index_user_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "zip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.index "lower((id)::text)", name: "index_zip_occurrence_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_zip_occurrence_statuses_id_format"
-    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "zip_occurrence_statuses_id_format_check"
+  create_table "zip_occurrence_statuses", force: :cascade do |t|
   end
 
-  create_table "zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "body", limit: 16, default: "", null: false
+  create_table "zip_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
-    t.string "memo", limit: 1024, default: "", null: false
+    t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO", null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_zip_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_zip_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_zip_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_zip_occurrences_on_status_id"
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_zip_occurrences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_zip_occurrences_public_id_format"
   end
 
-  add_foreign_key "area_domain_occurrences", "area_occurrences"
-  add_foreign_key "area_domain_occurrences", "domain_occurrences"
-  add_foreign_key "area_email_occurrences", "area_occurrences"
-  add_foreign_key "area_email_occurrences", "email_occurrences"
-  add_foreign_key "area_ip_occurrences", "area_occurrences"
-  add_foreign_key "area_ip_occurrences", "ip_occurrences"
-  add_foreign_key "area_occurrences", "area_occurrence_statuses", column: "status_id"
-  add_foreign_key "area_staff_occurrences", "area_occurrences"
-  add_foreign_key "area_staff_occurrences", "staff_occurrences"
-  add_foreign_key "area_telephone_occurrences", "area_occurrences"
-  add_foreign_key "area_telephone_occurrences", "telephone_occurrences"
-  add_foreign_key "area_user_occurrences", "area_occurrences"
-  add_foreign_key "area_user_occurrences", "user_occurrences"
-  add_foreign_key "area_zip_occurrences", "area_occurrences"
-  add_foreign_key "area_zip_occurrences", "zip_occurrences"
-  add_foreign_key "domain_email_occurrences", "domain_occurrences"
-  add_foreign_key "domain_email_occurrences", "email_occurrences"
-  add_foreign_key "domain_ip_occurrences", "domain_occurrences"
-  add_foreign_key "domain_ip_occurrences", "ip_occurrences"
-  add_foreign_key "domain_occurrences", "domain_occurrence_statuses", column: "status_id"
-  add_foreign_key "domain_staff_occurrences", "domain_occurrences"
-  add_foreign_key "domain_staff_occurrences", "staff_occurrences"
-  add_foreign_key "domain_telephone_occurrences", "domain_occurrences"
-  add_foreign_key "domain_telephone_occurrences", "telephone_occurrences"
-  add_foreign_key "domain_user_occurrences", "domain_occurrences"
-  add_foreign_key "domain_user_occurrences", "user_occurrences"
-  add_foreign_key "domain_zip_occurrences", "domain_occurrences"
-  add_foreign_key "domain_zip_occurrences", "zip_occurrences"
-  add_foreign_key "email_ip_occurrences", "email_occurrences"
-  add_foreign_key "email_ip_occurrences", "ip_occurrences"
-  add_foreign_key "email_occurrences", "email_occurrence_statuses", column: "status_id"
-  add_foreign_key "email_staff_occurrences", "email_occurrences"
-  add_foreign_key "email_staff_occurrences", "staff_occurrences"
-  add_foreign_key "email_telephone_occurrences", "email_occurrences"
-  add_foreign_key "email_telephone_occurrences", "telephone_occurrences"
-  add_foreign_key "email_user_occurrences", "email_occurrences"
-  add_foreign_key "email_user_occurrences", "user_occurrences"
-  add_foreign_key "email_zip_occurrences", "email_occurrences"
-  add_foreign_key "email_zip_occurrences", "zip_occurrences"
-  add_foreign_key "ip_occurrences", "ip_occurrence_statuses", column: "status_id"
-  add_foreign_key "ip_staff_occurrences", "ip_occurrences"
-  add_foreign_key "ip_staff_occurrences", "staff_occurrences"
-  add_foreign_key "ip_telephone_occurrences", "ip_occurrences"
-  add_foreign_key "ip_telephone_occurrences", "telephone_occurrences"
-  add_foreign_key "ip_user_occurrences", "ip_occurrences"
-  add_foreign_key "ip_user_occurrences", "user_occurrences"
-  add_foreign_key "ip_zip_occurrences", "ip_occurrences"
-  add_foreign_key "ip_zip_occurrences", "zip_occurrences"
-  add_foreign_key "staff_occurrences", "staff_occurrence_statuses", column: "status_id"
-  add_foreign_key "staff_telephone_occurrences", "staff_occurrences"
-  add_foreign_key "staff_telephone_occurrences", "telephone_occurrences"
-  add_foreign_key "staff_user_occurrences", "staff_occurrences"
-  add_foreign_key "staff_user_occurrences", "user_occurrences"
-  add_foreign_key "staff_zip_occurrences", "staff_occurrences"
-  add_foreign_key "staff_zip_occurrences", "zip_occurrences"
-  add_foreign_key "telephone_occurrences", "telephone_occurrence_statuses", column: "status_id"
-  add_foreign_key "telephone_user_occurrences", "telephone_occurrences"
-  add_foreign_key "telephone_user_occurrences", "user_occurrences"
-  add_foreign_key "telephone_zip_occurrences", "telephone_occurrences"
-  add_foreign_key "telephone_zip_occurrences", "zip_occurrences"
-  add_foreign_key "user_occurrences", "user_occurrence_statuses", column: "status_id"
-  add_foreign_key "user_zip_occurrences", "user_occurrences"
-  add_foreign_key "user_zip_occurrences", "zip_occurrences"
-  add_foreign_key "zip_occurrences", "zip_occurrence_statuses", column: "status_id"
+  add_foreign_key "area_domain_occurrences", "area_occurrences", validate: false
+  add_foreign_key "area_domain_occurrences", "domain_occurrences", validate: false
+  add_foreign_key "area_email_occurrences", "area_occurrences", validate: false
+  add_foreign_key "area_email_occurrences", "email_occurrences", validate: false
+  add_foreign_key "area_ip_occurrences", "area_occurrences", validate: false
+  add_foreign_key "area_ip_occurrences", "ip_occurrences", validate: false
+  add_foreign_key "area_occurrences", "area_occurrence_statuses", column: "status_id", name: "fk_area_occurrences_on_status_id"
+  add_foreign_key "area_staff_occurrences", "area_occurrences", validate: false
+  add_foreign_key "area_staff_occurrences", "staff_occurrences", validate: false
+  add_foreign_key "area_telephone_occurrences", "area_occurrences", validate: false
+  add_foreign_key "area_telephone_occurrences", "telephone_occurrences", validate: false
+  add_foreign_key "area_user_occurrences", "area_occurrences", validate: false
+  add_foreign_key "area_user_occurrences", "user_occurrences", validate: false
+  add_foreign_key "area_zip_occurrences", "area_occurrences", validate: false
+  add_foreign_key "area_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "domain_email_occurrences", "domain_occurrences", validate: false
+  add_foreign_key "domain_email_occurrences", "email_occurrences", validate: false
+  add_foreign_key "domain_ip_occurrences", "domain_occurrences", validate: false
+  add_foreign_key "domain_ip_occurrences", "ip_occurrences", validate: false
+  add_foreign_key "domain_occurrences", "domain_occurrence_statuses", column: "status_id", name: "fk_domain_occurrences_on_status_id"
+  add_foreign_key "domain_staff_occurrences", "domain_occurrences", validate: false
+  add_foreign_key "domain_staff_occurrences", "staff_occurrences", validate: false
+  add_foreign_key "domain_telephone_occurrences", "domain_occurrences", validate: false
+  add_foreign_key "domain_telephone_occurrences", "telephone_occurrences", validate: false
+  add_foreign_key "domain_user_occurrences", "domain_occurrences", validate: false
+  add_foreign_key "domain_user_occurrences", "user_occurrences", validate: false
+  add_foreign_key "domain_zip_occurrences", "domain_occurrences", validate: false
+  add_foreign_key "domain_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "email_ip_occurrences", "email_occurrences", validate: false
+  add_foreign_key "email_ip_occurrences", "ip_occurrences", validate: false
+  add_foreign_key "email_occurrences", "email_occurrence_statuses", column: "status_id", name: "fk_email_occurrences_on_status_id"
+  add_foreign_key "email_staff_occurrences", "email_occurrences", validate: false
+  add_foreign_key "email_staff_occurrences", "staff_occurrences", validate: false
+  add_foreign_key "email_telephone_occurrences", "email_occurrences", validate: false
+  add_foreign_key "email_telephone_occurrences", "telephone_occurrences", validate: false
+  add_foreign_key "email_user_occurrences", "email_occurrences", validate: false
+  add_foreign_key "email_user_occurrences", "user_occurrences", validate: false
+  add_foreign_key "email_zip_occurrences", "email_occurrences", validate: false
+  add_foreign_key "email_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "ip_occurrences", "ip_occurrence_statuses", column: "status_id", name: "fk_ip_occurrences_on_status_id"
+  add_foreign_key "ip_staff_occurrences", "ip_occurrences", validate: false
+  add_foreign_key "ip_staff_occurrences", "staff_occurrences", validate: false
+  add_foreign_key "ip_telephone_occurrences", "ip_occurrences", validate: false
+  add_foreign_key "ip_telephone_occurrences", "telephone_occurrences", validate: false
+  add_foreign_key "ip_user_occurrences", "ip_occurrences", validate: false
+  add_foreign_key "ip_user_occurrences", "user_occurrences", validate: false
+  add_foreign_key "ip_zip_occurrences", "ip_occurrences", validate: false
+  add_foreign_key "ip_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "staff_occurrences", "staff_occurrence_statuses", column: "status_id", name: "fk_staff_occurrences_on_status_id"
+  add_foreign_key "staff_telephone_occurrences", "staff_occurrences", validate: false
+  add_foreign_key "staff_telephone_occurrences", "telephone_occurrences", validate: false
+  add_foreign_key "staff_user_occurrences", "staff_occurrences", validate: false
+  add_foreign_key "staff_user_occurrences", "user_occurrences", validate: false
+  add_foreign_key "staff_zip_occurrences", "staff_occurrences", validate: false
+  add_foreign_key "staff_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "telephone_occurrences", "telephone_occurrence_statuses", column: "status_id", name: "fk_telephone_occurrences_on_status_id"
+  add_foreign_key "telephone_user_occurrences", "telephone_occurrences", validate: false
+  add_foreign_key "telephone_user_occurrences", "user_occurrences", validate: false
+  add_foreign_key "telephone_zip_occurrences", "telephone_occurrences", validate: false
+  add_foreign_key "telephone_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "user_occurrences", "user_occurrence_statuses", column: "status_id", name: "fk_user_occurrences_on_status_id"
+  add_foreign_key "user_zip_occurrences", "user_occurrences", validate: false
+  add_foreign_key "user_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "zip_occurrences", "zip_occurrence_statuses", column: "status_id", name: "fk_zip_occurrences_on_status_id"
 end

@@ -1,16 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_document_category_masters
 # Database name: document
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  parent_id  :string(255)      default("NEYO"), not null
+#  id        :bigint           not null, primary key
+#  parent_id :bigint           not null
 #
 # Indexes
 #
-#  index_app_document_category_masters_on_lower_id   (lower((id)::text)) UNIQUE
 #  index_app_document_category_masters_on_parent_id  (parent_id)
 #
 # Foreign Keys
@@ -27,7 +25,7 @@ class AppDocumentCategoryMasterTest < ActiveSupport::TestCase
 
   private
 
-    def treeable_class
-      AppDocumentCategoryMaster
-    end
+  def treeable_class
+    AppDocumentCategoryMaster
+  end
 end

@@ -52,15 +52,54 @@ ja:
     contact_topic_description: "トピックの詳細です。"
     inquiry_detail: "問い合わせの詳細です。"
   sign:
+    shared:
+      sign_out:
+        title: "ログアウトしますか？"
+        button: "ログアウトします"
+        success: "ログアウトします"
     app:
-      common:
-        cancel: キャンセル
       preferences:
         title: "おこのみせってい"
-      configuration:
-        sessions:
-          index:
-            revoke_confirm: "このセッションを無効化しますか？"
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        edit:
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
     org:
       layout:
         nav:
@@ -198,44 +237,12 @@ ja:
               cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
               failed: "復旧処理に失敗しました。後でもう一度お試しください。"
             destroy:
+              permanent_unavailable: 永久消去機能は現在利用できません。
               success: "アカウントを完全に削除しました。"
               deleted: "アカウントを完全に削除しました。"
               not_withdrawn: "退会済みでないため、削除できません。"
               failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
             authenticate_error: "認証が必要です。ログインしてください。"
-        security:
-          edit:
-            title: "セキュリティ設定"
-            description: "認証要素、アクティブセッション、リカバリーコードを確認できます。"
-          cards:
-            totp:
-              title: "二段階認証 (TOTP)"
-              description: "認証アプリからのワンタイムコードが、ログインを保護します。"
-            passkeys:
-              title: "パスキー"
-              description: "WebAuthn 対応のデバイスを使ったパスワードレス認証です。"
-              stats_label: "件登録済み"
-            secrets:
-              title: "リカバリーコード"
-              description: "主要な認証手段が使えないときに使える使い捨てコードです。"
-              stats_label: "件保存済み"
-            sessions:
-              title: "アクティブセッション"
-              description: "現在ログイン中のデバイスセッションです。"
-              stats_label: "件アクティブ"
-          states:
-            enabled: "有効"
-            disabled: "未設定"
-          actions:
-            manage: "管理"
-            review: "再確認"
-          review:
-            heading: "セキュリティレビュー"
-            last_reauth: "直近の再認証:"
-            last_review: "レビュー更新:"
-          never: "記録なし"
-          update:
-            success: "セキュリティダッシュボードを更新しました。"
         sessions:
           revoke:
             success: "セッションを破棄しました。"
@@ -267,37 +274,6 @@ ja:
               success: "ログインしました。"
           destroy:
             jump_obj: sign in with email
-      org:
-        configuration:
-          security:
-            edit:
-              title: "セキュリティ設定"
-              description: "組織アカウントのパスキー、リカバリーコード、セッションを監視できます。"
-            cards:
-              passkeys:
-                title: "パスキー"
-                description: "スタッフ専用のパスキーでパスワードレス認証を安全に行います。"
-                stats_label: "件登録済み"
-              secrets:
-                title: "リカバリーコード"
-                description: "認証情報が失われたときに使える使い捨てコードです。"
-                stats_label: "件保存済み"
-              sessions:
-                title: "アクティブセッション"
-                description: "現在ログイン中のセッションを確認してください。"
-                stats_label: "件アクティブ"
-            states:
-              enabled: "有効"
-              disabled: "未設定"
-            actions:
-              manage: "管理"
-              review: "再確認"
-            review:
-              heading: "セキュリティレビュー"
-              last_review: "レビュー更新:"
-            never: "記録なし"
-            update:
-              success: "セキュリティダッシュボードを更新しました。"
   sign:
     app:
       social:
@@ -554,45 +530,6 @@ core:
           index:
             description: ワンタイムパスワード（TOTP）の設定を管理します。
             new_link: TOTP を新規作成
-        telephone:
-          index:
-            title: 電話番号の一覧
-            description: 登録済みの電話番号を管理します。
-            new_link: 電話番号を追加
-            verified: 認証済み
-            unverified: 未認証
-            empty: 電話番号は登録されていません。
-          new:
-            title: 電話番号を追加
-            description: 新しい電話番号を追加して、アカウントの管理をより安全にします。
-            help_text: 入力された電話番号にSMSで確認コードを送信します。
-          create:
-            verification_code_sent: 確認コードを送信しました。
-            already_registered: この電話番号は既に登録されています。
-            turnstile_validation_failed: ボット検証に失敗しました。もう一度お試しください。
-          edit:
-            title: 電話番号の確認
-            description: SMSに送信された確認コードを入力してください。
-            pass_code_label: 確認コード
-            pass_code_hint: 6桁の確認コードを入力してください。
-            sms_sent: "%{number} に確認コードを送信しました。"
-            session_expired: セッションの有効期限が切れました。最初からやり直してください。
-          update:
-            success: 電話番号が認証されました。
-            invalid_code: 確認コードが正しくありません。もう一度お試しください。
-            session_expired: セッションの有効期限が切れました。最初からやり直してください。
-            attempts_exceeded: 試行回数が上限を超えました。最初からやり直してください。
-          show:
-            title: 電話番号を認証しました
-            description: 電話番号の認証が完了しました。
-            verified: 認証済み
-            back_to_list: 電話番号の一覧に戻る
-            not_found: 電話番号が見つかりません。
-          destroy:
-            success: 電話番号を削除しました。
-            not_found: 電話番号が見つかりません。
-            confirm: この電話番号を削除してもよろしいですか？
-            last_telephone: 最後の認証済み電話番号は削除できません。
       registration:
         new:
           page_title: アカウント登録
@@ -693,11 +630,7 @@ core:
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
             submit: テーマ設定を保存
-      exits:
-        edit:
-          title: "ログアウトしますか？"
-        destroy:
-          success: "ログアウトします"
+      
       configuration:
         withdrawal:
           show:
@@ -740,11 +673,9 @@ core:
             deleted: "アカウントを完全に削除しました。"
             not_withdrawn: "退会済みでないため、削除できません。"
           errors:
-            cooldown_active: "クールダウン中のため退会操作を行えません。"
             invalid_state: "この操作は実行できません。アカウントの状態が無効です: %{current_status}"
             recovery_not_available: "このアカウントは復旧できません。復旧期間が終了しています。"
             deletion_failed: "アカウント削除に失敗しました。もう一度お試しいただくか、サポートにお問い合わせください。"
-            finalized: "退会が確定しているため操作できません。"
     org:
       root:
         registration: 新規登録
@@ -754,11 +685,7 @@ core:
           log_in: "ログイン"
           configuration: "設定"
           logout: "ログアウト"
-      exits:
-        edit:
-          title: "ログアウトしますか？"
-        destroy:
-          success: "ログアウトします"
+      
       withdrawal:
         create:
           already_withdrawn: "既に退会済みです。"
@@ -1750,6 +1677,46 @@ core:
       apex_preference: "Apexの設定"
   sign:
     app:
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        edit:
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
       configuration:
         withdrawal:
           show:

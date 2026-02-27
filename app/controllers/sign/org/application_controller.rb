@@ -1,39 +1,46 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
   module Org
     class ApplicationController < ActionController::Base
-      include Pundit::Authorization
+      include ::Fuse
       include ::RateLimit
+      include ::Authentication::Staff
+      include ::Authorization::Staff
+      include ::Verification::Staff
       include ::Preference::Global
-      include ::Auth::Staff
-      include SessionLimitPendingGuard
+      include Pundit::Authorization
+      include ::Current
+      include ::Finisher
 
-      guest_only!
-      include ::Sign::ErrorResponses
+      before_action :check_fuse!
+      before_action :enforce_access_policy!
+      before_action :enforce_verification_if_required
+      before_action :set_preferences_cookie
+      before_action :resolve_param_context
+      before_action :set_region
+      before_action :set_locale
+      before_action :set_timezone
+      before_action :set_color_theme
+      before_action :set_current
+      append_after_action :finish_request
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
-      before_action :set_locale
-      before_action :set_timezone
-      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
+      guest_only!
 
       private
 
-        def pending_allowed_actions
-          [
-            "sign/org/in/sessions#edit",
-            "sign/org/in/sessions#update",
-            "sign/org/outs#edit",
-            "sign/org/outs#destroy"
-          ]
-        end
-
-        def pending_session_limit_redirect_path
-          edit_sign_org_in_session_path
-        end
+      # Redirect logged-in users from guest_only! pages to the configuration page.
+      # Overrides Auth::Base#after_login_path. ri is added automatically via default_url_options.
+      def after_login_path
+        sign_org_configuration_path
+      rescue StandardError
+        "/"
+      end
     end
   end
 end

@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: avatar_follows
 # Database name: avatar
 #
-#  id                 :uuid             not null, primary key
+#  id                 :bigint           not null, primary key
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
-#  followed_avatar_id :string           not null
-#  follower_avatar_id :string           not null
+#  followed_avatar_id :bigint           not null
+#  follower_avatar_id :bigint           not null
 #
 # Indexes
 #

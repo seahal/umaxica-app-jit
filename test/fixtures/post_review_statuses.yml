@@ -3,14 +3,13 @@
 # Table name: post_review_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  key        :string           not null
-#  name       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_post_review_statuses_on_key  (key) UNIQUE
-#
-# Auto-generated minimal fixture
+neyo:
+  id: 1
+active:
+  id: 2
+inactive:
+  id: 3
+deleted:
+  id: 4

@@ -3,7 +3,7 @@
 # Table name: com_document_versions
 # Database name: document
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -15,13 +15,14 @@
 #  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  com_document_id :uuid             not null
+#  com_document_id :bigint           not null
 #  edited_by_id    :bigint
 #  public_id       :string(255)      default(""), not null
 #
 # Indexes
 #
 #  index_com_document_versions_on_com_document_id_and_created_at  (com_document_id,created_at)
+#  index_com_document_versions_on_edited_by_id                    (edited_by_id)
 #  index_com_document_versions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys
@@ -30,14 +31,15 @@
 #
 one:
   com_document: one
-  permalink: test-doc-one
-  response_mode: html
-  title: Test Document
-  description: Test description
-  body: Test body
-  published_at: <%= 1.day.ago %>
-  expires_at: <%= 1.year.from_now %>
-  edited_by_type: Staff
-  public_id: one_com_doc_ver_000001
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+  published_at: 2026-01-12 17:31:06
+  expires_at: 2026-01-12 17:31:06
+  permalink: p1
+  response_mode: normal
+  public_id: 216
+two:
+  com_document: two
+  published_at: 2026-01-12 17:31:06
+  expires_at: 2026-01-12 17:31:06
+  permalink: p2
+  response_mode: normal
+  public_id: 547

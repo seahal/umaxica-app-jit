@@ -2,7 +2,7 @@
 
 class ClearPermalinkAndRevisionKeyOnDocuments < ActiveRecord::Migration[8.2]
   def up
-    %i[app_documents com_documents org_documents].each do |table_name|
+    %i(app_documents com_documents org_documents).each do |table_name|
       next unless table_exists?(table_name)
 
       safety_assured do

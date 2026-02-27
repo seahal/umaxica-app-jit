@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Docs
@@ -9,7 +10,7 @@ module Docs
             @posts = [
               { id: 1, title: "Internal Handbook", updated_at: 2.days.ago },
               { id: 2, title: "Ops Runbook", updated_at: 1.day.ago },
-              { id: 3, title: "Security Notes", updated_at: Time.current }
+              { id: 3, title: "Security Notes", updated_at: Time.current },
             ]
 
             Rails.event.notify(
@@ -26,7 +27,7 @@ module Docs
               id: @post_id,
               title: "Internal Document #{@post_id}",
               body: "This is a placeholder internal document for #{@post_id}.",
-              updated_at: Time.current
+              updated_at: Time.current,
             }
 
             Rails.event.notify(

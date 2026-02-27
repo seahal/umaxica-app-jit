@@ -1,15 +1,10 @@
+# typed: false
 # == Schema Information
 #
 # Table name: client_statuses
 # Database name: principal
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_client_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
@@ -17,13 +12,11 @@
 require "test_helper"
 
 class ClientStatusTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-
-  test "validates length of id" do
-    record = ClientStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "status constants are defined" do
+    assert_equal 1, ClientStatus::ACTIVE
+    assert_equal 2, ClientStatus::INACTIVE
+    assert_equal 3, ClientStatus::PENDING
+    assert_equal 4, ClientStatus::DELETED
+    assert_equal 5, ClientStatus::NOTHING
   end
 end

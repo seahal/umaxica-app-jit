@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module News
@@ -9,7 +10,7 @@ module News
             @posts = [
               { id: 1, title: "Corporate Announcement", published_at: 2.days.ago },
               { id: 2, title: "Press Release", published_at: 1.day.ago },
-              { id: 3, title: "Media Kit Update", published_at: Time.current }
+              { id: 3, title: "Media Kit Update", published_at: Time.current },
             ]
 
             Rails.event.notify(
@@ -26,7 +27,7 @@ module News
               id: @post_id,
               title: "Corporate News #{@post_id}",
               body: "This is a placeholder corporate news post for #{@post_id}.",
-              published_at: Time.current
+              published_at: Time.current,
             }
 
             Rails.event.notify(

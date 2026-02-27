@@ -1,29 +1,19 @@
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-    <div class="mb-4 text-left">
-      <%= link_to new_sign_app_in_path(rd: params[:rd]),
-                  class: "inline-flex items-center gap-2 text-sm font-semibold text-zinc-500 hover:text-blue-600 transition-colors duration-300" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        <span><%= t("sign.app.authentication.new.back") %></span>
-      <% end %>
-    </div>
-    <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white"><%= t('sign.app.registration.telephone.new.page_title') %></h2>
+<% content_for :page_title, t('sign.app.registration.telephone.new.page_title') %>
+<div>
+  <div>
+    <h2><%= t('sign.app.registration.telephone.new.page_title') %></h2>
   </div>
 
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-    <%= form_with model: @user_telephone, url: sign_app_up_telephones_path, method: 'post', data: { turbo: false }, class: "space-y-6" do |form| %>
-      <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
-
+  <div>
+    <%= form_with model: @user_telephone, url: sign_app_up_telephones_path, method: 'post', data: { turbo: false } do |form| %>
       <% if @user_telephone.errors.any? %>
-        <div class="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
-          <div class="flex">
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800 dark:text-red-200"><%= pluralize(@user_telephone.errors.count, "error") %>
+        <div>
+          <div>
+            <div>
+              <h3><%= pluralize(@user_telephone.errors.count, "error") %>
                 prohibited this sample from being saved:</h3>
-              <div class="mt-2 text-sm text-red-700 dark:text-red-300">
-                <ul role="list" class="list-disc pl-5 space-y-1">
+              <div>
+                <ul role="list">
                   <% @user_telephone.errors.each do |error| %>
                     <li><%= error.full_message %></li>
                   <% end %>
@@ -35,48 +25,48 @@
       <% end %>
 
       <div>
-        <%= form.label :number, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
-        <div class="mt-2">
-          <%= form.text_field :number, autocomplete: "tel", required: true, class: "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-indigo-500" %>
+        <%= form.label :raw_number, UserTelephone.human_attribute_name(:number) %>
+        <div>
+          <%= form.text_field :raw_number, autocomplete: "tel", required: true %>
         </div>
       </div>
 
-      <div class="space-y-4">
-        <div class="relative flex gap-x-3">
-          <div class="flex h-6 items-center">
-            <%= form.check_box :confirm_policy, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:focus:ring-offset-gray-900" %>
+      <div>
+        <div>
+          <div>
+            <%= form.check_box :confirm_policy %>
           </div>
-          <div class="text-sm leading-6">
-            <%= form.label :confirm_policy, '利用規約に同意する', class: "font-medium text-gray-900 dark:text-white" %>
+          <div>
+            <%= form.label :confirm_policy, '利用規約に同意する' %>
           </div>
         </div>
 
-        <div class="relative flex gap-x-3">
-          <div class="flex h-6 items-center">
-            <%= form.check_box :confirm_using_mfa, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:focus:ring-offset-gray-900" %>
+        <div>
+          <div>
+            <%= form.check_box :confirm_using_mfa %>
           </div>
-          <div class="text-sm leading-6">
-            <%= form.label :confirm_using_mfa, 'MFAの利用を確認する', class: "font-medium text-gray-900 dark:text-white" %>
+          <div>
+            <%= form.label :confirm_using_mfa, 'MFAの利用を確認する' %>
           </div>
         </div>
       </div>
 
       <div>
-        <%= render "concern/cloudflare_turnstile" %>
+        <%= render "shared/cloudflare_turnstile" %>
       </div>
 
       <div>
-        <%= form.submit class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500" %>
+        <%= form.submit %>
       </div>
     <% end %>
 
-    <div class="mt-10 text-sm">
-      <div class="space-y-2">
+    <div>
+      <div>
         <div>
-          <%= link_to t('sign.app.registration.telephone.new.link_to_other_methods'), new_sign_app_up_path, class: "font-semibold leading-6 text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+          <%= link_to t('sign.app.registration.telephone.new.link_to_other_methods'), new_sign_app_up_path %>
         </div>
         <div>
-          <%= link_to t('sign.app.registration.telephone.new.link_to_sign_in'), new_sign_app_in_path, class: "font-semibold leading-6 text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+          <%= link_to t('sign.app.registration.telephone.new.link_to_sign_in'), new_sign_app_in_path %>
         </div>
       </div>
     </div>

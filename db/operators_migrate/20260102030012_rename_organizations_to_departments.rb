@@ -22,10 +22,11 @@ class RenameOrganizationsToDepartments < ActiveRecord::Migration[8.2]
     end
 
     # Rename the foreign key column in departments table
-    if table_exists?(:departments) && column_exists?(:departments, :organization_status_id)
-      safety_assured do
-        rename_column :departments, :organization_status_id, :department_status_id
-      end
+    return unless table_exists?(:departments) && column_exists?(:departments, :organization_status_id)
+
+    safety_assured do
+      rename_column :departments, :organization_status_id, :department_status_id
     end
+
   end
 end

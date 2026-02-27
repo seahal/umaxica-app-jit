@@ -10,8 +10,9 @@ class AddUserIdentityPasskeyStatusToUserIdentityPasskeys < ActiveRecord::Migrati
       add_index :user_identity_passkeys, :user_identity_passkey_status_id
     end
 
-    unless foreign_key_exists?(:user_identity_passkeys, :user_identity_passkey_statuses)
-      add_foreign_key :user_identity_passkeys, :user_identity_passkey_statuses, column: :user_identity_passkey_status_id, primary_key: :id
-    end
+    return if foreign_key_exists?(:user_identity_passkeys, :user_identity_passkey_statuses)
+
+    add_foreign_key :user_identity_passkeys, :user_identity_passkey_statuses, column: :user_identity_passkey_status_id, primary_key: :id
+
   end
 end

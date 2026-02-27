@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module News
@@ -11,7 +12,7 @@ module News
             @versions = [
               { id: 1, version: "1.0.0", created_at: 2.days.ago },
               { id: 2, version: "1.1.0", created_at: 1.day.ago },
-              { id: 3, version: "1.2.0", created_at: Time.current }
+              { id: 3, version: "1.2.0", created_at: Time.current },
             ]
 
             Rails.event.notify(
@@ -32,7 +33,7 @@ module News
               version: "1.#{@version_id}.0",
               title: "Sample News Version #{@version_id}",
               body: "This is the content of version #{@version_id}",
-              created_at: Time.current
+              created_at: Time.current,
             }
 
             Rails.event.notify(

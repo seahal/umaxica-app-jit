@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,36 +6,43 @@
 # Table name: user_passkeys
 # Database name: principal
 #
-#  id                     :uuid             not null, primary key
-#  description            :string           default(""), not null
-#  public_key             :text             not null
-#  sign_count             :bigint           default(0), not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  external_id            :uuid             not null
-#  public_id              :string(255)      default(""), not null
-#  user_id                :uuid             not null
-#  user_passkey_status_id :string(255)      default("ACTIVE"), not null
-#  webauthn_id            :string           default(""), not null
+#  id           :bigint           not null, primary key
+#  description  :string           default(""), not null
+#  last_used_at :datetime
+#  public_key   :text             not null
+#  sign_count   :bigint           default(0), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  external_id  :uuid             not null
+#  public_id    :string(21)       not null
+#  status_id    :bigint           default(1), not null
+#  user_id      :bigint           not null
+#  webauthn_id  :string           default(""), not null
 #
 # Indexes
 #
-#  idx_on_user_identity_passkey_status_id_f979a7d699  (user_passkey_status_id)
-#  index_user_identity_passkeys_on_user_id            (user_id)
-#  index_user_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
-#  index_user_passkeys_on_public_id                   (public_id) UNIQUE
+#  index_user_identity_passkeys_on_user_id  (user_id)
+#  index_user_passkeys_on_public_id         (public_id) UNIQUE
+#  index_user_passkeys_on_status_id         (status_id)
+#  index_user_passkeys_on_webauthn_id       (webauthn_id) UNIQUE
 #
 # Foreign Keys
 #
+#  fk_rails_...  (status_id => user_passkey_statuses.id)
 #  fk_rails_...  (user_id => users.id)
-#  fk_rails_...  (user_passkey_status_id => user_passkey_statuses.id)
 #
 
 require "test_helper"
 
 class UserPasskeyTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::ACTIVE)
+    UserEmailStatus.find_or_create_by!(id: UserEmailStatus::VERIFIED)
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    UserEmail.create!(
+      user: @user,
+      address: "passkey-model-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
     @passkey = UserPasskey.new(
       user: @user,
       webauthn_id: SecureRandom.uuid,
@@ -47,6 +55,21 @@ class UserPasskeyTest < ActiveSupport::TestCase
 
   test "should be valid" do
     assert_predicate @passkey, :valid?
+  end
+
+  test "defaults status_id to active" do
+    passkey = UserPasskey.new(user: @user, webauthn_id: "id3", public_key: "key3")
+
+    assert_equal UserPasskeyStatus::ACTIVE, passkey.status_id
+  end
+
+  test "status association uses status_id" do
+    status = UserPasskeyStatus.find(UserPasskeyStatus::ACTIVE)
+    @passkey.status = status
+    @passkey.save!
+
+    assert_equal status, @passkey.reload.status
+    assert_equal status.id, @passkey.status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -77,6 +100,46 @@ class UserPasskeyTest < ActiveSupport::TestCase
     assert_not duplicate.valid?
   end
 
+  test "db unique index rejects duplicate webauthn_id" do
+    @passkey.save!
+
+    now = Time.current
+    duplicate_row = {
+      user_id: @user.id,
+      webauthn_id: @passkey.webauthn_id,
+      external_id: SecureRandom.uuid,
+      public_key: "duplicate-key",
+      description: "Duplicate Passkey",
+      sign_count: 0,
+      status_id: UserPasskeyStatus::ACTIVE,
+      public_id: SecureRandom.urlsafe_base64(16)[0, 21],
+      created_at: now,
+      updated_at: now,
+    }
+
+    connection = UserPasskey.connection
+    insert_sql = <<~SQL.squish
+      INSERT INTO user_passkeys
+        (user_id, webauthn_id, external_id, public_key, description, sign_count,
+         status_id, public_id, created_at, updated_at)
+      VALUES
+        (#{duplicate_row[:user_id]},
+         #{connection.quote(duplicate_row[:webauthn_id])},
+         #{connection.quote(duplicate_row[:external_id])},
+         #{connection.quote(duplicate_row[:public_key])},
+         #{connection.quote(duplicate_row[:description])},
+         #{duplicate_row[:sign_count]},
+         #{duplicate_row[:status_id]},
+         #{connection.quote(duplicate_row[:public_id])},
+         #{connection.quote(duplicate_row[:created_at])},
+         #{connection.quote(duplicate_row[:updated_at])})
+    SQL
+
+    assert_raises(ActiveRecord::RecordNotUnique) do
+      connection.insert(insert_sql) # rubocop:disable Rails/SkipsModelValidations
+    end
+  end
+
   test "enforces maximum passkeys per user" do
     UserPasskey::MAX_PASSKEYS_PER_USER.times do |i|
       UserPasskey.create!(
@@ -103,12 +166,14 @@ class UserPasskeyTest < ActiveSupport::TestCase
   test "description is invalid when blank" do
     @passkey.description = ""
     @passkey.define_singleton_method(:set_defaults) { } # Skip callback to test validation
+
     assert_not @passkey.valid?
     assert_not_empty @passkey.errors[:description]
   end
 
   test "sign_count cannot be negative" do
     @passkey.sign_count = -1
+
     assert_not @passkey.valid?
     assert_not_empty @passkey.errors[:sign_count]
   end
@@ -117,5 +182,20 @@ class UserPasskeyTest < ActiveSupport::TestCase
     @passkey.save!
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { @passkey.reload }
+  end
+
+  test "is invalid on create when user has no verified recovery identity" do
+    user_without_identity = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    passkey = UserPasskey.new(
+      user: user_without_identity,
+      webauthn_id: SecureRandom.uuid,
+      external_id: SecureRandom.uuid,
+      public_key: "test-key",
+      description: "No Identity",
+      sign_count: 0,
+    )
+
+    assert_not passkey.valid?
+    assert_includes passkey.errors[:base], User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
 end

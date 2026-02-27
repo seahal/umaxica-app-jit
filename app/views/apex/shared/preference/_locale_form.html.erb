@@ -34,10 +34,8 @@ end %>
   </div>
 
   <div class="form-actions">
-    <%= f.submit t("apex.#{scope}.preference.locale.edit.submit"),
-                 class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 cursor-pointer" %>
+    <%= f.submit t("apex.#{scope}.preference.locale.edit.submit") %>
     <%= link_to t("apex.#{scope}.preference.locale.edit.cancel"),
-                public_send("apex_#{scope}_preference_path"),
-                class: "inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-md transition-colors duration-200" %>
+                public_send("apex_#{scope}_preference_path") %>
   </div>
 <% end %>

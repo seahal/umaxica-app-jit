@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddPositionToPreferenceReferenceTables < ActiveRecord::Migration[8.2]
-  REFERENCE_TABLES = %i[
+  REFERENCE_TABLES = %i(
     app_preference_statuses
     com_preference_statuses
     org_preference_statuses
@@ -23,7 +23,7 @@ class AddPositionToPreferenceReferenceTables < ActiveRecord::Migration[8.2]
     org_preference_region_options
     org_preference_timezone_options
     org_preference_colortheme_options
-  ].freeze
+  ).freeze
 
   disable_ddl_transaction!
 

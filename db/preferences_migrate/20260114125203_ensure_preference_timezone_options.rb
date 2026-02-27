@@ -2,12 +2,12 @@
 
 class EnsurePreferenceTimezoneOptions < ActiveRecord::Migration[8.2]
   def up
-    safety_assured do
-      timezone_ids = %w[Etc/UTC Asia/Tokyo]
+    timezone_ids = %w(Etc/UTC Asia/Tokyo)
 
-      %w[app com org].each do |namespace|
-        table_name = "#{namespace}_preference_timezone_options"
+    %w(app com org).each do |namespace|
+      table_name = "#{namespace}_preference_timezone_options"
 
+      safety_assured do
         values_sql = timezone_ids.map { |id| "('#{id}')" }.join(", ")
 
         execute <<~SQL.squish
@@ -28,10 +28,10 @@ class EnsurePreferenceTimezoneOptions < ActiveRecord::Migration[8.2]
   end
 
   def down
-    timezone_ids = %w[Etc/UTC Asia/Tokyo]
+    timezone_ids = %w(Etc/UTC Asia/Tokyo)
     ids_sql = timezone_ids.map { |id| "'#{id}'" }.join(", ")
 
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       table_name = "#{namespace}_preference_timezone_options"
 
       safety_assured do

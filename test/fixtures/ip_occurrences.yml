@@ -3,31 +3,32 @@
 # Table name: ip_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(64)       default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_ip_occurrences_on_body        (body) UNIQUE
-#  index_ip_occurrences_on_expires_at  (expires_at)
-#  index_ip_occurrences_on_public_id   (public_id) UNIQUE
-#  index_ip_occurrences_on_status_id   (status_id)
+#  index_ip_occurrences_on_body             (body) UNIQUE
+#  index_ip_occurrences_on_body_created_at  (body,created_at)
+#  index_ip_occurrences_on_expires_at       (expires_at)
+#  index_ip_occurrences_on_public_id        (public_id) UNIQUE
+#  index_ip_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => ip_occurrence_statuses.id)
+#  fk_ip_occurrences_on_status_id  (status_id => ip_occurrence_statuses.id)
 #
 one:
-  status_id: "NEYO"
   public_id: "one_ip_occ_id_0000001"
   body: "127.0.0.1"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
+  status_id: 2
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,16 +6,16 @@
 # Table name: domain_ip_occurrences
 # Database name: occurrence
 #
-#  id                   :uuid             not null, primary key
+#  id                   :bigint           not null, primary key
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  domain_occurrence_id :uuid             not null
-#  ip_occurrence_id     :uuid             not null
+#  domain_occurrence_id :bigint           not null
+#  ip_occurrence_id     :bigint           not null
 #
 # Indexes
 #
-#  index_domain_ip_occurrences_on_domain_occurrence_id  (domain_occurrence_id)
-#  index_domain_ip_occurrences_on_ip_occurrence_id      (ip_occurrence_id)
+#  idx_domain_ip_occ_on_ids                         (domain_occurrence_id,ip_occurrence_id) UNIQUE
+#  index_domain_ip_occurrences_on_ip_occurrence_id  (ip_occurrence_id)
 #
 # Foreign Keys
 #
@@ -25,4 +26,6 @@
 class DomainIpOccurrence < OccurrenceRecord
   belongs_to :domain_occurrence, inverse_of: :domain_ip_occurrences
   belongs_to :ip_occurrence, inverse_of: :domain_ip_occurrences
+
+  validates :domain_occurrence_id, uniqueness: { scope: :ip_occurrence_id }
 end

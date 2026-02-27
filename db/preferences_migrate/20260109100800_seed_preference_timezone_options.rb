@@ -2,9 +2,9 @@
 
 class SeedPreferenceTimezoneOptions < ActiveRecord::Migration[8.0]
   def up
-    timezone_ids = %w[Etc/UTC Asia/Tokyo]
+    timezone_ids = %w(Etc/UTC Asia/Tokyo)
 
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       safety_assured do
         timezone_ids.each do |tz_id|
           execute <<~SQL.squish
@@ -18,9 +18,9 @@ class SeedPreferenceTimezoneOptions < ActiveRecord::Migration[8.0]
   end
 
   def down
-    timezone_ids = %w[Etc/UTC Asia/Tokyo]
+    timezone_ids = %w(Etc/UTC Asia/Tokyo)
 
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       safety_assured do
         execute <<~SQL.squish
           DELETE FROM #{namespace}_preference_timezone_options

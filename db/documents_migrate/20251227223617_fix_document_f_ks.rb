@@ -2,7 +2,7 @@
 
 class FixDocumentFKs < ActiveRecord::Migration[8.2]
   def change
-    %i[org com app].each do |prefix|
+    %i(org com app).each do |prefix|
       # Tag Master Parent FK
       # Checker: OrgDocumentTagMaster parent should have foreign key
       remove_foreign_key "#{prefix}_document_tag_masters", "#{prefix}_document_tag_masters", column: :parent_id, if_exists: true

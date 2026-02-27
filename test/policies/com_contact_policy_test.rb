@@ -1,8 +1,13 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class ComContactPolicyTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses
+
+  fixtures :staffs, :staff_statuses, :users, :user_statuses
+
   class MockContact
     def initialize
     end
@@ -26,11 +31,13 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     staff = staffs(:one)
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:can_view?) { true }
+
     assert_predicate policy, :index?
 
     # Staff without view permission cannot view
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:can_view?) { false }
+
     assert_not policy.index?
 
     # User cannot view
@@ -40,10 +47,12 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     # logic: actor.is_a?(Staff) && can_view?
     # User is not Staff, so should be false regardless of can_view?
     policy.define_singleton_method(:can_view?) { true }
+
     assert_not policy.index?
 
     # Nil actor cannot view
     policy = ComContactPolicy.new(nil, @record)
+
     assert_not policy.index?
   end
 
@@ -52,17 +61,20 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     staff = staffs(:one)
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:can_view?) { true }
+
     assert_predicate policy, :show?
 
     # Staff without view permission cannot view (unless owner, but staff isn't owner here)
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:can_view?) { false }
+
     assert_not policy.show?
 
     # Owner user can view
     user = users(:one)
     record = OpenStruct.new(user_id: user.id)
     policy = ComContactPolicy.new(user, record)
+
     assert_predicate policy, :show?
 
     # Other user cannot view
@@ -77,16 +89,19 @@ class ComContactPolicyTest < ActiveSupport::TestCase
   def test_create
     # Nil actor can create
     policy = ComContactPolicy.new(nil, @record)
+
     assert_predicate policy, :create?
 
     # User can create
     user = users(:one)
     policy = ComContactPolicy.new(user, @record)
+
     assert_predicate policy, :create?
 
     # Staff cannot create
     staff = staffs(:one)
     policy = ComContactPolicy.new(staff, @record)
+
     assert_not policy.create?
   end
 
@@ -104,15 +119,18 @@ class ComContactPolicyTest < ActiveSupport::TestCase
 
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:admin_or_manager?) { true }
+
     assert_predicate policy, :update?
 
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:admin_or_manager?) { false }
+
     assert_not policy.update?
 
     # User cannot update
     user = users(:one)
     policy = ComContactPolicy.new(user, @record)
+
     assert_not policy.update?
   end
 
@@ -122,11 +140,13 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     # Admin can destroy
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:admin?) { true }
+
     assert_predicate policy, :destroy?
 
     # Non-admin cannot destroy
     policy = ComContactPolicy.new(staff, @record)
     policy.define_singleton_method(:admin?) { false }
+
     assert_not policy.destroy?
   end
 
@@ -155,23 +175,27 @@ class ComContactPolicyTest < ActiveSupport::TestCase
 
     policy_scope = scope_class.new(staff, ComContact)
     policy_scope.define_singleton_method(:admin_or_manager?) { true }
+
     assert_equal ComContact.all, policy_scope.resolve
 
     # Case 2: Regular Staff
     policy_scope = scope_class.new(staff, ComContact)
     policy_scope.define_singleton_method(:admin_or_manager?) { false }
     # Should be where(staff_id: [actor.id, nil])
-    expected = ComContact.where(staff_id: [ staff.id, nil ])
+    expected = ComContact.where(staff_id: [staff.id, nil])
+
     assert_equal expected, policy_scope.resolve
 
     # Case 3: User
     user = users(:one)
     policy_scope = scope_class.new(user, ComContact)
     expected = ComContact.where(user_id: user.id)
+
     assert_equal expected, policy_scope.resolve
 
     # Case 4: Nil
     policy_scope = scope_class.new(nil, ComContact)
+
     assert_equal ComContact.none, policy_scope.resolve
   end
 end

@@ -3,15 +3,15 @@
 # Table name: admins
 # Database name: operator
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  lock_version  :integer          default(0), not null
 #  moniker       :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  department_id :uuid
-#  public_id     :string
-#  staff_id      :uuid             not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  department_id :bigint
+#  public_id     :string           not null
+#  staff_id      :bigint           not null
+#  status_id     :bigint           default(2), not null
 #
 # Indexes
 #
@@ -26,10 +26,12 @@
 #  fk_rails_...  (staff_id => staffs.id)
 #  fk_rails_...  (status_id => admin_statuses.id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 admin_one:
-  staff_id: "9bc9480f-36cf-4c3a-ac81-7ed2f68867e9"
-  public_id: ADM001
-  moniker: Admin One
-  status_id: ACTIVE
+  staff: one
+  status_id: 2
+  public_id: admin_test_one
+admin_two:
+  staff: two
+  status_id: 2
+  public_id: admin_test_two

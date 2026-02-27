@@ -21,19 +21,19 @@ class FixPrimaryKeyTypes < ActiveRecord::Migration[8.2]
 
   private
 
-    def migrate_pk_type(table, to_type, using:, from:)
-      column = column_for(table, :id)
-      return unless column
-      return unless column.type == from
+  def migrate_pk_type(table, to_type, using:, from:)
+    column = column_for(table, :id)
+    return unless column
+    return unless column.type == from
 
-      safety_assured do
-        change_column table, :id, to_type, using: using
-      end
+    safety_assured do
+      change_column table, :id, to_type, using: using
     end
+  end
 
-    def column_for(table, name)
-      connection.columns(table).find { |col| col.name == name.to_s }
-    rescue ActiveRecord::StatementInvalid
-      nil
-    end
+  def column_for(table, name)
+    connection.columns(table).find { |col| col.name == name.to_s }
+  rescue ActiveRecord::StatementInvalid
+    nil
+  end
 end

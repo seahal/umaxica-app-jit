@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -7,10 +8,12 @@ module Core
   module Com
     module Contact
       class EmailsControllerTest < ActionDispatch::IntegrationTest
+        fixtures :com_contact_categories, :com_contact_statuses
+
         setup do
           @contact = ComContact.create!(
-            category_id: "SECURITY_ISSUE",
-            status_id: "SET_UP",
+            category_id: ComContactCategory::SECURITY_ISSUE,
+            status_id: ComContactStatus::SET_UP,
           )
 
           @contact_email = ComContactEmail.create!(
@@ -31,6 +34,7 @@ module Core
         test "should get new" do
           host! @host
           get new_core_com_contact_email_url(contact_id: @contact.public_id)
+
           assert_response :success
         end
 
@@ -45,10 +49,11 @@ module Core
 
           def send_message(to:, message:, subject: nil)
             _subject = subject
-            if to == @expected_to && message.match?(@expected_msg_regex)
-              @called = true
-              true
-            end
+            return unless to == @expected_to && message.match?(@expected_msg_regex)
+
+            @called = true
+            true
+
           end
         end
 
@@ -60,7 +65,7 @@ module Core
 
           AwsSmsService.stub :new, verifier do
             post core_com_contact_email_url(contact_id: @contact.public_id), params: {
-              com_contact_email: { hotp_code: code }
+              com_contact_email: { hotp_code: code },
             }
           end
 
@@ -68,7 +73,8 @@ module Core
           assert_response :redirect
 
           @contact.reload
-          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.status_id
+
+          assert_equal ComContactStatus::CHECKED_EMAIL_ADDRESS, @contact.status_id
           assert @contact_email.reload.activated
         end
 
@@ -81,14 +87,15 @@ module Core
           # Should not call AwsSmsService
           AwsSmsService.stub :new, -> { raise "Should not be called" } do
             post core_com_contact_email_url(contact_id: @contact.public_id), params: {
-              com_contact_email: { hotp_code: code }
+              com_contact_email: { hotp_code: code },
             }
           end
 
           assert_response :redirect
 
           @contact.reload
-          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.status_id
+
+          assert_equal ComContactStatus::CHECKED_EMAIL_ADDRESS, @contact.status_id
         end
 
         test "should not verify with invalid code" do
@@ -96,7 +103,7 @@ module Core
           @contact_email.generate_hotp!
 
           post core_com_contact_email_url(contact_id: @contact.public_id), params: {
-            com_contact_email: { hotp_code: "invalid" }
+            com_contact_email: { hotp_code: "invalid" },
           }
 
           assert_response :unprocessable_content
@@ -106,8 +113,9 @@ module Core
         test "should fail if code is blank" do
           host! @host
           post core_com_contact_email_url(contact_id: @contact.public_id), params: {
-            com_contact_email: { hotp_code: "" }
+            com_contact_email: { hotp_code: "" },
           }
+
           assert_response :unprocessable_content
         end
 
@@ -117,8 +125,9 @@ module Core
           @contact_email.update!(verifier_expires_at: 1.minute.ago)
 
           post core_com_contact_email_url(contact_id: @contact.public_id), params: {
-            com_contact_email: { hotp_code: "123456" }
+            com_contact_email: { hotp_code: "123456" },
           }
+
           assert_response :unprocessable_content
         end
 
@@ -128,8 +137,9 @@ module Core
           @contact_email.update!(verifier_attempts_left: 0)
 
           post core_com_contact_email_url(contact_id: @contact.public_id), params: {
-            com_contact_email: { hotp_code: "123456" }
+            com_contact_email: { hotp_code: "123456" },
           }
+
           assert_response :unprocessable_content
         end
 
@@ -139,7 +149,7 @@ module Core
           @contact_email.update!(verifier_attempts_left: 1)
 
           post core_com_contact_email_url(contact_id: @contact.public_id), params: {
-            com_contact_email: { hotp_code: "invalid" }
+            com_contact_email: { hotp_code: "invalid" },
           }
 
           assert_response :unprocessable_content
@@ -154,7 +164,7 @@ module Core
 
           AwsSmsService.stub :new, verifier do
             post core_com_contact_email_url(contact_id: @contact.public_id, ct: "test"), params: {
-              com_contact_email: { hotp_code: code }
+              com_contact_email: { hotp_code: code },
             }
           end
 
@@ -165,13 +175,15 @@ module Core
         test "should handle missing contact" do
           host! @host
           get new_core_com_contact_email_url(contact_id: "missing")
+
           assert_response :not_found
         end
 
         test "should handle invalid contact status" do
           host! @host
-          @contact.update!(status_id: "NEYO")
+          @contact.update!(status_id: ComContactStatus::NOTHING)
           get new_core_com_contact_email_url(contact_id: @contact.public_id)
+
           assert_response :unprocessable_content
         end
       end

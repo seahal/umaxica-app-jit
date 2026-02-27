@@ -1,93 +1,77 @@
 <% title t("sign.app.authentication.email.new.page_title") %>
 
-<div class="flex flex-col items-center justify-center min-h-[60vh]">
-  <div class="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 transition-all hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5 duration-500">
-    <div class="text-center mb-8">
-      <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group transition-transform duration-500 hover:scale-110">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
+<div>
+  <div>
+    <div>
+      <div>
+        <h1>
+          <%= t("sign.app.authentication.email.new.page_title") %>
+        </h1>
+        <p>
+          <%= t("sign.app.registration.new.social.disclaimer", product: "UMAXICA") %>
+        </p>
       </div>
-      <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2 tracking-tight font-outfit">
-        <%= t("sign.app.authentication.email.new.page_title") %>
-      </h1>
-      <p class="text-zinc-500 dark:text-zinc-400 text-sm">
-        <%= t("sign.app.registration.new.social.disclaimer", product: "UMAXICA") %>
-      </p>
-    </div>
 
-    <div class="mb-6 text-left">
-      <%= link_to new_sign_app_in_path(rd: params[:rd]),
-                  class: "inline-flex items-center gap-2 text-sm font-semibold text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        <span><%= t("sign.app.authentication.new.back") %></span>
-      <% end %>
-    </div>
+      <%= form_with model: @user_email,
+                    url: sign_app_in_email_path,
+                    data: { turbo: false } do |form| %>
+        <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
 
-    <%= form_with model: @user_email,
-                  url: sign_app_in_email_path,
-                  data: { turbo: false },
-                  class: "space-y-6" do |form| %>
-      <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
+        <% if @user_email.errors.any? %>
+          <div class="animate-shake">
+            <ul>
+              <% @user_email.errors.each do |error| %>
+                <li>
+                  <span><%= error.full_message %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
 
-      <% if @user_email.errors.any? %>
-        <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-2xl animate-shake">
-          <ul class="text-sm text-red-600 dark:text-red-400 list-none p-0 m-0">
-            <% @user_email.errors.each do |error| %>
-              <li class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span><%= error.full_message %></span>
-              </li>
-            <% end %>
-          </ul>
+        <div>
+          <%= form.label :address %>
+          <div>
+            <%= form.email_field :address,
+                                 placeholder: "name@example.com",
+                                 required: true %>
+            <div></div>
+          </div>
+        </div>
+
+        <div>
+          <%= render "shared/cloudflare_turnstile" %>
+        </div>
+
+        <div>
+          <%= form.submit t("actions.submit") %>
         </div>
       <% end %>
 
-      <div class="space-y-2 group">
-        <%= form.label :address, class: "block text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 ml-1" %>
-        <div class="relative">
-          <%= form.email_field :address,
-                               placeholder: "name@example.com",
-                               class: "w-full rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 px-5 py-4 text-zinc-900 dark:text-white transition-all duration-300 placeholder:text-zinc-400 focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 shadow-sm",
-                               required: true %>
-          <div class="absolute inset-y-0 left-0 w-1 bg-transparent group-focus-within:bg-blue-500 rounded-full transition-all duration-300"></div>
-        </div>
+      <div>
+        <%= link_to new_sign_app_in_path(rd: params[:rd]) do %>
+          <span><%= t("sign.app.authentication.new.back") %></span>
+        <% end %>
       </div>
-
-      <div class="py-2">
-        <%= render "concern/cloudflare_turnstile" %>
-      </div>
-
-      <div class="pt-2">
-        <%= form.submit t("actions.submit"),
-                        class: "w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer" %>
-
-      </div>
-    <% end %>
-
+    </div>
   </div>
-</div>
 
-<style>
-    @keyframes shake {
-        0%, 100% {
-            transform: translateX(0);
-        }
-        25% {
-            transform: translateX(-4px);
-        }
-        75% {
-            transform: translateX(4px);
-        }
-    }
+  <style>
+      @keyframes shake {
+          0%, 100% {
+              transform: translateX(0);
+          }
+          25% {
+              transform: translateX(-4px);
+          }
+          75% {
+              transform: translateX(4px);
+          }
+      }
 
-    .animate-shake {
-        animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
-    }
-</style>
+      .animate-shake {
+          animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+      }
+  </style>
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">

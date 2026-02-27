@@ -1,14 +1,15 @@
+# typed: false
 # == Schema Information
 #
 # Table name: avatar_mutes
 # Database name: avatar
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  expires_at      :datetime
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  muted_avatar_id :string           not null
-#  muter_avatar_id :string           not null
+#  muted_avatar_id :bigint           not null
+#  muter_avatar_id :bigint           not null
 #
 # Indexes
 #

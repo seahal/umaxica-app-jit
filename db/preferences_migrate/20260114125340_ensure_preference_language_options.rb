@@ -2,12 +2,12 @@
 
 class EnsurePreferenceLanguageOptions < ActiveRecord::Migration[8.2]
   def up
-    safety_assured do
-      language_ids = %w[EN JA]
+    language_ids = %w(EN JA)
 
-      %w[app com org].each do |namespace|
-        table_name = "#{namespace}_preference_language_options"
+    %w(app com org).each do |namespace|
+      table_name = "#{namespace}_preference_language_options"
 
+      safety_assured do
         values_sql = language_ids.map { |id| "('#{id}')" }.join(", ")
 
         execute <<~SQL.squish
@@ -28,10 +28,10 @@ class EnsurePreferenceLanguageOptions < ActiveRecord::Migration[8.2]
   end
 
   def down
-    language_ids = %w[EN JA]
+    language_ids = %w(EN JA)
     ids_sql = language_ids.map { |id| "'#{id}'" }.join(", ")
 
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       table_name = "#{namespace}_preference_language_options"
 
       safety_assured do

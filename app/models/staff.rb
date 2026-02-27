@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,29 +6,35 @@
 # Table name: staffs
 # Database name: operator
 #
-#  id           :uuid             not null, primary key
-#  lock_version :integer          default(0), not null
-#  withdrawn_at :datetime         default(Infinity)
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  public_id    :string(8)        not null
-#  status_id    :string(255)      default("NEYO"), not null
+#  id                   :bigint           not null, primary key
+#  lock_version         :integer          default(0), not null
+#  multi_factor_enabled :boolean          default(FALSE), not null
+#  shreddable_at        :datetime         default(Infinity), not null
+#  withdrawn_at         :datetime
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  public_id            :string           not null
+#  status_id            :bigint           default(2), not null
+#  visibility_id        :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_staffs_on_public_id     (public_id) UNIQUE
-#  index_staffs_on_status_id     (status_id)
-#  index_staffs_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#  index_staffs_on_public_id      (public_id) UNIQUE
+#  index_staffs_on_shreddable_at  (shreddable_at)
+#  index_staffs_on_status_id      (status_id)
+#  index_staffs_on_visibility_id  (visibility_id)
+#  index_staffs_on_withdrawn_at   (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (status_id => staff_statuses.id)
+#  fk_rails_...  (visibility_id => staff_visibilities.id)
 #
 
 class Staff < OperatorRecord
   # Staff represents an operator accountably for the staff/admin console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
-  self.ignored_columns += [ "admin_id", "webauthn_id" ]
+  self.ignored_columns += ["admin_id", "webauthn_id"]
 
   include Withdrawable
   include ::Accountably
@@ -37,10 +44,13 @@ class Staff < OperatorRecord
   PUBLIC_ID_ALPHABET = "abcdefhjklmnpqrtuvwxy23456789".freeze
   PUBLIC_ID_LENGTH = 8
 
-  attribute :status_id, default: StaffStatus::NEYO
+  attribute :status_id, default: StaffStatus::NOTHING
 
   belongs_to :staff_status,
              foreign_key: :status_id,
+             inverse_of: :staffs
+  belongs_to :visibility,
+             class_name: "StaffVisibility",
              inverse_of: :staffs
   has_many :staff_emails,
            dependent: :restrict_with_error,
@@ -51,12 +61,12 @@ class Staff < OperatorRecord
   has_many :staff_passkeys,
            dependent: :destroy,
            inverse_of: :staff
-  has_many :staff_audits,
+  has_many :staff_activities,
            -> { where(subject_type: "Staff") },
            foreign_key: :subject_id,
            dependent: :nullify,
            inverse_of: false
-  has_many :user_audits,
+  has_many :user_activities,
            as: :actor,
            dependent: :nullify
   has_many :staff_secrets,
@@ -88,9 +98,10 @@ class Staff < OperatorRecord
             length: { is: PUBLIC_ID_LENGTH },
             format: {
               with: /\A[abcdefhjklmnpqrtuvwxy23456789]{8}\z/,
-              message: :invalid_format
+              message: :invalid_format,
             }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
+  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
 
   before_validation :normalize_public_id
   before_validation :assign_public_id!, on: :create
@@ -103,28 +114,30 @@ class Staff < OperatorRecord
     false
   end
 
+  # Generate a random 8-character public_id from the allowed alphabet
+  def self.generate_public_id
+    Array.new(PUBLIC_ID_LENGTH) { PUBLIC_ID_ALPHABET[SecureRandom.random_number(PUBLIC_ID_ALPHABET.length)] }.join
+  end
+
+  delegate :generate_public_id, to: :class
+
   private
 
-    # Normalize public_id: strip whitespace, remove hyphens/underscores, downcase
-    # Examples: "ABCD-EFGH" -> "abcdefgh", " abcd_efgh " -> "abcdefgh"
-    def normalize_public_id
-      return if public_id.blank?
+  # Normalize public_id: strip whitespace, remove hyphens/underscores, downcase
+  # Examples: "ABCD-EFGH" -> "abcdefgh", " abcd_efgh " -> "abcdefgh"
+  def normalize_public_id
+    return if public_id.blank?
 
-      self.public_id = public_id.strip.gsub(/[-_]/, "").downcase
+    self.public_id = public_id.strip.gsub(/[-_]/, "").downcase
+  end
+
+  # Assign a unique public_id if not already set
+  def assign_public_id!
+    return if public_id.present?
+
+    loop do
+      self.public_id = generate_public_id
+      break unless self.class.exists?(public_id: public_id)
     end
-
-    # Assign a unique public_id if not already set
-    def assign_public_id!
-      return if public_id.present?
-
-      loop do
-        self.public_id = generate_public_id
-        break unless self.class.exists?(public_id: public_id)
-      end
-    end
-
-    # Generate a random 8-character public_id from the allowed alphabet
-    def generate_public_id
-      Array.new(PUBLIC_ID_LENGTH) { PUBLIC_ID_ALPHABET[SecureRandom.random_number(PUBLIC_ID_ALPHABET.length)] }.join
-    end
+  end
 end

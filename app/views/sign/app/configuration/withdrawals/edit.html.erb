@@ -1,11 +1,26 @@
-<h1><%= t("sign.app.configuration.withdrawal.edit.title") %></h1>
-<p><%= t("sign.app.configuration.withdrawal.edit.description") %></p>
+<% content_for :page_title, t("sign.app.configuration.withdrawal.recovery.page_title", default: "Withdrawal recovery") %>
 
-<%= form_with url: sign_app_configuration_withdrawal_path, method: :patch, local: true do |f| %>
-  <div>
-    <%= f.check_box :confirm_create_recovery_code %>
-    <%= f.label :confirm_create_recovery_code, t("sign.app.configuration.withdrawal.edit.recovery_code_label") %>
-  </div>
-  <%= render "concern/cloudflare_turnstile" %>
-  <%= f.submit t("sign.app.configuration.withdrawal.edit.submit"), class: "btn btn-primary" %>
+<h1><%= t("sign.app.configuration.withdrawal.recovery.page_title", default: "Withdrawal recovery") %></h1>
+
+<p>
+  <%= t(
+        "sign.app.configuration.withdrawal.recovery.deadline",
+        default: "Recovery deadline: %{date}",
+        date: l(@recovery_deadline, format: :long),
+      ) %>
+</p>
+
+<% if @recoverable %>
+  <p><%= t("sign.app.configuration.withdrawal.recovery.available", default: "Your account can still be recovered.") %></p>
+
+  <%= button_to t("sign.app.configuration.withdrawal.recovery.submit", default: "Recover account"),
+                sign_app_configuration_withdrawal_path(ri: params[:ri]),
+                method: :post,
+                data: { turbo_confirm: t("sign.app.configuration.withdrawal.recovery.confirm", default: "Recover this account?") } %>
+<% else %>
+  <p><%= t("sign.app.configuration.withdrawal.recovery.unavailable", default: "Recovery period has expired.") %></p>
 <% end %>
+
+<p>
+  <%= link_to t("actions.back"), sign_app_configuration_path(ri: params[:ri]) %>
+</p>

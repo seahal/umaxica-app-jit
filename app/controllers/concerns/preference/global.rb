@@ -1,28 +1,23 @@
+# typed: false
 # frozen_string_literal: true
 
 module Preference::Global
   extend ActiveSupport::Concern
   include Preference::Base
 
-  PARAM_CONTEXT_KEYS = %i[ri lx ct tz].freeze
-  OPTIONAL_PARAM_KEYS = %i[lx ct tz].freeze
-  ALLOWED_REGION_VALUES = %w[jp us].freeze
+  PARAM_CONTEXT_KEYS = %i(ri lx ct tz).freeze
+  OPTIONAL_PARAM_KEYS = %i(lx ct tz).freeze
+  ALLOWED_REGION_VALUES = %w(jp us).freeze
 
   DEFAULT_CONTEXT =
     Preference::Constants::DEFAULT_PREFERENCES
-    .transform_keys(&:to_sym)
-    .transform_values { |value| value.to_s.downcase }
-    .freeze
+      .transform_keys(&:to_sym)
+      .transform_values { |value| value.to_s.downcase }
+      .freeze
 
   included do
     helper_method :get_language, :get_timezone, :get_region, :get_colortheme
     helper_method :effective_context, :required_ri
-    before_action :set_preferences_cookie
-    before_action :resolve_param_context
-    before_action :set_region
-    before_action :set_locale
-    before_action :set_timezone
-    before_action :set_color_theme
   end
 
   def resolve_param_context
@@ -90,7 +85,7 @@ module Preference::Global
       ri: normalized_preference_value(preferences, "ri"),
       lx: normalized_preference_value(preferences, "lx"),
       tz: preferences["tz"],
-      ct: colortheme_short_code(preferences["ct"])
+      ct: colortheme_short_code(preferences["ct"]),
     }
   end
 
@@ -99,7 +94,7 @@ module Preference::Global
       ri: preference_option_value(association_name_for_region),
       lx: preference_option_value(association_name_for_language),
       tz: preference_option_value(association_name_for_timezone),
-      ct: colortheme_short_code(preference_option_value(preference_colortheme_association))
+      ct: colortheme_short_code(preference_option_value(preference_colortheme_association)),
     }
   end
 
@@ -109,104 +104,116 @@ module Preference::Global
 
   private
 
-    def preference_option_value(association_name)
-      return nil if @preferences.blank? || association_name.blank?
+  def preference_option_value(association_name)
+    return nil if @preferences.blank? || association_name.blank?
 
-      record = @preferences.public_send(association_name)
-      record&.option_id&.to_s&.downcase
-    rescue NoMethodError
-      nil
-    end
+    record = @preferences.public_send(association_name)
+    record&.option_id&.to_s&.downcase
+  rescue NoMethodError
+    nil
+  end
 
-    def association_name_for_timezone
-      :"#{preference_prefix_underscore}_timezone"
-    rescue NoMethodError
-      nil
-    end
+  def association_name_for_region
+    :"#{preference_prefix_underscore}_region"
+  rescue NoMethodError
+    nil
+  end
 
-    def normalized_param_ri
-      params[:ri].presence&.to_s&.downcase
-    end
+  def association_name_for_language
+    :"#{preference_prefix_underscore}_language"
+  rescue NoMethodError
+    nil
+  end
 
-    def valid_ri_value?(value)
-      value.present? && allowed_region_values.include?(value)
-    end
+  def association_name_for_timezone
+    :"#{preference_prefix_underscore}_timezone"
+  rescue NoMethodError
+    nil
+  end
 
-    def allowed_region_values
-      return ALLOWED_REGION_VALUES if @preferences.blank?
+  def normalized_param_ri
+    params[:ri].presence&.to_s&.downcase
+  end
 
-      @allowed_region_values ||=
-        begin
-          region_option_class = "#{preference_prefix}PreferenceRegionOption".constantize
-          values = region_option_class.pluck(:id).map(&:downcase).presence
-          values || ALLOWED_REGION_VALUES
-        rescue NameError
-          ALLOWED_REGION_VALUES
-        end
-    end
+  def valid_ri_value?(value)
+    value.present? && allowed_region_values.include?(value)
+  end
 
-    def build_ri_redirect_url(ri_value)
-      query = request.query_parameters.merge("ri" => ri_value)
-      base = "#{request.base_url}#{request.path}"
-      query_string = query.to_query
-      query_string.blank? ? base : "#{base}?#{query_string}"
-    end
+  def allowed_region_values
+    return ALLOWED_REGION_VALUES if @preferences.blank?
 
-    def redirect_status_for_ri?
-      (request.get? || request.head?) ? :found : :see_other
-    end
-
-    def get_colortheme
-      "sy"
-    end
-
-    def get_language
-      I18n.locale.to_s
-    end
-
-    def get_region
-      "jp"
-    end
-
-    def get_timezone
-      "ASIA/Tokyo"
-    end
-
-    def set_region
-      return if params[:ri].present?
-      return unless request.get? || request.head?
-
-      redirect_params = request.query_parameters.merge(ri: get_region)
-
-      redirect_url = url_for(
-        protocol: request.protocol,
-        host: request.host,
-        port: request.port,
-        controller: controller_path,
-        action: action_name,
-        **redirect_params.symbolize_keys,
-        only_path: false,
-      )
-
-      redirect_to redirect_url
-    end
-
-    def set_locale
-      set_locale_from_params
-      write_preference_cookie(Preference::Base::LANGUAGE_COOKIE_KEY, I18n.locale.to_s.downcase)
-    end
-
-    def set_timezone
-      timezone = preference_payload_value("tz")
-      if timezone.blank? && @preferences.present?
-        timezone_association = "#{@preferences.class.name.underscore}_timezone"
-        timezone = @preferences.public_send(timezone_association)&.option_id
+    @allowed_region_values ||=
+      begin
+        region_option_class = Preference::ClassRegistry.option_class(preference_prefix, :region)
+        values = region_option_class.ordered.filter_map { |option| option.name&.downcase }.presence
+        values || ALLOWED_REGION_VALUES
+      rescue KeyError, NameError
+        ALLOWED_REGION_VALUES
       end
+  end
 
-      session[:timezone] = timezone if timezone.present?
+  def build_ri_redirect_url(ri_value)
+    query = request.query_parameters.merge("ri" => ri_value)
+    base = "#{request.base_url}#{request.path}"
+    query_string = query.to_query
+    query_string.blank? ? base : "#{base}?#{query_string}"
+  end
 
-      set_timezone_from_session
-      timezone_value = timezone.presence || Time.zone&.name
-      write_preference_cookie(Preference::Base::TIMEZONE_COOKIE_KEY, timezone_value) if timezone_value.present?
+  def redirect_status_for_ri?
+    (request.get? || request.head?) ? :found : :see_other
+  end
+
+  def get_colortheme
+    "sy"
+  end
+
+  def get_language
+    I18n.locale.to_s
+  end
+
+  def get_region
+    "jp"
+  end
+
+  def get_timezone
+    "ASIA/Tokyo"
+  end
+
+  def set_region
+    return if params[:ri].present?
+    return unless request.get? || request.head?
+
+    redirect_params = request.query_parameters.merge(ri: get_region)
+
+    redirect_url = url_for(
+      protocol: request.protocol,
+      host: request.host,
+      port: request.port,
+      controller: controller_path,
+      action: action_name,
+      **redirect_params.symbolize_keys,
+      only_path: false,
+    )
+
+    redirect_to redirect_url
+  end
+
+  def set_locale
+    set_locale_from_params
+    write_preference_cookie(Preference::Base::LANGUAGE_COOKIE_KEY, I18n.locale.to_s.downcase)
+  end
+
+  def set_timezone
+    timezone = preference_payload_value("tz")
+    if timezone.blank? && @preferences.present?
+      timezone_association = "#{@preferences.class.name.underscore}_timezone"
+      timezone = @preferences.public_send(timezone_association)&.option_id
     end
+
+    session[:timezone] = timezone if timezone.present?
+
+    set_timezone_from_session
+    timezone_value = timezone.presence || Time.zone&.name
+    write_preference_cookie(Preference::Base::TIMEZONE_COOKIE_KEY, timezone_value) if timezone_value.present?
+  end
 end

@@ -3,31 +3,32 @@
 # Table name: telephone_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(32)       default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_telephone_occurrences_on_body        (body) UNIQUE
-#  index_telephone_occurrences_on_expires_at  (expires_at)
-#  index_telephone_occurrences_on_public_id   (public_id) UNIQUE
-#  index_telephone_occurrences_on_status_id   (status_id)
+#  index_telephone_occurrences_on_body             (body) UNIQUE
+#  index_telephone_occurrences_on_body_created_at  (body,created_at)
+#  index_telephone_occurrences_on_expires_at       (expires_at)
+#  index_telephone_occurrences_on_public_id        (public_id) UNIQUE
+#  index_telephone_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => telephone_occurrence_statuses.id)
+#  fk_telephone_occurrences_on_status_id  (status_id => telephone_occurrence_statuses.id)
 #
 one:
-  public_id: "one_tel_occ_id_000001"
-  body: "09012345678"
-  status_id: NEYO
+  public_id: one_tel_occ_id_000001
+  body: "+819000000001"
   memo: ""
+  status_id: <%= TelephoneOccurrenceStatus::ACTIVE %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
   expires_at: <%= 1.year.from_now %>

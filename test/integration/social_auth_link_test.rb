@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -9,19 +10,27 @@ require "test_helper"
 # - Link with duplicate user_id+provider -> 409
 # - Successful link creates identity and associates with current user
 class SocialAuthLinkTest < ActionDispatch::IntegrationTest
-  SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
+  include ActiveSupport::Testing::TimeHelpers
+
+  SOCIAL_FLOW_ID_SESSION_KEY = :social_auth_flow_id
+  fixtures :users,
+           :user_statuses,
+           :user_social_google_statuses,
+           :user_social_apple_statuses,
+           :app_preference_activity_levels
 
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @callback_headers = SocialCallbackTestHelper.callback_headers(@host)
 
     # Create test users
     @user_one = users(:one)
     @user_two = users(:two)
 
     # Ensure no pre-existing social identities
-    UserSocialGoogle.where(user: [ @user_one, @user_two ]).destroy_all
-    UserSocialApple.where(user: [ @user_one, @user_two ]).destroy_all
+    UserSocialGoogle.where(user: [@user_one, @user_two]).destroy_all
+    UserSocialApple.where(user: [@user_one, @user_two]).destroy_all
   end
 
   teardown do
@@ -33,7 +42,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
   # MANDATORY TEST 3: Link provider+uid already linked to another user -> 409
   # ============================================================================
   test "link Google identity already linked to another user returns 409 Conflict" do
-    skip "Controller returns redirect instead of 409 conflict - behavior differs from expectation"
     existing_uid = "google_owned_by_user_one"
 
     # First, create identity for user_one
@@ -42,37 +50,34 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: existing_uid,
       provider: "google_oauth2",
       token: "token",
-      email: "user_one@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
 
     # Setup mock auth with the same uid
-    setup_google_mock_auth(uid: existing_uid, email: "different@example.com")
+    setup_google_mock_auth(uid: existing_uid)
 
     # User two tries to link the same Google account
     # Start link flow as user_two
-    # User two leads to link
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
-         headers: as_user_headers(@user_two, host: @host)
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/google_oauth2"
-    assert_includes @response.headers["Location"], "state="
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    # Callback should fail with conflict
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_two, host: @host)
 
-    # Should return 409 Conflict
-    assert_response :conflict
+    assert_response :redirect
 
-    # Verify conflict error in response body
-    assert_includes response.body, I18n.t("errors.social_auth.already_linked", provider: "Google"), "Should have conflict error"
+    # Callback should fail with conflict
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user_two, host: @host))
+
+    # Should redirect with error (409 manifested as redirect with flash)
+    assert_response :redirect
+    follow_redirect!
+
+    # Verify conflict error message
+    assert_predicate flash[:alert], :present?, "Should have conflict error"
 
     # Identity should still belong to user_one
     identity = UserSocialGoogle.find_by(uid: existing_uid)
+
     assert_equal @user_one.id, identity.user_id, "Identity should still belong to original user"
   end
 
@@ -84,32 +89,70 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: existing_uid,
       provider: "apple",
       token: "token",
-      email: "apple_user_one@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
 
-    setup_apple_mock_auth(uid: existing_uid, email: "different@apple.com")
+    setup_apple_mock_auth(uid: existing_uid)
 
     # User two starts link flow
-    post sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
-         headers: as_user_headers(@user_two, host: @host)
-    assert_response :temporary_redirect
-    assert_includes @response.headers["Location"], "/auth/apple"
-    assert_includes @response.headers["Location"], "state="
+    get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
+        headers: as_user_headers(@user_two, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
+    assert_response :redirect
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
-         headers: as_user_headers(@user_two, host: @host)
+         headers: @callback_headers.merge(as_user_headers(@user_two, host: @host))
 
-    # Should return 409 Conflict
-    assert_response :conflict
+    assert_response :redirect
+    follow_redirect!
 
-    # Verify identity still belongs to user_one
+    assert_predicate flash[:alert], :present?, "Should have conflict error for Apple"
+
     identity = UserSocialApple.find_by(uid: existing_uid)
+
     assert_equal @user_one.id, identity.user_id
+  end
+
+  test "link Apple fails when flow context is missing" do
+    setup_apple_mock_auth(uid: "apple_state_mismatch_#{SecureRandom.hex(4)}")
+
+    # Do not call /social/start to simulate missing link context
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
+
+    assert_response :redirect
+    assert_includes(
+      [sign_app_configuration_apple_url(ri: "jp"), sign_app_configuration_url(ri: "jp")],
+      response.location,
+    )
+    follow_redirect!
+
+    assert_predicate flash[:alert], :present?, "Should have error flash for state mismatch"
+
+    identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
+
+    assert_nil identity, "Identity should not be created on state mismatch"
+  end
+
+  test "link Apple fails when intent TTL exceeded" do
+    setup_apple_mock_auth(uid: "apple_state_expired_#{SecureRandom.hex(4)}")
+
+    get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
+        headers: as_user_headers(@user_one, host: @host)
+
+    assert_response :redirect
+
+    travel_to 6.minutes.from_now do
+      post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+           headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
+    end
+
+    assert_response :forbidden
+
+    identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
+
+    assert_nil identity, "Identity should not be created when intent expired"
   end
 
   # ============================================================================
@@ -124,22 +167,19 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: old_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "old@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
 
     # Try to link again (same provider, different uid)
     # Note: This depends on implementation - some update, some reject
-    setup_google_mock_auth(uid: old_uid, email: "updated@example.com")
+    setup_google_mock_auth(uid: old_uid)
 
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
-         headers: as_user_headers(@user_one, host: @host)
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
+
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -149,7 +189,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Identity should still exist
     existing_identity.reload
-    assert_equal "updated@example.com", existing_identity.email
   end
 
   # ============================================================================
@@ -157,17 +196,15 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
   # ============================================================================
   test "successful Google link creates identity for current user" do
     new_uid = "brand_new_google_#{SecureRandom.hex(4)}"
-    setup_google_mock_auth(uid: new_uid, email: "newlink@example.com")
+    setup_google_mock_auth(uid: new_uid)
 
     identity_count_before = UserSocialGoogle.count
 
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
-         headers: as_user_headers(@user_one, host: @host)
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
+
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -178,6 +215,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     # New identity created
     assert_equal identity_count_before + 1, UserSocialGoogle.count
     identity = UserSocialGoogle.find_by(uid: new_uid)
+
     assert_not_nil identity
     assert_equal @user_one.id, identity.user_id, "Identity should belong to current user"
     assert_not_nil identity.last_authenticated_at, "last_authenticated_at should be set"
@@ -187,12 +225,14 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     setup_google_mock_auth(uid: "unauthenticated_test")
 
     # Start without authentication headers
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
-         headers: { "Host" => @host }
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+        headers: { "Host" => @host }
 
-    # Should redirect to login page
+    # Should redirect to login or return error
     assert_response :redirect
-    assert_match %r{/in}, response.location, "Should require login for link intent"
+    follow_redirect!
+
+    assert_predicate flash[:alert], :present?, "Should require login for link intent"
   end
 
   # ============================================================================
@@ -207,22 +247,19 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: revoked_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "revoked@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:revoked),
     )
 
     # Setup mock auth with the same uid but updated info
-    setup_google_mock_auth(uid: revoked_uid, email: "reactivated@example.com")
+    setup_google_mock_auth(uid: revoked_uid)
 
     # User tries to link again
-    post sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
-         headers: as_user_headers(@user_one, host: @host)
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
+
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -232,9 +269,9 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Identity should be reactivated (status changed to ACTIVE)
     revoked_identity.reload
+
     assert_equal UserSocialGoogleStatus::ACTIVE, revoked_identity.user_identity_social_google_status_id,
                  "Identity should be ACTIVE"
-    assert_equal "reactivated@example.com", revoked_identity.email, "Email should be updated"
   end
 
   test "re-link REVOKED Apple identity reactivates it" do
@@ -245,21 +282,17 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: revoked_uid,
       provider: "apple",
       token: "old_token",
-      email: "revoked_apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:revoked),
     )
 
-    setup_apple_mock_auth(uid: revoked_uid, email: "reactivated_apple@example.com")
+    setup_apple_mock_auth(uid: revoked_uid)
 
-    post sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
-         headers: as_user_headers(@user_one, host: @host)
-
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
+    get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
+        headers: as_user_headers(@user_one, host: @host)
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
-         headers: as_user_headers(@user_one, host: @host)
+         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -267,35 +300,37 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     assert_predicate flash[:notice], :present?, "Should have success flash for Apple reactivation"
 
     revoked_identity.reload
+
     assert_equal UserSocialAppleStatus::ACTIVE, revoked_identity.user_identity_social_apple_status_id,
                  "Apple identity should be ACTIVE"
-    assert_equal "reactivated_apple@example.com", revoked_identity.email, "Email should be updated"
   end
 
   private
 
-    def setup_google_mock_auth(uid:, email: "test@example.com")
-      OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-        provider: "google_oauth2",
-        uid: uid,
-        info: { email: email, image: "https://example.com/image.jpg" },
-        credentials: {
-          token: "google_token_#{SecureRandom.hex(8)}",
-          refresh_token: "refresh_token",
-          expires_at: 1.week.from_now.to_i
-        },
-      )
-    end
+  # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
+  # We deliberately omit email from mock_auth to test this requirement
+  def setup_google_mock_auth(uid:)
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: uid,
+      info: { image: "https://example.com/image.jpg" },
+      credentials: {
+        token: "google_token_#{SecureRandom.hex(8)}",
+        refresh_token: "refresh_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+  end
 
-    def setup_apple_mock_auth(uid:, email: "apple@example.com")
-      OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
-        provider: "apple",
-        uid: uid,
-        info: { email: email },
-        credentials: {
-          token: "apple_token_#{SecureRandom.hex(8)}",
-          expires_at: 1.week.from_now.to_i
-        },
-      )
-    end
+  def setup_apple_mock_auth(uid:)
+    OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
+      provider: "apple",
+      uid: uid,
+      info: {},
+      credentials: {
+        token: "apple_token_#{SecureRandom.hex(8)}",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+  end
 end

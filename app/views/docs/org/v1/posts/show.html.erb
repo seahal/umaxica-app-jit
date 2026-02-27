@@ -1,12 +1,13 @@
+<% content_for :page_title, 'Post' %>
 <%= turbo_frame_tag "document_detail" do %>
-  <article class="bg-white shadow-lg rounded-lg overflow-hidden">
-    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6">
-      <div class="flex justify-between items-start">
-        <div class="flex-1">
-          <h1 class="text-3xl font-bold mb-2"><%= @post[:title] %></h1>
-          <div class="flex gap-3 text-xs text-blue-100">
+  <article>
+    <div>
+      <div>
+        <div>
+          <h1><%= @post[:title] %></h1>
+          <div>
             <span>
-              <code class="bg-blue-700 px-2 py-1 rounded"><%= @post[:id] %></code>
+              <code><%= @post[:id] %></code>
             </span>
             <% if @post[:updated_at].present? %>
               <span><%= @post[:updated_at].strftime("%Y-%m-%d") %></span>
@@ -16,8 +17,8 @@
       </div>
     </div>
 
-    <div class="p-6">
-      <div class="prose max-w-none">
+    <div>
+      <div>
         <%= simple_format(@post[:body], {}, sanitize: true) %>
       </div>
     </div>

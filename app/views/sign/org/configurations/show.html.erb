@@ -1,22 +1,18 @@
-<div class="mx-auto max-w-xl">
-  <h1 class="text-3xl font-semibold text-slate-900"><%= t("sign.org.configuration.show.page_title") %></h1>
-  <p class="mt-2 text-sm text-slate-600"><%= t("sign.org.configuration.show.description") %></p>
+<% content_for :page_title, t("sign.org.configuration.show.page_title") %>
+<div>
+  <h1><%= t("sign.org.configuration.show.page_title") %></h1>
+  <p><%= t("sign.org.configuration.show.description") %></p>
 
-  <div class="mt-6 space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+  <div>
     <%= link_to t("controller.sign.app.setting.index.session"),
-                sign_org_configuration_sessions_path,
-                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                sign_org_configuration_sessions_path %>
     <%= link_to t("controller.sign.app.setting.index.passkey"),
-                sign_org_configuration_passkeys_path,
-                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                sign_org_configuration_passkeys_path %>
     <%= link_to t("controller.sign.app.setting.index.secret"),
-                sign_org_configuration_secrets_path,
-                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                sign_org_configuration_secrets_path %>
     <%= link_to t("sign.org.configuration.show.withdrawal"),
-                sign_org_configuration_withdrawal_path,
-                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                sign_org_configuration_withdrawal_path %>
     <%= link_to "Logout",
-                edit_sign_org_out_path(ri: "jp"),
-                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                edit_sign_org_configuration_out_path(ri: "jp") %>
   </div>
 </div>

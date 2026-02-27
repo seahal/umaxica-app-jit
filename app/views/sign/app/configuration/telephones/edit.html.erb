@@ -1,67 +1,22 @@
-<div class="max-w-md mx-auto py-10 px-4 sm:px-6 lg:px-8">
-  <div class="text-center mb-8">
-    <h1 class="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight font-outfit"><%= t("sign.app.configuration.telephone.edit.title") %></h1>
-    <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.telephone.edit.description") %></p>
+<% content_for :page_title, t("sign.app.configuration.telephone.edit.title") %>
+<div>
+  <div>
+    <h1><%= t("sign.app.configuration.telephone.edit.title") %></h1>
   </div>
 
-  <div class="bg-white dark:bg-zinc-900 shadow rounded-lg p-6 border border-zinc-200 dark:border-zinc-800">
-    <%= form_with model: @user_telephone, url: sign_app_configuration_telephone_path(@user_telephone), method: :patch, class: "space-y-6" do |f| %>
-      <% if @user_telephone.errors.any? %>
-        <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 p-4 mb-6">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-              </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
-                <%= t("errors.messages.validation_errors", count: @user_telephone.errors.count) %>
-              </h3>
-              <div class="mt-2 text-sm text-red-700 dark:text-red-300">
-                <ul class="list-disc pl-5 space-y-1">
-                  <% @user_telephone.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
-                  <% end %>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% end %>
+  <div>
+    <div>
+      <p><%= @user_telephone.number %></p>
+    </div>
 
-      <div class="rounded-md bg-blue-50 dark:bg-blue-900/20 p-4 mb-4">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <div class="ml-3">
-            <p class="text-sm font-medium text-blue-800 dark:text-blue-200">
-              <%= t("sign.app.configuration.telephone.edit.sms_sent", number: @user_telephone.number) %>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <%= f.label :pass_code, t("sign.app.configuration.telephone.edit.pass_code_label"), class: "block text-sm font-medium text-zinc-700 dark:text-zinc-300" %>
-        <div class="mt-1">
-          <%= f.text_field :pass_code, class: "appearance-none block w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm placeholder-zinc-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white", placeholder: "123456", required: true, autocomplete: "one-time-code", inputmode: "numeric", pattern: "[0-9]*" %>
-        </div>
-        <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-          <%= t("sign.app.configuration.telephone.edit.pass_code_hint") %>
-        </p>
-      </div>
-
-      <div>
-        <%= f.submit t("actions.verify"), class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" %>
-      </div>
-    <% end %>
-
-    <div class="mt-6 text-center">
-      <%= link_to t("sign.app.common.cancel"), sign_app_configuration_telephones_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+    <div>
+      <%= button_to t("sign.app.configuration.telephone.index.delete"),
+                    sign_app_configuration_telephone_path(@user_telephone),
+                    method: :delete,
+                    data: { turbo_confirm: t("sign.app.configuration.telephone.index.delete_confirm") } %>
+    </div>
+    <div>
+      <%= link_to t("sign.app.common.cancel"), sign_app_configuration_telephones_path %>
     </div>
   </div>
 </div>

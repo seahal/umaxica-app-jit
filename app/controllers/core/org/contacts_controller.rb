@@ -1,16 +1,17 @@
+# typed: false
 # frozen_string_literal: true
 
 module Core
   module Org
     class ContactsController < Core::Org::ApplicationController
       include ::RateLimit
-      include CloudflareTurnstile
-      include Common::Otp
 
-      before_action :set_contact, only: %i[show edit update]
+      before_action :authenticate_staff!
+      before_action :ensure_contact_channels!, only: %i(new create)
+      before_action :set_contact, only: :show
 
       def show
-        @topic = @contact.org_contact_topics.last
+        @topic = @contact.org_contact_topics.order(created_at: :desc).first
       end
 
       def new
@@ -19,139 +20,171 @@ module Core
         @contact_categories = OrgContactCategory.order(:id)
       end
 
-      def edit
-        @contact_categories = OrgContactCategory.order(:id)
-        @topic = @contact.org_contact_topics.build
-      end
-
       def create
-        turnstile_result = cloudflare_turnstile_validation
-
         @contact = OrgContact.new(
           category_id: params.dig(:org_contact, :category_id),
           confirm_policy: params.dig(:org_contact, :confirm_policy),
         )
         @contact_categories = OrgContactCategory.order(:id)
 
-        @contact_email = @contact.org_contact_emails.build(
-          email_address: params.dig(:org_contact, :email_address),
-        )
-
-        @contact.org_contact_telephones.build(
-          telephone_number: params.dig(:org_contact, :telephone_number),
-        )
-
-        unless turnstile_result["success"]
-          @contact.errors.add(:base, "ロボットではないことの確認に失敗しました。もう一度お試しください。")
-          @email_address = params.dig(:org_contact, :email_address) || ""
-          @telephone_number = params.dig(:org_contact, :telephone_number) || ""
+        unless turnstile_stealth_valid?
           render :new, status: :unprocessable_content
           return
         end
 
-        if @contact.save
-          @contact.update!(status_id: "SET_UP")
-
-          verification_code = @contact_email.generate_verifier!
-
-          Email::Org::ContactMailer.with(
-            email_address: @contact_email.email_address,
-            pass_code: verification_code,
-          ).create.deliver_later
-
-          redirect_to new_core_org_contact_email_url(
-            contact_id: @contact.public_id,
-            **core_staff_redirect_options,
-          ), notice: I18n.t("help.org.contacts.create.success")
-        else
-          @email_address = params.dig(:org_contact, :email_address) || ""
-          @telephone_number = params.dig(:org_contact, :telephone_number) || ""
+        @topic = @contact.org_contact_topics.build(title: topic_title, description: topic_body)
+        unless @topic.valid?
+          append_topic_errors(@topic)
           render :new, status: :unprocessable_content
+          return
         end
-      end
 
-      def update
-        @topic = @contact.org_contact_topics.build(topic_params)
+        ActiveRecord::Base.transaction do
+          @contact.status_id = OrgContactStatus::SET_UP
+          @contact.save!
 
-        if @topic.save
-          send_topic_notification(@contact, @topic)
-
-          redirect_to core_org_contact_url(@contact, **core_staff_redirect_options),
-                      notice: I18n.t("help.org.contacts.update.success")
-        else
-          render :edit, status: :unprocessable_content
+          OrgContactEmail.create!(
+            org_contact: @contact,
+            email_address: canonical_staff_email.address,
+          )
+          OrgContactTelephone.create!(
+            org_contact: @contact,
+            telephone_number: canonical_staff_telephone.number,
+          )
+          @topic.save!
         end
+
+        write_behavior_event(@contact)
+        redirect_to core_org_contact_url(@contact, **core_staff_redirect_options),
+                    notice: I18n.t("help.org.contacts.create.success")
+      rescue ActiveRecord::RecordInvalid
+        render :new, status: :unprocessable_content
       end
 
       private
 
-        def validate_category_id(category_param)
-          return nil if category_param.blank?
+      def validate_category_id(category_param)
+        return nil if category_param.blank?
 
-          if OrgContactCategory.exists?(id: category_param)
-            category_param
-          else
-            Rails.event.notify(
-              "contact.invalid_category",
-              category_param: category_param,
-              controller: "core/org/contacts",
-            )
-            nil
-          end
-        end
-
-        def send_topic_notification(contact, topic)
-          contact_email = contact.org_contact_emails.order(created_at: :desc).first
-
-          unless contact_email
-            Rails.event.notify(
-              "contact.notification.skip",
-              contact_id: contact.public_id,
-              reason: "no email address configured",
-            )
-            return
-          end
-
-          Email::Org::TopicMailer.with(
-            contact: contact,
-            topic: topic,
-            email_address: contact_email.email_address,
-          ).notice.deliver_later
-        rescue StandardError => e
+        if OrgContactCategory.exists?(id: category_param)
+          category_param
+        else
           Rails.event.notify(
-            "contact.notification.failed",
-            contact_id: contact.public_id,
-            error_message: e.message,
+            "contact.invalid_category",
+            category_param: category_param,
+            controller: "core/org/contacts",
           )
+          nil
+        end
+      end
+
+      def topic_title
+        params.dig(:org_contact, :title).to_s
+      end
+
+      def topic_body
+        params.dig(:org_contact, :body).presence || params.dig(:org_contact, :description).to_s
+      end
+
+      def append_topic_errors(topic)
+        topic.errors.full_messages.each do |message|
+          @contact.errors.add(:base, message)
+        end
+      end
+
+      def turnstile_stealth_valid?
+        if Jit::Security::TurnstileConfig.stealth_secret_key.blank?
+          Rails.event.notify("contact.turnstile.stealth_skipped", controller: "core/org/contacts")
+          return true
         end
 
-        def topic_params
-          params.expect(org_contact_topic: [ :title, :description ])
+        result = Jit::Security::TurnstileVerifier.verify(
+          token: params["cf-turnstile-response"].to_s,
+          remote_ip: request.remote_ip,
+          mode: :stealth,
+        )
+        return true if result["success"]
+
+        @contact.errors.add(:base, I18n.t("turnstile_error"))
+        false
+      end
+
+      def ensure_contact_channels!
+        unless canonical_staff_email
+          render plain: "email を登録してください", status: :unprocessable_content
+          return
         end
 
-        def set_contact
-          @contact = OrgContact.find_by!(public_id: params[:id])
-        end
+        return if canonical_staff_telephone
 
-        def core_staff_redirect_options
-          {
-            host: core_staff_host,
-            port: request.port,
-            protocol: request.protocol.delete_suffix("://")
-          }.compact
-        end
+        render plain: "telephone を追加してください", status: :unprocessable_content
+      end
 
-        def core_staff_host
-          host_value = ENV["CORE_STAFF_URL"].presence || request.host
-          return request.host if host_value.blank?
-
+      def canonical_staff_email
+        @canonical_staff_email ||=
           begin
-            uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-            uri.host || host_value.split(":").first
-          rescue URI::InvalidURIError
-            host_value.split(":").first
+            emails = current_staff.staff_emails.to_a
+            verified =
+              emails.find do |email|
+                email.staff_identity_email_status_id == StaffEmailStatus::VERIFIED && email.address.present?
+              end
+            verified || emails.find { |email| email.address.present? }
           end
+      end
+
+      def canonical_staff_telephone
+        @canonical_staff_telephone ||=
+          begin
+            telephones = current_staff.staff_telephones.to_a
+            verified =
+              telephones.find do |telephone|
+                telephone.staff_identity_telephone_status_id == StaffTelephoneStatus::VERIFIED &&
+                  telephone.number.present?
+              end
+            verified || telephones.find { |telephone| telephone.number.present? }
+          end
+      end
+
+      def write_behavior_event(contact)
+        OrgContactBehavior.create!(
+          org_contact: contact,
+          actor: current_staff,
+          occurred_at: Time.current,
+          subject_type: "OrgContact",
+        )
+      rescue StandardError => e
+        Rails.event.notify(
+          "contact.behavior.write_failed",
+          controller: "core/org/contacts",
+          contact_id: contact.public_id,
+          error_class: e.class.name,
+          error_message: e.message,
+        )
+      end
+
+      def set_contact
+        @contact = OrgContact.find_by!(public_id: params[:id])
+      end
+
+      def core_staff_redirect_options
+        {
+          host: core_staff_host,
+          port: request.port,
+          protocol: request.protocol.delete_suffix("://"),
+        }.compact
+      end
+
+      def core_staff_host
+        env_url = ENV["CORE_STAFF_URL"].presence
+        return request.host unless env_url
+
+        begin
+          uri = URI.parse(env_url.start_with?("http") ? env_url : "http://#{env_url}")
+          uri.host || env_url.split(":").first
+        rescue URI::InvalidURIError
+          env_url.split(":").first
         end
+      end
     end
   end
 end

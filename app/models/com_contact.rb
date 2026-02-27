@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,23 +6,22 @@
 # Table name: com_contacts
 # Database name: guest
 #
-#  id               :uuid             not null, primary key
-#  ip_address       :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
-#  lock_version     :integer          default(0), not null
+#  id               :bigint           not null, primary key
+#  ip_address       :inet
 #  token            :string(32)       default(""), not null
-#  token_digest     :string(255)      default(""), not null
-#  token_expires_at :timestamptz      default(-Infinity), not null
+#  token_digest     :string
+#  token_expires_at :datetime
 #  token_viewed     :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default("NEYO"), not null
-#  public_id        :string(21)       default(""), not null
-#  status_id        :string(255)      default("NEYO"), not null
+#  category_id      :bigint           not null
+#  public_id        :string(21)       not null
+#  status_id        :bigint           not null
 #
 # Indexes
 #
 #  index_com_contacts_on_category_id       (category_id)
-#  index_com_contacts_on_public_id         (public_id)
+#  index_com_contacts_on_public_id         (public_id) UNIQUE
 #  index_com_contacts_on_status_id         (status_id)
 #  index_com_contacts_on_token             (token)
 #  index_com_contacts_on_token_digest      (token_digest)
@@ -29,8 +29,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (category_id => com_contact_categories.id) ON DELETE => cascade
-#  fk_rails_...  (status_id => com_contact_statuses.id) ON DELETE => cascade
+#  fk_rails_...  (category_id => com_contact_categories.id)
+#  fk_rails_...  (status_id => com_contact_statuses.id) ON DELETE => restrict
 #
 
 class ComContact < GuestRecord
@@ -51,40 +51,42 @@ class ComContact < GuestRecord
              foreign_key: :status_id,
              inverse_of: :com_contacts
   has_many :com_contact_topics, dependent: :destroy, inverse_of: :com_contact
+  has_many :com_contact_behaviors,
+           class_name: "ComContactBehavior",
+           foreign_key: :subject_id,
+           inverse_of: :com_contact,
+           dependent: :delete_all
 
   after_initialize do
     if new_record?
-      self.category_id ||= "SECURITY_ISSUE"
-      self.status_id ||= "NEYO"
+      self.category_id ||= ComContactCategory::SECURITY_ISSUE
+      self.status_id ||= ComContactStatus::NOTHING
     end
   end
 
   # Validations
   validates :confirm_policy, acceptance: true
-  validates :category_id, length: { maximum: 255 }
-  validates :status_id, length: { maximum: 255 }
   validates :token, length: { maximum: 32 }
   validates :token_digest, length: { maximum: 255 }
+
   # Callbacks
-  before_validation { self.category_id = category_id&.upcase }
-  before_validation { self.status_id = status_id&.upcase }
-  before_create :generate_token
+  has_secure_token :token
 
   # State check methods
   def email_pending?
-    status_id == "SET_UP" || status_id == "NULL_COM_STATUS"
+    status_id == ComContactStatus::SET_UP || status_id == ComContactStatus::NULL_COM_STATUS
   end
 
   def email_verified?
-    status_id == "CHECKED_EMAIL_ADDRESS"
+    status_id == ComContactStatus::CHECKED_EMAIL_ADDRESS
   end
 
   def phone_verified?
-    status_id == "CHECKED_TELEPHONE_NUMBER"
+    status_id == ComContactStatus::CHECKED_TELEPHONE_NUMBER
   end
 
   def completed?
-    status_id == "COMPLETED_CONTACT_ACTION"
+    status_id == ComContactStatus::COMPLETED_CONTACT_ACTION
   end
 
   # State transition helpers
@@ -103,19 +105,19 @@ class ComContact < GuestRecord
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
 
-    update!(status_id: "CHECKED_EMAIL_ADDRESS")
+    update!(status_id: ComContactStatus::CHECKED_EMAIL_ADDRESS)
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
 
-    update!(status_id: "CHECKED_TELEPHONE_NUMBER")
+    update!(status_id: ComContactStatus::CHECKED_TELEPHONE_NUMBER)
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
 
-    update!(status_id: "COMPLETED_CONTACT_ACTION")
+    update!(status_id: ComContactStatus::COMPLETED_CONTACT_ACTION)
   end
 
   # Token management
@@ -151,10 +153,4 @@ class ComContact < GuestRecord
   def to_param
     public_id
   end
-
-  private
-
-    def generate_token
-      self.token ||= SecureRandom.alphanumeric(32)
-    end
 end

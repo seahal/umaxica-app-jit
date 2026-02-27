@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -6,6 +7,8 @@ module Core
   module Com
     module Contact
       class TelephonesControllerTest < ActionDispatch::IntegrationTest
+        fixtures :com_contacts, :com_contact_categories, :com_contact_statuses
+
         setup do
           @contact = com_contacts(:verified_email_complete)
           @contact_telephone = ComContactTelephone.create!(
@@ -19,6 +22,7 @@ module Core
         test "should get new" do
           host! @host
           get new_core_com_contact_telephone_url(contact_id: @contact.public_id)
+
           assert_response :success
         end
 
@@ -27,16 +31,18 @@ module Core
           code = @contact_telephone.generate_hotp!
 
           post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-            com_contact_telephone: { hotp_code: code }
+            com_contact_telephone: { hotp_code: code },
           }
 
           assert_response :redirect
           # Check redirect location if necessary, but response :redirect is good start
 
           @contact.reload
-          assert_equal "CHECKED_TELEPHONE_NUMBER", @contact.status_id
+
+          assert_equal ComContactStatus::CHECKED_TELEPHONE_NUMBER, @contact.status_id
 
           @contact_telephone.reload
+
           assert @contact_telephone.activated
         end
 
@@ -45,11 +51,12 @@ module Core
           @contact_telephone.generate_hotp!
 
           post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-            com_contact_telephone: { hotp_code: "000000" } # Invalid code
+            com_contact_telephone: { hotp_code: "000000" }, # Invalid code
           }
 
           assert_response :unprocessable_content
           @contact_telephone.reload
+
           assert_equal 2, @contact_telephone.verifier_attempts_left # Started at 3
         end
 
@@ -57,7 +64,7 @@ module Core
           host! @host
 
           post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-            com_contact_telephone: { hotp_code: "" }
+            com_contact_telephone: { hotp_code: "" },
           }
 
           assert_response :unprocessable_content
@@ -69,7 +76,7 @@ module Core
           @contact_telephone.update!(verifier_attempts_left: 0)
 
           post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-            com_contact_telephone: { hotp_code: "123456" }
+            com_contact_telephone: { hotp_code: "123456" },
           }
 
           assert_response :unprocessable_content
@@ -82,7 +89,7 @@ module Core
           @contact_telephone.update!(verifier_expires_at: 1.minute.ago)
 
           post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-            com_contact_telephone: { hotp_code: "123456" }
+            com_contact_telephone: { hotp_code: "123456" },
           }
 
           assert_response :unprocessable_content
@@ -98,7 +105,7 @@ module Core
 
         test "should raise error if contact status is invalid" do
           host! @host
-          @contact.update!(status_id: "NEYO")
+          @contact.update!(status_id: ComContactStatus::NOTHING)
 
           assert_raises(StandardError) do
             get new_core_com_contact_telephone_url(contact_id: @contact.public_id)
@@ -111,12 +118,13 @@ module Core
           @contact_telephone.update!(verifier_attempts_left: 1)
 
           post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-            com_contact_telephone: { hotp_code: "invalid" }
+            com_contact_telephone: { hotp_code: "invalid" },
           }
 
           assert_response :unprocessable_content
 
           @contact_telephone.reload
+
           assert_equal 0, @contact_telephone.verifier_attempts_left
         end
 
@@ -125,7 +133,7 @@ module Core
           code = @contact_telephone.generate_hotp!
 
           post core_com_contact_telephone_url(contact_id: @contact.public_id, ct: "test"), params: {
-            com_contact_telephone: { hotp_code: code }
+            com_contact_telephone: { hotp_code: code },
           }
 
           assert_response :redirect
@@ -138,7 +146,7 @@ module Core
 
           assert_raises(StandardError) do
             post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-              com_contact_telephone: { hotp_code: "123456" }
+              com_contact_telephone: { hotp_code: "123456" },
             }
           end
         end

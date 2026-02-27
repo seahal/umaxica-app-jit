@@ -1,25 +1,21 @@
+# typed: false
 # frozen_string_literal: true
 
 module StaffSecret::Kinds
   extend ActiveSupport::Concern
 
-  # Lifetime-based kind constants (UPPER_SNAKE_CASE)
-  UNLIMITED = "UNLIMITED"
-  ONE_TIME = "ONE_TIME"
-  TIME_BOUND = "TIME_BOUND"
+  # Kind constants (integer IDs)
+  LOGIN = StaffSecretKind::LOGIN
+  TOTP = StaffSecretKind::TOTP
 
-  ALL = [ UNLIMITED, ONE_TIME, TIME_BOUND ].freeze
+  ALL = [LOGIN, TOTP].freeze
 
   # Predicates using string equality on staff_secret_kind_id column (no JOINs)
-  def unlimited?
-    staff_secret_kind_id == UNLIMITED
+  def login_secret?
+    staff_secret_kind_id == LOGIN
   end
 
-  def one_time?
-    staff_secret_kind_id == ONE_TIME
-  end
-
-  def time_bound?
-    staff_secret_kind_id == TIME_BOUND
+  def totp_secret?
+    staff_secret_kind_id == TOTP
   end
 end

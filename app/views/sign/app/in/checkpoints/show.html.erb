@@ -1,0 +1,14 @@
+<% content_for :page_title, t("sign.app.in.checkpoints.show.title") %>
+
+<h1><%= t("sign.app.in.checkpoints.show.title") %></h1>
+<p><%= t("sign.app.in.checkpoints.show.body") %></p>
+
+<%= form_with url: sign_app_in_checkpoint_path(ri: params[:ri]), method: :patch do %>
+  <%= hidden_field_tag :rd, params[:rd] %>
+  <%= submit_tag t("sign.app.in.checkpoints.show.actions.update") %>
+<% end %>
+
+<%= form_with url: sign_app_in_checkpoint_path(ri: params[:ri]), method: :delete do %>
+  <%= hidden_field_tag :rd, params[:rd] %>
+  <%= submit_tag t("sign.app.in.checkpoints.show.actions.continue") %>
+<% end %>

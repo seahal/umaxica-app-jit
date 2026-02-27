@@ -1,51 +1,25 @@
-<div class="mx-auto mt-24 mb-32 max-w-md animate-fade-in-up">
-  <div class="text-center mb-12">
-    <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+<% content_for :page_title, t("sign.org.authentication.new.page_title") %>
+<div class="animate-fade-in-up">
+  <div>
+    <h1>
       <%= t("sign.org.authentication.new.page_title") %>
     </h1>
-    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+    <p>
       <%= t("sign.org.authentication.new.description") %>
     </p>
   </div>
 
-  <div class="rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-xl shadow-lg ring-1 ring-black/5 dark:bg-slate-900/80 dark:border-slate-800 dark:ring-white/10 p-10 space-y-6">
-    <%= link_to new_sign_org_in_passkey_path,
-                class: "group relative flex items-center w-full rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 transition duration-300 hover:border-violet-300 hover:shadow-md hover:text-violet-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-violet-500 dark:hover:text-violet-400" do %>
-      <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-500 group-hover:bg-violet-50 group-hover:text-violet-600 dark:bg-slate-700 dark:text-slate-400 dark:group-hover:bg-violet-900/30 dark:group-hover:text-violet-400 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="m14 10-2 2-2-2"/>
-        </svg>
-      </div>
+  <div>
+    <%= link_to new_sign_org_in_passkey_path do %>
       <span><%= t("sign.org.authentication.new.links.passkey") %></span>
-      <div class="ml-auto text-slate-300 group-hover:translate-x-1 group-hover:text-violet-500 transition-all dark:text-slate-600">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6"/>
-        </svg>
-      </div>
     <% end %>
 
-    <%= link_to new_sign_org_in_secret_path,
-                class: "group relative flex items-center w-full rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 transition duration-300 hover:border-pink-300 hover:shadow-md hover:text-pink-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-pink-500 dark:hover:text-pink-400" do %>
-      <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-500 group-hover:bg-pink-50 group-hover:text-pink-600 dark:bg-slate-700 dark:text-slate-400 dark:group-hover:bg-pink-900/30 dark:group-hover:text-pink-400 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-        </svg>
-      </div>
+    <%= link_to new_sign_org_in_secret_path do %>
       <span><%= t("sign.org.authentication.new.links.secret") %></span>
-      <div class="ml-auto text-slate-300 group-hover:translate-x-1 group-hover:text-pink-500 transition-all dark:text-slate-600">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6"/>
-        </svg>
-      </div>
     <% end %>
 
-    <div class="pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
-      <%= link_to apex_org_root_path,
-                  class: "inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500 hover:text-slate-800 transition-colors dark:text-slate-400 dark:hover:text-slate-200" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
+    <div>
+      <%= link_to apex_org_root_path do %>
         <span><%= t("sign.org.authentication.new.back_to_root") %></span>
       <% end %>
     </div>

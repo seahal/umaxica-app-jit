@@ -1,18 +1,16 @@
-<header class="sticky top-0 z-50 w-full border-b border-[hsl(var(--border))] bg-[hsl(var(--background))]/80 backdrop-blur-sm">
-  <div class="flex h-16 items-center justify-between gap-4">
-    <div class="flex flex-col">
-      <span class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))] leading-none mb-0.5"><%= local_assigns[:service_name] || "Sign" %></span>
-      <h1 class="text-lg font-bold tracking-tight leading-none">
-        <% if local_assigns[:home_path].present? %>
-          <%= link_to ENV.fetch("BRAND_NAME", "Umaxica"), home_path, class: "transition hover:text-[hsl(var(--primary))]" %>
-        <% else %>
-          <%= ENV.fetch("BRAND_NAME", "Umaxica") %>
-        <% end %>
-        <span class="text-[hsl(var(--muted-foreground))]">/ <%= local_assigns[:namespace] || "app" %></span>
-      </h1>
-    </div>
-    <nav class="flex flex-wrap items-center gap-2 text-sm">
-      <%= yield %>
-    </nav>
+<header>
+  <div>
+    <span><%= local_assigns[:service_name] || "Sign" %></span>
+    <h1>
+      <% if local_assigns[:home_path].present? %>
+        <%= link_to ENV.fetch("BRAND_NAME", "Umaxica"), home_path %>
+      <% else %>
+        <%= ENV.fetch("BRAND_NAME", "Umaxica") %>
+      <% end %>
+      <span>(<%= local_assigns[:namespace] || "app" %>)</span>
+    </h1>
   </div>
+  <nav>
+    <%= yield %>
+  </nav>
 </header>

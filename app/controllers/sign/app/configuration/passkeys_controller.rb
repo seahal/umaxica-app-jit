@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "base64"
@@ -21,10 +22,14 @@ module Sign
       # - PATCH /configuration/passkeys/:id (update - description only)
       # - DELETE /configuration/passkeys/:id (destroy)
       class PasskeysController < ApplicationController
-        include Webauthn::Config
+        auth_required!
+
+        include ::Verification::User
+        include Sign::Webauthn
 
         before_action :authenticate_user!
-        before_action :set_passkey, only: %i[show edit update destroy]
+        before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
+        before_action :set_passkey, only: %i(show edit update destroy)
 
         # GET /configuration/passkeys
         def index
@@ -37,36 +42,8 @@ module Sign
         end
 
         # GET /configuration/passkeys/new
-        # - HTML: Render new passkey page
-        # - JSON: Generate WebAuthn registration options
         def new
           @passkey = current_user.user_passkeys.new
-
-          if request.format.json? || params[:format] == "json"
-            # Build exclude list from existing passkeys
-            existing_credentials =
-              current_user.user_passkeys.map do |passkey|
-                { id: passkey.webauthn_id }
-              end
-
-            challenge_id, creation_options = create_registration_challenge(
-              resource: current_user,
-              exclude_credentials: existing_credentials,
-            )
-
-            render json: {
-              challenge_id: challenge_id,
-              options: creation_options
-            }, status: :ok
-          else
-            render :new
-          end
-        rescue Webauthn::Config::OriginValidationError => e
-          Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
-          render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
-        rescue StandardError => e
-          Rails.logger.error("WebAuthn registration options failed: #{e.message}")
-          render json: { error: I18n.t("errors.webauthn.options_failed") }, status: :unprocessable_content
         end
 
         # GET /configuration/passkeys/:id/edit
@@ -75,6 +52,50 @@ module Sign
         end
 
         # POST /configuration/passkeys
+        def create
+          @passkey = current_user.user_passkeys.new(create_params)
+          authorize @passkey, :create?
+
+          if @passkey.save
+            render plain: "ok", status: :created
+          else
+            render plain: @passkey.errors.full_messages.join("\n"), status: :unprocessable_content
+          end
+        end
+
+        # POST /configuration/passkeys/options
+        # Generate WebAuthn registration options
+        #
+        # Response:
+        #   {
+        #     challenge_id: "abc123",
+        #     options: { ... WebAuthn options ... }
+        #   }
+        def options
+          # Build exclude list from existing passkeys
+          existing_credentials =
+            current_user.user_passkeys.map do |passkey|
+              { id: passkey.webauthn_id }
+            end
+
+          challenge_id, creation_options = create_registration_challenge(
+            resource: current_user,
+            exclude_credentials: existing_credentials,
+          )
+
+          render json: {
+            challenge_id: challenge_id,
+            options: creation_options,
+          }, status: :ok
+        rescue Sign::Webauthn::OriginValidationError => e
+          Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
+          render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
+        rescue StandardError => e
+          Rails.logger.error("WebAuthn registration options failed: #{e.message}")
+          render json: { error: I18n.t("errors.webauthn.options_failed") }, status: :unprocessable_content
+        end
+
+        # POST /configuration/passkeys/verification
         # Verify WebAuthn registration response and create passkey
         #
         # Request body:
@@ -89,83 +110,57 @@ module Sign
         #     status: "ok",
         #     redirect_url: "/configuration/passkeys"
         #   }
-        def create
+        def verification
           challenge_id = params[:challenge_id]
-
-          if challenge_id.blank?
-            return render json: {
-              error: I18n.t("errors.webauthn.challenge_id_required")
-            }, status: :bad_request
-          end
+          return render_missing_challenge_id if challenge_id.blank?
 
           with_challenge(challenge_id, purpose: :registration) do |challenge|
-            # Create relying party instance for this request
-            relying_party = WebAuthn::RelyingParty.new(
-              allowed_origins: [ webauthn_origin ],
-              id: webauthn_rp_id,
-              name: ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica")
-            )
+            credential = build_registration_credential
+            verify_registration_credential!(credential, challenge)
 
-            # Parse credential from request
-            credential = WebAuthn::Credential.from_create(
-              credential_params.to_h,
-              relying_party: relying_party
-            )
+            passkey = build_passkey_from_credential(credential)
+            persist_passkey!(passkey)
 
-            # Verify the credential (rp_id and origin are validated via relying_party)
-            credential.verify(challenge)
-
-            # Create the passkey record
-            passkey = current_user.user_passkeys.new(
-              webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false),
-              public_key: credential.public_key,
-              sign_count: credential.sign_count,
-              description: passkey_description,
-            )
-
-            authorize passkey
-
-            if passkey.save
-              render json: {
-                status: "ok",
-                passkey_id: passkey.id,
-                redirect_url: sign_app_configuration_passkeys_path
-              }, status: :created
-            else
-              render json: { error: passkey.errors.full_messages.to_sentence }, status: :unprocessable_content
-            end
+            issue_emergency_key!
+            render_verification_success
           end
-        rescue Webauthn::Config::ChallengeNotFoundError,
-               Webauthn::Config::ChallengeExpiredError => e
+        rescue Sign::Webauthn::ChallengeNotFoundError,
+               Sign::Webauthn::ChallengeExpiredError => e
           Rails.logger.warn("WebAuthn challenge error: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
-        rescue Webauthn::Config::ChallengePurposeMismatchError => e
+        rescue Sign::Webauthn::ChallengePurposeMismatchError => e
           Rails.logger.warn("WebAuthn challenge purpose mismatch: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
         rescue WebAuthn::Error => e
           Rails.logger.warn("WebAuthn registration failed: #{e.message}")
-          render json: { error: I18n.t("errors.webauthn.verification_failed") }, status: :unprocessable_content
+          render json: { error: I18n.t("errors.webauthn.verification_failed") },
+                 status: :unprocessable_content
+        rescue ActiveRecord::RecordNotUnique
+          render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.warn("WebAuthn passkey creation failed: #{e.message}")
-          render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_content
+          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_content
         end
 
         # PATCH/PUT /configuration/passkeys/:id
         def update
           authorize @passkey
 
-          if @passkey.update(update_params)
+          begin
+            @passkey.update!(update_params)
             respond_to do |format|
               format.html do
-                redirect_to sign_app_configuration_passkeys_path,
+                redirect_to sign_app_configuration_passkey_path(@passkey),
                             notice: t("messages.passkey_successfully_updated")
               end
               format.json { render json: { status: "ok" }, status: :ok }
             end
-          else
+          rescue ActiveRecord::RecordInvalid
             respond_to do |format|
               format.html { render :edit, status: :unprocessable_content }
-              format.json { render json: { errors: @passkey.errors.full_messages }, status: :unprocessable_content }
+              format.json {
+                render json: { errors: @passkey.errors.full_messages }, status: :unprocessable_content
+              }
             end
           end
         end
@@ -173,6 +168,22 @@ module Sign
         # DELETE /configuration/passkeys/:id
         def destroy
           authorize @passkey
+
+          unless AuthMethodGuard.can_remove_passkey?(current_user, @passkey)
+            respond_to do |format|
+              format.html do
+                redirect_to sign_app_configuration_passkeys_path,
+                            status: :see_other,
+                            alert: t("messages.cannot_delete_last_passkey")
+              end
+              format.json do
+                render json: { error: t("messages.cannot_delete_last_passkey") },
+                       status: :unprocessable_content
+              end
+            end
+            return
+          end
+
           @passkey.destroy!
 
           respond_to do |format|
@@ -187,31 +198,102 @@ module Sign
 
         private
 
-          def set_passkey
-            @passkey = current_user.user_passkeys.find_by!(public_id: params[:id])
-          end
+        def set_passkey
+          @passkey = current_user.user_passkeys.find_by!(public_id: params[:id])
+        end
 
-          def credential_params
-            params.expect(
-              credential: [
-                :id,
-                :rawId,
-                :type,
-                :authenticatorAttachment,
-                { transports: [] },
-                { response: %i[clientDataJSON attestationObject] },
-                { clientExtensionResults: {} }
-              ],
-            )
-          end
+        def credential_params
+          params.expect(
+            credential: [
+              :id,
+              :rawId,
+              :type,
+              :authenticatorAttachment,
+              { transports: [] },
+              { response: %i(clientDataJSON attestationObject) },
+              { clientExtensionResults: {} },
+            ],
+          )
+        end
 
-          def update_params
-            params.expect(passkey: [ :description ])
-          end
+        def render_missing_challenge_id
+          render json: {
+            error: I18n.t("errors.webauthn.challenge_id_required"),
+          }, status: :bad_request
+        end
 
-          def passkey_description
-            params[:description].presence || I18n.t("sign.default_passkey_description")
+        def build_registration_credential
+          WebAuthn::Credential.from_create(credential_params.to_h)
+        end
+
+        def verify_registration_credential!(credential, challenge)
+          with_webauthn_config do
+            credential.verify(challenge)
           end
+        end
+
+        def build_passkey_from_credential(credential)
+          current_user.user_passkeys.new(
+            webauthn_id: credential.id,
+            public_key: credential.public_key,
+            sign_count: credential.sign_count,
+            description: passkey_description,
+          )
+        end
+
+        def persist_passkey!(passkey)
+          authorize passkey, :create?
+          passkey.save!
+        end
+
+        def render_verification_success
+          redirect_url =
+            if respond_to?(:sign_app_configuration_emergency_key_path, true)
+              sign_app_configuration_emergency_key_path(ri: params[:ri])
+            else
+              sign_app_configuration_passkeys_path(ri: params[:ri])
+            end
+
+          render json: {
+            status: "ok",
+            redirect_url: redirect_url,
+          }, status: :created
+        end
+
+        def update_params
+          key = params.key?(:user_passkey) ? :user_passkey : :passkey
+          params.expect(key => [:description])
+        end
+
+        def create_params
+          params.fetch(:user_passkey, {}).permit(
+            :webauthn_id, :public_key, :sign_count, :description,
+            :external_id,
+          )
+        end
+
+        def issue_emergency_key!
+          result = UserSecrets::IssueRecovery.call(actor: current_user, user: current_user)
+          session[:recovery_secret_raw] = result.raw_secret
+        end
+
+        def ensure_verified_recovery_identity_for_registration!
+          return if current_user.has_verified_recovery_identity?
+
+          render plain: User::RECOVERY_IDENTITY_REQUIRED_MESSAGE, status: :forbidden
+        end
+
+        def passkey_description
+          params[:description].presence || I18n.t("sign.default_passkey_description")
+        end
+
+        def verification_required_action?
+          %w(new options verification edit update destroy).include?(action_name)
+        end
+
+        def verification_scope
+          "configuration_passkey"
+        end
       end
     end
   end

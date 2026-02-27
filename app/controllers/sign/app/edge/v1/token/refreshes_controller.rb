@@ -1,8 +1,10 @@
+# typed: false
 # frozen_string_literal: true
 
 class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::BaseController
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token
+  protect_from_forgery with: :exception
 
   def create
     response.set_header("Cache-Control", "no-store")
@@ -14,7 +16,7 @@ class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::Bas
     if refresh_plain.blank?
       render json: {
         error: I18n.t("sign.token_refresh.errors.missing_refresh_token"),
-        error_code: "missing_refresh_token"
+        error_code: "missing_refresh_token",
       }, status: :bad_request
       return
     end
@@ -25,10 +27,12 @@ class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::Bas
     if credentials
       render json: { refreshed: true }, status: :ok
     else
+      status = refresh_failure_status
+      code = refresh_failure_code
       render json: {
-        error: I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
-        error_code: "invalid_refresh_token"
-      }, status: :unauthorized
+        error: (code == "restricted_session") ? "きんそくじこうです" : I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
+        error_code: code,
+      }, status: status
     end
   end
 end

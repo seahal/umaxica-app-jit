@@ -2,7 +2,7 @@
 
 class CreateClients < ActiveRecord::Migration[8.2]
   def change
-    create_table :clients, id: :uuid do |t|
+    create_table :clients do |t|
       t.string :public_id
       t.string :moniker
 

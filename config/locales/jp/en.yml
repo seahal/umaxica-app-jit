@@ -13,10 +13,12 @@ en:
   common:
     ok: "OK"
   errors:
+    otp_locked: "Maximum verification attempts exceeded. Please start over."
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
     messages:
       not_authorized: "You are not authorized to perform this action."
+      validation_failed: "Please review the highlighted errors."
   seed:
     roles:
       admin:
@@ -53,12 +55,17 @@ en:
           create:
             success: "Your inquiry has been received. Please check your email address."
   sign:
+    telephone_verification:
+      sms_message: "Verification code: %{code}"
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+    shared:
+      sign_out:
+        title: "Do you want to sign out?"
+        button: "Sign out"
+        success: "You have been signed out."
     app:
-      common:
-        cancel: "Cancel"
       layout:
         nav:
           sign_up: "Sign Up"
@@ -83,18 +90,19 @@ en:
         secret:
           new:
             page_title: "Sign in with a secret"
-            description: "Enter one of your saved secrets to continue."
-            hints: "Secrets are single-use strings you saved when prompted."
-            pii_label: "Identification"
-            pii_placeholder: "Email address or phone number"
+            pii_label: "Email or telephone"
+            pii_placeholder: "user@example.com or +81 90 1234 5678"
             secret_label: "Secret"
-            confirm_label: "I have saved my secret"
-            confirm_hint: "Store this secret securely; you will need it if other methods fail."
-            use_totp: "Use TOTP instead"
+            hints: "Available secret hints"
+          create:
+            success: "Signed in successfully."
+            invalid: "Authentication failed. Please check your credentials."
         passkey:
           new:
             page_title: "Sign in with a passkey"
             description: "Use your device's security features for a faster and safer login."
+            pii_label: "Email or telephone"
+            pii_placeholder: "user@example.com or +81 90 1234 5678"
             submit: "Sign in using passkey"
         email:
           new:
@@ -106,6 +114,7 @@ en:
             email_not_found: "We couldn't find an account matching that email address."
             verification_code_sent: "Verification code has been sent to your email address."
             turnstile_error: "Security verification failed. Please refresh and try again."
+            cooldown: "Please wait and try again."
         telephone:
           new:
             page_title: "Sign in with telephone"
@@ -146,33 +155,38 @@ en:
           already_logged_in: "You are already logged in."
           create:
             verification_code_sent: "Verification code has been sent to your email address."
-            success: "Registration is complete."
-            failure: "Registration failed. Please try again."
             turnstile_validation_failed: "Security verification failed. Please try again."
+            otp_resend_too_soon: "Please wait before requesting another code."
           edit:
             return_page: "Back"
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Email address has been verified."
             failed: "Registration failed. Please try again."
+            code_required: "Verification code is required."
             invalid_code: "Invalid verification code."
             attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            sign_in_required: "We could not complete registration. Please sign in to continue."
             session_expired: "Your session has expired. Please start over."
-            already_verified: "This verification code has already been used. Please start over."
         telephone:
           create:
             verification_code_sent: "Verification code has been sent via SMS."
-            locked: "Your account is locked. Please try again later."
             turnstile_validation_failed: "Security verification failed. Please try again."
+            locked: "Your account is locked. Please try again later."
           edit:
             return_page: "Back"
             session_expired: "Your session has expired. Please start over."
+            resend_code: "Resend verification code"
+          resend:
+            sent: "We resent the verification code via SMS."
+            rate_limited: "Please wait before requesting another code."
           update:
             success: "Phone number has been verified."
+            passkey_required: "Phone verified. Please register a passkey to continue."
+            code_required: "Verification code is required."
             invalid_code: "Invalid verification code."
-            session_expired: "Your session has expired. Please start over."
             attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
-            already_verified: "This verification code has already been used. Please start over."
+            sign_in_required: "We could not complete registration. Please sign in to continue."
           complete:
             page_title: "Registration Complete"
             description: "Your account registration has been successfully completed. You can now continue to use our services."
@@ -184,15 +198,84 @@ en:
           description: "Manage advanced security controls for your account."
           withdrawal: "Withdrawal"
           back: "Back"
-        index:
-          totp: "TOTP"
-          passkey: "Passkeys"
-          secret: "Recovery codes"
-          email: "Email addresses"
-          telephone: "Phone numbers"
-          session: "Sessions"
-          google: "Google"
-          apple: "Apple"
+          logout: "Logout"
+          logout_desc: "Sign out of your account"
+          mfa: "MFA settings"
+          mfa_desc: "Enable and manage multi-factor authentication"
+        activity:
+          index:
+            page_title: "Activity"
+            description: "View login-related events on your account."
+            empty: "No activity logs are available."
+            table:
+              occurred_at: "Occurred at"
+              event: "Event"
+              ip_address: "IP address"
+              context: "Context"
+          events:
+            logged_in: "Login success"
+            login_success: "Login success"
+            unknown: "Unknown event (%{event_id})"
+        passkeys:
+          edit:
+            title: "Edit passkey"
+            description: "Update the name for this passkey."
+          show:
+            title: "Passkey details"
+            description: "Review the details of this registered passkey."
+        mfa:
+          show:
+            title: "MFA settings"
+            description: "Review and update your multi-factor authentication settings."
+            toggle_title: "Enable multi-factor authentication"
+            toggle_description: "When enabled, additional verification is required."
+            enabled: "Enabled"
+            disabled: "Disabled"
+            passkeys: "Passkeys"
+            passkeys_desc: "%{count} registered"
+            totps: "Authenticator app (TOTP)"
+            totps_desc: "%{count} registered"
+            secrets: "Secrets"
+            secrets_desc: "%{count} active"
+          update:
+            success: "MFA settings updated."
+            failure: "Failed to update MFA settings."
+        email:
+          edit:
+            title: "Delete Email Address"
+          index:
+            title: "Email Addresses"
+            description: "Manage your email addresses"
+            new_link: "Add Email Address"
+            delete: "Delete"
+            delete_confirm: "Are you sure you want to delete this email address?"
+          destroy:
+            success: "Email address deleted."
+            last_method: "You must keep at least one login or recovery method."
+        telephone:
+          edit:
+            title: "Delete Phone Number"
+          index:
+            title: "Phone Numbers"
+            description: "Manage your phone numbers"
+            new_link: "Add Phone Number"
+            delete: "Delete"
+            delete_confirm: "Are you sure you want to delete this phone number?"
+          destroy:
+            success: "Phone number deleted."
+            last_method: "You must keep at least one login or recovery method."
+        secrets:
+          update:
+            last_method: "You must keep at least one login or recovery method."
+          destroy:
+            last_method: "You must keep at least one login or recovery method."
+        emergency_key:
+          missing: "The emergency key is no longer available."
+          show:
+            title: "Emergency Key"
+            description: "We generated an emergency key for account recovery. Store it safely."
+            one_time_notice: "This key is shown only once. Save it in a secure place."
+            back_to_settings: "Back to settings"
         recovery:
           index:
             description: "Review existing recovery codes and ensure they stay up to date."
@@ -205,159 +288,82 @@ en:
             submit: "Generate recovery code"
         totp:
           index:
-            page_title: "TOTP credentials"
             description: "Manage time-based one-time passwords linked to your account."
             new_link: "Create a new TOTP credential"
-            return_page: "Back"
-          new:
-            page_title: "Set up TOTP"
-            description: "Scan the QR code with your authenticator app and enter the generated code to finish setup."
-            title_hint: "Give it an easy-to-remember name (e.g., Personal iPhone)."
-        email:
-          index:
-            title: "Email settings"
-            description: "Manage email addresses linked to your account."
-            new_link: "Add an email address"
-          new:
-            page_title: "Add an email address"
-            description: "Add a new email address to manage your account more flexibly."
-            help_text: "We will send a verification code to the email address you enter."
-          edit:
-            title: "Verify email address"
-            description: "Enter the verification code we sent to your email."
-            link_verified: "Email address verified."
-            pass_code_label: "Verification code"
-            pass_code_hint: "Enter the 6-digit verification code."
-        passkey:
-          index:
-            title: "Passkeys"
-            description: "Manage passkeys registered to your account."
-        passkeys:
-          new:
-            page_title: "Register a passkey"
-        telephone:
-          index:
-            title: "Phone numbers"
-            description: "Manage phone numbers linked to your account."
-            new_link: "Add a phone number"
-            verified: "Verified"
-            unverified: "Unverified"
-            empty: "No phone numbers registered."
-          new:
-            title: "Add a phone number"
-            description: "Add a phone number to make your account more secure."
-            help_text: "We will send a verification code via SMS."
-          create:
-            verification_code_sent: "A verification code has been sent to your phone."
-            already_registered: "This phone number is already registered."
-            turnstile_validation_failed: "Bot verification failed. Please try again."
-          edit:
-            title: "Verify phone number"
-            description: "Enter the verification code we sent to your phone."
-            pass_code_label: "Verification code"
-            pass_code_hint: "Enter the 6-digit verification code."
-            sms_sent: "A verification code has been sent to %{number}."
-            session_expired: "Your session has expired. Please start again."
-          update:
-            success: "Phone number verified successfully."
-            invalid_code: "Invalid verification code. Please try again."
-            session_expired: "Your session has expired. Please start again."
-            attempts_exceeded: "Too many failed attempts. Please start again."
-          show:
-            title: "Phone number verified"
-            description: "Your phone number has been successfully verified."
-            verified: "Verified"
-            back_to_list: "Back to phone numbers"
-            not_found: "Phone number not found."
-          destroy:
-            success: "Phone number removed successfully."
-            not_found: "Phone number not found."
-            confirm: "Are you sure you want to remove this phone number?"
-            last_telephone: "Cannot remove the last verified phone number."
-        secrets:
-          index:
-            title: "Secrets"
-            description: "Manage secret keys associated with your account."
-            new: "Create a new secret"
-            last_issued_prefix: "Prefix:"
-            last_issued_secret: "Secret:"
-            last_issued_notice: "This value will only be displayed once. Please store it in a secure location."
-          new:
-            title: "Create a secret"
-            description: "Create a new secret key."
-            acknowledgement_label: "I have saved the secret (it cannot be displayed again)"
-            secret_display_notice: "This value will only be displayed once."
-          edit:
-            title: "Edit a secret"
-            description: "Update the secret name."
-          show:
-            title: "Secret details"
-            description: "Review the details of this secret."
-          errors:
-            acknowledgement_required: "Please confirm that you have saved the secret"
-        sessions:
-          index:
-            title: "Active sessions"
-            description: "Sessions listed here can be revoked immediately. The session marked as \"current\" is the browser you are using."
-            table:
-              session: "Session"
-              kind: "Kind"
-              last_activity: "Last activity"
-              created: "Created"
-              refresh_expires: "Refresh expires"
-              action: "Action"
-            current: "Current"
-            revoke: "Revoke"
-            revoke_confirm: "Revoke this session?"
-            empty: "No active sessions were found."
-        google:
-          show:
-            title: "Google"
-            description: "Use your Google account to sign in to this account."
-            linked: "Linked"
-            unlinked: "Not linked"
-        apple:
-          show:
-            title: "Apple"
-            description: "Use your Apple ID to sign in to this account."
-            linked: "Linked"
-            unlinked: "Not linked"
-        withdrawal:
-          show:
-            title: "Withdrawal status"
-            description: "Pause or permanently delete your account."
-            withdrawn: "Your account has been withdrawn"
-            withdrawn_date: "Withdrawn at: %{date}"
-            recovery: "Account recovery"
-            recovery_notice: "Your account can be recovered within the recovery period."
-            recover_button: "Recover account"
-            recovery_expired: "The recovery period has expired."
-            active: "Your account is active"
-            withdrawal_actions: "Withdrawal options"
-            temporary_withdrawal: "Temporary withdrawal"
-            temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
-            temporary_warning: "While withdrawn, all service features are restricted."
-            withdraw_button: "Withdraw account"
-            confirm_withdrawal: "Are you sure you want to withdraw?"
-            permanent_deletion: "Permanent deletion"
-            permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
-            permanent_warning: "Warning: This cannot be undone."
-            delete_button: "Permanently delete account"
-            confirm_deletion: "This cannot be undone. Are you sure?"
-          new:
-            title: "Withdrawal"
-            description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
-            recovery_code_label: "Confirm recovery code"
-            submit: "Withdraw account"
-          edit:
-            title: "Recover account"
-            description: "Your account is currently withdrawn. Click the button below to recover it."
-            recovery_code_label: "Confirm recovery code"
-            submit: "Recover account"
         sessions:
           revoke:
             success: "Session revoked."
             failure: "Cannot revoke current session."
+            others_button: "Revoke all other sessions"
+            others_confirm: "Delete all other sessions?"
+      reauth:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Re-authentication"
+          description: "Re-authentication is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        show:
+          title: "Re-authentication Session"
+          list: "List"
+          to_edit: "To input screen"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        edit:
+          title: "Re-authentication"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        success:
+          complete: "Re-authentication completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
       preferences:
         title: "Preference settings"
         footer:
@@ -375,6 +381,104 @@ en:
             success: "Account created and signed in with %{provider}."
             failure: "Authentication failed. Please try again."
     org:
+      reauth:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Re-authentication"
+          description: "Re-authentication is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        show:
+          title: "Re-authentication Session"
+          list: "List"
+          to_edit: "To input screen"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        edit:
+          title: "Re-authentication"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        success:
+          complete: "Re-authentication completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
       preferences:
         footer:
           preference: "Preferences"
@@ -410,6 +514,7 @@ en:
           new:
             page_title: "Sign in with a secret"
             pii_label: "Account identifiable information"
+            pii_placeholder: "Telephone or email address"
             secret_label: "Secret"
             confirm_label: "I have saved the secret"
         passkey:
@@ -421,11 +526,6 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
-        exits:
-          edit:
-            title: "Do you want to sign out?"
-          destroy:
-            success: "You have been signed out."
         email:
           new:
             page_title: "sign up with email address"
@@ -508,6 +608,7 @@ en:
           update:
             success: "Email address has been verified."
             failed: "Registration failed. Please try again."
+            code_required: "Verification code is required."
             invalid_code: "Invalid verification code."
             attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
             session_expired: "Your session has expired. Please start over."
@@ -520,6 +621,10 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+            passkey_required: "Phone verified. Please register a passkey to continue."
+            code_required: "Verification code is required."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
         configuration:
           withdrawal:
             show:
@@ -558,15 +663,10 @@ en:
               recovered: "Your account has been recovered. You can log in now."
               cannot_recover: "Recovery period has expired. Please contact support."
               failed: "Failed to recover account. Please try again later."
-            destroy:
-              deleted: "Account has been permanently deleted."
-              not_withdrawn: "Account is not withdrawn; cannot delete."
-            errors:
-              cooldown_active: "Withdrawal cooldown is still active."
-              recovery_not_available: "Account recovery is not available."
-              invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
-              finalized: "Your account withdrawal has been finalized."
-              deletion_failed: "Failed to delete account."
+          destroy:
+            permanent_unavailable: "Permanent deletion is currently unavailable."
+            deleted: "Account has been permanently deleted."
+            not_withdrawn: "Account is not withdrawn; cannot delete."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -661,11 +761,6 @@ en:
           log_in: "Log In"
           configuration: "Settings"
           logout: "Log Out"
-      exits:
-        edit:
-          title: "Do you want to sign out?"
-        destroy:
-          success: "You have been signed out."
       authentication:
         new:
           page_title: "Choose how to sign in"
@@ -688,6 +783,7 @@ en:
           new:
             page_title: "Sign in with a secret"
             pii_label: "Account identifiable information"
+            pii_placeholder: "Telephone or email address"
             secret_label: "Secret"
             confirm_label: "I have saved the secret"
       registration:
@@ -1235,113 +1331,15 @@ en:
         configuration:
           show:
             page_title: "Settings"
-          security:
-            edit:
-              title: "Security settings"
-              description: "Review your authentication factors, active sessions, and recovery codes."
-            cards:
-              totp:
-                title: "Two-factor authentication"
-                description: "TOTP apps generate rotating codes that add a second layer to your login."
-              passkeys:
-                title: "Passkeys"
-                description: "Manage your registered WebAuthn credentials."
-                stats_label: "registered"
-              secrets:
-                title: "Recovery codes"
-                description: "Single-use codes that restore access if your main factors fail."
-                stats_label: "stored"
-              sessions:
-                title: "Active sessions"
-                description: "Device sessions that are currently signed into your account."
-                stats_label: "active"
-            states:
-              enabled: "Enabled"
-              disabled: "Not configured"
-            actions:
-              manage: "Manage"
-              review: "Mark as reviewed"
-            review:
-              heading: "Security review"
-              last_reauth: "Last reauthentication:"
-              last_review: "Last review refreshed:"
-            never: "Not yet recorded"
-            update:
-              success: "Security dashboard refreshed."
           index:
             totp: "TOTP"
             passkey: "Passkey"
             secret: "Recovery Code"
             google: "Google"
             apple: "Apple"
-        setting:
-          index:
-            totp: "TOTP"
-            passkey: "Passkey"
-            secret: "Recovery Code"
-            email: "Email"
-            telephone: "Phone"
-            session: "Sessions"
-            google: "Google"
-            apple: "Apple"
-          passkey:
-            index:
-              return_page: "Back"
-          totp:
-            index:
-              page_title: "TOTP credentials"
-              return_page: "Back"
-        v1:
-          passkey:
-            new: "Register passkey"
-            index:
-              page_title: "Passkeys"
-              return_page: "Back"
-          recovery:
-            index:
-              page_title: "Recovery codes"
-              return_page: "Back"
-          totp:
-            index:
-              page_title: "TOTP credentials"
-              return_page: "Back"
-              passkey: "Passkey"
-              totp: "TOTP"
-              recovery: "Recovery"
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-      org:
-        configuration:
-          security:
-            edit:
-              title: "Security settings"
-              description: "Monitor your organization's passkeys, recovery codes, and session history."
-            cards:
-              passkeys:
-                title: "Passkeys"
-                description: "Staff passkeys simplify passwordless authentication."
-                stats_label: "registered"
-              secrets:
-                title: "Recovery codes"
-                description: "Single-use secrets that restore access if your primary keys fail."
-                stats_label: "stored"
-              sessions:
-                title: "Active sessions"
-                description: "Signed-in sessions for your staff account."
-                stats_label: "active"
-            states:
-              enabled: "Enabled"
-              disabled: "Not configured"
-            actions:
-              manage: "Manage"
-              review: "Refresh review"
-            review:
-              heading: "Security review"
-              last_review: "Last review refreshed:"
-            never: "Not yet recorded"
-            update:
-              success: "Security dashboard refreshed."
     apex:
     app:
       configurations:
@@ -1468,6 +1466,8 @@ en:
           description: "Please fill out the form below to contact us."
           email_address: "Email Address"
           telephone_number: "Telephone Number"
+          title: "Title"
+          body: "Body"
           contact_category_title: "Inquiry Category"
           category_id: "Inquiry Category"
           confirm_policy: "I agree to the privacy policy"
@@ -1523,8 +1523,8 @@ en:
           page_title: "Contact Us"
           badge: "Contact"
           description: "Please fill out the form below to contact us."
-          email_address: "Email Address"
-          telephone_number: "Telephone Number"
+          title: "Title"
+          body: "Body"
           category_id: "Inquiry Category"
           confirm_policy: "I agree to the privacy policy"
           confirm_policy_note: "You must agree to the privacy policy before submitting."
@@ -1539,8 +1539,8 @@ en:
           page_title: "Contact Us"
           badge: "Contact"
           description: "Please fill out the form below to contact us."
-          email_address: "Email Address"
-          telephone_number: "Telephone Number"
+          title: "Title"
+          body: "Body"
           category_id: "Inquiry Category"
           confirm_policy: "I agree to the privacy policy"
           confirm_policy_note: "You must agree to the privacy policy before submitting."
@@ -1549,6 +1549,8 @@ en:
             other: "%{count} errors prohibited this contact from being saved."
           submit: "Continue"
           cancel: "Cancel"
+        create:
+          success: "Your inquiry has been received."
         telephones:
           new:
             page_title: "Verify Phone Number"
@@ -1580,14 +1582,15 @@ en:
           page_title: "Contact Us"
           heading: "Send us a message"
           description: "Please fill out the form below to contact us."
-          email_address: "Email Address"
-          telephone_number: "Telephone Number"
+          title: "Title"
+          body: "Body"
           contact_category_title: "Inquiry Category"
+          category_id: "Inquiry Category"
           confirm_policy: "I agree to the privacy policy"
           submit: "Continue"
           cancel: "Cancel"
         create:
-          success: "Thank you for contacting us. Please verify your email address."
+          success: "Your inquiry has been received."
           failure: "Unable to process your request. Please check the form and try again."
           turnstile_error: "Security verification failed. Please refresh the page and try again."
           confirm_policy_error: "You must agree to the privacy policy to continue."
@@ -1871,6 +1874,8 @@ en:
         footer:
           preference: "Preferences"
   shared:
+    page_header:
+      up_label_fallback: "Back"
     links:
       apex_preference: "Apex preferences"
 
@@ -1932,36 +1937,3 @@ en:
       preferences:
         footer:
           preference: "Preferences"
-  controller:
-    sign:
-      app:
-        configuration:
-          security:
-            edit:
-              title: "Security overview"
-              description: "Review the protections on your account and jump straight to each management page."
-            cards:
-              passkeys:
-                title: "Passkeys"
-                description: "Manage the passkeys registered to this account."
-                stats_label: "registered"
-              secrets:
-                title: "Recovery codes"
-                description: "Check your recovery codes and generate new ones."
-                stats_label: "available"
-              sessions:
-                title: "Sessions"
-                description: "Inspect active sessions and sign out of unused devices."
-                stats_label: "active now"
-            states:
-              enabled: "Enabled"
-              disabled: "Disabled"
-            actions:
-              manage: "Manage"
-              review: "Mark as reviewed"
-            review:
-              heading: "Security review"
-              last_review: "Last reviewed"
-              never: "Never reviewed"
-            update:
-              success: "Security review timestamp saved."

@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_timeline_categories
 # Database name: news
 #
-#  id                              :uuid             not null, primary key
+#  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
-#  com_timeline_category_master_id :string(255)      not null
-#  com_timeline_id                 :uuid             not null
+#  com_timeline_category_master_id :bigint           default(0), not null
+#  com_timeline_id                 :bigint           not null
 #
 # Indexes
 #
@@ -16,8 +17,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_timeline_category_master_id => com_timeline_category_masters.id)
-#  fk_rails_...  (com_timeline_id => com_timelines.id) ON DELETE => cascade
+#  fk_com_timeline_categories_on_com_timeline_category_master_id  (com_timeline_category_master_id => com_timeline_category_masters.id)
+#  fk_rails_...                                                   (com_timeline_id => com_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true
@@ -29,5 +30,4 @@ class ComTimelineCategory < NewsRecord
              inverse_of: :com_timeline_categories
 
   validates :com_timeline_id, uniqueness: true
-  validates :com_timeline_category_master_id, length: { maximum: 255 }
 end

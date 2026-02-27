@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Configure Solid Cache to use the cache database

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DefaultContactStatusToNone < ActiveRecord::Migration[8.2]
-  CONTACT_TABLES = %w[app_contacts com_contacts org_contacts].freeze
+  CONTACT_TABLES = %w(app_contacts com_contacts org_contacts).freeze
 
   def change
     CONTACT_TABLES.each do |table|

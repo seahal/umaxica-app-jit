@@ -3,28 +3,16 @@
 # Table name: handle_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :bigint           not null, primary key
 #
 # Auto-generated minimal fixture
 neyo:
-  id: NEYO
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 5
 active:
-  id: ACTIVE
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 3
 inactive:
-  id: INACTIVE
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 1
 pending:
-  id: PENDING
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 2
 deleted:
-  id: DELETED
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 4

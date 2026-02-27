@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
@@ -13,7 +14,4 @@ Rails.application.routes.draw do
   draw :docs
   # endpoints for news
   draw :news
-
-  # mount Rswag::Ui::Engine => '/api-docs'
-  # mount Rswag::Api::Engine => '/api-docs'
 end

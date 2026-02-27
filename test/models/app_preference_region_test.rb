@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_preference_regions
 # Database name: preference
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :string           not null
-#  preference_id :uuid             not null
+#  option_id     :bigint           not null
+#  preference_id :bigint           not null
 #
 # Indexes
 #
@@ -16,8 +17,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (option_id => app_preference_region_options.id)
-#  fk_rails_...  (preference_id => app_preferences.id)
+#  fk_app_preference_regions_on_option_id  (option_id => app_preference_region_options.id)
+#  fk_rails_...                            (preference_id => app_preferences.id)
 #
 
 # frozen_string_literal: true
@@ -25,12 +26,16 @@
 require "test_helper"
 
 class AppPreferenceRegionTest < ActiveSupport::TestCase
+  fixtures :app_preference_region_options
+
   setup do
-    @preference = AppPreference.create!
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING)
   end
 
   test "belongs to preference" do
     region = AppPreferenceRegion.new
+
     assert_not region.valid?
     assert_not_empty region.errors[:preference]
   end
@@ -38,6 +43,7 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
   test "can be created with preference and option" do
     option = app_preference_region_options(:jp)
     region = AppPreferenceRegion.create!(preference: @preference, option: option)
+
     assert_not_nil region.id
     assert_equal @preference, region.preference
     assert_equal option, region.option
@@ -45,27 +51,31 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     region = AppPreferenceRegion.create!(preference: @preference)
-    assert_equal "JP", region.option_id
+
+    assert_equal AppPreferenceRegionOption::JP, region.option_id
   end
 
   test "validates uniqueness of preference" do
     option = app_preference_region_options(:jp)
     AppPreferenceRegion.create!(preference: @preference, option: option)
     duplicate_region = AppPreferenceRegion.new(preference: @preference, option: option)
+
     assert_not duplicate_region.valid?
     assert_not_empty duplicate_region.errors[:preference_id]
   end
 
   test "raises InvalidForeignKey for non-existent arbitrary option_id" do
     assert_raises(ActiveRecord::InvalidForeignKey) do
-      AppPreferenceRegion.create!(preference: @preference, option_id: "Mars")
+      AppPreferenceRegion.create!(preference: @preference, option_id: 9999)
     end
   end
 
-  test "AppPreferenceRegionOption accepts valid uppercase code" do
-    option = AppPreferenceRegionOption.create!(id: "XX")
+  test "AppPreferenceRegionOption accepts numeric ids" do
+    option = AppPreferenceRegionOption.create!(id: 99)
+
     assert_predicate option, :persisted?
-    region = AppPreferenceRegion.create!(preference: @preference, option_id: "XX")
+    region = AppPreferenceRegion.create!(preference: @preference, option_id: 99)
+
     assert_equal option, region.option
   end
 end

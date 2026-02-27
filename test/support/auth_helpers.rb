@@ -1,4 +1,9 @@
+# typed: false
 # frozen_string_literal: true
+
+require_relative "../../app/controllers/concerns/auth/base"
+require_relative "../../app/controllers/concerns/auth/user"
+require_relative "../../app/controllers/concerns/auth/staff"
 
 # Helpers for authentication-related test setup.
 #
@@ -15,6 +20,9 @@
 module AuthHelpers
   TEST_USER_HEADER = "X-TEST-CURRENT-USER"
   TEST_STAFF_HEADER = "X-TEST-CURRENT-STAFF"
+  MODERN_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " \
+                      "AppleWebKit/537.36 (KHTML, like Gecko) " \
+                      "Chrome/120.0.0.0 Safari/537.36"
 
   def host_headers(host = nil)
     host_value =
@@ -22,11 +30,25 @@ module AuthHelpers
       (respond_to?(:request, true) ? request&.host : nil) ||
       ENV["DEFAULT_URL_HOST"]
 
-    host_value.present? ? { "Host" => host_value } : {}
+    headers = { "User-Agent" => MODERN_USER_AGENT }
+    headers["Host"] = host_value if host_value.present?
+    headers
+  end
+
+  def browser_headers
+    { "User-Agent" => MODERN_USER_AGENT }
   end
 
   def as_user_headers(user, host: nil, headers: {})
-    host_headers(host).merge(headers).merge(TEST_USER_HEADER => user.id.to_s)
+    base = host_headers(host).merge(headers).merge(TEST_USER_HEADER => user.id.to_s)
+
+    if user.respond_to?(:persisted?) && user.persisted? && user.class.name == "User"
+      token = UserToken.where(user_id: user.id, expired_at: nil).order(created_at: :desc).first
+      token ||= UserToken.create!(user_id: user.id, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+      base["X-TEST-SESSION-PUBLIC-ID"] = token.public_id
+    end
+
+    base
   end
 
   def as_staff_headers(staff, host: nil, headers: {})
@@ -60,6 +82,18 @@ module AuthHelpers
     cookies[::Auth::Base::REFRESH_COOKIE_KEY] = token
   end
 
+  def satisfy_user_verification(user_token)
+    verification, raw_token = UserVerification.issue_for_token!(token: user_token)
+    cookies[UserVerification.cookie_name] = raw_token
+    verification
+  end
+
+  def satisfy_staff_verification(staff_token)
+    verification, raw_token = StaffVerification.issue_for_token!(token: staff_token)
+    cookies[StaffVerification.cookie_name] = raw_token
+    verification
+  end
+
   # Legacy aliases for backward compatibility
   alias_method :set_user_access_cookie, :set_access_cookie
   alias_method :set_staff_access_cookie, :set_access_cookie
@@ -78,12 +112,16 @@ module AuthHelpers
         []
       end
 
-    cookies_hash = {}
+    parsed = {}
     lines.each do |line|
-      match = line.match(/\A([^=]+)=([^;]*)/)
-      cookies_hash[match[1]] = match[2] if match
+      pair = line.to_s.split(";", 2).first
+      name, value = pair.to_s.split("=", 2)
+      next if name.blank?
+
+      parsed[name] = CGI.unescape(value.to_s)
     end
-    cookies_hash
+
+    parsed
   end
 
   # Check if response has Set-Cookie for a specific cookie name

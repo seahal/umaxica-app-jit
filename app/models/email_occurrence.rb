@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,30 +6,33 @@
 # Table name: email_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(255)      default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_email_occurrences_on_body        (body) UNIQUE
-#  index_email_occurrences_on_expires_at  (expires_at)
-#  index_email_occurrences_on_public_id   (public_id) UNIQUE
-#  index_email_occurrences_on_status_id   (status_id)
+#  index_email_occurrences_on_body             (body) UNIQUE
+#  index_email_occurrences_on_body_created_at  (body,created_at)
+#  index_email_occurrences_on_expires_at       (expires_at)
+#  index_email_occurrences_on_public_id        (public_id) UNIQUE
+#  index_email_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => email_occurrence_statuses.id)
+#  fk_email_occurrences_on_status_id  (status_id => email_occurrence_statuses.id)
 #
 
 class EmailOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
+
+  attribute :status_id, default: EmailOccurrenceStatus::NOTHING
 
   belongs_to :email_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :email_occurrences
   has_many :area_email_occurrences, dependent: :destroy, inverse_of: :email_occurrence
@@ -47,5 +51,5 @@ class EmailOccurrence < OccurrenceRecord
   has_many :zip_occurrences, through: :email_zip_occurrences
 
   validates :body, length: { maximum: 255 }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 end

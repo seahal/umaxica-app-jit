@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -27,14 +28,17 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "footer" do
       assert_select "a"
-      assert_select "a[href*=?]", apex_org_preference_url, text: I18n.t("sign.org.preferences.footer.preference")
-      assert_select "a[href*=?]", sign_org_configuration_path, text: I18n.t("sign.org.preferences.footer.configuration")
+      assert_select "a[href*=?]", apex_org_preference_url,
+                    text: I18n.t("sign.org.preferences.footer.preference")
+      assert_select "a[href*=?]", sign_org_configuration_path,
+                    text: I18n.t("sign.org.preferences.footer.configuration")
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get sign_org_root_url(ri: "jp")
+
     assert_response :success
     assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
   end

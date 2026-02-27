@@ -24,26 +24,26 @@ class SetPublicIdDefaultsAndSeedNullPublicIds < ActiveRecord::Migration[8.2]
 
   private
 
-    def set_default_empty_string(table)
-      return unless table_exists?(table)
-      return unless column_exists?(table, :public_id)
+  def set_default_empty_string(table)
+    return unless table_exists?(table)
+    return unless column_exists?(table, :public_id)
 
-      change_column_default table, :public_id, from: nil, to: ""
+    change_column_default table, :public_id, from: nil, to: ""
+  end
+
+  def ensure_null_public_id_row(table, _status_column)
+    return unless table_exists?(table)
+
+    safety_assured do
+      # No-op: intentionally left blank.
     end
+  end
 
-    def ensure_null_public_id_row(table, _status_column)
-      return unless table_exists?(table)
+  def delete_null_public_id_row(table)
+    return unless table_exists?(table)
 
-      safety_assured do
-        # No-op: intentionally left blank.
-      end
+    safety_assured do
+      # No-op: intentionally left blank.
     end
-
-    def delete_null_public_id_row(table)
-      return unless table_exists?(table)
-
-      safety_assured do
-        # No-op: intentionally left blank.
-      end
-    end
+  end
 end

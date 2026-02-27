@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,20 +6,15 @@
 # Table name: app_timeline_statuses
 # Database name: news
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_app_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class AppTimelineStatusTest < ActiveSupport::TestCase
+  fixtures :app_timeline_statuses
+
   def setup
-    @status = AppTimelineStatus.find("ACTIVE")
     @model_class = AppTimelineStatus
   end
 
@@ -26,46 +22,25 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
     assert_operator AppTimelineStatus, :<, NewsRecord
   end
 
-  test "id is required" do
-    status = AppTimelineStatus.new(id: nil)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id must be unique" do
-    status = AppTimelineStatus.new(id: "ACTIVE")
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id must have maximum length of 255" do
-    status = AppTimelineStatus.new(id: "A" * 256)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id can have maximum length of 255" do
-    long_id = "A" * 255
-    status = AppTimelineStatus.create!(id: long_id)
+  test "accepts integer ids" do
+    status = @model_class.new(id: 9)
 
     assert_predicate status, :valid?
-    assert_equal 255, status.id.length
   end
 
-  test "can load draft status from db" do
-    draft = AppTimelineStatus.find("DRAFT")
-
-    assert_not_nil draft
-    assert_equal "DRAFT", draft.id
+  test "constants are defined" do
+    assert_equal 1, AppTimelineStatus::NOTHING
+    assert_equal 2, AppTimelineStatus::ACTIVE
+    assert_equal 3, AppTimelineStatus::INACTIVE
+    assert_equal 4, AppTimelineStatus::PENDING
+    assert_equal 5, AppTimelineStatus::DELETED
+    assert_equal 6, AppTimelineStatus::DRAFT
+    assert_equal 7, AppTimelineStatus::ARCHIVED
   end
 
-  test "can load archived status from db" do
-    archived = AppTimelineStatus.find("ARCHIVED")
+  test "can find statuses by numeric id" do
+    status = @model_class.find(AppTimelineStatus::NOTHING)
 
-    assert_not_nil archived
-    assert_equal "ARCHIVED", archived.id
+    assert_equal AppTimelineStatus::NOTHING, status.id
   end
 end

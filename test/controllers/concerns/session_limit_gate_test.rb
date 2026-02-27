@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -16,9 +17,10 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
     end
 
     def check_gate
-      if require_session_limit_gate!(login_path: "/test/login")
-        head :ok
-      end
+      return unless require_session_limit_gate!(login_path: "/test/login")
+
+      head :ok
+
     end
 
     def consume_gate
@@ -30,7 +32,7 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
       render json: {
         valid: session_limit_gate_valid?,
         return_to: session_limit_return_to,
-        flow: session_limit_flow
+        flow: session_limit_flow,
       }
     end
   end
@@ -51,6 +53,7 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
 
   test "issue_session_limit_gate! creates a valid gate in session" do
     get "/test/issue_gate", params: { return_to: "/my/return/path", flow: "in.email.session" }
+
     assert_response :ok
 
     get "/test/gate_info"
@@ -63,6 +66,7 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
 
   test "issue_session_limit_gate! rejects external URLs in return_to" do
     get "/test/issue_gate", params: { return_to: "https://evil.com/attack", flow: "test" }
+
     assert_response :ok
 
     get "/test/gate_info"
@@ -86,21 +90,25 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
   test "require_session_limit_gate! allows access with valid gate" do
     # First issue a gate
     get "/test/issue_gate"
+
     assert_response :ok
 
     # Then check it
     get "/test/check_gate"
+
     assert_response :ok
   end
 
   test "require_session_limit_gate! redirects when gate is expired" do
     # Issue a gate
     get "/test/issue_gate"
+
     assert_response :ok
 
     # Simulate time passing beyond TTL (15 minutes = 900 seconds)
     travel 16.minutes do
       get "/test/check_gate"
+
       assert_redirected_to "/test/login"
       assert_equal I18n.t(
         "session_limit.gate_expired",
@@ -113,20 +121,24 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
   test "consume_session_limit_gate! removes the gate from session" do
     # Issue a gate
     get "/test/issue_gate"
+
     assert_response :ok
 
     # Verify it exists
     get "/test/gate_info"
     json = response.parsed_body
+
     assert json["valid"]
 
     # Consume it
     get "/test/consume_gate"
+
     assert_response :ok
 
     # Verify it's gone
     get "/test/gate_info"
     json = response.parsed_body
+
     assert_not json["valid"]
   end
 
@@ -137,6 +149,7 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
 
     # Now check should redirect
     get "/test/check_gate"
+
     assert_redirected_to "/test/login"
   end
 end

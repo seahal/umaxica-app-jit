@@ -1,3 +1,4 @@
+<% content_for :page_title, 'Roots' %>
 <ul>
   <li>Current language: <%= I18n.locale %></li>
   <li>TimeZone: <%= params[:tz].to_s.downcase == 'utc' ? "utc" : 'jst' %></li>

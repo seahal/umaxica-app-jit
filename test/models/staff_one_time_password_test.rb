@@ -1,28 +1,27 @@
+# typed: false
 # == Schema Information
 #
 # Table name: staff_one_time_passwords
 # Database name: operator
 #
-#  id                                :uuid             not null, primary key
-#  last_otp_at                       :datetime         default(-Infinity), not null
-#  private_key                       :string(1024)     default(""), not null
-#  title                             :string(32)
+#  id                                :bigint           not null, primary key
+#  secret_key                        :string
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
-#  public_id                         :string(21)
-#  staff_id                          :uuid             not null
-#  staff_one_time_password_status_id :string           default("NEYO"), not null
+#  public_id                         :string(21)       not null
+#  staff_id                          :bigint           not null
+#  staff_one_time_password_status_id :bigint           default(4), not null
 #
 # Indexes
 #
-#  idx_on_staff_one_time_password_status_id_8958a1c9bf  (staff_one_time_password_status_id)
-#  index_staff_one_time_passwords_on_public_id          (public_id) UNIQUE
-#  index_staff_one_time_passwords_on_staff_id           (staff_id)
+#  idx_staff_otps_on_staff_id                   (staff_id)
+#  idx_staff_otps_on_status_id                  (staff_one_time_password_status_id)
+#  index_staff_one_time_passwords_on_public_id  (public_id) UNIQUE
 #
 # Foreign Keys
 #
-#  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (staff_one_time_password_status_id => staff_one_time_password_statuses.id)
+#  fk_rails_...                                                     (staff_id => staffs.id) ON DELETE => cascade
+#  fk_staff_one_time_passwords_on_staff_one_time_password_status_i  (staff_one_time_password_status_id => staff_one_time_password_statuses.id)
 #
 
 # frozen_string_literal: true
@@ -36,7 +35,6 @@ class StaffOneTimePasswordTest < ActiveSupport::TestCase
     staff = staffs(:one)
     totp = StaffOneTimePassword.new(
       staff: staff,
-      last_otp_at: Time.current,
       private_key: "",
       public_id: nil,
     )
@@ -53,18 +51,18 @@ class StaffOneTimePasswordTest < ActiveSupport::TestCase
     StaffOneTimePassword::MAX_TOTPS_PER_STAFF.times do |index|
       StaffOneTimePassword.create!(
         staff: staff,
-        last_otp_at: Time.current,
         private_key: "key-#{index}",
       )
     end
 
     extra = StaffOneTimePassword.new(
       staff: staff,
-      last_otp_at: Time.current,
       private_key: "extra-key",
     )
 
     assert_not extra.valid?
-    assert_includes extra.errors[:base], "exceeds maximum totps per staff (#{StaffOneTimePassword::MAX_TOTPS_PER_STAFF})"
+    message = "exceeds maximum totps per staff (#{StaffOneTimePassword::MAX_TOTPS_PER_STAFF})"
+
+    assert_includes extra.errors[:base], message
   end
 end

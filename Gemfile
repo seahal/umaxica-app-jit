@@ -10,31 +10,34 @@ gem "rake"
 # Rack
 gem "rack"
 # Rails
-# gem "rails"
+# Tracking the main branch for Rails 8.1 features.
+# Once Rails 8.1 has a stable gem release, switch to:
+#   gem "rails", "~> 8.1.0"
+# or the stable maintenance branch:
+#   gem "rails", github: "rails/rails", branch: "8-1-stable"
 gem "rails", github: "rails/rails", branch: "main"
 # Web server
 gem "puma"
 # JSON APIs
-gem "jbuilder"
+# gem "jbuilder" # unused: no .jbuilder templates found
 # Use OpenStruct
 gem "ostruct"
 # Database
 gem "pg"
-gem "neighbor"
+# gem "neighbor" # unused: no neighbor scopes/modules found
 gem "strong_migrations"
 # Redis
 gem "redis"
 # CORS
 gem "rack-cors"
-# DoS protection
-gem "rack-attack"
+gem "rack-timeout", group: %i(development production)
 # Password hashing
 gem "argon2"
 gem "bcrypt"
 # SHA3
 gem "sha3"
 # Time zone data for Windows
-gem "tzinfo-data", platforms: %i[windows jruby]
+gem "tzinfo-data", platforms: %i(windows jruby)
 # Boot caching
 gem "bootsnap", require: false
 # File uploads and processing
@@ -42,8 +45,8 @@ gem "shrine"
 gem "image_processing"
 # AWS SDKs
 gem "aws-sdk-sns"
-gem "aws-sdk-connect"
-gem "aws-sdk-polly"
+# gem "aws-sdk-connect" # unused: no Connect client/integration found
+# gem "aws-sdk-polly" # unused: no Polly client/integration found
 # Asset pipeline
 gem "propshaft"
 # OpenTelemetry
@@ -51,7 +54,7 @@ gem "opentelemetry-sdk", require: false
 gem "opentelemetry-exporter-otlp", require: false
 gem "opentelemetry-instrumentation-all", require: false
 # Sitemap
-gem "sitemap_generator"
+# gem "sitemap_generator" # unused: no sitemap config/task found
 # TOTP
 gem "rotp"
 # QR code generation
@@ -62,7 +65,7 @@ gem "solid_cache"
 gem "solid_queue"
 gem "mission_control-jobs"
 # Pagination
-gem "pagy"
+# gem "pagy" # unused: no Pagy usage found
 # WebAuthn (FIDO2)
 gem "webauthn"
 # Social login
@@ -88,8 +91,10 @@ gem "nanoid"
 gem "pundit"
 # billing
 gem "stripe"
-# sorbet
-gem "sorbet-runtime"
+# SQL exploration
+gem "blazer"
+# Performance monitoring (APM)
+gem "skylight"
 
 group :development, :test do
   # Test coverage
@@ -98,8 +103,6 @@ group :development, :test do
   gem "minitest-mock"
   # Slow test profiling
   gem "test-prof"
-  # Postgres performance viewer
-  gem "pghero"
   # N+1 query detector
   # gem "bullet"
   gem "prosopite"
@@ -111,11 +114,13 @@ group :development, :test do
   gem "debride"
   # type
   gem "tapioca", require: false
+  # sorbet
+  gem "sorbet-runtime"
 end
 
 group :development do
   # Debugging
-  gem "debug", platforms: %i[ mri windows ]
+  gem "debug", platforms: %i( mri windows )
   gem "sorbet"
   gem "foreman"
   gem "yard"
@@ -129,10 +134,11 @@ group :development do
   # Speed up commands on slow machines / big apps
   # gem "spring"
   gem "brakeman", require: false
-  # Web console on exception pages
-  gem "web-console"
+  # web-console 4.2.1 is incompatible with Rails main (ActionDispatch::RemoteIp API change)
+  # gem "web-console"
   # RuboCop
   gem "rubocop", require: false
+  gem "rubocop-ast", require: false
   gem "rubocop-performance", require: false
   gem "rubocop-thread_safety", require: false
   gem "rubocop-rake", require: false
@@ -140,6 +146,10 @@ group :development do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-i18n", require: false
   gem "rubocop-rubycw", require: false
+  gem "rubocop-rails", require: false
+  gem "rubocop-sorbet", require: false
+  # Boundary enforcement for granular modular architecture
+  gem "packwerk", require: false
   # ERB lint
   gem "erb_lint", require: false
   # Annotate models, routes, fixtures, etc.

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,28 +6,23 @@
 # Table name: org_contact_emails
 # Database name: guest
 #
-#  id                     :string           not null, primary key
+#  id                     :bigint           not null, primary key
 #  activated              :boolean          default(FALSE), not null
-#  deletable              :boolean          default(FALSE), not null
 #  email_address          :string(1000)     default(""), not null
-#  expires_at             :timestamptz      not null
-#  remaining_views        :integer          default(0), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
 #  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  org_contact_id         :uuid             not null
+#  org_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_org_contact_emails_on_email_address        (email_address)
-#  index_org_contact_emails_on_expires_at           (expires_at)
-#  index_org_contact_emails_on_org_contact_id       (org_contact_id)
-#  index_org_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#  index_org_contact_emails_on_email_address   (email_address)
+#  index_org_contact_emails_on_org_contact_id  (org_contact_id)
 #
 # Foreign Keys
 #
@@ -36,6 +32,8 @@
 require "test_helper"
 
 class OrgContactEmailTest < ActiveSupport::TestCase
+  fixtures :org_contacts, :org_contact_categories, :org_contact_statuses
+
   def setup
     @org_contact = org_contacts(:one)
     @email = OrgContactEmail.new(
@@ -55,14 +53,14 @@ class OrgContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should validate email format" do
-    valid_addresses = %w[user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp]
+    valid_addresses = %w(user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp)
     valid_addresses.each do |valid_address|
       @email.email_address = valid_address
 
       assert_predicate @email, :valid?, "#{valid_address.inspect} should be valid"
     end
 
-    invalid_addresses = %w[user@example,com user_at_foo.org user.name@example.]
+    invalid_addresses = %w(user@example,com user_at_foo.org user.name@example.)
     invalid_addresses.each do |invalid_address|
       @email.email_address = invalid_address
 
@@ -99,7 +97,7 @@ class OrgContactEmailTest < ActiveSupport::TestCase
   end
 
   test "can_resend_verifier? logic" do
-    assert_predicate @email, :can_resend_verifier? # Fresh record (defaults to expired)
+    assert_not @email.can_resend_verifier?
     @email.generate_verifier!
     # Still valid attempt window
     assert_not @email.can_resend_verifier?

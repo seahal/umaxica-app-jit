@@ -7,4 +7,3 @@ rules:
     conditions:
       include:
         - main
-

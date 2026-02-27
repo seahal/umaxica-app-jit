@@ -10,8 +10,9 @@ class AddUserIdentityGoogleAuthStatusToUserGoogleAuths < ActiveRecord::Migration
       add_index :user_google_auths, :user_identity_google_auth_status_id
     end
 
-    unless foreign_key_exists?(:user_google_auths, :user_identity_google_auth_statuses)
-      add_foreign_key :user_google_auths, :user_identity_google_auth_statuses, column: :user_identity_google_auth_status_id, primary_key: :id
-    end
+    return if foreign_key_exists?(:user_google_auths, :user_identity_google_auth_statuses)
+
+    add_foreign_key :user_google_auths, :user_identity_google_auth_statuses, column: :user_identity_google_auth_status_id, primary_key: :id
+
   end
 end

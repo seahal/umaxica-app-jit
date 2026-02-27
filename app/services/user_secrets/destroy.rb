@@ -1,9 +1,10 @@
+# typed: false
 # frozen_string_literal: true
 
 module UserSecrets
   class Destroy
     ACTION = "user_secret.delete"
-    EVENT_ID = "USER_IDENTITY_SECRET_DELETE"
+    EVENT_ID = UserActivityEvent::USER_SECRET_REMOVED
 
     def self.call(actor:, secret:)
       new(actor: actor, secret: secret).call
@@ -17,6 +18,7 @@ module UserSecrets
     def call
       audit_class.transaction do
         UserSecret.transaction do
+          ensure_audit_dependencies!
           audit_class.create!(
             actor: @actor,
             subject_type: "UserSecret",
@@ -32,8 +34,15 @@ module UserSecrets
 
     private
 
-      def audit_class
-        @audit_class ||= @actor.is_a?(Staff) ? StaffAudit : UserAudit
+    def audit_class
+      @audit_class ||= @actor.is_a?(Staff) ? StaffActivity : UserActivity
+    end
+
+    def ensure_audit_dependencies!
+      ActivityRecord.connected_to(role: :writing) do
+        UserActivityEvent.find_or_create_by!(id: EVENT_ID)
+        UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NOTHING)
       end
+    end
   end
 end

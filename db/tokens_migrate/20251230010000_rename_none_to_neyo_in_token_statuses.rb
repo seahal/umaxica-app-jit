@@ -25,27 +25,27 @@ class RenameNoneToNeyoInTokenStatuses < ActiveRecord::Migration[8.2]
 
   private
 
-    def rename_id(table, from:, to:)
-      return unless table_exists?(table)
+  def rename_id(table, from:, to:)
+    return unless table_exists?(table)
 
-      change_column_default_if_exists(table, :id, from: from, to: to)
+    change_column_default_if_exists(table, :id, from: from, to: to)
+  end
+
+  def update_fk(table, column, from:, to:)
+    return unless table_exists?(table) && column_exists?(table, column)
+
+    safety_assured do
+      execute <<~SQL.squish
+        UPDATE #{table}
+        SET #{column} = '#{to}'
+        WHERE #{column} = '#{from}'
+      SQL
     end
+  end
 
-    def update_fk(table, column, from:, to:)
-      return unless table_exists?(table) && column_exists?(table, column)
+  def change_column_default_if_exists(table, column, from:, to:)
+    return unless table_exists?(table) && column_exists?(table, column)
 
-      safety_assured do
-        execute <<~SQL.squish
-          UPDATE #{table}
-          SET #{column} = '#{to}'
-          WHERE #{column} = '#{from}'
-        SQL
-      end
-    end
-
-    def change_column_default_if_exists(table, column, from:, to:)
-      return unless table_exists?(table) && column_exists?(table, column)
-
-      change_column_default table, column, from: from, to: to
-    end
+    change_column_default table, column, from: from, to: to
+  end
 end

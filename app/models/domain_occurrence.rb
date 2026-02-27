@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,14 +6,14 @@
 # Table name: domain_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(253)      default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :bigint           default(4), not null
 #
 # Indexes
 #
@@ -23,12 +24,14 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => domain_occurrence_statuses.id)
+#  fk_domain_occurrences_on_status_id  (status_id => domain_occurrence_statuses.id)
 #
 
 class DomainOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
+
+  attribute :status_id, default: DomainOccurrenceStatus::NOTHING
 
   belongs_to :domain_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :domain_occurrences
   has_many :area_domain_occurrences, dependent: :destroy, inverse_of: :domain_occurrence
@@ -47,5 +50,5 @@ class DomainOccurrence < OccurrenceRecord
   has_many :zip_occurrences, through: :domain_zip_occurrences
 
   validates :body, length: { maximum: 253 }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 end

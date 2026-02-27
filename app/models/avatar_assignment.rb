@@ -1,14 +1,15 @@
+# typed: false
 # == Schema Information
 #
 # Table name: avatar_assignments
 # Database name: avatar
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  role       :string(50)       default("viewer"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  avatar_id  :string(255)      not null
-#  user_id    :uuid             not null
+#  avatar_id  :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -25,14 +26,15 @@
 # frozen_string_literal: true
 
 class AvatarAssignment < AvatarRecord
-  ROLES = %w[owner affiliation administrator editor reviewer viewer].freeze
+  ROLES = %w(owner affiliation administrator editor reviewer viewer).freeze
 
   belongs_to :avatar
-  belongs_to :user
+  belongs_to :user, optional: true
+  validates :user_id, presence: true
 
   validates :role, presence: true, inclusion: { in: ROLES }, length: { maximum: 50 }
   validates :avatar_id, length: { maximum: 255 }
-  validates :avatar_id, uniqueness: { scope: [ :user_id, :role ] }
+  validates :avatar_id, uniqueness: { scope: [:user_id, :role] }
 
   validates :avatar_id,
             uniqueness: { conditions: -> { where(role: "owner") } },

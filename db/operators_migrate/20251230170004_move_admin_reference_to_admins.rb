@@ -8,7 +8,7 @@ class MoveAdminReferenceToAdmins < ActiveRecord::Migration[8.2]
       add_reference :admins,
                     :staff,
                     foreign_key: { to_table: :staffs, validate: false },
-                    type: :uuid
+                    type: :bigint
     end
   end
 end

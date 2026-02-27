@@ -2,9 +2,9 @@
 
 class CreateAdminMessages < ActiveRecord::Migration[8.2]
   def change
-    create_table :admin_messages, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.uuid :staff_message_id
-      t.uuid :public_id
+    create_table :admin_messages do |t|
+      t.bigint :staff_message_id
+      t.string :public_id, null: false, default: ""
 
       t.timestamps
     end

@@ -1,33 +1,28 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_preference_statuses
 # Database name: preference
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  app_preference_statuses_position_unique  (position) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
 class AppPreferenceStatus < PreferenceRecord
-  include StringPrimaryKey
-
+  # Fixed IDs - do not modify these values
+  DELETED = 1
+  NOTHING = 2
   has_many :app_preferences,
            class_name: "AppPreference",
            foreign_key: "status_id",
            primary_key: "id",
            inverse_of: :app_preference_status,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:position, :id) }
+  scope :ordered, -> { all }
 
-  validates :position,
-            presence: true,
-            numericality: { only_integer: true, greater_than: 0 },
-            uniqueness: true
+  def self.ensure_defaults!
+    find_or_create_by!(id: DELETED)
+    find_or_create_by!(id: NOTHING)
+  end
 end

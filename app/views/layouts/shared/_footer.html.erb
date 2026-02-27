@@ -1,10 +1,8 @@
-<footer class="border-t border-[hsl(var(--border))] py-8 text-sm text-[hsl(var(--muted-foreground))]">
-  <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
-    <nav class="flex flex-wrap items-center gap-6 font-medium">
-      <%= yield %>
-    </nav>
-    <div class="flex items-center gap-2">
-      <%= render "concern/copyright" %>
-    </div>
+<footer>
+  <nav>
+    <%= yield %>
+  </nav>
+  <div>
+    <%= render "shared/copyright" %>
   </div>
 </footer>

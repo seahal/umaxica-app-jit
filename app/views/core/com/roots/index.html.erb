@@ -1,30 +1,21 @@
-<div class="flex flex-col items-center justify-center p-12 space-y-12">
-  <div class="text-center space-y-4">
-    <h1 class="text-4xl font-bold tracking-tight text-[hsl(var(--foreground))] sm:text-6xl">
+<% content_for :page_title, 'Welcome' %>
+<div>
+  <div>
+    <h1>
       Welcome
     </h1>
-    <p class="text-lg text-[hsl(var(--muted-foreground))] max-w-xl mx-auto">
+    <p>
       Select an option to proceed.
     </p>
   </div>
 
-  <div class="grid w-full max-w-2xl gap-6 sm:grid-cols-2">
-    <%= link_to new_core_com_contact_path, class: "group relative flex flex-col items-center justify-center gap-4 rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-10 text-[hsl(var(--card-foreground))] shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-[hsl(var(--primary)/0.5)]" do %>
-      <div class="rounded-full bg-[hsl(var(--primary)/0.1)] p-4 text-[hsl(var(--primary))] transition-transform group-hover:scale-110">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
-        </svg>
-      </div>
-      <span class="text-xl font-semibold">Contact Us</span>
+  <div>
+    <%= link_to new_core_com_contact_path do %>
+      <span>Contact Us</span>
     <% end %>
 
-    <%= link_to core_com_configuration_path, class: "group relative flex flex-col items-center justify-center gap-4 rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-10 text-[hsl(var(--card-foreground))] shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-[hsl(var(--primary)/0.5)]" do %>
-      <div class="rounded-full bg-[hsl(var(--secondary))] p-4 text-[hsl(var(--secondary-foreground))] transition-transform group-hover:scale-110">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.43.816 1.035.816 1.682a23.31 23.31 0 01-2.755 0m-1.566 2.457c.248.55.059 1.21-.462 1.511l-.667.38c-.551.318-1.25.117-1.517-.461a21.04 21.04 0 01-2.924-2.457m0-1.09a21.03 21.03 0 002.924-2.457c.267-.579.966-.78 1.517-.461l.667.38c.523.301.712.961.462 1.511"/>
-        </svg>
-      </div>
-      <span class="text-xl font-semibold">Configuration</span>
+    <%= link_to core_com_configuration_path do %>
+      <span>Configuration</span>
     <% end %>
   </div>
 </div>

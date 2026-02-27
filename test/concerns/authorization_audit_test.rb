@@ -1,8 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class AuthorizationAuditTest < ActiveSupport::TestCase
+  fixtures :users, :staffs, :user_statuses, :staff_statuses
+
   class DummyPolicy
     def initialize
     end
@@ -88,7 +91,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
     result = capture_log_data(audit, exception)
 
-    assert_equal [ "authorization.failure" ], result[:events].map(&:first)
+    assert_equal ["authorization.failure"], result[:events].map(&:first)
   end
 
   test "log_authorization_failure routes to user audit" do
@@ -183,13 +186,14 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     exception = build_exception(record: users(:two))
     audit = DummyAudit.new(current_user: user)
 
-    assert_difference "UserAudit.count", 1 do
+    assert_difference "UserActivity.count", 1 do
       audit.send(:log_authorization_failure, exception)
     end
 
-    record = UserAudit.last
+    record = UserActivity.last
+
     assert_equal user, record.user
-    assert_equal "AUTHORIZATION_FAILED", record.event_id
+    assert_equal 3, record.event_id
   end
 
   test "log_authorization_failure creates real staff audit record" do
@@ -197,13 +201,14 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     exception = build_exception(record: staff)
     audit = DummyAudit.new(current_staff: staff)
 
-    assert_difference "StaffAudit.count", 1 do
+    assert_difference "StaffActivity.count", 1 do
       audit.send(:log_authorization_failure, exception)
     end
 
-    record = StaffAudit.last
+    record = StaffActivity.last
+
     assert_equal staff, record.staff
-    assert_equal "AUTHORIZATION_FAILED", record.event_id
+    assert_equal 2, record.event_id
   end
 
   test "handle_authorization_error handles html format" do
@@ -215,12 +220,11 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
 
-      def format.html
-        yield
+      format.define_singleton_method(:html) do |&inner_block|
+        inner_block&.call
       end
 
-      def format.json
-      end
+      format.define_singleton_method(:json) { nil }
 
       # Do nothing for json
       block.call(format)
@@ -241,13 +245,12 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
 
-      def format.html
-      end
+      format.define_singleton_method(:html) { nil }
 
       # Do nothing for html
 
-      def format.json
-        yield
+      format.define_singleton_method(:json) do |&inner_block|
+        inner_block&.call
       end
 
       block.call(format)
@@ -261,33 +264,33 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
   private
 
-    def build_exception(record:)
-      OpenStruct.new(policy: DummyPolicy.new, query: :show?, record: record)
+  def build_exception(record:)
+    OpenStruct.new(policy: DummyPolicy.new, query: :show?, record: record)
+  end
+
+  def capture_log_data(audit, exception)
+    result = { events: [], user_called: false, staff_called: false, log_data: nil }
+
+    audit.define_singleton_method(:create_user_authorization_audit) do |_actor, log_data|
+      result[:user_called] = true
+      result[:log_data] = log_data
+    end
+    audit.define_singleton_method(:create_staff_authorization_audit) do |_actor, log_data|
+      result[:staff_called] = true
+      result[:log_data] = log_data
     end
 
-    def capture_log_data(audit, exception)
-      result = { events: [], user_called: false, staff_called: false, log_data: nil }
-
-      audit.define_singleton_method(:create_user_authorization_audit) do |_actor, log_data|
-        result[:user_called] = true
-        result[:log_data] = log_data
-      end
-      audit.define_singleton_method(:create_staff_authorization_audit) do |_actor, log_data|
-        result[:staff_called] = true
-        result[:log_data] = log_data
-      end
-
-      notifier =
-        Struct.new(:events) do
-          def notify(name, payload)
-            events << [ name, payload ]
-          end
+    notifier =
+      Struct.new(:events) do
+        define_method(:notify) do |name, payload|
+          events << [name, payload]
         end
-
-      Rails.stub(:event, notifier.new(result[:events])) do
-        audit.send(:log_authorization_failure, exception)
       end
 
-      result
+    Rails.stub(:event, notifier.new(result[:events])) do
+      audit.send(:log_authorization_failure, exception)
     end
+
+    result
+  end
 end

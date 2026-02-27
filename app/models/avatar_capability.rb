@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,23 +6,13 @@
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id          :string           not null, primary key
-#  description :text
-#  key         :string           not null
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#
-# Indexes
-#
-#  index_avatar_capabilities_on_key  (key) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class AvatarCapability < AvatarRecord
-  include UuidV7PrimaryKey
+  self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NORMAL = 1
 
   has_many :avatars, foreign_key: :capability_id, inverse_of: :capability, dependent: :restrict_with_error
-
-  validates :key, presence: true, uniqueness: true
-  validates :name, presence: true
 end

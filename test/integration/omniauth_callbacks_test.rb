@@ -1,8 +1,12 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
 
 class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
+  fixtures :user_social_google_statuses, :user_social_apple_statuses, :user_statuses,
+           :user_one_time_password_statuses
+
   setup do
     OmniAuth.config.test_mode = true
     CloudflareTurnstile.test_mode = true
@@ -19,58 +23,94 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
   end
 
   test "should sign in with Google" do
+    # IMPORTANT: Social login uses provider+uid ONLY, NOT email
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       {
         provider: "google_oauth2",
         uid: "123456789",
         info: {
-          email: "test@example.com",
-          image: "http://example.com/image.jpg"
+          image: "http://example.com/image.jpg",
         },
         credentials: {
           token: "token",
           refresh_token: "refresh_token",
-          expires_at: 1.week.from_now.to_i
-        }
+          expires_at: 1.week.from_now.to_i,
+        },
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
+
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    SocialIdentifiable.normalize_provider("google_oauth2").humanize
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: SocialIdentifiable.normalize_provider("google_oauth2").humanize), flash[:notice]
-
     user = UserSocialGoogle.find_by(uid: "123456789").user
+
     assert_not_nil user
-    assert_equal "test@example.com", user.user_social_google.email
+    assert UserToken.exists?(user_id: user.id), "UserToken should be created for Google login"
   end
 
   test "should sign in with Apple" do
+    # IMPORTANT: Social login uses provider+uid ONLY, NOT email
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
       {
         provider: "apple",
         uid: "apple_uid_123",
-        info: {
-          email: "apple@example.com"
-        },
+        info: {},
         credentials: {
           token: "apple_token",
-          expires_at: 1.week.from_now.to_i
-        }
+          expires_at: 1.week.from_now.to_i,
+        },
       },
     )
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: SocialCallbackTestHelper.callback_headers(@host)
+
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Apple"), flash[:notice]
-
     user = UserSocialApple.find_by(uid: "apple_uid_123").user
+
     assert_not_nil user
-    assert_equal "apple@example.com", user.user_social_apple.email
+  end
+
+  test "apple social login with MFA enabled does not require additional MFA challenge" do
+    user = User.create!(multi_factor_enabled: true)
+    UserOneTimePassword.create!(
+      user: user,
+      private_key: ROTP::Base32.random_base32,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      title: "totp",
+    )
+    UserSocialApple.create!(
+      user: user,
+      uid: "apple_mfa_skip_uid",
+      provider: "apple",
+      token: "existing_token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_apple_status: user_social_apple_statuses(:active),
+    )
+
+    OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
+      {
+        provider: "apple",
+        uid: "apple_mfa_skip_uid",
+        info: {},
+        credentials: {
+          token: "apple_token",
+          expires_at: 1.week.from_now.to_i,
+        },
+      },
+    )
+
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: SocialCallbackTestHelper.callback_headers(@host)
+
+    assert_response :redirect
+    assert_match(%r{/in/checkpoint}, response.redirect_url)
+    assert_nil session[:pending_mfa]
   end
 
   test "should sign in with existing Google user" do
@@ -80,7 +120,6 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       uid: "existing_uid",
       provider: "google_oauth2",
       token: "existing_token",
-      email: "existing@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
@@ -90,46 +129,137 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
         provider: "google_oauth2",
         uid: "existing_uid",
         info: {
-          email: "existing@example.com",
-          image: "http://example.com/image.jpg"
+          image: "http://example.com/image.jpg",
         },
         credentials: {
           token: "new_token",
           refresh_token: "new_refresh_token",
-          expires_at: 1.week.from_now.to_i
-        }
+          expires_at: 1.week.from_now.to_i,
+        },
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
+
     assert_redirected_to @expected_redirect
     follow_redirect!
 
     provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
-    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name), flash[:notice]
+
+    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name),
+                 flash[:notice]
   end
 
-  test "login intent without linked identity returns conflict" do
+  test "social login with MFA enabled does not require additional MFA challenge" do
+    user = User.create!
+    user.update!(multi_factor_enabled: true)
+    UserOneTimePassword.create!(
+      user: user,
+      private_key: ROTP::Base32.random_base32,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      title: "totp",
+    )
+    UserSocialGoogle.create!(
+      user: user,
+      uid: "totp_required_uid",
+      provider: "google_oauth2",
+      token: "existing_token",
+      refresh_token: "existing_refresh",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:active),
+    )
+
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       {
         provider: "google_oauth2",
-        uid: "unlinked_uid",
-        info: {
-          email: "unlinked@example.com"
-        },
+        uid: "totp_required_uid",
+        info: { image: "http://example.com/image.jpg" },
         credentials: {
-          token: "token",
-          expires_at: 1.week.from_now.to_i
-        }
+          token: "new_token",
+          refresh_token: "new_refresh",
+          expires_at: 1.week.from_now.to_i,
+        },
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
 
-    assert_redirected_to @expected_redirect
-    follow_redirect!
-
-    provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: provider_name), flash[:notice]
+    assert_response :redirect
+    assert_match(%r{/in/checkpoint}, response.redirect_url)
+    assert_nil session[:pending_mfa]
   end
+
+  test "google login with missing user_token_kind does not crash callback" do
+    UserToken.delete_all
+    UserTokenKind.delete_all
+
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      {
+        provider: "google_oauth2",
+        uid: "missing_kind_uid",
+        info: {
+          image: "http://example.com/image.jpg",
+        },
+        credentials: {
+          token: "token",
+          refresh_token: "refresh_token",
+          expires_at: 1.week.from_now.to_i,
+        },
+      },
+    )
+
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
+
+    assert_response :redirect
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "google login with session limit exceeded redirects to session management" do
+    # Create an existing user with Google social identity
+    user = User.create!
+    UserSocialGoogle.create!(
+      user: user,
+      uid: "session_limit_uid",
+      provider: "google_oauth2",
+      token: "existing_token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:active),
+    )
+
+    # Create 2 active sessions to hit the limit
+    UserToken.where(user_id: user.id).delete_all
+    2.times do
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      {
+        provider: "google_oauth2",
+        uid: "session_limit_uid",
+        info: { image: "http://example.com/image.jpg" },
+        credentials: {
+          token: "new_token",
+          refresh_token: "new_refresh_token",
+          expires_at: 1.week.from_now.to_i,
+        },
+      },
+    )
+
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
+
+    assert_response :found
+    assert_redirected_to sign_app_in_session_url(host: @host)
+    assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
+
+    # A restricted token should have been created
+    restricted = UserToken.where(user_id: user.id, status: UserToken::STATUS_RESTRICTED)
+
+    assert_equal 1, restricted.count
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

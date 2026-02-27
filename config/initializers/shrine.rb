@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "shrine"
@@ -8,12 +9,12 @@ Shrine.storages =
   if Rails.env.test?
     {
       cache: Shrine::Storage::Memory.new,
-      store: Shrine::Storage::Memory.new
+      store: Shrine::Storage::Memory.new,
     }
   else
     {
       cache: Shrine::Storage::FileSystem.new("public", prefix: "uploads/cache"),
-      store: Shrine::Storage::FileSystem.new("public", prefix: "uploads")
+      store: Shrine::Storage::FileSystem.new("public", prefix: "uploads"),
     }
   end
 

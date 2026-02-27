@@ -13,4 +13,13 @@ export PORT="${PORT:-3000}"
 export RUBY_DEBUG_OPEN="true"
 export RUBY_DEBUG_LAZY="true"
 
+if [ "${SKIP_DB_PREPARE:-}" = "" ]; then
+  echo "Preparing database..."
+  # Use foreman so `.env` is loaded consistently with `foreman start`.
+  foreman run bin/rails db:prepare || {
+    echo "Database preparation failed. Try running: bin/setup" >&2
+    exit 1
+  }
+fi
+
 exec foreman start -f Procfile.dev "$@"

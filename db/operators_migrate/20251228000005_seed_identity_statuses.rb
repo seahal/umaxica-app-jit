@@ -8,14 +8,14 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
       # HandleAssignmentStatus
       upsert_table(
         'handle_assignment_statuses', [
-          { id: 'ACTIVE', key: 'ACTIVE', name: 'Active' }
+          { id: 'ACTIVE', key: 'ACTIVE', name: 'Active' },
         ],
       )
 
       # HandleStatus
       upsert_table(
         'handle_statuses', [
-          { id: 'ACTIVE', key: 'ACTIVE', name: 'Active' }
+          { id: 'ACTIVE', key: 'ACTIVE', name: 'Active' },
         ],
       )
 
@@ -25,7 +25,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "NEYO" },
           { id: "ALIVE" },
           { id: "PRE_WITHDRAWAL_CONDITION" },
-          { id: "WITHDRAWAL_COMPLETED" }
+          { id: "WITHDRAWAL_COMPLETED" },
         ],
       )
 
@@ -36,7 +36,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "UNVERIFIED" },
           { id: "VERIFIED" },
           { id: "SUSPENDED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -47,7 +47,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "USED" },
           { id: "EXPIRED" },
           { id: "REVOKED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -58,7 +58,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "UNVERIFIED" },
           { id: "VERIFIED" },
           { id: "SUSPENDED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -70,7 +70,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "UNVERIFIED" },
           { id: "ALIVE" },
           { id: "SUSPENDED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -80,7 +80,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "ACTIVE" },
           { id: "INACTIVE" },
           { id: "REVOKED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -89,7 +89,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
         'user_identity_passkey_statuses', [
           { id: "ACTIVE" },
           { id: "DISABLED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -100,7 +100,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "USED" },
           { id: "EXPIRED" },
           { id: "REVOKED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -109,7 +109,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
         'user_identity_social_apple_statuses', [
           { id: "ACTIVE" },
           { id: "REVOKED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -118,7 +118,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
         'user_identity_social_google_statuses', [
           { id: "ACTIVE" },
           { id: "REVOKED" },
-          { id: "DELETED" }
+          { id: "DELETED" },
         ],
       )
 
@@ -129,7 +129,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "ALIVE" },
           { id: "VERIFIED_WITH_SIGN_UP" },
           { id: "PRE_WITHDRAWAL_CONDITION" },
-          { id: "WITHDRAWAL_COMPLETED" }
+          { id: "WITHDRAWAL_COMPLETED" },
         ],
       )
 
@@ -141,7 +141,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
           { id: "VERIFIED" },
           { id: "SUSPENDED" },
           { id: "DELETED" },
-          { id: "ACTIVE" }
+          { id: "ACTIVE" },
         ],
       )
     end
@@ -149,7 +149,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
 
   def down
     safety_assured do
-      %w[
+      %w(
         handle_assignment_statuses
         handle_statuses
         staff_identity_statuses
@@ -164,7 +164,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
         user_identity_social_google_statuses
         user_identity_statuses
         user_identity_telephone_statuses
-      ].each do |table|
+      ).each do |table|
         # No-op: intentionally left blank.
       end
     end
@@ -172,7 +172,7 @@ class SeedIdentityStatuses < ActiveRecord::Migration[7.1]
 
   private
 
-    def upsert_table(table_name, rows)
-      # No-op: data seeding moved to fixtures.
-    end
+  def upsert_table(table_name, rows)
+    # No-op: data seeding moved to fixtures.
+  end
 end

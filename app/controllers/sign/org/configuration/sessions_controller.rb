@@ -1,12 +1,15 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
   module Org
     module Configuration
       class SessionsController < ApplicationController
+        auth_required!
+
         before_action :authenticate_staff!
         before_action :load_sessions
-        before_action :set_session, only: %i[show edit update destroy]
+        before_action :set_session, only: %i(show edit update destroy)
 
         def index
           render json: { sessions: @sessions }
@@ -46,32 +49,39 @@ module Sign
           head :see_other
         end
 
+        def others
+          @sessions.clear
+          persist_sessions!
+
+          head :see_other
+        end
+
         private
 
-          def load_sessions
-            session[:org_setting_sessions] ||= []
-            @sessions = session[:org_setting_sessions].map { |record| record.stringify_keys }
-          end
+        def load_sessions
+          session[:org_setting_sessions] ||= []
+          @sessions = session[:org_setting_sessions].map { |record| record.stringify_keys }
+        end
 
-          def set_session
-            @session = @sessions.find { |record| record["id"] == params[:id] }
-            return if @session
+        def set_session
+          @session = @sessions.find { |record| record["id"] == params[:id] }
+          return if @session
 
-            head :not_found
-            nil
-          end
+          head :not_found
+          nil
+        end
 
-          def session_params
-            params.fetch(:session, {}).permit(:name, :status).to_h.symbolize_keys
-          end
+        def session_params
+          params.fetch(:session, {}).permit(:name, :status).to_h.symbolize_keys
+        end
 
-          def persist_sessions!
-            session[:org_setting_sessions] = @sessions
-          end
+        def persist_sessions!
+          session[:org_setting_sessions] = @sessions
+        end
 
-          def default_session_payload
-            { "name" => "Connected app", "status" => "active" }
-          end
+        def default_session_payload
+          { "name" => "Connected app", "status" => "active" }
+        end
       end
     end
   end

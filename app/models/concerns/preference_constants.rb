@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Backward compatibility - delegates to Preference::Constants

@@ -2,12 +2,12 @@
 
 class EnsurePreferenceColorthemeOptions < ActiveRecord::Migration[8.2]
   def up
-    safety_assured do
-      colortheme_ids = %w[light dark system]
+    colortheme_ids = %w(light dark system)
 
-      %w[app com org].each do |namespace|
-        table_name = "#{namespace}_preference_colortheme_options"
+    %w(app com org).each do |namespace|
+      table_name = "#{namespace}_preference_colortheme_options"
 
+      safety_assured do
         values_sql = colortheme_ids.map { |id| "('#{id}')" }.join(", ")
 
         execute <<~SQL.squish
@@ -28,10 +28,10 @@ class EnsurePreferenceColorthemeOptions < ActiveRecord::Migration[8.2]
   end
 
   def down
-    colortheme_ids = %w[light dark system]
+    colortheme_ids = %w(light dark system)
     ids_sql = colortheme_ids.map { |id| "'#{id}'" }.join(", ")
 
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       table_name = "#{namespace}_preference_colortheme_options"
 
       safety_assured do

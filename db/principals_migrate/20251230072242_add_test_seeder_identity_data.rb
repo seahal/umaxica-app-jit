@@ -7,21 +7,21 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
     safety_assured do
       # Insert identity statuses needed by TestSeeder
       seed_ids = {
-        "user_identity_statuses" => %w[NEYO ALIVE VERIFIED_WITH_SIGN_UP PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED],
-        "staff_identity_statuses" => %w[NEYO ALIVE PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED],
-        "user_token_statuses" => %w[NEYO ACTIVE],
-        "staff_token_statuses" => %w[NEYO ACTIVE],
-        "user_identity_email_statuses" => %w[NEYO UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP UNVERIFIED ALIVE SUSPENDED DELETED],
-        "staff_identity_email_statuses" => %w[NEYO UNVERIFIED VERIFIED SUSPENDED DELETED],
-        "user_identity_telephone_statuses" => %w[NEYO UNVERIFIED VERIFIED SUSPENDED DELETED ACTIVE],
-        "staff_identity_telephone_statuses" => %w[NEYO UNVERIFIED VERIFIED SUSPENDED DELETED],
-        "user_identity_social_google_statuses" => %w[ACTIVE REVOKED DELETED],
-        "user_identity_social_apple_statuses" => %w[ACTIVE REVOKED DELETED],
-        "user_identity_passkey_statuses" => %w[ACTIVE DISABLED DELETED],
-        "user_identity_one_time_password_statuses" => %w[ACTIVE INACTIVE REVOKED DELETED],
-        "user_identity_secret_statuses" => %w[ACTIVE USED EXPIRED REVOKED DELETED],
-        "staff_identity_secret_statuses" => %w[ACTIVE USED EXPIRED REVOKED DELETED],
-        "user_occurrence_statuses" => %w[NEYO ACTIVE]
+        "user_identity_statuses" => %w(NEYO ALIVE VERIFIED_WITH_SIGN_UP PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED),
+        "staff_identity_statuses" => %w(NEYO ALIVE PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED),
+        "user_token_statuses" => %w(NEYO ACTIVE),
+        "staff_token_statuses" => %w(NEYO ACTIVE),
+        "user_identity_email_statuses" => %w(NEYO UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP UNVERIFIED ALIVE SUSPENDED DELETED),
+        "staff_identity_email_statuses" => %w(NEYO UNVERIFIED VERIFIED SUSPENDED DELETED),
+        "user_identity_telephone_statuses" => %w(NEYO UNVERIFIED VERIFIED SUSPENDED DELETED ACTIVE),
+        "staff_identity_telephone_statuses" => %w(NEYO UNVERIFIED VERIFIED SUSPENDED DELETED),
+        "user_identity_social_google_statuses" => %w(ACTIVE REVOKED DELETED),
+        "user_identity_social_apple_statuses" => %w(ACTIVE REVOKED DELETED),
+        "user_identity_passkey_statuses" => %w(ACTIVE DISABLED DELETED),
+        "user_identity_one_time_password_statuses" => %w(ACTIVE INACTIVE REVOKED DELETED),
+        "user_identity_secret_statuses" => %w(ACTIVE USED EXPIRED REVOKED DELETED),
+        "staff_identity_secret_statuses" => %w(ACTIVE USED EXPIRED REVOKED DELETED),
+        "user_occurrence_statuses" => %w(NEYO ACTIVE),
       }
 
       seed_ids.each do |table_name, ids|
@@ -68,22 +68,22 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
       end
 
       # Insert audit events and levels
-      levels = %w[NEYO NONE INFO WARN ERROR]
-      user_events = %w[
+      levels = %w(NEYO NONE INFO WARN ERROR)
+      user_events = %w(
         LOGIN_SUCCESS LOGIN_FAILURE LOGGED_IN LOGGED_OUT LOGIN_FAILED
         TOKEN_REFRESHED SIGNED_UP_WITH_EMAIL SIGNED_UP_WITH_TELEPHONE
         SIGNED_UP_WITH_APPLE AUTHORIZATION_FAILED
-      ]
-      staff_events = %w[
+      )
+      staff_events = %w(
         LOGIN_SUCCESS LOGIN_FAILURE LOGGED_IN LOGGED_OUT LOGIN_FAILED
         AUTHORIZATION_FAILED
-      ]
+      )
 
       seed_map = {
         "user_identity_audit_levels" => levels,
         "staff_identity_audit_levels" => levels,
         "user_identity_audit_events" => user_events,
-        "staff_identity_audit_events" => staff_events
+        "staff_identity_audit_events" => staff_events,
       }
 
       seed_map.each do |table_name, event_ids|
@@ -113,11 +113,11 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
         nil_uuid = "00000000-0000-0000-0000-000000000000"
         nil_public_id = "000000000000000000000"
 
-        cols = %w[id created_at updated_at]
+        cols = %w(id created_at updated_at)
         vals = [
           connection.quote(nil_uuid),
           "CURRENT_TIMESTAMP",
-          "CURRENT_TIMESTAMP"
+          "CURRENT_TIMESTAMP",
         ]
 
         if column_exists?("users", :public_id)
@@ -145,8 +145,8 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
           if result.nil?
             # Create a user if none exists
             nil_public_id = "000000000000000000000"
-            cols = %w[public_id created_at updated_at]
-            vals = [ connection.quote(nil_public_id), "CURRENT_TIMESTAMP", "CURRENT_TIMESTAMP" ]
+            cols = %w(public_id created_at updated_at)
+            vals = [connection.quote(nil_public_id), "CURRENT_TIMESTAMP", "CURRENT_TIMESTAMP"]
 
             if column_exists?("users", :user_identity_status_id)
               cols << "user_identity_status_id"
@@ -159,14 +159,14 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
           end
         end
 
-        cols = %w[uid provider token expires_at created_at updated_at]
+        cols = %w(uid provider token expires_at created_at updated_at)
         vals = [
           connection.quote("uid-1"),
           connection.quote("google_oauth2"),
           connection.quote("token-1"),
           "2147483647",
           "CURRENT_TIMESTAMP",
-          "CURRENT_TIMESTAMP"
+          "CURRENT_TIMESTAMP",
         ]
 
         if column_exists?("user_identity_social_googles", :user_id) && user_id

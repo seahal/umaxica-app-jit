@@ -22,9 +22,10 @@ class RenameStaffStatusIdToStaffIdentityStatusId < ActiveRecord::Migration[7.0]
       add_index :staffs, :staff_identity_status_id, name: 'index_staffs_on_staff_identity_status_id'
     end
 
-    unless foreign_key_exists?(:staffs, column: :staff_identity_status_id)
-      add_foreign_key :staffs, :staff_identity_statuses, column: :staff_identity_status_id, primary_key: :id
-    end
+    return if foreign_key_exists?(:staffs, column: :staff_identity_status_id)
+
+    add_foreign_key :staffs, :staff_identity_statuses, column: :staff_identity_status_id, primary_key: :id
+
   end
 
   def down

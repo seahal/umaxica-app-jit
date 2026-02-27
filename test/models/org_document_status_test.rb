@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,13 +6,7 @@
 # Table name: org_document_statuses
 # Database name: document
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_org_document_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
@@ -21,55 +16,30 @@ class OrgDocumentStatusTest < ActiveSupport::TestCase
 
   def setup
     @model_class = OrgDocumentStatus
-    @valid_id = "ACTIVE"
+    @valid_id = OrgDocumentStatus::ACTIVE
     @subject = @model_class.new(id: @valid_id)
-    @status = OrgDocumentStatus.find("ACTIVE")
+    @status = OrgDocumentStatus.find(OrgDocumentStatus::ACTIVE)
   end
 
   test "inherits from DocumentRecord" do
     assert_operator OrgDocumentStatus, :<, DocumentRecord
   end
 
-  test "id is required" do
-    status = OrgDocumentStatus.new(id: nil)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id must be unique" do
-    status = OrgDocumentStatus.new(id: "ACTIVE")
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id must have maximum length of 255" do
-    status = OrgDocumentStatus.new(id: "A" * 256)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id can have maximum length of 255" do
-    long_id = "A" * 255
-    status = OrgDocumentStatus.create!(id: long_id)
-
-    assert_predicate status, :valid?
-    assert_equal 255, status.id.length
+  test "id is numeric" do
+    assert_kind_of Integer, @status.id
   end
 
   test "can load draft status from fixtures" do
-    draft = OrgDocumentStatus.find("DRAFT")
+    draft = OrgDocumentStatus.find(OrgDocumentStatus::DRAFT)
 
     assert_not_nil draft
-    assert_equal "DRAFT", draft.id
+    assert_equal OrgDocumentStatus::DRAFT, draft.id
   end
 
   test "can load archived status from fixtures" do
-    archived = OrgDocumentStatus.find("ARCHIVED")
+    archived = OrgDocumentStatus.find(OrgDocumentStatus::ARCHIVED)
 
     assert_not_nil archived
-    assert_equal "ARCHIVED", archived.id
+    assert_equal OrgDocumentStatus::ARCHIVED, archived.id
   end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -34,7 +35,7 @@ class TokenRecordTest < ActiveSupport::TestCase
   test "as_json merges except options" do
     token = user_tokens(:one)
 
-    payload = token.as_json(except: [ :public_id ])
+    payload = token.as_json(except: [:public_id])
 
     assert_not payload.key?("public_id")
     assert_not payload.key?("refresh_token_digest")

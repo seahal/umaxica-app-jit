@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,20 +6,26 @@
 # Table name: user_passkey_statuses
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_passkey_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class UserPasskeyStatusTest < ActiveSupport::TestCase
   fixtures :user_passkey_statuses
 
-  test "upcases id before validation" do
-    status = UserPasskeyStatus.new(id: "custom")
-    status.valid?
-    assert_equal "CUSTOM", status.id
+  test "status constants are defined" do
+    assert_equal 1, UserPasskeyStatus::ACTIVE
+    assert_equal 2, UserPasskeyStatus::DISABLED
+    assert_equal 3, UserPasskeyStatus::REVOKED
+    assert_equal 4, UserPasskeyStatus::DELETED
+    assert_equal 5, UserPasskeyStatus::NOTHING
+  end
+
+  test "status ids are integers" do
+    assert_kind_of Integer, UserPasskeyStatus::ACTIVE
+    assert_kind_of Integer, UserPasskeyStatus::DISABLED
+    assert_kind_of Integer, UserPasskeyStatus::REVOKED
+    assert_kind_of Integer, UserPasskeyStatus::DELETED
+    assert_kind_of Integer, UserPasskeyStatus::NOTHING
   end
 end

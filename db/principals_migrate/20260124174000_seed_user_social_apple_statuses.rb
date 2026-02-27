@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 class SeedUserSocialAppleStatuses < ActiveRecord::Migration[8.2]
-  STATUS_IDS = %w[
+  STATUS_IDS = %w(
     NEYO
     ACTIVE
     INACTIVE
     PENDING
     DELETED
     REVOKED
-  ].freeze
+  ).freeze
 
   def up
     safety_assured do

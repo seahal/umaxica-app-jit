@@ -1,13 +1,14 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_document_categories
 # Database name: document
 #
-#  id                              :uuid             not null, primary key
+#  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
-#  com_document_category_master_id :string(255)      not null
-#  com_document_id                 :uuid             not null
+#  com_document_category_master_id :bigint           default(0), not null
+#  com_document_id                 :bigint           not null
 #
 # Indexes
 #

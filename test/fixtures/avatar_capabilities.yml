@@ -1,24 +1,11 @@
+# <% I18n.locale = :ja %>
 # == Schema Information
 #
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id          :string           not null, primary key
-#  description :text
-#  key         :string           not null
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_avatar_capabilities_on_key  (key) UNIQUE
-#
-  <% I18n.locale = :ja %>
-
 normal:
-  id: NORMAL
-  key: "normal"
-  name: "Normal"
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+  id: 1
+  id: 1

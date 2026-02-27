@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -5,42 +6,21 @@
 # Table name: email_occurrence_statuses
 # Database name: occurrence
 #
-#  id :string(255)      default("NONE"), not null, primary key
-#
-# Indexes
-#
-#  index_email_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class EmailOccurrenceStatusTest < ActiveSupport::TestCase
-  test "upcases id before validation" do
-    assert_upcases_id(EmailOccurrenceStatus)
+  test "accepts integer ids" do
+    record = EmailOccurrenceStatus.new(id: 9)
+
+    assert_predicate record, :valid?
   end
 
-  test "validates id presence" do
-    record = EmailOccurrenceStatus.new(id: nil)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id length" do
-    record = EmailOccurrenceStatus.new(id: "A" * 256)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id format" do
-    record = EmailOccurrenceStatus.new(id: "BAD-ID!")
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id uniqueness case insensitive" do
-    record = EmailOccurrenceStatus.new(id: "active")
-
-    assert_invalid_attribute(record, :id)
+  test "constants are defined" do
+    assert_equal 1, EmailOccurrenceStatus::ACTIVE
+    assert_equal 2, EmailOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

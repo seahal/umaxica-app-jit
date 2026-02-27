@@ -2,8 +2,8 @@
 
 class CreateStaffOneTimePasswords < ActiveRecord::Migration[8.2]
   def change
-    create_table :staff_one_time_passwords, id: :uuid do |t|
-      t.references :staff, null: false, foreign_key: true, type: :uuid
+    create_table :staff_one_time_passwords do |t|
+      t.references :staff, null: false, foreign_key: true, type: :bigint
       t.string :private_key, limit: 1024, null: false, default: ""
       t.datetime :last_otp_at, null: false, default: -> { "'-infinity'" }
       t.string :public_id, limit: 21

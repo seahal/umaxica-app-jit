@@ -1,0 +1,16 @@
+# Fixed IDs - do not modify these values
+# == Schema Information
+#
+# Table name: avatar_roles
+# Database name: avatar
+#
+#  id :bigint           not null, primary key
+#
+neyo:
+  id: 1
+viewer:
+  id: 2
+editor:
+  id: 3
+admin:
+  id: 4
