@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -12,7 +13,7 @@ module Sign
           if refresh_token.blank?
             render json: {
               error: I18n.t("sign.token_refresh.errors.missing_refresh_token"),
-              error_code: "missing_refresh_token"
+              error_code: "missing_refresh_token",
             }, status: :bad_request
             return
           end
@@ -27,7 +28,7 @@ module Sign
               error: I18n.t(
                 "sign.token_refresh.errors.invalid_refresh_token",
               ),
-              error_code: "invalid_refresh_token"
+              error_code: "invalid_refresh_token",
             }, status: :unauthorized
           end
         end

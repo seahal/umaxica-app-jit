@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -16,16 +17,16 @@ module Sign
               user: {
                 id: current_user.public_id,
                 name: primary_user_email || "user@example.com",
-                display_name: primary_user_name || I18n.t("sign.default_user_name")
+                display_name: primary_user_name || I18n.t("sign.default_user_name"),
               },
               authenticator_selection: {
                 user_verification: "preferred",
-                resident_key: "preferred"
+                resident_key: "preferred",
               },
               attestation: "none",
               rp: {
                 id: webauthn_rp_id,
-                name: webauthn_rp_name
+                name: webauthn_rp_name,
               },
             )
 
@@ -43,21 +44,21 @@ module Sign
 
           private
 
-            def primary_user_email
-              current_user.user_emails.first&.address
-            end
+          def primary_user_email
+            current_user.user_emails.first&.address
+          end
 
-            def primary_user_name
-              current_user.try(:name) || primary_user_email
-            end
+          def primary_user_name
+            current_user.try(:name) || primary_user_email
+          end
 
-            def webauthn_rp_id
-              ENV.fetch("WEBAUTHN_RP_ID_APP") { URI.parse(ENV.fetch("SIGN_SERVICE_URL", "localhost")).host }
-            end
+          def webauthn_rp_id
+            ENV.fetch("WEBAUTHN_RP_ID_APP") { URI.parse(ENV.fetch("SIGN_SERVICE_URL", "localhost")).host }
+          end
 
-            def webauthn_rp_name
-              ENV.fetch("WEBAUTHN_RP_NAME_APP", "Umaxica App")
-            end
+          def webauthn_rp_name
+            ENV.fetch("WEBAUTHN_RP_NAME_APP", "Umaxica App")
+          end
         end
       end
     end

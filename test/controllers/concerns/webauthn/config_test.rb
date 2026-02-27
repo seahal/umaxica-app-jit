@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -24,6 +25,7 @@ class Webauthn::ConfigTest < ActiveSupport::TestCase
   # Case B-1: webauthn_rp_id should return request.host
   test "webauthn_rp_id returns request host" do
     @controller.request.host = "sign.app.localhost"
+
     assert_equal "sign.app.localhost", @controller.webauthn_rp_id
   end
 
@@ -31,6 +33,7 @@ class Webauthn::ConfigTest < ActiveSupport::TestCase
   test "webauthn_origin returns request base_url" do
     @controller.request.host = "sign.app.localhost"
     @controller.request.set_header("rack.url_scheme", "http")
+
     assert_equal "http://sign.app.localhost", @controller.webauthn_origin
   end
 
@@ -54,15 +57,18 @@ class Webauthn::ConfigTest < ActiveSupport::TestCase
 
     # Verify it is in session
     challenges = @controller.session[Webauthn::Config::CHALLENGE_SESSION_KEY]
+
     assert_not_nil challenges[challenge_id]
     assert_equal "test-challenge", challenges[challenge_id]["challenge"]
 
     # Fetch and delete (consuming the challenge)
     retrieved_challenge = @controller.send(:fetch_and_delete_challenge!, challenge_id, purpose: :registration)
+
     assert_equal "test-challenge", retrieved_challenge
 
     # Verify it is gone
     challenges = @controller.session[Webauthn::Config::CHALLENGE_SESSION_KEY]
+
     assert_nil challenges[challenge_id]
   end
 

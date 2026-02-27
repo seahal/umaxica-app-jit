@@ -19,8 +19,8 @@ class CreateOrgPreferenceAudits < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :org_preference_audits, %i[subject_type subject_id occurred_at], name: "idx_on_subject_type_subject_id_occurred_at_org_pref"
-    add_index :org_preference_audits, [ :actor_id, :occurred_at ]
+    add_index :org_preference_audits, %i(subject_type subject_id occurred_at), name: "idx_on_subject_type_subject_id_occurred_at_org_pref"
+    add_index :org_preference_audits, [:actor_id, :occurred_at]
     add_index :org_preference_audits, :subject_id
     add_index :org_preference_audits, :event_id
     add_index :org_preference_audits, :level_id

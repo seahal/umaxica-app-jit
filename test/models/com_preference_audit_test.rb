@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: com_preference_audits
@@ -47,12 +48,14 @@ class ComPreferenceAuditTest < ActiveSupport::TestCase
 
   test "com_preference helper method returns nil for other subject types" do
     @audit.subject_type = "OtherType"
+
     assert_nil @audit.com_preference
   end
 
   test "can set com_preference" do
     new_pref = com_preferences(:two)
     @audit.com_preference = new_pref
+
     assert_equal new_pref.id.to_s, @audit.subject_id
     assert_equal "ComPreference", @audit.subject_type
     assert_equal new_pref, @audit.com_preference
@@ -68,24 +71,28 @@ class ComPreferenceAuditTest < ActiveSupport::TestCase
 
   test "validates presence of subject_id" do
     @audit.subject_id = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_id], I18n.t("errors.messages.blank")
   end
 
   test "validates presence of subject_type" do
     @audit.subject_type = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_type], I18n.t("errors.messages.blank")
   end
 
   test "validates length of event_id" do
     @audit.event_id = "A" * 256
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:event_id], I18n.t("errors.messages.too_long", count: 255)
   end
 
   test "validates length of level_id" do
     @audit.level_id = "A" * 256
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:level_id], I18n.t("errors.messages.too_long", count: 255)
   end

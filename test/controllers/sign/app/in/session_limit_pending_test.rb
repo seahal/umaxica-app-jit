@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -40,8 +41,8 @@ class Sign::App::In::SessionLimitPendingTest < ActionDispatch::IntegrationTest
          params: {
            secret_login_form: {
              account_identifiable_information: @user.user_emails.first.address,
-             secret_value: secret_value
-           }
+             secret_value: secret_value,
+           },
          },
          headers: default_headers
 
@@ -49,6 +50,7 @@ class Sign::App::In::SessionLimitPendingTest < ActionDispatch::IntegrationTest
     assert session[:session_limit_pending]
 
     get sign_app_configuration_path, headers: default_headers
+
     assert_redirected_to edit_sign_app_in_session_path
     assert_equal t("session_limit.pending.message", locale: I18n.locale), flash[:alert]
   end
@@ -61,14 +63,14 @@ class Sign::App::In::SessionLimitPendingTest < ActionDispatch::IntegrationTest
          params: {
            secret_login_form: {
              account_identifiable_information: @user.user_emails.first.address,
-             secret_value: secret_value
-           }
+             secret_value: secret_value,
+           },
          },
          headers: default_headers
 
     assert session[:session_limit_pending]
     patch sign_app_in_session_path,
-          params: { revoke_session_ids: [ @initial_tokens.first.id ] },
+          params: { revoke_session_ids: [@initial_tokens.first.id] },
           headers: default_headers
 
     assert_not session[:session_limit_pending]
@@ -85,8 +87,8 @@ class Sign::App::In::SessionLimitPendingTest < ActionDispatch::IntegrationTest
          params: {
            secret_login_form: {
              account_identifiable_information: @user.user_emails.first.address,
-             secret_value: secret_value
-           }
+             secret_value: secret_value,
+           },
          },
          headers: default_headers
 
@@ -100,17 +102,17 @@ class Sign::App::In::SessionLimitPendingTest < ActionDispatch::IntegrationTest
 
   private
 
-    def default_headers
-      { "Host" => @host, "HTTPS" => "on", "cf-turnstile-response" => "test_token" }
-    end
+  def default_headers
+    { "Host" => @host, "HTTPS" => "on", "cf-turnstile-response" => "test_token" }
+  end
 
-    def create_secret_for(user)
-      _secret, raw = UserSecret.issue!(
-        name: "Pending Login",
-        user_id: user.id,
-        user_secret_kind_id: UserSecret::Kinds::UNLIMITED,
-        uses: 1,
-      )
-      raw
-    end
+  def create_secret_for(user)
+    _secret, raw = UserSecret.issue!(
+      name: "Pending Login",
+      user_id: user.id,
+      user_secret_kind_id: UserSecret::Kinds::UNLIMITED,
+      uses: 1,
+    )
+    raw
+  end
 end

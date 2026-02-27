@@ -26,17 +26,17 @@ class AddIdFormatConstraintsToIdentityStatusTables < ActiveRecord::Migration[8.2
 
   private
 
-    def tables
-      %w[
-        user_telephone_statuses
-        user_statuses
-        user_social_google_statuses
-        user_social_apple_statuses
-        user_secret_statuses
-        user_passkey_statuses
-        user_one_time_password_statuses
-        user_email_statuses
-        client_statuses
-      ]
-    end
+  def tables
+    %w(
+      user_telephone_statuses
+      user_statuses
+      user_social_google_statuses
+      user_social_apple_statuses
+      user_secret_statuses
+      user_passkey_statuses
+      user_one_time_password_statuses
+      user_email_statuses
+      client_statuses
+    )
+  end
 end

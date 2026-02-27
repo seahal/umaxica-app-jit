@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -11,14 +12,14 @@ class Sign::App::SignInTest < ActionDispatch::IntegrationTest
     @email = UserEmail.create!(
       user: @user,
       address: "valid@example.com",
-      user_email_status_id: "VERIFIED_WITH_SIGN_UP"
+      user_email_status_id: "VERIFIED_WITH_SIGN_UP",
     )
 
     @password = SecureRandom.uuid # 36 chars
     @secret = @user.user_secrets.new(
       name: @password.first(4),
       user_secret_kind_id: UserSecretKind::UNLIMITED,
-      user_secret_status_id: UserSecretStatus::ACTIVE
+      user_secret_status_id: UserSecretStatus::ACTIVE,
     )
     @secret.password = @password
     @secret.save!
@@ -30,14 +31,15 @@ class Sign::App::SignInTest < ActionDispatch::IntegrationTest
 
   test "successful login changes session id" do
     get new_sign_app_in_secret_url(ri: "jp")
+
     assert_response :success
     session_id_before = session.id
 
     post sign_app_in_secret_url(ri: "jp"), params: {
       secret_login_form: {
         account_identifiable_information: "valid@example.com",
-        secret_value: @password
-      }
+        secret_value: @password,
+      },
     }
 
     assert_redirected_to sign_app_configuration_url(ri: "jp")
@@ -51,8 +53,8 @@ class Sign::App::SignInTest < ActionDispatch::IntegrationTest
     post sign_app_in_secret_url(ri: "jp"), params: {
       secret_login_form: {
         account_identifiable_information: "valid@example.com",
-        secret_value: SecureRandom.uuid # Wrong password but correct length
-      }
+        secret_value: SecureRandom.uuid, # Wrong password but correct length
+      },
     }
 
     assert_response :unprocessable_content

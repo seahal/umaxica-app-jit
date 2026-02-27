@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -58,8 +59,8 @@ module Sign
           @user_email = UserEmail.lock.find_by(public_id: id)
 
           if @user_email.blank? ||
-             @user_email.otp_expired? ||
-             @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
+              @user_email.otp_expired? ||
+              @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
             return :already_verified if @user_email&.user_email_status_id == "VERIFIED_WITH_SIGN_UP"
 
             @error_redirect = new_sign_app_up_email_path # default, override in controller if needed

@@ -26,16 +26,16 @@ class AddIdFormatConstraintsToOccurrenceStatusTables < ActiveRecord::Migration[8
 
   private
 
-    def tables
-      %w[
-        staff_occurrence_statuses
-        user_occurrence_statuses
-        zip_occurrence_statuses
-        telephone_occurrence_statuses
-        ip_occurrence_statuses
-        email_occurrence_statuses
-        domain_occurrence_statuses
-        area_occurrence_statuses
-      ]
-    end
+  def tables
+    %w(
+      staff_occurrence_statuses
+      user_occurrence_statuses
+      zip_occurrence_statuses
+      telephone_occurrence_statuses
+      ip_occurrence_statuses
+      email_occurrence_statuses
+      domain_occurrence_statuses
+      area_occurrence_statuses
+    )
+  end
 end

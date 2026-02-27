@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class EnsurePreferenceAuditEventsAndLevels < ActiveRecord::Migration[8.2]
-  EVENTS = %w[
+  EVENTS = %w(
     CREATE_NEW_PREFERENCE_TOKEN
     REFRESH_TOKEN_ROTATED
     PREFERENCE_CREATED
@@ -14,12 +14,12 @@ class EnsurePreferenceAuditEventsAndLevels < ActiveRecord::Migration[8.2]
     UPDATE_PREFERENCE_REGION
     UPDATE_PREFERENCE_COLORTHEME
     RESET_BY_USER_DECISION
-  ].freeze
+  ).freeze
 
-  LEVELS = %w[NEYO INFO WARN ERROR].freeze
+  LEVELS = %w(NEYO INFO WARN ERROR).freeze
 
   def up
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       seed_ids("#{namespace}_preference_audit_events", EVENTS)
       seed_ids("#{namespace}_preference_audit_levels", LEVELS)
     end
@@ -31,17 +31,17 @@ class EnsurePreferenceAuditEventsAndLevels < ActiveRecord::Migration[8.2]
 
   private
 
-    def seed_ids(table_name, ids)
-      return unless table_exists?(table_name)
+  def seed_ids(table_name, ids)
+    return unless table_exists?(table_name)
 
-      safety_assured do
-        ids.each do |id|
-          execute <<~SQL.squish
-            INSERT INTO #{table_name} (id, created_at, updated_at)
-            VALUES ('#{id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            ON CONFLICT (id) DO NOTHING
-          SQL
-        end
+    safety_assured do
+      ids.each do |id|
+        execute <<~SQL.squish
+          INSERT INTO #{table_name} (id, created_at, updated_at)
+          VALUES ('#{id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+          ON CONFLICT (id) DO NOTHING
+        SQL
       end
     end
+  end
 end

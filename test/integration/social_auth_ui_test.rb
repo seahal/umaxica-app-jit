@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -10,6 +11,7 @@ class SocialAuthUiTest < ActionDispatch::IntegrationTest
 
   test "signup screen renders POST forms for social providers" do
     get new_sign_app_up_path(ri: "jp"), headers: { "Host" => @host }
+
     assert_response :success
 
     doc = Nokogiri::HTML(response.body)
@@ -29,6 +31,7 @@ class SocialAuthUiTest < ActionDispatch::IntegrationTest
 
   test "signin screen renders POST forms for social providers" do
     get new_sign_app_in_path(ri: "jp"), headers: { "Host" => @host }
+
     assert_response :success
 
     doc = Nokogiri::HTML(response.body)

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -13,6 +14,7 @@ class Sign::App::OutsControllerTest < ActionDispatch::IntegrationTest
     get edit_sign_app_out_url(ri: "jp"), headers: { "Host" => @host }
 
     rt = Base64.urlsafe_encode64(edit_sign_app_out_url(ri: "jp", host: @host))
+
     assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
   end
 
@@ -20,6 +22,7 @@ class Sign::App::OutsControllerTest < ActionDispatch::IntegrationTest
     delete sign_app_out_url(ri: "jp"), headers: { "Host" => @host }
 
     rt = Base64.urlsafe_encode64(sign_app_out_url(ri: "jp", host: @host))
+
     assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
   end
 
@@ -37,12 +40,13 @@ class Sign::App::OutsControllerTest < ActionDispatch::IntegrationTest
     cookies[Auth::Base::ACCESS_COOKIE_KEY] = "access-dummy"
     delete sign_app_out_url(ri: "jp"), headers: {
       "Host" => @host,
-      "X-TEST-CURRENT-USER" => @user.id
+      "X-TEST-CURRENT-USER" => @user.id,
     }
 
     assert_redirected_to sign_app_root_path(ri: "jp")
     assert UserToken.exists?(token_record.id)
     token_record.reload
+
     assert_predicate token_record.revoked_at, :present?
 
     raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"] || ""
@@ -63,6 +67,7 @@ class Sign::App::OutsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unauthorized
     json = response.parsed_body
+
     assert_equal "invalid_refresh_token", json["error_code"]
   end
 
@@ -74,7 +79,7 @@ class Sign::App::OutsControllerTest < ActionDispatch::IntegrationTest
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
     delete sign_app_out_url(ri: "jp"), headers: {
       "Host" => @host,
-      "X-TEST-CURRENT-USER" => @user.id
+      "X-TEST-CURRENT-USER" => @user.id,
     }
 
     assert_redirected_to sign_app_root_path(ri: "jp")

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -8,7 +9,7 @@ module Sign
 
       # TODO: CSRF protection requires JS to send X-CSRF-Token.
       # For now, we skip it to ensure JSON fetch works easily as requested.
-      skip_before_action :verify_authenticity_token, only: %i[options create update destroy]
+      skip_before_action :verify_authenticity_token, only: %i(options create update destroy)
 
       def new
         @passkey_exists = current_user.passkey.present?
@@ -19,17 +20,17 @@ module Sign
         rp_config = webauthn_rp_config
         user_name = current_user.user_emails.first&.address || current_user.public_id || "User"
 
-        exclude_list = current_user.passkey ? [ current_user.passkey.credential_id ] : []
+        exclude_list = current_user.passkey ? [current_user.passkey.credential_id] : []
 
         options = WebAuthn::Credential.options_for_create(
           user: {
             id: current_user.id,
             name: user_name,
-            display_name: user_name
+            display_name: user_name,
           },
           exclude: exclude_list,
           authenticator_selection: { user_verification: "preferred" },
-          rp: { name: WebAuthn.configuration.rp_name, id: rp_config[:rp_id] }
+          rp: { name: WebAuthn.configuration.rp_name, id: rp_config[:rp_id] },
         )
 
         session[:webauthn_registration_challenge] = options.challenge
@@ -42,14 +43,14 @@ module Sign
 
         # Create relying party instance
         relying_party = WebAuthn::RelyingParty.new(
-          allowed_origins: [ rp_config[:origin] ],
+          allowed_origins: [rp_config[:origin]],
           id: rp_config[:rp_id],
-          name: ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica")
+          name: ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica"),
         )
 
         webauthn_credential = WebAuthn::Credential.from_create(
           params,
-          relying_party: relying_party
+          relying_party: relying_party,
         )
 
         webauthn_credential.verify(session[:webauthn_registration_challenge])
@@ -62,7 +63,7 @@ module Sign
           user: current_user,
           credential_id: webauthn_credential.id,
           public_key: Base64.urlsafe_encode64(webauthn_credential.public_key),
-          sign_count: webauthn_credential.sign_count
+          sign_count: webauthn_credential.sign_count,
         )
 
         render json: { status: "created" }, status: :created
@@ -81,14 +82,14 @@ module Sign
 
         # Create relying party instance
         relying_party = WebAuthn::RelyingParty.new(
-          allowed_origins: [ rp_config[:origin] ],
+          allowed_origins: [rp_config[:origin]],
           id: rp_config[:rp_id],
-          name: ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica")
+          name: ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica"),
         )
 
         webauthn_credential = WebAuthn::Credential.from_create(
           params,
-          relying_party: relying_party
+          relying_party: relying_party,
         )
 
         webauthn_credential.verify(session[:webauthn_registration_challenge])
@@ -99,7 +100,7 @@ module Sign
             user: current_user,
             credential_id: webauthn_credential.id,
             public_key: Base64.urlsafe_encode64(webauthn_credential.public_key),
-            sign_count: webauthn_credential.sign_count
+            sign_count: webauthn_credential.sign_count,
           )
         end
 
@@ -124,37 +125,37 @@ module Sign
 
       private
 
-        def webauthn_rp_config
-          map = JSON.parse(ENV.fetch("WEBAUTHN_RP_MAP", "{}"))
-          cfg = map[request.host]
+      def webauthn_rp_config
+        map = JSON.parse(ENV.fetch("WEBAUTHN_RP_MAP", "{}"))
+        cfg = map[request.host]
 
-          # Fallback for localhost development if not in map
-          if cfg.nil? && (request.host == "localhost" || request.host == "127.0.0.1")
-            return { rp_id: "localhost", origin: "#{request.scheme}://#{request.host_with_port}" }
-          end
-
-          raise "WebAuthn configuration not found for host: #{request.host}" unless cfg
-
-          # Ensure keys are symbols
-          {
-            rp_id: cfg["rp_id"],
-            origin: cfg["origin"]
-          }
+        # Fallback for localhost development if not in map
+        if cfg.nil? && (request.host == "localhost" || request.host == "127.0.0.1")
+          return { rp_id: "localhost", origin: "#{request.scheme}://#{request.host_with_port}" }
         end
 
-        def log_failure(exception, type, rp_config)
-          payload = {
-            type: type,
-            error: exception.message,
-            rp_id: rp_config&.dig(:rp_id),
-            origin: rp_config&.dig(:origin),
-            request_host: request.host,
-            request_scheme: request.scheme,
-            x_forwarded_proto: request.headers["X-Forwarded-Proto"],
-            has_challenge: session[:webauthn_registration_challenge].present?
-          }
-          Rails.logger.error(JSON.dump(payload))
-        end
+        raise "WebAuthn configuration not found for host: #{request.host}" unless cfg
+
+        # Ensure keys are symbols
+        {
+          rp_id: cfg["rp_id"],
+          origin: cfg["origin"],
+        }
+      end
+
+      def log_failure(exception, type, rp_config)
+        payload = {
+          type: type,
+          error: exception.message,
+          rp_id: rp_config&.dig(:rp_id),
+          origin: rp_config&.dig(:origin),
+          request_host: request.host,
+          request_scheme: request.scheme,
+          x_forwarded_proto: request.headers["X-Forwarded-Proto"],
+          has_challenge: session[:webauthn_registration_challenge].present?,
+        }
+        Rails.logger.error(JSON.dump(payload))
+      end
     end
   end
 end

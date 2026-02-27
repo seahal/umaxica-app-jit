@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -46,14 +47,14 @@ module Sign
 
       TELEPHONE_STATUSES = {
         unverified: "UNVERIFIED_WITH_SIGN_UP",
-        verified: "VERIFIED_WITH_SIGN_UP"
+        verified: "VERIFIED_WITH_SIGN_UP",
       }.freeze
 
       included do
         flow :telephone_registration do
-          step 1, actions: %i[new create]
-          step 2, actions: %i[edit update]
-          step 3, actions: %i[show destroy]
+          step 1, actions: %i(new create)
+          step 2, actions: %i(edit update)
+          step 3, actions: %i(show destroy)
         end
       end
 
@@ -70,7 +71,10 @@ module Sign
         if validate_turnstile
           turnstile_result = cloudflare_turnstile_validation
           unless turnstile_result["success"]
-            @user_telephone = UserTelephone.new(number: telephone_number, confirm_policy: confirm_policy, confirm_using_mfa: confirm_using_mfa)
+            @user_telephone = UserTelephone.new(
+              number: telephone_number, confirm_policy: confirm_policy,
+              confirm_using_mfa: confirm_using_mfa,
+            )
             @user_telephone.errors.add(:base, t("sign.app.configuration.telephone.create.turnstile_validation_failed"))
             return false
           end
@@ -79,7 +83,10 @@ module Sign
         # Normalize telephone number (basic E.164 normalization)
         normalized_number = normalize_telephone_number(telephone_number)
 
-        @user_telephone = UserTelephone.new(number: normalized_number, confirm_policy: confirm_policy, confirm_using_mfa: confirm_using_mfa)
+        @user_telephone = UserTelephone.new(
+          number: normalized_number, confirm_policy: confirm_policy,
+          confirm_using_mfa: confirm_using_mfa,
+        )
         @user_telephone.user_telephone_status_id = status
 
         # Check for global uniqueness (already verified numbers)
@@ -91,7 +98,7 @@ module Sign
         # Delete existing unverified telephone for same number
         UserTelephone.where(
           number: normalized_number,
-          user_telephone_status_id: TELEPHONE_STATUSES[:unverified]
+          user_telephone_status_id: TELEPHONE_STATUSES[:unverified],
         ).destroy_all
 
         # Generate OTP
@@ -105,7 +112,7 @@ module Sign
         AwsSmsService.send_message(
           to: @user_telephone.number,
           message: "PassCode => #{otp_code}",
-          subject: "PassCode => #{otp_code}"
+          subject: "PassCode => #{otp_code}",
         )
 
         true
@@ -121,8 +128,8 @@ module Sign
         @user_telephone = UserTelephone.find_by(id: id)
 
         if @user_telephone.blank? ||
-           @user_telephone.otp_expired? ||
-           @user_telephone.user_telephone_status_id != TELEPHONE_STATUSES[:unverified]
+            @user_telephone.otp_expired? ||
+            @user_telephone.user_telephone_status_id != TELEPHONE_STATUSES[:unverified]
           return :session_expired
         end
 
@@ -154,8 +161,8 @@ module Sign
         @user_telephone = UserTelephone.find_by(id: id)
 
         if @user_telephone.blank? ||
-           @user_telephone.otp_expired? ||
-           @user_telephone.user_telephone_status_id != TELEPHONE_STATUSES[:unverified]
+            @user_telephone.otp_expired? ||
+            @user_telephone.user_telephone_status_id != TELEPHONE_STATUSES[:unverified]
           reset_flow!
           flash[:alert] = t("sign.app.configuration.telephone.edit.session_expired")
           return false
@@ -166,28 +173,28 @@ module Sign
 
       private
 
-        # Normalizes telephone number to E.164 format
-        # Basic normalization: removes spaces, parentheses, hyphens
-        # For production, consider using a library like phonelib for full E.164 normalization
-        #
-        # @param number [String] the raw telephone number
-        # @return [String] normalized telephone number
-        def normalize_telephone_number(number)
-          return "" if number.blank?
+      # Normalizes telephone number to E.164 format
+      # Basic normalization: removes spaces, parentheses, hyphens
+      # For production, consider using a library like phonelib for full E.164 normalization
+      #
+      # @param number [String] the raw telephone number
+      # @return [String] normalized telephone number
+      def normalize_telephone_number(number)
+        return "" if number.blank?
 
-          # Remove common formatting characters
-          normalized = number.gsub(/[\s\-\(\)]/, "")
+        # Remove common formatting characters
+        normalized = number.gsub(/[\s\-\(\)]/, "")
 
-          # Ensure it starts with + for international format
-          normalized = "+#{normalized}" unless normalized.start_with?("+")
+        # Ensure it starts with + for international format
+        normalized = "+#{normalized}" unless normalized.start_with?("+")
 
-          normalized
-        end
+        normalized
+      end
 
-        # Override SequentialFlow's flow_initial_path
-        def flow_initial_path
-          raise NotImplementedError, "Override #flow_initial_path in your controller"
-        end
+      # Override SequentialFlow's flow_initial_path
+      def flow_initial_path
+        raise NotImplementedError, "Override #flow_initial_path in your controller"
+      end
     end
   end
 end

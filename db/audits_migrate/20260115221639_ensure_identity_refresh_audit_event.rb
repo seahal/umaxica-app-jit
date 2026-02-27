@@ -14,25 +14,25 @@ class EnsureIdentityRefreshAuditEvent < ActiveRecord::Migration[8.2]
 
   private
 
-    def seed_event(table_name)
-      return unless table_exists?(table_name)
+  def seed_event(table_name)
+    return unless table_exists?(table_name)
 
-      if column_exists?(table_name, :created_at)
-        safety_assured do
-          execute <<~SQL.squish
-            INSERT INTO #{table_name} (id, created_at, updated_at)
-            VALUES ('#{EVENT_ID}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            ON CONFLICT (id) DO NOTHING
-          SQL
-        end
-      else
-        safety_assured do
-          execute <<~SQL.squish
-            INSERT INTO #{table_name} (id)
-            VALUES ('#{EVENT_ID}')
-            ON CONFLICT (id) DO NOTHING
-          SQL
-        end
+    if column_exists?(table_name, :created_at)
+      safety_assured do
+        execute <<~SQL.squish
+          INSERT INTO #{table_name} (id, created_at, updated_at)
+          VALUES ('#{EVENT_ID}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+          ON CONFLICT (id) DO NOTHING
+        SQL
+      end
+    else
+      safety_assured do
+        execute <<~SQL.squish
+          INSERT INTO #{table_name} (id)
+          VALUES ('#{EVENT_ID}')
+          ON CONFLICT (id) DO NOTHING
+        SQL
       end
     end
+  end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -55,11 +56,11 @@ class Sign::App::Social::SessionsControllerTest < ActionDispatch::IntegrationTes
 
   private
 
-    def default_headers
-      { "Host" => host, "HTTPS" => "on" }
-    end
+  def default_headers
+    { "Host" => host, "HTTPS" => "on" }
+  end
 
-    def host
-      ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
-    end
+  def host
+    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+  end
 end

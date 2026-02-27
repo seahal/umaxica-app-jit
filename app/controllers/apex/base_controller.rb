@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Apex
@@ -12,8 +13,8 @@ module Apex
 
     private
 
-      def enforce_required_ri!
-        ensure_required_ri!
-      end
+    def enforce_required_ri!
+      ensure_required_ri!
+    end
   end
 end

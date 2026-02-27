@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -18,9 +19,11 @@ class AccountableTest < ActiveSupport::TestCase
 
   test "has_one :account association" do
     dummy = DummyAccountable.new
+
     assert_respond_to dummy, :account
 
     reflection = DummyAccountable.reflect_on_association(:account)
+
     assert_not_nil reflection
     assert_equal :has_one, reflection.macro
     assert_equal "accountable", reflection.options[:as].to_s

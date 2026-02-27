@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -171,6 +172,7 @@ class UserAuditTest < ActiveSupport::TestCase
     audit = UserAudit.new(user_audit_event: @audit_event)
     audit.user = @user
     audit.save!
+
     assert_not_nil audit.timestamp
   end
 

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # AccountablyService provides a polymorphic interface for User and Staff models
@@ -329,27 +330,27 @@ class AccountablyService
 
   private
 
-    # Validate that the object is a User or Staff
-    #
-    # @param obj [Object] The object to validate
-    # @return [Boolean] true if valid
-    def valid_accountably?(obj)
-      obj.is_a?(User) || obj.is_a?(Staff)
-    end
+  # Validate that the object is a User or Staff
+  #
+  # @param obj [Object] The object to validate
+  # @return [Boolean] true if valid
+  def valid_accountably?(obj)
+    obj.is_a?(User) || obj.is_a?(Staff)
+  end
 
-    private_class_method :find_record
+  private_class_method :find_record
 
-    def collection_present?(collection)
-      collection.respond_to?(:exists?) ? collection.exists? : collection.any?
-    end
+  def collection_present?(collection)
+    collection.respond_to?(:exists?) ? collection.exists? : collection.any?
+  end
 
-    def passkeys_present?
-      if user?
-        accountably.user_passkeys.exists?
-      elsif staff?
-        accountably.staff_passkeys.exists?
-      else
-        false
-      end
+  def passkeys_present?
+    if user?
+      accountably.user_passkeys.exists?
+    elsif staff?
+      accountably.staff_passkeys.exists?
+    else
+      false
     end
+  end
 end

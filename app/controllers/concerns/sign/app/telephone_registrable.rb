@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -61,8 +62,8 @@ module Sign
         UserTelephone.transaction do
           @user_telephone = UserTelephone.lock.find_by(id: id)
           if @user_telephone.blank? ||
-             @user_telephone.otp_expired? ||
-             @user_telephone.user_telephone_status_id != "UNVERIFIED_WITH_SIGN_UP"
+              @user_telephone.otp_expired? ||
+              @user_telephone.user_telephone_status_id != "UNVERIFIED_WITH_SIGN_UP"
             return :already_verified if @user_telephone&.user_telephone_status_id == "VERIFIED_WITH_SIGN_UP"
 
             return :session_expired

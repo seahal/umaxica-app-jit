@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -26,7 +27,7 @@ class AppTimelineUpdaterTest < ActiveSupport::TestCase
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
-      position: 0
+      position: 0,
     }
   end
 
@@ -41,7 +42,7 @@ class AppTimelineUpdaterTest < ActiveSupport::TestCase
       position: 1,
       title: "Title",
       description: "Description",
-      body: "Body"
+      body: "Body",
     }
 
     assert_difference "AppTimelineVersion.count", 1 do

@@ -26,17 +26,17 @@ class AddIdFormatConstraintsToTimelineStatusTables < ActiveRecord::Migration[8.2
 
   private
 
-    def tables
-      %w[
-        org_timeline_statuses
-        org_timeline_tag_masters
-        org_timeline_category_masters
-        com_timeline_statuses
-        com_timeline_tag_masters
-        com_timeline_category_masters
-        app_timeline_statuses
-        app_timeline_tag_masters
-        app_timeline_category_masters
-      ]
-    end
+  def tables
+    %w(
+      org_timeline_statuses
+      org_timeline_tag_masters
+      org_timeline_category_masters
+      com_timeline_statuses
+      com_timeline_tag_masters
+      com_timeline_category_masters
+      app_timeline_statuses
+      app_timeline_tag_masters
+      app_timeline_category_masters
+    )
+  end
 end

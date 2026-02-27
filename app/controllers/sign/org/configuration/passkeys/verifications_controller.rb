@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -30,7 +31,7 @@ module Sign
               render json: {
                 status: "ok",
                 passkey_id: passkey.id,
-                redirect_url: sign_org_configuration_passkeys_path
+                redirect_url: sign_org_configuration_passkeys_path,
               }, status: :created
             end
           rescue Webauthn::SessionChallenge::ChallengeError => e
@@ -45,27 +46,27 @@ module Sign
 
           private
 
-            def credential_params
-              params.expect(
-                credential: [
-                  :id,
-                  :rawId,
-                  :type,
-                  :authenticatorAttachment,
-                  { transports: [] },
-                  { response: [ :clientDataJSON, :attestationObject ] },
-                  { clientExtensionResults: {} }
-                ],
-              )
-            end
+          def credential_params
+            params.expect(
+              credential: [
+                :id,
+                :rawId,
+                :type,
+                :authenticatorAttachment,
+                { transports: [] },
+                { response: [:clientDataJSON, :attestationObject] },
+                { clientExtensionResults: {} },
+              ],
+            )
+          end
 
-            def passkey_description
-              params[:description].presence || I18n.t("sign.default_passkey_description")
-            end
+          def passkey_description
+            params[:description].presence || I18n.t("sign.default_passkey_description")
+          end
 
-            def webauthn_origin
-              ENV.fetch("WEBAUTHN_ORIGIN_ORG") { "https://#{ENV.fetch("SIGN_STAFF_URL", "localhost")}" }
-            end
+          def webauthn_origin
+            ENV.fetch("WEBAUTHN_ORIGIN_ORG") { "https://#{ENV.fetch("SIGN_STAFF_URL", "localhost")}" }
+          end
         end
       end
     end

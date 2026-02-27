@@ -3,7 +3,7 @@
 class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
   def up
     rename_id_tables(
-      %w[
+      %w(
         app_contact_audit_events
         app_contact_audit_levels
         com_contact_audit_events
@@ -26,11 +26,11 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         user_identity_audit_levels
         staff_identity_audit_events
         staff_identity_audit_levels
-      ], from: "NONE", to: "NEYO",
+      ), from: "NONE", to: "NEYO",
     )
 
     update_audit_fks(
-      %i[
+      %i(
         app_contact_histories
         com_contact_audits
         org_contact_histories
@@ -42,11 +42,11 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         org_timeline_audits
         user_identity_audits
         staff_identity_audits
-      ], from: "NONE", to: "NEYO",
+      ), from: "NONE", to: "NEYO",
     )
 
     change_audit_defaults(
-      %i[
+      %i(
         app_contact_histories
         com_contact_audits
         org_contact_histories
@@ -58,13 +58,13 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         org_timeline_audits
         user_identity_audits
         staff_identity_audits
-      ], from: "NONE", to: "NEYO",
+      ), from: "NONE", to: "NEYO",
     )
   end
 
   def down
     rename_id_tables(
-      %w[
+      %w(
         app_contact_audit_events
         app_contact_audit_levels
         com_contact_audit_events
@@ -87,11 +87,11 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         user_identity_audit_levels
         staff_identity_audit_events
         staff_identity_audit_levels
-      ], from: "NEYO", to: "NONE",
+      ), from: "NEYO", to: "NONE",
     )
 
     update_audit_fks(
-      %i[
+      %i(
         app_contact_histories
         com_contact_audits
         org_contact_histories
@@ -103,11 +103,11 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         org_timeline_audits
         user_identity_audits
         staff_identity_audits
-      ], from: "NEYO", to: "NONE",
+      ), from: "NEYO", to: "NONE",
     )
 
     change_audit_defaults(
-      %i[
+      %i(
         app_contact_histories
         com_contact_audits
         org_contact_histories
@@ -119,53 +119,53 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         org_timeline_audits
         user_identity_audits
         staff_identity_audits
-      ], from: "NEYO", to: "NONE",
+      ), from: "NEYO", to: "NONE",
     )
   end
 
   private
 
-    def rename_id_tables(tables, from:, to:)
-      tables.each do |table|
-        rename_id(table, from: from, to: to)
-      end
+  def rename_id_tables(tables, from:, to:)
+    tables.each do |table|
+      rename_id(table, from: from, to: to)
     end
+  end
 
-    def rename_id(table, from:, to:)
-      return unless table_exists?(table)
+  def rename_id(table, from:, to:)
+    return unless table_exists?(table)
 
-      change_column_default_if_exists(table, :id, from: from, to: to)
+    change_column_default_if_exists(table, :id, from: from, to: to)
+  end
+
+  def update_fk(table, column, from:, to:)
+    return unless table_exists?(table) && column_exists?(table, column)
+
+    safety_assured do
+      execute <<~SQL.squish
+        UPDATE #{table}
+        SET #{column} = '#{to}'
+        WHERE #{column} = '#{from}'
+      SQL
     end
+  end
 
-    def update_fk(table, column, from:, to:)
-      return unless table_exists?(table) && column_exists?(table, column)
-
-      safety_assured do
-        execute <<~SQL.squish
-          UPDATE #{table}
-          SET #{column} = '#{to}'
-          WHERE #{column} = '#{from}'
-        SQL
-      end
+  def update_audit_fks(tables, from:, to:)
+    tables.each do |table|
+      update_fk(table, :event_id, from: from, to: to)
+      update_fk(table, :level_id, from: from, to: to)
     end
+  end
 
-    def update_audit_fks(tables, from:, to:)
-      tables.each do |table|
-        update_fk(table, :event_id, from: from, to: to)
-        update_fk(table, :level_id, from: from, to: to)
-      end
+  def change_audit_defaults(tables, from:, to:)
+    tables.each do |table|
+      change_column_default_if_exists(table, :event_id, from: from, to: to)
+      change_column_default_if_exists(table, :level_id, from: from, to: to)
     end
+  end
 
-    def change_audit_defaults(tables, from:, to:)
-      tables.each do |table|
-        change_column_default_if_exists(table, :event_id, from: from, to: to)
-        change_column_default_if_exists(table, :level_id, from: from, to: to)
-      end
-    end
+  def change_column_default_if_exists(table, column, from:, to:)
+    return unless table_exists?(table) && column_exists?(table, column)
 
-    def change_column_default_if_exists(table, column, from:, to:)
-      return unless table_exists?(table) && column_exists?(table, column)
-
-      change_column_default table, column, from: from, to: to
-    end
+    change_column_default table, column, from: from, to: to
+  end
 end

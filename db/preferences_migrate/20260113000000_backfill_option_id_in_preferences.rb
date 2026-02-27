@@ -17,7 +17,7 @@ class BackfillOptionIdInPreferences < ActiveRecord::Migration[8.2]
     app_preference_timezones: "Asia/Tokyo",
     app_preference_regions: "JP",
     app_preference_languages: "JA",
-    app_preference_colorthemes: "system"
+    app_preference_colorthemes: "system",
   }.freeze
 
   def up

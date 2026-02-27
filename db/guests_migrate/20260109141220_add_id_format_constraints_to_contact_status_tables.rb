@@ -26,14 +26,14 @@ class AddIdFormatConstraintsToContactStatusTables < ActiveRecord::Migration[8.2]
 
   private
 
-    def tables
-      %w[
-        org_contact_statuses
-        org_contact_categories
-        com_contact_statuses
-        com_contact_categories
-        app_contact_statuses
-        app_contact_categories
-      ]
-    end
+  def tables
+    %w(
+      org_contact_statuses
+      org_contact_categories
+      com_contact_statuses
+      com_contact_categories
+      app_contact_statuses
+      app_contact_categories
+    )
+  end
 end

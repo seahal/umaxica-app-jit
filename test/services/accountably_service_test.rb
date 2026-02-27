@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -338,7 +339,7 @@ class AccountablyServiceTest < ActiveSupport::TestCase
 
     add_user_identities(@user)
 
-    assert_equal %i[email oauth phone], accountably.available_authentication_methods.sort
+    assert_equal %i(email oauth phone), accountably.available_authentication_methods.sort
   end
 
   test "staff authenticatable_with? supports email only" do
@@ -408,25 +409,26 @@ class AccountablyServiceTest < ActiveSupport::TestCase
 
   private
 
-    # Helper method to add various identities to a user for testing
-    def add_user_identities(user)
-      user.user_emails.create!(address: "test@example.com", confirm_policy: true)
-      user.user_telephones.create!(
-        number: "123-456-7890",
-        confirm_policy: true,
-        confirm_using_mfa: true,
-      )
-      unless user.user_social_apple
-        user.create_user_social_apple!(
-          uid: "testval_#{SecureRandom.hex(8)}",
-          token: "test_apple_token_#{SecureRandom.hex(8)}",
-          expires_at: 1.week.from_now.to_i,
-        )
-      end
-    end
+  # Helper method to add various identities to a user for testing
+  def add_user_identities(user)
+    user.user_emails.create!(address: "test@example.com", confirm_policy: true)
+    user.user_telephones.create!(
+      number: "123-456-7890",
+      confirm_policy: true,
+      confirm_using_mfa: true,
+    )
+    return if user.user_social_apple
 
-    # Helper method to add email to staff for testing
-    def add_staff_email(staff)
-      staff.staff_emails.create!(address: "staff@example.com", confirm_policy: true)
-    end
+    user.create_user_social_apple!(
+      uid: "testval_#{SecureRandom.hex(8)}",
+      token: "test_apple_token_#{SecureRandom.hex(8)}",
+      expires_at: 1.week.from_now.to_i,
+    )
+
+  end
+
+  # Helper method to add email to staff for testing
+  def add_staff_email(staff)
+    staff.staff_emails.create!(address: "staff@example.com", confirm_policy: true)
+  end
 end

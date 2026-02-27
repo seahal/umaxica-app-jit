@@ -34,8 +34,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     end
     add_index :app_contact_histories, :occurred_at
     add_index :app_contact_histories, :expires_at
-    add_index :app_contact_histories, %i[subject_type subject_id occurred_at]
-    add_index :app_contact_histories, [ :actor_id, :occurred_at ]
+    add_index :app_contact_histories, %i(subject_type subject_id occurred_at)
+    add_index :app_contact_histories, [:actor_id, :occurred_at]
     add_index :app_contact_histories, :event_id
     add_index :app_contact_histories, :level_id
     add_index :app_contact_histories, :parent_id
@@ -79,8 +79,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     end
     add_index :com_contact_audits, :occurred_at
     add_index :com_contact_audits, :expires_at
-    add_index :com_contact_audits, %i[subject_type subject_id occurred_at]
-    add_index :com_contact_audits, [ :actor_id, :occurred_at ]
+    add_index :com_contact_audits, %i(subject_type subject_id occurred_at)
+    add_index :com_contact_audits, [:actor_id, :occurred_at]
     add_index :com_contact_audits, :event_id
     add_index :com_contact_audits, :level_id
     add_index :com_contact_audits, :parent_id
@@ -124,8 +124,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     end
     add_index :org_contact_histories, :occurred_at
     add_index :org_contact_histories, :expires_at
-    add_index :org_contact_histories, %i[subject_type subject_id occurred_at]
-    add_index :org_contact_histories, [ :actor_id, :occurred_at ]
+    add_index :org_contact_histories, %i(subject_type subject_id occurred_at)
+    add_index :org_contact_histories, [:actor_id, :occurred_at]
     add_index :org_contact_histories, :event_id
     add_index :org_contact_histories, :level_id
     add_index :org_contact_histories, :parent_id
@@ -146,67 +146,67 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
 
   private
 
-    # Helper method to create audit table with standard structure
-    def create_audit_table(table_name, event_table_name, level_table_name)
-      create_table table_name, id: :uuid, default: -> { "uuidv7()" } do |t|
-        # Subject reference (DB-agnostic polymorphic pattern)
-        t.string :subject_id, null: false
-        t.text :subject_type, null: false
+  # Helper method to create audit table with standard structure
+  def create_audit_table(table_name, event_table_name, level_table_name)
+    create_table table_name, id: :uuid, default: -> { "uuidv7()" } do |t|
+      # Subject reference (DB-agnostic polymorphic pattern)
+      t.string :subject_id, null: false
+      t.text :subject_type, null: false
 
-        # Actor reference (polymorphic)
-        t.uuid :actor_id, null: false, default: "00000000-0000-0000-0000-000000000000"
-        t.text :actor_type, null: false, default: ""
+      # Actor reference (polymorphic)
+      t.uuid :actor_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.text :actor_type, null: false, default: ""
 
-        # Event/Level references
-        t.string :event_id, limit: 255, null: false, default: "NONE"
-        t.string :level_id, limit: 255, null: false, default: "NONE"
+      # Event/Level references
+      t.string :event_id, limit: 255, null: false, default: "NONE"
+      t.string :level_id, limit: 255, null: false, default: "NONE"
 
-        # Audit metadata
-        t.datetime :occurred_at, null: false, default: -> { "CURRENT_TIMESTAMP" }
-        t.datetime :expires_at, null: false, default: -> { "CURRENT_TIMESTAMP + interval '7 years'" }
-        t.inet :ip_address, default: "0.0.0.0", null: false
-        t.jsonb :context, null: false, default: {}
+      # Audit metadata
+      t.datetime :occurred_at, null: false, default: -> { "CURRENT_TIMESTAMP" }
+      t.datetime :expires_at, null: false, default: -> { "CURRENT_TIMESTAMP + interval '7 years'" }
+      t.inet :ip_address, default: "0.0.0.0", null: false
+      t.jsonb :context, null: false, default: {}
 
-        # Data preservation
-        t.text :previous_value, null: false, default: ""
-        t.text :current_value, null: false, default: ""
+      # Data preservation
+      t.text :previous_value, null: false, default: ""
+      t.text :current_value, null: false, default: ""
 
-        t.timestamps
-      end
-
-      # Indexes
-      add_index table_name, :occurred_at
-      add_index table_name, :expires_at
-      add_index table_name, %i[subject_type subject_id occurred_at]
-      add_index table_name, [ :actor_id, :occurred_at ]
-      add_index table_name, :event_id
-      add_index table_name, :level_id
-
-      # Event table
-      create_table event_table_name, id: :string, limit: 255 do |t|
-        t.timestamps
-      end
-      set_default_and_seed(event_table_name)
-
-      # Level table
-      create_table level_table_name, id: :string, limit: 255 do |t|
-        t.timestamps
-      end
-      set_default_and_seed(level_table_name)
-
-      # Foreign keys
-      add_foreign_key table_name, event_table_name, column: :event_id
-      add_foreign_key table_name, level_table_name, column: :level_id
+      t.timestamps
     end
 
-    def set_default_and_seed(table_name)
-      reversible do |dir|
-        dir.up do
-          execute "ALTER TABLE #{table_name} ALTER COLUMN id SET DEFAULT 'NONE'"
-        end
-        dir.down do
-          execute "ALTER TABLE #{table_name} ALTER COLUMN id DROP DEFAULT"
-        end
+    # Indexes
+    add_index table_name, :occurred_at
+    add_index table_name, :expires_at
+    add_index table_name, %i(subject_type subject_id occurred_at)
+    add_index table_name, [:actor_id, :occurred_at]
+    add_index table_name, :event_id
+    add_index table_name, :level_id
+
+    # Event table
+    create_table event_table_name, id: :string, limit: 255 do |t|
+      t.timestamps
+    end
+    set_default_and_seed(event_table_name)
+
+    # Level table
+    create_table level_table_name, id: :string, limit: 255 do |t|
+      t.timestamps
+    end
+    set_default_and_seed(level_table_name)
+
+    # Foreign keys
+    add_foreign_key table_name, event_table_name, column: :event_id
+    add_foreign_key table_name, level_table_name, column: :level_id
+  end
+
+  def set_default_and_seed(table_name)
+    reversible do |dir|
+      dir.up do
+        execute "ALTER TABLE #{table_name} ALTER COLUMN id SET DEFAULT 'NONE'"
+      end
+      dir.down do
+        execute "ALTER TABLE #{table_name} ALTER COLUMN id DROP DEFAULT"
       end
     end
+  end
 end

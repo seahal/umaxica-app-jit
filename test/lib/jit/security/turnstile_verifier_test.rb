@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -22,6 +23,7 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         result = TurnstileVerifier.verify(token: "", remote_ip: "127.0.0.1")
+
         assert_not result["success"]
         assert_equal "missing cf-turnstile-response", result["error"]
       end
@@ -33,6 +35,7 @@ module Jit
         ENV.stub(:[], nil) do
           Rails.application.credentials.stub(:dig, nil) do
             result = TurnstileVerifier.verify(token: "token", remote_ip: "127.0.0.1")
+
             assert_not result["success"]
             assert_equal "missing turnstile secret", result["error"]
           end
@@ -42,6 +45,7 @@ module Jit
       test "returns mock response when test_response set" do
         TurnstileVerifier.test_response = { "success" => true, "mock" => true }
         result = TurnstileVerifier.verify(token: "foo", remote_ip: "127.0.0.1")
+
         assert result["success"]
         assert result["mock"]
       end
@@ -49,6 +53,7 @@ module Jit
       test "returns success true when test_mode is true" do
         TurnstileVerifier.test_mode = true
         result = TurnstileVerifier.verify(token: "foo", remote_ip: "127.0.0.1")
+
         assert result["success"]
       end
 
@@ -60,6 +65,7 @@ module Jit
 
         Net::HTTP.stub :post_form, mock_response do
           result = TurnstileVerifier.verify(token: "valid", remote_ip: "1.2.3.4", secret_key: "secret")
+
           assert result["success"]
         end
 

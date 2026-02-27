@@ -67,9 +67,9 @@ class RemoveRedundantIndexes < ActiveRecord::Migration[8.2]
 
     # Department - Remove one of the redundant unique indexes
     # Keep index_departments_on_status_and_parent and remove index_departments_on_department_status_id_and_parent_id
-    remove_index :departments, column: %i[department_status_id parent_id] if index_exists?(
+    remove_index :departments, column: %i(department_status_id parent_id) if index_exists?(
       :departments,
-      %i[department_status_id parent_id],
+      %i(department_status_id parent_id),
       name: :index_departments_on_department_status_id_and_parent_id,
     )
   end

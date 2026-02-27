@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Webauthn
@@ -83,12 +84,12 @@ module Webauthn
         user: {
           id: resource.id,
           name: resource_display_name(resource),
-          display_name: resource_display_name(resource)
+          display_name: resource_display_name(resource),
         },
         exclude: exclude_list,
         authenticator_selection: {
           resident_key: "discouraged",
-          user_verification: "preferred"
+          user_verification: "preferred",
         },
         attestation: "none",
         rp: { id: webauthn_rp_id },
@@ -99,7 +100,7 @@ module Webauthn
         purpose: :registration,
       )
 
-      [ challenge_id, options ]
+      [challenge_id, options]
     end
 
     # Creates a WebAuthn authentication challenge.
@@ -124,7 +125,7 @@ module Webauthn
         purpose: :authentication,
       )
 
-      [ challenge_id, options ]
+      [challenge_id, options]
     end
 
     # Executes a block with the challenge, then deletes it.
@@ -147,85 +148,85 @@ module Webauthn
 
     private
 
-      # Stores a challenge in session and returns its ID.
-      #
-      # @param challenge [String] The WebAuthn challenge (Base64URL encoded)
-      # @param purpose [Symbol] :registration or :authentication
-      # @return [String] The generated challenge ID
-      def store_challenge!(challenge:, purpose:)
-        session[CHALLENGE_SESSION_KEY] ||= {}
-        challenges = session[CHALLENGE_SESSION_KEY]
+    # Stores a challenge in session and returns its ID.
+    #
+    # @param challenge [String] The WebAuthn challenge (Base64URL encoded)
+    # @param purpose [Symbol] :registration or :authentication
+    # @return [String] The generated challenge ID
+    def store_challenge!(challenge:, purpose:)
+      session[CHALLENGE_SESSION_KEY] ||= {}
+      challenges = session[CHALLENGE_SESSION_KEY]
 
-        # Cleanup expired challenges and enforce limit
-        cleanup_expired_challenges!(challenges)
-        enforce_challenge_limit!(challenges)
+      # Cleanup expired challenges and enforce limit
+      cleanup_expired_challenges!(challenges)
+      enforce_challenge_limit!(challenges)
 
-        challenge_id = SecureRandom.urlsafe_base64(16)
+      challenge_id = SecureRandom.urlsafe_base64(16)
 
-        challenges[challenge_id] = {
-          "challenge" => challenge,
-          "purpose" => purpose.to_s,
-          "expires_at" => (Time.current + CHALLENGE_TTL).to_i
-        }
+      challenges[challenge_id] = {
+        "challenge" => challenge,
+        "purpose" => purpose.to_s,
+        "expires_at" => (Time.current + CHALLENGE_TTL).to_i,
+      }
 
-        session[CHALLENGE_SESSION_KEY] = challenges
-        challenge_id
+      session[CHALLENGE_SESSION_KEY] = challenges
+      challenge_id
+    end
+
+    # Fetches and deletes a challenge from session.
+    #
+    # @param challenge_id [String] The challenge ID
+    # @param purpose [Symbol] Expected purpose
+    # @return [String] The challenge string
+    # @raise [ChallengeNotFoundError] if challenge not found
+    # @raise [ChallengeExpiredError] if challenge expired
+    # @raise [ChallengePurposeMismatchError] if purpose doesn't match
+    def fetch_and_delete_challenge!(challenge_id, purpose:)
+      challenges = session[CHALLENGE_SESSION_KEY] || {}
+      data = challenges.delete(challenge_id)
+      session[CHALLENGE_SESSION_KEY] = challenges
+
+      raise ChallengeNotFoundError, "Challenge not found" unless data
+
+      if Time.current.to_i > data["expires_at"].to_i
+        raise ChallengeExpiredError, "Challenge has expired"
       end
 
-      # Fetches and deletes a challenge from session.
-      #
-      # @param challenge_id [String] The challenge ID
-      # @param purpose [Symbol] Expected purpose
-      # @return [String] The challenge string
-      # @raise [ChallengeNotFoundError] if challenge not found
-      # @raise [ChallengeExpiredError] if challenge expired
-      # @raise [ChallengePurposeMismatchError] if purpose doesn't match
-      def fetch_and_delete_challenge!(challenge_id, purpose:)
-        challenges = session[CHALLENGE_SESSION_KEY] || {}
-        data = challenges.delete(challenge_id)
-        session[CHALLENGE_SESSION_KEY] = challenges
-
-        raise ChallengeNotFoundError, "Challenge not found" unless data
-
-        if Time.current.to_i > data["expires_at"].to_i
-          raise ChallengeExpiredError, "Challenge has expired"
-        end
-
-        if data["purpose"] != purpose.to_s
-          raise ChallengePurposeMismatchError,
-                "Purpose mismatch: expected #{purpose}, got #{data["purpose"]}"
-        end
-
-        data["challenge"]
+      if data["purpose"] != purpose.to_s
+        raise ChallengePurposeMismatchError,
+              "Purpose mismatch: expected #{purpose}, got #{data["purpose"]}"
       end
 
-      # Removes expired challenges from the hash.
-      def cleanup_expired_challenges!(challenges)
-        now = Time.current.to_i
-        challenges.delete_if { |_, data| data["expires_at"].to_i < now }
-      end
+      data["challenge"]
+    end
 
-      # Removes oldest challenges if limit exceeded.
-      def enforce_challenge_limit!(challenges)
-        return if challenges.size < MAX_CHALLENGES_PER_SESSION
+    # Removes expired challenges from the hash.
+    def cleanup_expired_challenges!(challenges)
+      now = Time.current.to_i
+      challenges.delete_if { |_, data| data["expires_at"].to_i < now }
+    end
 
-        # Sort by expires_at and remove oldest
-        sorted = challenges.sort_by { |_, data| data["expires_at"].to_i }
-        oldest_id, = sorted.first
-        challenges.delete(oldest_id)
-      end
+    # Removes oldest challenges if limit exceeded.
+    def enforce_challenge_limit!(challenges)
+      return if challenges.size < MAX_CHALLENGES_PER_SESSION
 
-      # Returns a display name for the resource.
-      def resource_display_name(resource)
-        if resource.respond_to?(:user_emails) && resource.user_emails.any?
-          resource.user_emails.first.address
-        elsif resource.respond_to?(:staff_emails) && resource.staff_emails.any?
-          resource.staff_emails.first.address
-        elsif resource.respond_to?(:public_id)
-          resource.public_id
-        else
-          resource.id.to_s
-        end
+      # Sort by expires_at and remove oldest
+      sorted = challenges.sort_by { |_, data| data["expires_at"].to_i }
+      oldest_id, = sorted.first
+      challenges.delete(oldest_id)
+    end
+
+    # Returns a display name for the resource.
+    def resource_display_name(resource)
+      if resource.respond_to?(:user_emails) && resource.user_emails.any?
+        resource.user_emails.first.address
+      elsif resource.respond_to?(:staff_emails) && resource.staff_emails.any?
+        resource.staff_emails.first.address
+      elsif resource.respond_to?(:public_id)
+        resource.public_id
+      else
+        resource.id.to_s
       end
+    end
   end
 end

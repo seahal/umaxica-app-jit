@@ -44,10 +44,10 @@ class RenameOperatorIdentityTables < ActiveRecord::Migration[8.2]
 
   private
 
-    def safe_rename(old_name, new_name)
-      return unless connection.table_exists?(old_name)
-      return if connection.table_exists?(new_name)
+  def safe_rename(old_name, new_name)
+    return unless connection.table_exists?(old_name)
+    return if connection.table_exists?(new_name)
 
-      connection.execute("ALTER TABLE #{old_name} RENAME TO #{new_name}")
-    end
+    connection.execute("ALTER TABLE #{old_name} RENAME TO #{new_name}")
+  end
 end

@@ -26,30 +26,30 @@ class AddIdFormatConstraintsToAuditStatusTables < ActiveRecord::Migration[8.2]
 
   private
 
-    def tables
-      %w[
-        user_audit_levels
-        user_audit_events
-        staff_audit_levels
-        staff_audit_events
-        org_timeline_audit_levels
-        org_timeline_audit_events
-        com_timeline_audit_levels
-        com_timeline_audit_events
-        app_timeline_audit_levels
-        app_timeline_audit_events
-        org_document_audit_levels
-        org_document_audit_events
-        com_document_audit_levels
-        com_document_audit_events
-        app_document_audit_levels
-        app_document_audit_events
-        org_contact_audit_levels
-        org_contact_audit_events
-        com_contact_audit_levels
-        com_contact_audit_events
-        app_contact_audit_levels
-        app_contact_audit_events
-      ]
-    end
+  def tables
+    %w(
+      user_audit_levels
+      user_audit_events
+      staff_audit_levels
+      staff_audit_events
+      org_timeline_audit_levels
+      org_timeline_audit_events
+      com_timeline_audit_levels
+      com_timeline_audit_events
+      app_timeline_audit_levels
+      app_timeline_audit_events
+      org_document_audit_levels
+      org_document_audit_events
+      com_document_audit_levels
+      com_document_audit_events
+      app_document_audit_levels
+      app_document_audit_events
+      org_contact_audit_levels
+      org_contact_audit_events
+      com_contact_audit_levels
+      com_contact_audit_events
+      app_contact_audit_levels
+      app_contact_audit_events
+    )
+  end
 end

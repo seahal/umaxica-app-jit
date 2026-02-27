@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -16,16 +17,16 @@ module Sign
               user: {
                 id: current_staff.public_id,
                 name: primary_staff_email || "staff@example.com",
-                display_name: primary_staff_name || I18n.t("sign.default_staff_name")
+                display_name: primary_staff_name || I18n.t("sign.default_staff_name"),
               },
               authenticator_selection: {
                 user_verification: "preferred",
-                resident_key: "preferred"
+                resident_key: "preferred",
               },
               attestation: "none",
               rp: {
                 id: webauthn_rp_id,
-                name: webauthn_rp_name
+                name: webauthn_rp_name,
               },
             )
 
@@ -43,21 +44,21 @@ module Sign
 
           private
 
-            def primary_staff_email
-              current_staff.staff_emails.first&.address
-            end
+          def primary_staff_email
+            current_staff.staff_emails.first&.address
+          end
 
-            def primary_staff_name
-              current_staff.try(:name) || primary_staff_email
-            end
+          def primary_staff_name
+            current_staff.try(:name) || primary_staff_email
+          end
 
-            def webauthn_rp_id
-              ENV.fetch("WEBAUTHN_RP_ID_ORG") { URI.parse(ENV.fetch("SIGN_STAFF_URL", "localhost")).host }
-            end
+          def webauthn_rp_id
+            ENV.fetch("WEBAUTHN_RP_ID_ORG") { URI.parse(ENV.fetch("SIGN_STAFF_URL", "localhost")).host }
+          end
 
-            def webauthn_rp_name
-              ENV.fetch("WEBAUTHN_RP_NAME_ORG", "Umaxica Org")
-            end
+          def webauthn_rp_name
+            ENV.fetch("WEBAUTHN_RP_NAME_ORG", "Umaxica Org")
+          end
         end
       end
     end

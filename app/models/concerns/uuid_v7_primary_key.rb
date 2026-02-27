@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module UuidV7PrimaryKey
@@ -10,7 +11,7 @@ module UuidV7PrimaryKey
 
   private
 
-    def assign_uuid_v7_primary_key
-      self.id ||= SecureRandom.uuid_v7
-    end
+  def assign_uuid_v7_primary_key
+    self.id ||= SecureRandom.uuid_v7
+  end
 end

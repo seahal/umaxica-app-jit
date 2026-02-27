@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -13,6 +14,7 @@ class Sign::Org::OutsControllerTest < ActionDispatch::IntegrationTest
     get edit_sign_org_out_url(ri: "jp"), headers: { "Host" => @host }
 
     rt = Base64.urlsafe_encode64(edit_sign_org_out_url(ri: "jp", host: @host))
+
     assert_redirected_to new_sign_org_in_url(rt: rt, host: @host)
   end
 
@@ -20,6 +22,7 @@ class Sign::Org::OutsControllerTest < ActionDispatch::IntegrationTest
     delete sign_org_out_url(ri: "jp"), headers: { "Host" => @host }
 
     rt = Base64.urlsafe_encode64(sign_org_out_url(ri: "jp", host: @host))
+
     assert_redirected_to new_sign_org_in_url(rt: rt, host: @host)
   end
 

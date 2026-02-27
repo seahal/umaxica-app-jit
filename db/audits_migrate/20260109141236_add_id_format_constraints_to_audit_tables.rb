@@ -28,19 +28,19 @@ class AddIdFormatConstraintsToAuditTables < ActiveRecord::Migration[8.2]
 
   private
 
-    def tables_to_constrain
-      [
-        # Org Preference Audit
-        "org_preference_audit_levels",
-        "org_preference_audit_events",
+  def tables_to_constrain
+    [
+      # Org Preference Audit
+      "org_preference_audit_levels",
+      "org_preference_audit_events",
 
-        # Com Preference Audit
-        "com_preference_audit_levels",
-        "com_preference_audit_events",
+      # Com Preference Audit
+      "com_preference_audit_levels",
+      "com_preference_audit_events",
 
-        # App Preference Audit
-        "app_preference_audit_levels",
-        "app_preference_audit_events"
-      ]
-    end
+      # App Preference Audit
+      "app_preference_audit_levels",
+      "app_preference_audit_events",
+    ]
+  end
 end

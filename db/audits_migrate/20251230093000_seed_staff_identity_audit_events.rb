@@ -3,7 +3,7 @@
 class SeedStaffIdentityAuditEvents < ActiveRecord::Migration[8.2]
   disable_ddl_transaction!
 
-  STAFF_EVENTS = %w[
+  STAFF_EVENTS = %w(
     NEYO
     LOGIN_SUCCESS
     LOGIN_FAILURE
@@ -11,7 +11,7 @@ class SeedStaffIdentityAuditEvents < ActiveRecord::Migration[8.2]
     LOGGED_OUT
     LOGIN_FAILED
     AUTHORIZATION_FAILED
-  ].freeze
+  ).freeze
 
   def up
     # No-op: data seeding moved to fixtures.
@@ -23,28 +23,28 @@ class SeedStaffIdentityAuditEvents < ActiveRecord::Migration[8.2]
 
   private
 
-    def staff_events
-      STAFF_EVENTS
+  def staff_events
+    STAFF_EVENTS
+  end
+
+  def seed_id(table_name, id)
+    cols = ["id"]
+    vals = [connection.quote(id)]
+
+    if column_exists?(table_name, :created_at)
+      cols << "created_at"
+      vals << "CURRENT_TIMESTAMP"
     end
 
-    def seed_id(table_name, id)
-      cols = [ "id" ]
-      vals = [ connection.quote(id) ]
-
-      if column_exists?(table_name, :created_at)
-        cols << "created_at"
-        vals << "CURRENT_TIMESTAMP"
-      end
-
-      if column_exists?(table_name, :updated_at)
-        cols << "updated_at"
-        vals << "CURRENT_TIMESTAMP"
-      end
-
-      execute <<~SQL.squish
-        INSERT INTO #{table_name} (#{cols.join(", ")})
-        VALUES (#{vals.join(", ")})
-        ON CONFLICT (id) DO NOTHING
-      SQL
+    if column_exists?(table_name, :updated_at)
+      cols << "updated_at"
+      vals << "CURRENT_TIMESTAMP"
     end
+
+    execute <<~SQL.squish
+      INSERT INTO #{table_name} (#{cols.join(", ")})
+      VALUES (#{vals.join(", ")})
+      ON CONFLICT (id) DO NOTHING
+    SQL
+  end
 end

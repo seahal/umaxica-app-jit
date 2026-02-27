@@ -26,17 +26,17 @@ class AddIdFormatConstraintsToDocumentStatusTables < ActiveRecord::Migration[8.2
 
   private
 
-    def tables
-      %w[
-        org_document_statuses
-        org_document_tag_masters
-        org_document_category_masters
-        com_document_statuses
-        com_document_tag_masters
-        com_document_category_masters
-        app_document_statuses
-        app_document_tag_masters
-        app_document_category_masters
-      ]
-    end
+  def tables
+    %w(
+      org_document_statuses
+      org_document_tag_masters
+      org_document_category_masters
+      com_document_statuses
+      com_document_tag_masters
+      com_document_category_masters
+      app_document_statuses
+      app_document_tag_masters
+      app_document_category_masters
+    )
+  end
 end

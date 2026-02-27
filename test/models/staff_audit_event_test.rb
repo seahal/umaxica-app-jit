@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # == Schema Information
@@ -19,6 +20,7 @@ class StaffAuditEventTest < ActiveSupport::TestCase
 
   test "validates length of id" do
     record = StaffAuditEvent.new(id: "A" * 256)
+
     assert_predicate record, :invalid?
     assert_predicate record.errors[:id], :any?
   end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "test_helper"
@@ -22,14 +23,15 @@ class Sign::App::SignUpGuardTest < ActionDispatch::IntegrationTest
     assert_response :conflict
 
     set_cookie = response.headers["Set-Cookie"].to_s
-    %w[
+
+    %w(
       access_token=
       refresh_token=
       __Secure-access_token=
       __Secure-refresh_token=
       __Host-access_token=
       __Host-refresh_token=
-    ].each do |cookie_prefix|
+    ).each do |cookie_prefix|
       assert_includes set_cookie, cookie_prefix
     end
 
@@ -38,11 +40,11 @@ class Sign::App::SignUpGuardTest < ActionDispatch::IntegrationTest
 
   private
 
-    def default_headers
-      { "Host" => host, "HTTPS" => "on" }
-    end
+  def default_headers
+    { "Host" => host, "HTTPS" => "on" }
+  end
 
-    def host
-      ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
-    end
+  def host
+    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+  end
 end

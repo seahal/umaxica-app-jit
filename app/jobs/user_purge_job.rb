@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class UserPurgeJob < ApplicationJob
@@ -5,7 +6,7 @@ class UserPurgeJob < ApplicationJob
 
   def perform
     users = User.where(status_id: "PENDING_DELETION")
-                .where(scheduled_purge_at: ..Time.current)
+      .where(scheduled_purge_at: ..Time.current)
 
     users.find_each do |user|
       user.destroy!

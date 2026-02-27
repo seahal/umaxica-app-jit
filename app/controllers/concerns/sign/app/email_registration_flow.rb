@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Sign
@@ -46,14 +47,14 @@ module Sign
 
       EMAIL_STATUSES = {
         unverified: "UNVERIFIED_WITH_SIGN_UP",
-        verified: "VERIFIED_WITH_SIGN_UP"
+        verified: "VERIFIED_WITH_SIGN_UP",
       }.freeze
 
       included do
         flow :email_registration do
-          step 1, actions: %i[new create]
-          step 2, actions: %i[edit update]
-          step 3, actions: %i[show destroy]
+          step 1, actions: %i(new create)
+          step 2, actions: %i(edit update)
+          step 3, actions: %i(show destroy)
         end
       end
 
@@ -64,7 +65,8 @@ module Sign
       # @param validate_turnstile [Boolean] whether to validate Cloudflare Turnstile
       # @param status [String] initial status for the email record
       # @return [Boolean] true if successful, false if validation failed
-      def initiate_email_registration(email_address, confirm_policy: "1", validate_turnstile: true, status: EMAIL_STATUSES[:unverified])
+      def initiate_email_registration(email_address, confirm_policy: "1", validate_turnstile: true,
+                                      status: EMAIL_STATUSES[:unverified])
         if validate_turnstile
           turnstile_result = cloudflare_turnstile_validation
           unless turnstile_result["success"]
@@ -80,7 +82,7 @@ module Sign
         # Delete existing unverified email for same address
         UserEmail.where(
           address: @user_email.address,
-          user_email_status_id: EMAIL_STATUSES[:unverified]
+          user_email_status_id: EMAIL_STATUSES[:unverified],
         ).destroy_all
 
         # Generate OTP
@@ -96,7 +98,7 @@ module Sign
           hotp_token: otp_code,
           email_address: @user_email.address,
           verification_token: verification_token,
-          public_id: @user_email.public_id
+          public_id: @user_email.public_id,
         ).create.deliver_later
 
         true
@@ -113,8 +115,8 @@ module Sign
         @user_email = UserEmail.find_by(public_id: public_id)
 
         if @user_email.blank? ||
-           @user_email.otp_expired? ||
-           @user_email.user_email_status_id != EMAIL_STATUSES[:unverified]
+            @user_email.otp_expired? ||
+            @user_email.user_email_status_id != EMAIL_STATUSES[:unverified]
           return :session_expired
         end
 
@@ -155,8 +157,8 @@ module Sign
         @verification_token = params[:token]
 
         if @user_email.blank? ||
-           @user_email.otp_expired? ||
-           @user_email.user_email_status_id != EMAIL_STATUSES[:unverified]
+            @user_email.otp_expired? ||
+            @user_email.user_email_status_id != EMAIL_STATUSES[:unverified]
           reset_flow!
           flash[:alert] = t("sign.app.registration.email.edit.session_expired")
           return false
@@ -167,10 +169,10 @@ module Sign
 
       private
 
-        # Override SequentialFlow's flow_initial_path
-        def flow_initial_path
-          raise NotImplementedError, "Override #flow_initial_path in your controller"
-        end
+      # Override SequentialFlow's flow_initial_path
+      def flow_initial_path
+        raise NotImplementedError, "Override #flow_initial_path in your controller"
+      end
     end
   end
 end

@@ -26,10 +26,10 @@ class AddIdFormatConstraintsToTokenStatusTables < ActiveRecord::Migration[8.2]
 
   private
 
-    def tables
-      %w[
-        user_token_statuses
-        staff_token_statuses
-      ]
-    end
+  def tables
+    %w(
+      user_token_statuses
+      staff_token_statuses
+    )
+  end
 end

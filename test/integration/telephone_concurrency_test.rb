@@ -1,3 +1,6 @@
+# typed: false
+# frozen_string_literal: true
+
 require "test_helper"
 
 class TelephoneConcurrencyTest < ActionDispatch::IntegrationTest
@@ -25,7 +28,7 @@ class TelephoneConcurrencyTest < ActionDispatch::IntegrationTest
         user_identity_telephone_status_id: "UNVERIFIED_WITH_SIGN_UP",
         otp_attempts_count: 0,
         otp_counter: "0",
-        otp_private_key: "secret"
+        otp_private_key: "secret",
       )
       # Force the dummy ID if it's not set automatically (it is by before_validation)
       ut.save!
@@ -42,6 +45,7 @@ class TelephoneConcurrencyTest < ActionDispatch::IntegrationTest
     # This should succeed now
     assert_response :redirect
     follow_redirect!(headers: headers)
+
     assert_response :success
   end
 end

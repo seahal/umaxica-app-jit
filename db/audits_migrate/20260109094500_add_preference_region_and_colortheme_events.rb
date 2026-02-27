@@ -2,7 +2,7 @@
 
 class AddPreferenceRegionAndColorthemeEvents < ActiveRecord::Migration[8.0]
   def up
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       safety_assured do
         execute <<~SQL.squish
           INSERT INTO #{namespace}_preference_audit_events (id, created_at, updated_at)
@@ -16,7 +16,7 @@ class AddPreferenceRegionAndColorthemeEvents < ActiveRecord::Migration[8.0]
   end
 
   def down
-    %w[app com org].each do |namespace|
+    %w(app com org).each do |namespace|
       safety_assured do
         execute <<~SQL.squish
           DELETE FROM #{namespace}_preference_audit_events

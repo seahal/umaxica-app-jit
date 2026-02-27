@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Webauthn
@@ -39,7 +40,7 @@ module Webauthn
         "challenge" => challenge,
         "purpose" => purpose.to_s,
         "scope" => scope.to_s,
-        "expires_at" => (Time.current + ttl).to_i
+        "expires_at" => (Time.current + ttl).to_i,
       }
     end
 

@@ -1,3 +1,4 @@
+# typed: false
 # == Schema Information
 #
 # Table name: app_preference_audits
@@ -47,6 +48,7 @@ class AppPreferenceAuditTest < ActiveSupport::TestCase
   test "can set app_preference" do
     new_pref = app_preferences(:two)
     @audit.app_preference = new_pref
+
     assert_equal new_pref.id.to_s, @audit.subject_id
     assert_equal "AppPreference", @audit.subject_type
     assert_equal new_pref, @audit.app_preference
@@ -62,30 +64,35 @@ class AppPreferenceAuditTest < ActiveSupport::TestCase
 
   test "validates presence of subject_id" do
     @audit.subject_id = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_id], I18n.t("errors.messages.blank")
   end
 
   test "validates presence of subject_type" do
     @audit.subject_type = nil
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_type], I18n.t("errors.messages.blank")
   end
 
   test "validates length of event_id" do
     @audit.event_id = "A" * 256
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:event_id], I18n.t("errors.messages.too_long", count: 255)
   end
 
   test "validates length of level_id" do
     @audit.level_id = "A" * 256
+
     assert_not @audit.valid?
     assert_includes @audit.errors[:level_id], I18n.t("errors.messages.too_long", count: 255)
   end
 
   test "app_preference helper method returns nil when subject_type is not AppPreference" do
     @audit.subject_type = "SomeOtherType"
+
     assert_nil @audit.app_preference
   end
 end
