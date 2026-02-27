@@ -22,8 +22,6 @@ class UserActivityLevel < ActivityRecord
            dependent: :restrict_with_error,
            inverse_of: :user_activity_level
 
-  scope :ordered, -> { all }
-
   DEFAULTS = [DEBUG, ERROR, INFO, NOTHING, WARN].freeze
 
   def self.ensure_defaults!

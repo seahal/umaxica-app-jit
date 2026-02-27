@@ -13,10 +13,10 @@ require "test_helper"
 class ComPreferenceActivityLevelTest < ActiveSupport::TestCase
   fixtures :com_preference_activity_levels
 
-  test "ordered scope includes default ids when position is absent" do
-    ordered_ids = ComPreferenceActivityLevel.ordered.pluck(:id)
+  test "includes all default ids" do
+    ids = ComPreferenceActivityLevel.pluck(:id)
 
-    assert_empty(ComPreferenceActivityLevel::DEFAULTS - ordered_ids)
+    assert_empty(ComPreferenceActivityLevel::DEFAULTS - ids)
   end
 
   test "has_many association with com_preference_activities" do

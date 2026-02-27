@@ -75,14 +75,11 @@ class UserActivityEventTest < ActiveSupport::TestCase
     assert UserActivityEvent.exists?(id: UserActivityEvent::LOGGED_IN)
   end
 
-  test "ordered scope returns all default records" do
+  test "returns all default records" do
     UserActivityEvent.ensure_defaults!
-    events = UserActivityEvent.ordered
+    ids = UserActivityEvent.pluck(:id)
 
-    assert_kind_of ActiveRecord::Relation, events
-    ordered_ids = events.pluck(:id)
-
-    assert_empty(UserActivityEvent::DEFAULTS - ordered_ids)
+    assert_empty(UserActivityEvent::DEFAULTS - ids)
   end
 
   test "has_many association with user_activities" do

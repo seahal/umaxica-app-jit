@@ -558,7 +558,7 @@ module Preference
       return if option_class.blank? || raw_name.blank?
 
       target_keys = normalized_option_lookup_keys(raw_name)
-      option_class.ordered.each do |option|
+      option_class.find_each do |option|
         return option.id if (target_keys & normalized_option_lookup_keys(option.name)).any?
       end
       nil

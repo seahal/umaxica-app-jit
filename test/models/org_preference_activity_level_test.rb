@@ -13,10 +13,10 @@ require "test_helper"
 class OrgPreferenceActivityLevelTest < ActiveSupport::TestCase
   fixtures :org_preference_activity_levels
 
-  test "ordered scope includes default ids when position is absent" do
-    ordered_ids = OrgPreferenceActivityLevel.ordered.pluck(:id)
+  test "includes all default ids" do
+    ids = OrgPreferenceActivityLevel.pluck(:id)
 
-    assert_empty(OrgPreferenceActivityLevel::DEFAULTS - ordered_ids)
+    assert_empty(OrgPreferenceActivityLevel::DEFAULTS - ids)
   end
 
   test "has_many association with org_preference_activities" do

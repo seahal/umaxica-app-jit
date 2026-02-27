@@ -14,7 +14,6 @@ class OrgPreferenceActivityLevel < ActivityRecord
   INFO = 1
 
   has_many :org_preference_activities, dependent: :restrict_with_error, inverse_of: :org_preference_activity_level
-  scope :ordered, -> { column_names.include?("position") ? order(:position) : all }
 
   DEFAULTS = [INFO].freeze
 

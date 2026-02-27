@@ -145,7 +145,7 @@ module Preference::Global
     @allowed_region_values ||=
       begin
         region_option_class = Preference::ClassRegistry.option_class(preference_prefix, :region)
-        values = region_option_class.ordered.filter_map { |option| option.name&.downcase }.presence
+        values = region_option_class.filter_map { |option| option.name&.downcase }.presence
         values || ALLOWED_REGION_VALUES
       rescue KeyError, NameError
         ALLOWED_REGION_VALUES
