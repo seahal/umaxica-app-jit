@@ -137,7 +137,6 @@ export default class extends Controller {
         throw new Error("予期しない応答です");
       }
     } catch (error) {
-      console.error("Passkey authentication error:", error);
       if (error.name === "NotAllowedError") {
         this.showError("認証がキャンセルされました");
       } else if (error.name === "SecurityError") {
@@ -218,7 +217,7 @@ export default class extends Controller {
   }
 
   encodeCredential(credential) {
-    const response = credential.response;
+    const { response } = credential;
 
     return {
       id: credential.id,

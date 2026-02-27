@@ -35,15 +35,20 @@ export default class extends Controller {
   }
 
   handleBeforeVisit(event) {
-    if (!this.dirty) return;
+    if (!this.dirty) {
+      return;
+    }
     const message = this.messageValue || "変更は保存されていません。移動しますか？";
+    // eslint-disable-next-line no-alert
     if (!window.confirm(message)) {
       event.preventDefault();
     }
   }
 
   handleBeforeUnload(event) {
-    if (!this.dirty) return;
+    if (!this.dirty) {
+      return;
+    }
     const message = this.messageValue || "変更は保存されていません。移動しますか？";
     event.preventDefault();
     event.returnValue = message;

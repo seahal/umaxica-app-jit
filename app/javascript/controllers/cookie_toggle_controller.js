@@ -21,9 +21,8 @@ export default class extends Controller {
       const checkedCount = this.checkboxTargets.filter((cb) => cb.checked).length;
       const totalCount = this.checkboxTargets.length;
       this.statusTarget.textContent = `${checkedCount} / ${totalCount} cookies enabled`;
-      // console.log(`Updated status: ${checkedCount} / ${totalCount}`);
     } else {
-      console.error("Status target not found!");
+      // Status target not found, silently ignore
     }
   }
 }

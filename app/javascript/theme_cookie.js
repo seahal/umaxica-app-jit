@@ -16,7 +16,9 @@ function readCookie(name) {
 }
 
 function resolveTheme(value) {
-  if (!value) return "system";
+  if (!value) {
+    return "system";
+  }
   return THEME_CODE_MAP[value.toLowerCase()] || value.toLowerCase();
 }
 

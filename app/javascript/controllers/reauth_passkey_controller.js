@@ -34,7 +34,6 @@ export default class extends Controller {
       this.showStatus("サーバーで検証中...");
       this.element.closest("form").requestSubmit();
     } catch (error) {
-      console.error("Reauth passkey error:", error);
       if (error.name === "NotAllowedError") {
         this.showError("認証がキャンセルされました");
       } else if (error.name === "SecurityError") {
@@ -46,7 +45,7 @@ export default class extends Controller {
   }
 
   encodeCredential(credential) {
-    const response = credential.response;
+    const { response } = credential;
 
     return {
       id: credential.id,

@@ -14,7 +14,9 @@ export default class extends Controller {
   getCurrentTheme() {
     // Checking localStorage first allows user override
     const stored = localStorage.getItem("theme");
-    if (stored) return stored;
+    if (stored) {
+      return stored;
+    }
 
     // Fallback to system preference
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";

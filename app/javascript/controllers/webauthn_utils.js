@@ -1,8 +1,16 @@
 function describeInput(input) {
-  if (input === null) return "null";
-  if (input === undefined) return "undefined";
-  if (input instanceof ArrayBuffer) return "ArrayBuffer";
-  if (Array.isArray(input)) return "Array";
+  if (input === null) {
+    return "null";
+  }
+  if (input === undefined) {
+    return "undefined";
+  }
+  if (input instanceof ArrayBuffer) {
+    return "ArrayBuffer";
+  }
+  if (Array.isArray(input)) {
+    return "Array";
+  }
   if (input && input.constructor && input.constructor.name) {
     return `${typeof input}(${input.constructor.name})`;
   }
@@ -35,7 +43,9 @@ export function toArrayBuffer(input, label = "value") {
 }
 
 function normalizeCredentialList(list, label) {
-  if (list === undefined || list === null) return list;
+  if (list === undefined || list === null) {
+    return list;
+  }
   if (!Array.isArray(list)) {
     throw new TypeError(`${label} must be an array`);
   }

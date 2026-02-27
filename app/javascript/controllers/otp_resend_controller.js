@@ -23,7 +23,9 @@ export default class extends Controller {
 
   async resend(event) {
     event.preventDefault();
-    if (this.remainingSeconds > 0) return;
+    if (this.remainingSeconds > 0) {
+      return;
+    }
 
     try {
       const response = await fetch(this.endpointValue, {

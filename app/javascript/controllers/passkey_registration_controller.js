@@ -142,7 +142,6 @@ export default class extends Controller {
         window.location.reload();
       }
     } catch (error) {
-      console.error("Passkey registration error:", error);
       if (error.name === "NotAllowedError") {
         this.showError("認証がキャンセルされました");
       } else if (error.name === "InvalidStateError") {
@@ -154,7 +153,7 @@ export default class extends Controller {
   }
 
   encodeCredential(credential) {
-    const response = credential.response;
+    const { response } = credential;
 
     return {
       id: credential.id,
