@@ -56,12 +56,13 @@ class FixDatabaseConsistencyIdentityRelations < ActiveRecord::Migration[8.2]
       end
     end
 
-    if table_exists?(:admins) && table_exists?(:departments)
-      remove_foreign_key :admins, :departments if foreign_key_exists?(:admins, :departments)
-      unless foreign_key_exists?(:admins, :departments)
-        add_foreign_key :admins, :departments, on_delete: :nullify, validate: false
-      end
-    end
+    return unless table_exists?(:admins) && table_exists?(:departments)
+
+    remove_foreign_key :admins, :departments if foreign_key_exists?(:admins, :departments)
+    return if foreign_key_exists?(:admins, :departments)
+
+    add_foreign_key :admins, :departments, on_delete: :nullify, validate: false
+
   end
 
   def down
@@ -98,8 +99,9 @@ class FixDatabaseConsistencyIdentityRelations < ActiveRecord::Migration[8.2]
       remove_foreign_key :workspaces, :workspace_statuses, column: :workspace_status_id if foreign_key_exists?(:workspaces, :workspace_statuses, column: :workspace_status_id)
     end
 
-    if table_exists?(:client_avatar_accesses)
-      add_index :client_avatar_accesses, :client_id, algorithm: :concurrently unless index_exists?(:client_avatar_accesses, :client_id)
-    end
+    return unless table_exists?(:client_avatar_accesses)
+
+    add_index :client_avatar_accesses, :client_id, algorithm: :concurrently unless index_exists?(:client_avatar_accesses, :client_id)
+
   end
 end

@@ -539,4 +539,5 @@ Content-Security-Policy: default-src 'self'; connect-src 'self' https:
 - Integrate with the session management layer.
 - Ensure alignment with the multi-domain architecture.
 
-Following this task list step by step will deliver a secure and user-friendly FIDO2 security key experience.
+Following this task list step by step will deliver a secure and user-friendly FIDO2 security key
+experience.

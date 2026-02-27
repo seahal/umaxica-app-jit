@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document details the fixes applied to resolve Priority A `database_consistency` issues. The focus was on:
+This document details the fixes applied to resolve Priority A `database_consistency` issues. The
+focus was on:
 
 - Foreign key constraints
 - ON DELETE rules
@@ -51,8 +52,10 @@ This document details the fixes applied to resolve Priority A `database_consiste
 - Enforces NOT NULL on:
   - `admins.public_id`
   - `departments.name`
-  - `staff_emails.staff_id`, `staff_emails.address`, `staff_emails.otp_counter`, `staff_emails.otp_private_key`
-  - `staff_telephones.staff_id`, `staff_telephones.number`, `staff_telephones.otp_counter`, `staff_telephones.otp_private_key`
+  - `staff_emails.staff_id`, `staff_emails.address`, `staff_emails.otp_counter`,
+    `staff_emails.otp_private_key`
+  - `staff_telephones.staff_id`, `staff_telephones.number`, `staff_telephones.otp_counter`,
+    `staff_telephones.otp_private_key`
   - `staff_passkeys.external_id`, `staff_passkeys.public_key`, `staff_passkeys.sign_count`
   - `staff_secrets.name`
 
@@ -151,7 +154,9 @@ This document details the fixes applied to resolve Priority A `database_consiste
 
 ### ColumnPresenceChecker: Contact status_id NOT NULL
 
-The requirement for `org_contact_status` / `com_contact_status` FK columns to be NOT NULL conflicts with the ON DELETE SET NULL behavior. We prioritized the ON DELETE SET NULL requirement from `ForeignKeyCascadeChecker`, which means these columns must remain nullable.
+The requirement for `org_contact_status` / `com_contact_status` FK columns to be NOT NULL conflicts
+with the ON DELETE SET NULL behavior. We prioritized the ON DELETE SET NULL requirement from
+`ForeignKeyCascadeChecker`, which means these columns must remain nullable.
 
 ## Additional Model Fixes
 
@@ -161,7 +166,8 @@ Created `/app/models/department_status.rb` to properly represent the `department
 
 ### Department Model Update
 
-Updated `belongs_to :department_status` to use `class_name: "DepartmentStatus"` instead of `"OrganizationStatus"` to correctly reference the `department_statuses` table.
+Updated `belongs_to :department_status` to use `class_name: "DepartmentStatus"` instead of
+`"OrganizationStatus"` to correctly reference the `department_statuses` table.
 
 ## How to Apply
 

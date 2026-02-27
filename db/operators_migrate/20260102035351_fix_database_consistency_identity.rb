@@ -42,10 +42,10 @@ class FixDatabaseConsistencyIdentity < ActiveRecord::Migration[8.2]
     # Add foreign key for post versions (Moved to avatars_migrate)
 
     # Add foreign key for self-referential division parent
-    unless foreign_key_exists?(:divisions, :divisions, column: :parent_id)
-      add_foreign_key :divisions, :divisions, column: :parent_id, validate: false
-      validate_foreign_key :divisions, :divisions
-    end
+    return if foreign_key_exists?(:divisions, :divisions, column: :parent_id)
+
+    add_foreign_key :divisions, :divisions, column: :parent_id, validate: false
+    validate_foreign_key :divisions, :divisions
 
     # Add foreign key for user owned_clients
 

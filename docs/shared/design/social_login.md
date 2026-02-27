@@ -2,7 +2,8 @@
 
 ## Overview
 
-Implement an extensible architecture that supports multiple social login providers (Google, Apple, Facebook, etc.).
+Implement an extensible architecture that supports multiple social login providers (Google, Apple,
+Facebook, etc.).
 
 ## Current State
 

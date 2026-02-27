@@ -144,8 +144,9 @@ module Telephone
       errors.add(:number, :exceeds_e164_length, max: TelephoneNormalization::MAX_E164_DIGITS)
     end
 
-    if normalized.length > 16
-      errors.add(:number, :too_long, count: 16)
-    end
+    return unless normalized.length > 16
+
+    errors.add(:number, :too_long, count: 16)
+
   end
 end

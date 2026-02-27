@@ -133,15 +133,15 @@ module SocialAuthConcern
 
     last_reauth = current_resource.last_reauth_at
 
-    if last_reauth.blank? || last_reauth < ttl.ago
-      Rails.event.notify(
-        "social_auth.reauth_required",
-        user_id: current_resource.id,
-        last_reauth_at: last_reauth&.iso8601,
-        required_within: ttl.to_i,
-      )
-      raise SocialAuth::ReauthRequiredError.new("errors.social_auth.reauth_required")
-    end
+    return unless last_reauth.blank? || last_reauth < ttl.ago
+
+    Rails.event.notify(
+      "social_auth.reauth_required",
+      user_id: current_resource.id,
+      last_reauth_at: last_reauth&.iso8601,
+      required_within: ttl.to_i,
+    )
+    raise SocialAuth::ReauthRequiredError.new("errors.social_auth.reauth_required")
   end
 
   # Process the OmniAuth callback using SocialAuthService.
@@ -287,9 +287,9 @@ module SocialAuthConcern
     intent_user_id = session[SOCIAL_USER_ID_SESSION_KEY].to_s
     current_id = social_auth_user&.id&.to_s
 
-    if intent_user_id.blank? || current_id.blank? || intent_user_id != current_id
-      raise SocialAuth::UnauthorizedError.new("errors.social_auth.user_changed")
-    end
+    return unless intent_user_id.blank? || current_id.blank? || intent_user_id != current_id
+
+    raise SocialAuth::UnauthorizedError.new("errors.social_auth.user_changed")
   end
 
   def snapshot_social_auth_context(intent)

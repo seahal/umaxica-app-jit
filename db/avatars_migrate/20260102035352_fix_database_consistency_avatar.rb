@@ -5,10 +5,10 @@ class FixDatabaseConsistencyAvatar < ActiveRecord::Migration[8.2]
 
   def up
     # Add foreign key for post versions
-    unless foreign_key_exists?(:post_versions, :posts, column: :post_id)
-      add_foreign_key :post_versions, :posts, column: :post_id, validate: false
-      validate_foreign_key :post_versions, :posts
-    end
+    return if foreign_key_exists?(:post_versions, :posts, column: :post_id)
+
+    add_foreign_key :post_versions, :posts, column: :post_id, validate: false
+    validate_foreign_key :post_versions, :posts
 
     # Add foreign key for client avatars (Cross-DB or same DB check)
     # Note: If this fails due to separate databases, it should be removed or handled differently.

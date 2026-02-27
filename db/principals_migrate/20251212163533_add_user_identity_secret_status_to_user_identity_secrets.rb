@@ -10,8 +10,9 @@ class AddUserIdentitySecretStatusToUserIdentitySecrets < ActiveRecord::Migration
       add_index :user_identity_secrets, :user_identity_secret_status_id
     end
 
-    unless foreign_key_exists?(:user_identity_secrets, :user_identity_secret_statuses)
-      add_foreign_key :user_identity_secrets, :user_identity_secret_statuses, column: :user_identity_secret_status_id, primary_key: :id
-    end
+    return if foreign_key_exists?(:user_identity_secrets, :user_identity_secret_statuses)
+
+    add_foreign_key :user_identity_secrets, :user_identity_secret_statuses, column: :user_identity_secret_status_id, primary_key: :id
+
   end
 end

@@ -10,8 +10,9 @@ class AddUserIdentityAppleAuthStatusToUserAppleAuths < ActiveRecord::Migration[8
       add_index :user_apple_auths, :user_identity_apple_auth_status_id
     end
 
-    unless foreign_key_exists?(:user_apple_auths, :user_identity_apple_auth_statuses)
-      add_foreign_key :user_apple_auths, :user_identity_apple_auth_statuses, column: :user_identity_apple_auth_status_id, primary_key: :id
-    end
+    return if foreign_key_exists?(:user_apple_auths, :user_identity_apple_auth_statuses)
+
+    add_foreign_key :user_apple_auths, :user_identity_apple_auth_statuses, column: :user_identity_apple_auth_status_id, primary_key: :id
+
   end
 end

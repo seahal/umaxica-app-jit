@@ -10,8 +10,9 @@ class AddAuditEventIdIndexToUsers < ActiveRecord::Migration[7.0]
     end
 
     # Indexes on audit event_id for faster joins/filters
-    unless index_exists?(:user_identity_audits, :event_id, name: 'index_user_identity_audits_on_event_id')
-      add_index :user_identity_audits, :event_id, name: 'index_user_identity_audits_on_event_id'
-    end
+    return if index_exists?(:user_identity_audits, :event_id, name: 'index_user_identity_audits_on_event_id')
+
+    add_index :user_identity_audits, :event_id, name: 'index_user_identity_audits_on_event_id'
+
   end
 end

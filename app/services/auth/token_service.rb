@@ -20,12 +20,12 @@ module Auth
           JWT_ALGORITHM,
           { kid: Jit::Security::Jwt::Keyring.active_kid },
         )
-      rescue JWT::EncodeError, OpenSSL::PKey::PKeyError, ArgumentError => error
+      rescue JWT::EncodeError, OpenSSL::PKey::PKeyError, ArgumentError => e
         Rails.event.notify(
           "authentication.token.generation.failed",
-          error_class: error.class.name,
-          error_message: error.message,
-          backtrace: error.backtrace.first(5),
+          error_class: e.class.name,
+          error_message: e.message,
+          backtrace: e.backtrace.first(5),
           resource_type: resource.class.name,
           resource_id: resource.id,
         )
@@ -46,18 +46,18 @@ module Auth
       rescue JWT::ExpiredSignature
         Rails.event.notify("authentication.token.verification.expired", host: host)
         nil
-      rescue JWT::DecodeError, JWT::VerificationError => error
+      rescue JWT::DecodeError, JWT::VerificationError => e
         Rails.event.notify(
           "authentication.token.verification.failed",
-          error_class: error.class.name,
+          error_class: e.class.name,
           host: host,
         )
         nil
-      rescue OpenSSL::PKey::PKeyError, ArgumentError, TypeError => error
+      rescue OpenSSL::PKey::PKeyError, ArgumentError, TypeError => e
         Rails.event.notify(
           "authentication.token.verification.error",
-          error_class: error.class.name,
-          error_message: error.message,
+          error_class: e.class.name,
+          error_message: e.message,
           host: host,
         )
         nil

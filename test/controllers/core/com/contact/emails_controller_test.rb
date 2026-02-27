@@ -49,10 +49,11 @@ module Core
 
           def send_message(to:, message:, subject: nil)
             _subject = subject
-            if to == @expected_to && message.match?(@expected_msg_regex)
-              @called = true
-              true
-            end
+            return unless to == @expected_to && message.match?(@expected_msg_regex)
+
+            @called = true
+            true
+
           end
         end
 

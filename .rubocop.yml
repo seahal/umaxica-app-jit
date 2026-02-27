@@ -486,18 +486,11 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Max: 120
 
-Metrics/ParameterLists:
-  Max: 4
-  MaxOptionalParameters: 2
-
 Metrics/PerceivedComplexity:
   Enabled: true
   Include:
     - app/controllers/**/*.rb
   Max: 18
-
-Metrics/BlockNesting:
-  Max: 2
 
 Metrics/CollectionLiteralLength:
   LengthThreshold: 80
@@ -646,9 +639,6 @@ Security/Open:
   Enabled: true
 
 Security/CompoundHash:
-  Enabled: true
-
-Security/IoMethods:
   Enabled: true
 
 # ---------- デバッグコード検出 ----------
@@ -1334,3 +1324,116 @@ Style/CommentAnnotation:
     - REVIEW
   # (Optional: If you want to require issue numbers, you could craft a custom cop,
   # but base CommentAnnotation flags these keywords so we can review them).
+
+# ============================================================
+# 12. Additional Strictness（追加の厳格化）
+# ============================================================
+
+# ---------- Lint: 追加バグ検出 ----------
+
+# 無意味な void 式（x; 1 + 1; など）を検出
+Lint/Void:
+  Enabled: true
+  CheckForMethodsWithNoSideEffects: true
+
+# 同一オペランドの二項演算（x || x, x && x など）を禁止
+Lint/BinaryOperatorWithIdenticalOperands:
+  Enabled: true
+
+# 正規表現で名前付き・位置キャプチャを混在させることを禁止
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+# Float の等値比較を禁止（精度問題）
+Lint/FloatComparison:
+  Enabled: true
+
+# BigDecimal.new の代わりに BigDecimal() を強制
+Lint/BigDecimalNew:
+  Enabled: true
+
+# rescue 節の変数名を一貫させる（例: rescue => e ではなく rescue => err 等）
+# デフォルトは "e" なので Ruby 慣習に従う
+Naming/RescuedExceptionsVariableName:
+  Enabled: true
+  PreferredName: "e"
+
+# ---------- Style: 追加スタイル ----------
+
+# ガード節（早期 return）の強制 — ネストを減らす
+Style/GuardClause:
+  Enabled: true
+  MinBodyLength: 1
+
+# 述語メソッドで不必要に nil を return しない
+# 例: def valid?; return nil if ...; end → Enabled で警告
+Style/ReturnNilInPredicateMethodDefinition:
+  Enabled: true
+
+# 冗長な条件式の除去（if x; x; else; y; end → x || y）
+Style/RedundantCondition:
+  Enabled: true
+
+# 不要な self の除去
+Style/RedundantSelf:
+  Enabled: true
+
+# クラスメソッドは module_function より extend self を優先
+Style/ModuleFunction:
+  Enabled: true
+  EnforcedStyle: module_function
+
+# ---------- Sorbet: 型注釈の強制 ----------
+
+# すべてのファイルに有効な Sorbet sigil を要求
+# typed: ignore / false / true / strict / strong のいずれかが必要
+Sorbet/ValidSigil:
+  Enabled: true
+
+# T.unsafe() の使用を禁止（型安全性の抜け穴）
+Sorbet/ForbidTUnsafe:
+  Enabled: true
+  Exclude:
+    - "config/initializers/**/*"
+    - "test/**/*"
+
+# シグネチャのビルド順を強制（sig { ... } の記述順）
+Sorbet/SignatureBuildOrder:
+  Enabled: true
+
+# ---------- Metrics: より厳格な上限 ----------
+
+# ネストの深さ: 既存 max 2 を維持しつつ全ファイルに適用
+Metrics/BlockNesting:
+  Max: 2
+  # AllCops の Exclude が適用されるのでここでは除外不要
+
+# パラメータ数の厳格化（既存 max: 4、これを全ファイルで強制）
+# （既存設定を上書き: MaxOptionalParameters を 1 に絞る）
+Metrics/ParameterLists:
+  Max: 4
+  MaxOptionalParameters: 1
+
+# ---------- Naming: 追加命名規則 ----------
+
+# メソッドパラメータ名の最低文字数（1文字は原則禁止）
+Naming/MethodParameterName:
+  Enabled: true
+  MinNameLength: 2
+  AllowedNames:
+    - _
+    - e
+    - i
+    - j
+    - n
+    - x
+    - y
+    - io
+    - id
+
+# ---------- Security: 追加 ----------
+
+# open() の代わりに IO.popen 等を使用させる
+# ※ 既存の Security/Open を補完
+Security/IoMethods:
+  Enabled: true

@@ -7,7 +7,8 @@ This document fixes the remaining ambiguous points and is the source of truth fo
 ### Adopted spec: A (no full login until passkey is completed)
 
 - SMS OTP verification **does not** establish a full session by itself.
-- After SMS OTP success, the user **must** complete passkey registration before a session is created.
+- After SMS OTP success, the user **must** complete passkey registration before a session is
+  created.
 - If a user already has an active passkey, SMS OTP success can complete login immediately.
 
 ### Flow summary
@@ -32,8 +33,10 @@ This document fixes the remaining ambiguous points and is the source of truth fo
 
 ### Common guards (applies to all unlink/disable actions)
 
-- **Recent Reauth required**: use existing step-up gate (`Auth::StepUp::STEP_UP_TTL`, currently 10 minutes).
-- **No lockout**: after removal, the user must still have **at least one** remaining authentication/recovery method.
+- **Recent Reauth required**: use existing step-up gate (`Auth::StepUp::STEP_UP_TTL`, currently 10
+  minutes).
+- **No lockout**: after removal, the user must still have **at least one** remaining
+  authentication/recovery method.
 - “Last method” removal is rejected with a user-facing error.
 - Audit log entry is required for each unlink/disable action.
 
@@ -59,7 +62,8 @@ This document fixes the remaining ambiguous points and is the source of truth fo
 ### Adopted spec
 
 - After a passkey is registered, an Emergency Key is issued automatically.
-- Stored in DB as a `UserSecret` with `user_secret_kind_id = RECOVERY` and **hashed** (never plaintext).
+- Stored in DB as a `UserSecret` with `user_secret_kind_id = RECOVERY` and **hashed** (never
+  plaintext).
 - Plaintext is shown **only once** on a dedicated page, then removed from session.
 - Re-issuing invalidates prior active recovery secrets (set to `REVOKED`).
 - Audit log:
@@ -73,7 +77,8 @@ This document fixes the remaining ambiguous points and is the source of truth fo
 - Two-way model is **“withdraw (reversible)” ↔ “recover”** within a fixed recovery window.
 - Permanent deletion is **not** available via UI in this sprint.
 - `/configuration/withdrawal` should present **only the reversible path**.
-- If permanent deletion is needed later, it must be moved to a separate flow (support or delayed job).
+- If permanent deletion is needed later, it must be moved to a separate flow (support or delayed
+  job).
 
 ### Behavior
 
@@ -83,5 +88,6 @@ This document fixes the remaining ambiguous points and is the source of truth fo
 
 ## 5. public_id Boundary
 
-- In configuration area, `totps`, `passkeys`, and `secrets` must use `public_id` in routes and lookup.
+- In configuration area, `totps`, `passkeys`, and `secrets` must use `public_id` in routes and
+  lookup.
 - `UserPasskey` must be upgraded to include a `public_id` (string, 21 chars, unique).

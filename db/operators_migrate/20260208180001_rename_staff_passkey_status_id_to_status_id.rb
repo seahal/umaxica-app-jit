@@ -45,8 +45,9 @@ class RenameStaffPasskeyStatusIdToStatusId < ActiveRecord::Migration[8.2]
       add_index table, new_column, name: new_index_name, algorithm: :concurrently
     end
 
-    unless foreign_key_exists?(table, status_table, column: new_column)
-      add_foreign_key table, status_table, column: new_column, validate: false
-    end
+    return if foreign_key_exists?(table, status_table, column: new_column)
+
+    add_foreign_key table, status_table, column: new_column, validate: false
+
   end
 end

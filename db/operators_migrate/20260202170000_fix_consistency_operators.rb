@@ -3,16 +3,6 @@
 class FixConsistencyOperators < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
-      %w(
-        staffs staff_statuses staff_telephones staff_telephone_statuses
-        staff_emails staff_email_statuses
-        staff_secrets staff_secret_statuses staff_secret_kinds
-        staff_passkeys staff_passkey_statuses
-        organizations organization_statuses
-        departments department_statuses
-        divisions division_statuses
-        admins admin_statuses
-      )
       # Delete in order (Children first) preventing FK violations
       %w(
         staff_one_time_passwords staff_passkeys staff_secrets

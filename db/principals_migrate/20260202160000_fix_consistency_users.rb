@@ -13,7 +13,7 @@ class FixConsistencyUsers < ActiveRecord::Migration[8.2]
         user_one_time_passwords user_one_time_password_statuses
         clients client_statuses
       )
-      tables.select { |t| table_exists?(t) }
+      tables.select! { |t| table_exists?(t) }
       # Delete in order (Children first) preventing FK violations
       %w(
         user_one_time_passwords user_passkeys user_secrets

@@ -7,11 +7,12 @@ class RenameStaffTelephonesToStaffIdentityTelephones < ActiveRecord::Migration[8
     rename_table :staff_telephones, :staff_identity_telephones
 
     # Check if index still has old name before renaming
-    if index_exists?(:staff_identity_telephones, :staff_id, name: "index_staff_telephones_on_staff_id")
-      rename_index :staff_identity_telephones,
-                   "index_staff_telephones_on_staff_id",
-                   "index_staff_identity_telephones_on_staff_id"
-    end
+    return unless index_exists?(:staff_identity_telephones, :staff_id, name: "index_staff_telephones_on_staff_id")
+
+    rename_index :staff_identity_telephones,
+                 "index_staff_telephones_on_staff_id",
+                 "index_staff_identity_telephones_on_staff_id"
+
   end
 
   def down

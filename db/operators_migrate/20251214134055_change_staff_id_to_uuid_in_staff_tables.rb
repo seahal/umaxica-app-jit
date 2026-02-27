@@ -43,9 +43,10 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
     add_index table_name, :staff_id
 
     # Add foreign key constraint when types match
-    if compatible_foreign_key_type?(table_name, :staff_id, :staffs)
-      add_foreign_key table_name, :staffs
-    end
+    return unless compatible_foreign_key_type?(table_name, :staff_id, :staffs)
+
+    add_foreign_key table_name, :staffs
+
   end
 
   def revert_staff_id_type(table_name)
@@ -65,9 +66,10 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
     add_index table_name, :staff_id
 
     # Add foreign key constraint when types match
-    if compatible_foreign_key_type?(table_name, :staff_id, :staffs)
-      add_foreign_key table_name, :staffs
-    end
+    return unless compatible_foreign_key_type?(table_name, :staff_id, :staffs)
+
+    add_foreign_key table_name, :staffs
+
   end
 
   def compatible_foreign_key_type?(from_table, from_column, to_table)

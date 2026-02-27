@@ -5,7 +5,8 @@
 ## 用語（前提）
 
 - `Session`: ブラウザCookie等で維持されるログイン状態（誰がログインしているか）
-- `Account`: 認証・認可の主体（人）。このリポジトリでは `User` / `Staff` が該当（`Account` concern を include）
+- `Account`: 認証・認可の主体（人）。このリポジトリでは `User` / `Staff` が該当（`Account`
+  concern を include）
 - `Workspace`（= 法人クッション）: 組織・契約・資産の受け皿（旧 `Organization`）
 - `Membership`: Account が Workspace に所属する関係（ロール/状態/入退社などを表現）
 - `Avatar`: 発信主体（Xでいう投稿主/スクリーンネーム）。会社利用では複数人で運用されうる「資産」
@@ -35,15 +36,19 @@ Session -> Account -> Membership -> Workspace
 
 ## いまの実装方針（User の所属を `Membership` で表現する）
 
-現時点ではまず「User がどの Workspace に所属しているか」を明確にするため、`user_organizations` ではなく `user_memberships` を導入して表現する（Staff は今回は対象外）。
+現時点ではまず「User がどの Workspace に所属しているか」を明確にするため、`user_organizations`
+ではなく `user_memberships` を導入して表現する（Staff は今回は対象外）。
 
 - 追加: `UserMembership`（`app/models/user_membership.rb`）
-- 追加: `user_memberships` テーブル（`db/identities_migrate/20251218150000_create_user_memberships.rb`）
+- 追加: `user_memberships`
+  テーブル（`db/identities_migrate/20251218150000_create_user_memberships.rb`）
   - `user_id` + `workspace_id` をユニークにする
   - `joined_at` / `left_at` で在籍・退職（所属の状態）を表現できるようにする
-  - 既存の `user_organizations` のデータは `user_memberships` に移行する（マイグレーション内で INSERT）
+  - 既存の `user_organizations` のデータは `user_memberships`
+    に移行する（マイグレーション内で INSERT）
 
-これにより「User が個人事業主なのか／会社に属しているのか」は、`UserMembership` を見れば “どの Workspace に所属しているか” として判別できるようになる。
+これにより「User が個人事業主なのか／会社に属しているのか」は、`UserMembership`
+を見れば “どの Workspace に所属しているか” として判別できるようになる。
 
 ## Team（部署階層）が必要になった場合
 
@@ -59,7 +64,8 @@ Account -> Membership -> Workspace -> Team
 
 ## “他者の Avatar になる” 問題（所有と権限の分離）
 
-「場合によっては Avatar が他者のものになる（譲渡/移管）」があり得るため、`Avatar` の “owner” と “操作権限” を分離する。
+「場合によっては Avatar が他者のものになる（譲渡/移管）」があり得るため、`Avatar`
+の “owner” と “操作権限” を分離する。
 
 推奨:
 

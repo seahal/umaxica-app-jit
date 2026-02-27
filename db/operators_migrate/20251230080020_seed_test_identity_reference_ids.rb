@@ -45,9 +45,10 @@ class SeedTestIdentityReferenceIds < ActiveRecord::Migration[8.2]
       vals << "CURRENT_TIMESTAMP"
     end
 
-    if column_exists?(table_name, :updated_at)
-      cols << "updated_at"
-      vals << "CURRENT_TIMESTAMP"
-    end
+    return unless column_exists?(table_name, :updated_at)
+
+    cols << "updated_at"
+    vals << "CURRENT_TIMESTAMP"
+
   end
 end

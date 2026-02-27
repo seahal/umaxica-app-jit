@@ -19,12 +19,13 @@ class FixDatabaseConsistencyMessage < ActiveRecord::Migration[8.2]
       validate_foreign_key :client_messages, :user_messages
     end
 
-    unless foreign_key_exists?(:admin_messages, :staff_messages, column: :staff_message_id)
-      add_foreign_key :admin_messages, :staff_messages,
-                      column: :staff_message_id,
-                      validate: false
-      validate_foreign_key :admin_messages, :staff_messages
-    end
+    return if foreign_key_exists?(:admin_messages, :staff_messages, column: :staff_message_id)
+
+    add_foreign_key :admin_messages, :staff_messages,
+                    column: :staff_message_id,
+                    validate: false
+    validate_foreign_key :admin_messages, :staff_messages
+
   end
 
   def down

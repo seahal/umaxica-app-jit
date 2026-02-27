@@ -20,9 +20,10 @@ class RenameDomainOccurrenceTables < ActiveRecord::Migration[8.2]
       rename_table :domain_occurrence_statuses, :domain_occurence_statuses
     end
 
-    if table_exists?(:domain_occurrences) && !table_exists?(:domain_occurences)
-      rename_table :domain_occurrences, :domain_occurences
-    end
+    return unless table_exists?(:domain_occurrences) && !table_exists?(:domain_occurences)
+
+    rename_table :domain_occurrences, :domain_occurences
+
   end
 
   private
@@ -48,9 +49,10 @@ class RenameDomainOccurrenceTables < ActiveRecord::Migration[8.2]
       add_check_constraint to, "char_length(public_id) = 21", name: length_new
     end
 
-    if check_constraint_exists?(to, name: format_old)
-      remove_check_constraint to, name: format_old
-      add_check_constraint to, "public_id ~ '^[A-Za-z0-9_-]{21}$'", name: format_new
-    end
+    return unless check_constraint_exists?(to, name: format_old)
+
+    remove_check_constraint to, name: format_old
+    add_check_constraint to, "public_id ~ '^[A-Za-z0-9_-]{21}$'", name: format_new
+
   end
 end

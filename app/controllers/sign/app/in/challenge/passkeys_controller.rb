@@ -52,12 +52,12 @@ module Sign
           private
 
           def ensure_pending_mfa!
-            if !pending_mfa_valid? || pending_mfa_user.nil?
-              clear_pending_mfa!
-              redirect_to new_sign_app_in_path,
-                          alert: I18n.t("sign.app.in.mfa.session_expired"),
-                          status: :see_other
-            end
+            return unless !pending_mfa_valid? || pending_mfa_user.nil?
+
+            clear_pending_mfa!
+            redirect_to new_sign_app_in_path,
+                        alert: I18n.t("sign.app.in.mfa.session_expired"),
+                        status: :see_other
           end
 
           def active_passkeys_for(user)

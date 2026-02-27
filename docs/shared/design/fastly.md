@@ -2,8 +2,8 @@
 
 ## Overview
 
-Architecture for delivering tenant-specific error pages with Fastly VCL.
-Users see the correct page for their domain without a URL change.
+Architecture for delivering tenant-specific error pages with Fastly VCL. Users see the correct page
+for their domain without a URL change.
 
 ## Request Flow
 

@@ -146,8 +146,9 @@ module Email
       return
     end
 
-    if normalized.length > 255
-      errors.add(:address, :too_long, count: 255)
-    end
+    return unless normalized.length > 255
+
+    errors.add(:address, :too_long, count: 255)
+
   end
 end

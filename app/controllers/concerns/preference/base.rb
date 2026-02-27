@@ -82,8 +82,8 @@ module Preference
 
         payload = build_payload(preferences, host, preference_type, public_id, jti)
         JWT.encode(payload, JwtConfiguration.private_key, JWT_ALGORITHM)
-      rescue StandardError => error
-        Rails.logger.error("PreferenceToken.encode failed: #{error.message}")
+      rescue StandardError => e
+        Rails.logger.error("PreferenceToken.encode failed: #{e.message}")
         nil
       end
 
@@ -95,11 +95,11 @@ module Preference
       rescue JWT::ExpiredSignature
         Rails.logger.debug("PreferenceToken.decode failed: token expired")
         nil
-      rescue JWT::DecodeError => error
-        Rails.logger.debug { "PreferenceToken.decode invalid token: #{error.message}" }
+      rescue JWT::DecodeError => e
+        Rails.logger.debug { "PreferenceToken.decode invalid token: #{e.message}" }
         nil
-      rescue StandardError => error
-        Rails.logger.error("PreferenceToken.decode failed: #{error.message}")
+      rescue StandardError => e
+        Rails.logger.error("PreferenceToken.decode failed: #{e.message}")
         nil
       end
 
@@ -406,9 +406,9 @@ module Preference
       normalized_value = value.to_s.downcase
       return if normalized_value.blank?
 
-      if available_locale_strings.include?(normalized_value)
-        normalized_value.to_sym
-      end
+      return unless available_locale_strings.include?(normalized_value)
+
+      normalized_value.to_sym
     end
 
     def available_locale_strings

@@ -13,9 +13,10 @@ class AddStaffIdentityPasskeyStatusToStaffIdentityPasskeys < ActiveRecord::Migra
       add_index :staff_identity_passkeys, :staff_identity_passkey_status_id, algorithm: :concurrently
     end
 
-    unless foreign_key_exists?(:staff_identity_passkeys, :staff_identity_passkey_statuses)
-      add_foreign_key :staff_identity_passkeys, :staff_identity_passkey_statuses,
-                      column: :staff_identity_passkey_status_id, primary_key: :id, validate: false
-    end
+    return if foreign_key_exists?(:staff_identity_passkeys, :staff_identity_passkey_statuses)
+
+    add_foreign_key :staff_identity_passkeys, :staff_identity_passkey_statuses,
+                    column: :staff_identity_passkey_status_id, primary_key: :id, validate: false
+
   end
 end

@@ -82,9 +82,10 @@ class UserTelephone < PrincipalRecord
   def ensure_unique_number_digest
     return if number_digest.blank?
 
-    if self.class.where(number_digest: number_digest).where.not(id: id).exists?
-      errors.add(:number, :taken)
-    end
+    return unless self.class.where(number_digest: number_digest).where.not(id: id).exists?
+
+    errors.add(:number, :taken)
+
   end
 
   def enforce_user_telephone_limit

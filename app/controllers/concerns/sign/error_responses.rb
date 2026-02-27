@@ -53,12 +53,10 @@ module Sign
     alias_method :staff_not_authorized, :handle_not_authorized
 
     def handle_csrf_failure
-      if request.format.json?
-        render json: { error: I18n.t("errors.invalid_authenticity_token", default: "セッションが期限切れです。ページを再読み込みしてください。") },
-               status: :unprocessable_content
-      else
-        raise ActionController::InvalidCrossOriginRequest
-      end
+      raise ActionController::InvalidCrossOriginRequest unless request.format.json?
+
+      render json: { error: I18n.t("errors.invalid_authenticity_token", default: "セッションが期限切れです。ページを再読み込みしてください。") },
+             status: :unprocessable_content
     end
   end
 end

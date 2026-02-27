@@ -3,13 +3,15 @@
 ## 1) SMS OTP could establish login without passkey
 
 - What was weird:
-  - `DELETE /up/telephones/:id` logged in the user even though SMS flow is supposed to require passkey registration.
+  - `DELETE /up/telephones/:id` logged in the user even though SMS flow is supposed to require
+    passkey registration.
 - Repro:
   1. Complete SMS verification so `user_telephone_status_id = VERIFIED_WITH_SIGN_UP`.
   2. Call `DELETE /up/telephones/:id`.
   3. Session is established without passkey.
 - Cause:
-  - `Sign::App::Up::TelephonesController#destroy` updated user status + created token unconditionally.
+  - `Sign::App::Up::TelephonesController#destroy` updated user status + created token
+    unconditionally.
 - Fix:
   - `destroy` now sets the passkey registration session and redirects to `/up/passkeys/new`.
   - Full login is only granted after passkey registration.
@@ -21,7 +23,8 @@
 ## 2) Passkey edit/show pages were scaffold placeholders and used numeric IDs
 
 - What was weird:
-  - `/configuration/passkeys/:id/edit` and `show` rendered placeholder scaffolds and leaked numeric IDs.
+  - `/configuration/passkeys/:id/edit` and `show` rendered placeholder scaffolds and leaked numeric
+    IDs.
 - Repro:
   1. Visit edit/show page for an existing passkey.
   2. Placeholder content appears; URL uses numeric id.

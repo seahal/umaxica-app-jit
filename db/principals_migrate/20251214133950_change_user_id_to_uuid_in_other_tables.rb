@@ -49,9 +49,10 @@ class ChangeUserIdToUuidInOtherTables < ActiveRecord::Migration[8.2]
     add_index table_name, :user_id
 
     # Add foreign key constraint when types match
-    if compatible_foreign_key_type?(table_name, :user_id, :users)
-      add_foreign_key table_name, :users
-    end
+    return unless compatible_foreign_key_type?(table_name, :user_id, :users)
+
+    add_foreign_key table_name, :users
+
   end
 
   def revert_user_id_type(table_name)
@@ -71,9 +72,10 @@ class ChangeUserIdToUuidInOtherTables < ActiveRecord::Migration[8.2]
     add_index table_name, :user_id
 
     # Add foreign key constraint when types match
-    if compatible_foreign_key_type?(table_name, :user_id, :users)
-      add_foreign_key table_name, :users
-    end
+    return unless compatible_foreign_key_type?(table_name, :user_id, :users)
+
+    add_foreign_key table_name, :users
+
   end
 
   def compatible_foreign_key_type?(from_table, from_column, to_table)

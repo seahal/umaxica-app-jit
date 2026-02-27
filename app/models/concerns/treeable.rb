@@ -269,9 +269,10 @@ module Treeable
     raw = self[parent_col]
 
     # Normalize blank values to the configured sentinel.
-    if raw.blank?
-      self[parent_col] = root_val
-    end
+    return if raw.present?
+
+    self[parent_col] = root_val
+
   end
 
   def tree_parent_must_not_create_cycle

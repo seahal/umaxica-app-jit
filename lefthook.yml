@@ -61,6 +61,15 @@ pre-push:
         else
           docker compose run core bundle exec brakeman --no-pager
         fi
+    ruby_database_consistency:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec database_consistency
+        else
+          docker compose run core bundle exec database_consistency
+        fi
     ruby_on_rails_test:
       run: |
         #!/bin/sh

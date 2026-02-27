@@ -2,7 +2,8 @@
 
 ## 1. Color Roles
 
-Colors are defined by their meaning (role) rather than their appearance. This ensures consistency across different components and themes.
+Colors are defined by their meaning (role) rather than their appearance. This ensures consistency
+across different components and themes.
 
 - `bg`: Main background color
 - `fg`: Main foreground (text) color
@@ -36,7 +37,8 @@ We do not use breadcrumbs. Each page follows a strict hierarchy:
 ## 4. UI Density & Layout
 
 - **Mobile-First**: Designed primarily for mobile screens, scaling up for desktop.
-- **Max Width**: The main content area is capped at `max-w-screen-sm` (approx. 640px) to maintain readability and mobile-like experience on large screens.
+- **Max Width**: The main content area is capped at `max-w-screen-sm` (approx. 640px) to maintain
+  readability and mobile-like experience on large screens.
 - **Touch Targets**: All interactive elements have a minimum size of 44x44px.
 - **Vertical Stack**: Forms and lists are stacked vertically with ample whitespace.
 

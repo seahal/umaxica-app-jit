@@ -76,8 +76,9 @@ class AddIdentifierBlindIndexesPrincipal < ActiveRecord::Migration[8.2]
       add_column :user_emails, :address_bidx, :string, if_not_exists: true
     end
 
-    unless column_exists?(:user_telephones, :number_bidx)
-      add_column :user_telephones, :number_bidx, :string, if_not_exists: true
-    end
+    return if column_exists?(:user_telephones, :number_bidx)
+
+    add_column :user_telephones, :number_bidx, :string, if_not_exists: true
+
   end
 end

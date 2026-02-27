@@ -24,12 +24,13 @@ class EnsureTokenTables < ActiveRecord::Migration[8.2]
   private
 
   def ensure_ref_table(table)
-    unless table_exists?(table)
-      create_table table do |t|
-        t.citext :code, null: false
-        t.index :code, unique: true
-      end
+    return if table_exists?(table)
+
+    create_table table do |t|
+      t.citext :code, null: false
+      t.index :code, unique: true
     end
+
   end
 
   def add_fk_if_missing(from, to, col)
@@ -37,8 +38,9 @@ class EnsureTokenTables < ActiveRecord::Migration[8.2]
 
     fk_name = "fk_#{from}_on_#{col}"
     result = connection.select_value("SELECT 1 FROM pg_constraint WHERE conname = '#{fk_name}'")
-    unless result
-      execute "ALTER TABLE #{from} ADD CONSTRAINT #{fk_name} FOREIGN KEY (#{col}) REFERENCES #{to} (id)"
-    end
+    return if result
+
+    execute "ALTER TABLE #{from} ADD CONSTRAINT #{fk_name} FOREIGN KEY (#{col}) REFERENCES #{to} (id)"
+
   end
 end

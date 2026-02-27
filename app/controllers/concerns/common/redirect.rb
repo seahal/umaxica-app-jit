@@ -65,9 +65,9 @@ module Common
     def generate_redirect_url(url)
       safe_path = safe_internal_path(url)
 
-      if safe_path
-        Base64.urlsafe_encode64(safe_path)
-      end
+      return unless safe_path
+
+      Base64.urlsafe_encode64(safe_path)
     end
 
     def jump_to_generated_url(encoded_url, fallback: "/")

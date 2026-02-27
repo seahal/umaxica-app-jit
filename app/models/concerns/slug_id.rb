@@ -14,6 +14,6 @@ module SlugId
   private
 
   def generate_slug_id
-    self.slug_id = Nanoid.generate(size: 32, alphabet: "0123456789abcdefghijklmnopqrstuvwxyz") if self.slug_id.blank?
+    self.slug_id = Nanoid.generate(size: 32, alphabet: "0123456789abcdefghijklmnopqrstuvwxyz") if slug_id.blank?
   end
 end

@@ -54,17 +54,19 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "controller has ensure_mfa_user before_action" do
-    before_actions = Sign::App::In::TotpsController._process_action_callbacks
-      .select { |cb| cb.kind == :before }
-      .map { |cb| cb.filter }
+    before_actions =
+      Sign::App::In::TotpsController._process_action_callbacks
+        .select { |cb| cb.kind == :before }
+        .map { |cb| cb.filter }
 
     assert_includes before_actions, :ensure_mfa_user!
   end
 
   test "controller has reject_logged_in_session before_action" do
-    before_actions = Sign::App::In::TotpsController._process_action_callbacks
-      .select { |cb| cb.kind == :before }
-      .map { |cb| cb.filter }
+    before_actions =
+      Sign::App::In::TotpsController._process_action_callbacks
+        .select { |cb| cb.kind == :before }
+        .map { |cb| cb.filter }
 
     assert_includes before_actions, :reject_logged_in_session
   end

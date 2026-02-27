@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document records the architectural decision to use **Rails Importmap** for the runtime environment and **Bun** solely as a development toolchain (Linter/Formatter).
+This document records the architectural decision to use **Rails Importmap** for the runtime
+environment and **Bun** solely as a development toolchain (Linter/Formatter).
 
 ## Decision
 
@@ -60,4 +61,5 @@ This document records the architectural decision to use **Rails Importmap** for 
 
 ## Conclusion
 
-This architecture optimizes for "Simple Production, Fast Development," which is the ideal state for a modern Rails application.
+This architecture optimizes for "Simple Production, Fast Development," which is the ideal state for
+a modern Rails application.

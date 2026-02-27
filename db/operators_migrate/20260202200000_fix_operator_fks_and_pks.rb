@@ -68,14 +68,15 @@ class FixOperatorFksAndPks < ActiveRecord::Migration[8.2]
     end
 
     # Convert departments.department_status_id from string to bigint
-    if table_exists?(:departments)
-      execute "ALTER TABLE departments ALTER COLUMN department_status_id DROP DEFAULT"
-      execute "ALTER TABLE departments ALTER COLUMN department_status_id TYPE bigint USING 0"
-      execute "ALTER TABLE departments ALTER COLUMN department_status_id SET DEFAULT 0"
-      execute "ALTER TABLE departments ALTER COLUMN department_status_id SET NOT NULL"
+    return unless table_exists?(:departments)
 
-      add_fk_sql(:departments, :department_statuses, :department_status_id)
-    end
+    execute "ALTER TABLE departments ALTER COLUMN department_status_id DROP DEFAULT"
+    execute "ALTER TABLE departments ALTER COLUMN department_status_id TYPE bigint USING 0"
+    execute "ALTER TABLE departments ALTER COLUMN department_status_id SET DEFAULT 0"
+    execute "ALTER TABLE departments ALTER COLUMN department_status_id SET NOT NULL"
+
+    add_fk_sql(:departments, :department_statuses, :department_status_id)
+
   end
 
   def fix_staff_otp_status
@@ -85,14 +86,15 @@ class FixOperatorFksAndPks < ActiveRecord::Migration[8.2]
 
     execute "TRUNCATE TABLE staff_one_time_passwords CASCADE"
 
-    if column_exists?(:staff_one_time_passwords, :staff_one_time_password_status_id)
-      execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id DROP DEFAULT"
-      execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id TYPE bigint USING 0"
-      execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id SET DEFAULT 0"
-      execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id SET NOT NULL"
+    return unless column_exists?(:staff_one_time_passwords, :staff_one_time_password_status_id)
 
-      add_fk_sql(:staff_one_time_passwords, :staff_one_time_password_statuses, :staff_one_time_password_status_id)
-    end
+    execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id DROP DEFAULT"
+    execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id TYPE bigint USING 0"
+    execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id SET DEFAULT 0"
+    execute "ALTER TABLE staff_one_time_passwords ALTER COLUMN staff_one_time_password_status_id SET NOT NULL"
+
+    add_fk_sql(:staff_one_time_passwords, :staff_one_time_password_statuses, :staff_one_time_password_status_id)
+
   end
 
   def fix_staff_secret_kind
@@ -113,14 +115,15 @@ class FixOperatorFksAndPks < ActiveRecord::Migration[8.2]
     end
 
     # Convert staff_secrets.staff_secret_kind_id from string to bigint
-    if table_exists?(:staff_secrets) && column_exists?(:staff_secrets, :staff_secret_kind_id)
-      execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id DROP DEFAULT"
-      execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id TYPE bigint USING 0"
-      execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id SET DEFAULT 0"
-      execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id SET NOT NULL"
+    return unless table_exists?(:staff_secrets) && column_exists?(:staff_secrets, :staff_secret_kind_id)
 
-      add_fk_sql(:staff_secrets, :staff_secret_kinds, :staff_secret_kind_id)
-    end
+    execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id DROP DEFAULT"
+    execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id TYPE bigint USING 0"
+    execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id SET DEFAULT 0"
+    execute "ALTER TABLE staff_secrets ALTER COLUMN staff_secret_kind_id SET NOT NULL"
+
+    add_fk_sql(:staff_secrets, :staff_secret_kinds, :staff_secret_kind_id)
+
   end
 
   def fix_staff_email_fields
@@ -145,10 +148,11 @@ class FixOperatorFksAndPks < ActiveRecord::Migration[8.2]
     end
 
     # otp_private_key NOT NULL
-    if column_exists?(:staff_emails, :otp_private_key)
-      execute "UPDATE staff_emails SET otp_private_key = '' WHERE otp_private_key IS NULL"
-      execute "ALTER TABLE staff_emails ALTER COLUMN otp_private_key SET NOT NULL"
-    end
+    return unless column_exists?(:staff_emails, :otp_private_key)
+
+    execute "UPDATE staff_emails SET otp_private_key = '' WHERE otp_private_key IS NULL"
+    execute "ALTER TABLE staff_emails ALTER COLUMN otp_private_key SET NOT NULL"
+
   end
 
   def fix_staff_telephone_fields
@@ -173,10 +177,11 @@ class FixOperatorFksAndPks < ActiveRecord::Migration[8.2]
     end
 
     # otp_private_key NOT NULL
-    if column_exists?(:staff_telephones, :otp_private_key)
-      execute "UPDATE staff_telephones SET otp_private_key = '' WHERE otp_private_key IS NULL"
-      execute "ALTER TABLE staff_telephones ALTER COLUMN otp_private_key SET NOT NULL"
-    end
+    return unless column_exists?(:staff_telephones, :otp_private_key)
+
+    execute "UPDATE staff_telephones SET otp_private_key = '' WHERE otp_private_key IS NULL"
+    execute "ALTER TABLE staff_telephones ALTER COLUMN otp_private_key SET NOT NULL"
+
   end
 
   def fix_staff_passkey_fields
@@ -195,10 +200,11 @@ class FixOperatorFksAndPks < ActiveRecord::Migration[8.2]
     end
 
     # sign_count NOT NULL (already default 0)
-    if column_exists?(:staff_passkeys, :sign_count)
-      execute "UPDATE staff_passkeys SET sign_count = 0 WHERE sign_count IS NULL"
-      execute "ALTER TABLE staff_passkeys ALTER COLUMN sign_count SET NOT NULL"
-    end
+    return unless column_exists?(:staff_passkeys, :sign_count)
+
+    execute "UPDATE staff_passkeys SET sign_count = 0 WHERE sign_count IS NULL"
+    execute "ALTER TABLE staff_passkeys ALTER COLUMN sign_count SET NOT NULL"
+
   end
 
   def drop_fks_from_table(from_table, to_table)

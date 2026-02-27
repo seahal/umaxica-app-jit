@@ -191,9 +191,9 @@ module Auth
 
     # Reject if user/staff is already logged in with 401 Unauthorized
     def reject_logged_in_session
-      if logged_in?
-        render plain: "権限がありません", status: :unauthorized
-      end
+      return unless logged_in?
+
+      render plain: "権限がありません", status: :unauthorized
     end
 
     # ======================================================================
@@ -211,10 +211,10 @@ module Auth
     # @param session_key [Symbol] The session key to store rd parameter in
     # @return [String, nil] The rd parameter value if present
     def preserve_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
-      if params[Auth::IoKeys::Params::RD].present?
-        session[session_key] = params[Auth::IoKeys::Params::RD]
-        params[Auth::IoKeys::Params::RD]
-      end
+      return if params[Auth::IoKeys::Params::RD].blank?
+
+      session[session_key] = params[Auth::IoKeys::Params::RD]
+      params[Auth::IoKeys::Params::RD]
     end
 
     # Retrieves and clears the redirect parameter from session

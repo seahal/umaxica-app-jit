@@ -2,4 +2,3 @@
 import "@hotwired/turbo-rails";
 import "controllers";
 import "theme_cookie";
-import "@hotwired/turbo-rails";

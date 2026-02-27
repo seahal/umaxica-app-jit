@@ -36,9 +36,10 @@ class Sign::Org::PasskeysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "controller has reject_logged_in_session before_action" do
-    before_actions = Sign::Org::PasskeysController._process_action_callbacks
-      .select { |cb| cb.kind == :before }
-      .map { |cb| cb.filter }
+    before_actions =
+      Sign::Org::PasskeysController._process_action_callbacks
+        .select { |cb| cb.kind == :before }
+        .map { |cb| cb.filter }
 
     assert_includes before_actions, :reject_logged_in_session
   end

@@ -154,9 +154,9 @@ module Jit
         creds = Object.new
         creds.define_singleton_method(:[]) { |key| flat[key] }
         creds.define_singleton_method(:dig) do |*args|
-          if args.length == 2 && args[0] == :CLOUDFLARE
-            nested[args[1]]
-          end
+          return unless args.length == 2 && args[0] == :CLOUDFLARE
+
+          nested[args[1]]
         end
         creds
       end

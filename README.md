@@ -3,8 +3,8 @@
 
 # Umaxica App (JIT)
 
-This is a Rails 8 multi-surface application.
-Routing and implementation are organized around explicit domain boundaries: `app`, `com`, and `org`.
+This is a Rails 8 multi-surface application. Routing and implementation are organized around
+explicit domain boundaries: `app`, `com`, and `org`.
 
 ## Prerequisites
 
@@ -43,7 +43,8 @@ docker compose up -d
 bin/dev
 ```
 
-`bin/dev` runs database preparation (`bin/rails db:prepare`) and then starts processes defined in `Procfile.dev`.
+`bin/dev` runs database preparation (`bin/rails db:prepare`) and then starts processes defined in
+`Procfile.dev`.
 
 For first-time setup in one command:
 
@@ -53,8 +54,8 @@ bin/setup
 
 ## WebAuthn
 
-WebAuthn-related flows require `TRUSTED_ORIGINS`.
-Set allowed origins as a comma-separated environment variable for the hosts you use.
+WebAuthn-related flows require `TRUSTED_ORIGINS`. Set allowed origins as a comma-separated
+environment variable for the hosts you use.
 
 Example:
 
@@ -68,7 +69,8 @@ TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000
 - Frontend code: `app/javascript/` (Stimulus + importmap)
 - Tests: `test/` (Minitest, fixtures)
 - Routing: `config/routes.rb`, `config/routes/*.rb`
-- Database: `db/` and domain migration directories (for example `db/operators_migrate/`, `db/avatars_migrate/`)
+- Database: `db/` and domain migration directories (for example `db/operators_migrate/`,
+  `db/avatars_migrate/`)
 - Ops/docs: `docker/`, `compose.yml`, `docs/`, `qa/`
 
 ## Development Commands
@@ -90,7 +92,8 @@ Run pre-commit hooks locally:
 lefthook run pre-commit
 ```
 
-`lefthook.yml` includes checks such as `rubocop`, `erb_lint`, `pnpm check`, `brakeman`, `rails test`, and `bundler-audit`.
+`lefthook.yml` includes checks such as `rubocop`, `erb_lint`, `pnpm check`, `brakeman`,
+`rails test`, and `bundler-audit`.
 
 ## Notes
 

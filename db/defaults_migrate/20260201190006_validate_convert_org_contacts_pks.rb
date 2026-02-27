@@ -20,8 +20,9 @@ class ValidateConvertOrgContactsPks < ActiveRecord::Migration[8.0]
       validate_foreign_key "org_contact_emails", "org_contacts"
     end
 
-    if foreign_key_exists?(:org_contact_telephones, column: :org_contact_id, to_table: :org_contacts)
-      validate_foreign_key "org_contact_telephones", "org_contacts"
-    end
+    return unless foreign_key_exists?(:org_contact_telephones, column: :org_contact_id, to_table: :org_contacts)
+
+    validate_foreign_key "org_contact_telephones", "org_contacts"
+
   end
 end

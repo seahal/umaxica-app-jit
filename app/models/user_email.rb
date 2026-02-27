@@ -102,9 +102,10 @@ class UserEmail < PrincipalRecord
   def ensure_unique_address_digest
     return if address_digest.blank?
 
-    if self.class.where(address_digest: address_digest).where.not(id: id).exists?
-      errors.add(:address, :taken)
-    end
+    return unless self.class.where(address_digest: address_digest).where.not(id: id).exists?
+
+    errors.add(:address, :taken)
+
   end
 
   def enforce_user_email_limit

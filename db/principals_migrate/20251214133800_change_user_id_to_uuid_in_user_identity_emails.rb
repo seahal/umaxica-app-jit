@@ -19,9 +19,10 @@ class ChangeUserIdToUuidInUserIdentityEmails < ActiveRecord::Migration[8.2]
     add_index :user_identity_emails, :user_id
 
     # Add foreign key constraint when types match
-    if compatible_foreign_key_type?(:user_identity_emails, :user_id, :users)
-      add_foreign_key :user_identity_emails, :users
-    end
+    return unless compatible_foreign_key_type?(:user_identity_emails, :user_id, :users)
+
+    add_foreign_key :user_identity_emails, :users
+
   end
 
   def down
@@ -41,9 +42,10 @@ class ChangeUserIdToUuidInUserIdentityEmails < ActiveRecord::Migration[8.2]
     add_index :user_identity_emails, :user_id
 
     # Add foreign key constraint when types match
-    if compatible_foreign_key_type?(:user_identity_emails, :user_id, :users)
-      add_foreign_key :user_identity_emails, :users
-    end
+    return unless compatible_foreign_key_type?(:user_identity_emails, :user_id, :users)
+
+    add_foreign_key :user_identity_emails, :users
+
   end
 
   private

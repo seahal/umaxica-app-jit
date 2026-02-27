@@ -41,20 +41,21 @@ class EnforceContactStatusNotNull < ActiveRecord::Migration[8.2]
       SELECT id FROM #{status_table} WHERE code = 'NEYO'
     SQL
 
-    if default_id
-      # Update NULLs to default_id
-      execute <<~SQL.squish
-        UPDATE #{table_name} SET #{column_name} = #{default_id} WHERE #{column_name} IS NULL
-      SQL
+    return unless default_id
 
-      # Set NOT NULL
-      change_column_null table_name, column_name, false
+    # Update NULLs to default_id
+    execute <<~SQL.squish
+      UPDATE #{table_name} SET #{column_name} = #{default_id} WHERE #{column_name} IS NULL
+    SQL
 
-      # Ensure index exists
-      index_name = "index_#{table_name}_on_#{column_name}"
-      unless index_exists?(table_name, column_name, name: index_name)
-        add_index table_name, column_name, name: index_name, algorithm: :concurrently
-      end
-    end
+    # Set NOT NULL
+    change_column_null table_name, column_name, false
+
+    # Ensure index exists
+    index_name = "index_#{table_name}_on_#{column_name}"
+    return if index_exists?(table_name, column_name, name: index_name)
+
+    add_index table_name, column_name, name: index_name, algorithm: :concurrently
+
   end
 end

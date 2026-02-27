@@ -17,10 +17,11 @@ require "test_helper"
 class IdentityEmailTest < ActiveSupport::TestCase
   [StaffEmail, UserEmail].each do |model|
     test "#{model} valid with address and confirm_policy" do
-      record = model.new(
-        address: "eg@example.com",
-        confirm_policy: true,
-      ).tap { |instance| assign_owner(instance) }
+      record =
+        model.new(
+          address: "eg@example.com",
+          confirm_policy: true,
+        ).tap { |instance| assign_owner(instance) }
 
       assert_predicate record, :valid?
       assert_difference "#{model}.count", +1 do

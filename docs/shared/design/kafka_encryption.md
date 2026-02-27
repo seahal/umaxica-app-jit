@@ -2,7 +2,8 @@
 
 ## Overview
 
-How to apply encryption when a Rails application exchanges data with Kafka, plus security considerations.
+How to apply encryption when a Rails application exchanges data with Kafka, plus security
+considerations.
 
 ## Using ActiveRecord::Encryption
 

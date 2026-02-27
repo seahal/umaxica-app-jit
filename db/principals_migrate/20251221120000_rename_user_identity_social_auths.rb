@@ -84,9 +84,10 @@ class RenameUserIdentitySocialAuths < ActiveRecord::Migration[8.2]
       rename_table :user_identity_social_apples, :user_apple_auths
     end
 
-    if table_exists?(:user_identity_social_googles) && !table_exists?(:user_google_auths)
-      rename_table :user_identity_social_googles, :user_google_auths
-    end
+    return unless table_exists?(:user_identity_social_googles) && !table_exists?(:user_google_auths)
+
+    rename_table :user_identity_social_googles, :user_google_auths
+
   end
 
   private

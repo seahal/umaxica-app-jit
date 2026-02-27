@@ -27,9 +27,9 @@ module Core
           end
 
           @contact = OrgContact.find_by(public_id: contact_id)
-          if @contact.nil?
-            raise StandardError, "Contact not found"
-          end
+          return unless @contact.nil?
+
+          raise StandardError, "Contact not found"
         end
 
         def placeholder_message(action)

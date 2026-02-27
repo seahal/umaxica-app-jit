@@ -10,11 +10,6 @@
       "resolved": "ghcr.io/devcontainers-extra/features/lefthook-asdf@sha256:7eeba1f61b4eda2004fdced224c39a775c00e248790f35407353252b48f3cc43",
       "integrity": "sha256:7eeba1f61b4eda2004fdced224c39a775c00e248790f35407353252b48f3cc43"
     },
-    "ghcr.io/devcontainers/features/aws-cli:1": {
-      "version": "1.1.2",
-      "resolved": "ghcr.io/devcontainers/features/aws-cli@sha256:bbc9fd513c22e331953126c75ad7b2ed1f9044f1cd5890b7073b634810459b18",
-      "integrity": "sha256:bbc9fd513c22e331953126c75ad7b2ed1f9044f1cd5890b7073b634810459b18"
-    },
     "ghcr.io/devcontainers/features/copilot-cli:1": {
       "version": "1.0.0",
       "resolved": "ghcr.io/devcontainers/features/copilot-cli@sha256:905c3bd16f12b57e4e68319838799f51d5540982a8911a68f1605f3562838c8b",
@@ -30,58 +25,26 @@
       "resolved": "ghcr.io/devcontainers/features/sshd@sha256:f5251b8e4325f68f7280973c6cd65daff414449c66f240621502d4e8e74eb7ee",
       "integrity": "sha256:f5251b8e4325f68f7280973c6cd65daff414449c66f240621502d4e8e74eb7ee"
     },
-    "ghcr.io/devcontainers/features/terraform:1": {
-      "version": "1.4.2",
-      "resolved": "ghcr.io/devcontainers/features/terraform@sha256:250d08e39c99d9e959e091e74527c22c04eeae728b424da99f002423c7902f82",
-      "integrity": "sha256:250d08e39c99d9e959e091e74527c22c04eeae728b424da99f002423c7902f82"
-    },
-    "ghcr.io/dhoeric/features/tfsec:1": {
-      "version": "1.0.0",
-      "resolved": "ghcr.io/dhoeric/features/tfsec@sha256:b042655e42aeef1425fcaa5b54a76f43dd6dec6ebb76257d2dda74687e021302",
-      "integrity": "sha256:b042655e42aeef1425fcaa5b54a76f43dd6dec6ebb76257d2dda74687e021302"
-    },
-    "ghcr.io/jajera/features/gcloud-cli:1": {
-      "version": "1.0.1",
-      "resolved": "ghcr.io/jajera/features/gcloud-cli@sha256:bdafd7578bc7b32851b443f8ffe350d20fae0d299a08cc803519e0526014d76b",
-      "integrity": "sha256:bdafd7578bc7b32851b443f8ffe350d20fae0d299a08cc803519e0526014d76b"
-    },
     "ghcr.io/jasonthedeveloper/features/trivy:1": {
       "version": "1.0.0",
       "resolved": "ghcr.io/jasonthedeveloper/features/trivy@sha256:c2f95d6884821376bec12a7b778fce22dbfc41267bda00c2d09e653eea18345b",
       "integrity": "sha256:c2f95d6884821376bec12a7b778fce22dbfc41267bda00c2d09e653eea18345b"
-    },
-    "ghcr.io/joedmck/devcontainer-features/wrangler:1": {
-      "version": "1.0.0",
-      "resolved": "ghcr.io/joedmck/devcontainer-features/wrangler@sha256:fed4e30539e33daec9581180f80c60d3ef0aed516f4d733fae70071fdc7b880e",
-      "integrity": "sha256:fed4e30539e33daec9581180f80c60d3ef0aed516f4d733fae70071fdc7b880e"
     },
     "ghcr.io/jsburckhardt/devcontainer-features/codex:1": {
       "version": "1.0.0",
       "resolved": "ghcr.io/jsburckhardt/devcontainer-features/codex@sha256:e6ec5fabc4c804ddda9e0aee677d13e989decc7fbbdcf27f70551f986bb9b28a",
       "integrity": "sha256:e6ec5fabc4c804ddda9e0aee677d13e989decc7fbbdcf27f70551f986bb9b28a"
     },
-    "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {
-      "version": "1.1.1",
-      "resolved": "ghcr.io/jsburckhardt/devcontainer-features/opencode@sha256:047f9144ad6540ee416cc2ea170f41bfae887c6c2cd883e14d2ab44a1ce20fc8",
-      "integrity": "sha256:047f9144ad6540ee416cc2ea170f41bfae887c6c2cd883e14d2ab44a1ce20fc8"
-    },
     "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt:1": {
       "version": "1.0.0",
       "resolved": "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt@sha256:bd1f7a64fc308f256a01c61946db094e0c92c4fd9d32f42b7ea8b661788d879d",
       "integrity": "sha256:bd1f7a64fc308f256a01c61946db094e0c92c4fd9d32f42b7ea8b661788d879d"
     },
-    "ghcr.io/mpriscella/features/fastly:1": {
-      "version": "1.0.1",
-      "resolved": "ghcr.io/mpriscella/features/fastly@sha256:f47969ceabfc2d6ffd5dc339326e95d78a165a274ce1e57d59250477bdc75ba9",
-      "integrity": "sha256:f47969ceabfc2d6ffd5dc339326e95d78a165a274ce1e57d59250477bdc75ba9"
-    },
     "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {
       "version": "0.1.4",
       "resolved": "ghcr.io/stu-bell/devcontainer-features/gemini-cli@sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
       "integrity": "sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
-      "dependsOn": [
-        "ghcr.io/stu-bell/devcontainer-features/node"
-      ]
+      "dependsOn": ["ghcr.io/stu-bell/devcontainer-features/node"]
     },
     "ghcr.io/stu-bell/devcontainer-features/node": {
       "version": "0.5.0",

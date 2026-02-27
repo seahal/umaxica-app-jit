@@ -1,8 +1,11 @@
 1. Your existing foundation is solid
 
-- You already have the core models (CorporateSiteContact, CorporateSiteContactEmail, CorporateSiteContactTelephone) in the guest database
-- You're already using encrypted fields, expires_at, and remaining_views - exactly what your abstract design needs
-- Your SMS service with adapter pattern (SmsProviders::Base) is exactly the architecture your abstract spec describes
+- You already have the core models (CorporateSiteContact, CorporateSiteContactEmail,
+  CorporateSiteContactTelephone) in the guest database
+- You're already using encrypted fields, expires_at, and remaining_views - exactly what your
+  abstract design needs
+- Your SMS service with adapter pattern (SmsProviders::Base) is exactly the architecture your
+  abstract spec describes
 - Your Email and Telephone concerns already handle validation and normalization
 
 2. The abstract design fits your multi-domain architecture well
@@ -29,14 +32,9 @@ Honest take: You don't have AASM/state_machine gem. You'll need to:
 - OR build a simple state machine module
 - OR add a gem (but I see you avoid dependencies)
 
-Recommendation: Rails enum + validator. Example:
-class CorporateSiteContact < GuestRecord
-enum :status, {
-email_pending: "email_pending",
-email_verified: "email_verified",
-phone_verified: "phone_verified",
-completed: "completed"
-}
+Recommendation: Rails enum + validator. Example: class CorporateSiteContact < GuestRecord enum
+:status, { email_pending: "email_pending", email_verified: "email_verified", phone_verified:
+"phone_verified", completed: "completed" }
 
     validates :status, inclusion: {
       in: statuses.keys,
@@ -47,8 +45,7 @@ end
 
 2. Anti-Abuse / CAPTCHA - Not Implemented Yet
 
-Your CLAUDE.md mentions Rack::Attack with RACK_ATTACK_API_KEY, but:
-$ grep -r "Rack::Attack" config/
+Your CLAUDE.md mentions Rack::Attack with RACK_ATTACK_API_KEY, but: $ grep -r "Rack::Attack" config/
 
 # → Nothing found
 
@@ -62,8 +59,7 @@ Missing: No anti-abuse implementation yet. Your abstract spec is aspirational he
 
 3. One-Time Token vs Existing Token Field
 
-Your schema has:
-t.string :token, null: false, index: true, default: '', limit: 32
+Your schema has: t.string :token, null: false, index: true, default: '', limit: 32
 
 But your abstract spec wants:
 
@@ -83,19 +79,14 @@ Your abstract spec needs:
 
 # For email verification
 
-email_verifier_digest
-email_verifier_expires_at
+email_verifier_digest email_verifier_expires_at
 
 # For phone verification
 
-otp_digest
-otp_expires_at
-otp_attempts_left
+otp_digest otp_expires_at otp_attempts_left
 
-Your current schema in corporate_site_contact_emails:
-t.string :email_address # ✓
-t.timestamptz :expires_at # ✓
-t.integer :remaining_views # ✓
+Your current schema in corporate_site_contact_emails: t.string :email_address # ✓ t.timestamptz
+:expires_at # ✓ t.integer :remaining_views # ✓
 
 # Missing: verifier_digest, attempts_left
 
@@ -142,10 +133,8 @@ Pragmatic approach:
 
 4. Missing: Controller Layer
 
-You have no controllers yet in top/com for the contact flow. Your abstract spec lists 8 routes:
-GET /contact/new
-POST /contact
-GET /contact/verify-email
+You have no controllers yet in top/com for the contact flow. Your abstract spec lists 8 routes: GET
+/contact/new POST /contact GET /contact/verify-email
 
 # ... etc
 
@@ -153,14 +142,11 @@ But you only have healths_controller.rb in top/com/.
 
 9. Service Layer Pattern
 
-Your existing services (AwsSmsService, AccountService, etc.) are class methods:
-class AwsSmsService
-class << self
-def send_message(to:, message:, subject: nil)
+Your existing services (AwsSmsService, AccountService, etc.) are class methods: class AwsSmsService
+class << self def send_message(to:, message:, subject: nil)
 
-Your abstract spec implies instance-based services:
-AntiAbuse.verify!(token:, context:) # Class method?
-EmailVerifier.issue!(session:) # Instance method?
+Your abstract spec implies instance-based services: AntiAbuse.verify!(token:, context:) # Class
+method? EmailVerifier.issue!(session:) # Instance method?
 
 Recommendation: Stay consistent. Your codebase uses class-method services. Don't mix styles.
 
@@ -180,15 +166,18 @@ Phase 1 (MVP - 2-3 days):
 7. Build controllers for the 8 routes
 8. Write controller tests (your existing test style)
 
-Phase 2 (Anti-abuse - 1 day): 9. Add Turnstile gem (or recaptcha gem) 10. Wrap in thin adapter if you really need swappability
+Phase 2 (Anti-abuse - 1 day): 9. Add Turnstile gem (or recaptcha gem) 10. Wrap in thin adapter if
+you really need swappability
 
-Phase 3 (Production hardening - 1-2 days): 11. Add audit logging (separate table, Karafka event?) 12. Add monitoring (OpenTelemetry already configured) 13. Load testing + tune rate limits
+Phase 3 (Production hardening - 1-2 days): 11. Add audit logging (separate table, Karafka
+event?) 12. Add monitoring (OpenTelemetry already configured) 13. Load testing + tune rate limits
 
 🚨 Critical Issues to Fix Immediately
 
 1. Typo: Telepyhone → Telephone - FIXED ✅
 2. Wrong regex: Telephone concern has email regex (app/models/concerns/telephone.rb:12)
-3. Missing indexes: Need indexes on email_address and telephone_number for lookups (encrypted fields need deterministic encryption - you already have this ✓)
+3. Missing indexes: Need indexes on email_address and telephone_number for lookups (encrypted fields
+   need deterministic encryption - you already have this ✓)
 
 💡 Architecture Suggestions
 
@@ -238,9 +227,11 @@ Recommended: Drop it to 5/10 by:
 
 ✅ My Honest Verdict
 
-Your abstract spec is excellent architecturally - it shows deep thinking about security, state management, and testability.
+Your abstract spec is excellent architecturally - it shows deep thinking about security, state
+management, and testability.
 
-But for your actual codebase: You're 60% there already. The spec is slightly over-engineered for what you need right now. I'd:
+But for your actual codebase: You're 60% there already. The spec is slightly over-engineered for
+what you need right now. I'd:
 
 1. Fix the bugs first (typo, regex)
 2. Add missing columns (digests, attempts)
@@ -248,4 +239,5 @@ But for your actual codebase: You're 60% there already. The spec is slightly ove
 4. Ship the MVP
 5. Refactor to adapters only when you feel pain
 
-Your team will thank you for shipping faster rather than building a perfect adapter layer that might never need swapping.
+Your team will thank you for shipping faster rather than building a perfect adapter layer that might
+never need swapping.

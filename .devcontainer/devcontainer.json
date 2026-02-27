@@ -123,16 +123,9 @@
     "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {},
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
     "ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
-    "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
     "ghcr.io/devcontainers/features/sshd:latest": {},
     "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
-    "ghcr.io/jasonthedeveloper/features/trivy:1": {},
-    "ghcr.io/dhoeric/features/tfsec:1": {},
-    "ghcr.io/devcontainers/features/aws-cli:1": {},
-    "ghcr.io/devcontainers/features/terraform:1": {},
-    "ghcr.io/jajera/features/gcloud-cli:1": {},
-    "ghcr.io/joedmck/devcontainer-features/wrangler:1": {},
-    "ghcr.io/mpriscella/features/fastly:1": {}
+    "ghcr.io/jasonthedeveloper/features/trivy:1": {}
   },
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind,consistency=cached",
@@ -140,11 +133,8 @@
     "source=${localEnv:HOME}/.copilot,target=/home/jit/.copilot,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.gemini,target=/home/jit/.gemini,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.config/opencode,target=/home/jit/.config/opencode,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.config/gh,target=/home/jit/.config/gh,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.config/git,target=/home/jit/.config/git,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.local/share/opencode,target=/home/jit/.local/share/opencode,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.local/state/opencode,target=/home/jit/.local/state/opencode,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.gitconfig,target=/home/jit/.gitconfig,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind,consistency=cached"
   ]

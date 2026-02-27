@@ -4,13 +4,15 @@
 
 ## 概要
 
-このドキュメントは、マルチデータベース環境における UserService と StaffService の Service Class Layer の導入設計について記録します。
+このドキュメントは、マルチデータベース環境における UserService と StaffService の Service Class
+Layer の導入設計について記録します。
 
 ## 設計の根拠
 
 ### 1. データとロジックの分離の必要性
 
-現在のアプリケーションは複雑なマルチデータベース構成を持っており、以下の理由から Service Layer の導入が推奨されます：
+現在のアプリケーションは複雑なマルチデータベース構成を持っており、以下の理由から Service
+Layer の導入が推奨されます：
 
 #### Identity vs. Personality の分離
 
@@ -177,8 +179,8 @@ end
 
 #### Profile モデル（未実装）
 
-現在、ProfilesRecord を継承するモデルは存在しません。
-これから **Personality モデル**を作成する必要があります。
+現在、ProfilesRecord を継承するモデルは存在しません。これから
+**Personality モデル**を作成する必要があります。
 
 ### ドメイン構造
 
@@ -343,7 +345,8 @@ end
 ### 関連ファイル
 
 - モデル: `app/models/user.rb`, `app/models/staff.rb`
-- Base クラス: `app/models/identities_record.rb`, `app/models/occurrence_record.rb`, `app/models/profiles_record.rb`
+- Base クラス: `app/models/identities_record.rb`, `app/models/occurrence_record.rb`,
+  `app/models/profiles_record.rb`
 - データベース設定: `config/database.yml`
 - マイグレーション: `db/identity_migrate/`, `db/occurrences_migrate/`, `db/profile_migrate/`
 

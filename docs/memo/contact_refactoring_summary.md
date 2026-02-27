@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document summarizes the refactoring work done to implement a proper contact intake flow for the corporate site.
+This document summarizes the refactoring work done to implement a proper contact intake flow for the
+corporate site.
 
 ## Changes Made
 
@@ -10,11 +11,14 @@ This document summarizes the refactoring work done to implement a proper contact
 
 **Files affected:**
 
-- Renamed: `app/models/corporate_site_contact_telepyhone.rb` → `app/models/corporate_site_contact_telephone.rb`
+- Renamed: `app/models/corporate_site_contact_telepyhone.rb` →
+  `app/models/corporate_site_contact_telephone.rb`
 - Updated class name: `CorporateSiteContactTelepyhone` → `CorporateSiteContactTelephone`
-- Renamed: `test/models/corporate_site_contact_telepyhone_test.rb` → `test/models/corporate_site_contact_telephone_test.rb`
+- Renamed: `test/models/corporate_site_contact_telepyhone_test.rb` →
+  `test/models/corporate_site_contact_telephone_test.rb`
 - Updated all test references
-- Renamed: `test/fixtures/corporate_site_contact_telepyhones.yml` → `test/fixtures/corporate_site_contact_telephones.yml`
+- Renamed: `test/fixtures/corporate_site_contact_telepyhones.yml` →
+  `test/fixtures/corporate_site_contact_telephones.yml`
 - Updated documentation in `docs/memo/contact.md`
 
 **Migration:**
@@ -78,7 +82,8 @@ email_pending → email_verified → phone_verified → completed
 - State transition methods: `verify_email!`, `verify_phone!`, `complete!`
 - State check methods: `can_verify_email?`, `can_verify_phone?`, `can_complete?`
 - Token management: `generate_final_token`, `verify_token(raw_token)`
-- Associations: `has_many :corporate_site_contact_emails`, `has_many :corporate_site_contact_telephones`, `has_many :corporate_site_contact_topics`
+- Associations: `has_many :corporate_site_contact_emails`,
+  `has_many :corporate_site_contact_telephones`, `has_many :corporate_site_contact_topics`
 
 ### 5. Added Verification Logic to Models ✅
 
@@ -107,7 +112,8 @@ Methods added:
 **Files affected:**
 
 - `app/models/corporate_site_contact_topic.rb` - Fixed `belongs_to` association
-- Created migration: `db/guests_migrate/20251027110200_fix_corporate_site_contact_topics_foreign_key.rb`
+- Created migration:
+  `db/guests_migrate/20251027110200_fix_corporate_site_contact_topics_foreign_key.rb`
 
 ### 7. Updated Tests and Fixtures ✅
 
@@ -144,7 +150,8 @@ Methods added:
 
 ## Next Steps (Not Yet Implemented)
 
-1. **Service Layer**: Create `ContactEmailVerifier`, `ContactPhoneVerifier`, `ContactTokenIssuer` service objects
+1. **Service Layer**: Create `ContactEmailVerifier`, `ContactPhoneVerifier`, `ContactTokenIssuer`
+   service objects
 2. **Rate Limiting**: Implement Rack::Attack for IP/email/phone throttling
 3. **Controllers**: Build controllers for the top/com domain (formerly www/com)
 4. **Mailers**: Create email verification mailer

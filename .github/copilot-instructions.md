@@ -206,7 +206,8 @@ StaffAuditLevel.find_or_create_by!(id: StaffAuditLevel::NEYO)
 
 ### Code Organization Patterns
 
-- **Concerns** for shared model/controller behavior (`app/models/concerns/`, `app/controllers/concerns/`)
+- **Concerns** for shared model/controller behavior (`app/models/concerns/`,
+  `app/controllers/concerns/`)
 - **Frozen string literals** required at top of all Ruby files
 - **Type checking** with Sorbet (runtime types via `sorbet-runtime` gem)
 - **RuboCop** inherits from `rubocop-rails-omakase`
@@ -236,7 +237,8 @@ Lefthook runs these checks before commit:
 - Ruby 4.0.1 required (edge version from Rails main branch)
 - Database setup requires Docker containers running first
 - Credentials key shared separately with team members
-- Cookie sharing limitation in dev: localhost subdomains don't share cookies (use `.test` domain if needed)
+- Cookie sharing limitation in dev: localhost subdomains don't share cookies (use `.test` domain if
+  needed)
 
 ### Integration Services
 

@@ -2,7 +2,8 @@
 
 ## ✨ Refining and Organizing the UI Elements
 
-The placement you proposed aligns with **standard web-app practices** and **common user expectations**, while still leaving room for polish.
+The placement you proposed aligns with **standard web-app practices** and **common user
+expectations**, while still leaving room for polish.
 
 | Location         | Current Element          | Suggested Polish                                              | Notes                                                                                                                               |
 | :--------------- | :----------------------- | :------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------- |
@@ -15,7 +16,8 @@ The placement you proposed aligns with **standard web-app practices** and **comm
 
 ## 🎨 Checking Consistency with Material Design
 
-The layout mostly satisfies the **consistent layout principles** encouraged by Material Design (M3) and other design systems, though several tweaks will help.
+The layout mostly satisfies the **consistent layout principles** encouraged by Material Design (M3)
+and other design systems, though several tweaks will help.
 
 ### Strengths
 
@@ -24,8 +26,10 @@ The layout mostly satisfies the **consistent layout principles** encouraged by M
 
 ### Needed adjustments
 
-1. **Flash message placement:** Material Design treats temporary notifications as **snackbars**, typically shown **briefly at the bottom center** so they do not block content.
-2. **Clarify navigation behavior:** **Hamburger menus** are primarily for **mobile**. On desktop, keep primary navigation **persistently visible** next to the logo.
+1. **Flash message placement:** Material Design treats temporary notifications as **snackbars**,
+   typically shown **briefly at the bottom center** so they do not block content.
+2. **Clarify navigation behavior:** **Hamburger menus** are primarily for **mobile**. On desktop,
+   keep primary navigation **persistently visible** next to the logo.
 
 ---
 

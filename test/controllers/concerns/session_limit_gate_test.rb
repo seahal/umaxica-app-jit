@@ -17,9 +17,10 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
     end
 
     def check_gate
-      if require_session_limit_gate!(login_path: "/test/login")
-        head :ok
-      end
+      return unless require_session_limit_gate!(login_path: "/test/login")
+
+      head :ok
+
     end
 
     def consume_gate

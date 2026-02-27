@@ -97,10 +97,10 @@ module Core
             raise StandardError, "Contact not found"
           end
 
-          unless @contact.status_id == ComContactStatus::CHECKED_EMAIL_ADDRESS
-            raise StandardError,
-                  "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
-          end
+          return if @contact.status_id == ComContactStatus::CHECKED_EMAIL_ADDRESS
+
+          raise StandardError,
+                "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
         end
 
         def core_corporate_redirect_options

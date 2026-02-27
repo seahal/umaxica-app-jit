@@ -48,10 +48,10 @@ module Preference::Core
       reload_preferences_and_reissue_token!
     end
 
-    if @preference_language.option_id.present?
-      language = option_id_to_language(@preference_language.option_id, preference_prefix)
-      write_preference_cookie(Preference::Base::LANGUAGE_COOKIE_KEY, language) if language.present?
-    end
+    return if @preference_language.option_id.blank?
+
+    language = option_id_to_language(@preference_language.option_id, preference_prefix)
+    write_preference_cookie(Preference::Base::LANGUAGE_COOKIE_KEY, language) if language.present?
   end
 
   def set_timezone_preferences_edit
@@ -78,10 +78,10 @@ module Preference::Core
       end
     end
 
-    if @preference_timezone.option_id.present?
-      timezone = option_id_to_timezone(@preference_timezone.option_id, preference_prefix)
-      write_preference_cookie(Preference::Base::TIMEZONE_COOKIE_KEY, timezone) if timezone.present?
-    end
+    return if @preference_timezone.option_id.blank?
+
+    timezone = option_id_to_timezone(@preference_timezone.option_id, preference_prefix)
+    write_preference_cookie(Preference::Base::TIMEZONE_COOKIE_KEY, timezone) if timezone.present?
   end
 
   def set_colortheme_preferences_edit
@@ -102,11 +102,11 @@ module Preference::Core
       reload_preferences_and_reissue_token!
     end
 
-    if @preference_colortheme.option_id.present?
-      colortheme = option_id_to_colortheme(@preference_colortheme.option_id, preference_prefix)
-      short_code = colortheme_short_code(colortheme)
-      write_preference_cookie(Preference::Base::THEME_COOKIE_KEY, short_code) if short_code.present?
-    end
+    return if @preference_colortheme.option_id.blank?
+
+    colortheme = option_id_to_colortheme(@preference_colortheme.option_id, preference_prefix)
+    short_code = colortheme_short_code(colortheme)
+    write_preference_cookie(Preference::Base::THEME_COOKIE_KEY, short_code) if short_code.present?
   end
 
   def set_cookie_preferences_edit

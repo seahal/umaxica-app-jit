@@ -11,7 +11,8 @@ We release patches for security vulnerabilities for the following versions:
 
 ## Reporting a Vulnerability
 
-We take the security of our application seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of our application seriously. If you discover a security vulnerability, please
+follow these steps:
 
 ### 1. Do NOT Disclose Publicly
 
@@ -118,7 +119,8 @@ Our security practices align with:
 
 ## Bug Bounty Program
 
-We currently do not have a bug bounty program. However, we deeply appreciate responsible disclosure and will acknowledge security researchers who report valid vulnerabilities.
+We currently do not have a bug bounty program. However, we deeply appreciate responsible disclosure
+and will acknowledge security researchers who report valid vulnerabilities.
 
 ## Contact
 

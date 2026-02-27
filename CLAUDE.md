@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this
+repository.
 
 ## Build & Run Commands
 
@@ -38,11 +39,13 @@ bin/rails notes                  # Show TODO/FIXME annotations
 
 ### Application Module: `Jit::Application`
 
-Ruby 4.0.1 / Rails 8.1 (from `rails/rails` main branch). PostgreSQL 18+ required for native `uuidv7()`.
+Ruby 4.0.1 / Rails 8.1 (from `rails/rails` main branch). PostgreSQL 18+ required for native
+`uuidv7()`.
 
 ### Multi-Domain, Multi-Audience Structure
 
-The app serves multiple domains, each split into three audience tiers: **app** (end users), **org** (staff), **com** (corporate/public). Routes are host-constrained and modularized:
+The app serves multiple domains, each split into three audience tiers: **app** (end users), **org**
+(staff), **com** (corporate/public). Routes are host-constrained and modularized:
 
 | Route file              | Domain purpose                                     | Hosts (dev)                                                   |
 | ----------------------- | -------------------------------------------------- | ------------------------------------------------------------- |
@@ -53,7 +56,8 @@ The app serves multiple domains, each split into three audience tiers: **app** (
 | `config/routes/news.rb` | News/blog delivery                                 | news domains                                                  |
 | `config/routes/help.rb` | Help system                                        | help domains                                                  |
 
-Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/sign/org/`, `app/controllers/apex/com/`, etc.
+Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/sign/org/`,
+`app/controllers/apex/com/`, etc.
 
 ### Multi-Database Architecture (20 databases)
 
@@ -74,20 +78,23 @@ Each database has a write (pub) and read replica (sub) connection. Key databases
 | `queue`      | `db/queues_migrate`      | SolidQueue jobs              |
 | `cache`      | `db/caches_migrate`      | SolidCache                   |
 
-Schema files: `db/<name>_schema.rb` (e.g., `db/principal_schema.rb`). The root `db/schema.rb` also exists.
+Schema files: `db/<name>_schema.rb` (e.g., `db/principal_schema.rb`). The root `db/schema.rb` also
+exists.
 
 ### Authentication & Security
 
 - **WebAuthn/FIDO2** for passkeys (requires `TRUSTED_ORIGINS` env var for all Rails commands)
 - **OmniAuth** for social login (Apple, Google)
-- **Cloudflare Turnstile** for bot protection (standard + stealth modes) via `TurnstileConfig` / `TurnstileVerifier`
+- **Cloudflare Turnstile** for bot protection (standard + stealth modes) via `TurnstileConfig` /
+  `TurnstileVerifier`
 - **Pundit** for authorization policies
 - **Rack::Attack** for rate limiting
 - **Custom `CsrfValidation` middleware** for API endpoints
 - **ActiveRecord Encryption** for sensitive data (keys in Rails credentials)
 - **Argon2 + bcrypt** for password hashing
 
-Auth concerns: `Auth::User` (user sessions), `Auth::Staff` (staff sessions), `Auth::Passkey`, `Auth::StepUp`.
+Auth concerns: `Auth::User` (user sessions), `Auth::Staff` (staff sessions), `Auth::Passkey`,
+`Auth::StepUp`.
 
 ### Frontend
 
@@ -113,16 +120,20 @@ Auth concerns: `Auth::User` (user sessions), `Auth::Staff` (staff sessions), `Au
 - `test/controllers/` - Controller tests (require DB, mirror controller namespaces)
 - `test/integration/` - Integration tests (full request stack)
 - `test/services/`, `test/jobs/`, `test/mailers/`, `test/policies/` - Domain-specific tests
-- `test/support/` - Shared helpers (auth bypass via `X-TEST-CURRENT-USER` / `X-TEST-CURRENT-STAFF` headers)
+- `test/support/` - Shared helpers (auth bypass via `X-TEST-CURRENT-USER` / `X-TEST-CURRENT-STAFF`
+  headers)
 - Test fixtures loaded selectively in `test/test_helper.rb` (not `fixtures :all`)
 
 ### Docker Compose Services
 
-PostgreSQL 18 (primary + replica with WAL streaming), Valkey (port 56379), Kafka + Zookeeper, SeaweedFS (S3-compatible storage), Grafana + Loki + Tempo (observability), Cloudflare Tunnel.
+PostgreSQL 18 (primary + replica with WAL streaming), Valkey (port 56379), Kafka + Zookeeper,
+SeaweedFS (S3-compatible storage), Grafana + Loki + Tempo (observability), Cloudflare Tunnel.
 
 ### CI Pipeline (`.github/workflows/integration.yml`)
 
-Runs on push to develop/main and PRs. Jobs: actionlint, hadolint, Brakeman + bundler-audit, gitleaks, Semgrep, RuboCop + erb_lint, Rails test suite (with Postgres 18 + Valkey + Kafka), Biome + pnpm audit, container image scanning (Trivy + Grype).
+Runs on push to develop/main and PRs. Jobs: actionlint, hadolint, Brakeman + bundler-audit,
+gitleaks, Semgrep, RuboCop + erb_lint, Rails test suite (with Postgres 18 + Valkey + Kafka), Biome +
+pnpm audit, container image scanning (Trivy + Grype).
 
 ## Requirements Analysis Best Practices
 
@@ -132,5 +143,7 @@ Always verify initial understanding against primary sources. Never proceed on as
 
 1. **Hypothesis**: Recognize intuitive understanding as a hypothesis
 2. **Primary sources**: Check implementation code (highest trust) > prototypes > specs
-3. **Contradictions**: If sources contradict each other, do NOT resolve independently -- report to user for decision
-4. **Confirm**: Before implementing, output confirmed sources and current understanding as bullet points for user agreement
+3. **Contradictions**: If sources contradict each other, do NOT resolve independently -- report to
+   user for decision
+4. **Confirm**: Before implementing, output confirmed sources and current understanding as bullet
+   points for user agreement
