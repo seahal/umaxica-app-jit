@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+# INFORMATION: Look this docs. https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html
+
 # app/models/current.rb
 class Current < ActiveSupport::CurrentAttributes
   attribute :actor
