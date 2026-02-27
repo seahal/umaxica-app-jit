@@ -4,7 +4,8 @@
 require "test_helper"
 
 class Core::Org::DocsControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
+  # Placeholder test - to be implemented
+  test "placeholder" do
+    skip "Not yet implemented"
+  end
 end

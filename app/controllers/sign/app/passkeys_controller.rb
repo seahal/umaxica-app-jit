@@ -7,10 +7,6 @@ module Sign
       auth_required!
       before_action :authenticate_user!
 
-      # TODO: CSRF protection requires JS to send X-CSRF-Token.
-      # For now, we skip it to ensure JSON fetch works easily as requested.
-      skip_before_action :verify_authenticity_token, only: %i(options create update destroy)
-
       def new
         @passkey_exists = current_user.passkey.present?
         @current_host = request.host

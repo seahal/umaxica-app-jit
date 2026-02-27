@@ -15,7 +15,7 @@ class ComPreferenceAuditLevel < AuditRecord
   include StringPrimaryKey
 
   has_many :com_preference_audits, dependent: :restrict_with_error, inverse_of: :com_preference_audit_level
-  scope :ordered, -> { column_names.include?("position") ? order(:position, :id) : order(:id) }
+  scope :ordered, -> { column_names.include?("position") ? order(:position, primary_key) : order(primary_key) }
 
   validates :position,
             presence: true,

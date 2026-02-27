@@ -66,8 +66,13 @@ module Sign
       # @param validate_turnstile [Boolean] whether to validate Cloudflare Turnstile
       # @param status [String] initial status for the telephone record
       # @return [Boolean] true if successful, false if validation failed
-      def initiate_telephone_registration(telephone_number, confirm_policy: "1", confirm_using_mfa: "1", validate_turnstile: false,
-                                          status: TELEPHONE_STATUSES[:unverified])
+      def initiate_telephone_registration(
+        telephone_number,
+        confirm_policy: "1",
+        confirm_using_mfa: "1",
+        validate_turnstile: false,
+        status: TELEPHONE_STATUSES[:unverified]
+      )
         if validate_turnstile
           turnstile_result = cloudflare_turnstile_validation
           unless turnstile_result["success"]

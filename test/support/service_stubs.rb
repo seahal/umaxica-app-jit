@@ -1,20 +1,27 @@
 # typed: false
 # frozen_string_literal: true
 
-# Auto-stubs for external services in test environment
-# These are applied globally to prevent actual external API calls.
+# Auto-stubs for external services in test environment.
+# Stubs are applied per test to avoid cross-test global side effects.
 
 module ServiceStubs
-  # Set up service stubs for testing
-  def self.setup
-    # Stub AwsSmsService.send_message to prevent actual SMS sending
-    AwsSmsService.define_singleton_method(:original_send_message, AwsSmsService.method(:send_message))
-    AwsSmsService.define_singleton_method(:send_message) do |to:, message:, subject: nil|
+  def setup
+    super
+    return unless defined?(AwsSmsService)
+
+    @original_aws_sms_send_message = AwsSmsService.method(:send_message)
+    AwsSmsService.define_singleton_method(:send_message) do |to:, _message:, _subject: nil|
       Rails.logger.debug { "[TEST] AwsSmsService.send_message called with to: #{to}" }
       true
     end
   end
+
+  def teardown
+    if defined?(AwsSmsService) && @original_aws_sms_send_message
+      AwsSmsService.define_singleton_method(:send_message, &@original_aws_sms_send_message)
+    end
+    super
+  end
 end
 
-# Apply stubs when this file is loaded
-ServiceStubs.setup
+ActiveSupport.on_load(:active_support_test_case) { prepend ServiceStubs }

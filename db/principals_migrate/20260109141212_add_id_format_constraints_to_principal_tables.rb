@@ -28,15 +28,18 @@ class AddIdFormatConstraintsToPrincipalTables < ActiveRecord::Migration[8.2]
 
   def tables_to_constrain
     %w(
-      user_telephone_statuses
-      user_statuses
-      user_social_google_statuses
-      user_social_apple_statuses
-      user_secret_statuses
-      user_passkey_statuses
-      user_one_time_password_statuses
-      user_email_statuses
-      client_statuses
+      users
+      accounts
+      user_emails
+      user_telephones
+      user_secrets
+      user_passkeys
+      user_social_apples
+      user_social_googles
+      clients
+      user_clients
+      roles
+      user_memberships
     )
   end
 end

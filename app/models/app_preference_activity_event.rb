@@ -27,7 +27,7 @@ class AppPreferenceActivityEvent < ActivityRecord
            primary_key: "id",
            inverse_of: :app_preference_activity_event,
            dependent: :restrict_with_error
-  scope :ordered, -> { column_names.include?("position") ? order(:position) : all }
+  scope :ordered, -> { column_names.include?("position") ? order(:position, primary_key) : order(primary_key) }
 
   DEFAULTS = [
     REFRESH_TOKEN_ROTATED,

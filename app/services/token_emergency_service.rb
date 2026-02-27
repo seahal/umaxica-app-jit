@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class TokenEmergencyService
-  # TODO:
+  # TODO: Implement token emergency service
   # - execute emergency token operations per surface (access_reset, refresh_freeze)
   # - record audit logs
   # - return the execution result (token_version, etc)

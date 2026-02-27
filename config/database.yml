@@ -186,6 +186,17 @@ development:
     database: development_activity_db
     host: <%= ENV["POSTGRESQL_ACTIVITY_SUB"] || default_host %>
     migrations_paths: db/activity_migrate
+  audit:
+    !!merge <<: *default
+    database: development_audit_db
+    host: <%= ENV["POSTGRESQL_AUDIT_PUB"] || ENV["POSTGRESQL_ACTIVITY_PUB"] || default_host %>
+    migrations_paths: db/audits_migrate
+  audit_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_audit_db
+    host: <%= ENV["POSTGRESQL_AUDIT_SUB"] || ENV["POSTGRESQL_ACTIVITY_SUB"] || default_host %>
+    migrations_paths: db/audits_migrate
   behavior:
     !!merge <<: *default
     database: development_behavior_db
@@ -396,6 +407,17 @@ test:
     database: test_activity_db
     host: <%= test_host %>
     migrations_paths: db/activity_migrate
+  audit:
+    !!merge <<: *test_default
+    database: test_audit_db
+    host: <%= test_host %>
+    migrations_paths: db/audits_migrate
+  audit_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_audit_db
+    host: <%= test_host %>
+    migrations_paths: db/audits_migrate
   behavior:
     !!merge <<: *test_default
     database: test_behavior_db
@@ -520,6 +542,23 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.ACTIVITY_REPLICA&.PASSWORD %>
     migrations_paths: db/activity_migrate
+  audit:
+    !!merge <<: *default
+    database: production_audit_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.AUDIT&.HOST || Rails.application.credentials&.DATABASE&.ACTIVITY&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.AUDIT&.PASSWORD || Rails.application.credentials&.DATABASE&.ACTIVITY&.PASSWORD %>
+    migrations_paths: db/audits_migrate
+  audit_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_audit_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.AUDIT_REPLICA&.HOST || Rails.application.credentials&.DATABASE&.ACTIVITY_REPLICA&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.AUDIT_REPLICA&.PASSWORD || Rails.application.credentials&.DATABASE&.ACTIVITY_REPLICA&.PASSWORD %>
+    migrations_paths: db/audits_migrate
   behavior:
     !!merge <<: *default
     database: production_behavior_db

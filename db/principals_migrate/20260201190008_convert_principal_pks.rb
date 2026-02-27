@@ -22,6 +22,7 @@ class ConvertPrincipalPks < ActiveRecord::Migration[8.0]
     drop_table :user_identity_audits, if_exists: true
     drop_table :user_memberships, if_exists: true
     drop_table :user_one_time_passwords, if_exists: true
+    drop_table :passkeys, if_exists: true
     drop_table :user_passkeys, if_exists: true
     drop_table :user_secrets, if_exists: true
     drop_table :user_social_apples, if_exists: true

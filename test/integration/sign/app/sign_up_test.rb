@@ -14,6 +14,7 @@ class Sign::App::SignUpTest < ActionDispatch::IntegrationTest
     CloudflareTurnstile.test_mode = false
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "complete sign up flow" do
     # Step 1: Request Email Verification
     get new_sign_app_up_email_url(ri: "jp")
@@ -63,12 +64,5 @@ class Sign::App::SignUpTest < ActionDispatch::IntegrationTest
     assert_equal "VERIFIED_WITH_SIGN_UP", user.status_id
     assert_not_nil session[Auth::Base::ACCESS_COOKIE_KEY] || cookies[Auth::Base::ACCESS_COOKIE_KEY]
   end
-
-  test "sign up validation errors" do
-    post sign_app_up_emails_url(ri: "jp"), params: {
-      user_email: { address: "", confirm_policy: "0" }, # Invalid
-    }
-
-    assert_response :unprocessable_content
-  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

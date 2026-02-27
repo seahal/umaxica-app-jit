@@ -1,24 +1,13 @@
-<<<<<<<< HEAD:test/policies/staff_passkey_policy_test.rb
-========
 # typed: false
->>>>>>>> develop:test/policies/user_email_policy_test.rb
 # frozen_string_literal: true
 
 require "test_helper"
 
-<<<<<<<< HEAD:test/policies/staff_passkey_policy_test.rb
-class StaffPasskeyPolicyTest < ActiveSupport::TestCase
-  def setup
-    @user = nil
-    @record = nil
-    @policy = StaffPasskeyPolicy.new(@user, @record)
-========
 class UserEmailPolicyTest < ActiveSupport::TestCase
   def setup
     @user = nil
     @record = nil
     @policy = UserEmailPolicy.new(@user, @record)
->>>>>>>> develop:test/policies/user_email_policy_test.rb
   end
 
   def test_index
@@ -50,11 +39,7 @@ class UserEmailPolicyTest < ActiveSupport::TestCase
   end
 
   def test_scope
-<<<<<<<< HEAD:test/policies/staff_passkey_policy_test.rb
-    scope = StaffPasskeyPolicy::Scope.new(@user, nil)
-========
     scope = UserEmailPolicy::Scope.new(@user, nil)
->>>>>>>> develop:test/policies/user_email_policy_test.rb
     assert_raises(NoMethodError) { scope.resolve }
   end
 end

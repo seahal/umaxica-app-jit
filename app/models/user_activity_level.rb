@@ -22,7 +22,7 @@ class UserActivityLevel < ActivityRecord
            dependent: :restrict_with_error,
            inverse_of: :user_activity_level
 
-  scope :ordered, -> { all }
+  scope :ordered, -> { order(primary_key) }
 
   DEFAULTS = [DEBUG, ERROR, INFO, NOTHING, WARN].freeze
 

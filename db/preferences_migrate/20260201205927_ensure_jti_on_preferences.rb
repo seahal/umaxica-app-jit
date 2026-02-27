@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddJtiToPreferences < ActiveRecord::Migration[8.2]
+class EnsureJtiOnPreferences < ActiveRecord::Migration[8.2]
   disable_ddl_transaction!
 
   def up

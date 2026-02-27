@@ -87,6 +87,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150000) do
     t.index ["organization_id"], name: "index_roles_on_organization_id"
   end
 
+  create_table "staff_identity_telephone_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
+  end
+
   create_table "staff_token_kinds", force: :cascade do |t|
     t.citext "code", null: false
     t.index ["code"], name: "index_staff_token_kinds_on_code", unique: true

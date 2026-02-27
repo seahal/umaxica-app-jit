@@ -54,6 +54,8 @@ require "test_helper"
 
 # Covers refresh token behavior and session constraints for staff.
 class StaffTokenTest < ActiveSupport::TestCase
+  include ActiveSupport::Testing::TimeHelpers
+
   def setup
     @staff = Staff.find_by!(public_id: "bcde3456")
 
@@ -118,8 +120,9 @@ class StaffTokenTest < ActiveSupport::TestCase
 
   test "timestamp updates on save" do
     original_updated_at = @token.updated_at
-    sleep(0.1)
-    @token.update!(updated_at: Time.current)
+    travel 1.second do
+      @token.update!(updated_at: Time.current)
+    end
 
     assert_operator @token.updated_at, :>, original_updated_at
   end

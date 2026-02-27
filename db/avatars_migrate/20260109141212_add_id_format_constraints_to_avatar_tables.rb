@@ -28,13 +28,18 @@ class AddIdFormatConstraintsToAvatarTables < ActiveRecord::Migration[8.2]
 
   def tables_to_constrain
     %w(
-      post_statuses
-      post_review_statuses
-      handle_statuses
-      handle_assignment_statuses
-      avatar_ownership_statuses
-      avatar_moniker_statuses
-      avatar_membership_statuses
+      handles
+      avatars
+      handle_assignments
+      avatar_monikers
+      avatar_memberships
+      avatar_ownership_periods
+      posts
+      post_reviews
+      avatar_assignments
+      avatar_follows
+      avatar_blocks
+      avatar_mutes
     )
   end
 end

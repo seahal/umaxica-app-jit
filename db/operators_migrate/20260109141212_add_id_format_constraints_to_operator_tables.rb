@@ -28,15 +28,16 @@ class AddIdFormatConstraintsToOperatorTables < ActiveRecord::Migration[8.2]
 
   def tables_to_constrain
     %w(
-      staff_telephone_statuses
-      staff_statuses
-      staff_secret_statuses
-      staff_passkey_statuses
-      staff_email_statuses
-      organization_statuses
-      division_statuses
-      workspace_statuses
-      admin_statuses
+      staffs
+      staff_emails
+      staff_telephones
+      staff_secrets
+      staff_passkeys
+      organizations
+      divisions
+      admins
+      staff_admins
+      role_assignments
     )
   end
 end

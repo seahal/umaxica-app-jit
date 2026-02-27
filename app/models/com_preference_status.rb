@@ -19,7 +19,7 @@ class ComPreferenceStatus < PreferenceRecord
            primary_key: "id",
            inverse_of: :com_preference_status,
            dependent: :restrict_with_error
-  scope :ordered, -> { all }
+  scope :ordered, -> { order(primary_key) }
 
   def self.ensure_defaults!
     find_or_create_by!(id: DELETED)

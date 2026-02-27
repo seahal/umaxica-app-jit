@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class OutageService
-  # TODO:
+  # TODO: Implement outage service
   # - store and retrieve outage state per surface
   # - write audit logs
   # - decide where to propagate the state (DB/Redis/FeatureFlag)

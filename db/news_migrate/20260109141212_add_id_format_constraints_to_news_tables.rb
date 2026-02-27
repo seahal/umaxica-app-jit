@@ -28,15 +28,18 @@ class AddIdFormatConstraintsToNewsTables < ActiveRecord::Migration[8.2]
 
   def tables_to_constrain
     %w(
-      org_timeline_statuses
-      org_timeline_tag_masters
-      org_timeline_category_masters
-      com_timeline_statuses
-      com_timeline_tag_masters
-      com_timeline_category_masters
-      app_timeline_statuses
-      app_timeline_tag_masters
-      app_timeline_category_masters
+      app_timelines
+      com_timelines
+      org_timelines
+      app_timeline_versions
+      com_timeline_versions
+      org_timeline_versions
+      org_timeline_tags
+      org_timeline_categories
+      app_timeline_tags
+      app_timeline_categories
+      com_timeline_tags
+      com_timeline_categories
     )
   end
 end

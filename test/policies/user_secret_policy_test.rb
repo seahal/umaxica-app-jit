@@ -1,7 +1,4 @@
-<<<<<<<< HEAD:test/policies/app_timeline_audit_policy_test.rb
-========
 # typed: false
->>>>>>>> develop:test/policies/user_secret_policy_test.rb
 # frozen_string_literal: true
 
 require "test_helper"

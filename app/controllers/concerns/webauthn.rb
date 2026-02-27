@@ -22,7 +22,7 @@ module Webauthn
           ]
         end
 
-        origins.compact.uniq
+        origins.compact.uniq!
       end
   end
 

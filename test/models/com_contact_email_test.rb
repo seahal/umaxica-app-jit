@@ -43,22 +43,6 @@ class ComContactEmailTest < ActiveSupport::TestCase
     assert_operator ComContactEmail, :<, GuestRecord
   end
 
-  setup do
-    # Seed necessary reference data for tests
-    [ComContactCategory::SECURITY_ISSUE, ComContactCategory::NOTHING].each do |id|
-      ComContactCategory.find_or_create_by!(id: id)
-    end
-    [
-      ComContactStatus::NOTHING,
-      ComContactStatus::SET_UP,
-      ComContactStatus::CHECKED_EMAIL_ADDRESS,
-      ComContactStatus::CHECKED_TELEPHONE_NUMBER,
-      ComContactStatus::COMPLETED_CONTACT_ACTION,
-    ].each do |id|
-      ComContactStatus.find_or_create_by!(id: id)
-    end
-  end
-
   test "should belong to com_contact" do
     contact = create_contact(
       public_id: "unique_contact_1",
@@ -113,10 +97,8 @@ class ComContactEmailTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    # Read directly from database to check encryption
-    raw_value = ComContactEmail.connection.execute(
-      "SELECT email_address FROM com_contact_emails WHERE id = '#{email.id}'",
-    ).first["email_address"]
+    # Read directly from database to check encryption.
+    raw_value = raw_column_value(email, :email_address)
 
     # Encrypted value should be different from plaintext
     assert_not_equal "test@example.com", raw_value
@@ -155,14 +137,9 @@ class ComContactEmailTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    # With deterministic encryption, encrypted values should be the same
-    raw1 = ComContactEmail.connection.execute(
-      "SELECT email_address FROM com_contact_emails WHERE id = '#{email1.id}'",
-    ).first["email_address"]
-
-    raw2 = ComContactEmail.connection.execute(
-      "SELECT email_address FROM com_contact_emails WHERE id = '#{email2.id}'",
-    ).first["email_address"]
+    # With deterministic encryption, encrypted values should be the same.
+    raw1 = raw_column_value(email1, :email_address)
+    raw2 = raw_column_value(email2, :email_address)
 
     assert_equal raw1, raw2
   end

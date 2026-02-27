@@ -35,6 +35,7 @@ class IdFormatConstraintTest < ActiveSupport::TestCase
     @target_models = [].freeze
   end
 
+  # rubocop:disable Minitest/NoAssertions
   test "models with string IDs should enforce uppercase alphanumeric and underscore format" do
     skip "No target models found" if @target_models.empty?
 
@@ -44,6 +45,7 @@ class IdFormatConstraintTest < ActiveSupport::TestCase
       test_model_id_format(model)
     end
   end
+  # rubocop:enable Minitest/NoAssertions
 
   def print_target_models
     return unless ENV["ID_FORMAT_CONSTRAINT_VERBOSE"]

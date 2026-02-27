@@ -54,6 +54,8 @@ require "test_helper"
 
 # Covers refresh token behavior and session constraints for users.
 class UserTokenTest < ActiveSupport::TestCase
+  include ActiveSupport::Testing::TimeHelpers
+
   def setup
     @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
     @token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
@@ -120,8 +122,9 @@ class UserTokenTest < ActiveSupport::TestCase
 
   test "timestamp updates on save" do
     original_updated_at = @token.updated_at
-    sleep(0.1)
-    @token.update!(updated_at: Time.current)
+    travel 1.second do
+      @token.update!(updated_at: Time.current)
+    end
 
     assert_operator @token.updated_at, :>, original_updated_at
   end

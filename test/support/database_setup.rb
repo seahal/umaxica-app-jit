@@ -5,13 +5,15 @@
 # These values are often expected to exist by various tests.
 
 ActiveSupport.on_load(:active_record) do
+  ensure_ids =
+    lambda do |model, ids|
+      existing_ids = model.where(id: ids).pluck(:id)
+      missing_ids = ids - existing_ids
+      missing_ids.each { |id| model.create!(id: id) }
+    end
+
   if defined?(UserActivityEvent)
     UserActivityEvent.ensure_defaults!
-    [
-      UserActivityEvent::USER_SECRET_CREATED,
-      UserActivityEvent::USER_SECRET_REMOVED,
-      UserActivityEvent::USER_SECRET_UPDATED,
-    ].each { |id| UserActivityEvent.find_or_create_by!(id: id) }
   end
 
   if defined?(UserActivityLevel)
@@ -19,34 +21,37 @@ ActiveSupport.on_load(:active_record) do
   end
 
   if defined?(StaffActivityLevel)
-    StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NOTHING)
+    ensure_ids.call(StaffActivityLevel, [StaffActivityLevel::NOTHING])
   end
 
   if defined?(StaffActivityEvent)
-    [
-      StaffActivityEvent::STAFF_SECRET_CREATED,
-      StaffActivityEvent::STAFF_SECRET_REMOVED,
-      StaffActivityEvent::STAFF_SECRET_UPDATED,
-      StaffActivityEvent::STEP_UP_VERIFIED,
-    ].each { |id| StaffActivityEvent.find_or_create_by!(id: id) }
+    ensure_ids.call(
+      StaffActivityEvent,
+      [
+        StaffActivityEvent::STAFF_SECRET_CREATED,
+        StaffActivityEvent::STAFF_SECRET_REMOVED,
+        StaffActivityEvent::STAFF_SECRET_UPDATED,
+        StaffActivityEvent::STEP_UP_VERIFIED,
+      ],
+    )
   end
 
   if defined?(AppPreferenceActivityLevel)
-    AppPreferenceActivityLevel.find_or_create_by!(id: AppPreferenceActivityLevel::INFO)
+    ensure_ids.call(AppPreferenceActivityLevel, [AppPreferenceActivityLevel::INFO])
   end
   if defined?(AppPreferenceActivityEvent)
     AppPreferenceActivityEvent.ensure_defaults!
   end
 
   if defined?(ComPreferenceActivityLevel)
-    ComPreferenceActivityLevel.find_or_create_by!(id: ComPreferenceActivityLevel::INFO)
+    ensure_ids.call(ComPreferenceActivityLevel, [ComPreferenceActivityLevel::INFO])
   end
   if defined?(ComPreferenceActivityEvent)
     ComPreferenceActivityEvent.ensure_defaults!
   end
 
   if defined?(OrgPreferenceActivityLevel)
-    OrgPreferenceActivityLevel.find_or_create_by!(id: OrgPreferenceActivityLevel::INFO)
+    ensure_ids.call(OrgPreferenceActivityLevel, [OrgPreferenceActivityLevel::INFO])
   end
   if defined?(OrgPreferenceActivityEvent)
     OrgPreferenceActivityEvent.ensure_defaults!

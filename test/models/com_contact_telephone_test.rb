@@ -69,10 +69,8 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    # Read directly from database to check encryption
-    raw_value = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone.id}'",
-    ).first["telephone_number"]
+    # Read directly from database to check encryption.
+    raw_value = raw_column_value(telephone, :telephone_number)
 
     # Encrypted value should be different from plaintext
     assert_not_equal "+15551234568", raw_value
@@ -103,14 +101,9 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    # With deterministic encryption, encrypted values should be the same
-    raw1 = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone1.id}'",
-    ).first["telephone_number"]
-
-    raw2 = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone2.id}'",
-    ).first["telephone_number"]
+    # With deterministic encryption, encrypted values should be the same.
+    raw1 = raw_column_value(telephone1, :telephone_number)
+    raw2 = raw_column_value(telephone2, :telephone_number)
 
     assert_equal raw1, raw2
   end

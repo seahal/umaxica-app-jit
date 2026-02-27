@@ -28,12 +28,12 @@ class AddIdFormatConstraintsToGuestContactTables < ActiveRecord::Migration[8.2]
 
   def tables_to_constrain
     %w(
-      org_contact_statuses
-      org_contact_categories
-      com_contact_statuses
-      com_contact_categories
-      app_contact_statuses
-      app_contact_categories
+      app_contacts
+      org_contacts
+      com_contacts
+      com_contact_topics
+      org_contact_topics
+      app_contact_topics
     )
   end
 end

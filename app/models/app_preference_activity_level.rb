@@ -15,7 +15,7 @@ class AppPreferenceActivityLevel < ActivityRecord
   INFO = 1
 
   has_many :app_preference_activities, dependent: :restrict_with_error, inverse_of: :app_preference_activity_level
-  scope :ordered, -> { column_names.include?("position") ? order(:position) : all }
+  scope :ordered, -> { column_names.include?("position") ? order(:position, primary_key) : order(primary_key) }
 
   DEFAULTS = [NOTHING, INFO].freeze
 
