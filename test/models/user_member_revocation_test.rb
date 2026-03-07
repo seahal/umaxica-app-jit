@@ -13,7 +13,6 @@
 # Indexes
 #
 #  index_user_member_revocations_on_member_id              (member_id)
-#  index_user_member_revocations_on_user_id                (user_id)
 #  index_user_member_revocations_on_user_id_and_member_id  (user_id,member_id) UNIQUE
 #
 # Foreign Keys

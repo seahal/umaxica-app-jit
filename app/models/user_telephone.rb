@@ -55,8 +55,12 @@ class UserTelephone < PrincipalRecord
 
   # Note: :number validation is now handled by Telephone concern (E.164 normalization)
   validates :number, uniqueness: { case_sensitive: false }
-  validates :number_bidx, uniqueness: true, allow_nil: true
-  validates :number_digest, uniqueness: true, allow_nil: true
+  validates :number_bidx,
+            uniqueness: { conditions: -> { where.not(number_bidx: nil) } },
+            allow_nil: true
+  validates :number_digest,
+            uniqueness: { conditions: -> { where.not(number_digest: nil) } },
+            allow_nil: true
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }

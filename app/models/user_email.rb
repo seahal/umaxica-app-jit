@@ -54,8 +54,12 @@ class UserEmail < PrincipalRecord
              inverse_of: :user_emails
   belongs_to :user, inverse_of: :user_emails
   validates :address, uniqueness: { case_sensitive: false }
-  validates :address_bidx, uniqueness: true, allow_nil: true
-  validates :address_digest, uniqueness: true, allow_nil: true
+  validates :address_bidx,
+            uniqueness: { conditions: -> { where.not(address_bidx: nil) } },
+            allow_nil: true
+  validates :address_digest,
+            uniqueness: { conditions: -> { where.not(address_digest: nil) } },
+            allow_nil: true
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }

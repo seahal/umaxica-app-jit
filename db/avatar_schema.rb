@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_05_114400) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_07_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -279,7 +279,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114400) do
     t.datetime "updated_at", null: false
     t.index ["avatar_id"], name: "index_member_avatar_deletions_on_avatar_id"
     t.index ["member_id", "avatar_id"], name: "index_member_avatar_deletions_on_member_id_and_avatar_id", unique: true
-    t.index ["member_id"], name: "index_member_avatar_deletions_on_member_id"
   end
 
   create_table "member_avatar_extractions", force: :cascade do |t|
@@ -316,7 +315,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114400) do
     t.datetime "updated_at", null: false
     t.index ["avatar_id"], name: "index_member_avatar_suspensions_on_avatar_id"
     t.index ["member_id", "avatar_id"], name: "index_member_avatar_suspensions_on_member_id_and_avatar_id", unique: true
-    t.index ["member_id"], name: "index_member_avatar_suspensions_on_member_id"
   end
 
   create_table "member_avatar_visibilities", force: :cascade do |t|

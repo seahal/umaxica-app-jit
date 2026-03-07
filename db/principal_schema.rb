@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_07_121000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -80,14 +80,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
   create_table "member_statuses", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index "lower((id)::text)", name: "index_member_identity_statuses_on_lower_id", unique: true
   end
 
   create_table "members", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "division_id"
     t.string "moniker"
-    t.string "public_id"
+    t.string "public_id", null: false
     t.bigint "status_id", default: 5, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
@@ -215,7 +214,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
     t.bigint "user_id", null: false
     t.index ["member_id"], name: "index_user_member_deletions_on_member_id"
     t.index ["user_id", "member_id"], name: "index_user_member_deletions_on_user_id_and_member_id", unique: true
-    t.index ["user_id"], name: "index_user_member_deletions_on_user_id"
   end
 
   create_table "user_member_discoveries", force: :cascade do |t|
@@ -225,7 +223,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
     t.bigint "user_id", null: false
     t.index ["member_id"], name: "index_user_member_discoveries_on_member_id"
     t.index ["user_id", "member_id"], name: "index_user_member_discoveries_on_user_id_and_member_id", unique: true
-    t.index ["user_id"], name: "index_user_member_discoveries_on_user_id"
   end
 
   create_table "user_member_impersonations", force: :cascade do |t|
@@ -235,7 +232,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
     t.bigint "user_id", null: false
     t.index ["member_id"], name: "index_user_member_impersonations_on_member_id"
     t.index ["user_id", "member_id"], name: "index_user_member_impersonations_on_user_id_and_member_id", unique: true
-    t.index ["user_id"], name: "index_user_member_impersonations_on_user_id"
   end
 
   create_table "user_member_observations", force: :cascade do |t|
@@ -245,7 +241,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
     t.bigint "user_id", null: false
     t.index ["member_id"], name: "index_user_member_observations_on_member_id"
     t.index ["user_id", "member_id"], name: "index_user_member_observations_on_user_id_and_member_id", unique: true
-    t.index ["user_id"], name: "index_user_member_observations_on_user_id"
   end
 
   create_table "user_member_revocations", force: :cascade do |t|
@@ -255,7 +250,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
     t.bigint "user_id", null: false
     t.index ["member_id"], name: "index_user_member_revocations_on_member_id"
     t.index ["user_id", "member_id"], name: "index_user_member_revocations_on_user_id_and_member_id", unique: true
-    t.index ["user_id"], name: "index_user_member_revocations_on_user_id"
   end
 
   create_table "user_member_suspensions", force: :cascade do |t|
@@ -265,7 +259,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
     t.bigint "user_id", null: false
     t.index ["member_id"], name: "index_user_member_suspensions_on_member_id"
     t.index ["user_id", "member_id"], name: "index_user_member_suspensions_on_user_id_and_member_id", unique: true
-    t.index ["user_id"], name: "index_user_member_suspensions_on_user_id"
   end
 
   create_table "user_members", force: :cascade do |t|
@@ -275,7 +268,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
     t.bigint "user_id", null: false
     t.index ["member_id"], name: "index_user_members_on_member_id"
     t.index ["user_id", "member_id"], name: "index_user_members_on_user_id_and_member_id", unique: true
-    t.index ["user_id"], name: "index_user_members_on_user_id"
   end
 
   create_table "user_memberships", force: :cascade do |t|

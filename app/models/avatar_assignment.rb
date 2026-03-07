@@ -37,10 +37,10 @@ class AvatarAssignment < AvatarRecord
   validates :avatar_id, uniqueness: { scope: [:user_id, :role] }
 
   validates :avatar_id,
-            uniqueness: { conditions: -> { where(role: "owner") } },
+            uniqueness: { conditions: -> { where("((role)::text = 'owner'::text)") } },
             if: -> { role == "owner" }
 
   validates :avatar_id,
-            uniqueness: { conditions: -> { where(role: "affiliation") } },
+            uniqueness: { conditions: -> { where("((role)::text = 'affiliation'::text)") } },
             if: -> { role == "affiliation" }
 end

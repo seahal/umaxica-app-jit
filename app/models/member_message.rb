@@ -17,6 +17,10 @@
 #  index_member_messages_on_public_id        (public_id) UNIQUE
 #  index_member_messages_on_user_message_id  (user_message_id)
 #
+# Foreign Keys
+#
+#  fk_member_messages_on_user_message_id_cascade  (user_message_id => user_messages.id) ON DELETE => cascade
+#
 
 class MemberMessage < MessageRecord
   include ::PublicId

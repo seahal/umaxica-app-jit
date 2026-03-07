@@ -37,7 +37,11 @@ class AvatarMembership < AvatarRecord
   belongs_to :avatar_membership_status, optional: true
   belongs_to :avatar_role, foreign_key: :role_id, inverse_of: :avatar_memberships
 
-  validates :avatar_id, uniqueness: { scope: :actor_id }
+  validates :avatar_id,
+            uniqueness: {
+              scope: :actor_id,
+              conditions: -> { where("valid_to = 'infinity'::timestamp with time zone") },
+            }
   validates :actor_id, presence: true
   validates :valid_from, presence: true
   validates :id, numericality: { only_integer: true }, allow_nil: true

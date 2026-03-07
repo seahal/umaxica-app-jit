@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_05_114352) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_07_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,5 +60,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114352) do
   end
 
   add_foreign_key "client_messages", "user_messages", name: "fk_client_messages_on_user_message_id_cascade", on_delete: :cascade
+  add_foreign_key "member_messages", "user_messages", name: "fk_member_messages_on_user_message_id_cascade", on_delete: :cascade
   add_foreign_key "operator_messages", "staff_messages", name: "fk_admin_messages_on_staff_message_id_cascade", on_delete: :cascade
 end

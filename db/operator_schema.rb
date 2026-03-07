@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_05_000000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_07_121000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -109,6 +109,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_000000) do
     t.bigint "staff_identity_email_status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((address)::text)", name: "index_staff_emails_on_lower_address", unique: true
+    t.index ["address"], name: "index_staff_emails_on_address"
     t.index ["public_id"], name: "index_staff_emails_on_public_id", unique: true
     t.index ["staff_id"], name: "index_staff_emails_on_staff_id"
     t.index ["staff_identity_email_status_id"], name: "index_staff_emails_on_staff_identity_email_status_id"

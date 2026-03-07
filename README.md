@@ -8,11 +8,32 @@ Multi-domain Rails 8.2 application organized around three audience tiers — **a
 
 ## Environments & Endpoints
 
-| Tier                     | Primary Hosts                         | Locale/Section Hosts |
-| :----------------------- | :------------------------------------ | -------------------: | ---- | --------------------------- |
-| `com` (corporate/public) | `www.umaxica.com`                     |           `www.[news | help | docs].[jp\|us].umaxica.com` |
-| `app` (end users)        | `www.umaxica.app`, `sign.umaxica.app` |  `www.[jp\|us].[docs | help | news].umaxica.app`          |
-| `org` (staff)            | `www.umaxica.org`, `sign.umaxica.org` |  `www.[jp\|us].[docs | help | news].umaxica.org`          |
+### Corporate Site
+
+- `www.umaxica.com`
+- `www.news.[jp|us].umaxica.com`
+- `www.help.[jp|us].umaxica.com`
+- `www.docs.[jp|us].umaxica.com`
+
+### Service Endpoints
+
+- `www.umaxica.app`
+- `sign.umaxica.app`
+- `www.[jp|us].docs.umaxica.app`
+- `www.[jp|us].help.umaxica.app`
+- `www.[jp|us].news.umaxica.app`
+
+### Staff Site
+
+- `www.umaxica.org`
+- `sign.umaxica.org`
+- `www.[jp|us].docs.umaxica.org`
+- `www.[jp|us].help.umaxica.org`
+- `www.[jp|us].news.umaxica.org`
+
+### Network Endpoints
+
+- `a[jp|us].umaxica.net`
 
 ## Getting Started
 

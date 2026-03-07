@@ -22,6 +22,7 @@
 #
 # Indexes
 #
+#  index_staff_emails_on_address                         (address)
 #  index_staff_emails_on_lower_address                   (lower((address)::text)) UNIQUE
 #  index_staff_emails_on_public_id                       (public_id) UNIQUE
 #  index_staff_emails_on_staff_id                        (staff_id)

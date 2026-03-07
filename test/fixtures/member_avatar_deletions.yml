@@ -12,7 +12,6 @@
 # Indexes
 #
 #  index_member_avatar_deletions_on_avatar_id                (avatar_id)
-#  index_member_avatar_deletions_on_member_id                (member_id)
 #  index_member_avatar_deletions_on_member_id_and_avatar_id  (member_id,avatar_id) UNIQUE
 #
 # Foreign Keys

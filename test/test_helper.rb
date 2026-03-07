@@ -40,9 +40,11 @@ Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 module ActiveSupport
   class TestCase
     coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+    max_parallel_workers = 19
 
     # Use a single worker for coverage runs to keep SimpleCov results deterministic.
     # Respect PARALLEL_WORKERS when provided, otherwise use max available CPU workers.
+    # Cap workers below 20 to avoid over-parallelizing test runs.
     # NOTE: Multi-process parallelism (the default) forks the process. Each worker gets
     # its own database connection pool and transaction, so fixture isolation is maintained.
     # If you observe flaky tests with shared state (e.g. Rails.cache, ENV), consider
@@ -52,9 +54,9 @@ module ActiveSupport
       if coverage_enabled
         1
       elsif requested_workers&.positive?
-        requested_workers
+        [requested_workers, max_parallel_workers].min
       else
-        Etc.nprocessors - 1
+        [Etc.nprocessors - 1, max_parallel_workers].min
       end
     parallelize(workers: workers)
 

@@ -10,10 +10,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# Indexes
-#
-#  index_member_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
 require "test_helper"
 
 class MemberStatusTest < ActiveSupport::TestCase

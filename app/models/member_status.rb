@@ -10,18 +10,15 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# Indexes
-#
-#  index_member_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
 class MemberStatus < PrincipalRecord
-  self.record_timestamps = false
-
   ACTIVE = 1
   INACTIVE = 2
   PENDING = 3
   DELETED = 4
   NOTHING = 5
+
+  validates :created_at, :updated_at, presence: true
+
   has_many :members,
            foreign_key: :status_id,
            dependent: :restrict_with_error,

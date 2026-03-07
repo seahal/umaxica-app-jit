@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_05_114351) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_07_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,5 +60,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_05_114351) do
   end
 
   add_foreign_key "client_notifications", "user_notifications", name: "fk_client_notifications_on_user_notification_id_cascade", on_delete: :cascade
+  add_foreign_key "member_notifications", "user_notifications", name: "fk_member_notifications_on_user_notification_id_cascade", on_delete: :cascade
   add_foreign_key "operator_notifications", "staff_notifications", name: "fk_admin_notifications_on_staff_notification_id_cascade", on_delete: :cascade
 end
