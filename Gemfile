@@ -93,12 +93,13 @@ gem "pundit"
 gem "stripe"
 # SQL exploration
 gem "blazer"
-# Performance monitoring (APM)
-gem "skylight"
+gem "sentry-ruby"
+gem "sentry-rails"
 
 group :development, :test do
   # Test coverage
   gem "simplecov", require: false
+  gem "simplecov-lcov", require: false
   # Minitest mock (extracted from minitest 6.0+)
   gem "minitest-mock"
   # Slow test profiling

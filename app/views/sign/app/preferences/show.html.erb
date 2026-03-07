@@ -1,9 +1,7 @@
-<% content_for :page_title, t("sign.app.preferences.title") %>
-
+<% content_for :page_title, 'Sign::App::Preferences#show' %>
 <div>
-  <h1><%= t("sign.app.preferences.title") %></h1>
-  <div>
-    <%= link_to t("shared.links.apex_preference"),
-                apex_app_preference_url %>
-  </div>
+  <h1>Preference</h1>
+  <p>
+    <%= link_to "Go to email preference", @preference_email_path %>
+  </p>
 </div>

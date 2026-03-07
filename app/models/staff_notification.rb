@@ -22,7 +22,7 @@ class StaffNotification < NotificationRecord
   include ::PublicId
 
   belongs_to :staff, optional: false, inverse_of: :staff_notifications
-  has_many :admin_notifications,
+  has_many :operator_notifications,
            inverse_of: :staff_notification,
            dependent: :delete_all
 end

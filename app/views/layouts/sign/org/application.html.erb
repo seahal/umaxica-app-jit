@@ -34,8 +34,11 @@
 <hr />
 
 <%= render "shared/flash_messages" %>
+<% if show_cookie_banner? %>
+  <%= render "shared/cookie_banner" %>
+<% end %>
 
-<main>
+    <main>
   <%= yield %>
 </main>
 

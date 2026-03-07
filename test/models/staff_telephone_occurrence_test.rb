@@ -26,7 +26,32 @@
 require "test_helper"
 
 class StaffTelephoneOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :telephone_occurrences
+
+  test "associations" do
+    staff = StaffOccurrence.create!(body: "staff-001")
+    record = StaffTelephoneOccurrence.new(
+      staff_occurrence: staff,
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal staff, record.staff_occurrence
+    assert_equal telephone_occurrences(:one), record.telephone_occurrence
+  end
+
+  test "uniqueness validation" do
+    staff = StaffOccurrence.create!(body: "staff-002")
+    StaffTelephoneOccurrence.create!(
+      staff_occurrence: staff,
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+    duplicate = StaffTelephoneOccurrence.new(
+      staff_occurrence: staff,
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:staff_occurrence_id]
+  end
 end

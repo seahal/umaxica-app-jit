@@ -15,7 +15,7 @@
 #  active_handle_id             :bigint           not null
 #  avatar_status_id             :string
 #  capability_id                :bigint           default(0), not null
-#  client_id                    :bigint
+#  member_id                    :bigint
 #  owner_organization_id        :string
 #  public_id                    :string           not null
 #  representing_organization_id :string
@@ -24,7 +24,7 @@
 #
 #  index_avatars_on_active_handle_id              (active_handle_id)
 #  index_avatars_on_capability_id                 (capability_id)
-#  index_avatars_on_client_id                     (client_id)
+#  index_avatars_on_member_id                     (member_id)
 #  index_avatars_on_owner_organization_id         (owner_organization_id)
 #  index_avatars_on_public_id                     (public_id) UNIQUE
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
@@ -36,9 +36,10 @@
 #
 
 class Avatar < AvatarRecord
+  # TODO: Add `shreddable_at` to Avatar and align deletion lifecycle with shredding flow.
   include PublicId
 
-  belongs_to :client, optional: true, inverse_of: :avatars
+  belongs_to :member, optional: true, inverse_of: :avatars
   belongs_to :capability, class_name: "AvatarCapability"
   belongs_to :active_handle, class_name: "Handle"
 
@@ -52,13 +53,13 @@ class Avatar < AvatarRecord
   # Avatar assignments (role-based access control)
   has_many :avatar_assignments, dependent: :destroy
 
-  has_many :client_avatar_accesses, dependent: :destroy, inverse_of: :avatar
-  has_many :client_avatar_visibilities, dependent: :destroy, inverse_of: :avatar
-  has_many :client_avatar_oversights, dependent: :destroy, inverse_of: :avatar
-  has_many :client_avatar_extractions, dependent: :destroy, inverse_of: :avatar
-  has_many :client_avatar_impersonations, dependent: :destroy, inverse_of: :avatar
-  has_many :client_avatar_suspensions, dependent: :destroy, inverse_of: :avatar
-  has_many :client_avatar_deletions, dependent: :destroy, inverse_of: :avatar
+  has_many :member_avatar_accesses, dependent: :destroy, inverse_of: :avatar
+  has_many :member_avatar_visibilities, dependent: :destroy, inverse_of: :avatar
+  has_many :member_avatar_oversights, dependent: :destroy, inverse_of: :avatar
+  has_many :member_avatar_extractions, dependent: :destroy, inverse_of: :avatar
+  has_many :member_avatar_impersonations, dependent: :destroy, inverse_of: :avatar
+  has_many :member_avatar_suspensions, dependent: :destroy, inverse_of: :avatar
+  has_many :member_avatar_deletions, dependent: :destroy, inverse_of: :avatar
 
   # Single-user roles (has_one through)
   has_one :owner_assignment,

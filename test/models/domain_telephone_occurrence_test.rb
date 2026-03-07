@@ -26,7 +26,30 @@
 require "test_helper"
 
 class DomainTelephoneOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :domain_occurrences, :telephone_occurrences
+
+  test "associations" do
+    record = DomainTelephoneOccurrence.new(
+      domain_occurrence: domain_occurrences(:one),
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal domain_occurrences(:one), record.domain_occurrence
+    assert_equal telephone_occurrences(:one), record.telephone_occurrence
+  end
+
+  test "uniqueness validation" do
+    DomainTelephoneOccurrence.create!(
+      domain_occurrence: domain_occurrences(:one),
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+    duplicate = DomainTelephoneOccurrence.new(
+      domain_occurrence: domain_occurrences(:one),
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:domain_occurrence_id]
+  end
 end

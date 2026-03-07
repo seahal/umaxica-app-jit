@@ -6,7 +6,7 @@
 #
 #  id :bigint           not null, primary key
 #
-neyo:
+nothing:
   id: 1
 created:
   id: 2

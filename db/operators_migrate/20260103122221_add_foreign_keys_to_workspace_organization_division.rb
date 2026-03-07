@@ -21,8 +21,8 @@ class AddForeignKeysToWorkspaceOrganizationDivision < ActiveRecord::Migration[8.
 
     # Add foreign key from clients to divisions with nullify
 
-    # Add foreign key from admins to departments with nullify
-    add_foreign_key :admins, :departments,
+    # Add foreign key from operators to departments with nullify
+    add_foreign_key :operators, :departments,
                     on_delete: :nullify,
                     if_not_exists: true,
                     validate: false

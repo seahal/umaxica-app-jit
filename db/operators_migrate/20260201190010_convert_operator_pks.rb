@@ -9,8 +9,8 @@ class ConvertOperatorPks < ActiveRecord::Migration[8.0]
     drop_table :staff_telephones, if_exists: true
     drop_table :staff_secrets, if_exists: true
     drop_table :role_assignments, if_exists: true
-    drop_table :staff_admins, if_exists: true
-    drop_table :admins, if_exists: true
+    drop_table :staff_operators, if_exists: true
+    drop_table :operators, if_exists: true
     drop_table :user_workspaces, if_exists: true
     drop_table :user_organizations, if_exists: true # Old name if persisted
     drop_table :departments, if_exists: true
@@ -46,7 +46,7 @@ class ConvertOperatorPks < ActiveRecord::Migration[8.0]
     drop_table :division_statuses, if_exists: true
     drop_table :staff_identity_audit_events, if_exists: true
     drop_table :staff_identity_audit_levels, if_exists: true
-    drop_table :admin_statuses, if_exists: true
+    drop_table :operator_statuses, if_exists: true
 
     # Drop renamed tables (from earlier migration 20260108100600)
     drop_table :staff_statuses, if_exists: true
@@ -164,13 +164,13 @@ class ConvertOperatorPks < ActiveRecord::Migration[8.0]
       t.index ["role_id"], name: "index_role_assignments_on_role_id"
     end
 
-    # Admin Statuses
+    # Operator Statuses
     # rubocop:disable Rails/CreateTableWithTimestamps
-    create_table :admin_statuses, id: :string
+    create_table :operator_statuses, id: :string
     # rubocop:enable Rails/CreateTableWithTimestamps
 
-    # Admins
-    create_table :admins do |t|
+    # Operators
+    create_table :operators do |t|
       t.bigint "staff_id", null: false
       t.bigint "department_id"
       t.string "public_id"
@@ -178,19 +178,19 @@ class ConvertOperatorPks < ActiveRecord::Migration[8.0]
       t.string "status_id", default: "NEYO", null: false
       t.integer "lock_version", default: 0, null: false
       t.timestamps
-      t.index ["public_id"], name: "index_admins_on_public_id", unique: true
-      t.index ["staff_id"], name: "index_admins_on_staff_id"
-      t.index ["department_id"], name: "index_admins_on_department_id"
-      t.index ["status_id"], name: "index_admins_on_status_id"
+      t.index ["public_id"], name: "index_operators_on_public_id", unique: true
+      t.index ["staff_id"], name: "index_operators_on_staff_id"
+      t.index ["department_id"], name: "index_operators_on_department_id"
+      t.index ["status_id"], name: "index_operators_on_status_id"
     end
 
-    # Staff Admins (join table)
-    create_table :staff_admins do |t|
+    # Staff Operators (join table)
+    create_table :staff_operators do |t|
       t.bigint "staff_id", null: false
       t.bigint "admin_id", null: false
       t.timestamps
-      t.index ["admin_id"], name: "index_staff_admins_on_admin_id"
-      t.index ["staff_id", "admin_id"], name: "index_staff_admins_on_staff_id_and_admin_id", unique: true
+      t.index ["admin_id"], name: "index_staff_operators_on_admin_id"
+      t.index ["staff_id", "admin_id"], name: "index_staff_operators_on_staff_id_and_admin_id", unique: true
     end
 
     # Staff Identities
@@ -338,11 +338,11 @@ class ConvertOperatorPks < ActiveRecord::Migration[8.0]
     add_foreign_key :departments, :workspaces, validate: false
     add_foreign_key :departments, :departments, column: :parent_id, validate: false
 
-    add_foreign_key :admins, :staffs, validate: false
-    add_foreign_key :admins, :departments, on_delete: :nullify, validate: false
-    add_foreign_key :admins, :admin_statuses, column: :status_id, validate: false
-    add_foreign_key :staff_admins, :staffs, on_delete: :cascade, validate: false
-    add_foreign_key :staff_admins, :admins, on_delete: :cascade, validate: false
+    add_foreign_key :operators, :staffs, validate: false
+    add_foreign_key :operators, :departments, on_delete: :nullify, validate: false
+    add_foreign_key :operators, :operator_statuses, column: :status_id, validate: false
+    add_foreign_key :staff_operators, :staffs, on_delete: :cascade, validate: false
+    add_foreign_key :staff_operators, :operators, column: :admin_id, on_delete: :cascade, validate: false
 
     add_foreign_key :organizations, :workspace_statuses, column: :workspace_status_id, on_delete: :restrict, validate: false
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_26_150000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_05_114353) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -75,6 +75,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_google_auths_on_user_id"
+  end
+
+  create_table "member_statuses", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_member_identity_statuses_on_lower_id", unique: true
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "division_id"
+    t.string "moniker"
+    t.string "public_id"
+    t.bigint "status_id", default: 5, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["division_id"], name: "index_members_on_division_id"
+    t.index ["public_id"], name: "index_members_on_public_id", unique: true
+    t.index ["status_id"], name: "index_members_on_status_id"
+    t.index ["user_id"], name: "index_members_on_user_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -186,6 +206,76 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150000) do
     t.index ["public_id"], name: "index_user_emails_on_public_id", unique: true
     t.index ["user_email_status_id"], name: "index_user_emails_on_user_email_status_id"
     t.index ["user_id"], name: "index_user_emails_on_user_id"
+  end
+
+  create_table "user_member_deletions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["member_id"], name: "index_user_member_deletions_on_member_id"
+    t.index ["user_id", "member_id"], name: "index_user_member_deletions_on_user_id_and_member_id", unique: true
+    t.index ["user_id"], name: "index_user_member_deletions_on_user_id"
+  end
+
+  create_table "user_member_discoveries", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["member_id"], name: "index_user_member_discoveries_on_member_id"
+    t.index ["user_id", "member_id"], name: "index_user_member_discoveries_on_user_id_and_member_id", unique: true
+    t.index ["user_id"], name: "index_user_member_discoveries_on_user_id"
+  end
+
+  create_table "user_member_impersonations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["member_id"], name: "index_user_member_impersonations_on_member_id"
+    t.index ["user_id", "member_id"], name: "index_user_member_impersonations_on_user_id_and_member_id", unique: true
+    t.index ["user_id"], name: "index_user_member_impersonations_on_user_id"
+  end
+
+  create_table "user_member_observations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["member_id"], name: "index_user_member_observations_on_member_id"
+    t.index ["user_id", "member_id"], name: "index_user_member_observations_on_user_id_and_member_id", unique: true
+    t.index ["user_id"], name: "index_user_member_observations_on_user_id"
+  end
+
+  create_table "user_member_revocations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["member_id"], name: "index_user_member_revocations_on_member_id"
+    t.index ["user_id", "member_id"], name: "index_user_member_revocations_on_user_id_and_member_id", unique: true
+    t.index ["user_id"], name: "index_user_member_revocations_on_user_id"
+  end
+
+  create_table "user_member_suspensions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["member_id"], name: "index_user_member_suspensions_on_member_id"
+    t.index ["user_id", "member_id"], name: "index_user_member_suspensions_on_user_id_and_member_id", unique: true
+    t.index ["user_id"], name: "index_user_member_suspensions_on_user_id"
+  end
+
+  create_table "user_members", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["member_id"], name: "index_user_members_on_member_id"
+    t.index ["user_id", "member_id"], name: "index_user_members_on_user_id_and_member_id", unique: true
+    t.index ["user_id"], name: "index_user_members_on_user_id"
   end
 
   create_table "user_memberships", force: :cascade do |t|
@@ -377,6 +467,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150000) do
   add_foreign_key "clients", "client_statuses", name: "fk_clients_on_client_status_id"
   add_foreign_key "clients", "users", on_delete: :nullify
   add_foreign_key "google_auths", "users", validate: false
+  add_foreign_key "members", "member_statuses", column: "status_id", validate: false
+  add_foreign_key "members", "users", on_delete: :nullify, validate: false
   add_foreign_key "user_client_deletions", "clients", validate: false
   add_foreign_key "user_client_deletions", "users", validate: false
   add_foreign_key "user_client_discoveries", "clients", validate: false
@@ -393,6 +485,20 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150000) do
   add_foreign_key "user_clients", "users", on_delete: :cascade, validate: false
   add_foreign_key "user_emails", "user_email_statuses"
   add_foreign_key "user_emails", "users", validate: false
+  add_foreign_key "user_member_deletions", "members"
+  add_foreign_key "user_member_deletions", "users"
+  add_foreign_key "user_member_discoveries", "members"
+  add_foreign_key "user_member_discoveries", "users"
+  add_foreign_key "user_member_impersonations", "members"
+  add_foreign_key "user_member_impersonations", "users"
+  add_foreign_key "user_member_observations", "members"
+  add_foreign_key "user_member_observations", "users"
+  add_foreign_key "user_member_revocations", "members"
+  add_foreign_key "user_member_revocations", "users"
+  add_foreign_key "user_member_suspensions", "members"
+  add_foreign_key "user_member_suspensions", "users"
+  add_foreign_key "user_members", "members", on_delete: :cascade, validate: false
+  add_foreign_key "user_members", "users", on_delete: :cascade, validate: false
   add_foreign_key "user_memberships", "users", validate: false
   add_foreign_key "user_one_time_passwords", "user_one_time_password_statuses", column: "user_identity_one_time_password_status_id"
   add_foreign_key "user_one_time_passwords", "users", validate: false

@@ -4,31 +4,31 @@
 
 ### Staff Tables
 
-- **Location**: `db/identifiers_migrate/20240827130202_create_staffs.rb:7`
+- **Location**: `db/searches_migrate/20240827130202_create_staffs.rb:7`
 - **Issue**: Staff table needs hash partition implementation
 - **Priority**: High
 - **Details**: Current implementation lacks proper partitioning for scalability
 
 ### Email-User Relation Tables
 
-- **Location**: `db/identifiers_migrate/20240829210307_create_user_email_users.rb:5`
+- **Location**: `db/searches_migrate/20240829210307_create_user_email_users.rb:5`
 - **Issue**: User email users table needs hash partition
 - **Priority**: High
 
-- **Location**: `db/identifiers_migrate/20240829210221_create_staff_email_staffs.rb:5`
+- **Location**: `db/searches_migrate/20240829210221_create_staff_email_staffs.rb:5`
 - **Issue**: Staff email staffs table needs hash partition
 - **Priority**: High
 
 ### Staff Column Type
 
-- **Location**: `db/identifiers_migrate/20240829210221_create_staff_email_staffs.rb:9`
+- **Location**: `db/searches_migrate/20240829210221_create_staff_email_staffs.rb:9`
 - **Issue**: Want to use column type=staff instead of current implementation
 - **Priority**: Medium
 - **Details**: Type safety improvement needed
 
 ### User Tables
 
-- **Location**: `db/identifiers_migrate/20240827130201_create_users.rb:7`
+- **Location**: `db/searches_migrate/20240827130201_create_users.rb:7`
 - **Issue**: User table needs hash partition implementation
 - **Priority**: High
 

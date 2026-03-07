@@ -17,7 +17,7 @@ module Sign::App
       controller = ApplicationController.new
 
       assert_includes controller.class, RateLimit
-      assert_includes controller.class, Preference::Global
+      assert_includes controller.class, ::Preference::Global
     end
 
     test "authenticate_user! allows logged in users" do

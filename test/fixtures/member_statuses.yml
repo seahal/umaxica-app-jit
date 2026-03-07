@@ -1,0 +1,34 @@
+# Auto-generated minimal fixture
+# == Schema Information
+#
+# Table name: member_statuses
+# Database name: principal
+#
+#  id         :bigint           not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_member_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+nothing:
+  id: 5
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+active:
+  id: 1
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+deleted:
+  id: 4
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+inactive:
+  id: 2
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+pending:
+  id: 3
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

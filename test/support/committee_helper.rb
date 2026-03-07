@@ -12,8 +12,8 @@ module CommitteeHelper
         # Our OpenAPI defines "/v1/*" while the Edge API is served at "/edge/v1/*".
         # Committee will strip this prefix when matching paths.
         "/edge"
-      elsif request&.path.to_s.start_with?("/client/")
-        "/client"
+      elsif request&.path.to_s.start_with?("/member/")
+        "/member"
       end
 
     {

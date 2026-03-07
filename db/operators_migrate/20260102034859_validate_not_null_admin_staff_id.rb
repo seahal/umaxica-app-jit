@@ -2,15 +2,15 @@
 
 class ValidateNotNullAdminStaffId < ActiveRecord::Migration[8.2]
   def up
-    validate_check_constraint :admins, name: "admins_staff_id_null"
-    change_column_null :admins, :staff_id, false
-    remove_check_constraint :admins, name: "admins_staff_id_null"
+    validate_check_constraint :operators, name: "operators_staff_id_null"
+    change_column_null :operators, :staff_id, false
+    remove_check_constraint :operators, name: "operators_staff_id_null"
   end
 
   def down
-    add_check_constraint :admins, "staff_id IS NOT NULL",
-                         name: "admins_staff_id_null",
+    add_check_constraint :operators, "staff_id IS NOT NULL",
+                         name: "operators_staff_id_null",
                          validate: false
-    change_column_null :admins, :staff_id, true
+    change_column_null :operators, :staff_id, true
   end
 end

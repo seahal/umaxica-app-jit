@@ -56,19 +56,19 @@ class FixDatabaseConsistencyIdentityRelations < ActiveRecord::Migration[8.2]
       end
     end
 
-    return unless table_exists?(:admins) && table_exists?(:departments)
+    return unless table_exists?(:operators) && table_exists?(:departments)
 
-    remove_foreign_key :admins, :departments if foreign_key_exists?(:admins, :departments)
-    return if foreign_key_exists?(:admins, :departments)
+    remove_foreign_key :operators, :departments if foreign_key_exists?(:operators, :departments)
+    return if foreign_key_exists?(:operators, :departments)
 
-    add_foreign_key :admins, :departments, on_delete: :nullify, validate: false
+    add_foreign_key :operators, :departments, on_delete: :nullify, validate: false
 
   end
 
   def down
-    if table_exists?(:admins) && table_exists?(:departments)
-      remove_foreign_key :admins, :departments if foreign_key_exists?(:admins, :departments)
-      add_foreign_key :admins, :departments unless foreign_key_exists?(:admins, :departments)
+    if table_exists?(:operators) && table_exists?(:departments)
+      remove_foreign_key :operators, :departments if foreign_key_exists?(:operators, :departments)
+      add_foreign_key :operators, :departments unless foreign_key_exists?(:operators, :departments)
     end
 
     if table_exists?(:clients) && table_exists?(:divisions)

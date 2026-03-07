@@ -26,7 +26,6 @@ class UserStatusTest < ActiveSupport::TestCase
       VERIFIED_WITH_SIGN_UP: 10,
       NOTHING: 11,
       GHOST: 12,
-      NONE: 13,
     }
 
     actual_status_constants = {
@@ -42,7 +41,6 @@ class UserStatusTest < ActiveSupport::TestCase
       VERIFIED_WITH_SIGN_UP: UserStatus::VERIFIED_WITH_SIGN_UP,
       NOTHING: UserStatus::NOTHING,
       GHOST: UserStatus::GHOST,
-      NONE: UserStatus::NONE,
     }
 
     assert_equal expected_status_constants, actual_status_constants

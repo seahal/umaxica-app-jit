@@ -10,29 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_26_150001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_05_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
-
-  create_table "admin_statuses", force: :cascade do |t|
-  end
-
-  create_table "admins", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "department_id"
-    t.integer "lock_version", default: 0, null: false
-    t.string "moniker"
-    t.string "public_id", null: false
-    t.bigint "staff_id", null: false
-    t.bigint "status_id", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["department_id"], name: "index_admins_on_department_id"
-    t.index ["public_id"], name: "index_admins_on_public_id", unique: true
-    t.index ["staff_id"], name: "index_admins_on_staff_id"
-    t.index ["status_id"], name: "index_admins_on_status_id"
-  end
 
   create_table "department_statuses", force: :cascade do |t|
   end
@@ -62,21 +44,39 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150001) do
     t.index ["organization_id"], name: "index_divisions_on_organization_id"
   end
 
+  create_table "operator_statuses", force: :cascade do |t|
+  end
+
+  create_table "operators", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "department_id"
+    t.integer "lock_version", default: 0, null: false
+    t.string "moniker"
+    t.string "public_id", null: false
+    t.bigint "staff_id", null: false
+    t.bigint "status_id", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_operators_on_department_id"
+    t.index ["public_id"], name: "index_operators_on_public_id", unique: true
+    t.index ["staff_id"], name: "index_operators_on_staff_id"
+    t.index ["status_id"], name: "index_operators_on_status_id"
+  end
+
   create_table "organization_statuses", force: :cascade do |t|
   end
 
   create_table "organizations", force: :cascade do |t|
-    t.bigint "admin_id"
     t.datetime "created_at", null: false
     t.bigint "department_id"
     t.string "domain", default: "", null: false
     t.string "name", default: "", null: false
+    t.bigint "operator_id"
     t.bigint "parent_id"
     t.datetime "updated_at", null: false
     t.bigint "workspace_status_id", default: 0, null: false
-    t.index ["admin_id"], name: "index_organizations_on_admin_id"
     t.index ["department_id"], name: "index_organizations_on_department_id"
     t.index ["domain"], name: "index_organizations_on_domain", unique: true
+    t.index ["operator_id"], name: "index_organizations_on_operator_id"
     t.index ["parent_id"], name: "index_organizations_on_parent_id"
     t.index ["workspace_status_id"], name: "index_organizations_on_workspace_status_id"
   end
@@ -90,15 +90,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150001) do
     t.index ["role_id"], name: "index_role_assignments_on_role_id"
     t.index ["staff_id"], name: "index_role_assignments_on_staff_id"
     t.index ["user_id"], name: "index_role_assignments_on_user_id"
-  end
-
-  create_table "staff_admins", force: :cascade do |t|
-    t.bigint "admin_id", null: false
-    t.datetime "created_at", null: false
-    t.bigint "staff_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["admin_id"], name: "index_staff_admins_on_admin_id"
-    t.index ["staff_id", "admin_id"], name: "index_staff_admins_on_staff_id_and_admin_id", unique: true
   end
 
   create_table "staff_email_statuses", force: :cascade do |t|
@@ -168,6 +159,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150001) do
     t.index ["public_id"], name: "index_staff_one_time_passwords_on_public_id", unique: true
     t.index ["staff_id"], name: "idx_staff_otps_on_staff_id"
     t.index ["staff_one_time_password_status_id"], name: "idx_staff_otps_on_status_id"
+  end
+
+  create_table "staff_operators", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "operator_id", null: false
+    t.bigint "staff_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["operator_id"], name: "index_staff_operators_on_operator_id"
+    t.index ["staff_id", "operator_id"], name: "index_staff_operators_on_staff_id_and_operator_id", unique: true
   end
 
   create_table "staff_passkey_statuses", force: :cascade do |t|
@@ -284,18 +284,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150001) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "admins", "admin_statuses", column: "status_id"
-  add_foreign_key "admins", "departments", on_delete: :nullify, validate: false
-  add_foreign_key "admins", "staffs", validate: false
   add_foreign_key "departments", "department_statuses", name: "fk_departments_on_department_status_id"
   add_foreign_key "departments", "departments", column: "parent_id", validate: false
   add_foreign_key "departments", "organizations", column: "workspace_id", on_delete: :nullify
   add_foreign_key "divisions", "division_statuses"
   add_foreign_key "divisions", "organizations", on_delete: :nullify
+  add_foreign_key "operators", "departments", on_delete: :nullify, validate: false
+  add_foreign_key "operators", "operator_statuses", column: "status_id"
+  add_foreign_key "operators", "staffs", validate: false
   add_foreign_key "organizations", "organization_statuses", column: "workspace_status_id"
   add_foreign_key "role_assignments", "staffs", on_delete: :cascade, validate: false
-  add_foreign_key "staff_admins", "admins", on_delete: :cascade, validate: false
-  add_foreign_key "staff_admins", "staffs", on_delete: :cascade, validate: false
   add_foreign_key "staff_emails", "staff_email_statuses", column: "staff_identity_email_status_id"
   add_foreign_key "staff_emails", "staffs", validate: false
   add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id", validate: false
@@ -303,6 +301,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_150001) do
   add_foreign_key "staff_identity_passkeys", "staffs", validate: false
   add_foreign_key "staff_one_time_passwords", "staff_one_time_password_statuses", name: "fk_staff_one_time_passwords_on_staff_one_time_password_status_i"
   add_foreign_key "staff_one_time_passwords", "staffs", on_delete: :cascade, validate: false
+  add_foreign_key "staff_operators", "operators", on_delete: :cascade, validate: false
+  add_foreign_key "staff_operators", "staffs", on_delete: :cascade, validate: false
   add_foreign_key "staff_passkeys", "staff_passkey_statuses", column: "status_id", validate: false
   add_foreign_key "staff_passkeys", "staffs", validate: false
   add_foreign_key "staff_recovery_codes", "staffs", validate: false

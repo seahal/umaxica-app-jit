@@ -20,7 +20,7 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  public_id             :string(255)      default(""), not null
-#  status_id             :bigint           default(13), not null
+#  status_id             :bigint           default(11), not null
 #  visibility_id         :bigint           default(2), not null
 #
 # Indexes
@@ -52,7 +52,7 @@ class UserTest < ActiveSupport::TestCase
 
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
-        u.status_id = UserStatus::NONE
+        u.status_id = UserStatus::NOTHING
       end
   end
 
@@ -86,7 +86,7 @@ class UserTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     user = User.create!
 
-    assert_equal UserStatus::NONE, user.status_id
+    assert_equal UserStatus::NOTHING, user.status_id
   end
 
   test "should default visibility_id to staff (2)" do
@@ -104,7 +104,7 @@ class UserTest < ActiveSupport::TestCase
   test "invalid visibility_id is rejected by foreign key" do
     user = User.new(
       public_id: "u_fk_#{SecureRandom.hex(6)}",
-      status_id: UserStatus::NONE,
+      status_id: UserStatus::NOTHING,
       visibility_id: 9_999,
     )
     assert_raises(ActiveRecord::InvalidForeignKey) do

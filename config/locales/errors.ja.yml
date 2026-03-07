@@ -2,3 +2,6 @@ ja:
   errors:
     rate_limit:
       exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
+    preference:
+      cookie:
+        invalid_access_token: "Preference のアクセストークンが不正、または未設定です。"

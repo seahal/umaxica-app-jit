@@ -6,7 +6,7 @@
 #  id :bigint           not null, primary key
 #
 # Auto-generated minimal fixture
-neyo:
+nothing:
   id: 5
 active:
   id: 3

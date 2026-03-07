@@ -5,9 +5,9 @@
 #
 #  id :bigint           not null, primary key
 #
-none:
+nothing_zero:
   id: 0
-neyo:
+nothing:
   id: 9
 account_recovered:
   id: 1

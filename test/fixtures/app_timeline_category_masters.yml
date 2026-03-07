@@ -14,6 +14,6 @@
 #
 #  fk_app_timeline_category_masters_parent  (parent_id => app_timeline_category_masters.id)
 #
-neyo:
+nothing:
   id: 1
   parent_id: 1

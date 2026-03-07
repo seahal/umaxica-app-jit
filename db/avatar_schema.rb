@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_12_000004) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_05_114400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -142,10 +142,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000004) do
     t.bigint "active_handle_id", null: false
     t.string "avatar_status_id"
     t.bigint "capability_id", default: 0, null: false
-    t.bigint "client_id"
     t.datetime "created_at", null: false
     t.jsonb "image_data", default: {}, null: false
     t.integer "lock_version", default: 0, null: false
+    t.bigint "member_id"
     t.string "moniker", null: false
     t.string "owner_organization_id"
     t.string "public_id", null: false
@@ -153,7 +153,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000004) do
     t.datetime "updated_at", null: false
     t.index ["active_handle_id"], name: "index_avatars_on_active_handle_id"
     t.index ["capability_id"], name: "index_avatars_on_capability_id"
-    t.index ["client_id"], name: "index_avatars_on_client_id"
+    t.index ["member_id"], name: "index_avatars_on_member_id"
     t.index ["owner_organization_id"], name: "index_avatars_on_owner_organization_id"
     t.index ["public_id"], name: "index_avatars_on_public_id", unique: true
     t.index ["representing_organization_id"], name: "index_avatars_on_representing_organization_id"
@@ -263,6 +263,71 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000004) do
     t.check_constraint "handle_status_id IS NULL OR handle_status_id >= 0", name: "chk_handles_handle_status_id_positive"
   end
 
+  create_table "member_avatar_accesses", force: :cascade do |t|
+    t.bigint "avatar_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_member_avatar_accesses_on_avatar_id"
+    t.index ["member_id", "avatar_id"], name: "index_member_avatar_accesses_on_member_id_and_avatar_id", unique: true
+  end
+
+  create_table "member_avatar_deletions", force: :cascade do |t|
+    t.bigint "avatar_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_member_avatar_deletions_on_avatar_id"
+    t.index ["member_id", "avatar_id"], name: "index_member_avatar_deletions_on_member_id_and_avatar_id", unique: true
+    t.index ["member_id"], name: "index_member_avatar_deletions_on_member_id"
+  end
+
+  create_table "member_avatar_extractions", force: :cascade do |t|
+    t.bigint "avatar_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_member_avatar_extractions_on_avatar_id"
+    t.index ["member_id", "avatar_id"], name: "index_member_avatar_extractions_on_member_id_and_avatar_id", unique: true
+  end
+
+  create_table "member_avatar_impersonations", force: :cascade do |t|
+    t.bigint "avatar_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_member_avatar_impersonations_on_avatar_id"
+    t.index ["member_id", "avatar_id"], name: "index_member_avatar_impersonations_on_member_id_and_avatar_id", unique: true
+  end
+
+  create_table "member_avatar_oversights", force: :cascade do |t|
+    t.bigint "avatar_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_member_avatar_oversights_on_avatar_id"
+    t.index ["member_id", "avatar_id"], name: "index_member_avatar_oversights_on_member_id_and_avatar_id", unique: true
+  end
+
+  create_table "member_avatar_suspensions", force: :cascade do |t|
+    t.bigint "avatar_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_member_avatar_suspensions_on_avatar_id"
+    t.index ["member_id", "avatar_id"], name: "index_member_avatar_suspensions_on_member_id_and_avatar_id", unique: true
+    t.index ["member_id"], name: "index_member_avatar_suspensions_on_member_id"
+  end
+
+  create_table "member_avatar_visibilities", force: :cascade do |t|
+    t.bigint "avatar_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_member_avatar_visibilities_on_avatar_id"
+    t.index ["member_id", "avatar_id"], name: "index_member_avatar_visibilities_on_member_id_and_avatar_id", unique: true
+  end
+
   create_table "post_review_statuses", force: :cascade do |t|
   end
 
@@ -350,6 +415,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000004) do
   add_foreign_key "handle_assignments", "handle_assignment_statuses"
   add_foreign_key "handle_assignments", "handles"
   add_foreign_key "handles", "handle_statuses"
+  add_foreign_key "member_avatar_accesses", "avatars"
+  add_foreign_key "member_avatar_deletions", "avatars"
+  add_foreign_key "member_avatar_extractions", "avatars"
+  add_foreign_key "member_avatar_impersonations", "avatars"
+  add_foreign_key "member_avatar_oversights", "avatars"
+  add_foreign_key "member_avatar_suspensions", "avatars"
+  add_foreign_key "member_avatar_visibilities", "avatars"
   add_foreign_key "post_reviews", "post_review_statuses"
   add_foreign_key "post_reviews", "posts"
   add_foreign_key "post_versions", "posts", on_delete: :cascade

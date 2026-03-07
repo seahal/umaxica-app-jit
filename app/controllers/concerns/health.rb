@@ -24,11 +24,11 @@ module Health
     if errors.empty?
       [200, "OK"]
     else
-      [422, "UNHEALTHY", errors]
+      [503, "UNHEALTHY", errors]
     end
   rescue StandardError => e
     Rails.event.notify("health_check.failed", error_class: e.class.name, error_message: e.message)
-    [500, "ERROR"]
+    [503, "ERROR"]
   end
 
   def check_dependencies
@@ -55,16 +55,17 @@ module Health
 
   def show_html
     @status, @body, @errors = get_status
+    timestamp = Time.now.utc.iso8601
     if @errors
-      render html: "#{@body}: #{@errors.join(", ")}", status: @status
+      render html: "#{@body}: #{@errors.join(", ")} (#{timestamp})", status: @status
     else
-      render html: @body, status: @status
+      render html: "#{@body} (#{timestamp})", status: @status
     end
   end
 
   def show_json
     @status, @body, @errors = get_status
-    response_body = { status: @body }
+    response_body = { status: @body, timestamp: Time.now.utc.iso8601 }
     response_body[:errors] = @errors if @errors
     render json: response_body, status: @status
   end

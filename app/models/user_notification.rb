@@ -22,7 +22,7 @@ class UserNotification < NotificationRecord
   include ::PublicId
 
   belongs_to :user, inverse_of: :user_notifications
-  has_many :client_notifications,
+  has_many :member_notifications,
            inverse_of: :user_notification,
            dependent: :delete_all
 end

@@ -10,14 +10,16 @@ module Core
         get core_app_health_url
 
         assert_response :success
-        assert_equal "OK", @response.body
+        assert_includes @response.body, "OK"
+        assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, @response.body)
       end
 
       test "should get show with postfix" do
         get core_app_health_url(format: :html)
 
         assert_response :success
-        assert_equal "OK", @response.body
+        assert_includes @response.body, "OK"
+        assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, @response.body)
       end
 
       test "should handle redirect if response is redirect" do

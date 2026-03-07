@@ -3,7 +3,7 @@
 class ReplaceCodeWithFixedIds < ActiveRecord::Migration[8.0]
   def up
     target_tables = {
-      admin_statuses: {
+      operator_statuses: {
         1 => "ACTIVE",
         2 => "NEYO",
       },

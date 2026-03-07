@@ -69,7 +69,7 @@ class OrgDocumentBehaviorTest < ActiveSupport::TestCase
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
       event_id: org_document_behavior_events(:created).id,
-      level_id: org_document_behavior_levels(:neyo).id,
+      level_id: org_document_behavior_levels(:nothing).id,
     )
 
     assert_equal doc, audit.org_document

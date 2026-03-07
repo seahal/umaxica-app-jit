@@ -483,7 +483,7 @@ Content-Security-Policy: default-src 'self'; connect-src 'self' https:
 - Supported browsers and devices.
 - Troubleshooting steps.
 
-#### 11.2 Administrator guide
+#### 11.2 Operator guide
 
 - Managing WebAuthn settings.
 - Security monitoring points.

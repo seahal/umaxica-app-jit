@@ -9,7 +9,7 @@ require_relative "../../app/controllers/concerns/auth/staff"
 #
 # This app supports multiple "surfaces":
 # - Edge API: Cookie-based auth (browser/SPA) + JSON 401 (no redirect)
-# - Client API: Bearer auth (native/external) + JSON 401
+# - Member API: Bearer auth (native/external) + JSON 401
 #
 # In tests, controllers can bypass auth via special headers:
 # - "X-TEST-CURRENT-USER"

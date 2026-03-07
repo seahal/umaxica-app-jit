@@ -36,7 +36,7 @@ class AddIdFormatConstraintsToOperatorTables < ActiveRecord::Migration[8.2]
       organization_statuses
       division_statuses
       workspace_statuses
-      admin_statuses
+      operator_statuses
     )
   end
 end

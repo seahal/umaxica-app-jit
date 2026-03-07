@@ -17,7 +17,7 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  public_id             :string(255)      default(""), not null
-#  status_id             :bigint           default(13), not null
+#  status_id             :bigint           default(11), not null
 #  visibility_id         :bigint           default(2), not null
 #
 # Indexes

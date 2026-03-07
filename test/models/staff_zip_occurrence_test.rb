@@ -26,7 +26,32 @@
 require "test_helper"
 
 class StaffZipOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :zip_occurrences
+
+  test "associations" do
+    staff = StaffOccurrence.create!(body: "staff-001")
+    record = StaffZipOccurrence.new(
+      staff_occurrence: staff,
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal staff, record.staff_occurrence
+    assert_equal zip_occurrences(:one), record.zip_occurrence
+  end
+
+  test "uniqueness validation" do
+    staff = StaffOccurrence.create!(body: "staff-002")
+    StaffZipOccurrence.create!(
+      staff_occurrence: staff,
+      zip_occurrence: zip_occurrences(:one),
+    )
+    duplicate = StaffZipOccurrence.new(
+      staff_occurrence: staff,
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:staff_occurrence_id]
+  end
 end

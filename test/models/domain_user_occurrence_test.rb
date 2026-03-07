@@ -26,7 +26,28 @@
 require "test_helper"
 
 class DomainUserOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :domain_occurrences
+
+  test "associations" do
+    domain = domain_occurrences(:one)
+    user = UserOccurrence.create!(body: "user-001")
+    record = DomainUserOccurrence.new(
+      domain_occurrence: domain,
+      user_occurrence: user,
+    )
+
+    assert record.save!
+    assert_equal domain, record.domain_occurrence
+    assert_equal user, record.user_occurrence
+  end
+
+  test "uniqueness validation" do
+    domain = domain_occurrences(:one)
+    user = UserOccurrence.create!(body: "user-002")
+    DomainUserOccurrence.create!(domain_occurrence: domain, user_occurrence: user)
+    duplicate = DomainUserOccurrence.new(domain_occurrence: domain, user_occurrence: user)
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:domain_occurrence_id]
+  end
 end

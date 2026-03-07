@@ -284,3 +284,9 @@ ja:
             retry: "やり直し"
           create:
             hotp_code_required: "コードを入力してください"
+  preference:
+    cookie:
+      banner:
+        message: "快適な利用のため Cookie を使用しています。"
+        accept: "同意する"
+        cancel: "閉じる"

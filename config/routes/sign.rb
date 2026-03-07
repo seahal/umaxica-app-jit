@@ -7,11 +7,12 @@ scope module: :sign, as: :sign do
       root to: "roots#index"
 
       resource :health, only: :show, defaults: { format: :html }
+      resource :sitemap, only: :show, defaults: { format: :xml }
 
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
-          resource :csrf, only: :show
+          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create
@@ -19,7 +20,7 @@ scope module: :sign, as: :sign do
         end
       end
 
-      namespace :client do
+      namespace :member do
         namespace :v1 do
           resource :health, only: :show
         end
@@ -139,6 +140,11 @@ scope module: :sign, as: :sign do
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
       end
+
+      resource :preference, only: :show
+      namespace :preference do
+        resources :email, only: %i(index show create edit update), controller: :emails
+      end
     end
   end
 
@@ -146,12 +152,14 @@ scope module: :sign, as: :sign do
   constraints host: ENV["SIGN_STAFF_URL"] do
     scope module: :org, as: :org do
       root to: "roots#index"
+
       resource :health, only: :show, defaults: { format: :html }
+      resource :sitemap, only: :show, defaults: { format: :xml }
 
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
-          resource :csrf, only: :show
+          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create

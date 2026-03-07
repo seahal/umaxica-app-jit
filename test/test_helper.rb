@@ -54,7 +54,7 @@ module ActiveSupport
       elsif requested_workers&.positive?
         requested_workers
       else
-        :number_of_processors
+        Etc.nprocessors - 1
       end
     parallelize(workers: workers)
 

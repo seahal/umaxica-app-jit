@@ -21,4 +21,4 @@ Rails.application.config.session_store :cookie_store,
                                        key: force_secure_cookies ? "__Secure-jit_session" : "jit_session",
                                        secure: force_secure_cookies,
                                        httponly: true,
-                                       same_site: force_secure_cookies ? :none : :lax
+                                       same_site: :lax

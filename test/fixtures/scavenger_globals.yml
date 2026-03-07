@@ -35,7 +35,7 @@ one:
   event_id: 1
   status_id: 2
   job_type: scavenger:global
-  payload: {source: fixture}
+  payload: { source: fixture }
   started_at: 2026-02-24 03:20:05
   finished_at: 2026-02-24 03:20:15
   retry_count: 0

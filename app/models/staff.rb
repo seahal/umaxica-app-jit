@@ -32,12 +32,11 @@
 #
 
 class Staff < OperatorRecord
-  # Staff represents an operator accountably for the staff/admin console.
+  # Staff represents an operator accountably for the staff/operator console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
-  self.ignored_columns += ["admin_id", "webauthn_id"]
+  self.ignored_columns += ["operator_id", "webauthn_id"]
 
-  include Withdrawable
-  include ::Accountably
+  include ::Identity
 
   # Human-readable character set excluding: i, o, 0, 1, s, z, g
   # Allowed: a b c d e f h j k l m n p q r t u v w x y 2 3 4 5 6 7 8 9
@@ -84,11 +83,11 @@ class Staff < OperatorRecord
   has_many :staff_notifications,
            dependent: :destroy,
            inverse_of: :staff
-  has_many :staff_admins,
+  has_many :staff_operators,
            dependent: :destroy,
            inverse_of: :staff
-  has_many :admins,
-           class_name: "Admin",
+  has_many :operators,
+           class_name: "Operator",
            inverse_of: :staff,
            dependent: :destroy
 
@@ -100,9 +99,6 @@ class Staff < OperatorRecord
               with: /\A[abcdefhjklmnpqrtuvwxy23456789]{8}\z/,
               message: :invalid_format,
             }
-  validates :status_id, numericality: { only_integer: true }
-  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
-
   before_validation :normalize_public_id
   before_validation :assign_public_id!, on: :create
 

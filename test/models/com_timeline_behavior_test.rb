@@ -69,7 +69,7 @@ class ComTimelineBehaviorTest < ActiveSupport::TestCase
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
       event_id: com_timeline_behavior_events(:created).id,
-      level_id: com_timeline_behavior_levels(:neyo).id,
+      level_id: com_timeline_behavior_levels(:nothing).id,
     )
 
     assert_equal timeline, audit.com_timeline

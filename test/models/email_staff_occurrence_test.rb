@@ -26,7 +26,26 @@
 require "test_helper"
 
 class EmailStaffOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "associations" do
+    email = EmailOccurrence.create!(body: "test@example.com")
+    staff = StaffOccurrence.create!(body: "staff-001")
+    record = EmailStaffOccurrence.new(
+      email_occurrence: email,
+      staff_occurrence: staff,
+    )
+
+    assert record.save!
+    assert_equal email, record.email_occurrence
+    assert_equal staff, record.staff_occurrence
+  end
+
+  test "uniqueness validation" do
+    email = EmailOccurrence.create!(body: "test2@example.com")
+    staff = StaffOccurrence.create!(body: "staff-002")
+    EmailStaffOccurrence.create!(email_occurrence: email, staff_occurrence: staff)
+    duplicate = EmailStaffOccurrence.new(email_occurrence: email, staff_occurrence: staff)
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:email_occurrence_id]
+  end
 end

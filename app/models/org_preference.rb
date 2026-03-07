@@ -38,6 +38,7 @@
 # frozen_string_literal: true
 
 class OrgPreference < PreferenceRecord
+  # TODO: Add `deletable_at` to OrgPreference for lifecycle-based cleanup.
   include ::PublicId
   include ::ConsumeOnceToken
   include ::Preference::Resettable

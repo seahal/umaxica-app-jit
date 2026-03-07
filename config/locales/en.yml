@@ -1,667 +1,519 @@
+---
 en:
   otp:
     resend:
-      button: "Resend code"
-      sent: "Verification code sent."
-      too_soon: "Please wait before requesting another code."
-      failed: "Unable to resend code. Please try again."
+      button: Resend code
+      sent: Verification code sent.
+      too_soon: Please wait before requesting another code.
+      failed: Unable to resend code. Please try again.
   session_limit:
-    gate_expired: "The operation has timed out. Please log in again."
-    user_not_found: "User not found. Please log in again."
-    staff_not_found: "Staff not found. Please log in again."
-    no_sessions_selected: "Please select sessions to revoke."
-    sessions_revoked: "Sessions revoked. Please continue logging in."
-    login_limit_exceeded: "Login limit exceeded. Please end an existing session and try again."
+    gate_expired: The operation has timed out. Please log in again.
+    user_not_found: User not found. Please log in again.
+    staff_not_found: Staff not found. Please log in again.
+    no_sessions_selected: Please select sessions to revoke.
+    sessions_revoked: Sessions revoked. Please continue logging in.
+    login_limit_exceeded: Login limit exceeded. Please end an existing session and try again.
     edit:
-      title: "Session Limit Reached"
-      description: "You have reached the maximum number of concurrent sessions. To continue logging in, please select sessions to revoke."
-      active_sessions: "Active Sessions"
-      session_label: "Session"
-      created_at: "Created"
-      last_used: "Last used"
-      no_sessions: "No active sessions found."
-      submit: "Revoke Selected Sessions and Log In"
-      cancel: "Cancel"
+      title: Session Limit Reached
+      description:
+        You have reached the maximum number of concurrent sessions. To continue logging in, please
+        select sessions to revoke.
+      active_sessions: Active Sessions
+      session_label: Session
+      created_at: Created
+      last_used: Last used
+      no_sessions: No active sessions found.
+      submit: Revoke Selected Sessions and Log In
+      cancel: Cancel
   sign:
+    common:
+      cancel: Cancel
+    default_passkey_description: My Passkey
     app:
-      in:
-        checkpoints:
+      authentication:
+        new:
+          page_title: Sign in
+          description: Select a method to sign in
+          back: Back
+          links:
+            email: Email
+            passkey: Passkey
+            secret: Secret Key
+            google: Google
+            apple: Apple
+            registration: Sign Up
+        secret:
+          new:
+            page_title: Sign in with a secret
+            pii_label: Email or telephone
+            pii_placeholder: user@example.com or +81 90 1234 5678
+            secret_label: Secret
+            hints: Available secret hints
+          create:
+            success: Signed in successfully.
+            invalid: Authentication failed. Please check your credentials.
+        passkey:
+          new:
+            page_title: Sign in with Passkey
+            description: Sign in using your registered passkey
+            pii_label: Email or telephone
+            pii_placeholder: user@example.com or +81 90 1234 5678
+            submit: Sign in with Passkey
+      outs:
+        destroy:
+          success: You have been signed out.
+      configuration:
+        show:
+          page_title: Settings
+          description: Account settings and security management
+          security_settings: Security Settings
+          totp_desc: Configure 2FA
+          passkey_desc: Manage passkeys
+          secret_desc: Manage secret keys
+          account_settings: Account Settings
+          email_desc: Manage contact emails
+          telephone_desc: Manage contact phone numbers
+          session_desc: Manage active sessions
+          external_services: External Services
+          google_desc: Connect Google account
+          apple_desc: Connect Apple ID
+          others: Others
+          withdrawal_desc: Delete account
+          withdrawal: Withdrawal
+          back: Back to top
+          session_header: Session
+          logout: Logout
+        edit:
+          page_title: Account Status
+          deactivated_notice: Withdrawal is in progress. Settings cannot be changed.
+          scheduled_purge_notice: Scheduled for deletion on %{date}.
+          withdrawal_link: Review withdrawal details
+          not_deactivated: Your account is active.
+        withdrawal:
+          new:
+            page_title: Withdraw Account
+            already_deactivated: Your account is already deactivated.
+          schedule:
+            title: Schedule deletion
+            ack_label: I understand the account will be scheduled for deletion in 31 days.
+            submit: Continue
+          deactivate:
+            title: Deactivate today
+            ack_label: I understand my account will be deactivated today.
+            submit: Deactivate account
+            confirm: Deactivate your account today?
+        passkey:
+          index:
+            title: Passkey Management
+            description: Manage your registered passkeys
+        passkeys:
+          new:
+            page_title: Register Passkey
+            description: Register a new passkey to sign in without a password
+            description_label: Passkey name
+            description_placeholder: e.g., MacBook Pro
+            submit: Register Passkey
+          index:
+            title: Passkey Management
+            description: Manage your registered passkeys
+            add: Register new passkey
+            empty: No passkeys registered
+            back: Back to settings
           show:
-            title: "Checkpoint"
-            body: "Please enable MFA. There is an important terms update. Do you accept it?"
-            actions:
-              update: "Update checkpoint state"
-              continue: "Continue"
-          forbidden: "You do not have permission to access this page."
-          timeout: "timeout しました"
-        session:
-          title: "Manage Sessions"
-          description: "You have reached the maximum number of concurrent sessions. To continue, revoke at least one active session."
-          restricted_notice: "Your session is restricted until you free up a session slot. You can only manage sessions."
-          restricted_write_blocked: "This action requires an active session. Please manage your sessions first."
-          active_sessions: "Active Sessions"
-          restricted_sessions: "Pending Sessions"
-          session_label: "Session"
-          pending_session: "Pending Session"
-          current: "Current"
-          created_at: "Created"
-          last_used_at: "Last used"
-          revoke: "Revoke"
-          revoke_selected: "Revoke Selected and Continue"
-          cancel: "Cancel and Log Out"
-          cancel_confirm: "Are you sure you want to cancel? You will be logged out."
-          no_sessions_selected: "Please select at least one session to revoke."
-          sessions_revoked: "Selected sessions have been revoked."
-          session_revoked: "Session has been revoked."
-          promoted: "Session activated. You can now use all features."
-          cancelled: "Session cancelled. Please log in again."
-          login_required: "Please log in to manage sessions."
-          invalid_session: "Invalid session reference."
-          cannot_revoke_current: "Cannot revoke current session this way. Use cancel to log out."
-        mfa:
-          title: "Additional authentication required"
-          description: "Please select an authentication method."
-          required: "Additional authentication is required."
-          session_expired: "Your MFA session has expired. Please sign in again."
-          verification_failed: "Authentication failed."
-          no_methods_available: "No authentication methods are available. Please contact support."
+            title: Passkey Details
+            back: Back to list
+          edit:
+            title: Edit Passkey
+        secrets:
+          create:
+            created: Secret has been saved.
+          update:
+            updated: Secret has been successfully updated.
+          destroy:
+            destroyed: Secret has been successfully deleted.
+      reauth:
+        index:
+          title: Re-authentication Sessions
+          new: New
+          empty: No sessions found
+          table:
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
+        new:
+          title: Re-authentication
+          description: Re-authentication is required to continue. Please select a method.
+          method_legend: Authentication Method
           methods:
-            totp: "Authenticator app (TOTP)"
-            passkey: "Passkey"
-          totp:
-            title: "Authenticator app verification"
-            description: "Enter the 6-digit code from your authenticator app."
-            token_label: "Verification code"
-            submit: "Verify"
-            back: "Back to method selection"
-            success: "Authentication successful."
-          passkey:
-            title: "Passkey verification"
-            description: "Authenticate using your registered passkey."
-            authenticate: "Authenticate with Passkey"
-            back: "Back to method selection"
-            success: "Authentication successful."
-      layout:
-        nav:
-          log_out: "logout"
+            passkey: Passkey
+            totp: Authenticator App (TOTP)
+            email_otp: Email (One-time code)
+          submit: Continue
+          back: Back
+        show:
+          title: Re-authentication Session
+          list: List
+          to_edit: To input screen
+          cancel: Cancel
+          confirm_cancel: Are you sure?
+        edit:
+          title: Re-authentication
+          description:
+            Please enter the code or use passkey authentication for identity verification.
+          authenticate_with_passkey: Authenticate with Passkey
+          code_label: Verification Code
+          code_placeholder: 6 digits
+          submit: Confirm
+          cancel: Cancel
+          confirm_cancel: Are you sure?
+        success:
+          complete: Re-authentication completed.
+      verification:
+        index:
+          title: Verification Sessions
+          new: New
+          empty: No sessions found
+          table:
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
+        new:
+          title: Verification
+          description: Verification is required to continue. Please select a method.
+          method_legend: Authentication Method
+          methods:
+            passkey: Passkey
+            totp: Authenticator App (TOTP)
+            email_otp: Email (One-time code)
+          submit: Continue
+          back: Back
+        edit:
+          title: Verification
+          description:
+            Please enter the code or use passkey authentication for identity verification.
+          authenticate_with_passkey: Authenticate with Passkey
+          code_label: Verification Code
+          code_placeholder: 6 digits
+          submit: Confirm
+          back: Back
+        success:
+          complete: Verification completed.
+        setup:
+          title: Set up verification methods
+          description:
+            Please register passkey, email, telephone, or authenticator app before continuing.
+          methods:
+            passkey: Register passkey
+            email: Register email
+            telephone: Register telephone
+            totp: Register authenticator app (TOTP)
+    social:
+      sessions:
+        invalid_provider: Invalid provider specified
+        create:
+          success: Successfully signed in with %{provider}
+          already_registered: Welcome back! Signed in with %{provider}
+          failure: Failed to sign in. Please try again.
+        link:
+          success: Successfully linked %{provider} account
+        unlink:
+          success: Successfully unlinked %{provider} account
+        reauth:
+          success: Successfully re-authenticated with %{provider}
+        failure:
+          unknown_error: An unknown error occurred
+          invalid_credentials: Invalid credentials
+          access_denied: Access was denied
+          timeout: Request timed out
+          invalid_client: Apple Sign In configuration error. Please contact support.
+          invalid_grant: Apple authorization expired. Please try again.
+          invalid_request: Invalid request to Apple. Please try again.
+          invalid_redirect_uri: Apple Sign In redirect URL is misconfigured.
+          user_cancelled_authorize: You cancelled the Apple Sign In. Please try again if needed.
     org:
-      in:
-        checkpoints:
+      reauth:
+        index:
+          title: Re-authentication Sessions
+          new: New
+          empty: No sessions found
+          table:
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
+        new:
+          title: Re-authentication
+          description: Re-authentication is required to continue. Please select a method.
+          method_legend: Authentication Method
+          methods:
+            passkey: Passkey
+            totp: Authenticator App (TOTP)
+            email_otp: Email (One-time code)
+          submit: Continue
+          back: Back
+      verification:
+        index:
+          title: Verification Sessions
+          new: New
+          empty: No sessions found
+          table:
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
+        new:
+          title: Verification
+          description: Verification is required to continue. Please select a method.
+          method_legend: Authentication Method
+          methods:
+            passkey: Passkey
+            totp: Authenticator App (TOTP)
+            email_otp: Email (One-time code)
+          submit: Continue
+          back: Back
+        edit:
+          title: Verification
+          description:
+            Please enter the code or use passkey authentication for identity verification.
+          authenticate_with_passkey: Authenticate with Passkey
+          code_label: Verification Code
+          code_placeholder: 6 digits
+          submit: Confirm
+          back: Back
+        success:
+          complete: Verification completed.
+      authentication:
+        new:
+          back: Back
+        passkey:
+          new:
+            page_title: Sign in with Passkey
+            description: Sign in using your registered passkey
+            identifier_label: Email or Staff Code
+            identifier_placeholder: Email or staff code
+            submit: Sign in with Passkey
+      outs:
+        destroy:
+          success: You have been signed out.
+      configuration:
+        passkeys:
+          new:
+            page_title: Register Passkey
+            description: Register a new passkey to sign in without a password
+            description_label: Passkey name
+            description_placeholder: e.g., MacBook Pro
+            submit: Register Passkey
+          index:
+            title: Passkey Management
+            description: Manage your registered passkeys
+            add: Register new passkey
+            empty: No passkeys registered
+            back: Back to settings
           show:
-            title: "Checkpoint"
-            body: "Please enable MFA. There is an important terms update. Do you accept it?"
-            actions:
-              update: "Update checkpoint state"
-              continue: "Continue"
-          forbidden: "You do not have permission to access this page."
-          timeout: "timeout しました"
-        session:
-          title: "Manage Sessions"
-          description: "You have reached the maximum number of concurrent sessions. To continue, revoke at least one active session."
-          restricted_notice: "Your session is restricted until you free up a session slot. You can only manage sessions."
-          restricted_write_blocked: "This action requires an active session. Please manage your sessions first."
-          active_sessions: "Active Sessions"
-          restricted_sessions: "Pending Sessions"
-          session_label: "Session"
-          pending_session: "Pending Session"
-          current: "Current"
-          created_at: "Created"
-          last_used_at: "Last used"
-          revoke: "Revoke"
-          revoke_selected: "Revoke Selected and Continue"
-          cancel: "Cancel and Log Out"
-          cancel_confirm: "Are you sure you want to cancel? You will be logged out."
-          no_sessions_selected: "Please select at least one session to revoke."
-          sessions_revoked: "Selected sessions have been revoked."
-          session_revoked: "Session has been revoked."
-          promoted: "Session activated. You can now use all features."
-          cancelled: "Session cancelled. Please log in again."
-          login_required: "Please log in to manage sessions."
-          invalid_session: "Invalid session reference."
-          cannot_revoke_current: "Cannot revoke current session this way. Use cancel to log out."
+            title: Passkey Details
+            back: Back to list
+          edit:
+            title: Edit Passkey
+        secrets:
+          create:
+            created: Secret has been saved.
+          update:
+            updated: Secret has been successfully updated.
+          destroy:
+            destroyed: Secret has been successfully deleted.
+      registration:
+        email:
+          destroy:
+            cancelled: Registration cancelled.
+          flow:
+            invalid: Please follow the registration steps in order.
+            invalid_step: Please complete the previous step first.
   auth:
-    unauthorized: "You are not authorized to access this page."
+    unauthorized: You are not authorized to access this page.
     step_up:
-      required: "Re-authentication is required to continue."
-      session_expired: "Verification required."
-      invalid_request: "Invalid verification request."
-      method_unavailable: "Selected verification method is unavailable."
-      register_methods_required: "No step-up methods available. Please register passkey/email/totp."
-      verification_required: "Verification required."
+      required: Re-authentication is required to continue.
+      session_expired: Verification required.
+      invalid_request: Invalid verification request.
+      method_unavailable: Selected verification method is unavailable.
+      register_methods_required: No step-up methods available. Please register passkey/email/totp.
+      verification_required: Verification required.
   activerecord:
     attributes:
       user_passkey:
-        description: "Name"
-        created_at: "Registered"
-        last_used_at: "Last used"
-        sign_count: "Usage count"
+        description: Name
+        created_at: Registered
+        last_used_at: Last used
+        sign_count: Usage count
       staff_passkey:
-        description: "Name"
-        created_at: "Registered"
-        sign_count: "Usage count"
+        description: Name
+        created_at: Registered
+        sign_count: Usage count
     errors:
       messages:
-        invalid_e164_format: "must be in E.164 format (e.g., +819012345678)"
-        code_format: "must contain only uppercase letters, numbers, and underscores"
-        exceeds_e164_length: "exceeds E.164 maximum length of %{max} digits"
-        country_code_cannot_start_with_zero: "country code cannot start with zero"
+        invalid_e164_format: must be in E.164 format (e.g., +819012345678)
+        code_format: must contain only uppercase letters, numbers, and underscores
+        exceeds_e164_length: exceeds E.164 maximum length of %{max} digits
+        country_code_cannot_start_with_zero: country code cannot start with zero
       models:
         staff:
           attributes:
             public_id:
-              invalid_format: "must be 8 lowercase alphanumeric characters (excluding i, o, 0, 1, s, z, g)"
+              invalid_format:
+                must be 8 lowercase alphanumeric characters (excluding i, o, 0, 1, s, z, g)
   activemodel:
     errors:
       models:
         sign/app/configuration/withdrawal/schedule_form:
           attributes:
             ack_schedule_purge:
-              accepted: "You must check this box."
+              accepted: You must check this box.
         sign/app/configuration/withdrawal/deactivate_form:
           attributes:
             ack_deactivate_today:
-              accepted: "You must check this box."
+              accepted: You must check this box.
   actions:
-    edit: "Edit"
-    destroy: "Delete"
-    save: "Save"
-    back: "Back"
-    up: "Up"
-    actions: "Actions"
-    connect: "Connect"
-    disconnect: "Disconnect"
+    edit: Edit
+    destroy: Delete
+    save: Save
+    back: Back
+    up: Up
+    actions: Actions
+    connect: Connect
+    disconnect: Disconnect
   messages:
-    confirm_destroy: "Are you sure you want to delete this?"
-    passkey_successfully_updated: "Passkey updated successfully"
-    passkey_successfully_destroyed: "Passkey deleted successfully"
-    cannot_delete_last_passkey: "Cannot delete the last passkey. You must have at least one passkey."
-  sign:
-    default_passkey_description: "My Passkey"
-    app:
-      registration:
-        telephone:
-          update:
-            passkey_required: "Phone verified. Please register a passkey to complete signup."
-            code_required: "Verification code is required."
-            invalid_code: "Invalid verification code."
-            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
-        passkey:
-          title: "Register a Passkey"
-          description: "A passkey is required to secure your account. Your passkey will be used for future logins."
-          description_label: "Passkey Name (optional)"
-          description_placeholder: "e.g., My MacBook, iPhone"
-          register_button: "Register Passkey"
-          registering: "Starting registration..."
-          waiting_device: "Please follow the prompts on your device..."
-          verifying: "Verifying..."
-          success: "Passkey registered successfully!"
-          cancelled: "Registration was cancelled."
-          not_supported: "Passkeys are not supported on this device or browser."
-          error: "Failed to register passkey. Please try again."
-          session_expired: "Your session has expired. Please start the registration process again."
+    confirm_destroy: Are you sure you want to delete this?
+    passkey_successfully_updated: Passkey updated successfully
+    passkey_successfully_destroyed: Passkey deleted successfully
+    cannot_delete_last_passkey: Cannot delete the last passkey. You must have at least one passkey.
   uuid_pk:
     report:
       action_required: "Action required: Run migration to set DEFAULT uuidv7() for all tables."
   errors:
     messages:
-      validation_failed: "Please review the highlighted errors."
-    login_failed: "Login failed"
-    rate_limit:
-      exceeded: "Too many requests. Please try again later."
-      too_many_requests: "Too many requests right now. Please try again shortly."
-      retry_later: "Please retry in a little while."
-    webauthn:
-      email_required: "Please enter your email address"
-      identifier_required: "Please enter your email or staff code"
-      pii_required: "Please enter your email address or telephone number"
-      no_passkeys_available: "No passkeys available"
-      origin_invalid: "Authentication from this site is not allowed"
-      origin_not_trusted: "Origin '%{origin}' is not trusted. Configure TRUSTED_ORIGINS environment variable."
-      options_failed: "Failed to get authentication options"
-      challenge_id_required: "Challenge ID is required"
-      challenge_invalid: "Challenge is invalid or expired"
-      credential_not_found: "Passkey not found"
-      credential_already_registered: "This passkey is already registered"
-      sign_count_mismatch: "Passkey security verification failed"
-      verification_failed: "Passkey verification failed"
-    not_implemented: "This feature is not implemented"
-    messages:
       validation_errors:
-        one: "1 error"
+        one: 1 error
         other: "%{count} errors"
       webauthn:
-        email_required: "Please enter your email address"
-        identifier_required: "Please enter your email or staff code"
-        pii_required: "Please enter your email address or telephone number"
-        no_passkeys_available: "No passkeys available"
-        origin_invalid: "Authentication from this site is not allowed"
-        origin_not_trusted: "Origin '%{origin}' is not trusted. Configure TRUSTED_ORIGINS environment variable."
-        options_failed: "Failed to get authentication options"
-        credential_already_registered: "This passkey is already registered"
-      challenge_id_required: "Challenge ID is required"
-      challenge_invalid: "Challenge is invalid or expired"
-      credential_not_found: "Passkey not found"
-      sign_count_mismatch: "Passkey security verification failed"
-      verification_failed: "Passkey verification failed"
+        email_required: Please enter your email address
+        identifier_required: Please enter your email or staff code
+        pii_required: Please enter your email address or telephone number
+        no_passkeys_available: No passkeys available
+        origin_invalid: Authentication from this site is not allowed
+        origin_not_trusted:
+          Origin '%{origin}' is not trusted. Configure TRUSTED_ORIGINS environment variable.
+        options_failed: Failed to get authentication options
+        credential_already_registered: This passkey is already registered
+      challenge_id_required: Challenge ID is required
+      challenge_invalid: Challenge is invalid or expired
+      credential_not_found: Passkey not found
+      sign_count_mismatch: Passkey security verification failed
+      verification_failed: Passkey verification failed
+    login_failed: Login failed
+    rate_limit:
+      exceeded: Too many requests. Please try again later.
+      too_many_requests: Too many requests right now. Please try again shortly.
+      retry_later: Please retry in a little while.
+    webauthn:
+      email_required: Please enter your email address
+      identifier_required: Please enter your email or staff code
+      pii_required: Please enter your email address or telephone number
+      no_passkeys_available: No passkeys available
+      origin_invalid: Authentication from this site is not allowed
+      origin_not_trusted:
+        Origin '%{origin}' is not trusted. Configure TRUSTED_ORIGINS environment variable.
+      options_failed: Failed to get authentication options
+      challenge_id_required: Challenge ID is required
+      challenge_invalid: Challenge is invalid or expired
+      credential_not_found: Passkey not found
+      credential_already_registered: This passkey is already registered
+      sign_count_mismatch: Passkey security verification failed
+      verification_failed: Passkey verification failed
+    not_implemented: This feature is not implemented
     social_auth:
-      conflict: "This account is already linked to another user"
-      unauthorized: "Authentication failed"
-      state_missing: "Security state parameter missing. Please try again."
-      state_mismatch: "Security verification failed. Please try again."
-      state_expired: "Session expired. Please try again."
-      reauth_required: "This action requires recent re-authentication. Please authenticate again."
-      user_changed: "User session changed during authentication"
-      invalid_intent: "Invalid authentication intent"
-      not_logged_in: "Please log in first"
-      missing_auth_hash: "Authentication data not received"
-      missing_provider: "Provider information missing"
-      missing_uid: "User identifier not received from provider"
-      identity_conflict: "This account is already linked"
-      linked_to_another_user: "This %{provider} account is already linked to another user"
-      identity_not_found: "No %{provider} account linked"
-      last_identity: "Cannot remove your last login method"
-      insufficient_login_methods: "Please add another login method (email, passkey with verified phone, or another social account) before unlinking"
-      reauth_identity_mismatch: "Please use the same %{provider} account that is linked to your profile"
-      provider_error: "Error communicating with provider"
-  sign:
-    common:
-      cancel: "Cancel"
-    default_passkey_description: "My Passkey"
-    app:
-      authentication:
-        new:
-          page_title: "Sign in"
-          description: "Select a method to sign in"
-          back: "Back"
-          links:
-            email: "Email"
-            passkey: "Passkey"
-            secret: "Secret Key"
-            google: "Google"
-            apple: "Apple"
-            registration: "Sign Up"
-        secret:
-          new:
-            page_title: "Sign in with a secret"
-            pii_label: "Email or telephone"
-            pii_placeholder: "user@example.com or +81 90 1234 5678"
-            secret_label: "Secret"
-            hints: "Available secret hints"
-          create:
-            success: "Signed in successfully."
-            invalid: "Authentication failed. Please check your credentials."
-        passkey:
-          new:
-            page_title: "Sign in with Passkey"
-            description: "Sign in using your registered passkey"
-            pii_label: "Email or telephone"
-            pii_placeholder: "user@example.com or +81 90 1234 5678"
-            submit: "Sign in with Passkey"
-      outs:
-        destroy:
-          success: "You have been signed out."
-      configuration:
-        show:
-          page_title: "Settings"
-          description: "Account settings and security management"
-          security_settings: "Security Settings"
-          totp_desc: "Configure 2FA"
-          passkey_desc: "Manage passkeys"
-          secret_desc: "Manage secret keys"
-          account_settings: "Account Settings"
-          email_desc: "Manage contact emails"
-          telephone_desc: "Manage contact phone numbers"
-          session_desc: "Manage active sessions"
-          external_services: "External Services"
-          google_desc: "Connect Google account"
-          apple_desc: "Connect Apple ID"
-          others: "Others"
-          withdrawal_desc: "Delete account"
-          withdrawal: "Withdrawal"
-          back: "Back to top"
-          session_header: "Session"
-          logout: "Logout"
-        edit:
-          page_title: "Account Status"
-          deactivated_notice: "Withdrawal is in progress. Settings cannot be changed."
-          scheduled_purge_notice: "Scheduled for deletion on %{date}."
-          withdrawal_link: "Review withdrawal details"
-          not_deactivated: "Your account is active."
-        withdrawal:
-          new:
-            page_title: "Withdraw Account"
-            already_deactivated: "Your account is already deactivated."
-          schedule:
-            title: "Schedule deletion"
-            ack_label: "I understand the account will be scheduled for deletion in 31 days."
-            submit: "Continue"
-          deactivate:
-            title: "Deactivate today"
-            ack_label: "I understand my account will be deactivated today."
-            submit: "Deactivate account"
-            confirm: "Deactivate your account today?"
-        passkey:
-          index:
-            title: "Passkey Management"
-            description: "Manage your registered passkeys"
-        passkeys:
-          new:
-            page_title: "Register Passkey"
-            description: "Register a new passkey to sign in without a password"
-            description_label: "Passkey name"
-            description_placeholder: "e.g., MacBook Pro"
-            submit: "Register Passkey"
-          index:
-            title: "Passkey Management"
-            description: "Manage your registered passkeys"
-            add: "Register new passkey"
-            empty: "No passkeys registered"
-            back: "Back to settings"
-          show:
-            title: "Passkey Details"
-            back: "Back to list"
-          edit:
-            title: "Edit Passkey"
-        secrets:
-          create:
-            created: "Secret has been saved."
-          update:
-            updated: "Secret has been successfully updated."
-          destroy:
-            destroyed: "Secret has been successfully deleted."
-      reauth:
-        index:
-          title: "Re-authentication Sessions"
-          new: "New"
-          empty: "No sessions found"
-          table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
-        new:
-          title: "Re-authentication"
-          description: "Re-authentication is required to continue. Please select a method."
-          method_legend: "Authentication Method"
-          methods:
-            passkey: "Passkey"
-            totp: "Authenticator App (TOTP)"
-            email_otp: "Email (One-time code)"
-          submit: "Continue"
-          back: "Back"
-        show:
-          title: "Re-authentication Session"
-          list: "List"
-          to_edit: "To input screen"
-          cancel: "Cancel"
-          confirm_cancel: "Are you sure?"
-        edit:
-          title: "Re-authentication"
-          description: "Please enter the code or use passkey authentication for identity verification."
-          authenticate_with_passkey: "Authenticate with Passkey"
-          code_label: "Verification Code"
-          code_placeholder: "6 digits"
-          submit: "Confirm"
-          cancel: "Cancel"
-          confirm_cancel: "Are you sure?"
-        success:
-          complete: "Re-authentication completed."
-
-      verification:
-        index:
-          title: "Verification Sessions"
-          new: "New"
-          empty: "No sessions found"
-          table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
-        new:
-          title: "Verification"
-          description: "Verification is required to continue. Please select a method."
-          method_legend: "Authentication Method"
-          methods:
-            passkey: "Passkey"
-            totp: "Authenticator App (TOTP)"
-            email_otp: "Email (One-time code)"
-          submit: "Continue"
-          back: "Back"
-        edit:
-          title: "Verification"
-          description: "Please enter the code or use passkey authentication for identity verification."
-          authenticate_with_passkey: "Authenticate with Passkey"
-          code_label: "Verification Code"
-          code_placeholder: "6 digits"
-          submit: "Confirm"
-          back: "Back"
-        success:
-          complete: "Verification completed."
-        setup:
-          title: "Set up verification methods"
-          description: "Please register passkey, email, telephone, or authenticator app before continuing."
-          methods:
-            passkey: "Register passkey"
-            email: "Register email"
-            telephone: "Register telephone"
-            totp: "Register authenticator app (TOTP)"
-    social:
-      sessions:
-        invalid_provider: "Invalid provider specified"
-        create:
-          success: "Successfully signed in with %{provider}"
-          already_registered: "Welcome back! Signed in with %{provider}"
-          failure: "Failed to sign in. Please try again."
-        link:
-          success: "Successfully linked %{provider} account"
-        unlink:
-          success: "Successfully unlinked %{provider} account"
-        reauth:
-          success: "Successfully re-authenticated with %{provider}"
-        failure:
-          unknown_error: "An unknown error occurred"
-          invalid_credentials: "Invalid credentials"
-          access_denied: "Access was denied"
-          timeout: "Request timed out"
-          # Apple-specific errors
-          invalid_client: "Apple Sign In configuration error. Please contact support."
-          invalid_grant: "Apple authorization expired. Please try again."
-          invalid_request: "Invalid request to Apple. Please try again."
-          invalid_redirect_uri: "Apple Sign In redirect URL is misconfigured."
-          user_cancelled_authorize: "You cancelled the Apple Sign In. Please try again if needed."
-    org:
-      reauth:
-        index:
-          title: "Re-authentication Sessions"
-          new: "New"
-          empty: "No sessions found"
-          table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
-        new:
-          title: "Re-authentication"
-          description: "Re-authentication is required to continue. Please select a method."
-          method_legend: "Authentication Method"
-          methods:
-            passkey: "Passkey"
-            totp: "Authenticator App (TOTP)"
-            email_otp: "Email (One-time code)"
-          submit: "Continue"
-          back: "Back"
-
-      verification:
-        index:
-          title: "Verification Sessions"
-          new: "New"
-          empty: "No sessions found"
-          table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
-        new:
-          title: "Verification"
-          description: "Verification is required to continue. Please select a method."
-          method_legend: "Authentication Method"
-          methods:
-            passkey: "Passkey"
-            totp: "Authenticator App (TOTP)"
-          submit: "Continue"
-          back: "Back"
-        edit:
-          title: "Verification"
-          description: "Please enter the code or use passkey authentication for identity verification."
-          authenticate_with_passkey: "Authenticate with Passkey"
-          code_label: "Verification Code"
-          code_placeholder: "6 digits"
-          submit: "Confirm"
-          back: "Back"
-        success:
-          complete: "Verification completed."
-        show:
-          title: "Re-authentication Session"
-          list: "List"
-          to_edit: "To input screen"
-          cancel: "Cancel"
-          confirm_cancel: "Are you sure?"
-        edit:
-          title: "Re-authentication"
-          description: "Please enter the code or use passkey authentication for identity verification."
-          authenticate_with_passkey: "Authenticate with Passkey"
-          code_label: "Verification Code"
-          code_placeholder: "6 digits"
-          submit: "Confirm"
-          cancel: "Cancel"
-          confirm_cancel: "Are you sure?"
-        success:
-          complete: "Re-authentication completed."
-        setup:
-          title: "Set up verification methods"
-          description: "Please register passkey or authenticator app before continuing."
-          methods:
-            passkey: "Register passkey"
-            totp: "Register authenticator app (TOTP)"
-
-      verification:
-        index:
-          title: "Verification Sessions"
-          new: "New"
-          empty: "No sessions found"
-          table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
-        new:
-          title: "Verification"
-          description: "Verification is required to continue. Please select a method."
-          method_legend: "Authentication Method"
-          methods:
-            passkey: "Passkey"
-            totp: "Authenticator App (TOTP)"
-            email_otp: "Email (One-time code)"
-          submit: "Continue"
-          back: "Back"
-        edit:
-          title: "Verification"
-          description: "Please enter the code or use passkey authentication for identity verification."
-          authenticate_with_passkey: "Authenticate with Passkey"
-          code_label: "Verification Code"
-          code_placeholder: "6 digits"
-          submit: "Confirm"
-          back: "Back"
-        success:
-          complete: "Verification completed."
-      authentication:
-        new:
-          back: "Back"
-        passkey:
-          new:
-            page_title: "Sign in with Passkey"
-            description: "Sign in using your registered passkey"
-            identifier_label: "Email or Staff Code"
-            identifier_placeholder: "Email or staff code"
-            submit: "Sign in with Passkey"
-      outs:
-        destroy:
-          success: "You have been signed out."
-      configuration:
-        passkeys:
-          new:
-            page_title: "Register Passkey"
-            description: "Register a new passkey to sign in without a password"
-            description_label: "Passkey name"
-            description_placeholder: "e.g., MacBook Pro"
-            submit: "Register Passkey"
-          index:
-            title: "Passkey Management"
-            description: "Manage your registered passkeys"
-            add: "Register new passkey"
-            empty: "No passkeys registered"
-            back: "Back to settings"
-          show:
-            title: "Passkey Details"
-            back: "Back to list"
-          edit:
-            title: "Edit Passkey"
-        secrets:
-          create:
-            created: "Secret has been saved."
-          update:
-            updated: "Secret has been successfully updated."
-          destroy:
-            destroyed: "Secret has been successfully deleted."
-      registration:
-        email:
-          destroy:
-            cancelled: "Registration cancelled."
-          flow:
-            invalid: "Please follow the registration steps in order."
-            invalid_step: "Please complete the previous step first."
+      conflict: This account is already linked to another user
+      unauthorized: Authentication failed
+      state_missing: Security state parameter missing. Please try again.
+      state_mismatch: Security verification failed. Please try again.
+      state_expired: Session expired. Please try again.
+      reauth_required: This action requires recent re-authentication. Please authenticate again.
+      user_changed: User session changed during authentication
+      invalid_intent: Invalid authentication intent
+      not_logged_in: Please log in first
+      missing_auth_hash: Authentication data not received
+      missing_provider: Provider information missing
+      missing_uid: User identifier not received from provider
+      identity_conflict: This account is already linked
+      linked_to_another_user: This %{provider} account is already linked to another user
+      identity_not_found: No %{provider} account linked
+      last_identity: Cannot remove your last login method
+      insufficient_login_methods:
+        Please add another login method (email, passkey with verified phone, or another social
+        account) before unlinking
+      reauth_identity_mismatch:
+        Please use the same %{provider} account that is linked to your profile
+      provider_error: Error communicating with provider
   mail:
     common:
-      greeting: "Hello,"
-      footer_note: "This is an automated message. Please do not reply."
+      greeting: Hello,
+      footer_note: This is an automated message. Please do not reply.
     email:
       app:
         registration_mailer:
           create:
-            subject: "Your verification code"
-            title: "Verify your email address"
+            subject: Your verification code
+            title: Verify your email address
             instruction: "Please use the following verification code to complete your registration:"
-            expiration_note: "This code will expire in 10 minutes."
-            ignore_instruction: "If you did not request this, please ignore this email."
+            expiration_note: This code will expire in 10 minutes.
+            ignore_instruction: If you did not request this, please ignore this email.
   sequential_flow:
-    invalid_step: "Invalid access. Please start from the beginning."
-  org_timeline_tags: { "%{id}": "org_timeline_tag_%{id}" }
-  app_timeline_tags: { "%{id}": "app_timeline_tag_%{id}" }
-  com_timeline_categories: { "%{id}": "com_timeline_category_%{id}" }
-  com_timeline_tags: { "%{id}": "com_timeline_tag_%{id}" }
-  org_timeline_categories: { "%{id}": "org_timeline_category_%{id}" }
-  app_timeline_categories: { "%{id}": "app_timeline_category_%{id}" }
-  com_document_categories: { "%{id}": "com_document_category_%{id}" }
-  com_document_tags: { "%{id}": "com_document_tag_%{id}" }
-  org_document_tags: { "%{id}": "org_document_tag_%{id}" }
-  app_document_tags: { "%{id}": "app_document_tag_%{id}" }
-  org_document_categories: { "%{id}": "org_document_category_%{id}" }
-  app_document_categories: { "%{id}": "app_document_category_%{id}" }
+    invalid_step: Invalid access. Please start from the beginning.
+  org_timeline_tags:
+    "%{id}": org_timeline_tag_%{id}
+  app_timeline_tags:
+    "%{id}": app_timeline_tag_%{id}
+  com_timeline_categories:
+    "%{id}": com_timeline_category_%{id}
+  com_timeline_tags:
+    "%{id}": com_timeline_tag_%{id}
+  org_timeline_categories:
+    "%{id}": org_timeline_category_%{id}
+  app_timeline_categories:
+    "%{id}": app_timeline_category_%{id}
+  com_document_categories:
+    "%{id}": com_document_category_%{id}
+  com_document_tags:
+    "%{id}": com_document_tag_%{id}
+  org_document_tags:
+    "%{id}": org_document_tag_%{id}
+  app_document_tags:
+    "%{id}": app_document_tag_%{id}
+  org_document_categories:
+    "%{id}": org_document_category_%{id}
+  app_document_categories:
+    "%{id}": app_document_category_%{id}
   core:
     app:
       layout:
         nav:
-          sign_up: "Sign Up"
-          configuration: "Configuration"
+          sign_up: Sign Up
+          configuration: Configuration
   apex:
     org:
       preference:
         cookie:
           edit:
-            description: "Cookie Preferences"
+            description: Cookie Preferences
   custom:
     error:
-      key: "Custom Error"
+      key: Custom Error
   test:
     error:
-      key: "Test Error"
+      key: Test Error
+  preference:
+    cookie:
+      banner:
+        message: We use cookies to improve your experience.
+        accept: Accept
+        cancel: Cancel

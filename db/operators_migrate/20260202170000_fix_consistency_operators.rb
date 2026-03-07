@@ -7,14 +7,14 @@ class FixConsistencyOperators < ActiveRecord::Migration[8.2]
       %w(
         staff_one_time_passwords staff_passkeys staff_secrets
         staff_emails staff_telephones
-        admins
+        operators
         divisions departments
         organizations
         staffs
         staff_statuses staff_telephone_statuses staff_email_statuses
         staff_secret_statuses staff_secret_kinds
         staff_passkey_statuses
-        organization_statuses department_statuses division_statuses admin_statuses
+        organization_statuses department_statuses division_statuses operator_statuses
       ).each do |table|
         execute "DELETE FROM #{table}" if table_exists?(table)
       end
@@ -80,9 +80,9 @@ class FixConsistencyOperators < ActiveRecord::Migration[8.2]
         add_foreign_key :divisions, :organizations, column: :organization_id, on_delete: :nullify
       end
 
-      # --- Admin ---
-      remove_column :admins, :status_id if column_exists?(:admins, :status_id)
-      add_reference :admins, :status, foreign_key: { to_table: :admin_statuses }, type: :bigint, default: 0, null: false
+      # --- Operator ---
+      remove_column :operators, :status_id if column_exists?(:operators, :status_id)
+      add_reference :operators, :status, foreign_key: { to_table: :operator_statuses }, type: :bigint, default: 0, null: false
     end
   end
 

@@ -10,6 +10,10 @@ class Current < ActiveSupport::CurrentAttributes
   attribute :session
   attribute :token
 
+  # TODO: return :org, :app or :com
+  def domain
+  end
+
   def user?
     actor_type == :user
   end
@@ -18,11 +22,11 @@ class Current < ActiveSupport::CurrentAttributes
     actor_type == :staff
   end
 
-  def admin?
-    actor_type == :admin
+  def operator?
+    actor_type == :operator
   end
 
-  def client?
-    actor_type == :client
+  def member?
+    actor_type == :member
   end
 end

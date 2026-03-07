@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: operator_statuses
+# Database name: operator
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 2
+active:
+  id: 1

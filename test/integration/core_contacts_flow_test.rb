@@ -141,6 +141,74 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "org contacts new with invalid category renders form with nil category" do
+    host! @org_host
+    clear_staff_channels(@staff)
+    add_staff_email(@staff)
+    add_staff_telephone(@staff)
+
+    get new_core_org_contact_url(category: "invalid"), headers: org_auth_headers(@staff)
+
+    assert_response :success
+  end
+
+  test "org contacts new with valid category passes category to form" do
+    host! @org_host
+    clear_staff_channels(@staff)
+    add_staff_email(@staff)
+    add_staff_telephone(@staff)
+
+    category = OrgContactCategory.first
+    get new_core_org_contact_url(category: category.id), headers: org_auth_headers(@staff)
+
+    assert_response :success
+  end
+
+  test "org contacts with turnstile stealth validation" do
+    host! @org_host
+    clear_staff_channels(@staff)
+    add_staff_email(@staff)
+    add_staff_telephone(@staff)
+
+    Jit::Security::TurnstileConfig.stub(:stealth_secret_key, "test_secret") do
+      Jit::Security::TurnstileVerifier.stub(:verify, { "success" => true }) do
+        assert_difference(
+          ["OrgContact.count", "OrgContactTopic.count", "OrgContactEmail.count",
+           "OrgContactTelephone.count",], 1,
+        ) do
+          post core_org_contacts_url, headers: org_auth_headers(@staff), params: {
+            :org_contact => base_contact_params.merge(
+              category_id: OrgContactCategory::ORGANIZATION_INQUIRY,
+              title: "Org inquiry with turnstile",
+              body: "Org body with turnstile",
+            ),
+            "cf-turnstile-response" => "test_token",
+          }
+        end
+        assert_response :redirect
+      end
+    end
+  end
+
+  test "org contacts fails with invalid topic" do
+    host! @org_host
+    clear_staff_channels(@staff)
+    add_staff_email(@staff)
+    add_staff_telephone(@staff)
+
+    Jit::Security::TurnstileConfig.stub(:stealth_secret_key, nil) do
+      post core_org_contacts_url, headers: org_auth_headers(@staff), params: {
+        org_contact: base_contact_params.merge(
+          category_id: OrgContactCategory::ORGANIZATION_INQUIRY,
+          title: "",
+          body: "",
+        ),
+      }
+
+      assert_response :unprocessable_content
+    end
+  end
+
   test "com contacts keeps public verification flow" do
     host! @com_host
     CloudflareTurnstile.test_mode = true

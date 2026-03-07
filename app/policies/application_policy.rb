@@ -71,8 +71,8 @@ class ApplicationPolicy
   end
 
   # Role-based checks
-  def admin?
-    actor&.has_role?("admin", organization: organization)
+  def operator?
+    actor&.has_role?("operator", organization: organization)
   end
 
   def manager?
@@ -92,8 +92,8 @@ class ApplicationPolicy
   end
 
   # Combined role checks
-  def admin_or_manager?
-    actor&.admin_or_manager?(organization: organization)
+  def operator_or_manager?
+    actor&.operator_or_manager?(organization: organization)
   end
 
   def can_edit?
@@ -128,8 +128,8 @@ class ApplicationPolicy
       actor&.has_role?(role_key, organization: organization)
     end
 
-    def admin_or_manager?(organization: nil)
-      actor&.admin_or_manager?(organization: organization)
+    def operator_or_manager?(organization: nil)
+      actor&.operator_or_manager?(organization: organization)
     end
   end
 end

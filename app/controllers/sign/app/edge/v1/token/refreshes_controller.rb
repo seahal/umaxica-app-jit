@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::BaseController
+  include ::Preference::WebCookieEndpoint
+
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token
   protect_from_forgery with: :exception
@@ -25,6 +27,7 @@ class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::Bas
     credentials = refresh_access_token(refresh_plain)
 
     if credentials
+      sync_consented_buffer_cookie_safely!
       render json: { refreshed: true }, status: :ok
     else
       status = refresh_failure_status

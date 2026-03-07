@@ -43,17 +43,28 @@ development:
     database: development_principal_db
     host: <%= ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
     migrations_paths: db/principals_migrate
-  profile:
+  finder:
     !!merge <<: *default
-    database: development_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] || default_host %>
-    migrations_paths: db/profiles_migrate
-  profile_replica:
+    database: development_finder_db
+    host: <%= ENV["POSTGRESQL_FINDER_PUB"] || default_host %>
+    migrations_paths: db/finders_migrate
+  finder_replica:
     !!merge <<: *default
     replica: true
-    database: development_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] || default_host %>
-    migrations_paths: db/profiles_migrate
+    database: development_finder_db
+    host: <%= ENV["POSTGRESQL_FINDER_SUB"] || default_host %>
+    migrations_paths: db/finders_migrate
+  search:
+    !!merge <<: *default
+    database: development_search_db
+    host: <%= ENV["POSTGRESQL_SEARCH_PUB"] || default_host %>
+    migrations_paths: db/searches_migrate
+  search_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_search_db
+    host: <%= ENV["POSTGRESQL_SEARCH_SUB"] || default_host %>
+    migrations_paths: db/searches_migrate
   preference:
     !!merge <<: *default
     database: development_preference_db
@@ -253,17 +264,28 @@ test:
     database: test_principal_db
     host: <%= test_host %>
     migrations_paths: db/principals_migrate
-  profile:
+  finder:
     !!merge <<: *test_default
-    database: test_profile_db
+    database: test_finder_db
     host: <%= test_host %>
-    migrations_paths: db/profiles_migrate
-  profile_replica:
+    migrations_paths: db/finders_migrate
+  finder_replica:
     !!merge <<: *test_default
     replica: true
-    database: test_profile_db
+    database: test_finder_db
     host: <%= test_host %>
-    migrations_paths: db/profiles_migrate
+    migrations_paths: db/finders_migrate
+  search:
+    !!merge <<: *test_default
+    database: test_search_db
+    host: <%= test_host %>
+    migrations_paths: db/searches_migrate
+  search_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_search_db
+    host: <%= test_host %>
+    migrations_paths: db/searches_migrate
   preference:
     !!merge <<: *test_default
     database: test_preference_db
@@ -469,23 +491,40 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL_REPLICA&.PASSWORD %>
     migrations_paths: db/principals_migrate
-  profile:
+  finder:
     !!merge <<: *default
-    database: production_profile_db
+    database: production_finder_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.PROFILE&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.FINDER&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.PROFILE&.PASSWORD %>
-    migrations_paths: db/profiles_migrate
-  profile_replica:
+    password: <%= Rails.application.credentials&.DATABASE&.FINDER&.PASSWORD %>
+    migrations_paths: db/finders_migrate
+  finder_replica:
     !!merge <<: *default
     replica: true
-    database: production_profile_db
+    database: production_finder_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.PROFILE_REPLICA&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.FINDER_REPLICA&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.PROFILE_REPLICA&.PASSWORD %>
-    migrations_paths: db/profiles_migrate
+    password: <%= Rails.application.credentials&.DATABASE&.FINDER_REPLICA&.PASSWORD %>
+    migrations_paths: db/finders_migrate
+  search:
+    !!merge <<: *default
+    database: production_search_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.SEARCH&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.SEARCH&.PASSWORD %>
+    migrations_paths: db/searches_migrate
+  search_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_search_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.SEARCH_REPLICA&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.SEARCH_REPLICA&.PASSWORD %>
+    migrations_paths: db/searches_migrate
   preference:
     !!merge <<: *default
     database: production_preference_db

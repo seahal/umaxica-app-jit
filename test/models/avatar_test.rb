@@ -15,7 +15,7 @@
 #  active_handle_id             :bigint           not null
 #  avatar_status_id             :string
 #  capability_id                :bigint           default(0), not null
-#  client_id                    :bigint
+#  member_id                    :bigint
 #  owner_organization_id        :string
 #  public_id                    :string           not null
 #  representing_organization_id :string
@@ -24,7 +24,7 @@
 #
 #  index_avatars_on_active_handle_id              (active_handle_id)
 #  index_avatars_on_capability_id                 (capability_id)
-#  index_avatars_on_client_id                     (client_id)
+#  index_avatars_on_member_id                     (member_id)
 #  index_avatars_on_owner_organization_id         (owner_organization_id)
 #  index_avatars_on_public_id                     (public_id) UNIQUE
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
@@ -162,7 +162,7 @@ class AvatarTest < ActiveSupport::TestCase
 
     assert_equal user, avatar.affiliation_user
 
-    # Administrators
+    # Operators
     avatar.avatar_assignments.create!(user_id: user.id, role: "administrator")
 
     assert_includes avatar.administrators, user
@@ -238,9 +238,9 @@ class AvatarTest < ActiveSupport::TestCase
   end
 
   def create_user_and_status
-    UserStatus.find_or_create_by!(id: UserStatus::NONE)
+    UserStatus.find_or_create_by!(id: UserStatus::NOTHING)
     User.find_or_create_by!(public_id: "one_id") do |u|
-      u.status_id = UserStatus::NONE
+      u.status_id = UserStatus::NOTHING
     end
   end
 end

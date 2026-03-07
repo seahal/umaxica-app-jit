@@ -26,7 +26,7 @@ class ComTimelinePolicy < ApplicationPolicy
 
   def destroy?
     # Only staff managers and above can delete
-    actor.is_a?(Staff) && admin_or_manager?
+    actor.is_a?(Staff) && operator_or_manager?
   end
 
   class Scope < ApplicationPolicy::Scope

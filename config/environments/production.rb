@@ -35,11 +35,12 @@ Rails.application.configure do
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
   config.ssl_options = { hsts: { subdomains: true } }
 
-  # Log to STDOUT using a JSON formatter for Cloud Run visibility.
+  # Log to STDOUT as JSON for Cloud Run visibility.
   STDOUT.sync = true
   STDERR.sync = true
-  logger = ActiveSupport::Logger.new $stdout
-  config.logger = ActiveSupport::TaggedLogging.new logger
+  logger = ActiveSupport::Logger.new($stdout)
+  logger.formatter = config.log_formatter if config.log_formatter
+  config.logger = ActiveSupport::TaggedLogging.new(logger)
   config.log_tags = [:request_id]
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!).

@@ -5,7 +5,7 @@
 #
 #  id :bigint           not null, primary key
 #
-neyo:
+nothing:
   id: 2
 deleted:
   id: 1

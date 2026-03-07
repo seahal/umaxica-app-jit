@@ -17,7 +17,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_index_with_staff_and_admin_or_manager
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin_or_manager?) { true }
+    policy.define_singleton_method(:operator_or_manager?) { true }
 
     assert_predicate policy, :index?
   end
@@ -25,7 +25,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_index_with_staff_without_admin_or_manager
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin_or_manager?) { false }
+    policy.define_singleton_method(:operator_or_manager?) { false }
 
     assert_not policy.index?
   end
@@ -54,7 +54,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_show_with_staff_and_admin_or_manager
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin_or_manager?) { true }
+    policy.define_singleton_method(:operator_or_manager?) { true }
 
     assert_predicate policy, :show?
   end
@@ -62,7 +62,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_show_with_staff_without_admin_or_manager
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin_or_manager?) { false }
+    policy.define_singleton_method(:operator_or_manager?) { false }
 
     assert_not policy.show?
   end
@@ -79,7 +79,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_create_with_staff_and_admin
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin?) { true }
+    policy.define_singleton_method(:operator?) { true }
 
     assert_predicate policy, :create?
   end
@@ -87,7 +87,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_create_with_staff_without_admin
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin?) { false }
+    policy.define_singleton_method(:operator?) { false }
 
     assert_not policy.create?
   end
@@ -110,7 +110,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_update_with_staff_and_admin_or_manager
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin_or_manager?) { true }
+    policy.define_singleton_method(:operator_or_manager?) { true }
 
     assert_predicate policy, :update?
   end
@@ -118,7 +118,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_update_with_staff_without_admin_or_manager
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin_or_manager?) { false }
+    policy.define_singleton_method(:operator_or_manager?) { false }
 
     assert_not policy.update?
   end
@@ -143,7 +143,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_destroy_with_staff_and_admin
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin?) { true }
+    policy.define_singleton_method(:operator?) { true }
 
     assert_predicate policy, :destroy?
   end
@@ -151,7 +151,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_destroy_with_staff_without_admin
     staff = staffs(:one)
     policy = UserPolicy.new(staff, MockRecord.new)
-    policy.define_singleton_method(:admin?) { false }
+    policy.define_singleton_method(:operator?) { false }
 
     assert_not policy.destroy?
   end
@@ -180,7 +180,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_scope_with_staff_admin_or_manager
     staff = staffs(:one)
     scope = UserPolicy::Scope.new(staff, User)
-    scope.define_singleton_method(:admin_or_manager?) { true }
+    scope.define_singleton_method(:operator_or_manager?) { true }
 
     assert_equal User.all, scope.resolve
   end
@@ -188,7 +188,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   def test_scope_with_staff_not_admin_or_manager
     staff = staffs(:one)
     scope = UserPolicy::Scope.new(staff, User)
-    scope.define_singleton_method(:admin_or_manager?) { false }
+    scope.define_singleton_method(:operator_or_manager?) { false }
 
     assert_equal User.none, scope.resolve
   end

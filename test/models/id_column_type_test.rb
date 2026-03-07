@@ -19,11 +19,11 @@ class IdColumnTypeTest < ActiveSupport::TestCase
   end
 
   test "message and notification public_id columns are strings" do
-    [AdminMessage, ClientMessage, StaffMessage, UserMessage].each do |model|
+    [OperatorMessage, MemberMessage, StaffMessage, UserMessage].each do |model|
       assert_string_column(model, "public_id")
     end
 
-    [AdminNotification, ClientNotification, StaffNotification, UserNotification].each do |model|
+    [OperatorNotification, MemberNotification, StaffNotification, UserNotification].each do |model|
       assert_string_column(model, "public_id")
     end
   end

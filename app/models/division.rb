@@ -33,7 +33,7 @@ class Division < OperatorRecord
              class_name: "Organization",
              optional: true,
              inverse_of: :divisions
-  has_many :clients,
+  has_many :members,
            dependent: :nullify,
            inverse_of: :division
 

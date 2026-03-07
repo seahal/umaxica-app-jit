@@ -3,7 +3,7 @@
 class RenameOperatorTables < ActiveRecord::Migration[8.2]
   def change
     safety_assured do
-      rename_table :admin_identity_statuses, :admin_statuses
+      rename_table :admin_identity_statuses, :operator_statuses
 
       rename_table :staff_identity_emails, :staff_emails
       rename_table :staff_identity_telephones, :staff_telephones

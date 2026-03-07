@@ -6,10 +6,8 @@
 #
 #  id :bigint           not null, primary key
 #
-neyo:
+nothing:
   id: 11
-none:
-  id: 13
 active:
   id: 1
 deleted:

@@ -115,7 +115,7 @@
     "RUBY_DEBUG_OPEN": "false"
   },
   "updateRemoteUserUID": true,
-  "postCreateCommand": "sudo chown -R 1000:1000 /home/jit/ && RAILS_ENV=test bin/rails db:create || true",
+  "postCreateCommand": "sudo chown -R 1000:1000 /home/jit/",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt:1": {},

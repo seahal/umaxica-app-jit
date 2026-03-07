@@ -26,7 +26,30 @@
 require "test_helper"
 
 class AreaZipOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :area_occurrences, :zip_occurrences
+
+  test "associations" do
+    record = AreaZipOccurrence.new(
+      area_occurrence: area_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal area_occurrences(:one), record.area_occurrence
+    assert_equal zip_occurrences(:one), record.zip_occurrence
+  end
+
+  test "uniqueness validation" do
+    AreaZipOccurrence.create!(
+      area_occurrence: area_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+    duplicate = AreaZipOccurrence.new(
+      area_occurrence: area_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:area_occurrence_id]
+  end
 end

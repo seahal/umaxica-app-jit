@@ -26,7 +26,26 @@
 require "test_helper"
 
 class StaffUserOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "associations" do
+    staff = StaffOccurrence.create!(body: "staff-001")
+    user = UserOccurrence.create!(body: "user-001")
+    record = StaffUserOccurrence.new(
+      staff_occurrence: staff,
+      user_occurrence: user,
+    )
+
+    assert record.save!
+    assert_equal staff, record.staff_occurrence
+    assert_equal user, record.user_occurrence
+  end
+
+  test "uniqueness validation" do
+    staff = StaffOccurrence.create!(body: "staff-002")
+    user = UserOccurrence.create!(body: "user-002")
+    StaffUserOccurrence.create!(staff_occurrence: staff, user_occurrence: user)
+    duplicate = StaffUserOccurrence.new(staff_occurrence: staff, user_occurrence: user)
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:staff_occurrence_id]
+  end
 end

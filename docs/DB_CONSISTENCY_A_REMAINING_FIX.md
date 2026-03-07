@@ -50,7 +50,7 @@ focus was on:
 - Converts `staff_secrets.staff_secret_kind_id` to bigint
 - Adds FK constraints for these columns
 - Enforces NOT NULL on:
-  - `admins.public_id`
+  - `operators.public_id`
   - `departments.name`
   - `staff_emails.staff_id`, `staff_emails.address`, `staff_emails.otp_counter`,
     `staff_emails.otp_private_key`
@@ -144,7 +144,7 @@ focus was on:
 
 ### ColumnPresenceChecker
 
-- ✅ `public_id` NOT NULL for users, clients, admins, messages
+- ✅ `public_id` NOT NULL for users, clients, operators, messages
 - ✅ `parent_id` NOT NULL for document masters
 - ✅ `parent_id` NOT NULL for timeline masters
 - ✅ `departments.name` NOT NULL

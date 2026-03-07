@@ -2,7 +2,7 @@
 
 class EnsureSeedReferenceDataInOperators < ActiveRecord::Migration[8.2]
   DATA = {
-    admin_statuses: {
+    operator_statuses: {
       1 => "ACTIVE",
       2 => "NEYO",
     },

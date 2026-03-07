@@ -376,16 +376,16 @@ class SocialAuthService
   end
 
   def ensure_user_status(user)
-    # If status is unset or defaulted to NONE, set it to UNVERIFIED_WITH_SIGN_UP for social sign-up.
-    if user.status_id.present? && user.status_id != UserStatus::NONE
+    # If status is unset or defaulted to NOTHING, set it to UNVERIFIED_WITH_SIGN_UP for social sign-up.
+    if user.status_id.present? && user.status_id != UserStatus::NOTHING
       return
     end
 
     status_id =
       if UserStatus.exists?(id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
         UserStatus::UNVERIFIED_WITH_SIGN_UP
-      elsif UserStatus.exists?(id: UserStatus::NONE)
-        UserStatus::NONE
+      elsif UserStatus.exists?(id: UserStatus::NOTHING)
+        UserStatus::NOTHING
       else
         UserStatus.first&.id
       end

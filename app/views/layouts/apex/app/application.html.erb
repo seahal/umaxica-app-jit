@@ -37,6 +37,9 @@
         <%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_configuration_out_url(host: ENV['SIGN_SERVICE_URL']) %>
       <% end %>
     <% end %>
+<% if show_cookie_banner? %>
+  <%= render "shared/cookie_banner" %>
+<% end %>
 
     <main>
       <%= yield %>
