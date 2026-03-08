@@ -16,6 +16,7 @@ module Sign
 
             assert_response :success
             assert_includes response.body, "OK"
+            assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
           end
 
           test "returns success for explicit html format" do
@@ -23,6 +24,7 @@ module Sign
 
             assert_response :success
             assert_includes response.body, "OK"
+            assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
           end
 
           test "returns OK status payload for json format" do
@@ -30,6 +32,7 @@ module Sign
 
             assert_response :success
             assert_equal "OK", response.parsed_body["status"]
+            assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.parsed_body["timestamp"])
           end
 
           test "raises error for unsupported yaml format" do
@@ -37,6 +40,7 @@ module Sign
 
             assert_response :success
             assert_equal "OK", response.parsed_body["status"]
+            assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.parsed_body["timestamp"])
           end
 
           test "json response conforms to OpenAPI schema" do

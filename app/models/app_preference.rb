@@ -38,6 +38,7 @@
 # frozen_string_literal: true
 
 class AppPreference < PreferenceRecord
+  # TODO: Add `deletable_at` to AppPreference for lifecycle-based cleanup.
   include ::PublicId
   include ::ConsumeOnceToken
   include ::Preference::Resettable
@@ -72,6 +73,9 @@ class AppPreference < PreferenceRecord
            foreign_key: :subject_id,
            inverse_of: :app_preference,
            dependent: :destroy
+  has_many :user_app_preferences,
+           dependent: :delete_all,
+           inverse_of: :app_preference
   belongs_to :replaced_by,
              class_name: "AppPreference",
              optional: true

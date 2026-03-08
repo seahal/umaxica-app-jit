@@ -35,9 +35,9 @@ class ValidateFixDatabaseConsistencyIdentityRelations < ActiveRecord::Migration[
       validate_foreign_key :clients, :divisions
     end
 
-    if table_exists?(:admins) && table_exists?(:departments) &&
-        foreign_key_exists?(:admins, :departments)
-      validate_foreign_key :admins, :departments
+    if table_exists?(:operators) && table_exists?(:departments) &&
+        foreign_key_exists?(:operators, :departments)
+      validate_foreign_key :operators, :departments
     end
   end
 

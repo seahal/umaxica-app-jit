@@ -26,7 +26,7 @@ class OrgTimelinePolicy < ApplicationPolicy
 
   def destroy?
     # Owner or staff managers and above
-    actor.is_a?(Staff) && (owner? || admin_or_manager?)
+    actor.is_a?(Staff) && (owner? || operator_or_manager?)
   end
 
   class Scope < ApplicationPolicy::Scope

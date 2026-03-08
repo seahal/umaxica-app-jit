@@ -1,0 +1,7 @@
+<% content_for :page_title, 'Sign::App::Preference::Emails#show' %>
+  <h1>Preference Email</h1>
+  <p>Current email: <%= @current_email.presence || "(not set)" %></p>
+  <p><%= link_to "Edit", edit_sign_app_preference_email_path(id: params[:id]) %></p>
+  <p><%= link_to "Index", sign_app_preference_email_index_path %></p>
+  <p><%= link_to "Back to preference", sign_app_preference_path %></p>
+</div>

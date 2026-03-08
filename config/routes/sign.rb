@@ -1,17 +1,20 @@
 # typed: false
 # frozen_string_literal: true
 
+require Rails.root.join("lib/sign_host_env").to_s
+
 scope module: :sign, as: :sign do
-  constraints host: ENV["SIGN_SERVICE_URL"] do
+  constraints host: SignHostEnv.service_url do
     scope module: :app, as: :app do
       root to: "roots#index"
 
       resource :health, only: :show, defaults: { format: :html }
+      resource :sitemap, only: :show, defaults: { format: :xml }
 
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
-          resource :csrf, only: :show
+          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create
@@ -19,7 +22,7 @@ scope module: :sign, as: :sign do
         end
       end
 
-      namespace :client do
+      namespace :member do
         namespace :v1 do
           resource :health, only: :show
         end
@@ -88,9 +91,8 @@ scope module: :sign, as: :sign do
               to: "omniauth_callbacks#omniauth",
               via: %i(get post),
               as: :callback
-        match "failure",
-              to: "omniauth_callbacks#failure",
-              via: %i(get post)
+        get "failure",
+            to: "omniauth_callbacks#failure"
       end
 
       resource :verification, only: %i(show), controller: :verification
@@ -139,19 +141,26 @@ scope module: :sign, as: :sign do
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
       end
+
+      resource :preference, only: :show
+      namespace :preference do
+        resources :email, only: %i(index show create edit update), controller: :emails
+      end
     end
   end
 
   # Staff auth management
-  constraints host: ENV["SIGN_STAFF_URL"] do
+  constraints host: SignHostEnv.staff_url do
     scope module: :org, as: :org do
       root to: "roots#index"
+
       resource :health, only: :show, defaults: { format: :html }
+      resource :sitemap, only: :show, defaults: { format: :xml }
 
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
-          resource :csrf, only: :show
+          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create

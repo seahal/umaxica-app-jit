@@ -26,7 +26,30 @@
 require "test_helper"
 
 class AreaTelephoneOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :area_occurrences, :telephone_occurrences
+
+  test "associations" do
+    record = AreaTelephoneOccurrence.new(
+      area_occurrence: area_occurrences(:one),
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal area_occurrences(:one), record.area_occurrence
+    assert_equal telephone_occurrences(:one), record.telephone_occurrence
+  end
+
+  test "uniqueness validation" do
+    AreaTelephoneOccurrence.create!(
+      area_occurrence: area_occurrences(:one),
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+    duplicate = AreaTelephoneOccurrence.new(
+      area_occurrence: area_occurrences(:one),
+      telephone_occurrence: telephone_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:area_occurrence_id]
+  end
 end

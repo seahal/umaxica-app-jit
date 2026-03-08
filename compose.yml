@@ -13,8 +13,8 @@ services:
     restart: always
     user: "${UID:-1000}:${GID:-1000}"
     tmpfs:
-      - /home/jit/workspace/tmp:uid=1000,gid=1000
-      - /home/jit/workspace/log:uid=1000,gid=1000
+      - /home/jit/workspace/tmp
+      - /home/jit/workspace/log
     ports:
       - "3001:3000"
     volumes:
@@ -35,6 +35,8 @@ services:
         condition: service_started
       valkey:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
 
   primary:
     image: postgres:18.1-alpine
@@ -53,7 +55,7 @@ services:
       POSTGRES_INITDB_MAX_WAL_SENDERS: 10
       POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10
     tmpfs:
-      - /var/lib/postgresql/18:uid=70,gid=70
+      - /var/lib/postgresql/18
     ports:
       - "127.0.0.1:5435:5432"
     volumes:
@@ -80,7 +82,7 @@ services:
       TZ: UTC
       POSTGRES_HOST_AUTH_METHOD: trust # dev only
     tmpfs:
-      - /var/lib/postgresql/18:uid=70,gid=70
+      - /var/lib/postgresql/18
     ports:
       - "127.0.0.1:5436:5432"
     volumes:
@@ -157,8 +159,6 @@ services:
       - "127.0.0.1:14268:14268" # jaeger ingest
       - "127.0.0.1:3200:3200" # tempo
       - "127.0.0.1:9095:9095" # tempo grpc
-      - "127.0.0.1:4317:4317" # otlp grpc
-      - "127.0.0.1:4318:4318" # otlp http
       - "127.0.0.1:9411:9411" # zipkin
     networks:
       - observability
@@ -174,12 +174,50 @@ services:
       - "127.0.0.1:8000:3000"
     volumes:
       - grafana-volume:/var/lib/grafana
-      # - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
     networks:
       - observability
     depends_on:
       - loki
       - tempo
+      - prometheus
+    restart: unless-stopped
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./docker/otel-collector/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "127.0.0.1:4317:4317" # otlp grpc
+      - "127.0.0.1:4318:4318" # otlp http
+      - "127.0.0.1:8889:8889" # prometheus exporter
+    networks:
+      - observability
+    depends_on:
+      - tempo
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-volume:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks:
+      - observability
+    restart: unless-stopped
+
+  alloy:
+    image: grafana/alloy:latest
+    volumes:
+      - ./docker/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: run /etc/alloy/config.alloy
+    networks:
+      - observability
+    depends_on:
+      - loki
     restart: unless-stopped
 
   master:
@@ -258,6 +296,7 @@ volumes:
   loki-volume: {}
   tempo-volume: {}
   grafana-volume: {}
+  prometheus-volume: {}
   master_data: {}
   volume_data: {}
   filer_data: {}

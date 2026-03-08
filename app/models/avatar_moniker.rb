@@ -33,7 +33,8 @@ class AvatarMoniker < AvatarRecord
   belongs_to :avatar
   belongs_to :avatar_moniker_status, optional: true
 
-  validates :avatar_id, uniqueness: true
+  validates :avatar_id,
+            uniqueness: { conditions: -> { where("valid_to = 'infinity'::timestamp with time zone") } }
   validates :moniker, presence: true
   validates :valid_from, presence: true
   validates :id, length: { maximum: 255 }

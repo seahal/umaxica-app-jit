@@ -16,7 +16,10 @@ module Sign
 
         def update
           refresh_checkpoint_dimension!
-          redirect_to sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri])
+          safe_redirect_to(
+            sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
+            fallback: sign_app_in_checkpoint_path(ri: params[:ri]),
+          )
         end
 
         def destroy

@@ -7,7 +7,7 @@
 #  id   :bigint           not null, primary key
 #  name :string           default(""), not null
 #
-neyo:
+nothing:
   id: 1
 active:
   id: 2

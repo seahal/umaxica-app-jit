@@ -20,9 +20,9 @@ class AppPreferenceActivityEventTest < ActiveSupport::TestCase
     assert_predicate record, :valid?
   end
 
-  test "ordered scope includes default ids when position is absent" do
-    ordered_ids = AppPreferenceActivityEvent.ordered.pluck(:id)
+  test "includes all default ids" do
+    ids = AppPreferenceActivityEvent.pluck(:id)
 
-    assert_empty(AppPreferenceActivityEvent::DEFAULTS - ordered_ids)
+    assert_empty(AppPreferenceActivityEvent::DEFAULTS - ids)
   end
 end

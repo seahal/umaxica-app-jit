@@ -26,7 +26,30 @@
 require "test_helper"
 
 class TelephoneZipOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :telephone_occurrences, :zip_occurrences
+
+  test "associations" do
+    record = TelephoneZipOccurrence.new(
+      telephone_occurrence: telephone_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal telephone_occurrences(:one), record.telephone_occurrence
+    assert_equal zip_occurrences(:one), record.zip_occurrence
+  end
+
+  test "uniqueness validation" do
+    TelephoneZipOccurrence.create!(
+      telephone_occurrence: telephone_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+    duplicate = TelephoneZipOccurrence.new(
+      telephone_occurrence: telephone_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:telephone_occurrence_id]
+  end
 end

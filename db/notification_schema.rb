@@ -10,46 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
+ActiveRecord::Schema[8.2].define(version: 0) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "admin_notifications", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "public_id", default: "", null: false
-    t.bigint "staff_notification_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["public_id"], name: "index_admin_notifications_on_public_id", unique: true
-    t.index ["staff_notification_id"], name: "index_admin_notifications_on_staff_notification_id"
-  end
-
-  create_table "client_notifications", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "public_id", default: "", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_notification_id", null: false
-    t.index ["public_id"], name: "index_client_notifications_on_public_id", unique: true
-    t.index ["user_notification_id"], name: "index_client_notifications_on_user_notification_id"
-  end
-
-  create_table "staff_notifications", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "public_id", default: "", null: false
-    t.bigint "staff_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["public_id"], name: "index_staff_notifications_on_public_id", unique: true
-    t.index ["staff_id"], name: "index_staff_notifications_on_staff_id"
-  end
-
-  create_table "user_notifications", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "public_id", default: "", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["public_id"], name: "index_user_notifications_on_public_id", unique: true
-    t.index ["user_id"], name: "index_user_notifications_on_user_id"
-  end
-
-  add_foreign_key "admin_notifications", "staff_notifications", name: "fk_admin_notifications_on_staff_notification_id_cascade", on_delete: :cascade
-  add_foreign_key "client_notifications", "user_notifications", name: "fk_client_notifications_on_user_notification_id_cascade", on_delete: :cascade
 end

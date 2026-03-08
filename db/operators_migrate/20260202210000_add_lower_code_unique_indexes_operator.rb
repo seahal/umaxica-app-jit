@@ -4,7 +4,7 @@ class AddLowerCodeUniqueIndexesOperator < ActiveRecord::Migration[8.2]
   disable_ddl_transaction!
 
   TABLES = %w(
-    admin_statuses
+    operator_statuses
     department_statuses
     division_statuses
     organization_statuses

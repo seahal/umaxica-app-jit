@@ -7,7 +7,7 @@ class ConvertAllOperatorPksToBigint < ActiveRecord::Migration[8.2]
     enable_extension "citext" unless extension_enabled?("citext")
 
     # Drop all operator tables with int/serial/string PKs
-    drop_table :admin_statuses, if_exists: true, force: :cascade
+    drop_table :operator_statuses, if_exists: true, force: :cascade
     drop_table :staff_statuses, if_exists: true, force: :cascade
     drop_table :organization_statuses, if_exists: true, force: :cascade
     drop_table :division_statuses, if_exists: true, force: :cascade
@@ -20,7 +20,7 @@ class ConvertAllOperatorPksToBigint < ActiveRecord::Migration[8.2]
     drop_table :staff_identity_statuses, if_exists: true, force: :cascade
 
     # Recreate all tables with bigint PK + code column
-    create_table :admin_statuses, id: :bigint do |t|
+    create_table :operator_statuses, id: :bigint do |t|
       t.citext :code, null: false, index: { unique: true }
     end
 

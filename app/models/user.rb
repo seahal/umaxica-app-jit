@@ -20,7 +20,7 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  public_id             :string(255)      default(""), not null
-#  status_id             :bigint           default(13), not null
+#  status_id             :bigint           default(11), not null
 #  visibility_id         :bigint           default(2), not null
 #
 # Indexes
@@ -44,8 +44,7 @@
 
 class User < PrincipalRecord
   include ::PublicId
-  include ::Accountably
-  include ::Withdrawable
+  include ::Identity
 
   # what is this?
   VERIFIED_RECOVERY_EMAIL_STATUS_IDS = [
@@ -62,7 +61,7 @@ class User < PrincipalRecord
   # Remove this line as well after DROP COLUMN migration is completed.
   self.ignored_columns += ["webauthn_id"]
 
-  attribute :status_id, default: UserStatus::NONE
+  attribute :status_id, default: UserStatus::NOTHING
 
   belongs_to :user_status,
              foreign_key: :status_id,
@@ -110,37 +109,37 @@ class User < PrincipalRecord
   has_many :user_notifications,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_clients,
+  has_many :user_members,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_client_discoveries,
-           class_name: "UserClientDiscovery",
+  has_many :user_member_discoveries,
+           class_name: "UserMemberDiscovery",
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_client_observations,
-           class_name: "UserClientObservation",
+  has_many :user_member_observations,
+           class_name: "UserMemberObservation",
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_client_revocations,
-           class_name: "UserClientRevocation",
+  has_many :user_member_revocations,
+           class_name: "UserMemberRevocation",
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_client_impersonations,
-           class_name: "UserClientImpersonation",
+  has_many :user_member_impersonations,
+           class_name: "UserMemberImpersonation",
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_client_suspensions,
-           class_name: "UserClientSuspension",
+  has_many :user_member_suspensions,
+           class_name: "UserMemberSuspension",
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_client_deletions,
-           class_name: "UserClientDeletion",
+  has_many :user_member_deletions,
+           class_name: "UserMemberDeletion",
            dependent: :destroy,
            inverse_of: :user
-  has_many :clients,
-           through: :user_clients
-  has_many :owned_clients,
-           class_name: "Client",
+  has_many :members,
+           through: :user_members
+  has_many :owned_members,
+           class_name: "Member",
            dependent: :nullify,
            inverse_of: :user
   has_many :avatar_assignments, dependent: :destroy
@@ -150,9 +149,8 @@ class User < PrincipalRecord
            through: :avatar_assignments,
            source: :avatar
   validates :public_id, uniqueness: true, length: { maximum: 21 }
-  validates :status_id, numericality: { only_integer: true }
+  # TODO: User deletion flow should rely on `shreddable_at`; remove `deletable_at` usage from User.
   scope :deletable, ->(now = Time.current) { where(deletable_at: ..now) }
-  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
 
   def totp_enabled?
     user_one_time_passwords.exists?(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)

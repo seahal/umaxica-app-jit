@@ -1,14 +1,23 @@
 pre-commit:
   parallel: true
   commands:
-    pnpm_biome_check:
+    pnpm_oxlint:
       run: |
         #!/bin/sh
         set -eu
         if [ -f /.dockerenv ]; then
-          pnpm run check
+          pnpm run lint
         else
-          docker compose run core pnpm check
+          docker compose run core pnpm run lint
+        fi
+    pnpm_oxfmt:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          pnpm run format:check
+        else
+          docker compose run core pnpm run format:check
         fi
     ruby_rubocop:
       run: |
@@ -51,6 +60,15 @@ pre-push:
           bundle exec bundler-audit check --update
         else
           docker compose run core bundle exec bundler-audit check --update
+        fi
+    ruby_importmap_audit:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bin/importmap audit
+        else
+          docker compose run core bin/importmap audit
         fi
     ruby_brakeman:
       run: |

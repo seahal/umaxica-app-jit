@@ -19,9 +19,9 @@ class OrgPreferenceActivityEventTest < ActiveSupport::TestCase
     assert_predicate record, :valid?
   end
 
-  test "ordered scope includes default ids when position is absent" do
-    ordered_ids = OrgPreferenceActivityEvent.ordered.pluck(:id)
+  test "includes all default ids" do
+    ids = OrgPreferenceActivityEvent.pluck(:id)
 
-    assert_empty(OrgPreferenceActivityEvent::DEFAULTS - ordered_ids)
+    assert_empty(OrgPreferenceActivityEvent::DEFAULTS - ids)
   end
 end

@@ -47,3 +47,8 @@ two:
   public_id: "defh5678"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
+sample_staff:
+  status_id: <%= StaffStatus::NOTHING %>
+  public_id: "tmpl2345"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

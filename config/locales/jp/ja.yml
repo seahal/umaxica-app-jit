@@ -1,22 +1,69 @@
+---
 ja:
   reproduce_issue:
     missing_position: AppPreferenceStatusをpositionなしで作成しようとしています...
-    duplicate_position: '
+    duplicate_position: |2-
 
-      重複したpositionでAppPreferenceStatusを作成しようとしています...'
-    success_created: '作成に成功しました。ID: %{id}、position: %{position}'
-    expected_error: '想定されるエラー: %{message}'
-    expected_db_error: '想定されるDBエラー: %{message}'
-    check_positions: '
+      重複したpositionでAppPreferenceStatusを作成しようとしています...
+    success_created: "作成に成功しました。ID: %{id}、position: %{position}"
+    expected_error: "想定されるエラー: %{message}"
+    expected_db_error: "想定されるDBエラー: %{message}"
+    check_positions: |2-
 
-      既存のpositionを確認しています:'
+      既存のpositionを確認しています:
   turnstile_error: セキュリティ検証に失敗しました。もう一度お試しください。
   common:
     ok: OK
     unsaved_changes: 変更は保存されていません。移動しますか？
   errors:
+    otp_locked: 試行回数の上限を超えました。最初からやり直してください。
+    unauthorized: 不正なアクセスです
+    not_implemented: 機能はまだ実装されていません
+    webauthn:
+      origin_invalid: このサイトからの認証は許可されていません
+      challenge_id_required: チャレンジIDが必要です
+      challenge_invalid: WebAuthn認証に失敗しました。もう一度やり直してください。
+      credential_not_found: パスキーが見つかりませんでした。
+      credential_already_registered: このパスキーは既に登録されています。
+      verification_failed: パスキーの検証に失敗しました。
+      sign_count_mismatch: パスキーのセキュリティカウンターに問題があります。
+    login_failed: ログインに失敗しました。
     messages:
-      validation_failed: 入力内容を確認してください。
+      not_authorized: この操作を行う権限がありません。
+      login_required: ログインが必要です
+      already_authenticated: すでにログインしています
+      preference_operation_failed: 設定の操作に失敗しました。
+      accepted: を受諾してください
+      blank: を入力してください
+      confirmation: と%{attribute}の入力が一致しません
+      empty: を入力してください
+      equal_to: は%{count}にしてください
+      even: は偶数にしてください
+      exclusion: は予約されています
+      greater_than: は%{count}より大きい値にしてください
+      greater_than_or_equal_to: は%{count}以上の値にしてください
+      in: は%{count}の範囲に含めてください
+      inclusion: は一覧にありません
+      invalid: は不正な値です
+      less_than: は%{count}より小さい値にしてください
+      less_than_or_equal_to: は%{count}以下の値にしてください
+      model_invalid: "バリデーションに失敗しました: %{errors}"
+      not_a_number: は数値で入力してください
+      not_an_integer: は整数で入力してください
+      odd: は奇数にしてください
+      other_than: は%{count}以外の値にしてください
+      password_too_long: が長すぎます
+      present: は入力しないでください
+      required: を入力してください
+      taken: はすでに存在します
+      too_long: は%{count}文字以内で入力してください
+      too_short: は%{count}文字以上で入力してください
+      wrong_length: は%{count}文字で入力してください
+      extension_allowlist_error: 許可されていないファイル形式です
+    format: "%{attribute}%{message}"
+    template:
+      body: 次の項目を確認してください
+      header: "%{model}に%{count}個のエラーが発生しました"
   actions:
     submit: 送信
     cancel: キャンセル
@@ -30,9 +77,9 @@ ja:
     default_passkey_description: パスキー
     shared:
       sign_out:
-        title: "ログアウトしますか？"
-        button: "ログアウトします"
-        success: "ログアウトします"
+        title: ログアウトしますか？
+        button: ログアウトします
+        success: ログアウトします
     app:
       authentication:
         passkey:
@@ -41,7 +88,7 @@ ja:
             page_title: パスキーでログイン
             description: パスキーを使って安全にログインします。
             pii_label: メールアドレスまたは電話番号
-            pii_placeholder: "user@example.com または +81 90 1234 5678"
+            pii_placeholder: user@example.com または +81 90 1234 5678
             submit: パスキーでログイン
         new:
           page_title: サインイン方法を選ぶ
@@ -62,7 +109,7 @@ ja:
           new:
             page_title: シークレットでサインイン
             pii_label: メールアドレスまたは電話番号
-            pii_placeholder: "user@example.com または +81 90 1234 5678"
+            pii_placeholder: user@example.com または +81 90 1234 5678
             secret_label: シークレット
             hints: 利用可能なシークレット
           create:
@@ -95,7 +142,7 @@ ja:
           new:
             page_title: リカバリーコードを利用する
             description: 保存しているリカバリーコードを入力してアカウントへアクセスします。
-      title_suffix: (アプリ)
+      title_suffix: "(アプリ)"
       header:
         sign: サイン
       layout:
@@ -107,7 +154,7 @@ ja:
       registration:
         new:
           page_title: アカウント登録
-          page_description: '%{product} の利用をはじめるための登録方法を選択してください。'
+          page_description: "%{product} の利用をはじめるための登録方法を選択してください。"
           methods:
             title: 登録方法を選ぶ
             email:
@@ -136,7 +183,7 @@ ja:
             link_to_sign_in: ログインしますか？
           create:
             verification_code_sent: 確認コードをメールアドレスに送信しました。
-            success: "登録が完了しました。"
+            success: 登録が完了しました。
             turnstile_validation_failed: セキュリティ検証に失敗しました。もう一度お試しください。
             otp_resend_too_soon: しばらく時間をおいてから再度お試しください。
           edit:
@@ -191,43 +238,43 @@ ja:
           events:
             logged_in: ログイン成功
             login_success: ログイン成功
-            unknown: "不明なイベント (%{event_id})"
+            unknown: 不明なイベント (%{event_id})
         email:
           edit:
-            title: "メールアドレスの削除"
+            title: メールアドレスの削除
           index:
-            title: "メールアドレス"
-            description: "メールアドレスを管理します"
-            new_link: "メールアドレスを追加"
-            delete: "削除"
-            delete_confirm: "このメールアドレスを削除しますか？"
+            title: メールアドレス
+            description: メールアドレスを管理します
+            new_link: メールアドレスを追加
+            delete: 削除
+            delete_confirm: このメールアドレスを削除しますか？
           destroy:
-            success: "メールアドレスを削除しました。"
-            last_method: "最後のログイン手段のため削除できません。"
+            success: メールアドレスを削除しました。
+            last_method: 最後のログイン手段のため削除できません。
         telephone:
           edit:
-            title: "電話番号の削除"
+            title: 電話番号の削除
           index:
-            title: "電話番号"
-            description: "電話番号を管理します"
-            new_link: "電話番号を追加"
-            delete: "削除"
-            delete_confirm: "この電話番号を削除しますか？"
+            title: 電話番号
+            description: 電話番号を管理します
+            new_link: 電話番号を追加
+            delete: 削除
+            delete_confirm: この電話番号を削除しますか？
           destroy:
-            success: "電話番号を削除しました。"
-            last_method: "最後のログイン手段のため削除できません。"
+            success: 電話番号を削除しました。
+            last_method: 最後のログイン手段のため削除できません。
         secrets:
           update:
-            last_method: "最後のログイン手段のため無効化できません。"
+            last_method: 最後のログイン手段のため無効化できません。
           destroy:
-            last_method: "最後のログイン手段のため削除できません。"
+            last_method: 最後のログイン手段のため削除できません。
         emergency_key:
-          missing: "緊急キーの表示期限が切れました。"
+          missing: 緊急キーの表示期限が切れました。
           show:
-            title: "緊急キー"
-            description: "緊急時に利用できるキーを発行しました。安全な場所に保管してください。"
-            one_time_notice: "このキーは一度しか表示されません。スクリーンショットまたは安全な保管場所に保存してください。"
-            back_to_settings: "設定に戻る"
+            title: 緊急キー
+            description: 緊急時に利用できるキーを発行しました。安全な場所に保管してください。
+            one_time_notice: このキーは一度しか表示されません。スクリーンショットまたは安全な保管場所に保存してください。
+            back_to_settings: 設定に戻る
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -255,71 +302,71 @@ ja:
             submit: アカウントを復旧する
       reauth:
         index:
-          title: "再認証セッション"
-          new: "新規"
-          empty: "セッションはありません"
+          title: 再認証セッション
+          new: 新規
+          empty: セッションはありません
           table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
         new:
-          title: "再認証"
-          description: "続行するには再認証が必要です。方法を選択してください。"
-          method_legend: "認証方法"
+          title: 再認証
+          description: 続行するには再認証が必要です。方法を選択してください。
+          method_legend: 認証方法
           methods:
-            passkey: "パスキー"
-            totp: "認証アプリ（TOTP）"
-            email_otp: "メール（ワンタイムコード）"
-          submit: "続行"
-          back: "戻る"
+            passkey: パスキー
+            totp: 認証アプリ（TOTP）
+            email_otp: メール（ワンタイムコード）
+          submit: 続行
+          back: 戻る
         show:
-          title: "再認証セッション"
-          list: "一覧"
-          to_edit: "入力画面へ"
-          cancel: "キャンセル"
-          confirm_cancel: "キャンセルしますか？"
+          title: 再認証セッション
+          list: 一覧
+          to_edit: 入力画面へ
+          cancel: キャンセル
+          confirm_cancel: キャンセルしますか？
         edit:
-          title: "再認証"
-          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
-          authenticate_with_passkey: "パスキーで認証"
-          code_label: "確認コード"
-          code_placeholder: "6桁"
-          submit: "確認"
-          cancel: "キャンセル"
-          confirm_cancel: "キャンセルしますか？"
+          title: 再認証
+          description: 本人確認のため、コードの入力またはパスキー認証を行ってください。
+          authenticate_with_passkey: パスキーで認証
+          code_label: 確認コード
+          code_placeholder: 6桁
+          submit: 確認
+          cancel: キャンセル
+          confirm_cancel: キャンセルしますか？
         success:
-          complete: "再認証が完了しました"
+          complete: 再認証が完了しました
       verification:
         index:
-          title: "検証セッション"
-          new: "新規"
-          empty: "セッションはありません"
+          title: 検証セッション
+          new: 新規
+          empty: セッションはありません
           table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
         new:
-          title: "検証"
-          description: "続行するには検証が必要です。方法を選択してください。"
-          method_legend: "認証方法"
+          title: 検証
+          description: 続行するには検証が必要です。方法を選択してください。
+          method_legend: 認証方法
           methods:
-            passkey: "パスキー"
-            totp: "認証アプリ（TOTP）"
-            email_otp: "メール（ワンタイムコード）"
-          submit: "続行"
-          back: "戻る"
+            passkey: パスキー
+            totp: 認証アプリ（TOTP）
+            email_otp: メール（ワンタイムコード）
+          submit: 続行
+          back: 戻る
         edit:
-          title: "検証"
-          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
-          authenticate_with_passkey: "パスキーで認証"
-          code_label: "確認コード"
-          code_placeholder: "6桁"
-          submit: "確認"
-          back: "戻る"
+          title: 検証
+          description: 本人確認のため、コードの入力またはパスキー認証を行ってください。
+          authenticate_with_passkey: パスキーで認証
+          code_label: 確認コード
+          code_placeholder: 6桁
+          submit: 確認
+          back: 戻る
         success:
-          complete: "検証が完了しました"
+          complete: 検証が完了しました
     token_refresh:
       errors:
         missing_refresh_token: リフレッシュトークンが必要です
@@ -327,70 +374,70 @@ ja:
     org:
       reauth:
         index:
-          title: "再認証セッション"
-          new: "新規"
-          empty: "セッションはありません"
+          title: 再認証セッション
+          new: 新規
+          empty: セッションはありません
           table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
         new:
-          title: "再認証"
-          description: "続行するには再認証が必要です。方法を選択してください。"
-          method_legend: "認証方法"
+          title: 再認証
+          description: 続行するには再認証が必要です。方法を選択してください。
+          method_legend: 認証方法
           methods:
-            passkey: "パスキー"
-            totp: "認証アプリ（TOTP）"
-            email_otp: "メール（ワンタイムコード）"
-          submit: "続行"
-          back: "戻る"
+            passkey: パスキー
+            totp: 認証アプリ（TOTP）
+            email_otp: メール（ワンタイムコード）
+          submit: 続行
+          back: 戻る
         show:
-          title: "再認証セッション"
-          list: "一覧"
-          to_edit: "入力画面へ"
-          cancel: "キャンセル"
-          confirm_cancel: "キャンセルしますか？"
+          title: 再認証セッション
+          list: 一覧
+          to_edit: 入力画面へ
+          cancel: キャンセル
+          confirm_cancel: キャンセルしますか？
         edit:
-          title: "再認証"
-          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
-          authenticate_with_passkey: "パスキーで認証"
-          code_label: "確認コード"
-          code_placeholder: "6桁"
-          submit: "確認"
-          cancel: "キャンセル"
-          confirm_cancel: "キャンセルしますか？"
+          title: 再認証
+          description: 本人確認のため、コードの入力またはパスキー認証を行ってください。
+          authenticate_with_passkey: パスキーで認証
+          code_label: 確認コード
+          code_placeholder: 6桁
+          submit: 確認
+          cancel: キャンセル
+          confirm_cancel: キャンセルしますか？
         success:
-          complete: "再認証が完了しました"
+          complete: 再認証が完了しました
       verification:
         index:
-          title: "検証セッション"
-          new: "新規"
-          empty: "セッションはありません"
+          title: 検証セッション
+          new: 新規
+          empty: セッションはありません
           table:
-            scope: "Scope"
-            method: "Method"
-            status: "Status"
-            expires: "Expires"
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
         new:
-          title: "検証"
-          description: "続行するには検証が必要です。方法を選択してください。"
-          method_legend: "認証方法"
+          title: 検証
+          description: 続行するには検証が必要です。方法を選択してください。
+          method_legend: 認証方法
           methods:
-            passkey: "パスキー"
-            totp: "認証アプリ（TOTP）"
-          submit: "続行"
-          back: "戻る"
+            passkey: パスキー
+            totp: 認証アプリ（TOTP）
+          submit: 続行
+          back: 戻る
         edit:
-          title: "検証"
-          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
-          authenticate_with_passkey: "パスキーで認証"
-          code_label: "確認コード"
-          code_placeholder: "6桁"
-          submit: "確認"
-          back: "戻る"
+          title: 検証
+          description: 本人確認のため、コードの入力またはパスキー認証を行ってください。
+          authenticate_with_passkey: パスキーで認証
+          code_label: 確認コード
+          code_placeholder: 6桁
+          submit: 確認
+          back: 戻る
         success:
-          complete: "検証が完了しました"
+          complete: 検証が完了しました
       layout:
         nav:
           sign_up: 新規登録
@@ -477,7 +524,7 @@ ja:
       social:
         sessions:
           create:
-            success: '%{provider} でアカウントを作成してサインインしました。'
+            success: "%{provider} でアカウントを作成してサインインしました。"
       configuration:
         show:
           page_title: 設定
@@ -488,32 +535,32 @@ ja:
           mfa_desc: 多要素認証の有効化と管理
         passkeys:
           new:
-            page_title: "パスキーを登録"
+            page_title: パスキーを登録
           index:
-            title: "パスキー管理"
+            title: パスキー管理
           edit:
-            title: "パスキーを編集"
-            description: "パスキーの名称を変更できます。"
+            title: パスキーを編集
+            description: パスキーの名称を変更できます。
           show:
-            title: "パスキーの詳細"
-            description: "登録済みパスキーの情報を確認します。"
+            title: パスキーの詳細
+            description: 登録済みパスキーの情報を確認します。
         mfa:
           show:
-            title: "MFA設定"
-            description: "多要素認証の利用状況を確認し、設定を変更できます。"
-            toggle_title: "多要素認証を有効化"
-            toggle_description: "有効にすると追加認証が要求されます。"
-            enabled: "有効"
-            disabled: "無効"
-            passkeys: "パスキー"
-            passkeys_desc: "登録済み %{count} 件"
-            totps: "認証アプリ（TOTP）"
-            totps_desc: "登録済み %{count} 件"
-            secrets: "シークレット"
-            secrets_desc: "有効 %{count} 件"
+            title: MFA設定
+            description: 多要素認証の利用状況を確認し、設定を変更できます。
+            toggle_title: 多要素認証を有効化
+            toggle_description: 有効にすると追加認証が要求されます。
+            enabled: 有効
+            disabled: 無効
+            passkeys: パスキー
+            passkeys_desc: 登録済み %{count} 件
+            totps: 認証アプリ（TOTP）
+            totps_desc: 登録済み %{count} 件
+            secrets: シークレット
+            secrets_desc: 有効 %{count} 件
           update:
-            success: "MFA設定を更新しました。"
-            failure: "MFA設定の更新に失敗しました。"
+            success: MFA設定を更新しました。
+            failure: MFA設定の更新に失敗しました。
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -650,7 +697,7 @@ ja:
             new:
               page_title: TOTP認証の設定
               description: 認証アプリでQRコードをスキャンし、生成されたコードを入力して設定を完了します。
-              title_hint: '識別しやすい名前を付けてください（例: 個人用iPhone）'
+              title_hint: "識別しやすい名前を付けてください（例: 個人用iPhone）"
           email:
             index:
               title: メール設定
@@ -664,7 +711,7 @@ ja:
             show:
               title: 退会ステータス
               withdrawn: あなたのアカウントは退会済みです
-              withdrawn_date: '退会日時: %{date}'
+              withdrawn_date: "退会日時: %{date}"
               recovery: アカウント復旧
               recovery_notice: 復旧期間内であればアカウントを復旧できます。
               recover_button: アカウントを復旧する
@@ -802,7 +849,7 @@ ja:
         timezones:
           invalid: 無効なタイムゾーンが選択されました
         themes:
-          updated: '%{theme} にテーマを更新しました'
+          updated: "%{theme} にテーマを更新しました"
           invalid: 無効なテーマが選択されました
   help:
     org:
@@ -818,7 +865,7 @@ ja:
           body: お問い合わせ内容
           submit: 次へ
           cancel: キャンセル
-          error_heading: '%{count}件のエラーがあるため送信できません。'
+          error_heading: "%{count}件のエラーがあるため送信できません。"
           heading: お問い合わせフォーム
           contact_category_title: お問い合わせ種別
         create:
@@ -846,7 +893,7 @@ ja:
           body: お問い合わせ内容
           submit: 次へ
           cancel: キャンセル
-          error_heading: '%{count}件のエラーがあるため送信できません。'
+          error_heading: "%{count}件のエラーがあるため送信できません。"
           heading: お問い合わせフォーム
           contact_category_title: お問い合わせ種別
         create:
@@ -928,7 +975,7 @@ ja:
           body: お問い合わせ内容
           submit: 送信
           cancel: キャンセル
-          error_heading: '%{count}件のエラーがあるため送信できません。'
+          error_heading: "%{count}件のエラーがあるため送信できません。"
         create:
           success: お問い合わせを受け付けました
       preference:
@@ -960,7 +1007,8 @@ ja:
       errors:
         id_required: お問い合わせIDは必須です
         not_found: お問い合わせが見つかりません
-        invalid_status: '無効なお問い合わせステータス: SET_UPが予想されていますが、%{current_status}です'
+        invalid_status:
+          "無効なお問い合わせステータス: SET_UPが予想されていますが、%{current_status}です"
   shared:
     page_header:
       up_label_fallback: もどる
@@ -1089,7 +1137,7 @@ ja:
         timezones:
           invalid: 無効なタイムゾーンが選択されました
         themes:
-          updated: '%{theme} にテーマを更新しました'
+          updated: "%{theme} にテーマを更新しました"
           invalid: 無効なテーマが選択されました
       preference:
         cookie:
@@ -1117,7 +1165,7 @@ ja:
   messages:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
     user_registration_error: ユーザー登録中にエラーが発生しました。
-    access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
+    access_blocked_auth_error: "アクセスをブロック: 認証エラーです"
     email_successfully_created: メールアドレスの確認コードを送信しました。
     telephone_successfully_created: 電話番号の確認コードを送信しました。
     sample_successfully_updated: 登録が完了しました。
@@ -1141,10 +1189,10 @@ ja:
             org_document_tag_id:
               already_tagged: このドキュメントにはすでにタグ付けされています
       messages:
-        record_invalid: 'バリデーションに失敗しました: %{errors}'
+        record_invalid: "バリデーションに失敗しました: %{errors}"
         restrict_dependent_destroy:
-          has_one: '%{record}が存在しているので削除できません'
-          has_many: '%{record}が存在しているので削除できません'
+          has_one: "%{record}が存在しているので削除できません"
+          has_many: "%{record}が存在しているので削除できません"
         identity_audit_event_format_invalid: は大文字とアンダースコアのみで構成される必要があります
         invalid_e164_format: はE.164形式（例：+819012345678）である必要があります
         exceeds_e164_length: はE.164形式の最大桁数（%{max}桁）を超えています
@@ -1159,7 +1207,7 @@ ja:
       - 金
       - 土
     abbr_month_names:
-      - null
+      -
       - 1月
       - 2月
       - 3月
@@ -1181,11 +1229,11 @@ ja:
       - 金曜日
       - 土曜日
     formats:
-      default: '%Y/%m/%d'
-      long: '%Y年%m月%d日(%a)'
-      short: '%m/%d'
+      default: "%Y/%m/%d"
+      long: "%Y年%m月%d日(%a)"
+      short: "%m/%d"
     month_names:
-      - null
+      -
       - 1月
       - 2月
       - 3月
@@ -1207,16 +1255,16 @@ ja:
       about_x_hours: 約%{count}時間
       about_x_months: 約%{count}ヶ月
       about_x_years: 約%{count}年
-      almost_x_years: '%{count}年弱'
+      almost_x_years: "%{count}年弱"
       half_a_minute: 30秒前後
-      less_than_x_seconds: '%{count}秒未満'
-      less_than_x_minutes: '%{count}分未満'
-      over_x_years: '%{count}年以上'
-      x_seconds: '%{count}秒'
-      x_minutes: '%{count}分'
-      x_days: '%{count}日'
-      x_months: '%{count}ヶ月'
-      x_years: '%{count}年'
+      less_than_x_seconds: "%{count}秒未満"
+      less_than_x_minutes: "%{count}分未満"
+      over_x_years: "%{count}年以上"
+      x_seconds: "%{count}秒"
+      x_minutes: "%{count}分"
+      x_days: "%{count}日"
+      x_months: "%{count}ヶ月"
+      x_years: "%{count}年"
     prompts:
       second: 秒
       minute: 分
@@ -1224,58 +1272,9 @@ ja:
       day: 日
       month: 月
       year: 年
-  errors:
-    otp_locked: 試行回数の上限を超えました。最初からやり直してください。
-    unauthorized: 不正なアクセスです
-    not_implemented: 機能はまだ実装されていません
-    webauthn:
-      origin_invalid: "このサイトからの認証は許可されていません"
-      challenge_id_required: "チャレンジIDが必要です"
-      challenge_invalid: WebAuthn認証に失敗しました。もう一度やり直してください。
-      credential_not_found: パスキーが見つかりませんでした。
-      credential_already_registered: このパスキーは既に登録されています。
-      verification_failed: パスキーの検証に失敗しました。
-      sign_count_mismatch: パスキーのセキュリティカウンターに問題があります。
-    login_failed: ログインに失敗しました。
-    messages:
-      not_authorized: この操作を行う権限がありません。
-      login_required: ログインが必要です
-      already_authenticated: すでにログインしています
-      preference_operation_failed: 設定の操作に失敗しました。
-      accepted: を受諾してください
-      blank: を入力してください
-      confirmation: と%{attribute}の入力が一致しません
-      empty: を入力してください
-      equal_to: は%{count}にしてください
-      even: は偶数にしてください
-      exclusion: は予約されています
-      greater_than: は%{count}より大きい値にしてください
-      greater_than_or_equal_to: は%{count}以上の値にしてください
-      in: は%{count}の範囲に含めてください
-      inclusion: は一覧にありません
-      invalid: は不正な値です
-      less_than: は%{count}より小さい値にしてください
-      less_than_or_equal_to: は%{count}以下の値にしてください
-      model_invalid: 'バリデーションに失敗しました: %{errors}'
-      not_a_number: は数値で入力してください
-      not_an_integer: は整数で入力してください
-      odd: は奇数にしてください
-      other_than: は%{count}以外の値にしてください
-      password_too_long: が長すぎます
-      present: は入力しないでください
-      required: を入力してください
-      taken: はすでに存在します
-      too_long: は%{count}文字以内で入力してください
-      too_short: は%{count}文字以上で入力してください
-      wrong_length: は%{count}文字で入力してください
-      extension_allowlist_error: 許可されていないファイル形式です
-    format: '%{attribute}%{message}'
-    template:
-      body: 次の項目を確認してください
-      header: '%{model}に%{count}個のエラーが発生しました'
   seed:
     roles:
-      admin:
+      operator:
         description: システム全体へのアクセス権。ユーザーと設定を管理し、削除を含む全ての操作が可能です。
       manager:
         description: コンテンツ管理と他ユーザーの投稿編集が可能。管理対象の削除権限があります。
@@ -1301,37 +1300,37 @@ ja:
   number:
     currency:
       format:
-        delimiter: ','
-        format: '%n%u'
+        delimiter: ","
+        format: "%n%u"
         precision: 0
-        separator: .
+        separator: "."
         significant: false
         strip_insignificant_zeros: false
         unit: 円
     format:
-      delimiter: ','
+      delimiter: ","
       precision: 3
       round_mode: default
-      separator: .
+      separator: "."
       significant: false
       strip_insignificant_zeros: false
     human:
       decimal_units:
-        format: '%n %u'
+        format: "%n %u"
         units:
           billion: 十億
           million: 百万
           quadrillion: 千兆
           thousand: 千
           trillion: 兆
-          unit: ''
+          unit: ""
       format:
-        delimiter: ''
+        delimiter: ""
         precision: 3
         significant: true
         strip_insignificant_zeros: true
       storage_units:
-        format: '%n%u'
+        format: "%n%u"
         units:
           byte: バイト
           eb: EB
@@ -1342,22 +1341,22 @@ ja:
           tb: TB
     percentage:
       format:
-        delimiter: ''
-        format: '%n%'
+        delimiter: ""
+        format: "%n%"
     precision:
       format:
-        delimiter: ''
+        delimiter: ""
   support:
     array:
-      last_word_connector: 、
-      two_words_connector: 、
-      words_connector: 、
+      last_word_connector: "、"
+      two_words_connector: "、"
+      words_connector: "、"
   time:
     am: 午前
     formats:
-      default: '%Y年%m月%d日(%a) %H時%M分%S秒 %z'
-      long: '%Y/%m/%d %H:%M'
-      short: '%m/%d %H:%M'
+      default: "%Y年%m月%d日(%a) %H時%M分%S秒 %z"
+      long: "%Y/%m/%d %H:%M"
+      short: "%m/%d %H:%M"
     pm: 午後
   apex:
     app:
@@ -1383,19 +1382,19 @@ ja:
         submitting: 送信中...
         back_to_settings: 設定一覧に戻る
         up_link: うえへ
-        footer: &id001
+        footer: &1
           home: ホーム
           cookie: クッキー
           preference: プリファレンス
           privacy: プライバシー
-        languages: &id002
+        languages: &2
           unsupported: 対応していない言語が選択されました
-        timezones: &id003
+        timezones: &3
           invalid: 無効なタイムゾーンが選択されました
         themes:
           updated: テーマを%{theme}に更新しました
           invalid: 無効なテーマが選択されました
-        regions: &id004
+        regions: &4
           title: 地域・言語の設定
           region_section: 地域設定
           select_region: 地域を選択
@@ -1420,7 +1419,7 @@ ja:
           update_settings: 設定を更新
           cancel: キャンセル
       preference:
-        cookie: &id005
+        cookie: &5
           edit:
             h1: クッキー設定
             accept_necessary_cookies: 必須クッキーを許可 (必須)
@@ -1428,7 +1427,7 @@ ja:
             accept_performance_cookies: パフォーマンスクッキーを許可
             accept_targeting_cookies: ターゲティングクッキーを許可
             accept_consent_cookies: クッキー同意を許可
-        locale: &id006
+        locale: &6
           edit:
             title: ロケール設定
             description: 言語とタイムゾーンの設定を管理します
@@ -1446,7 +1445,7 @@ ja:
               JST: 日本標準時 (JST)
             submit: 設定を更新
             cancel: キャンセル
-        theme: &id007
+        theme: &7
           edit:
             title: テーマ設定（ライト／ダークの切り替え）
             description: 表示モードを作業環境に合わせて選択します。
@@ -1460,7 +1459,7 @@ ja:
               dark: 夜間の監視業務や長時間利用で目の負担を軽減します。
               system: OSのテーマ変更にあわせて自動で切り替わります。
             submit: テーマ設定を保存
-        resets: &id008
+        resets: &8
           title: 設定のリセット
           description: このブラウザに保存された設定データを削除します。
           button: 設定をリセットする
@@ -1483,17 +1482,17 @@ ja:
         submitting: 送信中...
         back_to_settings: 設定一覧に戻る
         up_link: うえへ
-        footer: *id001
-        languages: *id002
-        timezones: *id003
+        footer: *1
+        languages: *2
+        timezones: *3
         themes:
-          updated: '%{theme} にテーマを更新しました'
-        regions: *id004
+          updated: "%{theme} にテーマを更新しました"
+        regions: *4
       preference:
-        cookie: *id005
-        locale: *id006
-        theme: *id007
-        resets: *id008
+        cookie: *5
+        locale: *6
+        theme: *7
+        resets: *8
         language:
           edit:
             language_label: 言語洗濯
@@ -1521,15 +1520,15 @@ ja:
         submitting: 送信中...
         back_to_settings: 設定一覧に戻る
         up_link: うえへ
-        footer: *id001
-        languages: *id002
-        timezones: *id003
+        footer: *1
+        languages: *2
+        timezones: *3
         themes:
           updated: 管理テーマを%{theme}に更新しました
           invalid: 無効な管理テーマが選択されました
-        regions: *id004
+        regions: *4
       preference:
-        cookie: *id005
+        cookie: *5
         locale:
           edit:
             title: ロケール設定
@@ -1791,10 +1790,10 @@ ja:
     posts:
       index:
         title: ドキュメント
-        count: '%{count} 件'
+        count: "%{count} 件"
         search_placeholder: 検索...
         search_button: 検索
-        search_found: '%{count} 件見つかりました'
+        search_found: "%{count} 件見つかりました"
         search_all: すべて
         empty: ドキュメントがありません
         select_title: ドキュメントを選択
@@ -1822,7 +1821,7 @@ ja:
     posts:
       index:
         title: ニュース
-        count: '%{count} 件'
+        count: "%{count} 件"
         empty: 投稿がありません
         select_title: 投稿を選択
         select_description: 一覧から投稿を選択すると詳細が表示されます

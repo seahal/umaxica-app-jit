@@ -14,7 +14,6 @@ class ComPreferenceActivityLevel < ActivityRecord
   INFO = 1
 
   has_many :com_preference_activities, dependent: :restrict_with_error, inverse_of: :com_preference_activity_level
-  scope :ordered, -> { column_names.include?("position") ? order(:position, primary_key) : order(primary_key) }
 
   DEFAULTS = [INFO].freeze
 

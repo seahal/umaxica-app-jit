@@ -63,11 +63,17 @@ POSTGRESQL_OPERATOR_PUB=primary
 POSTGRESQL_OPERATOR_SUB=replica
 POSTGRESQL_AVATAR_PUB=primary
 POSTGRESQL_AVATAR_SUB=replica
+POSTGRESQL_FINDER_PUB=primary
+POSTGRESQL_FINDER_SUB=replica
+POSTGRESQL_SEARCH_PUB=primary
+POSTGRESQL_SEARCH_SUB=replica
 # Object Storage Configuration
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
 # OpenTelemetry Configuration
 OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
+# Error Monitoring Configuration
+SENTRY_DSN_CONFIG=null
 # PaaS Configuration
 ## Mail Configuration
 RESEND_SMTP_ENDPOINT=smtp.resend.com

@@ -26,7 +26,28 @@
 require "test_helper"
 
 class AreaUserOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :area_occurrences
+
+  test "associations" do
+    area = area_occurrences(:one)
+    user = UserOccurrence.create!(body: "user-001")
+    record = AreaUserOccurrence.new(
+      area_occurrence: area,
+      user_occurrence: user,
+    )
+
+    assert record.save!
+    assert_equal area, record.area_occurrence
+    assert_equal user, record.user_occurrence
+  end
+
+  test "uniqueness validation" do
+    area = area_occurrences(:one)
+    user = UserOccurrence.create!(body: "user-002")
+    AreaUserOccurrence.create!(area_occurrence: area, user_occurrence: user)
+    duplicate = AreaUserOccurrence.new(area_occurrence: area, user_occurrence: user)
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:area_occurrence_id]
+  end
 end

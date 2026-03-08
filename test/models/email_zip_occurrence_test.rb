@@ -26,7 +26,32 @@
 require "test_helper"
 
 class EmailZipOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :zip_occurrences
+
+  test "associations" do
+    email = EmailOccurrence.create!(body: "test@example.com")
+    record = EmailZipOccurrence.new(
+      email_occurrence: email,
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal email, record.email_occurrence
+    assert_equal zip_occurrences(:one), record.zip_occurrence
+  end
+
+  test "uniqueness validation" do
+    email = EmailOccurrence.create!(body: "test2@example.com")
+    EmailZipOccurrence.create!(
+      email_occurrence: email,
+      zip_occurrence: zip_occurrences(:one),
+    )
+    duplicate = EmailZipOccurrence.new(
+      email_occurrence: email,
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:email_occurrence_id]
+  end
 end

@@ -1,57 +1,55 @@
 steps:
-  - name: "ubuntu:24.04"
+  # ---- 1. Build assets (importmap + Propshaft) ----
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - .
+      - "--target"
+      - production-build
+      - "-t"
+      - asset-builder
+      - "--file"
+      - Dockerfile
+    id: Build image for assets
+
+  - name: gcr.io/cloud-builders/docker
     args:
       - "-lc"
       - |
         set -euo pipefail
-        export DEBIAN_FRONTEND=noninteractive
-        # --- Build deps ---
-        apt-get update
-        apt-get install -y --no-install-recommends \
-          build-essential ca-certificates curl git \
-          libpq-dev libvips libvips-dev libyaml-dev \
-          libffi-dev libreadline-dev zlib1g-dev \
-          pkg-config tzdata libssl-dev npm unzip
-        rm -rf /var/lib/apt/lists/*
-        # --- mise install ---
-        curl -fsSL https://mise.run | sh
-        export PATH="$$HOME/.local/bin:$$PATH"
-        export PATH="$$HOME/.local/share/mise/shims:$$PATH"
-        # --- pnpm install ---
-        npm install -g pnpm@10.27.0
-        # --- Ruby install ---
-        mise install ruby@latest
-        mise use -g ruby@latest
-        # --- JS deps ---
-        pnpm install --frozen-lockfile
-        # --- Ruby deps ---
-        gem install --no-document bundler
-        bundle config set path vendor/bundle
-        bundle config set without 'development test'
-        bundle config set jobs "$$(nproc)"
-        bundle config set retry 3
-        bundle install
-        # --- Clean up files ---
-        rm -rf public/assets docs/ tmp/ log/ docker/ dependency/
-        # --- Assets build ---
-        SECRET_KEY_BASE=dummy RAILS_ENV=asset REGION_CODE=jp APEX_REGION=true bundle exec rails assets:precompile
-    id: Build assets with mise (ruby/node/pnpm)
+        docker run --rm \
+          -e SECRET_KEY_BASE=dummy \
+          -e RAILS_ENV=asset \
+          -e REGION_CODE=jp \
+          -e APEX_REGION=true \
+          -v /workspace/public:/output \
+          asset-builder \
+          bash -c "bundle exec rails assets:precompile && cp -r public/* /output/"
     entrypoint: bash
-  - name: "public.ecr.aws/aws-cli/aws-cli:latest"
-    args:
-      - "-lc"
-      - |
-        set -euo pipefail
-        export AWS_REGION=auto
-        export AWS_S3_FORCE_PATH_STYLE=true
-        aws s3 sync public/ "s3://$_R2_BUCKET/" \
-          --endpoint-url "$_R2_ENDPOINT" \
-          --no-progress
-    id: up files to cloudflare r2
-    entrypoint: bash
-    secretEnv:
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
+    id: Precompile assets
+    waitFor:
+      - Build image for assets
+
+  # ---- 2. Upload assets to Cloudflare R2 ----
+  # - name: "public.ecr.aws/aws-cli/aws-cli:latest"
+  #   args:
+  #     - "-lc"
+  #     - |
+  #       set -euo pipefail
+  #       export AWS_REGION=auto
+  #       export AWS_S3_FORCE_PATH_STYLE=true
+  #       aws s3 sync public/ "s3://$_R2_BUCKET/" \
+  #         --endpoint-url "$_R2_ENDPOINT" \
+  #         --no-progress
+  #   id: Upload assets to Cloudflare R2
+  #   entrypoint: bash
+  #   secretEnv:
+  #     - AWS_ACCESS_KEY_ID
+  #     - AWS_SECRET_ACCESS_KEY
+  #   waitFor:
+  #     - Precompile assets
+
+  # ---- 3. Docker build ----
   - name: gcr.io/cloud-builders/docker
     args:
       - build
@@ -59,40 +57,63 @@ steps:
       - "--target"
       - production
       - "-t"
-      - asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample
+      - "${_IMAGE}:latest"
+      - "-t"
+      - "${_IMAGE}:${SHORT_SHA}"
       - "--file"
       - Dockerfile
     id: Docker build
+    waitFor:
+      - Precompile assets
+
+  # ---- 4. Docker push ----
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample
+      - "${_IMAGE}"
+      - "--all-tags"
     id: Docker push
-#  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-#    args:
-#      - '-lc'
-#      - |
-#        set -euxo pipefail
-#        gcloud run deploy "${_SERVICE}" \
-#          --image "asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:latest" \
-#          --region "${_REGION}" \
-#          --project "$PROJECT_ID" \
-#          --quiet
-#    entrypoint: bash
+    waitFor:
+      - Docker build
+
+  # ---- 5. Deploy to Cloud Run ----
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    args:
+      - "-lc"
+      - |
+        set -euxo pipefail
+        gcloud run deploy "${_SERVICE}" \
+          --image "${_IMAGE}:${SHORT_SHA}" \
+          --region "${_REGION}" \
+          --project "$PROJECT_ID" \
+          --port 8080 \
+          --memory 1024Mi \
+          --cpu 1 \
+          --max-instances 1 \
+          --min-instances 0 \
+          --cpu-throttling \
+          --execution-environment gen1 \
+          --ingress all \
+          --allow-unauthenticated \
+          --set-env-vars "RAILS_ENV=production,RAILS_LOG_TO_STDOUT=1,RAILS_SERVE_STATIC_FILES=true,SECRET_KEY_BASE=dummy_temporary_key_for_testing_only" \
+          --quiet
+    entrypoint: bash
+    id: Deploy to Cloud Run
+    waitFor:
+      - Docker push
+
 timeout: 3600s
 options:
   logging: CLOUD_LOGGING_ONLY
 substitutions:
-  _R2_BUCKET: umaxica-production-cloudflare-r2-asset-jit-jp
-  _R2_ENDPOINT: "https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/"
-  _IMAGE: "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}"
   _REGION: asia-northeast1
-  _REPO: umaxica-app
-  _IMAGE_NAME: sample
-  _SERVICE: umaxica-app-jit-staging-apex
-availableSecrets:
-  secretManager:
-    - versionName: projects/$PROJECT_ID/secrets/AWS_ACCESS_KEY_ID/versions/latest
-      env: AWS_ACCESS_KEY_ID
-    - versionName: projects/$PROJECT_ID/secrets/AWS_SECRET_ACCESS_KEY/versions/latest
-      env: AWS_SECRET_ACCESS_KEY
+  _IMAGE: asia-northeast1-docker.pkg.dev/$PROJECT_ID/umaxica-apps-jit-artifact/staging
+  _SERVICE: umaxica-app-jit-staging
+  # _R2_BUCKET: umaxica-production-cloudflare-r2-asset-jit-jp
+  # _R2_ENDPOINT: "https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/"
+# availableSecrets:
+#   secretManager:
+#     - versionName: projects/$PROJECT_ID/secrets/AWS_ACCESS_KEY_ID/versions/latest
+#       env: AWS_ACCESS_KEY_ID
+#     - versionName: projects/$PROJECT_ID/secrets/AWS_SECRET_ACCESS_KEY/versions/latest
+#       env: AWS_SECRET_ACCESS_KEY

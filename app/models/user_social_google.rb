@@ -45,7 +45,7 @@ class UserSocialGoogle < PrincipalRecord
              foreign_key: :user_identity_social_google_status_id
 
   validates :token, presence: true
-  validates :user_id, uniqueness: true
+  validates :user_id, uniqueness: { conditions: -> { where.not(user_id: nil) } }
   validates :uid, presence: true, uniqueness: { scope: :provider }
   validates :expires_at, presence: true # TODO: I want to rename this code to revoked_at
   validates :user_identity_social_google_status_id, numericality: { only_integer: true }

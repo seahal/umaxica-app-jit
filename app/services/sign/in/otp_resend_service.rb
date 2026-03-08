@@ -51,7 +51,8 @@ module Sign
         log_issued!(occurrence: occurrence, issued_timestamps: updated_history)
 
         Response.new(status: :ok, resendable: true, retry_after: 0)
-      rescue StandardError
+      rescue StandardError => e
+        Rails.error.report(e, handled: true, context: { service: "otp_resend", kind: @kind })
         invalid_response
       end
 
@@ -101,8 +102,12 @@ module Sign
 
         records.find_each do |record|
           clear_otp(record)
-        rescue StandardError
-          nil
+        rescue StandardError => e
+          Rails.error.report(
+            e, handled: true, context: {
+              service: "otp_resend", action: "clear_otp", record_id: record.id,
+            },
+          )
         end
 
         target = records.order(created_at: :asc).first

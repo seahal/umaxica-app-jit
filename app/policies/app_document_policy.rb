@@ -26,13 +26,13 @@ class AppDocumentPolicy < ApplicationPolicy
 
   def destroy?
     # Owner or managers and above can delete
-    owner? || admin_or_manager?
+    owner? || operator_or_manager?
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if admin_or_manager?
-        # Admins and Managers see all documents
+      if operator_or_manager?
+        # Operators and Managers see all documents
         scope.all
       elsif actor
         # Other authenticated users see only their own documents

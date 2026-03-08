@@ -162,36 +162,18 @@ module SocialCallbackGuard
 
   private
 
+  def verified_social_callback_request?
+    cached = request.env["social_callback_guard.verified"]
+    return cached unless cached.nil?
+
+    request.env["social_callback_guard.verified"] = evaluate_social_callback_request
+  end
+
   def verify_social_callback_request!
-    provider = params[:provider].to_s
-    method = request.request_method.to_s.upcase
+    return if verified_social_callback_request?
 
-    unless SocialCallbackGuard.allowed_callback_method?(provider, method)
-      return reject_social_callback!(
-        reason: "bad_method",
-        provider: provider,
-        details: { method: method },
-      )
-    end
-
-    host = SocialCallbackGuard.normalize_host_port(request.host_with_port)
-    unless SocialCallbackGuard.allowed_hosts.include?(host)
-      return reject_social_callback!(
-        reason: "host_mismatch",
-        provider: provider,
-        details: { host: host },
-      )
-    end
-
-    log_callback_source(provider)
-    valid_state, state_reason = valid_callback_state?(provider)
-    return if valid_state
-
-    reject_social_callback!(
-      reason: "bad_state",
-      provider: provider,
-      details: { state_reason: state_reason },
-    )
+    rejection = request.env["social_callback_guard.rejection"] || default_social_callback_rejection
+    reject_social_callback!(**rejection)
   end
 
   def valid_callback_state?(provider)
@@ -273,6 +255,57 @@ module SocialCallbackGuard
     session.delete(SOCIAL_STATE_STARTED_AT_SESSION_KEY)
     session.delete(SOCIAL_STATE_USED_AT_SESSION_KEY)
     session.delete(SOCIAL_STATE_PROVIDER_SESSION_KEY)
+  end
+
+  def evaluate_social_callback_request
+    provider = params[:provider].to_s
+    method = request.request_method.to_s.upcase
+
+    unless SocialCallbackGuard.allowed_callback_method?(provider, method)
+      store_social_callback_rejection!(
+        reason: "bad_method",
+        provider: provider,
+        details: { method: method },
+      )
+      return false
+    end
+
+    host = SocialCallbackGuard.normalize_host_port(request.host_with_port)
+    unless SocialCallbackGuard.allowed_hosts.include?(host)
+      store_social_callback_rejection!(
+        reason: "host_mismatch",
+        provider: provider,
+        details: { host: host },
+      )
+      return false
+    end
+
+    log_callback_source(provider)
+    valid_state, state_reason = valid_callback_state?(provider)
+    return true if valid_state
+
+    store_social_callback_rejection!(
+      reason: "bad_state",
+      provider: provider,
+      details: { state_reason: state_reason },
+    )
+    false
+  end
+
+  def default_social_callback_rejection
+    {
+      reason: "bad_state",
+      provider: params[:provider].to_s,
+      details: {},
+    }
+  end
+
+  def store_social_callback_rejection!(reason:, provider:, details: {})
+    request.env["social_callback_guard.rejection"] = {
+      reason: reason,
+      provider: provider,
+      details: details,
+    }
   end
 
   def log_callback_source(provider)

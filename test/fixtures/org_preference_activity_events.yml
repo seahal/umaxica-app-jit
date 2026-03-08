@@ -5,7 +5,7 @@
 #
 #  id :bigint           not null, primary key
 #
-none:
+nothing_zero:
   id: 0
 create_new_preference_token:
   id: 1

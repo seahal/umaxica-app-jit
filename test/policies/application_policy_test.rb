@@ -152,24 +152,24 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
     actor = RoleActor.new
     policy = ApplicationPolicy.new(actor, RecordWithOrganization.new(org))
 
-    assert policy.send(:admin?)
+    assert policy.send(:operator?)
     assert policy.send(:manager?)
     assert policy.send(:editor?)
     assert policy.send(:contributor?)
     assert policy.send(:viewer?)
-    assert policy.send(:admin_or_manager?)
+    assert policy.send(:operator_or_manager?)
     assert policy.send(:can_edit?)
     assert policy.send(:can_view?)
     assert policy.send(:can_contribute?)
 
     assert_equal(
       [
-        [:has_role?, "admin", org],
+        [:has_role?, "operator", org],
         [:has_role?, "manager", org],
         [:has_role?, "editor", org],
         [:has_role?, "contributor", org],
         [:has_role?, "viewer", org],
-        [:admin_or_manager?, org],
+        [:operator_or_manager?, org],
         [:can_edit?, org],
         [:can_view?, org],
         [:can_contribute?, org],
@@ -182,16 +182,16 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
     actor = ScopeActor.new
     scope_obj = ApplicationPolicy::Scope.new(actor, [])
 
-    assert scope_obj.send(:has_role?, "admin", organization: "org-1")
-    assert scope_obj.send(:admin_or_manager?, organization: "org-2")
-    assert_equal [[:has_role?, "admin", "org-1"], [:admin_or_manager?, "org-2"]], actor.calls
+    assert scope_obj.send(:has_role?, "operator", organization: "org-1")
+    assert scope_obj.send(:operator_or_manager?, organization: "org-2")
+    assert_equal [[:has_role?, "operator", "org-1"], [:operator_or_manager?, "org-2"]], actor.calls
   end
 
   def test_scope_helpers_return_nil_without_actor
     scope_obj = ApplicationPolicy::Scope.new(nil, [])
 
-    assert_nil scope_obj.send(:has_role?, "admin", organization: "org-1")
-    assert_nil scope_obj.send(:admin_or_manager?, organization: "org-1")
+    assert_nil scope_obj.send(:has_role?, "operator", organization: "org-1")
+    assert_nil scope_obj.send(:operator_or_manager?, organization: "org-1")
   end
 
   private
@@ -217,8 +217,8 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
       true
     end
 
-    def admin_or_manager?(organization:)
-      @calls << [:admin_or_manager?, organization]
+    def operator_or_manager?(organization:)
+      @calls << [:operator_or_manager?, organization]
       true
     end
 
@@ -250,8 +250,8 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
       true
     end
 
-    def admin_or_manager?(organization:)
-      @calls << [:admin_or_manager?, organization]
+    def operator_or_manager?(organization:)
+      @calls << [:operator_or_manager?, organization]
       true
     end
   end

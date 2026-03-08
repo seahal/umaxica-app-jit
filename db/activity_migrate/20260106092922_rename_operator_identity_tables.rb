@@ -19,14 +19,14 @@ class RenameOperatorIdentityTables < ActiveRecord::Migration[8.2]
       safe_rename(:staff_identity_telephone_statuses, :staff_telephone_statuses)
       safe_rename(:staff_identity_telephones, :staff_telephones)
 
-      # Admin Identity tables
-      safe_rename(:admin_identity_statuses, :admin_statuses)
+      # Operator Identity tables
+      safe_rename(:admin_identity_statuses, :operator_statuses)
     end
   end
 
   def down
     safety_assured do
-      rename_table :admin_statuses, :admin_identity_statuses
+      rename_table :operator_statuses, :admin_identity_statuses
       rename_table :staff_telephones, :staff_identity_telephones
       rename_table :staff_telephone_statuses, :staff_identity_telephone_statuses
       rename_table :staff_statuses, :staff_identity_statuses

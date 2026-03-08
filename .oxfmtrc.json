@@ -88,15 +88,14 @@
     "public/assets/**",
     "public/packs/**",
 
-    // oxfmt は YAML / TOML / Ruby を扱えないので除外
+    // Ruby / ERB / TOML は除外
     "**/*.rb",
     "**/*.erb",
-    "**/*.yml",
-    "**/*.yaml",
     "**/*.toml",
     "Gemfile",
     "Gemfile.lock",
     "Rakefile",
+    "config/database.yml",
 
     // スキーマ等の自動生成 JSON は除外
     "db/**",

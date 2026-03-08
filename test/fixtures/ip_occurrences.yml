@@ -30,5 +30,3 @@ one:
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
   status_id: 2
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>

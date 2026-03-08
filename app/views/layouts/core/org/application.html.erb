@@ -36,6 +36,9 @@
         <% end %>
       </nav>
     </header>
+<% if show_cookie_banner? %>
+  <%= render "shared/cookie_banner" %>
+<% end %>
 
     <main>
       <%= yield %>

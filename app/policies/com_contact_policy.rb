@@ -22,17 +22,17 @@ class ComContactPolicy < ApplicationPolicy
 
   def update?
     # Only managers and above can update contact status/response
-    actor.is_a?(Staff) && admin_or_manager?
+    actor.is_a?(Staff) && operator_or_manager?
   end
 
   def destroy?
-    # Only admins can delete contacts
-    actor.is_a?(Staff) && admin?
+    # Only operators can delete contacts
+    actor.is_a?(Staff) && operator?
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if actor.is_a?(Staff) && admin_or_manager?
+      if actor.is_a?(Staff) && operator_or_manager?
         # Staff managers see all contacts
         scope.all
       elsif actor.is_a?(Staff)

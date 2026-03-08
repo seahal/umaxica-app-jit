@@ -4,7 +4,7 @@ class AddDepartmentToAdmins < ActiveRecord::Migration[8.2]
   disable_ddl_transaction!
 
   def change
-    add_reference :admins, :department,
+    add_reference :operators, :department,
                   type: :bigint,
                   index: { algorithm: :concurrently },
                   foreign_key: { to_table: :departments, validate: false }

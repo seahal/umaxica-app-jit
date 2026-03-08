@@ -39,7 +39,7 @@ require "concurrent"
 
 class UserSecretTest < ActiveSupport::TestCase
   setup do
-    UserStatus.find_or_create_by!(id: UserStatus::NONE)
+    UserStatus.find_or_create_by!(id: UserStatus::NOTHING)
     # Also need UserSecretStatus as 'ACTIVE', 'USED', 'EXPIRED' are used in tests
     UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
     UserSecretStatus.find_or_create_by!(id: UserSecretStatus::USED)
@@ -53,7 +53,7 @@ class UserSecretTest < ActiveSupport::TestCase
 
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
-        u.status_id = UserStatus::NONE
+        u.status_id = UserStatus::NOTHING
       end
     UserEmail.create!(
       user: @user,
@@ -158,6 +158,14 @@ class UserSecretTest < ActiveSupport::TestCase
 
     assert_equal 32, secret.length
     assert_match(/\A[1-9A-HJ-NP-Za-km-z]+\z/, secret)
+  end
+
+  test "sample fixture secret authenticates with fixed raw secret" do
+    secret = user_secrets(:sample_login)
+
+    assert secret.authenticate("00000000000000000000000000000000")
+    assert_equal UserSecretKind::PERMANENT, secret.user_secret_kind_id
+    assert_equal UserSecretStatus::ACTIVE, secret.user_secret_status_id
   end
 
   test "value maps to password accessor" do
@@ -267,7 +275,7 @@ class UserSecretTest < ActiveSupport::TestCase
   test "is invalid on create when user has no verified recovery identity" do
     user_without_identity =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
-        u.status_id = UserStatus::NONE
+        u.status_id = UserStatus::NOTHING
       end
 
     record = UserSecret.new(

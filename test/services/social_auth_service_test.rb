@@ -80,4 +80,97 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
       SocialAuthService.handle_callback(auth_hash: auth_hash, current_user: nil, intent: "login")
     end
   end
+
+  test "link intent associates identity with existing user" do
+    auth_hash = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "google_uid_link_test_#{SecureRandom.hex(8)}",
+      credentials: {
+        token: "test_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+
+    existing_user = users(:one)
+
+    result = SocialAuthService.handle_callback(
+      auth_hash: auth_hash,
+      current_user: existing_user,
+      intent: "link",
+    )
+
+    assert_equal existing_user, result[:user]
+    assert_equal "google_oauth2", result[:identity].provider
+  end
+
+  test "reauth intent updates existing identity" do
+    existing_user = users(:one)
+    existing_identity = UserSocialGoogle.create!(
+      user: existing_user,
+      uid: "google_uid_reauth_test_#{SecureRandom.hex(8)}",
+      provider: "google_oauth2",
+      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      token: "old_token",
+      expires_at: 1.week.from_now.to_i,
+    )
+
+    auth_hash = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: existing_identity.uid,
+      credentials: {
+        token: "new_test_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    )
+
+    result = SocialAuthService.handle_callback(
+      auth_hash: auth_hash,
+      current_user: existing_user,
+      intent: "reauth",
+    )
+
+    assert_equal existing_user, result[:user]
+    assert_equal existing_identity.id, result[:identity].id
+  end
+
+  test "raises error for invalid intent" do
+    auth_hash = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "test_uid",
+      credentials: { token: "test" },
+    )
+
+    assert_raises(SocialAuth::UnauthorizedError) do
+      SocialAuthService.handle_callback(
+        auth_hash: auth_hash,
+        current_user: nil,
+        intent: "invalid_intent",
+      )
+    end
+  end
+
+  test "unlink raises error when removing last login method" do
+    user = users(:one)
+    UserSocialGoogle.create!(
+      user: user,
+      uid: "google_uid_unlink_test_#{SecureRandom.hex(8)}",
+      provider: "google_oauth2",
+      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      token: "test_token",
+      expires_at: 1.week.from_now.to_i,
+    )
+
+    assert_raises(SocialAuth::LastIdentityError) do
+      SocialAuthService.unlink(provider: "google", user: user)
+    end
+  end
+
+  test "unlink returns already_unlinked when identity not found" do
+    user = users(:one)
+
+    result = SocialAuthService.unlink(provider: "google", user: user)
+
+    assert result[:success]
+    assert result[:already_unlinked]
+  end
 end

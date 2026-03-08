@@ -72,6 +72,10 @@ spec:
               value: top.umaxica.org
 
             # ===== Sign-in surfaces =====
+            - name: SIGN_SERVICE_URL
+              value: sign.umaxica.app
+            - name: SIGN_STAFF_URL
+              value: sign.umaxica.org
             - name: AUTH_SERVICE_URL
               value: sign.umaxica.app
             - name: AUTH_STAFF_URL

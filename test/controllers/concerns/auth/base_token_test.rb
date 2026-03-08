@@ -93,9 +93,9 @@ module Auth
     end
 
     test "Token.validate_actor_claim! returns false for unrecognized value" do
-      payload = { "act" => "admin" }
+      payload = { "act" => "operator" }
 
-      assert_not Auth::Base::Token.validate_actor_claim!(payload, "admin")
+      assert_not Auth::Base::Token.validate_actor_claim!(payload, "operator")
     end
 
     test "Token.validate_actor_claim! returns false for nil value" do

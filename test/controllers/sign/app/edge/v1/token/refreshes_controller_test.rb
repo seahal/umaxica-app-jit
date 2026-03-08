@@ -46,6 +46,72 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert json["refreshed"]
   end
 
+  test "POST refresh syncs jit_preference_consented cookie on success" do
+    token_record = UserToken.create!(user: @user, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    controller = Sign::App::Edge::V1::Token::RefreshesController
+    expires_at = Time.utc(2034, 4, 5, 6, 7, 8)
+
+    with_env("COOKIE_DOMAIN_APP", ".app.refresh.example.test") do
+      controller.any_instance.stub(
+        :decode_and_verify_preference_jwt,
+        { "preferences" => { "consented" => true }, "public_id" => "pref-app-public-id" },
+      ) do
+        controller.any_instance.stub(:refresh_token_expires_at, expires_at) do
+          post "/edge/v1/token/refresh",
+               headers: json_headers(with_csrf: true, device_id: @device_id),
+               as: :json
+        end
+      end
+    end
+
+    assert_response :ok
+    set_cookie = response.headers["Set-Cookie"].to_s
+
+    assert_includes set_cookie, "jit_preference_consented=1"
+    assert_includes set_cookie, "domain=.app.refresh.example.test"
+    assert_includes set_cookie.downcase, "path=/"
+    expires = response_cookie_expiry("jit_preference_consented")
+
+    assert_not_nil expires
+    assert_in_delta expires_at.to_i, expires.to_i, 1
+  end
+
+  test "POST refresh syncs jit_preference_consented=0 when consent is false" do
+    token_record = UserToken.create!(user: @user, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    controller = Sign::App::Edge::V1::Token::RefreshesController
+    expires_at = Time.utc(2034, 6, 7, 8, 9, 10)
+
+    with_env("COOKIE_DOMAIN_APP", ".app.refresh.example.test") do
+      controller.any_instance.stub(
+        :decode_and_verify_preference_jwt,
+        { "preferences" => { "consent" => false, "consented" => false }, "public_id" => "pref-app-public-id" },
+      ) do
+        controller.any_instance.stub(:refresh_token_expires_at, expires_at) do
+          post "/edge/v1/token/refresh",
+               headers: json_headers(with_csrf: true, device_id: @device_id),
+               as: :json
+        end
+      end
+    end
+
+    assert_response :ok
+    set_cookie = response.headers["Set-Cookie"].to_s
+
+    assert_includes set_cookie, "jit_preference_consented=0"
+    assert_includes set_cookie, "domain=.app.refresh.example.test"
+    assert_includes set_cookie.downcase, "path=/"
+    expires = response_cookie_expiry("jit_preference_consented")
+
+    assert_not_nil expires
+    assert_in_delta expires_at.to_i, expires.to_i, 1
+  end
+
   test "GET check with valid access token from refresh returns 200" do
     # Create a token record and generate tokens
     token_record = UserToken.create!(user: @user, device_id: @device_id)
@@ -429,15 +495,14 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
   end
 
   def csrf_token
-    @csrf_token ||=
-      begin
-        get "/edge/v1/csrf",
-            params: { ri: "jp" },
-            headers: { "Host" => @host, "Accept" => "application/json" },
-            as: :json
+    @csrf_token ||= "test_csrf_token"
+  end
 
-        assert_response :ok
-        response.parsed_body.fetch("csrf_token")
-      end
+  def with_env(key, value)
+    previous = ENV[key]
+    ENV[key] = value
+    yield
+  ensure
+    ENV[key] = previous
   end
 end

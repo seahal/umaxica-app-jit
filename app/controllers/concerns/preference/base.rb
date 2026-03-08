@@ -243,6 +243,7 @@ module Preference
     }.freeze
 
     included do
+      helper_method :show_cookie_banner?, :cookie_banner_endpoint_path if respond_to?(:helper_method)
       before_action :set_preferences_cookie
     end
 
@@ -264,6 +265,66 @@ module Preference
       return render_preference_refresh_error! if preference_refresh_failed?
 
       issue_access_token_from(@preferences || preference)
+      nil
+    end
+
+    def show_cookie_banner?
+      return false unless request.format.html?
+      return false if cookie_banner_endpoint_path.blank?
+
+      token = cookies[Preference::CookieName.access]
+      return true if token.blank?
+
+      payload = Token.decode(token, host: request.host)
+      consent = extract_cookie_banner_consent(payload)
+      consent != true
+    rescue StandardError => e
+      Rails.logger.warn("[Preference::Base] cookie banner fallback to visible: #{e.class}")
+      true
+    end
+
+    def cookie_banner_endpoint_path
+      return nil unless cookie_banner_endpoint_available_for_request?
+
+      @cookie_banner_endpoint_path ||=
+        begin
+          endpoint_path = nil
+          %i(
+            apex_app_web_v1_cookie_path
+            apex_com_web_v1_cookie_path
+            apex_org_web_v1_cookie_path
+          ).each do |helper_name|
+            next unless respond_to?(helper_name, true)
+
+            endpoint_path = public_send(helper_name)
+            break
+          rescue ActionController::UrlGenerationError
+            next
+          end
+          endpoint_path
+        end
+    end
+
+    def cookie_banner_endpoint_available_for_request?
+      expected_host =
+        case ::Core::Surface.current(request)
+        when :app then ENV["APEX_SERVICE_URL"]
+        when :com then ENV["APEX_CORPORATE_URL"]
+        when :org then ENV["APEX_STAFF_URL"]
+        end
+      return false if expected_host.blank?
+
+      request.host == expected_host
+    end
+
+    def extract_cookie_banner_consent(payload)
+      return nil unless payload.is_a?(Hash)
+
+      preferences = payload["preferences"]
+      return nil unless preferences.is_a?(Hash)
+      return preferences["consent"] if preferences.key?("consent")
+      return preferences["consented"] if preferences.key?("consented")
+
       nil
     end
 
@@ -558,7 +619,7 @@ module Preference
       return if option_class.blank? || raw_name.blank?
 
       target_keys = normalized_option_lookup_keys(raw_name)
-      option_class.ordered.each do |option|
+      option_class.find_each do |option|
         return option.id if (target_keys & normalized_option_lookup_keys(option.name)).any?
       end
       nil
@@ -802,13 +863,32 @@ module Preference
       region = preference.public_send("#{association_prefix}_region")&.option_id
       timezone = preference.public_send("#{association_prefix}_timezone")&.option_id
       colortheme = preference.public_send("#{association_prefix}_colortheme")&.option_id
+      consented = preference_cookie_consented(preference, association_prefix)
+      consent = preference_cookie_consent(preference, association_prefix)
 
       {
         "lx" => option_id_to_language(language, option_prefix) || "ja",
         "ri" => option_id_to_region(region, option_prefix) || "jp",
         "tz" => option_id_to_timezone(timezone, option_prefix) || "Asia/Tokyo",
         "ct" => normalize_colortheme(option_id_to_colortheme(colortheme, option_prefix)) || "sy",
+        "consented" => consented,
+        "consent" => consent,
       }
+    end
+
+    def preference_cookie_consented(preference, association_prefix)
+      preference.public_send("#{association_prefix}_cookie")&.consented
+    rescue NoMethodError
+      nil
+    end
+
+    def preference_cookie_consent(preference, association_prefix)
+      cookie = preference.public_send("#{association_prefix}_cookie")
+      return nil if cookie.blank? || cookie.consented_at.blank?
+
+      cookie.consented
+    rescue NoMethodError
+      nil
     end
 
     def option_id_to_language(option_id, prefix)
@@ -1039,6 +1119,7 @@ module Preference
     def preference_associations_to_preload
       prefix = preference_class.name.underscore
       [
+        "#{prefix}_cookie",
         "#{prefix}_language",
         "#{prefix}_region",
         "#{prefix}_timezone",

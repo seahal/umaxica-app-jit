@@ -10,7 +10,6 @@ class SessionLimitHardRejectTest < ActionDispatch::IntegrationTest
     include Auth::User
 
     public_strict!
-    skip_forgery_protection
 
     def create
       user = User.find(params[:user_id])

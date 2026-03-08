@@ -101,4 +101,61 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
 
     assert_response :success
   end
+
+  test "update with blank pass_code renders edit with error" do
+    post sign_app_configuration_emails_registration_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: "config-blank-code@example.com",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: request_headers
+
+    user_email = UserEmail.find_by!(address: "config-blank-code@example.com")
+    session[:email_registration_public_id] = user_email.public_id
+
+    patch sign_app_configuration_emails_registration_url(ri: "jp"),
+          params: {
+            user_email: {
+              pass_code: "",
+            },
+          },
+          headers: request_headers
+
+    assert_response :unprocessable_content
+    assert_includes response.body, I18n.t("sign.app.registration.email.update.code_required")
+  end
+
+  test "update with wrong pass_code renders edit with error" do
+    post sign_app_configuration_emails_registration_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: "config-wrong-code@example.com",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: request_headers
+
+    user_email = UserEmail.find_by!(address: "config-wrong-code@example.com")
+    session[:email_registration_public_id] = user_email.public_id
+
+    patch sign_app_configuration_emails_registration_url(ri: "jp"),
+          params: {
+            user_email: {
+              pass_code: "000000",
+            },
+          },
+          headers: request_headers
+
+    assert_response :unprocessable_content
+  end
+
+  test "edit with invalid session redirects to new registration" do
+    get edit_sign_app_configuration_emails_registration_url(ri: "jp"), headers: request_headers
+
+    assert_response :redirect
+    assert_redirected_to new_sign_app_configuration_emails_registration_url(ri: "jp")
+    assert_includes flash[:notice], I18n.t("sign.app.registration.email.edit.session_expired")
+  end
 end

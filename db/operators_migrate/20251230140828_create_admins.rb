@@ -2,12 +2,12 @@
 
 class CreateAdmins < ActiveRecord::Migration[8.2]
   def change
-    create_table :admins do |t|
+    create_table :operators do |t|
       t.string :public_id
       t.string :moniker
 
       t.timestamps
     end
-    add_index :admins, :public_id, unique: true
+    add_index :operators, :public_id, unique: true
   end
 end

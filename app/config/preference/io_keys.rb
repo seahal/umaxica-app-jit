@@ -10,6 +10,7 @@ module Preference
       LEGACY_THEME = "ct"
       LANGUAGE = "jit_lx"
       TIMEZONE = "jit_tz"
+      CONSENTED = "jit_preference_consented"
       ACCESS_BASENAME = "jit_preference_access"
       REFRESH_BASENAME = "jit_preference_refresh"
       DEVICE_BASENAME = "jit_preference_device_id"

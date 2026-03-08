@@ -1,8 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
+require Rails.root.join("lib/sign_host_env").to_s
+
 # config/initializers/session_store.rb
-sign_service_host = ENV.fetch("SIGN_SERVICE_URL", "").to_s
+sign_service_host = SignHostEnv.service_url.to_s
 non_local_host =
   sign_service_host.present? &&
   sign_service_host.exclude?("localhost") &&
@@ -21,4 +23,4 @@ Rails.application.config.session_store :cookie_store,
                                        key: force_secure_cookies ? "__Secure-jit_session" : "jit_session",
                                        secure: force_secure_cookies,
                                        httponly: true,
-                                       same_site: force_secure_cookies ? :none : :lax
+                                       same_site: :lax

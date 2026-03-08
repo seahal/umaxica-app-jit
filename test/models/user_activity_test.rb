@@ -83,7 +83,7 @@ class UserActivityTest < ActiveSupport::TestCase
       user: @user,
     )
 
-    # Defaults to NONE, so it should be valid
+    # Defaults to NOTHING, so it should be valid
     assert_predicate audit, :valid?
   end
 

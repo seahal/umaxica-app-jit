@@ -26,7 +26,30 @@
 require "test_helper"
 
 class DomainZipOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :domain_occurrences, :zip_occurrences
+
+  test "associations" do
+    record = DomainZipOccurrence.new(
+      domain_occurrence: domain_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert record.save!
+    assert_equal domain_occurrences(:one), record.domain_occurrence
+    assert_equal zip_occurrences(:one), record.zip_occurrence
+  end
+
+  test "uniqueness validation" do
+    DomainZipOccurrence.create!(
+      domain_occurrence: domain_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+    duplicate = DomainZipOccurrence.new(
+      domain_occurrence: domain_occurrences(:one),
+      zip_occurrence: zip_occurrences(:one),
+    )
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:domain_occurrence_id]
+  end
 end

@@ -111,7 +111,7 @@ jobs:
           GITLEAKS_FORMAT: sarif
           GITLEAKS_FAIL: true
       - name: Upload SARIF to GitHub Security
-        if: always()
+        if: always() && hashFiles('gitleaks.sarif') != ''
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: gitleaks.sarif
@@ -269,6 +269,10 @@ jobs:
       POSTGRESQL_OPERATOR_SUB: localhost
       POSTGRESQL_AVATAR_PUB: localhost
       POSTGRESQL_AVATAR_SUB: localhost
+      POSTGRESQL_FINDER_PUB: localhost
+      POSTGRESQL_FINDER_SUB: localhost
+      POSTGRESQL_SEARCH_PUB: localhost
+      POSTGRESQL_SEARCH_SUB: localhost
       # Kafka
       KAFKA_BROKERS: localhost:9092
       # Email
@@ -278,7 +282,7 @@ jobs:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       # HMAC Secret
-      OCCURRENCE_HMAC_SECRET: c2c1f3f4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7
+      OCCURRENCE_HMAC_SECRET: ${{ secrets.OCCURRENCE_HMAC_SECRET }}
     services:
       postgres:
         image: postgres:18
@@ -295,7 +299,8 @@ jobs:
         ports:
           - 6379:6379
         options: >-
-          --health-cmd "valkey-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd "valkey-cli ping" --health-interval 10s --health-timeout 5s --health-retries
+          5
       kafka:
         image: confluentinc/cp-kafka:7.9.0
         env:
@@ -313,7 +318,8 @@ jobs:
         ports:
           - 9092:9092
         options: >-
-          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
+          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092"
+          --health-interval 30s --health-timeout 10s --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - name: Setup Ruby
@@ -336,6 +342,12 @@ jobs:
           path: coverage/
           retention-days: 30
           compression-level: 6
+      - name: Report coverage to PR
+        if: github.event_name == 'pull_request' && always()
+        uses: romeovs/lcov-reporter-action@v0.4.0
+        with:
+          lcov-file: coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload test logs
         if: failure()
         uses: actions/upload-artifact@v4
@@ -397,7 +409,7 @@ jobs:
           provenance: false
           sbom: false
       - name: Run Trivy vulnerability scanner (SARIF)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: umaxica-app:${{ github.sha }}
           format: sarif
@@ -409,16 +421,16 @@ jobs:
           scanners: vuln,secret
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: trivy-results.sarif
           category: trivy-container
-      - name: Run Trivy (table format)
-        uses: aquasecurity/trivy-action@0.28.0
+      - name: Run Trivy (table format, informational)
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: umaxica-app:${{ github.sha }}
           format: table
-          exit-code: "1"
+          exit-code: "0"
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           scanners: vuln,secret
@@ -427,7 +439,7 @@ jobs:
         id: grype
         with:
           image: umaxica-app:${{ github.sha }}
-          fail-build: false
+          fail-build: true
           severity-cutoff: high
       - name: Upload Grype SARIF
         if: always() && steps.grype.outputs.sarif != ''

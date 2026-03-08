@@ -27,7 +27,6 @@ class OrgPreferenceActivityEvent < ActivityRecord
            primary_key: "id",
            inverse_of: :org_preference_activity_event,
            dependent: :restrict_with_error
-  scope :ordered, -> { column_names.include?("position") ? order(:position, primary_key) : order(primary_key) }
 
   DEFAULTS = [
     CREATE_NEW_PREFERENCE_TOKEN,

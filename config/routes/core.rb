@@ -8,11 +8,13 @@ scope module: :core, as: :core do
       root to: "roots#index"
       # health check for html
       resource :health, only: :show, format: :html
+      resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
-          resource :csrf, only: :show
+          resource :sitemap, only: :show
+
           resource :preference, only: %i(show create)
         end
       end
@@ -34,11 +36,13 @@ scope module: :core, as: :core do
       root to: "roots#index"
       # endpoint of health check
       resource :health, only: :show
+      resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
-          resource :csrf, only: :show
+          resource :sitemap, only: :show
+
           resource :preference, only: :show
         end
       end
@@ -65,11 +69,13 @@ scope module: :core, as: :core do
       root to: "roots#index"
       # health check for html
       resource :health, only: :show
+      resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
-          resource :csrf, only: :show
+          resource :sitemap, only: :show
+
           resource :preference, only: :show
         end
       end

@@ -7,10 +7,12 @@ scope module: :help, as: :help do
       root to: "roots#index"
       # health check for html/json
       resource :health, only: :show
+      resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
+          resource :sitemap, only: :show
         end
       end
     end
@@ -21,10 +23,12 @@ scope module: :help, as: :help do
       root to: "roots#index"
       # health check for html/json
       resource :health, only: :show
+      resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
+          resource :sitemap, only: :show
         end
       end
     end
@@ -35,10 +39,12 @@ scope module: :help, as: :help do
       root to: "roots#index"
       # health check for html/json
       resource :health, only: :show
+      resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
+          resource :sitemap, only: :show
         end
       end
     end

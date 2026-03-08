@@ -22,5 +22,5 @@ class UserMessage < MessageRecord
   include ::PublicId
 
   belongs_to :user, inverse_of: :user_messages
-  has_many :client_messages, inverse_of: :user_message, dependent: :delete_all
+  has_many :member_messages, inverse_of: :user_message, dependent: :delete_all
 end

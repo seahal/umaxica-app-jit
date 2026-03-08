@@ -37,7 +37,9 @@ class HandleAssignment < AvatarRecord
   belongs_to :handle
   belongs_to :handle_assignment_status, optional: true
 
-  validates :avatar_id, uniqueness: true
-  validates :handle_id, uniqueness: true
+  validates :avatar_id,
+            uniqueness: { conditions: -> { where("valid_to = 'infinity'::timestamp with time zone") } }
+  validates :handle_id,
+            uniqueness: { conditions: -> { where("valid_to = 'infinity'::timestamp with time zone") } }
   validates :valid_from, presence: true
 end

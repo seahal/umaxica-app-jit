@@ -42,25 +42,30 @@
 class UserEmail < PrincipalRecord
   include PublicId
   include Email
-
   include Turnstile
 
   MAX_EMAILS_PER_USER = 4
+
+  before_validation :set_address_digests
+
   attribute :user_email_status_id, default: UserEmailStatus::UNVERIFIED
   belongs_to :user_email_status,
              optional: true,
              inverse_of: :user_emails
   belongs_to :user, inverse_of: :user_emails
   validates :address, uniqueness: { case_sensitive: false }
-  validates :address_bidx, uniqueness: true, allow_nil: true
-  validates :address_digest, uniqueness: true, allow_nil: true
+  validates :address_bidx,
+            uniqueness: { conditions: -> { where.not(address_bidx: nil) } },
+            allow_nil: true
+  validates :address_digest,
+            uniqueness: { conditions: -> { where.not(address_digest: nil) } },
+            allow_nil: true
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
   validates :user_email_status_id, numericality: { only_integer: true }
   validate :ensure_unique_address_digest
   validate :enforce_user_email_limit, on: :create
-  before_validation :set_address_digests
 
   def to_param
     public_id

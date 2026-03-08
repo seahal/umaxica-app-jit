@@ -109,7 +109,7 @@ class AppDocumentPolicyTest < ActiveSupport::TestCase
   def test_destroy_with_admin_or_manager
     user = users(:one)
     policy = AppDocumentPolicy.new(user, MockDocument.new)
-    policy.define_singleton_method(:admin_or_manager?) { true }
+    policy.define_singleton_method(:operator_or_manager?) { true }
 
     assert_predicate policy, :destroy?
   end
@@ -119,7 +119,7 @@ class AppDocumentPolicyTest < ActiveSupport::TestCase
     other_user = users(:two)
     record = MockDocument.new(other_user.id)
     policy = AppDocumentPolicy.new(user, record)
-    policy.define_singleton_method(:admin_or_manager?) { false }
+    policy.define_singleton_method(:operator_or_manager?) { false }
 
     assert_not policy.destroy?
   end
@@ -141,7 +141,7 @@ class AppDocumentPolicyTest < ActiveSupport::TestCase
   def test_scope_with_admin_or_manager
     user = users(:one)
     scope = AppDocumentPolicy::Scope.new(user, AppDocument)
-    scope.define_singleton_method(:admin_or_manager?) { true }
+    scope.define_singleton_method(:operator_or_manager?) { true }
 
     assert_equal AppDocument.all, scope.resolve
   end
@@ -149,7 +149,7 @@ class AppDocumentPolicyTest < ActiveSupport::TestCase
   def test_scope_with_authenticated_user
     user = users(:one)
     scope = AppDocumentPolicy::Scope.new(user, AppDocument)
-    scope.define_singleton_method(:admin_or_manager?) { false }
+    scope.define_singleton_method(:operator_or_manager?) { false }
 
     assert_equal AppDocument.where(user_id: user.id), scope.resolve
   end

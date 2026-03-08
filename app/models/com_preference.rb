@@ -38,6 +38,7 @@
 # frozen_string_literal: true
 
 class ComPreference < PreferenceRecord
+  # TODO: Add `deletable_at` to ComPreference for lifecycle-based cleanup.
   include ::PublicId
   include ::ConsumeOnceToken
   include ::Preference::Resettable

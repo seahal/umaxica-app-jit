@@ -1,36 +1,37 @@
 services:
   core:
     container_name: jit-devcontainer-core
+    userns_mode: keep-id
     environment:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=false
   primary:
     container_name: jit-devcontainer-primary
-    ports: !reset []
+    ports: []
   replica:
     container_name: jit-devcontainer-replica
-    ports: !reset []
+    ports: []
   valkey:
     container_name: jit-devcontainer-valkey
-    ports: !reset []
+    ports: []
   master:
     container_name: jit-devcontainer-seaweedfs-master
-    ports: !reset []
+    ports: []
   volume:
     container_name: jit-devcontainer-seaweedfs-volume
-    ports: !reset []
+    ports: []
   filer:
     container_name: jit-devcontainer-seaweedfs-filer
-    ports: !reset []
+    ports: []
   s3:
     container_name: jit-devcontainer-seaweedfs-s3
-    ports: !reset []
+    ports: []
   loki:
     container_name: jit-devcontainer-loki
-    ports: !reset []
+    ports: []
   tempo:
     container_name: jit-devcontainer-tempo
-    ports: !reset []
+    ports: []
   grafana:
     container_name: jit-devcontainer-grafana
-    ports: !reset []
+    ports: []

@@ -1,0 +1,101 @@
+DatabaseConsistencyCheckers:
+  All:
+    enabled: true
+
+UserTelephone:
+  index_user_telephones_on_number_bidx:
+    UniqueIndexChecker:
+      enabled: false
+  index_user_telephones_on_number_digest:
+    UniqueIndexChecker:
+      enabled: false
+  number_bidx:
+    MissingUniqueIndexChecker:
+      enabled: false
+  number_digest:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+UserSocialGoogle:
+  index_user_identity_social_googles_on_user_id_unique:
+    UniqueIndexChecker:
+      enabled: false
+  user_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+UserSocialApple:
+  index_user_identity_social_apples_on_user_id_unique:
+    UniqueIndexChecker:
+      enabled: false
+  user_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+UserEmail:
+  index_user_emails_on_address_bidx:
+    UniqueIndexChecker:
+      enabled: false
+  index_user_emails_on_address_digest:
+    UniqueIndexChecker:
+      enabled: false
+  address_bidx:
+    MissingUniqueIndexChecker:
+      enabled: false
+  address_digest:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+HandleAssignment:
+  index_handle_assignments_on_avatar_id:
+    UniqueIndexChecker:
+      enabled: false
+  index_handle_assignments_on_handle_id:
+    UniqueIndexChecker:
+      enabled: false
+  avatar_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+  handle_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+AvatarOwnershipPeriod:
+  index_avatar_ownership_periods_on_avatar_id:
+    UniqueIndexChecker:
+      enabled: false
+  avatar_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+AvatarMoniker:
+  index_avatar_monikers_on_avatar_id:
+    UniqueIndexChecker:
+      enabled: false
+  avatar_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+AvatarMembership:
+  index_avatar_memberships_on_avatar_id_and_actor_id:
+    UniqueIndexChecker:
+      enabled: false
+  avatar_id+actor_id:
+    MissingUniqueIndexChecker:
+      enabled: false
+
+StaffEmail:
+  address:
+    MissingIndexFindByChecker:
+      enabled: false
+
+AvatarAssignment:
+  index_avatar_assignments_unique_owner:
+    UniqueIndexChecker:
+      enabled: false
+  index_avatar_assignments_unique_affiliation:
+    UniqueIndexChecker:
+      enabled: false
+  avatar_id:
+    MissingUniqueIndexChecker:
+      enabled: false

@@ -2,7 +2,7 @@
 
 class AddLockVersionToAdminsAndStaffs < ActiveRecord::Migration[8.2]
   def change
-    %i(admins staffs).each do |table_name|
+    %i(operators staffs).each do |table_name|
       add_column table_name, :lock_version, :integer, null: false, default: 0
     end
   end

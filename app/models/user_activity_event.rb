@@ -46,8 +46,6 @@ class UserActivityEvent < ActivityRecord
            dependent: :restrict_with_error,
            inverse_of: :user_activity_event
 
-  scope :ordered, -> { order(primary_key) }
-
   DEFAULTS = [
     ACCOUNT_RECOVERED,
     ACCOUNT_WITHDRAWN,

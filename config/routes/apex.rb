@@ -7,10 +7,18 @@ scope module: :apex, as: :apex do
       root to: "roots#index"
       # health check for html
       resource :health, only: :show, format: :html
+      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Edge API endpoint (browser/Rails view)
+      namespace :web do
+        namespace :v1 do
+          resource :cookie, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
+          resource :cookie, only: %i(show update)
         end
       end
       # preferences
@@ -34,6 +42,7 @@ scope module: :apex, as: :apex do
     end
   end
 
+  # FIXME: what is this?
   constraints lambda { |request|
                 request.host == ENV["APEX_SERVICE_URL"] && Core::Surface.matches?(request, :app)
               } do
@@ -41,10 +50,18 @@ scope module: :apex, as: :apex do
       root to: "roots#index"
       # endpoint of health check
       resource :health, only: :show
+      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Edge API endpoint (browser/Rails view)
+      namespace :web do
+        namespace :v1 do
+          resource :cookie, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
+          resource :cookie, only: %i(show update)
         end
       end
       # preferences
@@ -85,10 +102,17 @@ scope module: :apex, as: :apex do
       root to: "roots#index"
       # health check for html
       resource :health, only: :show, format: :html
+      # Edge API endpoint (browser/Rails view)
+      namespace :web do
+        namespace :v1 do
+          resource :cookie, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
+          resource :cookie, only: %i(show update)
         end
       end
       # for emergency

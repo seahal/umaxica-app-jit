@@ -19,9 +19,9 @@ class ComPreferenceActivityEventTest < ActiveSupport::TestCase
     assert_predicate record, :valid?
   end
 
-  test "ordered scope includes default ids when position is absent" do
-    ordered_ids = ComPreferenceActivityEvent.ordered.pluck(:id)
+  test "includes all default ids" do
+    ids = ComPreferenceActivityEvent.pluck(:id)
 
-    assert_empty(ComPreferenceActivityEvent::DEFAULTS - ordered_ids)
+    assert_empty(ComPreferenceActivityEvent::DEFAULTS - ids)
   end
 end

@@ -26,7 +26,28 @@
 require "test_helper"
 
 class AreaEmailOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  fixtures :area_occurrences
+
+  test "associations" do
+    area = area_occurrences(:one)
+    email = EmailOccurrence.create!(body: "test@example.com")
+    record = AreaEmailOccurrence.new(
+      area_occurrence: area,
+      email_occurrence: email,
+    )
+
+    assert record.save!
+    assert_equal area, record.area_occurrence
+    assert_equal email, record.email_occurrence
+  end
+
+  test "uniqueness validation" do
+    area = area_occurrences(:one)
+    email = EmailOccurrence.create!(body: "test2@example.com")
+    AreaEmailOccurrence.create!(area_occurrence: area, email_occurrence: email)
+    duplicate = AreaEmailOccurrence.new(area_occurrence: area, email_occurrence: email)
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:area_occurrence_id]
+  end
 end

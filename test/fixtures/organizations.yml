@@ -8,16 +8,16 @@
 #  name                :string           default(""), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  admin_id            :bigint
 #  department_id       :bigint
+#  operator_id         :bigint
 #  parent_id           :bigint
 #  workspace_status_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_organizations_on_admin_id             (admin_id)
 #  index_organizations_on_department_id        (department_id)
 #  index_organizations_on_domain               (domain) UNIQUE
+#  index_organizations_on_operator_id          (operator_id)
 #  index_organizations_on_parent_id            (parent_id)
 #  index_organizations_on_workspace_status_id  (workspace_status_id)
 #

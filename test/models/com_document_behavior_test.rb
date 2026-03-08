@@ -69,7 +69,7 @@ class ComDocumentBehaviorTest < ActiveSupport::TestCase
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
       event_id: com_document_behavior_events(:created).id,
-      level_id: com_document_behavior_levels(:neyo).id,
+      level_id: com_document_behavior_levels(:nothing).id,
     )
 
     assert_equal doc, audit.com_document

@@ -13,10 +13,10 @@ require "test_helper"
 class OrgPreferenceStatusTest < ActiveSupport::TestCase
   fixtures :org_preference_statuses
 
-  test "ordered scope returns all statuses" do
-    ordered = OrgPreferenceStatus.ordered.pluck(:id)
+  test "returns all statuses" do
+    ids = OrgPreferenceStatus.pluck(:id)
 
-    assert_equal [1, 2], ordered.sort
+    assert_equal [1, 2], ids.sort
   end
 
   test "accepts integer ids" do

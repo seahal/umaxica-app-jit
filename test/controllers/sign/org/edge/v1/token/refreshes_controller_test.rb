@@ -55,6 +55,47 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert json["refreshed"]
   end
 
+  test "POST refresh syncs jit_preference_consented cookie on success" do
+    token_record = StaffToken.create!(staff: @staff, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!
+
+    csrf_token = "test_csrf_token"
+    cookies["jit_csrf_token"] = csrf_token
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
+
+    controller = Sign::Org::Edge::V1::Token::RefreshesController
+    expires_at = Time.utc(2035, 5, 6, 7, 8, 9)
+
+    with_env("COOKIE_DOMAIN_ORG", ".org.refresh.example.test") do
+      controller.any_instance.stub(
+        :decode_and_verify_preference_jwt,
+        { "preferences" => { "consented" => false }, "public_id" => "pref-org-public-id" },
+      ) do
+        controller.any_instance.stub(:refresh_token_expires_at, expires_at) do
+          post "/edge/v1/token/refresh",
+               headers: {
+                 "Host" => @host,
+                 "Accept" => "application/json",
+                 "X-CSRF-Token" => csrf_token,
+               },
+               as: :json
+        end
+      end
+    end
+
+    assert_response :ok
+    set_cookie = response.headers["Set-Cookie"].to_s
+
+    assert_includes set_cookie, "jit_preference_consented=0"
+    assert_includes set_cookie, "domain=.org.refresh.example.test"
+    assert_includes set_cookie.downcase, "path=/"
+    expires = response_cookie_expiry("jit_preference_consented")
+
+    assert_not_nil expires
+    assert_in_delta expires_at.to_i, expires.to_i, 1
+  end
+
   test "GET check with valid access token from refresh returns 200" do
     token_record = StaffToken.create!(staff: @staff, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
@@ -136,5 +177,15 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_equal "missing", occurrence.context["reason"]
     assert_predicate occurrence.context["request_id"], :present?
     assert_predicate occurrence.context["ip_hash"], :present?
+  end
+
+  private
+
+  def with_env(key, value)
+    previous = ENV[key]
+    ENV[key] = value
+    yield
+  ensure
+    ENV[key] = previous
   end
 end

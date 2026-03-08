@@ -106,10 +106,10 @@ class ComContactPolicyTest < ActiveSupport::TestCase
   end
 
   def test_update
-    # Admin staff can update
-    staff = staffs(:one) # assuming fixture one is admin/manager-like? We might need to mock admin_or_manager?
+    # Operator staff can update
+    staff = staffs(:one) # assuming fixture one is admin/manager-like? We might need to mock operator_or_manager?
     # Helper to stub permissions helper since we don't know exact implementation
-    # of admin_or_manager? in ApplicationPolicy or its mixins from just this file.
+    # of operator_or_manager? in ApplicationPolicy or its mixins from just this file.
     # Looking at ApplicationPolicy would be good but usually we can stub.
 
     # Let's check ApplicationPolicy if we can or just stub methods on policy instance.
@@ -118,12 +118,12 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     # Assuming standard roles, let's just stub the method on policy instance
 
     policy = ComContactPolicy.new(staff, @record)
-    policy.define_singleton_method(:admin_or_manager?) { true }
+    policy.define_singleton_method(:operator_or_manager?) { true }
 
     assert_predicate policy, :update?
 
     policy = ComContactPolicy.new(staff, @record)
-    policy.define_singleton_method(:admin_or_manager?) { false }
+    policy.define_singleton_method(:operator_or_manager?) { false }
 
     assert_not policy.update?
 
@@ -137,15 +137,15 @@ class ComContactPolicyTest < ActiveSupport::TestCase
   def test_destroy
     staff = staffs(:one)
 
-    # Admin can destroy
+    # Operator can destroy
     policy = ComContactPolicy.new(staff, @record)
-    policy.define_singleton_method(:admin?) { true }
+    policy.define_singleton_method(:operator?) { true }
 
     assert_predicate policy, :destroy?
 
     # Non-admin cannot destroy
     policy = ComContactPolicy.new(staff, @record)
-    policy.define_singleton_method(:admin?) { false }
+    policy.define_singleton_method(:operator?) { false }
 
     assert_not policy.destroy?
   end
@@ -163,8 +163,8 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     # Mocking behaviors on policy scope instance or passing stubbed actors
 
     # Case 1: Staff Manager
-    # We need to stub admin_or_manager? on the policy scope instance which wraps the actor?
-    # No, admin_or_manager? comes from ApplicationPolicy::Scope or a mixin included there.
+    # We need to stub operator_or_manager? on the policy scope instance which wraps the actor?
+    # No, operator_or_manager? comes from ApplicationPolicy::Scope or a mixin included there.
     # Let's see ComContactPolicy::Scope inherits from ApplicationPolicy::Scope.
 
     # Let's just create a test subclass for scope testing to inject behaviors if needed,
@@ -174,13 +174,13 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     # Actually resolve is a method.
 
     policy_scope = scope_class.new(staff, ComContact)
-    policy_scope.define_singleton_method(:admin_or_manager?) { true }
+    policy_scope.define_singleton_method(:operator_or_manager?) { true }
 
     assert_equal ComContact.all, policy_scope.resolve
 
     # Case 2: Regular Staff
     policy_scope = scope_class.new(staff, ComContact)
-    policy_scope.define_singleton_method(:admin_or_manager?) { false }
+    policy_scope.define_singleton_method(:operator_or_manager?) { false }
     # Should be where(staff_id: [actor.id, nil])
     expected = ComContact.where(staff_id: [staff.id, nil])
 
