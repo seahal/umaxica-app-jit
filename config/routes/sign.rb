@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require Rails.root.join("lib/sign_host_env")
+require Rails.root.join("lib/sign_host_env").to_s
 
 scope module: :sign, as: :sign do
   constraints host: SignHostEnv.service_url do
