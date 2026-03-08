@@ -282,7 +282,7 @@ jobs:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       # HMAC Secret
-      OCCURRENCE_HMAC_SECRET: c2c1f3f4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7
+      OCCURRENCE_HMAC_SECRET: ${{ secrets.OCCURRENCE_HMAC_SECRET }}
     services:
       postgres:
         image: postgres:18

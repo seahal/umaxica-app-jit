@@ -48,7 +48,10 @@ module Sign
           # Prepare session with intent context (OmniAuth manages OAuth state)
           state = prepare_social_auth_intent!(intent, provider: provider)
 
-          redirect_to omniauth_authorize_path(provider, state: state)
+          safe_redirect_to(
+            omniauth_authorize_path(provider, state: state),
+            fallback: new_sign_app_in_path,
+          )
         rescue SocialAuth::BaseError => e
           handle_social_auth_error(e)
         end

@@ -13,7 +13,10 @@ module Sign
       def edit
         return if current_user.deactivated?
 
-        redirect_to sign_app_configuration_path(ri: params[:ri])
+        safe_redirect_to(
+          sign_app_configuration_path(ri: params[:ri]),
+          fallback: sign_app_configuration_path,
+        )
       end
     end
   end

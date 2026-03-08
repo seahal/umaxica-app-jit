@@ -1,8 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
+require Rails.root.join("lib/sign_host_env")
+
 scope module: :sign, as: :sign do
-  constraints host: ENV["SIGN_SERVICE_URL"] do
+  constraints host: SignHostEnv.service_url do
     scope module: :app, as: :app do
       root to: "roots#index"
 
@@ -148,7 +150,7 @@ scope module: :sign, as: :sign do
   end
 
   # Staff auth management
-  constraints host: ENV["SIGN_STAFF_URL"] do
+  constraints host: SignHostEnv.staff_url do
     scope module: :org, as: :org do
       root to: "roots#index"
 

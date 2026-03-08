@@ -7,17 +7,20 @@
     Cloudflare Turnstile site key is missing. Set credentials or CLOUDFLARE_TURNSTILE_SITE_KEY.
   </div>
 <% else %>
-  <div id="<%= widget_id %>"></div>
+  <div id="<%= widget_id %>" data-site-key="<%= site_key %>"></div>
 
   <script nonce="<%= content_security_policy_nonce %>">
       (function () {
-          const widgetId = <%= widget_id.to_json.html_safe %>;
-          const container = document.getElementById(widgetId);
+          const currentScript = document.currentScript;
+          const container = currentScript && currentScript.previousElementSibling;
 
           if (!container) {
-              console.error('Turnstile container not found:', widgetId);
+              console.error('Turnstile container not found');
               return;
           }
+
+          const widgetId = container.id;
+          const siteKey = container.dataset.siteKey;
 
           function renderWidget() {
               if (typeof turnstile === 'undefined') {
@@ -30,7 +33,7 @@
 
               try {
                   turnstile.render('#' + widgetId, {
-                      sitekey: <%= site_key.to_json.html_safe %>,
+                      sitekey: siteKey,
                       callback: function (token) {
                           console.debug('Turnstile verified:', token.substring(0, 20) + '...');
                       },
@@ -53,7 +56,7 @@
 
               const script = document.createElement('script');
               script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-              script.nonce = <%= content_security_policy_nonce.to_json.html_safe %>;
+              script.nonce = currentScript && currentScript.nonce;
               script.async = true;
               script.onload = function () {
                   console.debug('Turnstile script loaded');

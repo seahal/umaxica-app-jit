@@ -77,8 +77,7 @@ module Preference
       record = find_preference_by_public_id(public_id)
       return record.expires_at if record&.expires_at.present?
 
-      exp = decode_refresh_token_expiry(refresh_token_value)
-      exp ? Time.zone.at(exp) : nil
+      nil
     rescue StandardError => e
       Rails.logger.warn("[Preference::WebCookieEndpoint] refresh expiry fallback: #{e.class}")
       nil
@@ -90,16 +89,6 @@ module Preference
       PreferenceRecord.connected_to(role: :reading) do
         preference_class.find_by(public_id: public_id)
       end
-    end
-
-    def decode_refresh_token_expiry(token)
-      return nil if token.blank?
-      return nil unless token.count(".") == 2
-
-      payload, = JWT.decode(token, nil, false)
-      payload["exp"]
-    rescue JWT::DecodeError
-      nil
     end
 
     def preference_class

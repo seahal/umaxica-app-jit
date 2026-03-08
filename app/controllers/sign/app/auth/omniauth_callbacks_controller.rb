@@ -243,8 +243,11 @@ module Sign
                         alert: I18n.t("sign.app.social.sessions.create.session_limit")
           when :mfa_required
             Rails.logger.debug { "[OmniAuth] MFA required for user" }
-            redirect_to login_result[:redirect_path],
-                        notice: I18n.t("sign.app.in.mfa.required")
+            safe_redirect_to(
+              login_result[:redirect_path],
+              fallback: new_sign_app_in_path,
+              notice: I18n.t("sign.app.in.mfa.required"),
+            )
           else
             Rails.logger.warn { "[OmniAuth] Unknown login failure status: #{status}" }
             redirect_to new_sign_app_in_path,
