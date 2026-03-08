@@ -15,7 +15,6 @@
 # Indexes
 #
 #  index_user_app_preferences_on_app_preference_id              (app_preference_id)
-#  index_user_app_preferences_on_user_id                        (user_id)
 #  index_user_app_preferences_on_user_id_and_app_preference_id  (user_id,app_preference_id) UNIQUE
 #
 # Foreign Keys

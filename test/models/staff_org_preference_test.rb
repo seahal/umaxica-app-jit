@@ -15,7 +15,6 @@
 # Indexes
 #
 #  index_staff_org_preferences_on_org_preference_id               (org_preference_id)
-#  index_staff_org_preferences_on_staff_id                        (staff_id)
 #  index_staff_org_preferences_on_staff_id_and_org_preference_id  (staff_id,org_preference_id) UNIQUE
 #
 # Foreign Keys

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_07_110722) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_08_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -283,7 +283,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_07_110722) do
     t.datetime "updated_at", null: false
     t.index ["org_preference_id"], name: "index_staff_org_preferences_on_org_preference_id"
     t.index ["staff_id", "org_preference_id"], name: "index_staff_org_preferences_on_staff_id_and_org_preference_id", unique: true
-    t.index ["staff_id"], name: "index_staff_org_preferences_on_staff_id"
   end
 
   create_table "user_app_preferences", force: :cascade do |t|
@@ -293,7 +292,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_07_110722) do
     t.bigint "user_id", null: false
     t.index ["app_preference_id"], name: "index_user_app_preferences_on_app_preference_id"
     t.index ["user_id", "app_preference_id"], name: "index_user_app_preferences_on_user_id_and_app_preference_id", unique: true
-    t.index ["user_id"], name: "index_user_app_preferences_on_user_id"
   end
 
   add_foreign_key "app_preference_colorthemes", "app_preference_colortheme_options", column: "option_id", name: "fk_app_preference_colorthemes_on_option_id"
