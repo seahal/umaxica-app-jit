@@ -5,11 +5,13 @@ return if Rails.env.production?
 sample_user_secret = "00000000000000000000000000000000"
 sample_staff_secret = "11111111111111111111111111111111"
 
+UserVisibility.find_or_create_by!(id: UserVisibility::STAFF)
 UserStatus.find_or_create_by!(id: UserStatus::ACTIVE)
 UserEmailStatus.find_or_create_by!(id: UserEmailStatus::VERIFIED)
 UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
 UserSecretKind.find_or_create_by!(id: UserSecretKind::PERMANENT)
 
+StaffVisibility.find_or_create_by!(id: StaffVisibility::STAFF)
 StaffStatus.find_or_create_by!(id: StaffStatus::ACTIVE)
 StaffEmailStatus.find_or_create_by!(id: StaffEmailStatus::VERIFIED)
 StaffSecretStatus.find_or_create_by!(id: StaffSecretStatus::ACTIVE)
