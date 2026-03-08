@@ -329,7 +329,7 @@ jobs:
           bundler-cache: true
           cache-version: 1
       - name: Setup test databases
-        run: bin/rails db:prepare
+        run: bin/rails db:create db:schema:load
       - name: Run Rails tests
         run: COVERAGE=true bundle exec rails test
       - name: Run bundle-audit
