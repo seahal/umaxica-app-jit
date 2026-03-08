@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_26_170001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_07_110722) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -276,6 +276,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_170001) do
     t.index ["used_at"], name: "index_org_preferences_on_used_at"
   end
 
+  create_table "staff_org_preferences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigserial "org_preference_id", null: false
+    t.bigint "staff_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["org_preference_id"], name: "index_staff_org_preferences_on_org_preference_id"
+    t.index ["staff_id", "org_preference_id"], name: "index_staff_org_preferences_on_staff_id_and_org_preference_id", unique: true
+    t.index ["staff_id"], name: "index_staff_org_preferences_on_staff_id"
+  end
+
+  create_table "user_app_preferences", force: :cascade do |t|
+    t.bigserial "app_preference_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["app_preference_id"], name: "index_user_app_preferences_on_app_preference_id"
+    t.index ["user_id", "app_preference_id"], name: "index_user_app_preferences_on_user_id_and_app_preference_id", unique: true
+    t.index ["user_id"], name: "index_user_app_preferences_on_user_id"
+  end
+
   add_foreign_key "app_preference_colorthemes", "app_preference_colortheme_options", column: "option_id", name: "fk_app_preference_colorthemes_on_option_id"
   add_foreign_key "app_preference_colorthemes", "app_preferences", column: "preference_id", validate: false
   add_foreign_key "app_preference_cookies", "app_preferences", column: "preference_id", validate: false
@@ -309,4 +329,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_26_170001) do
   add_foreign_key "org_preference_timezones", "org_preferences", column: "preference_id", validate: false
   add_foreign_key "org_preferences", "org_preference_statuses", column: "status_id", name: "fk_org_preferences_on_status_id"
   add_foreign_key "org_preferences", "org_preferences", column: "replaced_by_id", on_delete: :nullify, validate: false
+  add_foreign_key "staff_org_preferences", "org_preferences", on_delete: :cascade
+  add_foreign_key "user_app_preferences", "app_preferences", on_delete: :cascade
 end

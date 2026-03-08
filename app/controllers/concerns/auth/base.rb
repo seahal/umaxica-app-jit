@@ -50,7 +50,27 @@ module Auth
     ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
     REFRESH_TOKEN_TTL = 30.days
     RESTRICTED_SESSION_TTL = 15.minutes
+    LOGIN_COOLDOWN = 30.seconds
     SESSION_LIMIT_HARD_REJECT_MESSAGE = "セッション数上限に達しています"
+    LOGIN_COOLDOWN_MESSAGE = "ログインは30秒間隔を空けてください"
+
+    class LoginCooldownError < StandardError; end
+
+    # Prevents rapid re-login by enforcing a 30-second cooldown between sessions.
+    # Disabled in test env by default because fixture-loaded tokens have created_at
+    # near Time.current, which would trip the cooldown on every login in test.
+    # Enable explicitly in tests that need to verify cooldown behavior.
+    LOGIN_COOLDOWN_ENABLED = Concurrent::AtomicReference.new(!Rails.env.test?)
+
+    class << self
+      def login_cooldown_enabled
+        LOGIN_COOLDOWN_ENABLED.get
+      end
+
+      def login_cooldown_enabled=(value)
+        LOGIN_COOLDOWN_ENABLED.set(value)
+      end
+    end
 
     AUDIT_EVENTS = {
       logged_in: "LOGGED_IN",
@@ -502,6 +522,8 @@ module Auth
 
     # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
+      check_login_cooldown!(resource)
+
       reset_session
 
       # Clear any existing auth cookies to prevent conflicts with old sessions
@@ -767,6 +789,10 @@ module Auth
     included do
       include ::Sign::ErrorResponses
       include ::SessionLimitGate
+
+      if respond_to?(:rescue_from)
+        rescue_from LoginCooldownError, with: :render_login_cooldown
+      end
 
       if respond_to?(:helper_method)
         helper_method :current_account, :current_session_public_id, :current_session_restricted?
@@ -1754,6 +1780,28 @@ module Auth
         redirect_path: mfa_entry_path(ri: ri),
         return_to: return_to,
       }
+    end
+
+    def check_login_cooldown!(resource)
+      return unless Auth::Base.login_cooldown_enabled
+
+      fk = resource.is_a?(::User) ? :user_id : :staff_id
+      latest_at =
+        if Rails.env.test?
+          TokenRecord.connected_to(role: :writing) {
+            token_class.where(fk => resource.id).order(created_at: :desc).pick(:created_at)
+          }
+        else
+          TokenRecord.connected_to(role: :reading) {
+            token_class.where(fk => resource.id).order(created_at: :desc).pick(:created_at)
+          }
+        end
+
+      raise LoginCooldownError if latest_at && latest_at > LOGIN_COOLDOWN.ago
+    end
+
+    def render_login_cooldown
+      render plain: LOGIN_COOLDOWN_MESSAGE, status: :too_many_requests
     end
 
     # Determine concurrent-session handling state for the resource.

@@ -25,13 +25,6 @@ module Sign
         # For link/reauth, auth is checked in prepare_social_auth_intent!
         public_strict! only: %i(omniauth failure)
 
-        # CSRF protection is handled by state parameter, not token.
-        # OAuth callbacks from Apple/Google cannot include Rails CSRF tokens;
-        # the `state` param provides equivalent CSRF protection (validated in validate_social_auth_state!).
-        # If provider constraints allow migrating callbacks fully to GET,
-        # deprecate and remove POST callbacks.
-        skip_forgery_protection only: %i(omniauth failure) # codeql[rb/csrf-protection-disabled]
-
         # Skip preference before_actions that may interfere with OmniAuth callback
         skip_before_action :set_region, :set_locale, :set_timezone, :set_color_theme,
                            only: %i(omniauth failure)
@@ -113,6 +106,23 @@ module Sign
         end
 
         private
+
+        def verified_request?
+          super || (action_name == "omniauth" && verified_social_callback_request?)
+        end
+
+        def handle_unverified_request
+          if action_name == "omniauth"
+            rejection = request.env["social_callback_guard.rejection"] || {
+              reason: "csrf_unverified",
+              provider: params[:provider].to_s,
+              details: {},
+            }
+            reject_social_callback!(**rejection)
+          else
+            super
+          end
+        end
 
         # rubocop:disable Metrics/MethodLength
         def handle_successful_auth(user, intent, provider_name, _identity, existing_account: nil)

@@ -49,10 +49,9 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     ca-certificates \
     libpq5 \
-    libvips \
     libyaml-0-2 \
     tzdata \
-    postgresql-client \
+    && rm -f /usr/local/bin/gosu /usr/local/bin/gosu-* \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -70,7 +69,6 @@ RUN apt-get update \
     curl \
     git \
     libpq-dev \
-    libvips-dev \
     libyaml-dev \
     pkg-config \
     unzip \
@@ -141,8 +139,6 @@ RUN apt-get update -qq \
     unzip \
     zlib1g-dev \
     graphviz \
-    python3 \
-    python-is-python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
@@ -187,6 +183,7 @@ RUN apt-get update -qq \
     zip \
     socat \
     netcat-openbsd \
+    python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 

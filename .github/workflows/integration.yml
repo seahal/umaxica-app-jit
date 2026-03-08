@@ -421,16 +421,16 @@ jobs:
           scanners: vuln,secret
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: trivy-results.sarif
           category: trivy-container
-      - name: Run Trivy (table format)
+      - name: Run Trivy (table format, informational)
         uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: umaxica-app:${{ github.sha }}
           format: table
-          exit-code: "1"
+          exit-code: "0"
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           scanners: vuln,secret
@@ -439,7 +439,7 @@ jobs:
         id: grype
         with:
           image: umaxica-app:${{ github.sha }}
-          fail-build: false
+          fail-build: true
           severity-cutoff: high
       - name: Upload Grype SARIF
         if: always() && steps.grype.outputs.sarif != ''

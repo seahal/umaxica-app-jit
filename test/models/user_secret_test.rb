@@ -160,6 +160,14 @@ class UserSecretTest < ActiveSupport::TestCase
     assert_match(/\A[1-9A-HJ-NP-Za-km-z]+\z/, secret)
   end
 
+  test "sample fixture secret authenticates with fixed raw secret" do
+    secret = user_secrets(:sample_login)
+
+    assert secret.authenticate("00000000000000000000000000000000")
+    assert_equal UserSecretKind::PERMANENT, secret.user_secret_kind_id
+    assert_equal UserSecretStatus::ACTIVE, secret.user_secret_status_id
+  end
+
   test "value maps to password accessor" do
     record = UserSecret.new(user: @user, name: "Key")
 

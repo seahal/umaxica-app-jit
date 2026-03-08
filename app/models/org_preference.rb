@@ -73,6 +73,9 @@ class OrgPreference < PreferenceRecord
            foreign_key: :subject_id,
            inverse_of: :org_preference,
            dependent: :destroy
+  has_many :staff_org_preferences,
+           dependent: :delete_all,
+           inverse_of: :org_preference
   belongs_to :replaced_by,
              class_name: "OrgPreference",
              optional: true

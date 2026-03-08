@@ -13,8 +13,8 @@ services:
     restart: always
     user: "${UID:-1000}:${GID:-1000}"
     tmpfs:
-      - /home/jit/workspace/tmp:uid=1000,gid=1000
-      - /home/jit/workspace/log:uid=1000,gid=1000
+      - /home/jit/workspace/tmp
+      - /home/jit/workspace/log
     ports:
       - "3001:3000"
     volumes:
@@ -55,7 +55,7 @@ services:
       POSTGRES_INITDB_MAX_WAL_SENDERS: 10
       POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10
     tmpfs:
-      - /var/lib/postgresql/18:uid=70,gid=70
+      - /var/lib/postgresql/18
     ports:
       - "127.0.0.1:5435:5432"
     volumes:
@@ -82,7 +82,7 @@ services:
       TZ: UTC
       POSTGRES_HOST_AUTH_METHOD: trust # dev only
     tmpfs:
-      - /var/lib/postgresql/18:uid=70,gid=70
+      - /var/lib/postgresql/18
     ports:
       - "127.0.0.1:5436:5432"
     volumes:

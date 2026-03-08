@@ -64,3 +64,8 @@ two:
   public_id: "two_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
+sample_user:
+  status_id: <%= UserStatus::NOTHING %>
+  public_id: "sample_user"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

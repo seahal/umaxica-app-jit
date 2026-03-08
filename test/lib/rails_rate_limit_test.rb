@@ -27,7 +27,8 @@ class RailsRateLimitTest < ActiveSupport::TestCase
 
     def scan(_cursor, match:, count:)
       _count = count
-      pattern_keys = @data.keys.select { |k| k.start_with?(match.sub("*", "")) }
+      prefix = match.end_with?("*") ? match.delete_suffix("*") : match
+      pattern_keys = @data.keys.select { |k| k.start_with?(prefix) }
       ["0", pattern_keys]
     end
 

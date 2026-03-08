@@ -7,9 +7,7 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
   self.use_transactional_tests = false
   self.fixture_table_names = []
 
-  ALLOWED_SKIP_FORGERY_PROTECTION_PATHS = [
-    "app/controllers/sign/app/auth/omniauth_callbacks_controller.rb",
-  ].freeze
+  ALLOWED_SKIP_FORGERY_PROTECTION_PATHS = [].freeze
 
   test "skip_forgery_protection is only used in approved controllers" do
     controller_files = Rails.root.glob("app/controllers/**/*_controller.rb")

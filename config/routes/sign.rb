@@ -89,9 +89,8 @@ scope module: :sign, as: :sign do
               to: "omniauth_callbacks#omniauth",
               via: %i(get post),
               as: :callback
-        match "failure",
-              to: "omniauth_callbacks#failure",
-              via: %i(get post)
+        get "failure",
+            to: "omniauth_callbacks#failure"
       end
 
       resource :verification, only: %i(show), controller: :verification

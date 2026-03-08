@@ -82,6 +82,14 @@ class StaffSecretTest < ActiveSupport::TestCase
     assert_equal StaffSecretStatus::USED, record.reload.staff_secret_status_id
   end
 
+  test "sample fixture secret authenticates with fixed raw secret" do
+    secret = staff_secrets(:sample_login)
+
+    assert secret.authenticate("11111111111111111111111111111111")
+    assert_equal StaffSecretKind::LOGIN, secret.staff_secret_kind_id
+    assert_equal StaffSecretStatus::ACTIVE, secret.staff_secret_status_id
+  end
+
   test "requires name to be present" do
     record = StaffSecret.new(
       staff: @staff,

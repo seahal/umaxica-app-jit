@@ -38,9 +38,13 @@ Rails.application.configure do
   # Log to STDOUT as JSON for Cloud Run visibility.
   STDOUT.sync = true
   STDERR.sync = true
-  logger = ActiveSupport::Logger.new($stdout)
-  logger.formatter = config.log_formatter if config.log_formatter
-  config.logger = ActiveSupport::TaggedLogging.new(logger)
+  primary_logger = ActiveSupport::Logger.new($stdout)
+  primary_logger.formatter = config.log_formatter if config.log_formatter
+
+  # Use BroadcastLogger (Rails 8 standard) to allow multiple log sinks if needed.
+  config.logger = ActiveSupport::BroadcastLogger.new(
+    ActiveSupport::TaggedLogging.new(primary_logger),
+  )
   config.log_tags = [:request_id]
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!).

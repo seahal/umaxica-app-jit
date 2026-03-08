@@ -117,6 +117,10 @@ group :development, :test do
   gem "tapioca", require: false
   # sorbet
   gem "sorbet-runtime"
+  gem "rack-livereload"
+  gem "guard"
+  gem "guard-minitest"
+  gem "guard-livereload", require: false
 end
 
 group :development do
