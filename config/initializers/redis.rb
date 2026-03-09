@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 # Redis configuration for the application
-default_redis_url = Rails.application.credentials.dig(:REDIS, :REDIS_NORMAL_URL)
+default_redis_url = Rails.app.creds.option(:REDIS_NORMAL_URL, default: "redis://localhost:6379/0")
 
 # Configure SSL for production Redis (Upstash requires SSL)
 redis_config = { url: default_redis_url }

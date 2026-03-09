@@ -61,11 +61,8 @@ module Jit
         case @mode
         when :stealth
           TurnstileConfig.stealth_secret_key
-        when :default
-          TurnstileConfig.default_secret_key
         else
-          # Legacy path: no mode specified -- preserves existing dig-based lookup
-          default_secret_key
+          TurnstileConfig.visible_secret_key
         end
       end
 
@@ -81,17 +78,10 @@ module Jit
         JSON.parse(response.body)
       end
 
-      def default_secret_key
-        return unless defined?(Rails)
-
-        Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SECRET_KEY) ||
-          ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"]
-      end
-
       def log_missing_secret
         return unless defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
 
-        Rails.logger.warn("[Turnstile] Secret key is missing (mode=#{@mode || :legacy}). Verification skipped.")
+        Rails.logger.warn("[Turnstile] Secret key is missing (mode=#{@mode || :visible}). Verification skipped.")
       end
 
       def failure(message)

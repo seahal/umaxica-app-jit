@@ -36,13 +36,11 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         # Ensure credentials/env return nil for secret key
-        ENV.stub(:[], nil) do
-          Rails.application.credentials.stub(:dig, nil) do
-            result = TurnstileVerifier.verify(token: "token", remote_ip: "127.0.0.1")
+        TurnstileConfig.stub :visible_secret_key, nil do
+          result = TurnstileVerifier.verify(token: "token", remote_ip: "127.0.0.1")
 
-            assert_not result["success"]
-            assert_equal "missing turnstile secret", result["error"]
-          end
+          assert_not result["success"]
+          assert_equal "missing turnstile secret", result["error"]
         end
       end
 
@@ -112,15 +110,15 @@ module Jit
         assert_not http_called, "HTTP should not be called when secret is nil"
       end
 
-      test "mode default uses TurnstileConfig default secret key" do
+      test "mode visible uses TurnstileConfig visible secret key" do
         TurnstileVerifier.test_mode = false
 
         mock_response = Minitest::Mock.new
         mock_response.expect :body, '{"success": true}'
 
-        TurnstileConfig.stub :default_secret_key, "default-secret" do
+        TurnstileConfig.stub :visible_secret_key, "visible-secret" do
           Net::HTTP.stub :post_form, mock_response do
-            result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4", mode: :default)
+            result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4", mode: :visible)
 
             assert result["success"]
           end
@@ -129,18 +127,18 @@ module Jit
         mock_response.verify
       end
 
-      test "no mode preserves legacy secret key resolution" do
+      test "no mode falls back to visible secret key" do
         TurnstileVerifier.test_mode = false
 
-        # With no mode, should use the legacy default_secret_key (dig-based)
-        # which falls back to ENV
         mock_response = Minitest::Mock.new
         mock_response.expect :body, '{"success": true}'
 
-        Net::HTTP.stub :post_form, mock_response do
-          result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4", secret_key: "explicit")
+        TurnstileConfig.stub :visible_secret_key, "visible-secret" do
+          Net::HTTP.stub :post_form, mock_response do
+            result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4")
 
-          assert result["success"]
+            assert result["success"]
+          end
         end
 
         mock_response.verify

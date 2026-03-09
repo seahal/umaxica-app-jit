@@ -23,7 +23,7 @@ module CloudflareTurnstile
     Jit::Security::TurnstileVerifier.verify(
       token: params["cf-turnstile-response"].to_s,
       remote_ip: request.remote_ip,
-      mode: :default,
+      mode: :visible,
     )
   end
 end

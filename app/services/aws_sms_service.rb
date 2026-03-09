@@ -8,8 +8,8 @@ class AwsSmsService
 
   def initialize
     @driver = Jit::Notification::Sms::AwsDriver.new(
-      access_key_id: Rails.application.credentials.dig(:AWS, :ACCESS_KEY_ID),
-      secret_access_key: Rails.application.credentials.dig(:AWS, :SECRET_ACCESS_KEY),
+      access_key_id: Rails.app.creds.require(:AWS_ACCESS_KEY_ID),
+      secret_access_key: Rails.app.creds.require(:AWS_SECRET_ACCESS_KEY),
       region: Rails.application.config.aws_region || "ap-northeast-1",
     )
   end
