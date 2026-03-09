@@ -36,8 +36,7 @@ module Preference
     end
 
     def self.private_key
-      private_key_base64 = ENV["PREFERENCE_JWT_PRIVATE_KEY"] ||
-        Rails.application.credentials.dig(:JWT, :PREFERENCE, :PRIVATE_KEY)
+      private_key_base64 = Rails.app.creds.option(:JWT_PREFERENCE_PRIVATE_KEY)
       if private_key_base64.blank?
         return ephemeral_private_key unless Rails.env.production?
 
@@ -49,8 +48,7 @@ module Preference
     end
 
     def self.public_key
-      public_key_base64 = ENV["PREFERENCE_JWT_PUBLIC_KEY"] ||
-        Rails.application.credentials.dig(:JWT, :PREFERENCE, :PUBLIC_KEY)
+      public_key_base64 = Rails.app.creds.option(:JWT_PREFERENCE_PUBLIC_KEY)
       if public_key_base64.blank?
         return ephemeral_private_key.public_key unless Rails.env.production?
 

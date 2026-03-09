@@ -35,12 +35,12 @@
 # =============================================================================
 
 # Load credentials early
-google_client_id = ENV["OMNI_AUTH_GOOGLE_CLIENT_ID"] || Rails.application.credentials.dig(:OMNI_AUTH, :GOOGLE, :CLIENT_ID)
-google_client_secret = ENV["OMNI_AUTH_GOOGLE_CLIENT_SECRET"] || Rails.application.credentials.dig(:OMNI_AUTH, :GOOGLE, :CLIENT_SECRET)
-apple_client_id = ENV["OMNI_AUTH_APPLE_CLIENT_ID"] || Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :CLIENT_ID)
-apple_team_id = ENV["OMNI_AUTH_APPLE_TEAM_ID"] || Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :TEAM_ID)
-apple_key_id = ENV["OMNI_AUTH_APPLE_KEY_ID"] || Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :KEY_ID)
-apple_pem = ENV["OMNI_AUTH_APPLE_PEM"] || Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :PRIVATE_KEY)
+google_client_id = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_CLIENT_ID)
+google_client_secret = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_CLIENT_SECRET)
+apple_client_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_CLIENT_ID)
+apple_team_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_TEAM_ID)
+apple_key_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_KEY_ID)
+apple_pem = Rails.app.creds.option(:OMNI_AUTH_APPLE_PRIVATE_KEY)
 
 # Validate required credentials
 if google_client_id.blank? || google_client_secret.blank?

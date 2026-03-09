@@ -16,13 +16,12 @@ class OccurrenceHmacTest < ActiveSupport::TestCase
     end
   end
 
-  test "credentials take precedence over env" do
-    credentials = Rails.application.credentials
+  test "creds option returns secret" do
+    fake_creds = Object.new
+    fake_creds.define_singleton_method(:option) { |_key, **| "cred-secret" }
 
-    credentials.stub(:[], "credential-secret") do
-      with_env_secret("env-secret") do
-        assert_equal "credential-secret", Occurrence::Hmac.secret
-      end
+    Rails.app.stub(:creds, fake_creds) do
+      assert_equal "cred-secret", Occurrence::Hmac.secret
     end
   end
 

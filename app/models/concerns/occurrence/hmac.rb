@@ -43,9 +43,7 @@ module Occurrence
     end
 
     def secret
-      credentials_secret = Rails.application.credentials[:OCCURRENCE_HMAC_SECRET].presence
-      env_secret = ENV["OCCURRENCE_HMAC_SECRET"].presence
-      secret_value = credentials_secret || env_secret
+      secret_value = Rails.app.creds.option(:OCCURRENCE_HMAC_SECRET)
       raise MissingSecretError if secret_value.blank?
 
       secret_value

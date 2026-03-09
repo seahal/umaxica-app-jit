@@ -33,9 +33,7 @@ module IdentifierBlindIndex
   end
 
   def secret
-    ENV["IDENTIFIER_BIDX_SECRET"].presence ||
-      Rails.application.credentials.dig(:IDENTIFIER, :BIDX_SECRET).presence ||
-      Rails.application.credentials[:IDENTIFIER_BIDX_SECRET].presence ||
+    Rails.app.creds.option(:IDENTIFIER_BIDX_SECRET) ||
       Rails.application.secret_key_base
   end
 end

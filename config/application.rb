@@ -46,9 +46,9 @@ module Jit
 
     # Active Record Encryption Configuration
     if %w(test production development).include? Rails.env
-      config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
-      config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
-      config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
+      config.active_record.encryption.primary_key = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY)
+      config.active_record.encryption.deterministic_key = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY)
+      config.active_record.encryption.key_derivation_salt = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT)
     end
 
     # USE UTC

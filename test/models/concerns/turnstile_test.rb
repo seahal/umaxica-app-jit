@@ -66,7 +66,7 @@ class TurnstileTest < ActiveSupport::TestCase
   end
 
   test "verify_turnstile returns missing secret error" do
-    Jit::Security::TurnstileConfig.stub(:default_secret_key, nil) do
+    Jit::Security::TurnstileConfig.stub(:visible_secret_key, nil) do
       result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
 
       assert_equal({ "success" => false, "error" => "missing turnstile secret" }, result)
@@ -74,7 +74,7 @@ class TurnstileTest < ActiveSupport::TestCase
   end
 
   test "verify_turnstile returns error result on exception" do
-    Jit::Security::TurnstileConfig.stub(:default_secret_key, "dummy") do
+    Jit::Security::TurnstileConfig.stub(:visible_secret_key, "dummy") do
       Net::HTTP.stub(:post_form, ->(_uri, _params) { raise StandardError, "Network error" }) do
         result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
 
@@ -87,7 +87,7 @@ class TurnstileTest < ActiveSupport::TestCase
   test "verify_turnstile returns parsed response on success" do
     response = Struct.new(:body).new('{"success":true}')
 
-    Jit::Security::TurnstileConfig.stub(:default_secret_key, "secret") do
+    Jit::Security::TurnstileConfig.stub(:visible_secret_key, "secret") do
       Net::HTTP.stub(:post_form, response) do
         result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
 

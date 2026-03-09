@@ -61,7 +61,7 @@ module Turnstile
       Jit::Security::TurnstileVerifier.verify(
         token: turnstile_response,
         remote_ip: remote_ip,
-        mode: :default,
+        mode: :visible,
       )
     end
   end

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 Sentry.init do |config|
-  config.dsn = Rails.application.credentials[:SENTRY_DSN_CONFIG] || ENV["SENTRY_DSN_CONFIG"]
+  config.dsn = Rails.app.creds.option(:SENTRY_DSN_CONFIG)
   config.breadcrumbs_logger = [:active_support_logger, :http_logger]
 
   # sentry-rails 6.4.1 still includes deprecated Rails constant by default.
