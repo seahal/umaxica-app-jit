@@ -75,6 +75,15 @@ module Jit
       g.orm :active_record, primary_key_type: :bigserial
     end
 
+    # Multi-database async query executor (one thread pool per database)
+    config.active_record.async_query_executor = :multi_thread_pool
+
+    # Log SQL warnings from PostgreSQL
+    config.active_record.db_warnings_action = :log
+
+    # Allow per-model/per-attribute i18n error message format customization
+    config.active_model.i18n_customize_full_message = true
+
     # Enable structured logging in all environments.
     config.active_support.structured_logging = true
   end

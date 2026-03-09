@@ -7,7 +7,7 @@
 # Database name: avatar
 #
 #  id               :bigint           not null, primary key
-#  cooldown_until   :timestamptz      not null
+#  cooldown_until   :datetime         not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
 #  created_at       :datetime         not null

@@ -44,39 +44,41 @@ jobs:
   # ====================
   lint-actions:
     name: GitHub Actions Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
-      - name: Download actionlint
-        run: |
-          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          echo "$PWD" >> "$GITHUB_PATH"
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Run actionlint
-        run: actionlint -color
+        uses: devops-actions/actionlint@v0.1.10
   # ====================
   lint-docker:
     name: Dockerfile Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Hadolint
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: Dockerfile
           failure-threshold: warning
   security:
     name: Security Checks (Brakeman, Bundle Audit)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.268.0
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -86,7 +88,7 @@ jobs:
         continue-on-error: true
       - name: Upload Brakeman SARIF to GitHub Security
         if: always()
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.31.10
         with:
           sarif_file: brakeman.sarif
           category: brakeman
@@ -95,16 +97,17 @@ jobs:
         run: bundle exec brakeman -z -q --no-pager
   gitleaks:
     name: Secret Leaks Detection
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_REPORT_PATH: gitleaks.sarif
@@ -112,30 +115,32 @@ jobs:
           GITLEAKS_FAIL: true
       - name: Upload SARIF to GitHub Security
         if: always() && hashFiles('gitleaks.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.31.10
         with:
           sarif_file: gitleaks.sarif
         continue-on-error: true
   # ====================
   dependency-review:
     name: Dependency Review
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     if: github.event_name == 'pull_request'
     timeout-minutes: 5
     permissions:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v4.8.2
         with:
           fail-on-severity: moderate
           comment-summary-in-pr: true
           deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0
   semgrep:
     name: Semgrep SAST
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     permissions:
       contents: read
@@ -144,26 +149,30 @@ jobs:
     container:
       image: semgrep/semgrep
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Run Semgrep
         run: semgrep scan --sarif --output=semgrep.sarif --config=auto
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
       - name: Upload Semgrep SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.31.10
         with:
           sarif_file: semgrep.sarif
           category: semgrep
         continue-on-error: true
   lint-ruby:
     name: Ruby Linting (RuboCop, ERB)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.268.0
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -321,9 +330,11 @@ jobs:
           --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092"
           --health-interval 30s --health-timeout 10s --health-retries 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.268.0
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -336,21 +347,15 @@ jobs:
         run: bundle exec bundle audit check --update
       - name: Upload test coverage
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: rails-coverage-${{ github.sha }}
           path: coverage/
           retention-days: 30
           compression-level: 6
-      - name: Report coverage to PR
-        if: github.event_name == 'pull_request' && always()
-        uses: romeovs/lcov-reporter-action@v0.4.0
-        with:
-          lcov-file: coverage/lcov.info
-          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload test logs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: rails-test-logs-${{ github.sha }}
           path: |
@@ -362,16 +367,18 @@ jobs:
         run: bundle exec database_consistency
   lint-js:
     name: JavaScript Lint (oxlint + oxfmt)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v4.2.0
         with:
           version: ${{ env.PNPM_VERSION }}
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -393,11 +400,13 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3.12.0
       - name: Build Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v6.18.0
         with:
           context: .
           target: production
@@ -409,7 +418,7 @@ jobs:
           provenance: false
           sbom: false
       - name: Run Trivy vulnerability scanner (SARIF)
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.32.0
         with:
           image-ref: umaxica-app:${{ github.sha }}
           format: sarif
@@ -420,13 +429,13 @@ jobs:
           vuln-type: os,library
           scanners: vuln,secret
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.31.10
         if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: trivy-results.sarif
           category: trivy-container
       - name: Run Trivy (table format, informational)
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.32.0
         with:
           image-ref: umaxica-app:${{ github.sha }}
           format: table
@@ -435,7 +444,7 @@ jobs:
           ignore-unfixed: true
           scanners: vuln,secret
       - name: Run Grype vulnerability scanner
-        uses: anchore/scan-action@v5
+        uses: anchore/scan-action@v7.1.0
         id: grype
         with:
           image: umaxica-app:${{ github.sha }}
@@ -443,18 +452,18 @@ jobs:
           severity-cutoff: high
       - name: Upload Grype SARIF
         if: always() && steps.grype.outputs.sarif != ''
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.31.10
         with:
           sarif_file: ${{ steps.grype.outputs.sarif }}
           category: grype-container
       - name: Generate SBOM with Syft
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@v0.20.9
         with:
           image: umaxica-app:${{ github.sha }}
           format: cyclonedx-json
           output-file: sbom.cdx.json
       - name: Upload SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: sbom-${{ github.sha }}
           path: sbom.cdx.json

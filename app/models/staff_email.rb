@@ -39,6 +39,8 @@ class StaffEmail < OperatorRecord
   include PublicId
   include Email
 
+  self.filter_attributes += %w(address)
+
   MAX_EMAILS_PER_STAFF = 4
   attribute :staff_identity_email_status_id, default: StaffEmailStatus::UNVERIFIED
   belongs_to :staff_email_status, inverse_of: :staff_emails, foreign_key: :staff_identity_email_status_id

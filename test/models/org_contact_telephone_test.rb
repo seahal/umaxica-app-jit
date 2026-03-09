@@ -11,7 +11,7 @@
 #  telephone_number       :string(1000)     default(""), not null
 #  verifier_attempts_left :integer          default(3), not null
 #  verifier_digest        :string(255)
-#  verifier_expires_at    :timestamptz
+#  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  org_contact_id         :bigint           not null

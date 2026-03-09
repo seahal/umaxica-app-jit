@@ -7,7 +7,9 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
   self.use_transactional_tests = false
   self.fixture_table_names = []
 
-  ALLOWED_SKIP_FORGERY_PROTECTION_PATHS = [].freeze
+  ALLOWED_SKIP_FORGERY_PROTECTION_PATHS = [
+    "app/controllers/csp_violations_controller.rb", # Browser CSP reports cannot include CSRF tokens
+  ].freeze
 
   test "skip_forgery_protection is only used in approved controllers" do
     controller_files = Rails.root.glob("app/controllers/**/*_controller.rb")

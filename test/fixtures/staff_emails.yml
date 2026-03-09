@@ -17,6 +17,14 @@
 #  staff_id                       :bigint           not null
 #  staff_identity_email_status_id :bigint           default(6), not null
 #
+# Indexes
+#
+#  index_staff_emails_on_address                         (address)
+#  index_staff_emails_on_lower_address                   (lower((address)::text)) UNIQUE
+#  index_staff_emails_on_public_id                       (public_id) UNIQUE
+#  index_staff_emails_on_staff_id                        (staff_id)
+#  index_staff_emails_on_staff_identity_email_status_id  (staff_identity_email_status_id)
+#
 # Foreign Keys
 #
 #  fk_rails_...  (staff_id => staffs.id)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -25,12 +25,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "email_address", limit: 1000, default: "", null: false
     t.string "token_digest", limit: 255
-    t.timestamptz "token_expires_at"
+    t.datetime "token_expires_at", precision: nil
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
-    t.timestamptz "verifier_expires_at"
+    t.datetime "verifier_expires_at", precision: nil
     t.index ["app_contact_id"], name: "index_app_contact_emails_on_app_contact_id"
     t.index ["email_address"], name: "index_app_contact_emails_on_email_address"
   end
@@ -58,7 +58,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
-    t.timestamptz "verifier_expires_at"
+    t.datetime "verifier_expires_at", precision: nil
     t.index ["app_contact_id"], name: "index_app_contact_telephones_on_app_contact_id"
     t.index ["telephone_number"], name: "index_app_contact_telephones_on_telephone_number"
   end
@@ -124,17 +124,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
+    t.datetime "expires_at", precision: nil, default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.integer "hotp_counter"
     t.string "hotp_secret"
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
-    t.timestamptz "token_expires_at"
+    t.datetime "token_expires_at", precision: nil
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
-    t.timestamptz "verifier_expires_at"
+    t.datetime "verifier_expires_at", precision: nil
     t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id_unique", unique: true
     t.index ["email_address"], name: "index_com_contact_emails_on_email_address"
   end
@@ -147,7 +147,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
     t.bigint "com_contact_id", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
+    t.datetime "expires_at", precision: nil, default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.integer "hotp_counter"
     t.string "hotp_secret"
     t.integer "remaining_views", limit: 2, default: 10, null: false
@@ -155,7 +155,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
-    t.timestamptz "verifier_expires_at"
+    t.datetime "verifier_expires_at", precision: nil
     t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id_unique", unique: true
     t.index ["telephone_number"], name: "index_com_contact_telephones_on_telephone_number"
   end
@@ -209,12 +209,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
     t.string "email_address", limit: 1000, default: "", null: false
     t.bigint "org_contact_id", null: false
     t.string "token_digest", limit: 255
-    t.timestamptz "token_expires_at"
+    t.datetime "token_expires_at", precision: nil
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
-    t.timestamptz "verifier_expires_at"
+    t.datetime "verifier_expires_at", precision: nil
     t.index ["email_address"], name: "index_org_contact_emails_on_email_address"
     t.index ["org_contact_id"], name: "index_org_contact_emails_on_org_contact_id"
   end
@@ -242,7 +242,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_15_103000) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
-    t.timestamptz "verifier_expires_at"
+    t.datetime "verifier_expires_at", precision: nil
     t.index ["org_contact_id"], name: "index_org_contact_telephones_on_org_contact_id"
     t.index ["telephone_number"], name: "index_org_contact_telephones_on_telephone_number"
   end

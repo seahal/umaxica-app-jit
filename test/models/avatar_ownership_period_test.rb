@@ -7,8 +7,8 @@
 # Database name: avatar
 #
 #  id                         :bigint           not null, primary key
-#  valid_from                 :timestamptz      not null
-#  valid_to                   :timestamptz      default(Infinity), not null
+#  valid_from                 :datetime         not null
+#  valid_to                   :datetime         default(Infinity), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  avatar_id                  :bigint           not null

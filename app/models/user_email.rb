@@ -44,6 +44,8 @@ class UserEmail < PrincipalRecord
   include Email
   include Turnstile
 
+  self.filter_attributes += %w(address)
+
   MAX_EMAILS_PER_USER = 4
 
   before_validation :set_address_digests

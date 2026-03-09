@@ -37,6 +37,8 @@
 #
 
 class UserTelephone < PrincipalRecord
+  self.filter_attributes += %w(number)
+
   MAX_TELEPHONES_PER_USER = 4
   # TODO: refactorize this line!
   alias_attribute :user_telephone_status_id, :user_identity_telephone_status_id

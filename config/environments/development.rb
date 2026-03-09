@@ -59,6 +59,16 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 
+  # Include source location in query log tags for easier debugging
+  config.active_record.query_log_tags = %i(application controller action job source_location)
+
+  # Detect N+1 queries and log warnings (without raising)
+  config.active_record.strict_loading_mode = :n_plus_one_only
+  config.active_record.action_on_strict_loading_violation = :log
+
+  # Warn on deprecated .connection usage (should use .with_connection for multi-DB)
+  config.active_record.permanent_connection_checkout = :deprecated
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 

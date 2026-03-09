@@ -8,7 +8,7 @@
 #
 #  id                    :bigint           not null, primary key
 #  comment               :text
-#  decided_at            :timestamptz
+#  decided_at            :datetime
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  post_id               :bigint           not null

@@ -40,7 +40,7 @@ Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 module ActiveSupport
   class TestCase
     coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
-    max_parallel_workers = 19
+    max_parallel_workers = 32
 
     # Use a single worker for coverage runs to keep SimpleCov results deterministic.
     # Respect PARALLEL_WORKERS when provided, otherwise use max available CPU workers.

@@ -50,7 +50,7 @@ Multi-domain Rails 8.2 application organized around three audience tiers — **a
 ### Quick Start
 
 ```bash
-docker compose up -d        # PostgreSQL 18, Valkey, Kafka, SeaweedFS, observability stack
+docker compose up -d        # PostgreSQL 18, Valkey, Kafka, observability stack
 bundle install
 pnpm install
 bin/rails db:prepare         # Create, migrate, seed all databases
@@ -67,16 +67,19 @@ bin/setup
 
 This app uses host-constrained routing in development. Access each surface with these hosts:
 
-| Surface  | URL Pattern                                  |            Notes |
-| :------- | :------------------------------------------- | ---------------: |
-| App top  | `http://app.localhost:3000`                  |         end-user |
-| Com top  | `http://com.localhost:3000`                  | corporate/public |
-| Org top  | `http://org.localhost:3000`                  |            staff |
-| App sign | `http://sign.app.localhost:3000`             |  passkey sign-in |
-| Org sign | `http://sign.org.localhost:3000`             |  passkey sign-in |
-| Docs     | `http://docs.[app\|com\|org].localhost:3000` |  content surface |
-| Help     | `http://help.[app\|com\|org].localhost:3000` |  content surface |
-| News     | `http://news.[app\|com\|org].localhost:3000` |  content surface |
+| Surface  | URL Pattern                                  |                 Notes |
+| :------- | :------------------------------------------- | --------------------: |
+| App apex | `http://app.localhost:3000`                  |      end-user surface |
+| Com apex | `http://com.localhost:3000`                  | corporate/preferences |
+| Org apex | `http://org.localhost:3000`                  |         staff surface |
+| App sign | `http://sign.app.localhost:3000`             |       passkey sign-in |
+| Org sign | `http://sign.org.localhost:3000`             |       passkey sign-in |
+| App core | `http://www.app.localhost:3000`              |           main app UI |
+| Com core | `http://www.com.localhost:3000`              |          corporate UI |
+| Org core | `http://www.org.localhost:3000`              |              staff UI |
+| Docs     | `http://docs.[app\|com\|org].localhost:3000` |       content surface |
+| Help     | `http://help.[app\|com\|org].localhost:3000` |       content surface |
+| News     | `http://news.[app\|com\|org].localhost:3000` |       content surface |
 
 `*.localhost` resolves to `127.0.0.1` by default in modern environments, so `/etc/hosts` updates are
 usually unnecessary.
@@ -104,9 +107,17 @@ TRUSTED_ORIGINS=https://sign.umaxica.app,https://sign.umaxica.org
 - All sensitive configuration lives in **Rails encrypted credentials**
   (`config/credentials/*.yml.enc`). Development and test credentials are shared with team members as
   needed — the encryption key will be provided separately.
-- Cryptographic keys are managed via **Cloud KMS**.
 - Never commit plaintext credentials. CI runs [Gitleaks](https://github.com/gitleaks/gitleaks) to
   detect accidental credential exposure.
+
+### External Services
+
+- **Google OAuth** for social sign-in.
+- **AWS** for SMS delivery via SNS.
+- **Cloudflare** for Turnstile and R2-based asset delivery.
+- **Fastly** for cache purge and edge delivery support.
+- **Sentry** for error monitoring.
+- **Resend** for SMTP-based email delivery.
 
 ## Development
 
@@ -146,21 +157,14 @@ lefthook run pre-push
 
 ## Logging
 
-This application uses Rails 8.1's built-in structured logging. All log output is JSON-formatted.
-
-Use `Rails.event.notify` instead of `Rails.logger` for application logging:
+Rails 8.1 structured logging is enabled. Application logs are JSON and should use
+`Rails.event.notify` rather than `Rails.logger`.
 
 ```ruby
-# Basic event
 Rails.event.notify("user.created", user_id: user.id, plan: "pro")
-
-# With tags
 Rails.event.tagged("auth") do
   Rails.event.notify("login.success", user_id: user.id)
 end
-
-# With request-scoped context
-Rails.event.set_context(request_id: request.request_id, ip: request.remote_ip)
 ```
 
 ## Troubleshooting
