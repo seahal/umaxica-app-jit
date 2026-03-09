@@ -78,7 +78,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1.268.0
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -172,7 +172,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1.268.0
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -334,7 +334,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1.268.0
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
