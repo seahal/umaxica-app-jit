@@ -9,14 +9,14 @@
 #  id                     :bigint           not null, primary key
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
-#  expires_at             :timestamptz      not null
+#  expires_at             :datetime         not null
 #  hotp_counter           :integer
 #  hotp_secret            :string
 #  remaining_views        :integer          default(10), not null
 #  telephone_number       :string(1000)     default(""), not null
 #  verifier_attempts_left :integer          default(3), not null
 #  verifier_digest        :string(255)
-#  verifier_expires_at    :timestamptz
+#  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  com_contact_id         :bigint           not null

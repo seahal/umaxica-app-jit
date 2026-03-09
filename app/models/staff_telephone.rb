@@ -34,6 +34,8 @@ class StaffTelephone < OperatorRecord
   alias_attribute :staff_telephone_status_id, :staff_identity_telephone_status_id
   include Telephone
 
+  self.filter_attributes += %w(number)
+
   MAX_TELEPHONES_PER_STAFF = 4
   attribute :staff_identity_telephone_status_id, default: StaffTelephoneStatus::UNVERIFIED
 

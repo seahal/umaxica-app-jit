@@ -56,6 +56,15 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
+  # Cache query log tags for performance
+  config.active_record.cache_query_log_tags = true
+
+  # Enumerate columns in SELECT to avoid prepared statement cache errors on column changes
+  config.active_record.enumerate_columns_in_select_statements = true
+
+  # Require --no-sandbox flag to run destructive console operations
+  config.sandbox_by_default = true
+
   # Replace the default in-process memory cache store with a durable alternative.
   config.cache_store = :solid_cache_store
 
@@ -91,13 +100,19 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `top.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Collect all host ENV vars used in route constraints.
+  config.hosts = ENV.values_at(
+    "SIGN_SERVICE_URL", "AUTH_SERVICE_URL",
+    "SIGN_STAFF_URL", "AUTH_STAFF_URL",
+    "APEX_SERVICE_URL", "APEX_STAFF_URL", "APEX_CORPORATE_URL",
+    "CORE_SERVICE_URL", "CORE_STAFF_URL", "CORE_CORPORATE_URL",
+    "DOCS_SERVICE_URL", "DOCS_STAFF_URL", "DOCS_CORPORATE_URL",
+    "NEWS_SERVICE_URL", "NEWS_STAFF_URL", "NEWS_CORPORATE_URL",
+    "HELP_SERVICE_URL", "HELP_STAFF_URL", "HELP_CORPORATE_URL",
+  ).compact_blank
+
+  # Skip DNS rebinding protection for health checks and load balancer probes.
+  config.host_authorization = { exclude: ->(request) { request.path.start_with?("/health", "/up") } }
 
   ### Added by owner
   # We've configured this production environment to prevent the delivery of public static content.

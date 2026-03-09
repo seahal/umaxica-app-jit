@@ -76,6 +76,11 @@ Rails.application.configure do
   # SMS Provider Configuration - Use test provider in test environment
   config.sms_provider = "test"
 
+  # Use PostgreSQL unlogged tables for faster test performance
+  ActiveSupport.on_load(:active_record_postgresqladapter) do
+    self.create_unlogged_tables = true
+  end
+
   # i18n default locale for tests
   # config.action_view.raise_on_missing_translations = true
   config.i18n.raise_on_missing_translations = true
