@@ -4,7 +4,6 @@
 module Sign
   module Org
     class ApplicationController < ActionController::Base
-      include ::Fuse
       include ::RateLimit
       include ::Authentication::Staff
       include ::Authorization::Staff
@@ -14,7 +13,6 @@ module Sign
       include ::Current
       include ::Finisher
 
-      before_action :check_fuse!
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_preferences_cookie

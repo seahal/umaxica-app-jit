@@ -4,7 +4,6 @@
 module Apex
   module App
     class ApplicationController < ActionController::Base
-      include ::Fuse
       include ::RateLimit
       include ::Preference::Global
       include ::Authentication::User
@@ -14,7 +13,6 @@ module Apex
       include ::Current
       include ::Finisher
 
-      before_action :check_fuse!
       before_action :set_preferences_cookie
       before_action :resolve_param_context
       before_action :set_region
