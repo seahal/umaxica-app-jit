@@ -102,7 +102,7 @@ class StaffTest < ActiveSupport::TestCase
   end
 
   test "auto-generated public_id is unique across multiple records" do
-    public_ids = 10.times.map { Staff.create!.public_id }
+    public_ids = Prosopite.pause { 10.times.map { Staff.create!.public_id } }
 
     assert_equal public_ids.uniq.size, public_ids.size
   end
@@ -319,7 +319,7 @@ class StaffTest < ActiveSupport::TestCase
 
   test "determinism: auto-generated public_id does not collide with existing records" do
     # Create multiple staffs and ensure no collision
-    10.times { Staff.create! }
+    Prosopite.pause { 10.times { Staff.create! } }
 
     public_ids = Staff.pluck(:public_id)
 

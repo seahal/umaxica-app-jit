@@ -30,9 +30,19 @@ class AppPreferenceColorthemeOption < PreferenceRecord
     end
   end
 
+  DEFAULTS = [NOTHING, LIGHT, DARK, SYSTEM].freeze
+
   def self.ensure_defaults!
-    ids = [NOTHING, LIGHT, DARK, SYSTEM]
-    existing = where(id: ids).pluck(:id)
-    (ids - existing).each { |id| create!(id: id) }
+    return if DEFAULTS.blank?
+
+    existing_ids = where(id: DEFAULTS).pluck(:id)
+    missing_ids = DEFAULTS - existing_ids
+    return if missing_ids.empty?
+
+    if defined?(Prosopite)
+      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
+    else
+      missing_ids.each { |id| create!(id: id) }
+    end
   end
 end

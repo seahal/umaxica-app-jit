@@ -45,8 +45,10 @@ class StaffSecretTest < ActiveSupport::TestCase
   end
 
   test "allows up to the maximum number of secrets per staff" do
-    StaffSecret::MAX_SECRETS_PER_STAFF.times do
-      create_secret!
+    Prosopite.pause do
+      StaffSecret::MAX_SECRETS_PER_STAFF.times do
+        create_secret!
+      end
     end
 
     assert_equal StaffSecret::MAX_SECRETS_PER_STAFF,
@@ -54,7 +56,7 @@ class StaffSecretTest < ActiveSupport::TestCase
   end
 
   test "rejects creating more than the maximum secrets per staff" do
-    StaffSecret::MAX_SECRETS_PER_STAFF.times { create_secret! }
+    Prosopite.pause { StaffSecret::MAX_SECRETS_PER_STAFF.times { create_secret! } }
 
     assert_raises(ActiveRecord::RecordInvalid) { create_secret! }
   end
