@@ -28,4 +28,24 @@ class StaffActivityEvent < ActivityRecord
            foreign_key: :event_id,
            dependent: :destroy,
            inverse_of: :staff_activity_event
+
+  DEFAULTS = [
+    LOGIN_SUCCESS, AUTHORIZATION_FAILED, LOGGED_IN, LOGGED_OUT, LOGIN_FAILED,
+    TOKEN_REFRESHED, NOTHING, STAFF_SECRET_CREATED, STAFF_SECRET_REMOVED,
+    STAFF_SECRET_UPDATED, STEP_UP_VERIFIED,
+  ].freeze
+
+  def self.ensure_defaults!
+    return if DEFAULTS.blank?
+
+    existing_ids = where(id: DEFAULTS).pluck(:id)
+    missing_ids = DEFAULTS - existing_ids
+    return if missing_ids.empty?
+
+    if defined?(Prosopite)
+      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
+    else
+      missing_ids.each { |id| create!(id: id) }
+    end
+  end
 end

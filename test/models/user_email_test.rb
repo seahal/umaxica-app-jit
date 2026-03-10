@@ -188,12 +188,14 @@ class UserEmailTest < ActiveSupport::TestCase
 
   test "enforces maximum emails per user" do
     user = users(:one)
-    UserEmail::MAX_EMAILS_PER_USER.times do |i|
-      UserEmail.create!(
-        address: "user#{i}@example.com",
-        confirm_policy: true,
-        user: user,
-      )
+    Prosopite.pause do
+      UserEmail::MAX_EMAILS_PER_USER.times do |i|
+        UserEmail.create!(
+          address: "user#{i}@example.com",
+          confirm_policy: true,
+          user: user,
+        )
+      end
     end
 
     extra_email = UserEmail.new(

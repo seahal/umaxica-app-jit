@@ -197,8 +197,10 @@ class UserTelephoneTest < ActiveSupport::TestCase
 
   test "enforce_user_telephone_limit validation on create" do
     # Create maximum allowed telephones
-    UserTelephone::MAX_TELEPHONES_PER_USER.times do |i|
-      UserTelephone.create!(@valid_attributes.merge(raw_number: "+155512310#{i}"))
+    Prosopite.pause do
+      UserTelephone::MAX_TELEPHONES_PER_USER.times do |i|
+        UserTelephone.create!(@valid_attributes.merge(raw_number: "+155512310#{i}"))
+      end
     end
 
     # Try to create one more

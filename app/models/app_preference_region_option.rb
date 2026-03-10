@@ -28,10 +28,20 @@ class AppPreferenceRegionOption < PreferenceRecord
     end
   end
 
+  DEFAULTS = [NOTHING, US, JP].freeze
+
   def self.ensure_defaults!
-    ids = [NOTHING, US, JP]
-    existing = where(id: ids).pluck(:id)
-    (ids - existing).each { |id| create!(id: id) }
+    return if DEFAULTS.blank?
+
+    existing_ids = where(id: DEFAULTS).pluck(:id)
+    missing_ids = DEFAULTS - existing_ids
+    return if missing_ids.empty?
+
+    if defined?(Prosopite)
+      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
+    else
+      missing_ids.each { |id| create!(id: id) }
+    end
   end
 
   self.primary_key = :id

@@ -41,11 +41,11 @@ class UserSecretTest < ActiveSupport::TestCase
   setup do
     UserStatus.find_or_create_by!(id: UserStatus::NOTHING)
     # Also need UserSecretStatus as 'ACTIVE', 'USED', 'EXPIRED' are used in tests
-    UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
+    @active_status = UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
     UserSecretStatus.find_or_create_by!(id: UserSecretStatus::USED)
     UserSecretStatus.find_or_create_by!(id: UserSecretStatus::EXPIRED)
     # Set up UserSecretKind records
-    UserSecretKind.find_or_create_by!(id: UserSecretKind::LOGIN)
+    @login_kind = UserSecretKind.find_or_create_by!(id: UserSecretKind::LOGIN)
     UserSecretKind.find_or_create_by!(id: UserSecretKind::TOTP)
     UserSecretKind.find_or_create_by!(id: UserSecretKind::RECOVERY)
     UserSecretKind.find_or_create_by!(id: UserSecretKind::API)
@@ -60,6 +60,10 @@ class UserSecretTest < ActiveSupport::TestCase
       address: "secret-model-#{SecureRandom.hex(4)}@example.com",
       user_email_status_id: UserEmailStatus::VERIFIED,
     )
+
+    # Preload to avoid N+1 in validations
+    @user.user_emails.load
+    @user.user_secrets.load
   end
 
   test "allows up to the maximum number of secrets per user" do
@@ -298,7 +302,8 @@ class UserSecretTest < ActiveSupport::TestCase
       name: "Secret-#{SecureRandom.hex(4)}",
       password: secure_secret,
       password_confirmation: secure_secret,
-      user_secret_kind_id: UserSecretKind::LOGIN,
+      user_secret_kind: @login_kind,
+      user_secret_status: @active_status,
     )
   end
 

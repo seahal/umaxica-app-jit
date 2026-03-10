@@ -20,8 +20,19 @@ class OrgPreferenceStatus < PreferenceRecord
            inverse_of: :org_preference_status,
            dependent: :restrict_with_error
 
+  DEFAULTS = [DELETED, NOTHING].freeze
+
   def self.ensure_defaults!
-    find_or_create_by!(id: DELETED)
-    find_or_create_by!(id: NOTHING)
+    return if DEFAULTS.blank?
+
+    existing_ids = where(id: DEFAULTS).pluck(:id)
+    missing_ids = DEFAULTS - existing_ids
+    return if missing_ids.empty?
+
+    if defined?(Prosopite)
+      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
+    else
+      missing_ids.each { |id| create!(id: id) }
+    end
   end
 end
