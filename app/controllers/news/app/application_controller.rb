@@ -4,7 +4,6 @@
 module News
   module App
     class ApplicationController < ActionController::Base
-      include ::Fuse
       include ::RateLimit
       include ::Preference::Regional
       include ::Authentication::User
@@ -14,7 +13,6 @@ module News
       include ::Current
       include ::Finisher
 
-      before_action :check_fuse!
       before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!

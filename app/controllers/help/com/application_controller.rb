@@ -4,7 +4,6 @@
 module Help
   module Com
     class ApplicationController < ActionController::Base
-      include ::Fuse
       include ::RateLimit
       include ::Preference::Regional
       include ::Authentication::Viewer
@@ -14,7 +13,6 @@ module Help
       include ::Current
       include ::Finisher
 
-      before_action :check_fuse!
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current

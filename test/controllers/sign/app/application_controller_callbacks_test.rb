@@ -11,7 +11,6 @@ module Sign::App
 
       expected_before_filters = %i(
         apply_rate_limit_rules
-        check_fuse!
         enforce_withdrawal_gate!
         transparent_refresh_access_token
         enforce_access_policy!

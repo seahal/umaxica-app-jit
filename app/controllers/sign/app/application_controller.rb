@@ -4,7 +4,6 @@
 module Sign
   module App
     class ApplicationController < ActionController::Base
-      include ::Fuse
       include ::RateLimit
       include ::Authentication::User
       include ::Authorization::User
@@ -15,7 +14,6 @@ module Sign
       include ::Current
       include ::Finisher
 
-      before_action :check_fuse!
       before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
