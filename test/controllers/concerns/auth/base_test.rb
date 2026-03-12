@@ -136,6 +136,10 @@ module Auth
       assert_kind_of Array, audiences
     end
 
+    test "JwtConfiguration.leeway_seconds returns integer" do
+      assert_kind_of Integer, Auth::Base::JwtConfiguration.leeway_seconds
+    end
+
     test "MissingPolicyError is a StandardError" do
       assert_operator Auth::Base::MissingPolicyError, :<, StandardError
     end

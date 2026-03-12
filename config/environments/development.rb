@@ -28,8 +28,7 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
-  # Change to :null_store to avoid any caching.
-  config.cache_store = :solid_cache_store
+  config.cache_store = :null_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # config.active_storage.service = :local
@@ -44,11 +43,14 @@ Rails.application.configure do
   #  config.action_mailer.delivery_method = :letter_opener
   # config.action_mailer.perform_deliveries = true
 
-  # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :stderr
+  # Raise on deprecation warnings to catch issues early.
+  config.active_support.deprecation = :raise
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
+
+  # Raise on SQL warnings from PostgreSQL (overrides :log in application.rb).
+  config.active_record.db_warnings_action = :raise
 
   # Highlight code that triggered database queries in logs.
   config.active_record.verbose_query_logs = true
@@ -62,15 +64,16 @@ Rails.application.configure do
   # Include source location in query log tags for easier debugging
   config.active_record.query_log_tags = %i(application controller action job source_location)
 
-  # Detect N+1 queries and log warnings (without raising)
+  # Detect N+1 queries and raise errors immediately.
+  config.active_record.strict_loading_by_default = true
   config.active_record.strict_loading_mode = :n_plus_one_only
-  config.active_record.action_on_strict_loading_violation = :log
+  config.active_record.action_on_strict_loading_violation = :raise
 
-  # Warn on deprecated .connection usage (should use .with_connection for multi-DB)
-  config.active_record.permanent_connection_checkout = :deprecated
+  # Disallow deprecated .connection usage (must use .with_connection for multi-DB)
+  config.active_record.permanent_connection_checkout = :disallowed
 
-  # Raises error for missing translations.
-  # config.i18n.raise_on_missing_translations = true
+  # Raise error for missing translations.
+  config.i18n.raise_on_missing_translations = true
 
   # Annotate rendered view with file names.
   config.action_view.annotate_rendered_view_with_filenames = true
@@ -124,11 +127,12 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.default_url_options = { host: "localhost", port: 3001 }
   config.action_mailer.smtp_settings = {
-    address: ENV["RESEND_SMTP_ENDPOINT"],
-    user_name: ENV["RESEND_SMTP_USER_NAME"],
-    password: Rails.app.creds.require(:RESEND_SMTP_PASSWORD),
+    address: "email-smtp.#{ENV.fetch("AWS_SES_REGION", "ap-northeast-1")}.amazonaws.com",
+    user_name: Rails.app.creds.option(:AWS_SES_SMTP_USER_NAME),
+    password: Rails.app.creds.option(:AWS_SES_SMTP_PASSWORD),
     port: 465,
     tls: true,
+    authentication: :login,
   }
 
   # static file serve

@@ -42,7 +42,7 @@
                 <p><%= t("errors.social_auth.insufficient_login_methods") %></p>
               <% end %>
             <% else %>
-              <%= link_to t('actions.connect'), sign_app_social_start_path(provider: "apple", intent: "link"), data: { turbo: false } %>
+              <%= link_to t('actions.connect'), new_sign_app_social_session_path(provider: "apple", intent: "link"), data: { turbo: false } %>
             <% end %>
           </div>
         </div>

@@ -100,9 +100,9 @@ module RateLimit
     return if Rails.env.test?
 
     if request.format.json?
-      rate_limit_for_scope!(rule: "default_api", scope: :ip, limit: 2_000, period: 1.minute)
+      rate_limit_for_scope!(rule: "default_api", scope: :ip, limit: 600, period: 1.minute)
     else
-      rate_limit_for_scope!(rule: "default_web", scope: :ip, limit: 1_000, period: 1.minute)
+      rate_limit_for_scope!(rule: "default_web", scope: :ip, limit: 300, period: 1.minute)
     end
   end
 

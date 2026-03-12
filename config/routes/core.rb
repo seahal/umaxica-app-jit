@@ -11,7 +11,7 @@ scope module: :core, as: :core do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
 
@@ -39,7 +39,7 @@ scope module: :core, as: :core do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
 
@@ -72,7 +72,7 @@ scope module: :core, as: :core do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
 

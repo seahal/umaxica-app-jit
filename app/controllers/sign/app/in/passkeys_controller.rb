@@ -28,6 +28,7 @@ module Sign
         include IdentifierDetection
         include MinimumResponseBudget
         include SessionLimitGate
+        include CloudflareTurnstile
 
         before_action :reject_logged_in_session
 
@@ -38,10 +39,6 @@ module Sign
 
         private
 
-        def before_passkey_options_request!
-          verify_turnstile_stealth!
-        end
-
         def find_active_passkey_actor(identifier)
           user = find_user_by_identifier(identifier)
           user if user&.active?
@@ -49,6 +46,10 @@ module Sign
 
         def passkey_identifier_required_error_key
           "errors.webauthn.pii_required"
+        end
+
+        def before_passkey_options_request!
+          verify_turnstile_stealth!
         end
 
         def allow_passkey_options_for_actor?(user)
@@ -66,18 +67,6 @@ module Sign
 
         def passkey_challenge_actor_id_key
           "user_id"
-        end
-
-        def verify_turnstile_stealth!
-          result = Jit::Security::TurnstileVerifier.verify(
-            token: params["cf-turnstile-response"].to_s,
-            remote_ip: request.remote_ip,
-            mode: :stealth,
-          )
-          return true if result["success"]
-
-          render json: { error: I18n.t("turnstile_error") }, status: :unprocessable_content
-          false
         end
 
         def passkey_sign_in_model

@@ -10,7 +10,7 @@ scope module: :news, as: :news do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1, defaults: { format: :json } do
+        namespace :v0, defaults: { format: :json } do
           resource :health, only: :show
           resource :sitemap, only: :show
           resources :posts, only: [:index, :show] do
@@ -31,7 +31,7 @@ scope module: :news, as: :news do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1, defaults: { format: :json } do
+        namespace :v0, defaults: { format: :json } do
           resource :health, only: :show
           resource :sitemap, only: :show
           resources :posts, only: [:index, :show] do
@@ -53,7 +53,7 @@ scope module: :news, as: :news do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1, defaults: { format: :json } do
+        namespace :v0, defaults: { format: :json } do
           resource :health, only: :show
           resource :sitemap, only: :show
           resources :posts, only: [:index, :show] do

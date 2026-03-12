@@ -32,10 +32,6 @@ class CredsIntegrationTest < ActiveSupport::TestCase
     assert_present Rails.app.creds.require(:JWT_AUTH_PUBLIC_KEY)
   end
 
-  test "RESEND_SMTP_PASSWORD is present" do
-    assert_present Rails.app.creds.require(:RESEND_SMTP_PASSWORD)
-  end
-
   test "SMTP_FROM_ADDRESS is present" do
     assert_present Rails.app.creds.require(:SMTP_FROM_ADDRESS)
   end
@@ -52,22 +48,6 @@ class CredsIntegrationTest < ActiveSupport::TestCase
 
   test "SENTRY_DSN_CONFIG is present" do
     assert_present Rails.app.creds.option(:SENTRY_DSN_CONFIG)
-  end
-
-  test "CLOUDFLARE_TURNSTILE_VISIBLE_SITE_KEY is present" do
-    assert_present Rails.app.creds.option(:CLOUDFLARE_TURNSTILE_VISIBLE_SITE_KEY)
-  end
-
-  test "CLOUDFLARE_TURNSTILE_VISIBLE_SECRET_KEY is present" do
-    assert_present Rails.app.creds.option(:CLOUDFLARE_TURNSTILE_VISIBLE_SECRET_KEY)
-  end
-
-  test "CLOUDFLARE_TURNSTILE_SITE_STEALTH_KEY is present" do
-    assert_present Rails.app.creds.option(:CLOUDFLARE_TURNSTILE_SITE_STEALTH_KEY)
-  end
-
-  test "CLOUDFLARE_TURNSTILE_SECRET_STEALTH_KEY is present" do
-    assert_present Rails.app.creds.option(:CLOUDFLARE_TURNSTILE_SECRET_STEALTH_KEY)
   end
 
   test "OMNI_AUTH_GOOGLE_CLIENT_ID is present" do

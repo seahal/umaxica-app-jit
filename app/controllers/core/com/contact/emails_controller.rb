@@ -7,7 +7,6 @@ module Core
       class EmailsController < Core::Com::ApplicationController
         include ::RateLimit
 
-        rescue_from Help::ContactError, with: :handle_contact_error
         before_action :load_and_validate_contact
 
         def new
@@ -16,7 +15,7 @@ module Core
 
         def create
           @contact_email = ComContactEmail.find_by(com_contact_id: @contact.id)
-          raise StandardError, "Contact email not found" unless @contact_email
+          return render_missing_contact_email unless @contact_email
 
           hotp_code = params.dig(:com_contact_email, :hotp_code)
           return handle_missing_code if hotp_code.blank?
@@ -96,18 +95,13 @@ module Core
 
         def load_and_validate_contact
           contact_id = params[:contact_id]
-
-          raise Help::ContactIdRequiredError if contact_id.blank?
+          return render_missing_contact_id if contact_id.blank?
 
           @contact = ComContact.find_by(public_id: contact_id)
+          return render_missing_contact unless @contact
+          return if @contact.status_id == ComContactStatus::SET_UP
 
-          raise Help::ContactNotFoundError if @contact.nil?
-
-          raise Help::InvalidContactStatusError.new(@contact.status_id) unless @contact.status_id == ComContactStatus::SET_UP
-        end
-
-        def handle_contact_error(error)
-          render plain: error.message, status: error.status_code
+          render_invalid_contact_state
         end
 
         def core_corporate_redirect_options
@@ -132,6 +126,22 @@ module Core
 
         def preserved_locale_query_params
           request.query_parameters.slice("ct", "lx", "ri", "tz").compact
+        end
+
+        def render_missing_contact_id
+          render plain: "Contact ID is required", status: :bad_request
+        end
+
+        def render_missing_contact
+          render plain: "Contact not found", status: :not_found
+        end
+
+        def render_missing_contact_email
+          render plain: "Contact email not found", status: :not_found
+        end
+
+        def render_invalid_contact_state
+          render plain: "Invalid contact status", status: :unprocessable_content
         end
       end
     end

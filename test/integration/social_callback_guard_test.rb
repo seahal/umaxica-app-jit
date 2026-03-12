@@ -14,16 +14,16 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
   test "callback phase rejects when state is missing" do
     setup_google_mock_auth(uid: "callback_google_missing_state_#{SecureRandom.hex(4)}")
     user = users(:one)
-    prepare_callback_flow(provider: "google_oauth2", user: user)
+    prepare_callback_flow(provider: "google_app", user: user)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :forbidden
@@ -33,9 +33,9 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   test "callback phase rejects when state mismatches" do
     setup_google_mock_auth(uid: "callback_google_bad_state_#{SecureRandom.hex(4)}")
     user = users(:one)
-    prepare_callback_flow(provider: "google_oauth2", user: user)
+    prepare_callback_flow(provider: "google_app", user: user)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: "invalid_state"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: "invalid_state"),
         headers: callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :forbidden
@@ -44,10 +44,10 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   test "callback phase rejects when state is expired" do
     setup_google_mock_auth(uid: "callback_google_expired_state_#{SecureRandom.hex(4)}")
     user = users(:one)
-    state = prepare_callback_flow(provider: "google_oauth2", user: user)
+    state = prepare_callback_flow(provider: "google_app", user: user)
 
     travel_to 6.minutes.from_now do
-      get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: state),
+      get sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: state),
           headers: callback_headers.merge(as_user_headers(user, host: @host))
     end
 
@@ -57,15 +57,15 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   test "callback phase rejects reused state" do
     setup_google_mock_auth(uid: "callback_google_reused_state_#{SecureRandom.hex(4)}")
     user = users(:one)
-    state = prepare_callback_flow(provider: "google_oauth2", user: user)
+    state = prepare_callback_flow(provider: "google_app", user: user)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: state),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: state),
         headers: callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :redirect
 
     setup_google_mock_auth(uid: "callback_google_reused_state_2_#{SecureRandom.hex(4)}")
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: state),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: state),
         headers: callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :forbidden
@@ -74,9 +74,9 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   test "callback phase rejects host mismatch" do
     setup_google_mock_auth(uid: "callback_google_host_mismatch_#{SecureRandom.hex(4)}")
     user = users(:one)
-    state = prepare_callback_flow(provider: "google_oauth2", user: user)
+    state = prepare_callback_flow(provider: "google_app", user: user)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: state),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: state),
         headers: callback_headers(host: "#{@host}:444").merge(as_user_headers(user, host: "#{@host}:444"))
 
     assert_response :forbidden
@@ -85,9 +85,9 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   test "callback phase rejects bad callback method" do
     setup_google_mock_auth(uid: "callback_google_bad_method_#{SecureRandom.hex(4)}")
     user = users(:one)
-    state = prepare_callback_flow(provider: "google_oauth2", user: user)
+    state = prepare_callback_flow(provider: "google_app", user: user)
 
-    post sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: state),
+    post sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: state),
          headers: callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :forbidden
@@ -96,9 +96,9 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   test "callback phase does not reject google origin header from provider domain" do
     setup_google_mock_auth(uid: "callback_google_provider_origin_#{SecureRandom.hex(4)}")
     user = users(:one)
-    state = prepare_callback_flow(provider: "google_oauth2", user: user)
+    state = prepare_callback_flow(provider: "google_app", user: user)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: state),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: state),
         headers: callback_headers(origin: "https://accounts.google.com")
           .merge(as_user_headers(user, host: @host))
 
@@ -136,8 +136,8 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   end
 
   def setup_google_mock_auth(uid:)
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: uid,
       info: { image: "https://example.com/image.jpg" },
       credentials: {

@@ -131,6 +131,13 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal ComContactStatus::CHECKED_EMAIL_ADDRESS, contact.status_id
   end
 
+  test "verify_phone! adds errors instead of raising when state is invalid" do
+    contact = build_contact(status_id: ComContactStatus::SET_UP)
+
+    assert_not contact.verify_phone!
+    assert_includes contact.errors[:base], "Cannot verify phone at this time"
+  end
+
   test "token length boundary" do
     contact = ComContact.new(confirm_policy: "1", token: "a" * 33)
 

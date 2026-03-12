@@ -6,21 +6,23 @@
 # Table name: telephone_occurrences
 # Database name: occurrence
 #
-#  id         :bigint           not null, primary key
-#  body       :string           default(""), not null
-#  expires_at :datetime         not null
-#  memo       :string           default(""), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  public_id  :string(21)       default(""), not null
-#  status_id  :bigint           default(2), not null
+#  id           :bigint           not null, primary key
+#  body         :string           default(""), not null
+#  deletable_at :datetime         default(Infinity), not null
+#  memo         :string           default(""), not null
+#  revoked_at   :datetime         default(Infinity), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  public_id    :string(21)       default(""), not null
+#  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
 #  index_telephone_occurrences_on_body             (body) UNIQUE
 #  index_telephone_occurrences_on_body_created_at  (body,created_at)
-#  index_telephone_occurrences_on_expires_at       (expires_at)
+#  index_telephone_occurrences_on_deletable_at     (deletable_at)
 #  index_telephone_occurrences_on_public_id        (public_id) UNIQUE
+#  index_telephone_occurrences_on_revoked_at       (revoked_at)
 #  index_telephone_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
@@ -90,10 +92,10 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
     assert_public_id_preserved(record, custom_public_id)
   end
 
-  test "expires_at default" do
+  test "lifecycle timestamps default" do
     record = build_occurrence(TelephoneOccurrence, body: "+819012300000", public_id: "Y" * 21)
 
-    assert_expires_at_default(record)
+    assert_occurrence_lifecycle_defaults(record)
   end
 
   # E.164 normalization tests

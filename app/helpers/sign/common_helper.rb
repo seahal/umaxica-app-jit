@@ -3,7 +3,7 @@
 
 module Sign::CommonHelper
   def to_localetime(time, tz = "utc")
-    raise if time.nil?
+    return nil if time.nil?
 
     zone =
       case tz.to_s.downcase
@@ -30,5 +30,13 @@ module Sign::CommonHelper
 
   def get_colortheme
     "sy"
+  end
+
+  def localized_session_timestamp(time)
+    return nil if time.nil?
+
+    short_format = I18n.t("time.formats.short", default: nil)
+    format_string = short_format.presence || "%Y/%m/%d %H:%M"
+    time.strftime(format_string)
   end
 end

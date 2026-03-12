@@ -4,9 +4,15 @@
 require "test_helper"
 
 class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :staffs
+
+  setup do
+    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! @host
+  end
+
   test "show without gate redirects to login with alert" do
-    get sign_org_in_session_url(ri: "jp"),
-        headers: browser_headers.merge("Host" => "sign.org.localhost")
+    get sign_org_in_session_url(ri: "jp"), headers: host_headers(@host)
 
     assert_redirected_to new_sign_org_in_url
     assert_equal I18n.t("session_limit.gate_expired", default: "操作がタイムアウトしました。もう一度ログインしてください。"), flash[:alert]
@@ -15,7 +21,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "show with gate but no pending staff redirects to login" do
     Sign::Org::In::SessionsController.any_instance.stub(:valid_gate?, true) do
       get sign_org_in_session_url(ri: "jp"),
-          headers: browser_headers.merge("Host" => "sign.org.localhost")
+          headers: host_headers(@host)
 
       assert_redirected_to new_sign_org_in_url
       assert_equal I18n.t("session_limit.staff_not_found", default: "スタッフが見つかりません。もう一度ログインしてください。"),
@@ -33,7 +39,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     Sign::Org::In::SessionsController.any_instance.stub(:valid_gate?, true) do
       Sign::Org::In::SessionsController.any_instance.stub(:load_pending_staff, staff) do
         get sign_org_in_session_url(ri: "jp"),
-            headers: browser_headers.merge("Host" => "sign.org.localhost")
+            headers: host_headers(@host)
 
         assert_response :success
       end
@@ -51,7 +57,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
       Sign::Org::In::SessionsController.any_instance.stub(:load_pending_staff, staff) do
         patch sign_org_in_session_url(ri: "jp"),
               params: { revoke_session_ids: [] },
-              headers: browser_headers.merge("Host" => "sign.org.localhost")
+              headers: host_headers(@host)
 
         assert_response :unprocessable_content
         assert_equal I18n.t("session_limit.no_sessions_selected", default: "無効化するセッションを選択してください。"),
@@ -72,7 +78,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
         Sign::Org::In::SessionsController.any_instance.stub(:session_limit_return_to, "/some/path") do
           patch sign_org_in_session_url(ri: "jp"),
                 params: { revoke_session_ids: [token.id] },
-                headers: browser_headers.merge("Host" => "sign.org.localhost")
+                headers: host_headers(@host)
 
           assert_redirected_to "/some/path"
           assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"),
@@ -95,7 +101,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
         Sign::Org::In::SessionsController.any_instance.stub(:session_limit_return_to, nil) do
           patch sign_org_in_session_url(ri: "jp"),
                 params: { revoke_session_ids: [token.id] },
-                headers: browser_headers.merge("Host" => "sign.org.localhost")
+                headers: host_headers(@host)
 
           assert_redirected_to new_sign_org_in_url
           assert_equal I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。"),

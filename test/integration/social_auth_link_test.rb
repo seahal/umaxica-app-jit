@@ -34,7 +34,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
@@ -48,7 +48,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: @user_one,
       uid: existing_uid,
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -59,13 +59,13 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # User two tries to link the same Google account
     # Start link flow as user_two
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_two, host: @host)
 
     assert_response :redirect
 
     # Callback should fail with conflict
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(@user_two, host: @host))
 
     # Should redirect with error (409 manifested as redirect with flash)
@@ -165,7 +165,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     existing_identity = UserSocialGoogle.create!(
       user: @user_one,
       uid: old_uid,
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "old_token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -175,10 +175,10 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     # Note: This depends on implementation - some update, some reject
     setup_google_mock_auth(uid: old_uid)
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
@@ -200,10 +200,10 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     identity_count_before = UserSocialGoogle.count
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
@@ -225,7 +225,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     setup_google_mock_auth(uid: "unauthenticated_test")
 
     # Start without authentication headers
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: { "Host" => @host }
 
     # Should redirect to login or return error
@@ -245,7 +245,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     revoked_identity = UserSocialGoogle.create!(
       user: @user_one,
       uid: revoked_uid,
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "old_token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:revoked),
@@ -255,10 +255,10 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     setup_google_mock_auth(uid: revoked_uid)
 
     # User tries to link again
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
@@ -310,8 +310,8 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
   # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
   # We deliberately omit email from mock_auth to test this requirement
   def setup_google_mock_auth(uid:)
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: uid,
       info: { image: "https://example.com/image.jpg" },
       credentials: {

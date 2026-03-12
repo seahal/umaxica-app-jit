@@ -70,11 +70,10 @@ module Sign
 
         def update
           @totp = find_totp
-          begin
-            @totp.update!(update_params)
+          if @totp.update(update_params)
             redirect_to sign_app_configuration_totps_path,
                         notice: t("messages.totp_successfully_updated")
-          rescue ActiveRecord::RecordInvalid
+          else
             render :edit, status: :unprocessable_content
           end
         end

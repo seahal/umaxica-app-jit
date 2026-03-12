@@ -33,6 +33,8 @@ module SocialAuthConcern
     rescue_from ActiveRecord::RecordNotUnique, with: :handle_record_not_unique
   end
 
+  private
+
   # Prepare social auth intent before redirecting to OmniAuth provider.
   # Stores intent context in session (no custom state; OmniAuth handles OAuth state).
   #
@@ -42,7 +44,6 @@ module SocialAuthConcern
     intent = intent.to_s
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.invalid_intent") unless VALID_INTENTS.include?(intent)
 
-    # For link/reauth, require logged-in user
     if %w(link reauth).include?(intent) && !logged_in?
       raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in")
     end
@@ -88,26 +89,14 @@ module SocialAuthConcern
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.state_missing")
   end
 
-  # Extract state parameter from callback.
-  # For Apple Sign In (POST), state is in the request body.
-  # For Google (GET redirect), state is in query params.
-  #
-  # @return [String, nil] The state parameter
   def extract_callback_state
-    # params[:state] works for both GET query string and POST body
     params[:state].to_s.presence
   end
 
-  # Get the current social auth intent from session.
-  # Returns "login" if no intent is set (backward compatibility).
-  #
-  # @return [String] The intent ("login", "link", or "reauth")
   def current_social_auth_intent
     session[SOCIAL_INTENT_SESSION_KEY] || "login"
   end
 
-  # Clear the social auth intent from session.
-  # Should be called after successful callback processing.
   def clear_social_auth_intent!
     session.delete(SOCIAL_INTENT_SESSION_KEY)
     session.delete(SOCIAL_USER_ID_SESSION_KEY)
@@ -123,16 +112,10 @@ module SocialAuthConcern
     @social_auth_user = nil
   end
 
-  # Require recent re-authentication for sensitive operations.
-  # Checks if user.last_reauth_at is within the specified TTL.
-  #
-  # @param ttl [ActiveSupport::Duration] The time-to-live for reauth, defaults to REAUTH_TTL (10 minutes)
-  # @raise [SocialAuth::ReauthRequiredError] if reauth is required
   def require_recent_reauth!(ttl: REAUTH_TTL)
     return unless current_resource
 
     last_reauth = current_resource.last_reauth_at
-
     return unless last_reauth.blank? || last_reauth < ttl.ago
 
     Rails.event.notify(
@@ -144,9 +127,6 @@ module SocialAuthConcern
     raise SocialAuth::ReauthRequiredError.new("errors.social_auth.reauth_required")
   end
 
-  # Process the OmniAuth callback using SocialAuthService.
-  #
-  # @return [Hash] Result from SocialAuthService#handle_callback
   def process_social_auth_callback
     auth_hash = omniauth_auth_hash
     intent = current_social_auth_intent
@@ -157,43 +137,24 @@ module SocialAuthConcern
       intent: intent,
     )
 
-    # Clear intent after successful processing
     clear_social_auth_intent!
-
     result
   end
 
-  # Get the OmniAuth auth hash from the request environment.
-  # IMPORTANT: Use request.env["omniauth.auth"], NOT params.
-  #
-  # @return [OmniAuth::AuthHash, nil]
   def omniauth_auth_hash
     request.env["omniauth.auth"]
   end
 
-  # Get the OmniAuth provider from the auth hash.
-  # IMPORTANT: Use auth hash provider, NOT params[:provider].
-  #
-  # @return [String, nil]
   def omniauth_provider
     omniauth_auth_hash&.provider
   end
 
-  # Build the OmniAuth authorize path with state parameter.
-  #
-  # @param provider [String] e.g., "google_oauth2", "apple"
-  # @param state [String] The state parameter
-  # @return [String] The authorize path
   def omniauth_authorize_path(provider, state: nil)
     return "/auth/#{provider}" if state.blank?
 
     "/auth/#{provider}?state=#{CGI.escape(state)}"
   end
 
-  # Resolve the user for social auth flows.
-  # - Prefer current_resource (auth cookie/header).
-  # - For link/reauth, fall back to session-stored user_id to survive
-  #   cross-site POST callbacks where auth cookies may be missing.
   def social_auth_user
     return current_resource if current_resource.present?
 
@@ -209,8 +170,6 @@ module SocialAuthConcern
         klass.find_by(id: user_id)
       end
   end
-
-  private
 
   def handle_social_auth_error(error)
     intent = @social_auth_intent_snapshot || current_social_auth_intent

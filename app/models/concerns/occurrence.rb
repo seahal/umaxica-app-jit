@@ -4,9 +4,11 @@
 module Occurrence
   extend ActiveSupport::Concern
 
+  DEFAULT_LIFECYCLE_AT = Float::INFINITY
+
   included do
-    after_initialize :set_default_expires_at
-    before_validation :ensure_expires_at
+    after_initialize :set_default_lifecycle_timestamps
+    before_validation :ensure_lifecycle_timestamps
     validates :public_id,
               length: { is: 21 },
               format: { with: /\A[A-Za-z0-9_-]{21}\z/ },
@@ -18,11 +20,13 @@ module Occurrence
 
   private
 
-  def set_default_expires_at
-    self.expires_at ||= 7.years.from_now if has_attribute?(:expires_at)
+  def set_default_lifecycle_timestamps
+    self.revoked_at ||= DEFAULT_LIFECYCLE_AT if has_attribute?(:revoked_at)
+    self.deletable_at ||= DEFAULT_LIFECYCLE_AT if has_attribute?(:deletable_at)
   end
 
-  def ensure_expires_at
-    self.expires_at ||= 7.years.from_now
+  def ensure_lifecycle_timestamps
+    self.revoked_at ||= DEFAULT_LIFECYCLE_AT if has_attribute?(:revoked_at)
+    self.deletable_at ||= DEFAULT_LIFECYCLE_AT if has_attribute?(:deletable_at)
   end
 end

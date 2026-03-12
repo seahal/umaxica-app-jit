@@ -1,7 +1,7 @@
 <turbo-frame id="cookie-banner">
   <section
     data-controller="cookie-banner"
-    data-cookie-banner-endpoint-value="<%= cookie_banner_endpoint_path %>">
+    data-cookie-banner-endpoint-value="<%= cookie_banner_endpoint_url %>">
     <p><%= t("preference.cookie.banner.message", default: "We use cookies to improve your experience.") %></p>
     <button type="button" data-action="cookie-banner#accept">
       <%= t("preference.cookie.banner.accept", default: "Accept") %>

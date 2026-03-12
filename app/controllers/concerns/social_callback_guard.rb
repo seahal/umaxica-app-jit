@@ -14,15 +14,17 @@ module SocialCallbackGuard
 
   REQUEST_ALLOWED_METHODS_BY_PROVIDER = {
     "apple" => %w(POST GET).freeze,
-    "google_oauth2" => %w(POST GET).freeze,
+    "google_app" => %w(POST GET).freeze,
+    "google_org" => %w(POST GET).freeze,
   }.freeze
 
   CALLBACK_ALLOWED_METHODS_BY_PROVIDER = {
     "apple" => %w(POST).freeze,
-    "google_oauth2" => %w(GET).freeze,
+    "google_app" => %w(GET).freeze,
+    "google_org" => %w(GET).freeze,
   }.freeze
 
-  REQUEST_PHASE_PATH = %r{\A/auth/(?<provider>google_oauth2|apple)\z}.freeze
+  REQUEST_PHASE_PATH = %r{\A/auth/(?<provider>google_app|google_org|apple)\z}.freeze
 
   included do
     # rubocop:disable Rails/LexicallyScopedActionFilter

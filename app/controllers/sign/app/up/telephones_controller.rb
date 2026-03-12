@@ -417,7 +417,10 @@ module Sign
         def log_signup_telephone_errors
           return unless @user_telephone&.errors&.any?
 
-          Rails.logger.warn("signup telephone invalid: #{@user_telephone.errors.full_messages.join(", ")}")
+          Rails.event.warn(
+            "sign.signup.telephone.validation_failed",
+            errors: @user_telephone.errors.full_messages,
+          )
         end
 
         def find_existing_telephone_by_digest

@@ -8,7 +8,8 @@ class Sign::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :staffs, :staff_statuses
 
   setup do
-    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! @host
     @staff = staffs(:one)
     @headers = { "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
   end
@@ -23,6 +24,6 @@ class Sign::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     get sign_org_configuration_url(ri: "jp")
     rt = Base64.strict_encode64(sign_org_configuration_url(ri: "jp"))
 
-    assert_redirected_to new_sign_org_in_url(rt: rt, host: "sign.org.localhost")
+    assert_redirected_to new_sign_org_in_url(rt: rt, host: @host)
   end
 end

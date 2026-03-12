@@ -33,7 +33,7 @@ user_secret.uses_remaining = 10
 user_secret.password = sample_user_secret
 user_secret.save!
 
-staff = Staff.find_or_initialize_by(public_id: "tmpl2345")
+staff = Staff.find_or_initialize_by(public_id: "TMPL2345WXYZ67AB")
 staff.status_id = StaffStatus::ACTIVE
 staff.save!
 

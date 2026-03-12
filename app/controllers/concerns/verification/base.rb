@@ -180,7 +180,7 @@ module Verification
     end
 
     def step_up_supported_methods
-      actor_staff? ? %i(passkey totp) : %i(email_otp passkey totp)
+      actor_staff? ? [:passkey] : %i(email_otp passkey totp)
     end
 
     def current_actor

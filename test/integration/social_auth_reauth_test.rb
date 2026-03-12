@@ -30,7 +30,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
@@ -42,7 +42,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     google_identity = UserSocialGoogle.create!(
       user: @user,
       uid: @google_uid,
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "old_token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -57,13 +57,13 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     time_before = Time.current
 
     # Start reauth flow
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
 
     # Callback with correct state and matching identity
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
@@ -127,7 +127,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: @user,
       uid: @google_uid,
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -139,10 +139,10 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     original_reauth_at = @user.last_reauth_at
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
@@ -161,10 +161,10 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     # User has no Google linked
     setup_google_mock_auth(uid: "some_unlinked_uid")
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
@@ -178,7 +178,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     setup_google_mock_auth(uid: "test")
 
     # No auth header
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "reauth", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
@@ -192,8 +192,8 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
   # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
   # We deliberately omit email from mock_auth to test this requirement
   def setup_google_mock_auth(uid:)
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: uid,
       info: { image: "https://example.com/image.jpg" },
       credentials: {

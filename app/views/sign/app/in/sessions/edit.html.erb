@@ -45,12 +45,12 @@
                     <div>
                     <span>
                       <%= t("session_limit.edit.created_at", default: "作成日時") %>:
-                      <%= l(session.created_at, format: :short) rescue session.created_at.strftime("%Y/%m/%d %H:%M") %>
+                      <%= localized_session_timestamp(session.created_at) %>
                     </span>
                       <% if session.last_used_at %>
                       <span>
                         <%= t("session_limit.edit.last_used", default: "最終使用") %>:
-                        <%= l(session.last_used_at, format: :short) rescue session.last_used_at.strftime("%Y/%m/%d %H:%M") %>
+                        <%= localized_session_timestamp(session.last_used_at) %>
                       </span>
                       <% end %>
                     </div>

@@ -142,17 +142,17 @@ development:
     database: development_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] || default_host %>
     migrations_paths: db/notifications_migrate
-  cache:
+  cable:
     !!merge <<: *default
-    database: development_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_PUB"] || default_host %>
-    migrations_paths: db/caches_migrate
-  cache_replica:
+    database: development_cable_db
+    host: <%= ENV["POSTGRESQL_CABLE_PUB"] || default_host %>
+    migrations_paths: db/cables_migrate
+  cable_replica:
     !!merge <<: *default
     replica: true
-    database: development_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_SUB"] || default_host %>
-    migrations_paths: db/caches_migrate
+    database: development_cable_db
+    host: <%= ENV["POSTGRESQL_CABLE_SUB"] || default_host %>
+    migrations_paths: db/cables_migrate
   queue:
     !!merge <<: *default
     database: development_queue_db
@@ -330,17 +330,17 @@ test:
     database: test_notification_db
     host: <%= test_host %>
     migrations_paths: db/notifications_migrate
-  cache:
+  cable:
     !!merge <<: *test_default
-    database: test_cache_db
+    database: test_cable_db
     host: <%= test_host %>
-    migrations_paths: db/caches_migrate
-  cache_replica:
+    migrations_paths: db/cables_migrate
+  cable_replica:
     !!merge <<: *test_default
     replica: true
-    database: test_cache_db
+    database: test_cable_db
     host: <%= test_host %>
-    migrations_paths: db/caches_migrate
+    migrations_paths: db/cables_migrate
   queue:
     !!merge <<: *test_default
     database: test_queue_db
@@ -674,23 +674,23 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION_REPLICA&.PASSWORD %>
     migrations_paths: db/notifications_migrate
-  cache:
+  cable:
     !!merge <<: *default
-    database: production_cache_db
+    database: production_cable_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.CACHE&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.CABLE&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.CACHE&.PASSWORD %>
-    migrations_paths: db/caches_migrate
-  cache_replica:
+    password: <%= Rails.application.credentials&.DATABASE&.CABLE&.PASSWORD %>
+    migrations_paths: db/cables_migrate
+  cable_replica:
     !!merge <<: *default
     replica: true
-    database: production_cache_db
+    database: production_cable_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.CABLE_REPLICA&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.PASSWORD %>
-    migrations_paths: db/caches_migrate
+    password: <%= Rails.application.credentials&.DATABASE&.CABLE_REPLICA&.PASSWORD %>
+    migrations_paths: db/cables_migrate
   storage:
     !!merge <<: *default
     database: production_storage_db

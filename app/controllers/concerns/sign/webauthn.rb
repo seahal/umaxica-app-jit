@@ -109,7 +109,7 @@ module Sign
     # @param allow_credentials [Array<Hash>] Credentials to allow (with :id key as Base64URL)
     # @return [Array<String, WebAuthn::PublicKeyCredential::RequestOptions>]
     #   Returns [challenge_id, options]
-    def create_authentication_challenge(allow_credentials:)
+    def create_authentication_challenge(allow_credentials:, user_verification: "preferred")
       validate_webauthn_origin!
 
       allow_list =
@@ -117,7 +117,7 @@ module Sign
 
       options = WebAuthn::Credential.options_for_get(
         allow: allow_list,
-        user_verification: "preferred",
+        user_verification: user_verification,
         rp_id: webauthn_rp_id,
       )
 

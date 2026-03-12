@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -147,21 +147,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "staff_identity_statuses", force: :cascade do |t|
   end
 
-  create_table "staff_one_time_password_statuses", force: :cascade do |t|
-  end
-
-  create_table "staff_one_time_passwords", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "public_id", limit: 21, null: false
-    t.string "secret_key"
-    t.bigint "staff_id", null: false
-    t.bigint "staff_one_time_password_status_id", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["public_id"], name: "index_staff_one_time_passwords_on_public_id", unique: true
-    t.index ["staff_id"], name: "idx_staff_otps_on_staff_id"
-    t.index ["staff_one_time_password_status_id"], name: "idx_staff_otps_on_status_id"
-  end
-
   create_table "staff_operators", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "operator_id", null: false
@@ -251,20 +236,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
 
   create_table "staffs", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
-    t.string "public_id", null: false
+    t.string "public_id", limit: 16, null: false
     t.datetime "shreddable_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "visibility_id", default: 2, null: false
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
+    t.index ["deletable_at"], name: "index_staffs_on_deletable_at"
     t.index ["public_id"], name: "index_staffs_on_public_id", unique: true
     t.index ["shreddable_at"], name: "index_staffs_on_shreddable_at"
     t.index ["status_id"], name: "index_staffs_on_status_id"
     t.index ["visibility_id"], name: "index_staffs_on_visibility_id"
     t.index ["withdrawn_at"], name: "index_staffs_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
+    t.check_constraint "char_length(public_id::text) = 16", name: "chk_staffs_public_id_length"
+    t.check_constraint "public_id::text ~ '^[0-9A-FGHJKMNPQRSTVWXYZ]{16}$'::text", name: "chk_staffs_public_id_format"
   end
 
   create_table "user_workspaces", force: :cascade do |t|
@@ -300,8 +289,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id", validate: false
   add_foreign_key "staff_identity_audits", "staffs", validate: false
   add_foreign_key "staff_identity_passkeys", "staffs", validate: false
-  add_foreign_key "staff_one_time_passwords", "staff_one_time_password_statuses", name: "fk_staff_one_time_passwords_on_staff_one_time_password_status_i"
-  add_foreign_key "staff_one_time_passwords", "staffs", on_delete: :cascade, validate: false
   add_foreign_key "staff_operators", "operators", on_delete: :cascade, validate: false
   add_foreign_key "staff_operators", "staffs", on_delete: :cascade, validate: false
   add_foreign_key "staff_passkeys", "staff_passkey_statuses", column: "status_id", validate: false

@@ -12,24 +12,19 @@ scope module: :sign, as: :sign do
       resource :sitemap, only: :show, defaults: { format: :xml }
 
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
+            resource :dbsc_registration, only: :create
             resource :refresh, only: :create
           end
         end
       end
 
-      namespace :member do
-        namespace :v1 do
-          resource :health, only: :show
-        end
-      end
-
       namespace :web do
-        namespace :v1 do
+        namespace :v0 do
           namespace :in do
             namespace :email do
               # TODO: nusty code!, delete controller of this line
@@ -77,14 +72,15 @@ scope module: :sign, as: :sign do
         end
       end
 
-      # Social auth: start sets intent/state then redirects to /auth/:provider
+      # Social auth: new sets intent/state then redirects to /auth/:provider
       namespace :social do
-        get "start", to: "sessions#start"
+        resource :session, only: [:new]
         delete ":provider/unlink",
                to: "sessions#unlink",
                as: :unlink,
-               constraints: { provider: /google_oauth2|apple/ }
+               constraints: { provider: /google_app|apple/ }
       end
+
       # OmniAuth callbacks (GET for Google, POST for Apple)
       namespace :auth, path: "auth" do
         match ":provider/callback",
@@ -158,17 +154,32 @@ scope module: :sign, as: :sign do
       resource :sitemap, only: :show, defaults: { format: :xml }
 
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
+            resource :dbsc_registration, only: :create
             resource :refresh, only: :create
           end
         end
       end
 
       resource :up, only: :new
+
+      # Social auth: Google sign-in for staff (login only, no sign-up)
+      namespace :social do
+        resource :session, only: [:new]
+      end
+      # OmniAuth callbacks (GET for Google)
+      namespace :auth, path: "auth" do
+        match ":provider/callback",
+              to: "omniauth_callbacks#omniauth",
+              via: %i(get post),
+              as: :callback
+        get "failure",
+            to: "omniauth_callbacks#failure"
+      end
 
       resource :in, only: [:new]
       namespace :in do
@@ -189,14 +200,10 @@ scope module: :sign, as: :sign do
       namespace :verification do
         resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
-        resource :totp, only: %i(new create)
       end
 
       resource :configuration, only: :show
       namespace :configuration do
-        # Backward compatibility for tests/flows that still reference /configuration/totps.,
-        # TODO: delete controller of this line
-        get "totps", to: "challenges#show", as: :totps
         # TODO: refactor to standard CRUD
         resources :passkeys do
           collection do

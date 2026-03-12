@@ -18,13 +18,13 @@ class AuthTokenServiceTest < ActiveSupport::TestCase
   end
 
   test "decode returns nil for blank token" do
-    result = Auth::TokenService.decode("", host: "example.com")
+    result = Auth::TokenService.decode("", host: "example.com", resource_type: "user")
 
     assert_nil result
   end
 
   test "decode returns nil for blank host" do
-    result = Auth::TokenService.decode("some_token", host: "")
+    result = Auth::TokenService.decode("some_token", host: "", resource_type: "user")
 
     assert_nil result
   end
@@ -74,9 +74,19 @@ class AuthTokenServiceTest < ActiveSupport::TestCase
 
     assert_predicate token, :present?
 
-    payload = Auth::TokenService.decode(token, host: "example.com")
+    payload = Auth::TokenService.decode(token, host: "example.com", resource_type: "user")
 
     assert_predicate payload, :present?
     assert_equal user.id, payload["sub"]
+  end
+
+  test "decode rejects token when resource_type issuer/type do not match" do
+    user = users(:one)
+    token = Auth::TokenService.encode(
+      user, host: "example.com", session_public_id: "sid123",
+            resource_type: "user",
+    )
+
+    assert_nil Auth::TokenService.decode(token, host: "example.com", resource_type: "staff")
   end
 end

@@ -13,9 +13,9 @@ module TokenStatusManagement
   VALID_STATUSES = [STATUS_ACTIVE, STATUS_RESTRICTED, STATUS_REVOKED].freeze
 
   included do
-    scope :active_status, -> { where(status: STATUS_ACTIVE).where(expiry_column => nil) }
-    scope :restricted_status, -> { where(status: STATUS_RESTRICTED).where(expiry_column => nil) }
-    scope :not_revoked, -> { where(expiry_column => nil) }
+    scope :active_status, ->(now = Time.current) { currently_valid_at(now).where(status: STATUS_ACTIVE) }
+    scope :restricted_status, ->(now = Time.current) { currently_valid_at(now).where(status: STATUS_RESTRICTED) }
+    scope :not_revoked, ->(now = Time.current) { currently_valid_at(now) }
 
     validates :status, inclusion: { in: VALID_STATUSES }, length: { maximum: 20 }
     attribute :status, default: STATUS_ACTIVE
@@ -44,16 +44,24 @@ module TokenStatusManagement
   end
 
   def expired?
-    if respond_to?(:expired_at) && has_attribute?(:expired_at)
-      expired_at.present?
-    elsif respond_to?(:revoked_at) && has_attribute?(:revoked_at)
-      revoked_at.present?
-    else
-      false
-    end
+    return true if respond_to?(:expired_at) && has_attribute?(:expired_at) && expired_at.present?
+    return true if scheduled_revocation_due?
+
+    false
+  end
+
+  def scheduled_revocation_due?(now = Time.current)
+    has_attribute?(:revoked_at) && revoked_at.present? && revoked_at <= now
   end
 
   module ClassMethods
+    def currently_valid_at(now = Time.current)
+      scope = where(expiry_column => nil)
+      return scope unless column_names.include?("revoked_at")
+
+      scope.where(arel_table[:revoked_at].eq(nil).or(arel_table[:revoked_at].gt(now)))
+    end
+
     def expiry_column
       return :expired_at if column_names.include?("expired_at")
       return :revoked_at if column_names.include?("revoked_at")

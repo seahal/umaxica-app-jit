@@ -5,11 +5,10 @@
    runtime surprises.
 2. `CoreService` currently returns its own file path and is unused; repurpose it for actual domain
    logic or delete the stub.
-3. `EventPublisher` publishes to topics such as `user_events`, but Karafka routing only defines
-   `email`. Align the topic names with Karafka routes or add the missing routes so messages are
-   delivered.
+3. `EventPublisher` should either be wired to the app's current notification/event mechanism or be
+   removed if it is no longer part of the architecture.
 4. Add unit/integration tests for `EventPublisher` to verify payload shape, headers, and error
-   handling when Kafka is unavailable.
+   handling when delivery fails.
 5. Move `ENV["RAILS_ENV"] ||= "test"` before the SimpleCov block so coverage reliably starts in the
    test environment.
 6. Replace the placeholder Bun test with real expectations that exercise JavaScript helpers or view
@@ -40,5 +39,5 @@
     this avoids unnecessary file system traversal.
 19. Swap the `rubocop -A` pre-commit hook for a safer variant (e.g., `--safe-auto-correct`) to
     reduce unintended edits from unsafe cops.
-20. Enable the Karafka process in `Procfile.dev` or document how to start it during development to
-    ensure event-driven features are exercised locally.
+20. Document the intended development workflow for any future asynchronous processing instead of
+   assuming an always-on background worker.

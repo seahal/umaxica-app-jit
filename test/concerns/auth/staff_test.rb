@@ -20,11 +20,12 @@ class Auth::StaffTest < ActiveSupport::TestCase
   class DummyClass
     include Auth::Staff
 
-    attr_accessor :session, :cookies, :request
+    attr_accessor :session, :cookies, :request, :response
 
     def initialize
       @session = {}
       @cookies = CookieMock.new
+      @response = ResponseMock.new
       @request = OpenStruct.new(
         host: "test.host", headers: {}, user_agent: "TestAgent",
         format: FormatMock.new,
@@ -33,6 +34,19 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     def reset_session
       @session = {}
+    end
+
+    def sign_org_edge_v0_token_dbsc_registration_path
+      "/edge/v0/token/dbsc_registration"
+    end
+
+    def sign_app_edge_v0_token_dbsc_registration_path
+      "/edge/v0/token/dbsc_registration"
+    end
+  end
+
+  class ResponseMock
+    def set_header(_name, _value)
     end
   end
 
@@ -98,10 +112,10 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     assert_operator access_opts[:expires], :>, 10.minutes.from_now
     assert_operator access_opts[:expires], :<, 2.hours.from_now
-    assert_operator refresh_opts[:expires], :>, 29.days.from_now
-    assert_operator refresh_opts[:expires], :<, 31.days.from_now
-    assert_operator device_opts[:expires], :>, 29.days.from_now
-    assert_operator device_opts[:expires], :<, 31.days.from_now
+    assert_operator refresh_opts[:expires], :>, 11.hours.from_now
+    assert_operator refresh_opts[:expires], :<, 13.hours.from_now
+    assert_operator device_opts[:expires], :>, 11.hours.from_now
+    assert_operator device_opts[:expires], :<, 13.hours.from_now
   end
 
   test "log_out clears session and current_staff" do
@@ -146,6 +160,18 @@ class Auth::StaffTest < ActiveSupport::TestCase
     assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
     assert_equal "Bearer", tokens[:token_type]
     assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+  end
+
+  test "log_in schedules forced logout and delayed deletion for staff token" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    freeze_time do
+      @obj.send(:log_in, @staff)
+      token = StaffToken.where(staff_id: @staff.id).order(created_at: :desc).first
+
+      assert_in_delta 12.hours.from_now.to_i, token.revoked_at.to_i, 1
+      assert_in_delta 36.hours.from_now.to_i, token.deletable_at.to_i, 1
+    end
   end
 
   test "current_staff works with Bearer token" do

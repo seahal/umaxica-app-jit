@@ -3,44 +3,59 @@
 # Table name: app_preferences
 # Database name: preference
 #
-#  id             :bigint           not null, primary key
-#  compromised_at :datetime
-#  expires_at     :datetime
-#  jti            :string
-#  revoked_at     :datetime
-#  token_digest   :binary
-#  used_at        :datetime
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  device_id      :string
-#  public_id      :string           not null
-#  replaced_by_id :bigint
-#  status_id      :bigint           default(2), not null
+#  id                       :bigint           not null, primary key
+#  compromised_at           :datetime
+#  dbsc_challenge           :text
+#  dbsc_challenge_issued_at :datetime
+#  dbsc_public_key          :jsonb
+#  expires_at               :datetime
+#  jti                      :string
+#  revoked_at               :datetime
+#  token_digest             :binary
+#  used_at                  :datetime
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  binding_method_id        :bigint           default(0), not null
+#  dbsc_session_id          :string
+#  dbsc_status_id           :bigint           default(0), not null
+#  device_id                :string
+#  public_id                :string           not null
+#  replaced_by_id           :bigint
+#  status_id                :bigint           default(2), not null
 #
 # Indexes
 #
-#  index_app_preferences_on_device_id       (device_id)
-#  index_app_preferences_on_jti             (jti) UNIQUE
-#  index_app_preferences_on_public_id       (public_id) UNIQUE
-#  index_app_preferences_on_replaced_by_id  (replaced_by_id)
-#  index_app_preferences_on_revoked_at      (revoked_at)
-#  index_app_preferences_on_status_id       (status_id)
-#  index_app_preferences_on_token_digest    (token_digest)
-#  index_app_preferences_on_used_at         (used_at)
+#  index_app_preferences_on_binding_method_id  (binding_method_id)
+#  index_app_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
+#  index_app_preferences_on_dbsc_status_id     (dbsc_status_id)
+#  index_app_preferences_on_device_id          (device_id)
+#  index_app_preferences_on_jti                (jti) UNIQUE
+#  index_app_preferences_on_public_id          (public_id) UNIQUE
+#  index_app_preferences_on_replaced_by_id     (replaced_by_id)
+#  index_app_preferences_on_revoked_at         (revoked_at)
+#  index_app_preferences_on_status_id          (status_id)
+#  index_app_preferences_on_token_digest       (token_digest)
+#  index_app_preferences_on_used_at            (used_at)
 #
 # Foreign Keys
 #
-#  fk_app_preferences_on_status_id  (status_id => app_preference_statuses.id)
-#  fk_rails_...                     (replaced_by_id => app_preferences.id) ON DELETE => nullify
+#  fk_app_preferences_on_binding_method_id  (binding_method_id => app_preference_binding_methods.id)
+#  fk_app_preferences_on_dbsc_status_id     (dbsc_status_id => app_preference_dbsc_statuses.id)
+#  fk_app_preferences_on_status_id          (status_id => app_preference_statuses.id)
+#  fk_rails_...                             (replaced_by_id => app_preferences.id) ON DELETE => nullify
 #
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 one:
   public_id: 922 # was app_pref_001
+  binding_method_id: <%= AppPreferenceBindingMethod::NOTHING %>
+  dbsc_status_id: <%= AppPreferenceDbscStatus::NOTHING %>
   status_id: 2
   expires_at: <%= 20.years.from_now %>
   token_digest: <%= Digest::SHA256.hexdigest("test_token_001") %>
 two:
   public_id: 820 # was app_pref_002
+  binding_method_id: <%= AppPreferenceBindingMethod::NOTHING %>
+  dbsc_status_id: <%= AppPreferenceDbscStatus::NOTHING %>
   status_id: 2
   expires_at: <%= 20.years.from_now %>
   token_digest: <%= Digest::SHA256.hexdigest("test_token_002") %>

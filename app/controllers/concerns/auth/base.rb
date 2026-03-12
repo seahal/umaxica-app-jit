@@ -44,11 +44,13 @@ module Auth
     # Dev/Test: no prefix (String, not Symbol)
     ACCESS_COOKIE_KEY = Auth::CookieName.access
     REFRESH_COOKIE_KEY = Auth::CookieName.refresh
+    DBSC_COOKIE_KEY = Auth::CookieName.dbsc
     DEVICE_COOKIE_KEY = Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
 
     # Token TTLs
     ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
     REFRESH_TOKEN_TTL = 30.days
+    DBSC_COOKIE_TTL = 10.minutes
     RESTRICTED_SESSION_TTL = 15.minutes
     LOGIN_COOLDOWN = 30.seconds
     SESSION_LIMIT_HARD_REJECT_MESSAGE = "セッション数上限に達しています"
@@ -82,15 +84,39 @@ module Auth
     VALID_ACTOR_TYPES = %w(user staff).freeze
 
     module JwtConfiguration
-      def self.issuer
-        ENV.fetch("AUTH_JWT_ISSUER", "umaxica-auth")
+      VALID_RESOURCE_TYPES = %w(user staff).freeze
+
+      def self.leeway_seconds
+        ENV.fetch("AUTH_JWT_LEEWAY_SECONDS", "30").to_i
       end
 
-      def self.audiences
-        raw = ENV["AUTH_JWT_AUDIENCES"].to_s
+      def self.issuer(resource_type = nil)
+        base = ENV.fetch("AUTH_JWT_ISSUER", "umaxica-auth")
+        normalized_resource_type = normalize_resource_type(resource_type)
+        return base if normalized_resource_type.nil?
+
+        "#{base}:#{normalized_resource_type}"
+      end
+
+      def self.audiences(resource_type = nil)
+        normalized_resource_type = normalize_resource_type(resource_type)
+        resource_key = normalized_resource_type&.upcase
+        raw =
+          if resource_key.present?
+            ENV["AUTH_JWT_#{resource_key}_AUDIENCES"].presence || ENV["AUTH_JWT_AUDIENCES"].to_s
+          else
+            ENV["AUTH_JWT_AUDIENCES"].to_s
+          end
         audiences = raw.split(",").map(&:strip)
         audiences.reject!(&:empty?)
         audiences.presence || ["umaxica-api"]
+      end
+
+      def self.token_type(resource_type)
+        normalized_resource_type = normalize_resource_type(resource_type)
+        raise ArgumentError, "unsupported auth resource type: #{resource_type.inspect}" if normalized_resource_type.nil?
+
+        "auth-access-token;#{normalized_resource_type}"
       end
 
       def self.private_key
@@ -106,21 +132,31 @@ module Auth
         public_key_der = Base64.decode64(public_key_base64)
         OpenSSL::PKey::EC.new(public_key_der)
       end
+
+      def self.normalize_resource_type(resource_type)
+        return nil if resource_type.blank?
+
+        normalized = resource_type.to_s
+        return normalized if VALID_RESOURCE_TYPES.include?(normalized)
+
+        nil
+      end
+      private_class_method :normalize_resource_type
     end
 
     class Token
       JWT_ALGORITHM = "ES384"
 
       class << self
-        def encode(resource, host:, session_public_id: nil, resource_type: nil)
+        def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil)
           Auth::TokenService.encode(
             resource, host: host, session_public_id: session_public_id,
-                      resource_type: resource_type,
+                      resource_type: resource_type, expires_at: expires_at,
           )
         end
 
-        def decode(token, host:)
-          Auth::TokenService.decode(token, host: host)
+        def decode(token, host:, resource_type: nil)
+          Auth::TokenService.decode(token, host: host, resource_type: resource_type)
         end
 
         def extract_subject(payload)
@@ -574,18 +610,27 @@ module Auth
       end
 
       # Generate JWT access token with explicit resource_type
+      access_expires_at = access_token_expires_at_for(token_record)
+      refresh_cookie_expires_at = refresh_cookie_expires_at_for(token_record)
+
       access_token = Token.encode(
         resource,
         host: request.host,
         session_public_id: token_record.public_id,
         resource_type: resource_type,
+        expires_at: access_expires_at,
       )
 
       # Always set cookies (even for JSON responses - required for Edge/SPA)
       set_auth_cookies(
         access_token: access_token, refresh_token: refresh_plain,
         device_id: token_record.device_id,
+        access_expires_at: access_expires_at,
+        refresh_expires_at: refresh_cookie_expires_at,
+        dbsc_token: dbsc_cookie_value_for(token_record),
+        dbsc_expires_at: dbsc_cookie_expires_at_for(token_record),
       )
+      issue_dbsc_registration_header_for(token_record)
 
       Sign::Risk::Emitter.emit(
         "session_issued",
@@ -604,7 +649,8 @@ module Auth
         access_token: access_token,
         refresh_token: refresh_plain,
         token_type: "Bearer",
-        expires_in: ACCESS_TOKEN_TTL.to_i,
+        expires_in: expires_in_for(access_expires_at),
+        dbsc: dbsc_payload_for(token_record),
       }
 
       # If session is restricted, issue session limit gate and indicate need for session management
@@ -627,10 +673,10 @@ module Auth
       token_record = find_refresh_token_record(refresh_public_id)
       return handle_restricted_refresh_rejected(token_record, refresh_public_id) if token_record&.restricted?
 
-      return handle_refresh_device_denied(
+      return handle_refresh_binding_denied(
         token_record,
         refresh_public_id,
-      ) unless refresh_device_allowed?(token_record)
+      ) unless refresh_binding_allowed?(token_record)
 
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
       previous_token_record = result[:previous_token] || token_record
@@ -652,8 +698,12 @@ module Auth
     rescue Sign::InvalidRefreshToken => e
       handle_invalid_refresh_token(e, refresh_public_id, token_record)
     rescue StandardError => e
-      Rails.logger.error "[Auth] Refresh Error: #{e.class}: #{e.message}"
-      Rails.logger.error e.backtrace.first(10).join("\n")
+      Rails.event.error(
+        "auth.token.refresh.error",
+        error_class: e.class.name,
+        message: e.message,
+        exception: e,
+      )
       handle_refresh_error(e, refresh_public_id, resource)
     end
 
@@ -691,12 +741,12 @@ module Auth
 
       refreshed = refresh_access_token(refresh_plain)
       unless refreshed
-        Rails.logger.debug { "[Auth] transparent_refresh: FAILURE" }
+        Rails.event.debug("auth.transparent_refresh.failed")
         clear_auth_cookies!
         return
       end
 
-      Rails.logger.debug { "[Auth] transparent_refresh: SUCCESS. User: #{refreshed[:user].present?}" }
+      Rails.event.debug("auth.transparent_refresh.success", user_present: refreshed[:user].present?)
       @current_resource = refreshed[:user]
     end
 
@@ -915,7 +965,7 @@ module Auth
         "/configuration/edit"
       end
     rescue StandardError => e
-      Rails.logger.error("Failed to resolve configuration edit path: #{e.message}")
+      Rails.event.error("auth.withdrawal_gate.path_resolution_failed", message: e.message, exception: e)
       "/configuration/edit"
     end
 
@@ -946,12 +996,12 @@ module Auth
       Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
     end
 
-    def device_cookie_options
-      cookie_options.merge(expires: REFRESH_TOKEN_TTL.from_now)
+    def device_cookie_options(expires_at:)
+      cookie_options.merge(expires: expires_at)
     end
 
-    def set_device_id_cookie!(device_id)
-      cookies.encrypted[device_cookie_key] = device_cookie_options.merge(value: device_id)
+    def set_device_id_cookie!(device_id, expires_at:)
+      cookies.encrypted[device_cookie_key] = device_cookie_options(expires_at: expires_at).merge(value: device_id)
     end
 
     def clear_device_id_cookie!
@@ -961,6 +1011,7 @@ module Auth
     def clear_auth_cookies!
       cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
       cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      clear_dbsc_cookie!
       clear_device_id_cookie!
       @current_resource = nil
     end
@@ -969,18 +1020,31 @@ module Auth
       cookies.encrypted[device_cookie_key].to_s.presence
     end
 
-    def set_auth_cookies(access_token:, refresh_token:, device_id:)
+    def set_auth_cookies(access_token:, refresh_token:, device_id:, access_expires_at:, refresh_expires_at:,
+                         dbsc_token: nil, dbsc_expires_at: nil)
       # Access cookie
       cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
         value: access_token,
-        expires: ACCESS_TOKEN_TTL.from_now,
+        expires: access_expires_at,
       )
       # Refresh cookie - use regular cookies (not encrypted)
       cookies[REFRESH_COOKIE_KEY] = cookie_options.merge(
         value: refresh_token,
-        expires: REFRESH_TOKEN_TTL.from_now,
+        expires: refresh_expires_at,
       )
-      set_device_id_cookie!(device_id)
+      set_dbsc_cookie!(dbsc_token, expires_at: dbsc_expires_at) if dbsc_token.present? && dbsc_expires_at.present?
+      set_device_id_cookie!(device_id, expires_at: refresh_expires_at)
+    end
+
+    def set_dbsc_cookie!(token, expires_at:)
+      cookies[DBSC_COOKIE_KEY] = cookie_options.merge(
+        value: token,
+        expires: expires_at,
+      )
+    end
+
+    def clear_dbsc_cookie!
+      cookies.delete(DBSC_COOKIE_KEY, cookie_deletion_options)
     end
 
     def extract_access_token(cookie_key)
@@ -1001,7 +1065,11 @@ module Auth
     def record_audit(event_id, resource:, actor: resource)
       return unless resource && event_id
 
-      Rails.logger.debug { "[Auth] record_audit: Event #{event_id}, Resource #{resource&.id}" }
+      Rails.event.debug(
+        "auth.audit.recording",
+        event_id: event_id,
+        resource_id: resource&.id,
+      )
 
       # Delegate to AuditWriter with best-effort semantics
       # This ensures audit failures do not block authentication
@@ -1131,17 +1199,25 @@ module Auth
     end
 
     def build_refreshed_session(resource, token_record, new_refresh_plain, previous_token_record: nil)
+      access_expires_at = access_token_expires_at_for(token_record)
+      refresh_cookie_expires_at = refresh_cookie_expires_at_for(token_record)
+
       new_access_token = Token.encode(
         resource,
         host: request.host,
         session_public_id: token_record.public_id,
         resource_type: resource_type,
+        expires_at: access_expires_at,
       )
 
       set_auth_cookies(
         access_token: new_access_token,
         refresh_token: new_refresh_plain,
         device_id: token_record.device_id,
+        access_expires_at: access_expires_at,
+        refresh_expires_at: refresh_cookie_expires_at,
+        dbsc_token: dbsc_cookie_value_for(token_record),
+        dbsc_expires_at: dbsc_cookie_expires_at_for(token_record),
       )
 
       Sign::Risk::Emitter.emit(
@@ -1167,12 +1243,15 @@ module Auth
 
       Sign::Risk::Enforcer.call(resource)
 
+      issue_dbsc_registration_header_for(token_record)
+
       {
         access_token: new_access_token,
         refresh_token: new_refresh_plain,
         token_type: "Bearer",
-        expires_in: ACCESS_TOKEN_TTL.to_i,
+        expires_in: expires_in_for(access_expires_at),
         user: resource,
+        dbsc: dbsc_payload_for(token_record),
       }
     end
 
@@ -1211,14 +1290,19 @@ module Auth
       nil
     end
 
-    def handle_refresh_device_denied(token_record, refresh_public_id)
-      reason = @refresh_device_reason || "missing"
-      event_type = (reason == "mismatch") ? "refresh_device_mismatch" : "refresh_device_missing"
+    def handle_refresh_binding_denied(token_record, refresh_public_id)
+      reason = @refresh_device_reason || @refresh_dbsc_reason || "missing"
+      event_type =
+        if token_record&.binding_method_dbsc?
+          "refresh_dbsc_denied"
+        else
+          (reason == "mismatch") ? "refresh_device_mismatch" : "refresh_device_missing"
+        end
       write_refresh_occurrence(
         event_type: event_type,
         token_record: token_record,
         reason: reason,
-        device_source: refresh_device_source,
+        device_source: refresh_binding_source(token_record),
       )
 
       set_refresh_failure!(:unauthorized, "invalid_refresh_token")
@@ -1228,7 +1312,7 @@ module Auth
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",
         refresh_token_id: refresh_public_id,
-        reason: "device_#{reason}",
+        reason: binding_failure_reason(reason, token_record),
         ip_address: request_ip_address,
       )
 
@@ -1302,6 +1386,13 @@ module Auth
       @refresh_failure_status = nil
       @refresh_failure_code = nil
       @refresh_device_reason = nil
+      @refresh_dbsc_reason = nil
+    end
+
+    def refresh_binding_allowed?(token_record)
+      return refresh_dbsc_allowed?(token_record) if token_record&.binding_method_dbsc?
+
+      refresh_device_allowed?(token_record)
     end
 
     def refresh_device_allowed?(token_record)
@@ -1336,6 +1427,24 @@ module Auth
       true
     end
 
+    def refresh_dbsc_allowed?(token_record)
+      return true if token_record.blank?
+      return false unless token_record.dbsc_status_active?
+
+      dbsc_cookie = cookies[DBSC_COOKIE_KEY].to_s.presence
+      if dbsc_cookie.blank?
+        @refresh_dbsc_reason = "missing_bound_cookie"
+        return false
+      end
+
+      if token_record.dbsc_session_id.to_s.blank? || token_record.dbsc_session_id != dbsc_cookie
+        @refresh_dbsc_reason = "session_id_mismatch"
+        return false
+      end
+
+      true
+    end
+
     def refresh_device_source
       header_present = request.headers[Auth::IoKeys::Headers::DEVICE_ID].to_s.present?
       cookie_present = read_device_id_cookie.present?
@@ -1344,6 +1453,27 @@ module Auth
       return "cookie" if cookie_present
 
       "none"
+    end
+
+    def refresh_dbsc_source
+      session_present = request.headers[Auth::IoKeys::Headers::DBSC_SESSION_ID].to_s.present?
+      response_present = request.headers[Auth::IoKeys::Headers::DBSC_RESPONSE].to_s.present?
+      return "both" if session_present && response_present
+      return "session_id" if session_present
+      return "response" if response_present
+
+      "none"
+    end
+
+    def refresh_binding_source(token_record)
+      return refresh_dbsc_source if token_record&.binding_method_dbsc?
+
+      refresh_device_source
+    end
+
+    def binding_failure_reason(reason, token_record)
+      prefix = token_record&.binding_method_dbsc? ? "dbsc" : "device"
+      "#{prefix}_#{reason}"
     end
 
     def load_current_resource
@@ -1480,9 +1610,12 @@ module Auth
       policy = rule[:policy]
       options = rule[:options] || {}
 
-      Rails.logger.warn(
-        "AUTH_POLICY: Resolved #{policy} for #{self.class.name}##{action_name} " \
-        "(Rules: #{self.class.access_policy_rules.size})",
+      Rails.event.debug(
+        "auth.policy.resolved",
+        policy: policy,
+        controller: self.class.name,
+        action: action_name,
+        rules_count: self.class.access_policy_rules.size,
       )
 
       case policy
@@ -1501,7 +1634,7 @@ module Auth
       rule = resolve_access_policy_for(action_name)
 
       if rule.nil?
-        Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
+        Rails.event.warn("auth.policy.missing", controller: self.class.name, action: action_name)
         raise MissingPolicyError,
               "Missing access_policy for #{self.class.name}##{action_name}. " \
               "Declare one of: #{VALID_POLICIES.join(", ")}"
@@ -1574,8 +1707,27 @@ module Auth
 
         # Set status if provided (for restricted sessions)
         token_attributes[:status] = status if status.present?
+        token_attributes.merge!(default_dbsc_token_attributes)
+        token_attributes.merge!(scheduled_login_token_attributes)
 
         token_class.create!(token_attributes)
+      end
+    end
+
+    def default_dbsc_token_attributes
+      case resource_type
+      when "user"
+        {
+          user_token_binding_method_id: UserTokenBindingMethod::LEGACY,
+          user_token_dbsc_status_id: UserTokenDbscStatus::NOTHING,
+        }
+      when "staff"
+        {
+          staff_token_binding_method_id: StaffTokenBindingMethod::LEGACY,
+          staff_token_dbsc_status_id: StaffTokenDbscStatus::NOTHING,
+        }
+      else
+        {}
       end
     end
 
@@ -1590,8 +1742,11 @@ module Auth
         begin
           return kind_model.find_by!(code: raw_kind_id).id
         rescue ActiveRecord::RecordNotFound
-          Rails.logger.error(
-            "AUTH_TOKEN_KIND_MISSING: #{kind_model.name} code=#{raw_kind_id} resource_type=#{resource_type}",
+          Rails.event.error(
+            "auth.token.kind_missing",
+            kind_model: kind_model.name,
+            code: raw_kind_id,
+            resource_type: resource_type,
           )
           raise ActiveRecord::RecordNotFound,
                 "Missing #{kind_model.name} code=#{raw_kind_id} for #{resource_type} login"
@@ -1619,8 +1774,11 @@ module Auth
       kind_model = token_kind_model
       kind_model.find(token_kind_id)
     rescue ActiveRecord::RecordNotFound
-      Rails.logger.error(
-        "AUTH_TOKEN_KIND_MISSING: #{kind_model.name} id=#{token_kind_id} resource_type=#{resource_type}",
+      Rails.event.error(
+        "auth.token.kind_missing",
+        kind_model: kind_model.name,
+        id: token_kind_id,
+        resource_type: resource_type,
       )
       raise ActiveRecord::RecordNotFound,
             "Missing #{kind_model.name} id=#{token_kind_id} for #{resource_type} login"
@@ -1851,6 +2009,16 @@ module Auth
       Time.current + ttl
     end
 
+    def scheduled_login_token_attributes(now: Time.current)
+      return {} unless resource_type == "staff"
+
+      revoked_at = now + StaffToken::LOGIN_SESSION_TTL
+      {
+        revoked_at: revoked_at,
+        deletable_at: revoked_at + StaffToken::DELETION_GRACE_PERIOD,
+      }
+    end
+
     # Store the pending login resource ID for session management
     def store_pending_login_resource(resource)
       if resource.is_a?(::User)
@@ -1885,11 +2053,93 @@ module Auth
       current_session&.restricted?
     end
 
+    def dbsc_payload_for(token_record)
+      return unless token_record
+
+      {
+        binding_method: dbsc_binding_method_name(token_record),
+        status: dbsc_status_name(token_record),
+        session_id: token_record.dbsc_session_id,
+        registration_url: token_dbsc_registration_path,
+        verification_url: token_dbsc_registration_path,
+      }
+    end
+
+    def dbsc_cookie_value_for(token_record)
+      return unless token_record&.binding_method_dbsc?
+
+      token_record.dbsc_session_id.presence || token_record.public_id
+    end
+
+    def dbsc_cookie_expires_at_for(token_record, now: Time.current)
+      return unless token_record&.binding_method_dbsc?
+
+      [now + DBSC_COOKIE_TTL, token_record.refresh_expires_at, token_record.revoked_at].compact.min
+    end
+
+    def issue_dbsc_registration_header_for(token_record)
+      return unless token_record
+      return if token_record.binding_method_dbsc?
+
+      challenge = issue_dbsc_challenge_for!(token_record)
+      return if challenge.blank?
+
+      response.set_header(
+        Auth::IoKeys::Headers::DBSC_REGISTRATION,
+        %(("ES256" "RS256");path="#{token_dbsc_registration_path}";challenge="#{challenge}"),
+      )
+    end
+
+    def issue_dbsc_challenge_for!(token_record)
+      challenge = SecureRandom.urlsafe_base64(32)
+      token_record.update!(dbsc_challenge: challenge, dbsc_challenge_issued_at: Time.current)
+      challenge
+    rescue StandardError
+      nil
+    end
+
+    def token_dbsc_registration_path
+      case resource_type
+      when "user"
+        sign_app_edge_v0_token_dbsc_registration_path
+      when "staff"
+        sign_org_edge_v0_token_dbsc_registration_path
+      end
+    end
+
+    def dbsc_binding_method_name(record)
+      return "dbsc" if record.binding_method_dbsc?
+      return "legacy" if record.binding_method_legacy?
+
+      "nothing"
+    end
+
+    def dbsc_status_name(record)
+      return "pending" if record.dbsc_status_pending?
+      return "active" if record.dbsc_status_active?
+      return "failed" if record.dbsc_status_failed?
+      return "revoke" if record.dbsc_status_revoke?
+
+      "nothing"
+    end
+
     def token_expiry_column(klass)
       return :expired_at if klass.column_names.include?("expired_at")
       return :revoked_at if klass.column_names.include?("revoked_at")
 
       raise "#{klass.name} does not have expired_at/revoked_at column"
+    end
+
+    def access_token_expires_at_for(token_record, now: Time.current)
+      [now + ACCESS_TOKEN_TTL, token_record&.revoked_at].compact.min
+    end
+
+    def refresh_cookie_expires_at_for(token_record)
+      [token_record&.refresh_expires_at, token_record&.revoked_at].compact.min
+    end
+
+    def expires_in_for(expires_at, now: Time.current)
+      [(expires_at.to_i - now.to_i), 0].max
     end
 
     def mfa_required_for?(resource)

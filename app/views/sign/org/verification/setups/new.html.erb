@@ -10,9 +10,5 @@
       <%= link_to t("sign.org.verification.setup.methods.passkey"),
                   new_sign_org_configuration_passkey_path(ri: params[:ri], rd: @rd) %>
     </li>
-    <li>
-      <%= link_to t("sign.org.verification.setup.methods.totp"),
-                  new_sign_org_configuration_totp_path(ri: params[:ri], rd: @rd) %>
-    </li>
   </ul>
 </div>

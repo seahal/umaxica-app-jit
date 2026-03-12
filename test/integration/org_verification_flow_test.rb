@@ -8,7 +8,7 @@ require "base64"
 #
 # These tests verify:
 # - Org staff verification flow works similarly to App
-# - Email OTP is NOT available for Org (only passkey and totp)
+# - Email OTP is NOT available for Org (passkey only)
 # - High-risk operations require verification
 class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
   fixtures :staffs, :staff_statuses, :staff_passkeys, :staff_passkey_statuses
@@ -36,18 +36,16 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
       sign_count: 0,
     )
 
-    Sign::Org::VerificationController.any_instance.stub(:available_step_up_methods, [:passkey, :totp]) do
+    Sign::Org::VerificationController.any_instance.stub(:available_step_up_methods, [:passkey]) do
       get sign_org_verification_url(ri: "jp"), headers: @headers
 
       assert_response :success
 
-      # Should have passkey and totp links - check for any link containing these terms
-      # assert response.body.include?("passkey")
-      # Check for totp link with correct path
-      assert response.body.include?("/verification/totp/new") || response.body.include?("totp")
+      assert response.body.include?("/verification/passkey/new") || response.body.include?("passkey")
 
       # Should NOT have email link (no emails route for org)
       assert_select "a[href*='email']", count: 0
+      assert_select "a[href*='verification/totp']", count: 0
     end
   end
 
@@ -68,28 +66,5 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
         end
       end
     end
-  end
-
-  test "org can verify with totp" do
-    private_key = "JBSWY3DPEHPK3PXP"
-    StaffOneTimePassword.create!(
-      staff: @staff,
-      private_key: private_key,
-      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
-    )
-
-    return_to = Base64.urlsafe_encode64(sign_org_configuration_totps_path(ri: "jp"))
-    get sign_org_verification_url(scope: "manage_totp", return_to: return_to, ri: "jp"),
-        headers: @headers
-
-    code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
-
-    post sign_org_verification_totp_url(ri: "jp"),
-         params: { verification: { code: code } },
-         headers: @headers
-
-    assert_response :redirect
-    # Redirects to return_to decoded value
-    assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
   end
 end

@@ -7,7 +7,8 @@ module SocialIdentifiable
   extend ActiveSupport::Concern
 
   PROVIDER_MAP = {
-    "google_oauth2" => "google",
+    "google_app" => "google",
+    "google_org" => "google",
     "apple" => "apple",
     "microsoft_graph" => "microsoft",
   }.freeze
@@ -24,7 +25,7 @@ module SocialIdentifiable
 
     def model_for_provider(provider)
       case provider.to_s
-      when "google_oauth2", "google"
+      when "google_app", "google_org", "google"
         UserSocialGoogle
       when "apple"
         UserSocialApple

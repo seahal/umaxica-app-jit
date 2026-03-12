@@ -28,7 +28,7 @@ module Auth
     def call
       return failure(:blank_access_token) if @access_token.blank?
 
-      payload = Auth::Base::Token.decode(@access_token, host: @request_host)
+      payload = Auth::Base::Token.decode(@access_token, host: @request_host, resource_type: @resource_type)
       return failure(:token_decode_failed) if payload.blank?
 
       unless Auth::Base::Token.validate_actor_claim!(payload, @resource_type)
@@ -59,6 +59,10 @@ module Auth
             else
               scope
             end
+          if @token_class.column_names.include?("revoked_at")
+            revoked_at = @token_class.arel_table[:revoked_at]
+            scope = scope.where(revoked_at.eq(nil).or(revoked_at.gt(Time.current)))
+          end
           scope.exists?
         end
 

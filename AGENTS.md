@@ -40,6 +40,14 @@ controllers, views, and routes.
 - Run migrations before tests when schema changes are involved:
   `bundle exec rails db:migrate && bundle exec rails test`.
 
+## Quality Guidelines
+
+- Consider ISO/IEC 25010 quality characteristics when designing, implementing, and reviewing
+  changes, especially functional suitability, performance efficiency, compatibility, usability,
+  reliability, security, maintainability, and portability.
+- When making tradeoffs, document the affected quality characteristics in PRs, issues, or review
+  notes when they materially influence scope, design, or testing.
+
 ## Commit & Pull Request Guidelines
 
 - Recent history uses short type-prefixed subjects (`[feat]`, `[update]`, `[refactor]`,

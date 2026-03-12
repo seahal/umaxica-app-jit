@@ -17,7 +17,6 @@ module Sign
         include Sign::VerificationReauthSessionStore
         include Sign::VerificationReauthLifecycle
         include Sign::VerificationPasskeyChecks
-        include Sign::VerificationTotpChecks
 
         auth_required!
 
@@ -29,7 +28,6 @@ module Sign
           "configuration_passkey" => %r{\A/configuration/passkeys},
           "configuration_mfa" => %r{\A/configuration/mfa},
           "configuration_secret" => %r{\A/configuration/secrets},
-          "manage_totp" => %r{\A/configuration/totps},
           "withdrawal" => %r{\A/configuration/withdrawal},
         }.freeze
 
@@ -46,12 +44,6 @@ module Sign
 
         def verification_params
           params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json)
-        end
-
-        def active_totp_credentials
-          current_staff.staff_one_time_passwords
-            .where(staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE)
-            .order(created_at: :desc)
         end
 
         def verification_unavailable_redirect_path

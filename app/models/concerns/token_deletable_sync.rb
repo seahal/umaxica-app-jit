@@ -14,7 +14,7 @@ module TokenDeletableSync
   def sync_deletable_at_from_expiry
     return unless has_attribute?(:deletable_at)
 
-    self.deletable_at = public_send(expiry_attribute_name)
+    self.deletable_at = derived_deletable_at
   end
 
   def expiry_attribute_name
@@ -22,5 +22,13 @@ module TokenDeletableSync
     return :refresh_expires_at if has_attribute?(:refresh_expires_at)
 
     raise "#{self.class.name} does not have an expires_at-style attribute"
+  end
+
+  def derived_deletable_at
+    if has_attribute?(:revoked_at) && revoked_at.present?
+      revoked_at + 1.day
+    else
+      public_send(expiry_attribute_name)
+    end
   end
 end

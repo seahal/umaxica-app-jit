@@ -10,15 +10,16 @@ scope module: :apex, as: :apex do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/Rails view)
       namespace :web do
-        namespace :v1 do
+        namespace :v0 do
           resource :cookie, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
+          resource :dbsc_registration, only: :create
         end
       end
       # preferences
@@ -53,15 +54,16 @@ scope module: :apex, as: :apex do
       resource :sitemap, only: :show, defaults: { format: :xml }
       # Edge API endpoint (browser/Rails view)
       namespace :web do
-        namespace :v1 do
+        namespace :v0 do
           resource :cookie, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
+          resource :dbsc_registration, only: :create
         end
       end
       # preferences
@@ -104,15 +106,16 @@ scope module: :apex, as: :apex do
       resource :health, only: :show, format: :html
       # Edge API endpoint (browser/Rails view)
       namespace :web do
-        namespace :v1 do
+        namespace :v0 do
           resource :cookie, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
-        namespace :v1 do
+        namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
+          resource :dbsc_registration, only: :create
         end
       end
       # for emergency

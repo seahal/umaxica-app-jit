@@ -17,7 +17,7 @@ class StaffActivityLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
     level = StaffActivityLevel.find(StaffActivityLevel::NOTHING)
     StaffActivity.create!(
-      staff: Staff.find_by!(public_id: "bcde3456"),
+      staff: Staff.find_by!(public_id: "BCDE2345FGHJ67KM"),
       staff_activity_event: StaffActivityEvent.find(StaffActivityEvent::LOGIN_SUCCESS),
       staff_activity_level: level,
       timestamp: Time.current,

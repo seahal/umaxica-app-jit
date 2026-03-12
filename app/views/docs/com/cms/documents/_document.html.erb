@@ -4,11 +4,7 @@
       <%= link_to document.permalink, docs_com_cms_document_path(document) %>
     </td>
     <td>
-      <% begin %>
-        <%= document.latest_version.title %>
-      <% rescue ActiveRecord::RecordNotFound %>
-        <span class="italic">No version</span>
-      <% end %>
+      <%= cms_document_title(document) %>
     </td>
     <td>
       <% if document.status_id == "PUBLISHED" %>

@@ -27,8 +27,8 @@
 #
 class StaffVerification < TokenRecord
   include RefreshTokenShared
+  include VerificationCookieable
 
-  COOKIE_NAME = "__Host-jit_step_up_org"
   TTL = 15.minutes
 
   belongs_to :staff_token, inverse_of: :staff_verifications
@@ -40,10 +40,6 @@ class StaffVerification < TokenRecord
 
   def active?
     revoked_at.nil? && expires_at.present? && expires_at > Time.current
-  end
-
-  def self.cookie_name
-    COOKIE_NAME
   end
 
   def self.digest_token(raw_token)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_12_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -49,14 +49,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "area_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
     t.datetime "created_at", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_area_occurrences_on_body", unique: true
-    t.index ["expires_at"], name: "index_area_occurrences_on_expires_at"
+    t.index ["deletable_at"], name: "index_area_occurrences_on_deletable_at"
     t.index ["public_id"], name: "index_area_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_area_occurrences_on_revoked_at"
     t.index ["status_id"], name: "index_area_occurrences_on_status_id"
   end
 
@@ -120,14 +122,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "domain_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
     t.datetime "created_at", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_domain_occurrences_on_body", unique: true
-    t.index ["expires_at"], name: "index_domain_occurrences_on_expires_at"
+    t.index ["deletable_at"], name: "index_domain_occurrences_on_deletable_at"
     t.index ["public_id"], name: "index_domain_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_domain_occurrences_on_revoked_at"
     t.index ["status_id"], name: "index_domain_occurrences_on_status_id"
   end
 
@@ -182,15 +186,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "email_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
     t.datetime "created_at", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body", "created_at"], name: "index_email_occurrences_on_body_created_at"
     t.index ["body"], name: "index_email_occurrences_on_body", unique: true
-    t.index ["expires_at"], name: "index_email_occurrences_on_expires_at"
+    t.index ["deletable_at"], name: "index_email_occurrences_on_deletable_at"
     t.index ["public_id"], name: "index_email_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_email_occurrences_on_revoked_at"
     t.index ["status_id"], name: "index_email_occurrences_on_status_id"
     t.check_constraint "char_length(memo::text) <= 1000", name: "chk_email_occurrences_memo_length"
   end
@@ -237,15 +243,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "ip_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
     t.datetime "created_at", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body", "created_at"], name: "index_ip_occurrences_on_body_created_at"
     t.index ["body"], name: "index_ip_occurrences_on_body", unique: true
-    t.index ["expires_at"], name: "index_ip_occurrences_on_expires_at"
+    t.index ["deletable_at"], name: "index_ip_occurrences_on_deletable_at"
     t.index ["public_id"], name: "index_ip_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_ip_occurrences_on_revoked_at"
     t.index ["status_id"], name: "index_ip_occurrences_on_status_id"
     t.check_constraint "char_length(memo::text) <= 1000", name: "chk_ip_occurrences_memo_length"
   end
@@ -286,6 +294,48 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.index ["zip_occurrence_id"], name: "index_ip_zip_occurrences_on_zip_occurrence_id"
   end
 
+  create_table "jwt_anomaly_events", force: :cascade do |t|
+    t.string "alg", default: "", null: false
+    t.string "code", default: "", null: false
+    t.datetime "created_at", null: false
+    t.string "error_class", default: "", null: false
+    t.string "error_message", default: "", null: false
+    t.string "issuer", default: "", null: false
+    t.string "jti", default: "", null: false
+    t.bigint "jwt_occurrence_id", null: false
+    t.string "kid", default: "", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "occurred_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "request_host", default: "", null: false
+    t.string "typ", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_jwt_anomaly_events_on_code"
+    t.index ["jwt_occurrence_id"], name: "index_jwt_anomaly_events_on_jwt_occurrence_id"
+    t.index ["occurred_at"], name: "index_jwt_anomaly_events_on_occurred_at"
+  end
+
+  create_table "jwt_occurrence_statuses", force: :cascade do |t|
+    t.string "name", default: "", null: false
+  end
+
+  create_table "jwt_occurrences", force: :cascade do |t|
+    t.string "body", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
+    t.string "memo", default: "", null: false
+    t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", precision: nil, default: ::Float::INFINITY, null: false
+    t.bigint "status_id", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.index ["body", "created_at"], name: "index_jwt_occurrences_on_body_and_created_at"
+    t.index ["body"], name: "index_jwt_occurrences_on_body", unique: true
+    t.index ["deletable_at"], name: "index_jwt_occurrences_on_deletable_at"
+    t.index ["public_id"], name: "index_jwt_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_jwt_occurrences_on_revoked_at"
+    t.index ["status_id"], name: "index_jwt_occurrences_on_status_id"
+    t.check_constraint "char_length(memo::text) <= 1000", name: "chk_jwt_occurrences_memo_length"
+  end
+
   create_table "staff_occurrence_statuses", force: :cascade do |t|
     t.string "name", default: "", null: false
   end
@@ -294,16 +344,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.string "body", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "event_type", default: "", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_staff_occurrences_on_body", unique: true
+    t.index ["deletable_at"], name: "index_staff_occurrences_on_deletable_at"
     t.index ["event_type", "created_at"], name: "index_staff_occurrences_on_event_type_and_created_at"
-    t.index ["expires_at"], name: "index_staff_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_staff_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_staff_occurrences_on_revoked_at"
     t.index ["status_id", "created_at"], name: "index_staff_occurrences_on_status_id_and_created_at"
   end
 
@@ -340,15 +392,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "telephone_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
     t.datetime "created_at", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body", "created_at"], name: "index_telephone_occurrences_on_body_created_at"
     t.index ["body"], name: "index_telephone_occurrences_on_body", unique: true
-    t.index ["expires_at"], name: "index_telephone_occurrences_on_expires_at"
+    t.index ["deletable_at"], name: "index_telephone_occurrences_on_deletable_at"
     t.index ["public_id"], name: "index_telephone_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_telephone_occurrences_on_revoked_at"
     t.index ["status_id"], name: "index_telephone_occurrences_on_status_id"
     t.check_constraint "char_length(memo::text) <= 1000", name: "chk_telephone_occurrences_memo_length"
   end
@@ -379,16 +433,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.string "body", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "event_type", default: "", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_user_occurrences_on_body", unique: true
+    t.index ["deletable_at"], name: "index_user_occurrences_on_deletable_at"
     t.index ["event_type", "created_at"], name: "index_user_occurrences_on_event_type_and_created_at"
-    t.index ["expires_at"], name: "index_user_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_user_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_user_occurrences_on_revoked_at"
     t.index ["status_id", "created_at"], name: "index_user_occurrences_on_status_id_and_created_at"
   end
 
@@ -407,14 +463,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "zip_occurrences", force: :cascade do |t|
     t.string "body", default: "", null: false
     t.datetime "created_at", null: false
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.datetime "deletable_at", precision: nil, default: ::Float::INFINITY, null: false
     t.string "memo", default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.datetime "revoked_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_zip_occurrences_on_body", unique: true
-    t.index ["expires_at"], name: "index_zip_occurrences_on_expires_at"
+    t.index ["deletable_at"], name: "index_zip_occurrences_on_deletable_at"
     t.index ["public_id"], name: "index_zip_occurrences_on_public_id", unique: true
+    t.index ["revoked_at"], name: "index_zip_occurrences_on_revoked_at"
     t.index ["status_id"], name: "index_zip_occurrences_on_status_id"
   end
 
@@ -466,6 +524,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   add_foreign_key "ip_user_occurrences", "user_occurrences", validate: false
   add_foreign_key "ip_zip_occurrences", "ip_occurrences", validate: false
   add_foreign_key "ip_zip_occurrences", "zip_occurrences", validate: false
+  add_foreign_key "jwt_anomaly_events", "jwt_occurrences", name: "fk_jwt_anomaly_events_on_jwt_occurrence_id"
+  add_foreign_key "jwt_occurrences", "jwt_occurrence_statuses", column: "status_id", name: "fk_jwt_occurrences_on_status_id"
   add_foreign_key "staff_occurrences", "staff_occurrence_statuses", column: "status_id", name: "fk_staff_occurrences_on_status_id"
   add_foreign_key "staff_telephone_occurrences", "staff_occurrences", validate: false
   add_foreign_key "staff_telephone_occurrences", "telephone_occurrences", validate: false

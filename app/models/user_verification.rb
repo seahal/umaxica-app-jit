@@ -27,8 +27,8 @@
 #
 class UserVerification < TokenRecord
   include RefreshTokenShared
+  include VerificationCookieable
 
-  COOKIE_NAME = "__Host-jit_step_up_app"
   TTL = 15.minutes
 
   belongs_to :user_token, inverse_of: :user_verifications
@@ -40,10 +40,6 @@ class UserVerification < TokenRecord
 
   def active?
     revoked_at.nil? && expires_at.present? && expires_at > Time.current
-  end
-
-  def self.cookie_name
-    COOKIE_NAME
   end
 
   def self.digest_token(raw_token)

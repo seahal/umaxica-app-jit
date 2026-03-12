@@ -26,7 +26,11 @@ module Sign
             end
 
             @passkey_challenge_id, @passkey_request_options =
-              create_authentication_challenge(allow_credentials: passkeys.map { |pk| { id: pk.webauthn_id } })
+              create_authentication_challenge(
+                allow_credentials: passkeys.map { |pk|
+                  { id: pk.webauthn_id }
+                }, user_verification: "discouraged",
+              )
           rescue Sign::Webauthn::OriginValidationError => e
             Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
             redirect_to sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.origin_invalid"),

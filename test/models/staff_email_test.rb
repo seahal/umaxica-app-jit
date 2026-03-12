@@ -40,7 +40,7 @@ class StaffEmailTest < ActiveSupport::TestCase
   fixtures :staffs, :staff_statuses, :staff_email_statuses
 
   setup do
-    @staff = Staff.find_by!(public_id: "cdef4567")
+    @staff = Staff.find_by!(public_id: "CDEF2345GHJK67NM")
     @valid_attributes = {
       address: "staff@example.com",
       confirm_policy: true,

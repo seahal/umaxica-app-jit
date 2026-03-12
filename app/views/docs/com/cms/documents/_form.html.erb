@@ -65,11 +65,8 @@
 
     <div>
       <%= form.label :title %>
-      <% title_value = begin
-                         document.persisted? ? document.latest_version.title : nil
-                       rescue
-                         nil
-                       end %>
+      <% latest_version = document.persisted? ? cms_document_latest_version(document) : nil %>
+      <% title_value = safe_encrypted_text(latest_version, :title) if latest_version.present? %>
       <%= form.text_field :title,
                           value: title_value,
                           placeholder: "Document Title" %>
@@ -77,11 +74,7 @@
 
     <div>
       <%= form.label :description %>
-      <% description_value = begin
-                               document.persisted? ? document.latest_version.description : nil
-                             rescue
-                               nil
-                             end %>
+      <% description_value = safe_encrypted_text(latest_version, :description) if latest_version.present? %>
       <%= form.text_area :description,
                          value: description_value,
                          rows: 3,
@@ -90,11 +83,7 @@
 
     <div>
       <%= form.label :body %>
-      <% body_value = begin
-                        document.persisted? ? document.latest_version.body : nil
-                      rescue
-                        nil
-                      end %>
+      <% body_value = safe_encrypted_text(latest_version, :body) if latest_version.present? %>
       <%= form.text_area :body,
                          value: body_value,
                          rows: 15,

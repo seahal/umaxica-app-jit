@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_12_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -371,7 +371,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.datetime "created_at", null: false
     t.integer "expires_at", null: false
     t.datetime "last_authenticated_at"
-    t.string "provider", default: "google_oauth2", null: false
+    t.string "provider", default: "google_app", null: false
     t.string "refresh_token", default: "", null: false
     t.string "token", default: "", null: false
     t.string "uid", default: "", null: false

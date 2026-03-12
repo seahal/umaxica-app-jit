@@ -115,7 +115,8 @@
     "RUBY_DEBUG_OPEN": "false"
   },
   "updateRemoteUserUID": true,
-  "postCreateCommand": "sudo chown -R 1000:1000 /home/jit/",
+  "postCreateCommand": "sudo mkdir -p /home/jit/.cache /home/jit/.config /home/jit/.npm /home/jit/.local /home/jit/.bundle && sudo chown -R 1000:1000 /home/jit/.cache /home/jit/.config /home/jit/.npm /home/jit/.local /home/jit/.bundle",
+  "postStartCommand": "sudo mkdir -p /home/jit/.cache /home/jit/.config /home/jit/.npm /home/jit/.local /home/jit/.bundle && sudo chown -R 1000:1000 /home/jit/.cache /home/jit/.config /home/jit/.npm /home/jit/.local /home/jit/.bundle",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt:1": {},

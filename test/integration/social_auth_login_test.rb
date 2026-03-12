@@ -19,7 +19,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
@@ -34,7 +34,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: existing_user,
       uid: existing_uid,
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "old_token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -45,13 +45,13 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     user_count_before = User.count
 
     # Start login flow
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
     assert_response :redirect
 
     # Callback
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
@@ -104,10 +104,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     user_count_before = User.count
     identity_count_before = UserSocialGoogle.count
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
@@ -155,10 +155,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     new_uid = "cookie_test_#{SecureRandom.hex(4)}"
     setup_google_mock_auth(uid: new_uid)
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
@@ -182,7 +182,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     identity = UserSocialGoogle.create!(
       user: existing_user,
       uid: existing_uid,
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "old_token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -193,10 +193,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
     time_before = Time.current
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: browser_headers.merge(@callback_headers)
 
     identity.reload
@@ -212,8 +212,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
   # We deliberately omit email from mock_auth to test this requirement
   def setup_google_mock_auth(uid:)
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: uid,
       info: { image: "https://example.com/image.jpg" },
       credentials: {

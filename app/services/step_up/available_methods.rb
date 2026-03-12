@@ -46,12 +46,6 @@ module StepUp
         )
       end
 
-      if subject.respond_to?(:staff_one_time_passwords)
-        return subject.staff_one_time_passwords.exists?(
-          staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
-        )
-      end
-
       false
     end
   end

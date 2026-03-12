@@ -186,6 +186,24 @@ module Core
 
           assert_response :unprocessable_content
         end
+
+        test "should return not found when contact email is missing" do
+          host! @host
+          @contact_email.destroy!
+
+          post core_com_contact_email_url(contact_id: @contact.public_id), params: {
+            com_contact_email: { hotp_code: "123456" },
+          }
+
+          assert_response :not_found
+        end
+
+        test "should return bad request when contact id is blank" do
+          host! @host
+          get new_core_com_contact_email_url(contact_id: " ")
+
+          assert_response :bad_request
+        end
       end
     end
   end

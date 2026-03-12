@@ -47,8 +47,8 @@ class News::Com::ApplicationHelperTest < ActionView::TestCase
     assert_equal "JST", to_localetime(test_time, :jst).zone
   end
 
-  test "to_localetime raises when time is nil" do
-    assert_raises(RuntimeError) { to_localetime(nil) }
+  test "to_localetime returns nil when time is nil" do
+    assert_nil to_localetime(nil)
   end
 
   test "to_localetime handles DateTime input" do

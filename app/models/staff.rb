@@ -7,18 +7,20 @@
 # Database name: operator
 #
 #  id                   :bigint           not null, primary key
+#  deletable_at         :datetime         default(Infinity), not null
 #  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
 #  shreddable_at        :datetime         default(Infinity), not null
 #  withdrawn_at         :datetime
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  public_id            :string           not null
+#  public_id            :string(16)       not null
 #  status_id            :bigint           default(2), not null
 #  visibility_id        :bigint           default(2), not null
 #
 # Indexes
 #
+#  index_staffs_on_deletable_at   (deletable_at)
 #  index_staffs_on_public_id      (public_id) UNIQUE
 #  index_staffs_on_shreddable_at  (shreddable_at)
 #  index_staffs_on_status_id      (status_id)
@@ -38,10 +40,10 @@ class Staff < OperatorRecord
 
   include ::Identity
 
-  # Human-readable character set excluding: i, o, 0, 1, s, z, g
-  # Allowed: a b c d e f h j k l m n p q r t u v w x y 2 3 4 5 6 7 8 9
-  PUBLIC_ID_ALPHABET = "abcdefhjklmnpqrtuvwxy23456789".freeze
-  PUBLIC_ID_LENGTH = 8
+  PUBLIC_ID_LENGTH = 16
+  PUBLIC_ID_ALPHABET = SecureRandom::BASE32_ALPHABET.join.freeze
+  PUBLIC_ID_FORMAT = /\A[0-9A-FGHJKMNPQRSTVWXYZ]{16}\z/
+  MAX_PUBLIC_ID_RETRIES = 5
 
   attribute :status_id, default: StaffStatus::NOTHING
 
@@ -71,9 +73,6 @@ class Staff < OperatorRecord
   has_many :staff_secrets,
            dependent: :destroy,
            inverse_of: :staff
-  has_many :staff_one_time_passwords,
-           dependent: :destroy,
-           inverse_of: :staff
   has_many :staff_tokens,
            dependent: :destroy,
            inverse_of: :staff
@@ -96,11 +95,13 @@ class Staff < OperatorRecord
             uniqueness: true,
             length: { is: PUBLIC_ID_LENGTH },
             format: {
-              with: /\A[abcdefhjklmnpqrtuvwxy23456789]{8}\z/,
+              with: PUBLIC_ID_FORMAT,
               message: :invalid_format,
             }
   before_validation :normalize_public_id
   before_validation :assign_public_id!, on: :create
+  before_save :normalize_public_id
+  around_create :retry_on_public_id_collision
 
   def staff?
     true
@@ -110,30 +111,71 @@ class Staff < OperatorRecord
     false
   end
 
-  # Generate a random 8-character public_id from the allowed alphabet
   def self.generate_public_id
     Array.new(PUBLIC_ID_LENGTH) { PUBLIC_ID_ALPHABET[SecureRandom.random_number(PUBLIC_ID_ALPHABET.length)] }.join
   end
 
   delegate :generate_public_id, to: :class
 
-  private
-
-  # Normalize public_id: strip whitespace, remove hyphens/underscores, downcase
-  # Examples: "ABCD-EFGH" -> "abcdefgh", " abcd_efgh " -> "abcdefgh"
-  def normalize_public_id
-    return if public_id.blank?
-
-    self.public_id = public_id.strip.gsub(/[-_]/, "").downcase
+  def public_id=(value)
+    @public_id_supplied = true unless @_assigning_public_id_internally
+    super
   end
 
-  # Assign a unique public_id if not already set
+  def self.normalize_public_id(value)
+    return value if value.nil?
+
+    value.strip.gsub(/[-_]/, "").upcase
+  end
+
+  private
+
+  def normalize_public_id
+    return if public_id.nil?
+
+    assign_public_id_value(self.class.normalize_public_id(public_id))
+  end
+
   def assign_public_id!
-    return if public_id.present?
+    return if public_id.present? || explicit_blank_public_id_input?
 
     loop do
-      self.public_id = generate_public_id
+      assign_public_id_value(generate_public_id)
       break unless self.class.exists?(public_id: public_id)
     end
+  end
+
+  def retry_on_public_id_collision
+    attempts = 0
+
+    begin
+      yield
+    rescue ActiveRecord::RecordNotUnique => e
+      attempts += 1
+
+      if attempts <= MAX_PUBLIC_ID_RETRIES
+        assign_public_id_value(nil)
+        assign_public_id!
+        retry
+      end
+
+      Rails.logger.error(
+        "[Staff] Failed to generate unique public_id after #{MAX_PUBLIC_ID_RETRIES} retries: " \
+        "#{e.class}: #{e.message} (last public_id=#{public_id.inspect})",
+      )
+      Rails.logger.error(e.backtrace.first(5).join("\n")) if e.backtrace
+      raise
+    end
+  end
+
+  def explicit_blank_public_id_input?
+    @public_id_supplied && self.class.normalize_public_id(public_id).blank?
+  end
+
+  def assign_public_id_value(value)
+    @_assigning_public_id_internally = true
+    self.public_id = value
+  ensure
+    @_assigning_public_id_internally = false
   end
 end

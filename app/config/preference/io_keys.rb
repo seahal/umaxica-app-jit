@@ -13,11 +13,16 @@ module Preference
       CONSENTED = "jit_preference_consented"
       ACCESS_BASENAME = "jit_preference_access"
       REFRESH_BASENAME = "jit_preference_refresh"
+      DBSC_BASENAME = "jit_preference_dbsc"
       DEVICE_BASENAME = "jit_preference_device_id"
     end
 
     module Headers
       DEVICE_ID = "X-Device-Id"
+      DBSC_REGISTRATION = "Secure-Session-Registration"
+      DBSC_CHALLENGE = "Secure-Session-Challenge"
+      DBSC_SESSION_ID = "Sec-Secure-Session-Id"
+      DBSC_RESPONSE = "Secure-Session-Response"
     end
 
     module Params

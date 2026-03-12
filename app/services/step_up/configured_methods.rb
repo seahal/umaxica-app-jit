@@ -33,7 +33,6 @@ module StepUp
       if subject.respond_to?(:user_one_time_passwords)
         return subject.user_one_time_passwords.exists?
       end
-      return subject.staff_one_time_passwords.exists? if subject.respond_to?(:staff_one_time_passwords)
 
       false
     end

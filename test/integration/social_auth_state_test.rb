@@ -15,7 +15,7 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
@@ -23,14 +23,14 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
     uid = "google_login_no_state_#{SecureRandom.hex(4)}"
     setup_google_mock_auth(uid: uid)
 
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
 
     user_count_before = User.count
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
@@ -75,8 +75,8 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
   private
 
   def setup_google_mock_auth(uid:)
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: uid,
       info: { image: "https://example.com/image.jpg" },
       credentials: {

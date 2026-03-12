@@ -29,41 +29,61 @@
 # - Callback is always POST (form_post response mode)
 #
 # IMPORTANT: Google Cloud Console Setup
-# - Register: http://localhost:3000/auth/google_oauth2/callback for local dev
-# - Register: https://<your-domain>/auth/google_oauth2/callback for production
+# - App client: register /auth/google_app/callback
+# - Org client: register /auth/google_org/callback
 #
 # =============================================================================
 
 # Load credentials early
-google_client_id = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_CLIENT_ID)
-google_client_secret = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_CLIENT_SECRET)
+# App (user) Google credentials
+google_app_client_id = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_APP_CLIENT_ID)
+google_app_client_secret = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_APP_CLIENT_SECRET)
+# Org (staff) Google credentials — separate OAuth client for staff domain
+google_org_client_id = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_ORG_CLIENT_ID)
+google_org_client_secret = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_ORG_CLIENT_SECRET)
+
 apple_client_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_CLIENT_ID)
 apple_team_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_TEAM_ID)
 apple_key_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_KEY_ID)
 apple_pem = Rails.app.creds.option(:OMNI_AUTH_APPLE_PRIVATE_KEY)
 
+# TODO: REMOVE them.
 # Validate required credentials
-if google_client_id.blank? || google_client_secret.blank?
-  Rails.logger.warn("[OmniAuth] Google OAuth credentials are missing. Google sign-in will not work.")
+if google_app_client_id.blank? || google_app_client_secret.blank?
+  Rails.logger.warn("[OmniAuth] Google OAuth (app) credentials are missing. Google sign-in for users will not work.")
+end
+if google_org_client_id.blank? || google_org_client_secret.blank?
+  Rails.logger.warn("[OmniAuth] Google OAuth (org) credentials are missing. Google sign-in for staff will not work.")
 end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   # ---------------------------------------------------------------------------
-  # Google OAuth2
+  # Google OAuth2 — App (user sign-in/sign-up)
   # ---------------------------------------------------------------------------
-  # Standard OAuth2 flow. Callback: GET /auth/google_oauth2/callback
+  # Callback: GET /auth/google_app/callback
   provider :google_oauth2,
-           google_client_id,
-           google_client_secret,
+           google_app_client_id,
+           google_app_client_secret,
            {
-             # OmniAuth standard callback path
-             callback_path: "/auth/google_oauth2/callback",
-             # IMPORTANT: We authenticate by provider+uid only, NOT email
-             # Request minimal scope - openid gives us the user identifier (sub claim)
+             name: "google_app",
+             callback_path: "/auth/google_app/callback",
              scope: "openid",
-             # Include access_type for refresh token (optional)
              access_type: "offline",
-             # Always show account picker
+             prompt: "select_account",
+           }
+
+  # ---------------------------------------------------------------------------
+  # Google OAuth2 — Org (staff sign-in only)
+  # ---------------------------------------------------------------------------
+  # Callback: GET /auth/google_org/callback
+  provider :google_oauth2,
+           google_org_client_id,
+           google_org_client_secret,
+           {
+             name: "google_org",
+             callback_path: "/auth/google_org/callback",
+             scope: "openid",
+             access_type: "offline",
              prompt: "select_account",
            }
 

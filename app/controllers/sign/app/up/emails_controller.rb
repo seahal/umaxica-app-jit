@@ -203,9 +203,12 @@ module Sign
           )
           audit.save!
         rescue ActiveRecord::RecordInvalid => e
-          Rails.logger.error(
-            "signup audit save failed: user_id=#{@user&.id} event_id=#{event_id} " \
-            "errors=#{e.record.errors.full_messages.join(", ")}",
+          Rails.event.error(
+            "sign.signup.email.audit_save_failed",
+            user_id: @user&.id,
+            event_id: event_id,
+            errors: e.record.errors.full_messages,
+            exception: e,
           )
           raise
         end
@@ -215,7 +218,10 @@ module Sign
         def log_signup_email_errors
           return unless @user_email&.errors&.any?
 
-          Rails.logger.warn("signup email invalid: #{@user_email.errors.full_messages.join(", ")}")
+          Rails.event.warn(
+            "sign.signup.email.validation_failed",
+            errors: @user_email.errors.full_messages,
+          )
         end
       end
     end

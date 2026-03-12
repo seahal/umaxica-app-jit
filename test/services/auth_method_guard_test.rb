@@ -24,7 +24,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
     UserSocialGoogle.create!(
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
@@ -111,7 +111,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
     google = UserSocialGoogle.create!(
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
@@ -130,7 +130,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
     google = UserSocialGoogle.create!(
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
@@ -148,7 +148,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
     UserSocialGoogle.create!(
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
@@ -173,7 +173,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
     UserSocialGoogle.create!(
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
@@ -204,7 +204,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
     UserSocialGoogle.create!(
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::REVOKED,
       token: "token",
       expires_at: 1.week.from_now.to_i,

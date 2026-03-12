@@ -18,6 +18,10 @@
       <span><%= t("sign.org.authentication.new.links.secret") %></span>
     <% end %>
 
+    <%= link_to new_sign_org_social_session_path(provider: "google_org") do %>
+      <span><%= t("sign.org.authentication.new.links.google") %></span>
+    <% end %>
+
     <div>
       <%= link_to apex_org_root_path do %>
         <span><%= t("sign.org.authentication.new.back_to_root") %></span>
