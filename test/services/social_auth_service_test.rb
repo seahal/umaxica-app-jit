@@ -8,7 +8,7 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
 
   test "social login assigns user status during user creation" do
     auth_hash = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+      provider: "google_app",
       uid: "google_uid_status_test",
       credentials: {
         token: "test_token",
@@ -83,7 +83,7 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
 
   test "link intent associates identity with existing user" do
     auth_hash = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+      provider: "google_app",
       uid: "google_uid_link_test_#{SecureRandom.hex(8)}",
       credentials: {
         token: "test_token",
@@ -100,7 +100,7 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
     )
 
     assert_equal existing_user, result[:user]
-    assert_equal "google_oauth2", result[:identity].provider
+    assert_equal "google_app", result[:identity].provider
   end
 
   test "reauth intent updates existing identity" do
@@ -108,14 +108,14 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
     existing_identity = UserSocialGoogle.create!(
       user: existing_user,
       uid: "google_uid_reauth_test_#{SecureRandom.hex(8)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
       token: "old_token",
       expires_at: 1.week.from_now.to_i,
     )
 
     auth_hash = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+      provider: "google_app",
       uid: existing_identity.uid,
       credentials: {
         token: "new_test_token",
@@ -135,7 +135,7 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
 
   test "raises error for invalid intent" do
     auth_hash = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+      provider: "google_app",
       uid: "test_uid",
       credentials: { token: "test" },
     )
@@ -154,7 +154,7 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
     UserSocialGoogle.create!(
       user: user,
       uid: "google_uid_unlink_test_#{SecureRandom.hex(8)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
       token: "test_token",
       expires_at: 1.week.from_now.to_i,

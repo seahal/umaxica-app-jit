@@ -12,7 +12,7 @@ class SocialIdentifiableTest < ActiveSupport::TestCase
   end
 
   test "normalize_provider maps known providers" do
-    assert_equal "google", SocialIdentifiable.normalize_provider("google_oauth2")
+    assert_equal "google", SocialIdentifiable.normalize_provider("google_app")
     assert_equal "microsoft", SocialIdentifiable.normalize_provider("microsoft_graph")
     assert_equal "apple", SocialIdentifiable.normalize_provider("apple")
   end

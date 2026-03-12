@@ -98,21 +98,21 @@ class OrgContact < GuestRecord
   end
 
   def verify_email!
-    raise StandardError, "Cannot verify email at this time" unless can_verify_email?
-
-    update!(status_id: OrgContactStatus::CHECKED_EMAIL_ADDRESS)
+    transition_status(status: OrgContactStatus::CHECKED_EMAIL_ADDRESS, error_message: "Cannot verify email at this time") do
+      can_verify_email?
+    end
   end
 
   def verify_phone!
-    raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
-
-    update!(status_id: OrgContactStatus::CHECKED_TELEPHONE_NUMBER)
+    transition_status(status: OrgContactStatus::CHECKED_TELEPHONE_NUMBER, error_message: "Cannot verify phone at this time") do
+      can_verify_phone?
+    end
   end
 
   def complete!
-    raise StandardError, "Cannot complete contact at this time" unless can_complete?
-
-    update!(status_id: OrgContactStatus::COMPLETED_CONTACT_ACTION)
+    transition_status(status: OrgContactStatus::COMPLETED_CONTACT_ACTION, error_message: "Cannot complete contact at this time") do
+      can_complete?
+    end
   end
 
   # Token management
@@ -147,5 +147,14 @@ class OrgContact < GuestRecord
   # Override to_param to use public_id in URLs
   def to_param
     public_id
+  end
+
+  private
+
+  def transition_status(status:, error_message:)
+    return update(status_id: status) if yield
+
+    errors.add(:base, error_message)
+    false
   end
 end

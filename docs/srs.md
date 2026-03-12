@@ -26,8 +26,8 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
   - Network-only hosts (e.g., `asset-jp.umaxica.net`) are proxied but not powered by Rails.
 - Subsystems: top-level marketing pages, authentication (sign), help center/contact flows,
   documentation and news portals, BFF preference endpoints, public API endpoints for inquiry
-  validation, and supporting infrastructure (Karafka, Kafka, Valkey, OpenTelemetry, MinIO,
-  Fastly/Cloudflare integrations).
+  validation, and supporting infrastructure (Valkey, OpenTelemetry, MinIO, Fastly/Cloudflare
+  integrations).
 
 ### 1.3 Intended Audience and Use
 
@@ -43,10 +43,10 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 | Role                  | Responsibilities                                                                                                             | Tooling / Notes                                           |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
 | Product Owner         | Defines feature scope, localization priorities, and compliance targets                                                       | Roadmap, Notion/Jira                                      |
-| Tech Lead / Architect | Owns multi-surface Rails architecture, multi-DB strategy, and integration points (Valkey, Kafka, SMS, email)                 | Rails, Karafka, Docker Compose                            |
+| Tech Lead / Architect | Owns multi-surface Rails architecture, multi-DB strategy, and integration points (Valkey, SMS, email)                        | Rails, Docker Compose                                     |
 | Front-End Engineer    | Builds Turbo/React views in `app/javascript`, owns theme and preference UX                                                   | pnpm, Biome, Tailwind, Turbo                              |
 | Back-End Engineer     | Implements controller logic (e.g., `config/routes/*.rb` namespaces), models, encryption, OTP/passkey workflows               | Rails 8, PostgreSQL, Valkey                               |
-| Platform/DevOps       | Manages Compose stack (PostgreSQL shards, Valkey, Kafka, MinIO, Grafana/Loki/Tempo), CI (`integration.yml`), and deployments | Docker, Foreman, GitHub Actions                           |
+| Platform/DevOps       | Manages Compose stack (PostgreSQL shards, Valkey, MinIO, Grafana/Loki/Tempo), CI (`integration.yml`), and deployments        | Docker, Foreman, GitHub Actions                           |
 | QA Engineer           | Designs Minitest/spec + JS/TS tests (via pnpm), Rswag/OpenAPI verification, smoke/load tests                                 | `bin/rails test`, `pnpm test` (when added), Playwright/k6 |
 | Security/Compliance   | Oversees JWT keys, Cloudflare Turnstile secrets, GDPR/ePrivacy consent storage                                               | Secrets management, monitoring                            |
 
@@ -61,8 +61,6 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
   `app/javascript`; assets are served via importmap and Rails Tailwind CLI for CSS.
 - **Caching & session adjuncts**: Valkey (Redis-compatible) powers request rate limiting, `Memorize`
   ephemeral storage, signed preference cookies, and Rack session backing for Action Cable.
-- **Messaging & async**: Kafka (via Karafka + WaterDrop) hosts the `email` topic consumed by
-  `EmailConsumer` for OTP and notification fan-out.
 - **Security & identity**: JWT auth cookies (ES256) via the `Authn` concern, WebAuthn passkeys,
   HOTP/TOTP (ROTP), SMS dispatchers (AWS SNS/Infobip/Test), and Cloudflare Turnstile for bot
   defense.
@@ -142,9 +140,8 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 - **FR-15**: Help center contact forms (`Help::Com::ContactsController`) shall validate input via
   `ServiceSiteContact`, requiring either email or telephone, policy acceptance, and OTP
   confirmation. IP addresses must be logged (`ip_address` column) and PII encrypted at rest.
-- **FR-16**: Successful contact submissions must enqueue notifications—initially via
-  `Email::App::ContactMailer` (sync) with the ability to offload through the Kafka `email` topic
-  (once `EmailConsumer` wiring is finished).
+- **FR-16**: Successful contact submissions must trigger notifications via
+  `Email::App::ContactMailer` and remain observable through application logs and traces.
 - **FR-17**: News and Docs namespaces must redirect to content-specific roots and expose health
   status; they are placeholders for static/dynamic content served through Rails/Turbo (React slots
   defined in `app/javascript/views`).
@@ -182,13 +179,12 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 - **FR-24**: OpenTelemetry instrumentation (`config/initializers/opentelemetry.rb`) must be active
   in production and optionally in development (when OTLP collector is reachable) to push traces to
   Tempo; spans must include hostnames to differentiate surfaces.
-- **FR-25**: Compose stack (PostgreSQL primaries/replicas, Valkey, Kafka, MinIO, Grafana/Loki/Tempo)
-  must stay reproducible for local dev; `Procfile.dev` orchestrates Rails and (optionally) Karafka,
-  with pnpm handling JS tooling.
+- **FR-25**: Compose stack (PostgreSQL primaries/replicas, Valkey, MinIO, Grafana/Loki/Tempo) must
+  stay reproducible for local dev; `Procfile.dev` orchestrates Rails with pnpm handling JS tooling.
 - **FR-26**: GitHub Actions integration pipeline (`integration.yml`) plus Lefthook pre-commit must
   run `bundle exec rubocop`, `erb_lint`, `pnpm run lint`, `pnpm run check`, and `bin/rails test`.
-- **FR-27**: Health dashboards (Grafana) must visualize request rate, OTP/passkey errors, and Kafka
-  lag for the `email` topic.
+- **FR-27**: Health dashboards (Grafana) must visualize request rate, OTP/passkey errors, and
+  Turnstile failures.
 
 ---
 
@@ -198,12 +194,12 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Performance          | P95 response time ≤ 300 ms for `/health` endpoints; OTP submissions and preference updates complete within 2 s end-to-end; pnpm lint/format cycles and Tailwind watch rebuilds complete within 5 s. |
 | Availability         | ≥ 99.0 % uptime for top/sign/help hosts, measured monthly; automated failover to replica PostgreSQL instances for read-heavy queries.                                                               |
-| Scalability          | Support ≥ 1k req/min per host with linear scale-out via additional Rails pods; Karafka consumers must process ≥ 50 msgs/s sustained.                                                                |
+| Scalability          | Support ≥ 1k req/min per host with linear scale-out via additional Rails pods.                                                                                                                   |
 | Security             | Enforce HTTPS-only traffic, HSTS headers, CSRF protection, signed cookies, JWT validation, Cloudflare Turnstile challenge, rate limiters, and WebAuthn/TOTP options.                                |
 | Privacy & Compliance | Preference cookies must capture consent state (GDPR/ePrivacy). PII stored encrypted with separation by database cluster. Audit logs retained ≥ 180 days.                                            |
 | Maintainability      | Namespaced controllers/views keep code per host ≤ 500 LOC; shared concerns (`Authn`, `PreferenceRegions`, `Theme`, etc.) must remain framework-agnostic.                                            |
 | Localization         | UI copy available in Japanese (default) and English; URL params `lx`, `ri`, `tz`, `ct` propagate through redirects and forms.                                                                       |
-| Observability        | OTEL traces for HTTP, Redis, Kafka, and Action Mailer; structured logs shipped to Loki; uptime monitors poll `/health` + `/v1/health`.                                                              |
+| Observability        | OTEL traces for HTTP, Redis, and Action Mailer; structured logs shipped to Loki; uptime monitors poll `/health` + `/v1/health`.                                                                     |
 
 ---
 
@@ -217,7 +213,7 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
   `POSTGRESQL_BEHAVIOR_PUB`).
 - Asset pipeline relies on Rails Tailwind CLI and pnpm-managed JS tooling; Vite is intentionally not
   used.
-- Dependencies include Karafka, ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine,
+- Dependencies include ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine,
   SolidCache, Fastly gem, AWS SDK.
 
 ### 6.2 Environmental & configuration constraints
@@ -227,14 +223,13 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
   Cloudflare Turnstile secret, JWT private/public keys, SMS provider selector, storage credentials
   (GCS/MinIO), OTLP endpoint.
 - Docker Compose assumes local ports: Rails 3000 (forwarded to 3001), PostgreSQL primaries on
-  5435/5436, Valkey on 56379, Kafka 19092, Kafka UI 18080, Grafana 8000, Loki 33100, Tempo
-  3200/4317, MinIO 9000/9001.
+  5435/5436, Valkey on 56379, Grafana 8000, Loki 33100, Tempo 3200/4317, MinIO 9000/9001.
 - Foreman/Procfile required for multi-process dev; CI uses GitHub Actions runners with
   PostgreSQL/Valkey services.
 
 ### 6.3 External services & integrations
 
-- Email providers: AWS SES, Resend (future), ActionMailer + SMTP credentials.
+- Email providers: AWS SES, ActionMailer + SMTP credentials.
 - SMS: AWS SNS, Infobip, or custom provider via `AwsSmsService`.
 - Cloud providers: Google Cloud (Cloud Run/Build/Storage/Artifact Registry) for deployment,
   Cloudflare (R2, Turnstile, DNS), Fastly (asset CDN).
@@ -249,7 +244,7 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AC-01 | `GET https://www.umaxica.com/health` returns 200 HTML, `GET .../v1/health` returns JSON `{status:"OK"}` for each host namespace.                          |
 | AC-02 | Editing language/region/timezone/theme updates cookies and redirects back to the proper Top scope with query parameters preserved.                        |
-| AC-03 | Email registration flow issues an OTP via ActionMailer (or Kafka stub) only when Turnstile succeeds and saves `UserIdentityEmail` with encrypted address. |
+| AC-03 | Email registration flow issues an OTP via ActionMailer only when Turnstile succeeds and saves `UserIdentityEmail` with encrypted address.                |
 | AC-04 | Telephone registration rejects invalid E.164 numbers and uses the configured SMS provider.                                                                |
 | AC-05 | Passkey flow returns creation options, stores the challenge in session, and accepts subsequent verification payloads.                                     |
 | AC-06 | Help contact form cannot submit without policy consent; valid submissions persist to `service_site_contacts` and emit a Mailer call.                      |
@@ -263,7 +258,7 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 ## 8. Appendices & References
 
 - Repository guides: `README.md`, `AGENTS.md`, `docs/checklist.md`
-- Infrastructure: `compose.yml`, `Procfile.dev`, `karafka.rb`, `karafka-web` UI
+- Infrastructure: `compose.yml`, `Procfile.dev`
 - Security: `SECURITY.md`, `CODE_OF_CONDUCT.md`
 - Testing assets: `test/`, `test/javascript/`, `rswag` configuration
 - Change log: tracked via Git history and PR descriptions

@@ -9,11 +9,9 @@ module CommitteeHelper
   def committee_options
     prefix =
       if request&.path.to_s.start_with?("/edge/")
-        # Our OpenAPI defines "/v1/*" while the Edge API is served at "/edge/v1/*".
+        # Our OpenAPI defines "/v1/*" while the Edge API is served at "/edge/v0/*".
         # Committee will strip this prefix when matching paths.
         "/edge"
-      elsif request&.path.to_s.start_with?("/member/")
-        "/member"
       end
 
     {

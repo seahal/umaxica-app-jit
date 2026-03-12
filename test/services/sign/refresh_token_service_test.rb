@@ -59,6 +59,18 @@ class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
     assert_nil token.reload.compromised_at
   end
 
+  test "scheduled revoked tokens are invalid after revoked_at passes" do
+    freeze_time do
+      token = UserToken.create!(user: users(:one), revoked_at: 5.minutes.from_now)
+      refresh = token.rotate_refresh_token!
+      travel 6.minutes
+
+      assert_raises(Sign::InvalidRefreshToken) do
+        Sign::RefreshTokenService.call(refresh_token: refresh)
+      end
+    end
+  end
+
   test "S2: service uses writing role for lock and update operations" do
     # Verify that ActiveRecord::Base.connected_to is called with role: :writing
     # This ensures SELECT ... FOR UPDATE and UPDATE go to primary database

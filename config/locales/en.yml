@@ -147,7 +147,6 @@ en:
           method_legend: Authentication Method
           methods:
             passkey: Passkey
-            totp: Authenticator App (TOTP)
             email_otp: Email (One-time code)
           submit: Continue
           back: Back
@@ -185,7 +184,6 @@ en:
           method_legend: Authentication Method
           methods:
             passkey: Passkey
-            totp: Authenticator App (TOTP)
             email_otp: Email (One-time code)
           submit: Continue
           back: Back
@@ -202,13 +200,9 @@ en:
           complete: Verification completed.
         setup:
           title: Set up verification methods
-          description:
-            Please register passkey, email, telephone, or authenticator app before continuing.
+          description: Please register a passkey before continuing.
           methods:
             passkey: Register passkey
-            email: Register email
-            telephone: Register telephone
-            totp: Register authenticator app (TOTP)
     social:
       sessions:
         invalid_provider: Invalid provider specified
@@ -233,6 +227,15 @@ en:
           invalid_redirect_uri: Apple Sign In redirect URL is misconfigured.
           user_cancelled_authorize: You cancelled the Apple Sign In. Please try again if needed.
     org:
+      social:
+        sessions:
+          invalid_provider: Invalid provider specified
+          create:
+            success: Successfully signed in with %{provider}
+            failure: Failed to sign in. Please try again.
+            not_found:
+              No staff account found for this Google account. Please contact your administrator.
+            session_limit: Too many active sessions. Please sign out of another device first.
       reauth:
         index:
           title: Re-authentication Sessions
@@ -360,8 +363,7 @@ en:
         staff:
           attributes:
             public_id:
-              invalid_format:
-                must be 8 lowercase alphanumeric characters (excluding i, o, 0, 1, s, z, g)
+              invalid_format: must be 16 uppercase characters from SecureRandom::BASE32_ALPHABET
   activemodel:
     errors:
       models:

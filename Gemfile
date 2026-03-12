@@ -28,9 +28,10 @@ gem "pg"
 gem "strong_migrations"
 # Redis
 gem "redis"
+# Timeout
+gem "rack-timeout", group: %i(development production)
 # CORS
 gem "rack-cors"
-gem "rack-timeout", group: %i(development production)
 # Password hashing
 gem "argon2"
 gem "bcrypt"
@@ -44,9 +45,7 @@ gem "bootsnap", require: false
 gem "shrine"
 gem "image_processing"
 # AWS SDKs
-gem "aws-sdk-sns"
-# gem "aws-sdk-connect" # unused: no Connect client/integration found
-# gem "aws-sdk-polly" # unused: no Polly client/integration found
+gem "aws-sdk-sns" # for sms delivery
 # Asset pipeline
 gem "propshaft"
 # OpenTelemetry
@@ -59,8 +58,8 @@ gem "opentelemetry-instrumentation-all", require: false
 gem "rotp"
 # QR code generation
 gem "rqrcode"
-# Solid Cache
-gem "solid_cache"
+# Solid Cable
+gem "solid_cable"
 # Solid Queue
 gem "solid_queue"
 gem "mission_control-jobs"

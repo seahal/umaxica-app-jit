@@ -24,8 +24,12 @@ module Sign
         status: "ok",
         access_token: result[:access_token],
         token_type: result[:token_type],
+        # API contract: this is the actual remaining JWT lifetime in seconds.
+        # It may be shorter than the default access TTL when the backing token
+        # has an earlier revocation boundary.
         expires_in: result[:expires_in],
         redirect_url: passkey_checkpoint_redirect_url,
+        dbsc: result[:dbsc],
       }, status: :ok
     end
 

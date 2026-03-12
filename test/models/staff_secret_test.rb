@@ -41,7 +41,7 @@ class StaffSecretTest < ActiveSupport::TestCase
     StaffSecretKind.find_or_create_by!(id: StaffSecretKind::LOGIN)
     StaffSecretKind.find_or_create_by!(id: StaffSecretKind::TOTP)
 
-    @staff = Staff.find_by!(public_id: "bcde3456")
+    @staff = Staff.find_by!(public_id: "BCDE2345FGHJ67KM")
   end
 
   test "allows up to the maximum number of secrets per staff" do

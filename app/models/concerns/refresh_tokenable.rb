@@ -31,7 +31,7 @@ module RefreshTokenable
       end
 
       transaction do
-        updated =
+        relation =
           where(
             :id => current_token.id,
             :refresh_token_digest => presented_refresh_digest,
@@ -39,7 +39,12 @@ module RefreshTokenable
             expiry_column => nil,
             :compromised_at => nil,
           ).where(arel_table[:refresh_expires_at].gt(now))
-            .update_all(rotated_at: now, last_used_at: now, updated_at: now)
+
+        if column_names.include?("revoked_at")
+          relation = relation.where(arel_table[:revoked_at].eq(nil).or(arel_table[:revoked_at].gt(now)))
+        end
+
+        updated = relation.update_all(rotated_at: now, last_used_at: now, updated_at: now)
 
         if updated != 1
           current_token.reload
@@ -72,12 +77,22 @@ module RefreshTokenable
         refresh_token_generation: previous_token.refresh_token_generation.to_i + 1,
         refresh_expires_at: previous_token.refresh_expires_at,
         device_id: previous_token.device_id,
+        dbsc_session_id: previous_token.dbsc_session_id,
+        dbsc_public_key: previous_token.dbsc_public_key,
+        dbsc_challenge: previous_token.dbsc_challenge,
+        dbsc_challenge_issued_at: previous_token.dbsc_challenge_issued_at,
       }
+      attrs[:revoked_at] = previous_token.revoked_at if previous_token.has_attribute?(:revoked_at)
+      attrs[:deletable_at] = previous_token.deletable_at if previous_token.has_attribute?(:deletable_at)
 
       attrs[:status] = previous_token.status if previous_token.respond_to?(:status)
       attrs[actor_key] = previous_token.public_send(actor_key) if actor_key
       attrs[token_status_key] = previous_token.public_send(token_status_key) if token_status_key
       attrs[token_kind_key] = previous_token.public_send(token_kind_key) if token_kind_key
+      attrs[:user_token_binding_method_id] = previous_token.user_token_binding_method_id if previous_token.has_attribute?(:user_token_binding_method_id)
+      attrs[:staff_token_binding_method_id] = previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
+      attrs[:user_token_dbsc_status_id] = previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
+      attrs[:staff_token_dbsc_status_id] = previous_token.staff_token_dbsc_status_id if previous_token.has_attribute?(:staff_token_dbsc_status_id)
 
       replacement = create!(attrs)
       raw_refresh_token, verifier = generate_refresh_token(public_id: replacement.public_id)

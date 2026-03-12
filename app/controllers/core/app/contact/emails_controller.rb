@@ -21,15 +21,12 @@ module Core
 
         def set_contact
           contact_id = params[:contact_id]
-
-          if contact_id.blank?
-            raise StandardError, "Contact ID is required"
-          end
+          return render plain: "Contact ID is required", status: :bad_request if contact_id.blank?
 
           @contact = AppContact.find_by(public_id: contact_id)
-          return unless @contact.nil?
+          return if @contact
 
-          raise StandardError, "Contact not found"
+          render plain: "Contact not found", status: :not_found
         end
 
         def placeholder_message(action)

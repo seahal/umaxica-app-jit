@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_12_023001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -32,6 +32,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.index ["expires_at"], name: "index_reauth_sessions_on_expires_at"
   end
 
+  create_table "staff_token_binding_methods", force: :cascade do |t|
+  end
+
+  create_table "staff_token_dbsc_statuses", force: :cascade do |t|
+  end
+
   create_table "staff_token_kinds", force: :cascade do |t|
   end
 
@@ -41,6 +47,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "staff_tokens", force: :cascade do |t|
     t.datetime "compromised_at"
     t.datetime "created_at", null: false
+    t.text "dbsc_challenge"
+    t.datetime "dbsc_challenge_issued_at"
+    t.jsonb "dbsc_public_key"
+    t.string "dbsc_session_id"
     t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id", default: "", null: false
     t.datetime "expired_at"
@@ -55,11 +65,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.datetime "revoked_at"
     t.datetime "rotated_at"
     t.bigint "staff_id", null: false
+    t.bigint "staff_token_binding_method_id", default: 0, null: false
+    t.bigint "staff_token_dbsc_status_id", default: 0, null: false
     t.bigint "staff_token_kind_id", default: 0, null: false
     t.bigint "staff_token_status_id", default: 0, null: false
     t.string "status", limit: 20, default: "active", null: false
     t.datetime "updated_at", null: false
     t.index ["compromised_at"], name: "index_staff_tokens_on_compromised_at"
+    t.index ["dbsc_session_id"], name: "index_staff_tokens_on_dbsc_session_id", unique: true
     t.index ["deletable_at"], name: "index_staff_tokens_on_deletable_at"
     t.index ["device_id"], name: "index_staff_tokens_on_device_id"
     t.index ["expired_at"], name: "index_staff_tokens_on_expired_at"
@@ -69,6 +82,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.index ["refresh_token_family_id"], name: "index_staff_tokens_on_refresh_token_family_id"
     t.index ["revoked_at"], name: "index_staff_tokens_on_revoked_at"
     t.index ["staff_id", "last_step_up_at"], name: "index_staff_tokens_on_staff_id_and_last_step_up_at"
+    t.index ["staff_token_binding_method_id"], name: "index_staff_tokens_on_staff_token_binding_method_id"
+    t.index ["staff_token_dbsc_status_id"], name: "index_staff_tokens_on_staff_token_dbsc_status_id"
     t.index ["staff_token_kind_id"], name: "index_staff_tokens_on_staff_token_kind_id"
     t.index ["staff_token_status_id"], name: "index_staff_tokens_on_staff_token_status_id"
     t.index ["status"], name: "index_staff_tokens_on_status"
@@ -89,6 +104,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.index ["token_digest"], name: "index_staff_verifications_on_token_digest", unique: true
   end
 
+  create_table "user_token_binding_methods", force: :cascade do |t|
+  end
+
+  create_table "user_token_dbsc_statuses", force: :cascade do |t|
+  end
+
   create_table "user_token_kinds", force: :cascade do |t|
   end
 
@@ -98,6 +119,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "user_tokens", force: :cascade do |t|
     t.datetime "compromised_at"
     t.datetime "created_at", null: false
+    t.text "dbsc_challenge"
+    t.datetime "dbsc_challenge_issued_at"
+    t.jsonb "dbsc_public_key"
+    t.string "dbsc_session_id"
     t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id", default: "", null: false
     t.datetime "expired_at"
@@ -114,9 +139,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.string "status", limit: 20, default: "active", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.bigint "user_token_binding_method_id", default: 0, null: false
+    t.bigint "user_token_dbsc_status_id", default: 0, null: false
     t.bigint "user_token_kind_id", default: 0, null: false
     t.bigint "user_token_status_id", default: 0, null: false
     t.index ["compromised_at"], name: "index_user_tokens_on_compromised_at"
+    t.index ["dbsc_session_id"], name: "index_user_tokens_on_dbsc_session_id", unique: true
     t.index ["deletable_at"], name: "index_user_tokens_on_deletable_at"
     t.index ["device_id"], name: "index_user_tokens_on_device_id"
     t.index ["expired_at"], name: "index_user_tokens_on_expired_at"
@@ -127,6 +155,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.index ["revoked_at"], name: "index_user_tokens_on_revoked_at"
     t.index ["status"], name: "index_user_tokens_on_status"
     t.index ["user_id", "last_step_up_at"], name: "index_user_tokens_on_user_id_and_last_step_up_at"
+    t.index ["user_token_binding_method_id"], name: "index_user_tokens_on_user_token_binding_method_id"
+    t.index ["user_token_dbsc_status_id"], name: "index_user_tokens_on_user_token_dbsc_status_id"
     t.index ["user_token_kind_id"], name: "index_user_tokens_on_user_token_kind_id"
     t.index ["user_token_status_id"], name: "index_user_tokens_on_user_token_status_id"
     t.check_constraint "user_token_kind_id >= 0", name: "chk_user_tokens_kind_id_positive"
@@ -146,9 +176,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.index ["user_token_id"], name: "index_user_verifications_on_user_token_id"
   end
 
+  add_foreign_key "staff_tokens", "staff_token_binding_methods", name: "fk_staff_tokens_on_staff_token_binding_method_id"
+  add_foreign_key "staff_tokens", "staff_token_dbsc_statuses", name: "fk_staff_tokens_on_staff_token_dbsc_status_id"
   add_foreign_key "staff_tokens", "staff_token_kinds", name: "fk_staff_tokens_on_staff_token_kind_id"
   add_foreign_key "staff_tokens", "staff_token_statuses", name: "fk_staff_tokens_on_staff_token_status_id"
   add_foreign_key "staff_verifications", "staff_tokens", on_delete: :cascade
+  add_foreign_key "user_tokens", "user_token_binding_methods", name: "fk_user_tokens_on_user_token_binding_method_id"
+  add_foreign_key "user_tokens", "user_token_dbsc_statuses", name: "fk_user_tokens_on_user_token_dbsc_status_id"
   add_foreign_key "user_tokens", "user_token_kinds", name: "fk_user_tokens_on_user_token_kind_id"
   add_foreign_key "user_tokens", "user_token_statuses", name: "fk_user_tokens_on_user_token_status_id"
   add_foreign_key "user_verifications", "user_tokens", on_delete: :cascade

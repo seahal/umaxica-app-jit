@@ -9,7 +9,7 @@
 #  id                                    :bigint           not null, primary key
 #  expires_at                            :integer          not null
 #  last_authenticated_at                 :datetime
-#  provider                              :string           default("google_oauth2"), not null
+#  provider                              :string           default("google_app"), not null
 #  refresh_token                         :string           default(""), not null
 #  token                                 :string           default(""), not null
 #  uid                                   :string           default(""), not null

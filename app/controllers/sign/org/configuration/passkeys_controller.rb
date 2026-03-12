@@ -87,7 +87,7 @@ module Sign
         rescue Sign::Webauthn::OriginValidationError => e
           Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
-        rescue StandardError => e
+        rescue Sign::Webauthn::ChallengeError, WebAuthn::Error, ArgumentError => e
           Rails.logger.error("WebAuthn registration options failed: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.options_failed") }, status: :unprocessable_content
         end
@@ -163,8 +163,7 @@ module Sign
 
         # PATCH/PUT /configuration/passkeys/:id
         def update
-          begin
-            @passkey.update!(update_params)
+          if @passkey.update(update_params)
             respond_to do |format|
               format.html do
                 redirect_to sign_org_configuration_passkey_path(@passkey),
@@ -172,7 +171,7 @@ module Sign
               end
               format.json { render json: { status: "ok" }, status: :ok }
             end
-          rescue ActiveRecord::RecordInvalid
+          else
             respond_to do |format|
               format.html { render :edit, status: :unprocessable_content }
               format.json {

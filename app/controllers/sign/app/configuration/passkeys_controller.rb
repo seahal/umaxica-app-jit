@@ -88,10 +88,10 @@ module Sign
             options: creation_options,
           }, status: :ok
         rescue Sign::Webauthn::OriginValidationError => e
-          Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
+          Rails.event.error("sign.webauthn.registration.origin_validation_failed", message: e.message, exception: e)
           render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
-        rescue StandardError => e
-          Rails.logger.error("WebAuthn registration options failed: #{e.message}")
+        rescue Sign::Webauthn::ChallengeError, WebAuthn::Error, ArgumentError => e
+          Rails.event.error("sign.webauthn.registration.options_failed", message: e.message, exception: e)
           render json: { error: I18n.t("errors.webauthn.options_failed") }, status: :unprocessable_content
         end
 
@@ -126,28 +126,26 @@ module Sign
           end
         rescue Sign::Webauthn::ChallengeNotFoundError,
                Sign::Webauthn::ChallengeExpiredError => e
-          Rails.logger.warn("WebAuthn challenge error: #{e.message}")
+          Rails.event.warn("sign.webauthn.registration.challenge_error", message: e.message)
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
         rescue Sign::Webauthn::ChallengePurposeMismatchError => e
-          Rails.logger.warn("WebAuthn challenge purpose mismatch: #{e.message}")
+          Rails.event.warn("sign.webauthn.registration.challenge_purpose_mismatch", message: e.message)
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
         rescue WebAuthn::Error => e
-          Rails.logger.warn("WebAuthn registration failed: #{e.message}")
+          Rails.event.warn("sign.webauthn.registration.failed", message: e.message)
           render json: { error: I18n.t("errors.webauthn.verification_failed") },
                  status: :unprocessable_content
         rescue ActiveRecord::RecordNotUnique
           render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
-          Rails.logger.warn("WebAuthn passkey creation failed: #{e.message}")
+          Rails.event.warn("sign.webauthn.registration.persist_failed", message: e.message)
           render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_content
         end
 
         # PATCH/PUT /configuration/passkeys/:id
         def update
           authorize @passkey
-
-          begin
-            @passkey.update!(update_params)
+          if @passkey.update(update_params)
             respond_to do |format|
               format.html do
                 redirect_to sign_app_configuration_passkey_path(@passkey),
@@ -155,7 +153,7 @@ module Sign
               end
               format.json { render json: { status: "ok" }, status: :ok }
             end
-          rescue ActiveRecord::RecordInvalid
+          else
             respond_to do |format|
               format.html { render :edit, status: :unprocessable_content }
               format.json {

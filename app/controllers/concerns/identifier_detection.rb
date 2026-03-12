@@ -14,6 +14,8 @@
 module IdentifierDetection
   extend ActiveSupport::Concern
 
+  private
+
   def detect_identifier_type(identifier)
     return :unknown if identifier.blank?
 

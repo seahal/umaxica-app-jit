@@ -16,7 +16,7 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
@@ -78,9 +78,9 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     assert_nil user.reload.user_social_google
 
     # Simulate Google callback as logged-in user
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
 
     # Should redirect to success path
@@ -205,8 +205,8 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
   # IMPORTANT: Social login uses provider+uid ONLY, NOT email
   def setup_google_mock_auth(uid:)
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: uid,
       info: { image: "https://example.com/image.jpg" },
       credentials: {

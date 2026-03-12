@@ -19,13 +19,13 @@ module Auth
     end
 
     test "Token.decode returns nil for blank token" do
-      result = Auth::Base::Token.decode("", host: "example.com")
+      result = Auth::Base::Token.decode("", host: "example.com", resource_type: "user")
 
       assert_nil result
     end
 
     test "Token.decode returns nil for blank host" do
-      result = Auth::Base::Token.decode("some_token", host: "")
+      result = Auth::Base::Token.decode("some_token", host: "", resource_type: "user")
 
       assert_nil result
     end
@@ -123,19 +123,20 @@ module Auth
       _payload, header = JWT.decode(token, nil, false)
 
       assert_predicate header["kid"], :present?
+      assert_equal "auth-access-token;user", header["typ"]
     end
 
     test "Token.decode rejects unknown kid" do
       token = Auth::Base::Token.encode(
         users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
       )
-      payload, _header = JWT.decode(token, nil, false)
+      payload, header = JWT.decode(token, nil, false)
       tampered = JWT.encode(
         payload, Auth::Base::JwtConfiguration.private_key, "ES384",
-        { kid: "unknown-kid" },
+        { kid: "unknown-kid", typ: header["typ"] },
       )
 
-      assert_nil Auth::Base::Token.decode(tampered, host: "example.com")
+      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
     end
 
     test "Token.decode rejects alg mismatch" do
@@ -144,9 +145,90 @@ module Auth
       )
       payload, _header = JWT.decode(token, nil, false)
       active_kid = Jit::Security::Jwt::Keyring.active_kid
-      tampered = JWT.encode(payload, "secret", "HS256", { kid: active_kid })
+      tampered = JWT.encode(payload, "secret", "HS256", { kid: active_kid, typ: "auth-access-token;user" })
 
-      assert_nil Auth::Base::Token.decode(tampered, host: "example.com")
+      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
+    end
+
+    test "Token.decode rejects alg none" do
+      token = Auth::Base::Token.encode(
+        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
+      )
+      payload, _header = JWT.decode(token, nil, false)
+      tampered = JWT.encode(
+        payload,
+        nil,
+        "none",
+        { kid: Jit::Security::Jwt::Keyring.active_kid, typ: "auth-access-token;user" },
+      )
+
+      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
+    end
+
+    test "Token.decode rejects missing nbf claim" do
+      token = Auth::Base::Token.encode(
+        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("nbf")
+      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", header)
+
+      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
+    end
+
+    test "Token.decode rejects missing sid claim" do
+      token = Auth::Base::Token.encode(
+        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("sid")
+      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", header)
+
+      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
+    end
+
+    test "Token.decode rejects missing sub claim" do
+      token = Auth::Base::Token.encode(
+        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("sub")
+      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", header)
+
+      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
+    end
+
+    test "Token.decode rejects missing typ claim" do
+      token = Auth::Base::Token.encode(
+        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("typ")
+      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", header)
+
+      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
+    end
+
+    test "Token.decode rejects user token for staff resource type" do
+      token = Auth::Base::Token.encode(
+        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
+      )
+
+      assert_nil Auth::Base::Token.decode(token, host: "example.com", resource_type: "staff")
+    end
+
+    test "Token.decode accepts nbf within configured leeway" do
+      token = Auth::Base::Token.encode(
+        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload["nbf"] = 20.seconds.from_now.to_i
+      payload["exp"] = 10.minutes.from_now.to_i
+      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", header)
+
+      Auth::Base::JwtConfiguration.stub(:leeway_seconds, 30) do
+        assert_predicate Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user"), :present?
+      end
     end
   end
 end

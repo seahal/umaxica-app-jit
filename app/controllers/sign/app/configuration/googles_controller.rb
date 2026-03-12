@@ -21,7 +21,7 @@ module Sign
         end
 
         def destroy
-          SocialAuthService.unlink(provider: "google_oauth2", user: current_user)
+          SocialAuthService.unlink(provider: "google_app", user: current_user)
           redirect_to sign_app_configuration_google_path,
                       notice: I18n.t("sign.app.social.sessions.destroy.success", provider: "Google")
         rescue SocialAuth::LastIdentityError

@@ -18,6 +18,8 @@ module Common
     # Minimum elapsed time for timing attack protection (in seconds)
     TIMING_PROTECTION_SECONDS = 0.01
 
+    private
+
     # ============================================================
     # Basic HOTP generation/verification (from Rotp)
     # ============================================================

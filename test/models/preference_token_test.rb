@@ -74,6 +74,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
       assert_equal @preference_type, payload["preference_type"]
       assert_equal @public_id, payload["public_id"]
       assert_equal @jti, payload["jti"]
+      assert_equal Preference::Token::TOKEN_TYPE, payload["typ"]
     end
   end
 
@@ -176,6 +177,193 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     end
   end
 
+  test "decode rejects HS256 token even with same payload" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, _header = JWT.decode(token, nil, false)
+      tampered = JWT.encode(payload, "secret", "HS256", { typ: Preference::Token::TOKEN_TYPE })
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects alg none token" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, _header = JWT.decode(token, nil, false)
+      tampered = JWT.encode(payload, nil, "none", { typ: Preference::Token::TOKEN_TYPE })
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects missing nbf claim" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("nbf")
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects missing typ claim" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("typ")
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects wrong typ header" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, _header = JWT.decode(token, nil, false)
+      tampered = JWT.encode(payload, @private_key, "ES384", { typ: "auth-access-token;user" })
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects wrong issuer" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload["iss"] = "other-issuer"
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects missing aud claim" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("aud")
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects missing public_id claim" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("public_id")
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects missing jti claim" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("jti")
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode rejects missing preference_type claim" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload.delete("preference_type")
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      assert_nil Preference::Token.decode(tampered, host: @host)
+    end
+  end
+
+  test "decode accepts nbf within configured leeway" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: @jti,
+      )
+      payload, header = JWT.decode(token, nil, false)
+      payload["nbf"] = 20.seconds.from_now.to_i
+      payload["exp"] = 10.minutes.from_now.to_i
+      tampered = JWT.encode(payload, @private_key, "ES384", header)
+
+      Preference::JwtConfiguration.stub(:leeway_seconds, 30) do
+        assert_predicate Preference::Token.decode(tampered, host: @host), :present?
+      end
+    end
+  end
+
   test "encode returns nil and logs error on StandardError" do
     # Temporarily override with faulty implementation
     original = Preference::JwtConfiguration.method(:private_key)
@@ -219,7 +407,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     # Manually stub using define_singleton_method to avoid Minitest stub issues with modules
     # if methods are missing or weirdly defined.
 
-    methods = %i(private_key public_key issuer audiences)
+    methods = %i(private_key public_key active_kid issuer audiences)
     originals = {}
 
     methods.each do |m|
@@ -240,6 +428,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     # Define stubs
     Preference::JwtConfiguration.define_singleton_method(:private_key) { priv_key }
     Preference::JwtConfiguration.define_singleton_method(:public_key) { pub_key }
+    Preference::JwtConfiguration.define_singleton_method(:active_kid) { "default" }
     Preference::JwtConfiguration.define_singleton_method(:issuer) { iss }
     Preference::JwtConfiguration.define_singleton_method(:audiences) { auds }
 

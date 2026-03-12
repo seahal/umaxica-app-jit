@@ -372,6 +372,14 @@ ja:
         missing_refresh_token: リフレッシュトークンが必要です
         invalid_refresh_token: 無効または期限切れのリフレッシュトークンです
     org:
+      social:
+        sessions:
+          invalid_provider: 無効なプロバイダーが指定されました
+          create:
+            success: "%{provider}でサインインしました"
+            failure: サインインに失敗しました。もう一度お試しください。
+            not_found: このGoogleアカウントに紐づくスタッフアカウントが見つかりません。管理者にお問い合わせください。
+            session_limit: アクティブなセッションが多すぎます。別のデバイスからサインアウトしてからお試しください。
       reauth:
         index:
           title: 再認証セッション
@@ -425,7 +433,6 @@ ja:
           method_legend: 認証方法
           methods:
             passkey: パスキー
-            totp: 認証アプリ（TOTP）
           submit: 続行
           back: 戻る
         edit:
@@ -483,14 +490,19 @@ ja:
         secret:
           new:
             page_title: シークレットでサインイン
-            pii_label: 本人確認情報
-            pii_placeholder: 電話番号またはメールアドレス
+            pii_label: ID
+            pii_placeholder: staff の ID を入力
             secret_label: シークレット
             confirm_label: シークレットを保存しました
+          create:
+            success: サインインしました。
+            invalid: 認証に失敗しました。入力内容をご確認ください。
         passkey:
           new:
             page_title: パスキーでログイン
-            description: パスキーを使って安全にログインします。
+            description: staff の ID を使ってパスキーでログインします。
+            identifier_label: ID
+            identifier_placeholder: staff の ID を入力
             submit: パスキーでログイン
         email:
           new:
@@ -1183,7 +1195,7 @@ ja:
         staff:
           attributes:
             public_id:
-              invalid_format: 英小文字と数字のみ（i, o, 0, 1, s, z, g を除く）で8文字にしてください
+              invalid_format: 英大文字と数字のうち SecureRandom::BASE32_ALPHABET の文字のみで16文字にしてください
         org_document_tagger:
           attributes:
             org_document_tag_id:

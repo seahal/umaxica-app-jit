@@ -54,6 +54,18 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_not_includes results, revoked
   end
 
+  test "future revoked_at stays valid until due and past revoked_at is excluded" do
+    future_token = UserToken.create!(user: @user, revoked_at: 10.minutes.from_now)
+    past_token = UserToken.create!(user: @user, revoked_at: 10.minutes.ago)
+
+    results = UserToken.not_revoked
+
+    assert_includes results, future_token
+    assert_not_includes results, past_token
+    assert_not future_token.expired?
+    assert_predicate past_token, :expired?
+  end
+
   test "restricted? returns true when status is restricted" do
     @token.update!(status: "restricted")
 
@@ -123,7 +135,7 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
   end
 
   test "works with StaffToken as well" do
-    staff = Staff.find_by!(public_id: "bcde3456")
+    staff = Staff.find_by!(public_id: "BCDE2345FGHJ67KM")
     token = StaffToken.create!(staff: staff)
 
     assert_predicate token, :active_status?

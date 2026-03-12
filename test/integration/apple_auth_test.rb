@@ -194,9 +194,9 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
   test "Google login without email creates user successfully" do
     # Same requirement applies to Google
     OmniAuth.config.test_mode = true
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
       {
-        provider: "google_oauth2",
+        provider: "google_app",
         uid: "google_uid_no_email_#{SecureRandom.hex(4)}",
         info: { image: "https://example.com/image.jpg" }, # No email
         credentials: {
@@ -207,11 +207,11 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       },
     )
 
-    uid = OmniAuth.config.mock_auth[:google_oauth2].uid
+    uid = OmniAuth.config.mock_auth[:google_app].uid
 
     assert_difference("User.count", 1) do
       assert_difference("UserSocialGoogle.count", 1) do
-        get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
             headers: browser_headers.merge(@callback_headers)
       end
     end

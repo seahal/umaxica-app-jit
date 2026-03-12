@@ -25,11 +25,7 @@ module Health
 
   included do
     # Skip query canonicalization for health checks if the callback exists
-    begin
-      skip_before_action :canonicalize_query_params
-    rescue ArgumentError
-      # Callback doesn't exist, ignore
-    end
+    skip_before_action :canonicalize_query_params, raise: false
     public_strict! if respond_to?(:public_strict!)
   end
 
@@ -48,9 +44,14 @@ module Health
   rescue StandardError => e
     # Debug print for tests
     if Rails.env.test?
-      Rails.logger.error("Health check error: #{e.class}: #{e.message}\n#{e.backtrace.first(5).join("\n")}")
+      Rails.event.error(
+        "health.check_failed",
+        error_class: e.class.name,
+        message: e.message,
+        exception: e,
+      )
     end
-    Rails.event.notify("health_check.failed", error_class: e.class.name, error_message: e.message)
+    Rails.event.record("health_check.failed", error_class: e.class.name, error_message: e.message)
     [503, "ERROR"]
   end
 
@@ -68,7 +69,7 @@ module Health
     DATABASE_RECORD_CLASSES.each do |klass|
       DB_ROLES.each do |role|
         klass.connected_to(role: role) do
-          klass.connection.execute("SELECT 1")
+          klass.with_connection { |conn| conn.execute("SELECT 1") }
         rescue StandardError => e
           errors << "Database #{klass.name}(#{role}) failed: #{e.message}"
         end

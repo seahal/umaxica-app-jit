@@ -7,7 +7,7 @@ module Sign
       # Controller for social auth entry points and account management
       #
       # Routes:
-      #   GET    /social/start          -> #start (entry point with intent)
+      #   GET    /social/session/new     -> #new (entry point with intent)
       #   DELETE /social/:provider/unlink -> #unlink (remove linked identity)
       #
       # The actual OmniAuth callbacks are handled by:
@@ -16,27 +16,27 @@ module Sign
         include ::Verification::User
         include SocialAuthConcern
 
-        SUPPORTED_PROVIDERS = %w(google_oauth2 apple).freeze
+        SUPPORTED_PROVIDERS = %w(google_app apple).freeze
 
         # Public access for start (login intent doesn't require auth)
         # For link/reauth intents, auth is checked in prepare_social_auth_intent!
-        public_strict! only: %i(start)
+        public_strict! only: %i(new)
         auth_required! only: %i(unlink)
         before_action -> { require_step_up!(scope: "social_unlink") }, only: :unlink
 
-        # GET /social/start?provider=google_oauth2&intent=login
+        # GET /social/session/new?provider=google_app&intent=login
         # Entry point for social auth flow.
         # Prepares session with intent/state, then redirects to OmniAuth.
         #
         # Params:
-        #   - provider: "google_oauth2" or "apple"
+        #   - provider: "google_app" or "apple"
         #   - intent: "login", "link", or "reauth" (default: "login")
         #
         # Flow:
         #   1. Validate provider
         #   2. Prepare intent in session (generates state)
         #   3. Redirect to /auth/:provider?state=...
-        def start
+        def new
           provider = params[:provider]
           intent = params[:intent] || "login"
 

@@ -63,6 +63,20 @@ For first-time setup in one command:
 bin/setup
 ```
 
+### Development Checks
+
+Use the project wrappers so local tooling runs with repository defaults:
+
+```bash
+bin/rubocop
+bin/brakeman
+bin/debride
+```
+
+`bin/debride` runs with Rails-aware analysis against `app/models`, `app/services`, `app/jobs`, and
+`app/policies`. Override the noise floor with `DEBRIDE_MINIMUM=5 bin/debride`, or pass paths
+explicitly such as `bin/debride app/services`.
+
 ### Local Domains (Development)
 
 This app uses host-constrained routing in development. Access each surface with these hosts:
@@ -117,7 +131,7 @@ TRUSTED_ORIGINS=https://sign.umaxica.app,https://sign.umaxica.org
 - **Cloudflare** for Turnstile and R2-based asset delivery.
 - **Fastly** for cache purge and edge delivery support.
 - **Sentry** for error monitoring.
-- **Resend** for SMTP-based email delivery.
+- **Amazon SES** for SMTP-based email delivery.
 
 ## Development
 

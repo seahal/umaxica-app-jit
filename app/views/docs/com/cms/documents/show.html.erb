@@ -9,11 +9,7 @@
       <div>
         <div>
           <h1>
-            <% begin %>
-              <%= @document.latest_version.title %>
-            <% rescue ActiveRecord::RecordNotFound %>
-              <span class="italic">Untitled Document</span>
-            <% end %>
+            <%= cms_document_title(@document, fallback: content_tag(:span, "Untitled Document", class: "italic")) %>
           </h1>
           <p>Permalink:
             <code><%= @document.permalink %></code></p>
@@ -75,8 +71,8 @@
         <% end %>
       </div>
 
-      <% begin %>
-        <% latest = @document.latest_version %>
+      <% latest = @versions.first %>
+      <% if latest.present? %>
         <div>
           <h2>Current Content</h2>
           <div>
@@ -96,7 +92,7 @@
             <% end %>
           </div>
         </div>
-      <% rescue ActiveRecord::RecordNotFound %>
+      <% else %>
         <div>
           <p class="italic">No content versions available</p>
         </div>

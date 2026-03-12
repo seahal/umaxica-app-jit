@@ -275,9 +275,14 @@ module Sign
         end
 
         def report_authentication_error(error, flow:)
-          Rails.logger.error(
-            "[SecretSignIn] flow=#{flow} error=#{error.class} message=#{error.message} " \
-            "user_id=#{mfa_user&.id || "n/a"} ip=#{request.remote_ip}",
+          Rails.event.error(
+            "sign.authentication.secret.error",
+            flow: flow,
+            error_class: error.class.name,
+            message: error.message,
+            user_id: mfa_user&.id,
+            ip: request.remote_ip,
+            exception: error,
           )
         end
 
@@ -285,12 +290,15 @@ module Sign
           @secret_form.errors.add(:base, invalid_secret_message)
 
           # Detailed failure logging (failure_reason=...) as requested
-          Rails.logger.info(
-            "[SecretSignIn] failed reason=#{reason} " \
-            "identifier_type=#{detect_identifier_type(identifier.to_s)} " \
-            "identifier_present=#{identifier.present?} " \
-            "user_id=#{user&.id || "n/a"} ip=#{request.remote_ip} " \
-            "errors=#{@secret_form.errors.full_messages.join(" | ")} details=#{details.inspect}",
+          Rails.event.info(
+            "sign.authentication.secret.failed",
+            reason: reason,
+            identifier_type: detect_identifier_type(identifier.to_s),
+            identifier_present: identifier.present?,
+            user_id: user&.id,
+            ip: request.remote_ip,
+            errors: @secret_form.errors.full_messages,
+            details: details,
           )
           render_new_with_unprocessable_entity
         end

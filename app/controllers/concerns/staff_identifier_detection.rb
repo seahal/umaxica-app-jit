@@ -10,6 +10,6 @@ module StaffIdentifierDetection
     staff_email = StaffEmail.find_by(address: identifier)
     return staff_email.staff if staff_email
 
-    Staff.find_by(public_id: identifier)
+    Staff.find_by(public_id: Staff.normalize_public_id(identifier))
   end
 end

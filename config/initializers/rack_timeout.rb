@@ -1,6 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
+return if Rails.env.test?
+
+require "rack-timeout" unless defined?(Rack::Timeout)
+
 if defined?(Rack::Timeout)
   # Rack::Timeout is automatically included by its Railtie for Rails apps.
   # By default it sets service_timeout to 15s, and wait_timeout to 30s.

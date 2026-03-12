@@ -141,7 +141,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = build_contact(status_id: AppContactStatus::SET_UP)
 
     assert_predicate contact, :can_verify_email?
-    contact.verify_email!
+    assert contact.verify_email!
 
     assert_equal AppContactStatus::CHECKED_EMAIL_ADDRESS, contact.status_id
   end
@@ -150,7 +150,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = build_contact(status_id: AppContactStatus::CHECKED_EMAIL_ADDRESS)
 
     assert_predicate contact, :can_verify_phone?
-    contact.verify_phone!
+    assert contact.verify_phone!
 
     assert_equal AppContactStatus::CHECKED_TELEPHONE_NUMBER, contact.status_id
   end
@@ -159,9 +159,26 @@ class AppContactTest < ActiveSupport::TestCase
     contact = build_contact(status_id: AppContactStatus::CHECKED_TELEPHONE_NUMBER)
 
     assert_predicate contact, :can_complete?
-    contact.complete!
+    assert contact.complete!
 
     assert_equal AppContactStatus::COMPLETED_CONTACT_ACTION, contact.status_id
+  end
+
+  test "should add errors instead of raising on invalid transitions" do
+    contact = build_contact(status_id: AppContactStatus::NOTHING)
+
+    assert_not contact.verify_email!
+    assert_includes contact.errors[:base], "Cannot verify email at this time"
+
+    contact.errors.clear
+
+    assert_not contact.verify_phone!
+    assert_includes contact.errors[:base], "Cannot verify phone at this time"
+
+    contact.errors.clear
+
+    assert_not contact.complete!
+    assert_includes contact.errors[:base], "Cannot complete contact at this time"
   end
 
   test "token length boundary" do

@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 require "jwt"
+require "base64"
+require "json"
+require "openssl"
 require "sha3"
 require "concurrent"
 
@@ -24,6 +27,14 @@ module Preference
     EPHEMERAL_PRIVATE_KEY_MUTEX = Mutex.new
     EPHEMERAL_PRIVATE_KEY_CACHE = Concurrent::AtomicReference.new(nil)
 
+    def self.active_kid
+      ENV.fetch("PREFERENCE_JWT_ACTIVE_KID", "default")
+    end
+
+    def self.leeway_seconds
+      ENV.fetch("PREFERENCE_JWT_LEEWAY_SECONDS", "30").to_i
+    end
+
     def self.issuer
       ENV.fetch("PREFERENCE_JWT_ISSUER", "jit-preference")
     end
@@ -33,6 +44,26 @@ module Preference
       audiences = raw.split(",").map(&:strip)
       audiences.reject!(&:empty?)
       audiences
+    end
+
+    def self.private_key_for_active
+      private_key_for(active_kid)
+    end
+
+    def self.private_key_for(kid)
+      keyset = parse_keyset(ENV["PREFERENCE_JWT_PRIVATE_KEYSET"])
+      return decode_key(keyset[kid]) if keyset.key?(kid)
+      return private_key if kid == active_kid
+
+      nil
+    end
+
+    def self.public_key_for(kid)
+      keyset = parse_keyset(ENV["PREFERENCE_JWT_PUBLIC_KEYSET"])
+      return decode_key(keyset[kid]) if keyset.key?(kid)
+      return public_key if kid == active_kid
+
+      nil
     end
 
     def self.private_key
@@ -68,18 +99,51 @@ module Preference
           EPHEMERAL_PRIVATE_KEY_CACHE.set(OpenSSL::PKey::EC.generate("secp384r1"))
       end
     end
+
+    def self.parse_header(token)
+      _payload, header = JWT.decode(token, nil, false)
+      header || {}
+    rescue JWT::DecodeError
+      {}
+    end
+
+    def self.parse_keyset(raw)
+      return {} if raw.blank?
+
+      parsed = JSON.parse(raw)
+      return parsed if parsed.is_a?(Hash)
+
+      {}
+    rescue JSON::ParserError
+      {}
+    end
+
+    def self.decode_key(base64_der)
+      return nil if base64_der.blank?
+
+      OpenSSL::PKey::EC.new(Base64.decode64(base64_der))
+    rescue OpenSSL::PKey::PKeyError
+      nil
+    end
+    private_class_method :parse_keyset, :decode_key
   end
 
   class Token
     JWT_ALGORITHM = "ES384"
     ACCESS_TOKEN_TTL = 7.days
+    TOKEN_TYPE = "preference-access-token"
 
     class << self
       def encode(preferences, host:, preference_type:, public_id:, jti:)
         return nil unless valid_encode_params?(preferences, host, preference_type, public_id, jti)
 
         payload = build_payload(preferences, host, preference_type, public_id, jti)
-        JWT.encode(payload, JwtConfiguration.private_key, JWT_ALGORITHM)
+        JWT.encode(
+          payload,
+          JwtConfiguration.private_key_for_active,
+          JWT_ALGORITHM,
+          { kid: JwtConfiguration.active_kid, typ: TOKEN_TYPE },
+        )
       rescue StandardError => e
         Rails.logger.error("PreferenceToken.encode failed: #{e.message}")
         nil
@@ -88,12 +152,44 @@ module Preference
       def decode(token, host:)
         return nil if token.blank? || host.blank?
 
-        payload, = JWT.decode(token, JwtConfiguration.public_key, true, decode_options)
-        validate_payload(payload, host)
+        header = JwtConfiguration.parse_header(token)
+        unless valid_header?(header)
+          report_invalid_header(host: host, header: header)
+          return nil
+        end
+
+        public_key = JwtConfiguration.public_key_for(header["kid"])
+        if public_key.nil?
+          Jit::Security::Jwt::AnomalyReporter.report_preference(
+            host: host,
+            header: header,
+            reason: "UNKNOWN_KID",
+          )
+          return nil
+        end
+
+        payload, = JWT.decode(token, public_key, true, decode_options)
+        validated_payload = validate_payload(payload, host)
+        unless validated_payload
+          report_invalid_payload(host: host, header: header, payload: payload)
+          return nil
+        end
+
+        validated_payload
       rescue JWT::ExpiredSignature
+        Jit::Security::Jwt::AnomalyReporter.report_preference(
+          host: host,
+          header: header,
+          reason: "EXPIRED",
+        )
         Rails.logger.debug("PreferenceToken.decode failed: token expired")
         nil
-      rescue JWT::DecodeError => e
+      rescue JWT::InvalidIssuerError, JWT::InvalidIatError, JWT::ImmatureSignature => e
+        report_claim_error(host: host, header: header, error: e)
+        Rails.logger.debug { "PreferenceToken.decode invalid claims: #{e.class}: #{e.message}" }
+        nil
+      rescue JWT::DecodeError, JWT::VerificationError => e
+        report_decode_error(host: host, header: header, error: e)
         Rails.logger.debug { "PreferenceToken.decode invalid token: #{e.message}" }
         nil
       rescue StandardError => e
@@ -133,30 +229,121 @@ module Preference
           preference_type: preference_type,
           public_id: public_id,
           jti: jti,
+          typ: TOKEN_TYPE,
           iss: JwtConfiguration.issuer,
           aud: JwtConfiguration.audiences,
           nonce: SecureRandom.uuid,
           iat: now,
+          nbf: now,
           exp: now + ACCESS_TOKEN_TTL.to_i,
         }
       end
 
       def decode_options
         {
-          algorithm: JWT_ALGORITHM,
+          algorithms: [JWT_ALGORITHM],
+          required_claims: %w(iss aud typ exp nbf public_id jti preference_type),
+          leeway: JwtConfiguration.leeway_seconds,
           verify_iss: true,
           iss: JwtConfiguration.issuer,
           verify_aud: false,
           verify_iat: true,
+          verify_exp: true,
+          verify_nbf: true,
         }
       end
 
       def validate_payload(payload, host)
         return nil unless payload.is_a?(Hash)
+        return nil unless payload["typ"] == TOKEN_TYPE
         return nil unless host_matches?(payload["host"], host)
         return nil unless audience_matches?(payload["aud"], host)
 
         payload
+      end
+
+      def valid_header?(header)
+        return false if header.blank?
+        return false unless header["alg"] == JWT_ALGORITHM
+        return false if header["kid"].blank?
+
+        header["typ"] == TOKEN_TYPE
+      end
+
+      def report_invalid_header(host:, header:)
+        reason =
+          if header.blank? || header["alg"].blank?
+            "MALFORMED_TOKEN"
+          elsif header["kid"].blank?
+            "MISSING_KID"
+          elsif header["alg"] == "none"
+            "ALG_NONE"
+          elsif header["alg"] != JWT_ALGORITHM
+            "ALG_MISMATCH"
+          elsif header["typ"].blank?
+            "MISSING_TYP"
+          else
+            "TYP_MISMATCH"
+          end
+
+        Jit::Security::Jwt::AnomalyReporter.report_preference(host: host, header: header, reason: reason)
+      end
+
+      def report_invalid_payload(host:, header:, payload:)
+        reason =
+          if payload["typ"] != TOKEN_TYPE
+            "TYP_MISMATCH"
+          elsif payload["host"].blank? || !host_matches?(payload["host"], host)
+            "HOST_MISMATCH"
+          elsif !audience_matches?(payload["aud"], host)
+            "AUD_MISMATCH"
+          else
+            "OTHER"
+          end
+
+        Jit::Security::Jwt::AnomalyReporter.report_preference(
+          host: host,
+          header: header,
+          payload: payload,
+          reason: reason,
+        )
+      end
+
+      def report_claim_error(host:, header:, error:)
+        reason =
+          case error
+          when JWT::InvalidIssuerError then "ISS_MISMATCH"
+          when JWT::InvalidIatError then "IAT_INVALID"
+          when JWT::ImmatureSignature then "IMMATURE"
+          else "OTHER"
+          end
+
+        Jit::Security::Jwt::AnomalyReporter.report_preference(
+          host: host,
+          header: header,
+          reason: reason,
+          error: error,
+        )
+      end
+
+      def report_decode_error(host:, header:, error:)
+        reason =
+          if error.message.to_s.include?("Missing required claim")
+            Jit::Security::Jwt::AnomalyReporter.reason_for_missing_claim(error.message)
+          elsif error.message.to_s.include?("Signature verification failed")
+            "SIGNATURE_INVALID"
+          elsif error.message.to_s.match?(/Not enough or too many segments|Invalid segment encoding/)
+            "MALFORMED_TOKEN"
+          else
+            "DECODE_ERROR"
+          end
+
+        Jit::Security::Jwt::AnomalyReporter.report_preference(
+          host: host,
+          header: header,
+          reason: reason,
+          error: error,
+        )
       end
 
       def host_matches?(host_claim, host)
@@ -241,7 +428,7 @@ module Preference
     }.freeze
 
     included do
-      helper_method :show_cookie_banner?, :cookie_banner_endpoint_path if respond_to?(:helper_method)
+      helper_method :show_cookie_banner?, :cookie_banner_endpoint_url if respond_to?(:helper_method)
       before_action :set_preferences_cookie
     end
 
@@ -268,7 +455,7 @@ module Preference
 
     def show_cookie_banner?
       return false unless request.format.html?
-      return false if cookie_banner_endpoint_path.blank?
+      return false if cookie_banner_endpoint_url.blank?
 
       token = cookies[Preference::CookieName.access]
       return true if token.blank?
@@ -281,25 +468,25 @@ module Preference
       true
     end
 
-    def cookie_banner_endpoint_path
+    def cookie_banner_endpoint_url
       return nil unless cookie_banner_endpoint_available_for_request?
 
-      @cookie_banner_endpoint_path ||=
+      @cookie_banner_endpoint_url ||=
         begin
-          endpoint_path = nil
+          endpoint_url = nil
           %i(
-            apex_app_web_v1_cookie_path
-            apex_com_web_v1_cookie_path
-            apex_org_web_v1_cookie_path
+            apex_app_web_v0_cookie_url
+            apex_com_web_v0_cookie_url
+            apex_org_web_v0_cookie_url
           ).each do |helper_name|
             next unless respond_to?(helper_name, true)
 
-            endpoint_path = public_send(helper_name)
+            endpoint_url = public_send(helper_name)
             break
           rescue ActionController::UrlGenerationError
             next
           end
-          endpoint_path
+          endpoint_url
         end
     end
 
@@ -654,8 +841,10 @@ module Preference
       end
     end
 
-    def ensure_preference_status_defaults!
+    def ensure_preference_reference_defaults!
       Preference::ClassRegistry.status_class_for(preference_class).ensure_defaults!
+      preference_binding_method_class.ensure_defaults!
+      preference_dbsc_status_class.ensure_defaults!
     end
 
     # ==========================================================================
@@ -686,7 +875,6 @@ module Preference
       token_value = refresh_token_value
       @refresh_token_value = token_value
       refresh_public_id = nil
-      refresh_device_id = nil
       @refresh_presented_digest = nil
       @refresh_public_id = nil
       preference =
@@ -710,13 +898,9 @@ module Preference
                   relation.find_by(token_digest: digest)
                 end
 
-              if pref.present?
-                refresh_device_id = extract_preference_refresh_device_id
-                if refresh_device_id.blank? || pref.device_id.to_s != refresh_device_id.to_s
-                  @preference_refresh_device_reason = refresh_device_id.blank? ? "missing" : "mismatch"
-                  handle_preference_refresh_device_denied(pref, refresh_public_id)
-                  return [nil, false]
-                end
+              if pref.present? && !preference_refresh_binding_allowed?(pref)
+                handle_preference_refresh_device_denied(pref, refresh_public_id)
+                return [nil, false]
               end
               pref
             end
@@ -751,11 +935,13 @@ module Preference
 
       PreferenceRecord.connected_to(role: :writing) do
         PreferenceRecord.transaction do
-          ensure_preference_status_defaults!
+          ensure_preference_reference_defaults!
           @preferences = preference_class.create!(
             expires_at: expires_at,
             jti: Jit::Security::Jwt::JtiGenerator.generate,
             device_id: SecureRandom.uuid,
+            binding_method_id: preference_binding_method_class::LEGACY,
+            dbsc_status_id: preference_dbsc_status_class::NOTHING,
           )
 
           generated_token, verifier = generate_refresh_token(public_id: @preferences.public_id)
@@ -791,7 +977,12 @@ module Preference
 
       @refresh_token_value = generated_token
       set_refresh_token_cookie(generated_token, expires_at)
+      set_preference_dbsc_cookie!(
+        @preferences.dbsc_session_id,
+        expires_at: preference_dbsc_cookie_expires_at(@preferences),
+      ) if @preferences.binding_method_dbsc?
       set_preference_device_id_cookie!(@preferences.device_id, expires_at: expires_at)
+      issue_preference_dbsc_registration_header_for(@preferences)
 
       @preferences
     end
@@ -831,8 +1022,13 @@ module Preference
       )
 
       set_refresh_token_cookie(new_token, new_expiry)
+      set_preference_dbsc_cookie!(
+        rotated_preference.dbsc_session_id,
+        expires_at: preference_dbsc_cookie_expires_at(rotated_preference),
+      ) if rotated_preference.binding_method_dbsc?
       set_preference_device_id_cookie!(rotated_preference.device_id, expires_at: new_expiry)
       @refresh_token_value = new_token
+      issue_preference_dbsc_registration_header_for(rotated_preference)
     end
 
     def issue_access_token_from(preference)
@@ -852,6 +1048,96 @@ module Preference
       )
 
       @preference_payload = Token.decode(token, host: request.host)
+    end
+
+    def preference_binding_method_class
+      case preference_class.name
+      when "AppPreference" then AppPreferenceBindingMethod
+      when "ComPreference" then ComPreferenceBindingMethod
+      when "OrgPreference" then OrgPreferenceBindingMethod
+      when "UserToken" then UserTokenBindingMethod
+      when "StaffToken" then StaffTokenBindingMethod
+      else
+        raise ArgumentError, "Unknown preference class: #{preference_class.name}"
+      end
+    end
+
+    def preference_dbsc_status_class
+      case preference_class.name
+      when "AppPreference" then AppPreferenceDbscStatus
+      when "ComPreference" then ComPreferenceDbscStatus
+      when "OrgPreference" then OrgPreferenceDbscStatus
+      when "UserToken" then UserTokenDbscStatus
+      when "StaffToken" then StaffTokenDbscStatus
+      else
+        raise ArgumentError, "Unknown preference class: #{preference_class.name}"
+      end
+    end
+
+    def preference_dbsc_payload_for(preference)
+      return unless preference
+
+      {
+        binding_method: dbsc_binding_method_name(preference),
+        status: dbsc_status_name(preference),
+        session_id: preference.dbsc_session_id,
+        registration_url: preference_dbsc_registration_path,
+        verification_url: preference_dbsc_registration_path,
+      }
+    end
+
+    def preference_dbsc_cookie_expires_at(preference, now: Time.current)
+      return unless preference&.binding_method_dbsc?
+
+      [now + 10.minutes, preference.expires_at, preference.revoked_at].compact.min
+    end
+
+    def issue_preference_dbsc_registration_header_for(preference)
+      return unless preference
+      return if preference.binding_method_dbsc?
+
+      challenge = issue_preference_dbsc_challenge_for!(preference)
+      return if challenge.blank?
+
+      response.set_header(
+        Preference::IoKeys::Headers::DBSC_REGISTRATION,
+        %(("ES256" "RS256");path="#{preference_dbsc_registration_path}";challenge="#{challenge}"),
+      )
+    end
+
+    def issue_preference_dbsc_challenge_for!(preference)
+      challenge = SecureRandom.urlsafe_base64(32)
+      preference.update!(dbsc_challenge: challenge, dbsc_challenge_issued_at: Time.current)
+      challenge
+    rescue StandardError
+      nil
+    end
+
+    def preference_dbsc_registration_path
+      case preference_class.name
+      when "AppPreference"
+        apex_app_edge_v0_dbsc_registration_path
+      when "OrgPreference"
+        apex_org_edge_v0_dbsc_registration_path
+      when "ComPreference"
+        apex_com_edge_v0_dbsc_registration_path
+      end
+    end
+
+    def dbsc_binding_method_name(record)
+      return "dbsc" if record.binding_method_dbsc?
+      return "legacy" if record.binding_method_legacy?
+
+      "nothing"
+    end
+
+    def dbsc_status_name(record)
+      return "pending" if record.dbsc_status_pending?
+      return "active" if record.dbsc_status_active?
+      return "failed" if record.dbsc_status_failed?
+      return "revoke" if record.dbsc_status_revoke?
+
+      "nothing"
     end
 
     def build_preferences_payload(preference)
@@ -971,6 +1257,38 @@ module Preference
       header_device_id || cookie_device_id
     end
 
+    def preference_refresh_binding_allowed?(preference)
+      return preference_refresh_dbsc_allowed?(preference) if preference.binding_method_dbsc?
+
+      refresh_device_id = extract_preference_refresh_device_id
+      if refresh_device_id.blank? || preference.device_id.to_s != refresh_device_id.to_s
+        @preference_refresh_device_reason = refresh_device_id.blank? ? "missing" : "mismatch"
+        return false
+      end
+
+      true
+    end
+
+    def preference_refresh_dbsc_allowed?(preference)
+      unless preference.dbsc_status_active?
+        @preference_refresh_device_reason = "dbsc_not_active"
+        return false
+      end
+
+      dbsc_cookie = cookies[Preference::CookieName.dbsc].to_s.presence
+      if dbsc_cookie.blank?
+        @preference_refresh_device_reason = "missing_bound_cookie"
+        return false
+      end
+
+      if preference.dbsc_session_id.to_s.blank? || preference.dbsc_session_id != dbsc_cookie
+        @preference_refresh_device_reason = "session_id_mismatch"
+        return false
+      end
+
+      true
+    end
+
     def handle_preference_refresh_device_denied(preference, refresh_public_id)
       clear_preference_auth_cookies!
       @preference_refresh_failed = true
@@ -1088,6 +1406,12 @@ module Preference
       )
     end
 
+    def set_preference_dbsc_cookie!(token, expires_at:)
+      cookies[Preference::CookieName.dbsc] = preference_cookie_options(expires_at: expires_at, httponly: true).merge(
+        value: token,
+      )
+    end
+
     def set_preference_device_id_cookie!(device_id, expires_at:)
       cookies.encrypted[preference_device_id_cookie_name] = preference_cookie_options(
         expires_at: expires_at,
@@ -1103,7 +1427,7 @@ module Preference
 
     def clear_preference_auth_cookies!
       [access_token_cookie_name, refresh_token_cookie_name,
-       preference_device_id_cookie_name,].uniq.each do |cookie_name|
+       preference_device_id_cookie_name, Preference::CookieName.dbsc,].uniq.each do |cookie_name|
         cookies.delete(cookie_name, **preference_cookie_deletion_options)
       end
     end

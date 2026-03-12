@@ -15,10 +15,7 @@ module Core
 
         def create
           @contact_telephone = ComContactTelephone.find_by(com_contact_id: @contact.id)
-
-          unless @contact_telephone
-            raise StandardError, "Contact telephone not found"
-          end
+          return render_missing_contact_telephone unless @contact_telephone
 
           hotp_code = params.dig(:com_contact_telephone, :hotp_code)
 
@@ -50,7 +47,7 @@ module Core
 
           if @contact_telephone.verify_hotp_code(hotp_code)
             # Update contact status to CHECKED_TELEPHONE_NUMBER
-            @contact.verify_phone!
+            return render_invalid_contact_state unless @contact.verify_phone!
 
             redirect_url = core_com_contact_url(
               @contact,
@@ -86,21 +83,14 @@ module Core
 
         def load_and_validate_contact
           contact_id = params[:contact_id]
-
-          if contact_id.blank?
-            raise StandardError, "Contact ID is required"
-          end
+          return render_missing_contact_id if contact_id.blank?
 
           @contact = ComContact.find_by(public_id: contact_id)
-
-          if @contact.nil?
-            raise StandardError, "Contact not found"
-          end
+          return render_missing_contact unless @contact
 
           return if @contact.status_id == ComContactStatus::CHECKED_EMAIL_ADDRESS
 
-          raise StandardError,
-                "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
+          render_invalid_contact_state
         end
 
         def core_corporate_redirect_options
@@ -125,6 +115,22 @@ module Core
 
         def preserved_locale_query_params
           request.query_parameters.slice("ct", "lx", "ri", "tz").compact
+        end
+
+        def render_missing_contact_id
+          render plain: "Contact ID is required", status: :bad_request
+        end
+
+        def render_missing_contact
+          render plain: "Contact not found", status: :not_found
+        end
+
+        def render_missing_contact_telephone
+          render plain: "Contact telephone not found", status: :not_found
+        end
+
+        def render_invalid_contact_state
+          render plain: "Invalid contact status", status: :unprocessable_content
         end
       end
     end

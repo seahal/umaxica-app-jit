@@ -3,7 +3,7 @@
 
 module Docs::CommonHelper
   def to_localetime(time, tz = "utc")
-    raise if time.nil?
+    return nil if time.nil?
 
     zone =
       case tz.to_s.downcase
@@ -37,5 +37,23 @@ module Docs::CommonHelper
 
   def get_colortheme
     "sy"
+  end
+
+  def cms_document_latest_version(document)
+    document.com_document_versions.order(created_at: :desc).first
+  end
+
+  def cms_document_title(document, fallback: content_tag(:span, "No version", class: "italic"))
+    version = cms_document_latest_version(document)
+    return fallback if version.blank?
+
+    safe_encrypted_text(version, :title, fallback:)
+  end
+
+  def safe_encrypted_text(record, attribute, fallback: nil)
+    value = record.public_send(attribute)
+    value.presence || fallback
+  rescue ActiveRecord::Encryption::Errors::Decryption
+    fallback
   end
 end

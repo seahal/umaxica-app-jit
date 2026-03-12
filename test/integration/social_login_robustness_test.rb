@@ -14,14 +14,14 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
   test "social login with invalid oauth state is rejected gracefully" do
     # Setup mock auth
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: "test_uid_#{SecureRandom.hex(4)}",
       info: { image: "https://example.com/image.jpg" },
       credentials: {
@@ -32,7 +32,7 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     )
 
     # Try callback without starting intent (no state)
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: "invalid_state"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: "invalid_state"),
         headers: { "Host" => @host }
 
     # Should be handled gracefully, not 500
@@ -44,14 +44,14 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
 
   test "social login callback error handling is robust" do
     # Set up mock auth with error
-    OmniAuth.config.mock_auth[:google_oauth2] = :unexpected_error
+    OmniAuth.config.mock_auth[:google_app] = :unexpected_error
 
     # Suppress expected OmniAuth error log
     old_logger = OmniAuth.config.logger
     OmniAuth.config.logger = Logger.new(nil)
 
     begin
-      get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+      get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
           headers: { "Host" => @host }
     ensure
       OmniAuth.config.logger = old_logger
@@ -66,7 +66,7 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     users(:one)
 
     # Set link intent without authentication
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: { "Host" => @host }
 
     # Should require authentication
@@ -78,8 +78,8 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     user = users(:one)
 
     # Create a social identity for the user
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: "reauth_test_#{SecureRandom.hex(4)}",
       info: { image: "https://example.com/image.jpg" },
       credentials: {
@@ -92,8 +92,8 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     # First, link the identity
     UserSocialGoogle.create!(
       user: user,
-      uid: OmniAuth.config.mock_auth[:google_oauth2].uid,
-      provider: "google_oauth2",
+      uid: OmniAuth.config.mock_auth[:google_app].uid,
+      provider: "google_app",
       token: "existing_token",
       refresh_token: "existing_refresh",
       expires_at: 1.week.from_now.to_i,
@@ -101,13 +101,13 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     )
 
     # Start reauth
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "reauth", ri: "jp"),
         headers: as_user_headers(user, host: @host)
 
     assert_response :redirect
 
     # Now do the callback with reauth
-    post sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    post sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
          headers: SocialCallbackTestHelper.callback_headers(@host).merge(
            as_user_headers(user, host: @host),
          )
@@ -136,7 +136,7 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: user,
       uid: "mfa_test_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "test_token",
       refresh_token: "test_refresh",
       expires_at: 1.week.from_now.to_i,
@@ -144,8 +144,8 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     )
 
     # Setup mock auth
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
-      provider: "google_oauth2",
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
+      provider: "google_app",
       uid: user.user_social_googles.first.uid,
       info: { image: "https://example.com/image.jpg" },
       credentials: {
@@ -156,14 +156,14 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     )
 
     # Start social login
-    get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
+    get sign_app_social_start_url(provider: "google_app", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
 
     # Do callback - this should redirect to MFA, but the callback processing itself
     # should not fail
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     # If MFA is required, that's OK - but the callback should succeed (redirect)

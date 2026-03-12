@@ -9,7 +9,7 @@
 #  id                                    :bigint           not null, primary key
 #  expires_at                            :integer          not null
 #  last_authenticated_at                 :datetime
-#  provider                              :string           default("google_oauth2"), not null
+#  provider                              :string           default("google_app"), not null
 #  refresh_token                         :string           default(""), not null
 #  token                                 :string           default(""), not null
 #  uid                                   :string           default(""), not null
@@ -92,7 +92,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
   test "find_or_create_from_auth_hash initializes new record" do
     auth = MockAuth.new(
       uid: "new-google-uid",
-      provider: "google_oauth2",
+      provider: "google_app",
       info: OpenStruct.new(email: "google@example.com"),
       credentials: OpenStruct.new(token: "google-token", expires_at: 123),
     )
@@ -101,7 +101,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
 
     assert_predicate identity, :new_record?
     assert_equal "new-google-uid", identity.uid
-    assert_equal "google_oauth2", identity.provider
+    assert_equal "google_app", identity.provider
     assert_equal "google-token", identity.token
     assert_equal 123, identity.expires_at
   end
@@ -118,7 +118,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
 
     auth = MockAuth.new(
       uid: "existing-google-uid",
-      provider: "google_oauth2",
+      provider: "google_app",
       info: OpenStruct.new(email: "updated-google@example.com"),
       credentials: OpenStruct.new(token: "updated-token", expires_at: 456),
     )
@@ -133,7 +133,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
   test "extract_uid falls back to extra raw_info sub" do
     auth = MockAuth.new(
       uid: "",
-      provider: "google_oauth2",
+      provider: "google_app",
       info: OpenStruct.new(email: "google@example.com"),
       credentials: OpenStruct.new(token: "google-token", expires_at: 123),
       extra: OpenStruct.new(raw_info: OpenStruct.new(sub: "fallback-sub")),
@@ -153,7 +153,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
 
     auth = MockAuth.new(
       uid: "update-google-uid",
-      provider: "google_oauth2",
+      provider: "google_app",
       info: OpenStruct.new(email: "new-google@example.com"),
       credentials: OpenStruct.new(token: "new-token", refresh_token: "new-refresh", expires_at: 456),
     )
@@ -191,7 +191,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
   end
 
   test "normalized_provider maps provider" do
-    identity = UserSocialGoogle.new(provider: "google_oauth2")
+    identity = UserSocialGoogle.new(provider: "google_app")
 
     assert_equal "google", identity.normalized_provider
   end

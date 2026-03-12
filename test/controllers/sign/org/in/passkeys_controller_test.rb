@@ -9,19 +9,16 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   fixtures :staffs, :staff_statuses, :staff_passkeys, :staff_passkey_statuses
 
   setup do
-    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! host
+    Jit::Security::TurnstileVerifier.test_mode = true
+    Jit::Security::TurnstileVerifier.test_response = { "success" => true }
     @original_trusted_origins = Webauthn.method(:trusted_origins)
-    Webauthn.define_singleton_method(:trusted_origins) { ["http://sign.app.localhost", "http://sign.org.localhost"] }
+    Webauthn.define_singleton_method(:trusted_origins) { ["http://sign.app.localhost", "http://#{host}"] }
 
     # Setup active staff with email and passkey
     @staff = staffs(:one)
     @staff.update!(status_id: StaffStatus::ACTIVE)
-
-    @staff_email = StaffEmail.create!(
-      staff: @staff,
-      address: "staff_test@example.com",
-      staff_email_status_id: StaffEmailStatus::VERIFIED,
-    )
 
     @staff_passkey = StaffPasskey.create!(
       staff: @staff,
@@ -35,12 +32,15 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
   teardown do
     Webauthn.define_singleton_method(:trusted_origins, @original_trusted_origins)
+    Jit::Security::TurnstileVerifier.test_mode = false
+    Jit::Security::TurnstileVerifier.test_response = nil
   end
 
   test "should get new" do
     get new_sign_org_in_passkey_url(ri: "jp")
 
     assert_response :success
+    assert_select "label", text: "ID"
   end
 
   test "options returns error if identifier blank" do
@@ -60,20 +60,22 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   test "options returns error if staff has no passkeys" do
     staff_no_passkey = staffs(:two)
     staff_no_passkey.update!(status_id: StaffStatus::ACTIVE)
-    StaffEmail.create!(
-      staff: staff_no_passkey,
-      address: "nopasskey_staff@example.com",
-      staff_email_status_id: StaffEmailStatus::VERIFIED,
-    )
 
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: "nopasskey_staff@example.com" }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: staff_no_passkey.public_id }
 
     assert_response :unprocessable_content
     assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
   end
 
-  test "options returns challenge and allowCredentials for email identifier" do
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+  test "options rejects email identifier" do
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: "staff_test@example.com" }
+
+    assert_response :unprocessable_content
+    assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
+  end
+
+  test "options returns challenge and allowCredentials for lowercase staff public_id identifier" do
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id.downcase }
 
     assert_response :ok
     json = response.parsed_body
@@ -94,7 +96,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     assert_equal @staff.id, session[:passkey_challenges][json["challenge_id"]]["staff_id"]
   end
 
-  test "options returns challenge and allowCredentials for staff_code identifier" do
+  test "options returns challenge and allowCredentials for staff public_id identifier" do
     post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
 
     assert_response :ok
@@ -119,7 +121,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "verification returns bad request on challenge purpose mismatch" do
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
 
     mismatch_error = Sign::Webauthn::ChallengePurposeMismatchError.new("purpose mismatch")
@@ -144,9 +146,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
   test "verification logs staff in on success" do
     assert_not_nil @staff_passkey, "Passkey must exist"
-    # Get challenge
-    email = StaffEmail.find_by(staff: @staff).address
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: email }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     explanation = response.parsed_body
     challenge_id = explanation["challenge_id"]
 
@@ -174,6 +174,8 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
       assert_equal "ok", json["status"]
       assert_not_nil json["access_token"]
+      assert_equal "Bearer", json["token_type"]
+      assert_equal Auth::Base::ACCESS_TOKEN_TTL.to_i, json["expires_in"]
       assert_includes json["redirect_url"], "rd="
 
       # Challenge verification updates sign count
@@ -183,7 +185,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "verification returns unauthorized for credential mismatch" do
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
 
     mock_credential = Object.new
@@ -208,16 +210,11 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "verification returns unauthorized when challenge actor and passkey owner mismatch" do
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
 
     other_staff = staffs(:two)
     other_staff.update!(status_id: StaffStatus::ACTIVE)
-    StaffEmail.create!(
-      staff: other_staff,
-      address: "other_staff_#{SecureRandom.hex(4)}@example.com",
-      staff_email_status_id: StaffEmailStatus::VERIFIED,
-    )
     other_passkey = StaffPasskey.create!(
       staff: other_staff,
       webauthn_id: Base64.urlsafe_encode64("other_staff_key_#{SecureRandom.hex(4)}", padding: false),
@@ -247,7 +244,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "verification returns 422 when login result status is unknown" do
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
 
     passkey_id = @staff_passkey.webauthn_id
@@ -278,7 +275,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   test "verification for staff with mfa enabled succeeds (MFA not enforced for staff)" do
     @staff.update!(multi_factor_enabled: true)
 
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
 
     mock_credential = Object.new
@@ -306,7 +303,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "verification returns unauthorized for malformed credential payload" do
-    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff_email.address }
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
 
     post verification_sign_org_in_passkeys_url(ri: "jp"), params: {

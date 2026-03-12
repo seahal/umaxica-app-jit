@@ -45,14 +45,25 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "example.com" }
 
-  # Print deprecation notices to the stderr.
-  config.active_support.deprecation = :stderr
+  # Raise on deprecation warnings to catch issues early.
+  config.active_support.deprecation = :raise
 
-  # Raises error for missing translations.
-  # config.i18n.raise_on_missing_translations = true
+  # Raise error for missing translations.
+  config.i18n.raise_on_missing_translations = true
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
+
+  # Disallow deprecated .connection usage (must use .with_connection for multi-DB)
+  config.active_record.permanent_connection_checkout = :disallowed
+
+  # Raise on SQL warnings from PostgreSQL.
+  config.active_record.db_warnings_action = :raise
+
+  # Detect N+1 queries and raise errors immediately.
+  config.active_record.strict_loading_by_default = true
+  config.active_record.strict_loading_mode = :n_plus_one_only
+  config.active_record.action_on_strict_loading_violation = :raise
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
@@ -80,8 +91,4 @@ Rails.application.configure do
   ActiveSupport.on_load(:active_record_postgresqladapter) do
     self.create_unlogged_tables = true
   end
-
-  # i18n default locale for tests
-  # config.action_view.raise_on_missing_translations = true
-  config.i18n.raise_on_missing_translations = true
 end

@@ -7,7 +7,7 @@ module Sign
       # PasskeysController handles Passkey-based staff authentication.
       #
       # Flow:
-      # 1. Staff visits /in/passkeys/new and enters their staff_code or email
+      # 1. Staff visits /in/passkeys/new and enters their staff public_id
       # 2. POST /in/passkeys/options with identifier to get WebAuthn challenge
       # 3. Browser performs navigator.credentials.get()
       # 4. POST /in/passkeys/verification with credential + challenge_id
@@ -24,9 +24,9 @@ module Sign
         include Sign::PasskeyVerificationFlow
         include Sign::PasskeySignInFlow
         include Sign::PasskeyLoginResultFlow
-        include StaffIdentifierDetection
         include MinimumResponseBudget
         include SessionLimitGate
+        include CloudflareTurnstile
 
         before_action :reject_logged_in_session
 
@@ -39,12 +39,19 @@ module Sign
 
         private
 
+        def before_passkey_options_request!
+          verify_turnstile_stealth!
+        end
+
         def normalized_passkey_identifier
-          params[:identifier].to_s.strip.downcase
+          Staff.normalize_public_id(params[:identifier])
         end
 
         def find_active_passkey_actor(identifier)
-          staff = find_staff_by_identifier(identifier)
+          normalized_identifier = Staff.normalize_public_id(identifier)
+          return if normalized_identifier.blank?
+
+          staff = Staff.find_by(public_id: normalized_identifier)
           staff if staff&.active?
         end
 

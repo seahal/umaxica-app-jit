@@ -95,21 +95,21 @@ module Core
           assert_response :unprocessable_content
         end
 
-        test "should raise error if contact not found" do
+        test "should return not found if contact not found" do
           host! @host
 
-          assert_raises(StandardError) do
-            get new_core_com_contact_telephone_url(contact_id: "invalid-id")
-          end
+          get new_core_com_contact_telephone_url(contact_id: "invalid-id")
+
+          assert_response :not_found
         end
 
-        test "should raise error if contact status is invalid" do
+        test "should return unprocessable content if contact status is invalid" do
           host! @host
           @contact.update!(status_id: ComContactStatus::NOTHING)
 
-          assert_raises(StandardError) do
-            get new_core_com_contact_telephone_url(contact_id: @contact.public_id)
-          end
+          get new_core_com_contact_telephone_url(contact_id: @contact.public_id)
+
+          assert_response :unprocessable_content
         end
 
         test "should handle last attempt failure" do
@@ -140,15 +140,26 @@ module Core
           assert_includes @response.redirect_url, "ct=test"
         end
 
-        test "should raise error if contact telephone not found" do
+        test "should return not found if contact telephone not found" do
           host! @host
           @contact_telephone.destroy!
 
-          assert_raises(StandardError) do
-            post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
-              com_contact_telephone: { hotp_code: "123456" },
-            }
-          end
+          post core_com_contact_telephone_url(contact_id: @contact.public_id), params: {
+            com_contact_telephone: { hotp_code: "123456" },
+          }
+
+          assert_response :not_found
+        end
+
+        test "should return bad request if contact id is blank" do
+          host! @host
+          get new_core_com_contact_telephone_url(contact_id: @contact.public_id)
+
+          assert_response :success
+
+          get new_core_com_contact_telephone_url(contact_id: " ")
+
+          assert_response :bad_request
         end
       end
     end

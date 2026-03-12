@@ -135,5 +135,6 @@ ActiveSupport.on_load(:after_initialize) do
       end
 
     Rails.event.subscribe(subscriber.new)
+    Rails.event.subscribe(JwtAnomalySubscriber.new) if defined?(JwtAnomalySubscriber)
   end
 end

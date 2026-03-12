@@ -2,10 +2,14 @@
 # frozen_string_literal: true
 
 module CustomAssertions
-  def assert_expires_at_default(record, msg = nil)
-    assert_respond_to record, :expires_at, "Record should have expires_at"
-    # Assuming default is some future date or present
-    assert_predicate record.expires_at, :present?, msg || "Expected expires_at to be present"
+  def assert_infinity_timestamp_default(record, attribute, msg = nil)
+    assert_respond_to record, attribute, "Record should have #{attribute}"
+    assert_equal Float::INFINITY, record.public_send(attribute), msg || "Expected #{attribute} to default to infinity"
+  end
+
+  def assert_occurrence_lifecycle_defaults(record)
+    assert_infinity_timestamp_default(record, :revoked_at)
+    assert_infinity_timestamp_default(record, :deletable_at)
   end
 
   def build_occurrence(model_class, attributes = {})

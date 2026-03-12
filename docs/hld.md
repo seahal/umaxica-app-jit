@@ -20,14 +20,14 @@ host—marketing, authentication, docs/news, help/support, BFF, and API—consis
 - Namespaced controllers for `Top`, `Sign`, `Help`, `Docs`, `News`, `Bff`, and `Api` surfaces
 - Turbo/React front-end with pnpm-managed tooling (`app/javascript/**`)
 - Multi-database Active Record setup (identity, guest, universal, token, etc.)
-- Supporting infrastructure: PostgreSQL primary/replica pairs, Valkey, Kafka/Karafka, MinIO,
+- Supporting infrastructure: PostgreSQL primary/replica pairs, Valkey, MinIO,
   Grafana/Loki/Tempo
 - CI/CD automation (GitHub Actions, Lefthook) and local workflows (Foreman + Docker Compose)
 
 ### 1.3 References
 
 - `docs/srs.md`
-- `compose.yml`, `Procfile.dev`, `karafka.rb`
+- `compose.yml`, `Procfile.dev`
 - `README.md`, `docs/checklist.md`
 - Ruby on Rails Guides, ISO/IEC/IEEE 42010 & IEEE 1016
 
@@ -53,13 +53,13 @@ host—marketing, authentication, docs/news, help/support, BFF, and API—consis
 - **Namespace isolation**: Each host maps to a dedicated controller namespace; shared logic lives in
   concerns (`Authn`, `PreferenceRegions`, `Theme`, `Redirect`, etc.).
 - **Configuration through ENV**: Hosts (e.g., `TOP_CORPORATE_URL`), downstream targets (`EDGE_*`),
-  DB URLs, Kafka brokers, and secrets are injected via ENV to keep the code portable.
+  DB URLs, and secrets are injected via ENV to keep the code portable.
 - **Defense in depth**: Signed cookies, JWTs, Turnstile, rate limiting, encryption, and
   `allow_browser versions: :modern` guard every entry point.
-- **Observability-first**: All HTTP, Redis, Kafka, and ActionMailer operations are instrumented;
+- **Observability-first**: All HTTP, Redis, and ActionMailer operations are instrumented;
   `/health` + `/v1/health` exist for every host.
-- **Composable tooling**: pnpm-managed JavaScript tooling (Biome), Tailwind CLI for CSS, Karafka for
-  Kafka, Foreman + Docker Compose for orchestration, GitHub Actions for CI.
+- **Composable tooling**: pnpm-managed JavaScript tooling (Biome), Tailwind CLI for CSS, Foreman +
+  Docker Compose for orchestration, GitHub Actions for CI.
 
 ### 2.3 Constraints
 
@@ -67,7 +67,6 @@ host—marketing, authentication, docs/news, help/support, BFF, and API—consis
 - pnpm 10+ / Node 20+ for JavaScript tooling (no Vite/Webpacker)
 - PostgreSQL 18 primaries/replicas per logical database
 - Valkey for caching/rate limiting
-- Kafka available (local via Compose or managed)
 - Cloudflare/ Fastly handle TLS and CDN duties
 
 ---
@@ -83,7 +82,6 @@ Browsers / Mobile Apps
 Rails 8 Monolith (Top / Sign / Help / Docs / News / API / BFF)
     │ ├─ Postgres clusters (identity, guest, universal, profile, token, etc.)
     │ ├─ Valkey (sessions, rate limiting, Memorize cache)
-    │ ├─ Kafka via Karafka (email topic)
     │ ├─ ActionMailer + SMTP / AwsSmsService providers
     │ └─ OpenTelemetry exporter (Tempo) + Loki logging
 Downstream: Google Cloud (Run/Build/Storage), Cloudflare R2, Fastly CDN
@@ -113,9 +111,8 @@ concerns scoped.
    Turnstile, rate limiting, redirect sanitization). Models inherit from base records
    (`IdentitiesRecord`, `GuestRecord`, etc.) to target specific DB clusters. Services (e.g.,
    `AwsSmsService`, `AccountService`) encapsulate integration logic.
-3. **Integration**: ActionMailer namespaces, Karafka consumer, Sms providers, Active Storage/Shrine,
-   OpenTelemetry instrumentation, Redis/Valkey caching, Kafka messaging, external CDNs/cloud
-   providers.
+3. **Integration**: ActionMailer namespaces, Sms providers, Active Storage/Shrine, OpenTelemetry
+   instrumentation, Redis/Valkey caching, external CDNs/cloud providers.
 
 ---
 
@@ -156,8 +153,7 @@ concerns scoped.
   The model encrypts email/phone/title/description, enforces validation, and guarantees either email
   or phone exists.
 - Turnstile result is logged; failures add model errors and re-render the form.
-- On success, controller redirects to `new` and (future) should enqueue a Kafka message through
-  `Karafka.producer`.
+- On success, controller redirects to `new` after immediate email notification handling.
 - Client-side guard (`app/javascript/views/www/app/inquiry/before_submit.js`) prevents submission
   when policy checkbox unchecked.
 
@@ -179,9 +175,6 @@ concerns scoped.
 
 ### 4.6 Background services
 
-- `karafka.rb` configures Kafka brokers (Docker vs host), client/group IDs, instrumentation, and
-  topics (currently `email`). Karafka Web UI is enabled for debugging.
-- `EmailConsumer` (stub) will eventually decrypt and dispatch ActionMailer jobs off Kafka payloads.
 - `SmsProviders::*` classes implement provider-specific HTTP clients; `AwsSmsService` selects the
   configured provider.
 - `Memorize` concern wraps a Redis pool with per-session prefixes and encryption for ephemeral
@@ -219,11 +212,10 @@ Sensitive columns leverage Active Record encryption.
 
 ### 6.1 Local development
 
-- `compose.yml` launches: Postgres primaries/replicas for each logical DB, Valkey, Kafka +
-  Zookeeper, Kafka UI, MinIO, Loki, Tempo, Grafana. Ports default to `5435-5436` (Postgres), `56379`
-  (Valkey), `19092` (Kafka), `18080` (Kafka UI), `9000/9001` (MinIO), `33100/3200/4317`
-  (observability), `8000` (Grafana).
-- `Procfile.dev` runs Rails server and optionally Karafka; `foreman start -f Procfile.dev`
+- `compose.yml` launches: Postgres primaries/replicas for each logical DB, Valkey, MinIO, Loki,
+  Tempo, Grafana. Ports default to `5435-5436` (Postgres), `56379` (Valkey), `9000/9001` (MinIO),
+  `33100/3200/4317` (observability), `8000` (Grafana).
+- `Procfile.dev` runs Rails server and supporting local processes; `foreman start -f Procfile.dev`
   orchestrates them. JavaScript tooling (Biome) runs via pnpm when linting/formatting.
 
 ### 6.2 CI/CD
@@ -269,9 +261,8 @@ Sensitive columns leverage Active Record encryption.
 | Interface      | Type                      | Description                                                                                                                                 |
 | -------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | HTTP           | REST                      | Host-scoped routes for top/sign/help/docs/news/api/bff, including `/health`, `/v1/health`, `/sign/...`, `/help/...`, `/api/v1/inquiry/...`. |
-| Mail           | SMTP / API                | `Email::App/Com/Org::*Mailer` deliver OTPs, contact confirmations, receipts (SES/Resend/Twilio SendGrid as configured).                     |
+| Mail           | SMTP / API                | `Email::App/Com/Org::*Mailer` deliver OTPs, contact confirmations, receipts (SES/Twilio SendGrid as configured).                            |
 | SMS            | HTTPS (AWS SNS / Infobip) | `SmsProviders::*` classes send OTP codes.                                                                                                   |
-| Kafka          | TCP                       | Topic `email` for asynchronous email delivery; to be expanded for other events.                                                             |
 | Redis/Valkey   | RESP                      | Sessions, rate limiting, Memorize store.                                                                                                    |
 | OTLP           | HTTP/gRPC                 | OpenTelemetry exporter pushes spans to Tempo (`http://tempo:4318/v1/traces`).                                                               |
 | Object storage | S3-compatible             | MinIO (dev) / Google Cloud Storage (prod) for uploads.                                                                                      |
@@ -283,11 +274,10 @@ Sensitive columns leverage Active Record encryption.
 - `config/initializers/opentelemetry.rb` configures service names (`umaxica-app-jit-core`) and
   instrumentation; production enables `use_all`.
 - Compose-provisioned Loki/Tempo/Grafana host logs/traces locally; dashboards highlight request
-  rate, OTP/passkey errors, Kafka lag.
-- `Karafka.monitor` provides consumer insight; `Karafka::Web` UI surfaces metrics.
+  rate and OTP/passkey errors.
 - Health endpoints per host feed edge monitors and CI smoke tests.
-- Future: integrate alerting (PagerDuty/Grafana Cloud) for Turnstile error spikes or Kafka lag
-  beyond thresholds.
+- Future: integrate alerting (PagerDuty/Grafana Cloud) for Turnstile error spikes beyond
+  thresholds.
 
 ---
 
@@ -299,16 +289,15 @@ Sensitive columns leverage Active Record encryption.
 - **pnpm + Turbo**: avoids Webpacker/Vite overhead while keeping JS modern through lightweight
   tooling.
 - **Compose-based infrastructure**: developers get a self-contained environment (Postgres, Valkey,
-  Kafka, observability) without external services.
+  observability) without external services.
 
 **Planned enhancements**
 
-1. Complete Kafka-driven email dispatch (encrypted payloads + action mailer integration).
-2. Flesh out staff/admin CRUD for docs/news/help content and owner/customer management.
-3. Implement real policy checks via Pundit and finish auth helper methods (`am_i_user?`, etc.).
-4. Publish OpenAPI docs with Rswag for API namespaces and mount `/api-docs` when ready.
-5. Automate Fastly cache purges via `fastly` gem upon content updates.
-6. Expand geolocation- or cookie-based personalization once privacy review passes.
+1. Flesh out staff/admin CRUD for docs/news/help content and owner/customer management.
+2. Implement real policy checks via Pundit and finish auth helper methods (`am_i_user?`, etc.).
+3. Publish OpenAPI docs with Rswag for API namespaces and mount `/api-docs` when ready.
+4. Automate Fastly cache purges via `fastly` gem upon content updates.
+5. Expand geolocation- or cookie-based personalization once privacy review passes.
 
 ---
 

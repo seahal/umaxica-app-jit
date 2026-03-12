@@ -119,9 +119,16 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = build_contact(status_id: OrgContactStatus::SET_UP)
 
     assert_predicate contact, :can_verify_email?
-    contact.verify_email!
+    assert contact.verify_email!
 
     assert_equal OrgContactStatus::CHECKED_EMAIL_ADDRESS, contact.status_id
+  end
+
+  test "should add errors instead of raising on invalid transition" do
+    contact = build_contact(status_id: OrgContactStatus::NOTHING)
+
+    assert_not contact.verify_email!
+    assert_includes contact.errors[:base], "Cannot verify email at this time"
   end
 
   test "association deletion: destroys dependent emails, telephones, and topics" do

@@ -108,6 +108,21 @@
 - Finish passkey registration and authentication flows.
 - Integrate multi-factor authentication.
 
+### 4. Connect `JwtOccurrence` to runtime JWT anomaly collection
+
+- Status: partial
+- Done: auth/preference JWT verification failures now normalize anomaly codes and emit
+  `Rails.event`, and a direct-save subscriber can persist lightweight JWT anomaly events.
+- Constraint: never store raw JWTs; keep only safe metadata like `kid`, `alg`, `typ`, `iss`, `jti`,
+  request host, IP, and user agent.
+- Deferred: add HMAC-based request identifiers before linking JWT anomaly events to
+  `UserOccurrence`, `StaffOccurrence`, `IpOccurrence`, or other existing occurrence families.
+- Deferred: design deduplication/rate-limiting for anomaly event persistence so repeated malformed
+  requests do not generate unbounded write amplification.
+- Deferred: define retention/cleanup policy for append-only JWT anomaly event records.
+- Deferred: backfill or enrich JWT anomaly events with normalized actor/session/request linkage once
+  the broader occurrence correlation strategy is finalized.
+
 ---
 
 Created: 2025-06-11 Updated: 2025-08-03

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Rails Application API
-  description: API documentation for v1 endpoints across all domains
+  description: API documentation for v0 endpoints across all domains
   version: 1.0.0
   contact:
     name: API Support
@@ -24,7 +24,7 @@ servers:
     description: Apex Staff
 
 paths:
-  /v1/health:
+  /v0/health:
     get:
       summary: Health check endpoint
       description: Returns the health status of the API

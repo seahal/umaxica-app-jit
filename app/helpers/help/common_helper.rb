@@ -3,7 +3,7 @@
 
 module Help::CommonHelper
   def to_localetime(time, tz = "utc")
-    raise if time.nil?
+    return nil if time.nil?
 
     zone =
       case tz.to_s.downcase

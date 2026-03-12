@@ -43,7 +43,6 @@ cross-cutting concerns.
 Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
     ├─ PostgreSQL (identity, guest, universal, token, etc.)
     ├─ Valkey (sessions, rate limit, Memorize)
-    ├─ Kafka (email topic via Karafka)
     ├─ ActionMailer + SMTP
     ├─ AwsSmsService → AWS SNS / Infobip
     └─ OpenTelemetry exporter → Tempo / Logs → Loki / Dashboards → Grafana
@@ -55,8 +54,8 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | -------------- | ------------------------------------------------------------------------------------------------ |
 | Presentation   | Namespaced controllers and Turbo/React views under `app/javascript`                              |
 | Domain Logic   | Concerns in `app/controllers/concerns`, services in `app/services`, models per DB                |
-| Integration    | `app/mailers`, `app/consumers`, `AwsSmsService`, `Karafka`, OTEL instrumentation                 |
-| Infrastructure | Compose services (Postgres, Valkey, Kafka, MinIO, Loki, Tempo, Grafana), pnpm/Tailwind toolchain |
+| Integration    | `app/mailers`, `AwsSmsService`, OTEL instrumentation                                              |
+| Infrastructure | Compose services (Postgres, Valkey, MinIO, Loki, Tempo, Grafana), pnpm/Tailwind toolchain        |
 
 ---
 
@@ -184,13 +183,11 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - `RedisMemorize` (inside `Memorize`) encrypts values using `ActiveSupport::MessageEncryptor`
   (derived from `secret_key_base`).
 
-### 3.11 Messaging & Background Work
+### 3.11 Background Work
 
-- `karafka.rb` sets up Karafka app with Kafka brokers (Docker vs local). Topic `:email` maps to
-  `EmailConsumer`.
-- `EmailConsumer` currently stubbed; intended design: decrypt payload, instantiate mailer from
-  payload metadata, deliver email; instrumentation via Karafka events.
-- Karafka Web UI (enabled at `/karafka` once mounted) exposes consumer metrics.
+- Email delivery is handled directly through ActionMailer from the relevant controllers/services.
+- Background work remains optional and should be introduced only when a concrete use case requires
+  it.
 
 ### 3.12 Observability
 
@@ -229,8 +226,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 2. Form ensures policy consent via `views/www/app/inquiry/before_submit.js`.
 3. `#create` builds `ServiceSiteContact`, ensures Turnstile passes, encrypts PII, and stores IP
    address.
-4. Future: enqueue Kafka payload to `email` topic; currently, send immediate email via
-   `Email::App::ContactMailer`.
+4. Send immediate email via `Email::App::ContactMailer`.
 5. Redirect back with success notice.
 
 ### 4.4 Passkey Enrollment
@@ -276,7 +272,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - Sessions (if configured) + Rack cache
 - Rate limiting store (Valkey)
 - Memorize key/value store with encryption
-- Potential background job caches when Karafka/ActiveJob expanded
+- Potential future cache entries for background work, if introduced later
 
 ---
 
@@ -288,7 +284,6 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | Cloudflare Turnstile | `https://challenges.cloudflare.com/turnstile/v0/siteverify`                                               | Called server-side with secret key, form response, and client IP.                     |
 | ActionMailer         | `Email::App::RegistrationMailer`, `Email::App::ContactMailer`, etc.                                       | Default sender from credentials `SMTP_FROM_ADDRESS`; uses `mailer/app/mailer` layout. |
 | Sms providers        | AWS SNS / Infobip / test driver                                                                           | Called via `AwsSmsService.send_message` with provider-specific client objects.        |
-| Kafka                | topic `email`                                                                                             | `karafka.rb` defines producers/consumers; `EmailConsumer` to process messages.        |
 | OpenTelemetry        | OTLP exporter                                                                                             | Default endpoint `http://tempo:4318/v1/traces` (configurable).                        |
 | Storage              | MinIO / Google Cloud Storage                                                                              | `google-cloud-storage` + `shrine` used for file storage (future).                     |
 
@@ -299,11 +294,11 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`,
   `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`, including the
   `POSTGRESQL_ACTIVITY_PUB/SUB` pair and `POSTGRESQL_BEHAVIOR_PUB`), Redis URLs
-  (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare
-  Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
+  (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile keys, JWT keys,
+  AWS/Infobip credentials, OTLP endpoint.
 - `compose.yml` launches all infra dependencies with sensible defaults; volumes store data per
   service.
-- `Procfile.dev` ensures the Rails server (and optionally Karafka) run concurrently; Tailwind
+- `Procfile.dev` ensures the Rails server and local development processes run concurrently; Tailwind
   watcher runs via `bin/rails tailwindcss:watch`.
 - Build/test commands:
   - `bundle install`, `pnpm install`
@@ -344,16 +339,15 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - Turnstile failures are logged at warn/error level with context.
 - `ServiceSiteContact` `before_create` raises if required content missing to prevent blank
   submissions.
-- OTEL instrumentation emits spans for HTTP requests, Redis calls, Karafka events, and ActionMailer
-  deliveries (once instrumentation enabled).
+- OTEL instrumentation emits spans for HTTP requests, Redis calls, and ActionMailer deliveries
+  (once instrumentation enabled).
 - Logs stream to STDOUT → Loki (when Compose stack used) or platform logging (Cloud Run).
 
 ---
 
 ## 10. Deployment & Operations
 
-- **Local**: Compose + Foreman; pnpm handles JS lint/format tasks; `karafka server` can run
-  concurrently.
+- **Local**: Compose + Foreman; pnpm handles JS lint/format tasks.
 - **CI**: GitHub Actions pipeline runs bundler install, database setup, Rails tests, pnpm linting,
   Brakeman, Bundler Audit, Biome (via `lefthook.yml`).
 - **Staging/Production**:
@@ -361,21 +355,18 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
   - Fastly/Cloudflare handle DNS & TLS; `EDGE_*` hostnames define redirect targets.
   - Observability data flows to Tempo/Loki/Grafana (self-hosted or managed).
   - Infrastructure managed by Terraform (as referenced in README).
-- **Karafka**: running `bundle exec karafka server` processes Kafka topics; `karafka-web` ties into
-  the same process for monitoring.
 - **Backups**: rely on PostgreSQL snapshots (outside repo) and MinIO/GCS backups.
 
 ---
 
 ## 11. Future Enhancements
 
-1. Encrypt Kafka payloads and finish `EmailConsumer`.
-2. Flesh out staff/admin flows (owner/customer/news/docs CRUD).
-3. Implement policy checks (`am_i_user?`, `am_i_staff?`, etc.) and integrate with Pundit.
-4. Publish OpenAPI via Rswag and mount `/api-docs`.
-5. Add geolocation- and cookie-based personalization to `Top::*` once privacy reviewed.
-6. Automate Fastly cache purges after docs/news updates.
-7. Expand SMS providers and add delivery receipt handling.
+1. Flesh out staff/admin flows (owner/customer/news/docs CRUD).
+2. Implement policy checks (`am_i_user?`, `am_i_staff?`, etc.) and integrate with Pundit.
+3. Publish OpenAPI via Rswag and mount `/api-docs`.
+4. Add geolocation- and cookie-based personalization to `Top::*` once privacy reviewed.
+5. Automate Fastly cache purges after docs/news updates.
+6. Expand SMS providers and add delivery receipt handling.
 
 ---
 

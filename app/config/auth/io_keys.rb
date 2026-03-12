@@ -8,12 +8,17 @@ module Auth
     module Cookies
       ACCESS_BASENAME = "jit_auth_access"
       REFRESH_BASENAME = "jit_auth_refresh"
+      DBSC_BASENAME = "jit_auth_dbsc"
       DEVICE_BASENAME = "jit_auth_device_id"
     end
 
     module Headers
       AUTHORIZATION = "Authorization"
       DEVICE_ID = "X-Device-Id"
+      DBSC_REGISTRATION = "Secure-Session-Registration"
+      DBSC_CHALLENGE = "Secure-Session-Challenge"
+      DBSC_SESSION_ID = "Sec-Secure-Session-Id"
+      DBSC_RESPONSE = "Secure-Session-Response"
       STRICT_DEVICE_CHECK = "X-STRICT-DEVICE-CHECK"
       TEST_CHECKPOINT = "X-TEST-CHECKPOINT"
       TEST_CURRENT_RESOURCE = "X-TEST-CURRENT-RESOURCE"

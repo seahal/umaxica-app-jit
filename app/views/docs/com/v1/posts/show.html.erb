@@ -6,20 +6,14 @@
       <div>
         <div>
           <h1>
-            <% begin %>
-              <%= @version.title %>
-            <% rescue ActiveRecord::Encryption::Errors::Decryption %>
-              <%= @document.permalink %>
-            <% end %>
+            <%= safe_encrypted_text(@version, :title, fallback: @document.permalink) %>
           </h1>
 
-          <% begin %>
-            <% if @version.description.present? %>
-              <p>
-                <%= @version.description %>
-              </p>
-            <% end %>
-          <% rescue ActiveRecord::Encryption::Errors::Decryption %>
+          <% description = safe_encrypted_text(@version, :description) %>
+          <% if description.present? %>
+            <p>
+              <%= description %>
+            </p>
           <% end %>
 
           <div>
@@ -46,15 +40,12 @@
 
     <!-- Document Content -->
     <div>
-      <% begin %>
-        <% if @version.body.present? %>
-          <div>
-            <%= simple_format(@version.body, {}, sanitize: true) %>
-          </div>
-        <% else %>
-          <p class="italic">No content available.</p>
-        <% end %>
-      <% rescue ActiveRecord::Encryption::Errors::Decryption %>
+      <% body = safe_encrypted_text(@version, :body) %>
+      <% if body.present? %>
+        <div>
+          <%= simple_format(body, {}, sanitize: true) %>
+        </div>
+      <% else %>
         <p class="italic">Content unavailable (encryption error).</p>
       <% end %>
     </div>
@@ -111,11 +102,7 @@
 
             <div>
               <div>
-                <% begin %>
-                  <%= version.title || "Untitled" %>
-                <% rescue ActiveRecord::Encryption::Errors::Decryption %>
-                  Untitled
-                <% end %>
+                <%= safe_encrypted_text(version, :title, fallback: "Untitled") %>
               </div>
               <div>
                 <%= version.created_at.strftime("%Y-%m-%d %H:%M") %>

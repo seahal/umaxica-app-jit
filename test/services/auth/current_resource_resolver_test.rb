@@ -25,6 +25,10 @@ module Auth
       def self.column_names
         %w(id public_id revoked_at)
       end
+
+      def self.arel_table
+        Arel::Table.new("tokens")
+      end
     end
 
     class FakeResourceClass

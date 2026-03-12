@@ -16,7 +16,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
     CloudflareTurnstile.test_mode = false
     CloudflareTurnstile.test_validation_response = nil
@@ -24,9 +24,9 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
   test "should sign in with Google" do
     # IMPORTANT: Social login uses provider+uid ONLY, NOT email
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
       {
-        provider: "google_oauth2",
+        provider: "google_app",
         uid: "123456789",
         info: {
           image: "http://example.com/image.jpg",
@@ -39,7 +39,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_redirected_to @expected_redirect
@@ -118,15 +118,15 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: user,
       uid: "existing_uid",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "existing_token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
 
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
       {
-        provider: "google_oauth2",
+        provider: "google_app",
         uid: "existing_uid",
         info: {
           image: "http://example.com/image.jpg",
@@ -139,13 +139,13 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
+    provider_name = SocialIdentifiable.normalize_provider("google_app").humanize
 
     assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name),
                  flash[:notice]
@@ -163,16 +163,16 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: user,
       uid: "totp_required_uid",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "existing_token",
       refresh_token: "existing_refresh",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
 
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
       {
-        provider: "google_oauth2",
+        provider: "google_app",
         uid: "totp_required_uid",
         info: { image: "http://example.com/image.jpg" },
         credentials: {
@@ -183,7 +183,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
@@ -195,9 +195,9 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     UserToken.delete_all
     UserTokenKind.delete_all
 
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
       {
-        provider: "google_oauth2",
+        provider: "google_app",
         uid: "missing_kind_uid",
         info: {
           image: "http://example.com/image.jpg",
@@ -210,7 +210,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
@@ -223,7 +223,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: user,
       uid: "session_limit_uid",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "existing_token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -236,9 +236,9 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       token.rotate_refresh_token!
     end
 
-    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+    OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
       {
-        provider: "google_oauth2",
+        provider: "google_app",
         uid: "session_limit_uid",
         info: { image: "http://example.com/image.jpg" },
         credentials: {
@@ -249,7 +249,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :found

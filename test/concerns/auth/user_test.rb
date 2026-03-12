@@ -21,11 +21,12 @@ class Auth::UserTest < ActiveSupport::TestCase
   class DummyClass
     include Auth::User
 
-    attr_accessor :session, :cookies, :request
+    attr_accessor :session, :cookies, :request, :response
 
     def initialize
       @session = {}
       @cookies = CookieMock.new
+      @response = ResponseMock.new
       format = FormatMock.new
       @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent", format: format)
     end
@@ -36,6 +37,19 @@ class Auth::UserTest < ActiveSupport::TestCase
 
     def controller_path
       "auth/users"
+    end
+
+    def sign_org_edge_v0_token_dbsc_registration_path
+      "/edge/v0/token/dbsc_registration"
+    end
+
+    def sign_app_edge_v0_token_dbsc_registration_path
+      "/edge/v0/token/dbsc_registration"
+    end
+  end
+
+  class ResponseMock
+    def set_header(_name, _value)
     end
   end
 
@@ -151,6 +165,37 @@ class Auth::UserTest < ActiveSupport::TestCase
     assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
     assert_equal "Bearer", tokens[:token_type]
     assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+  end
+
+  test "build_refreshed_session caps cookie and jwt expiry to revoked_at" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    freeze_time do
+      token = UserToken.create!(
+        user: @user,
+        user_token_kind_id: UserTokenKind::BROWSER_WEB,
+        device_id: "device-user",
+        refresh_expires_at: 30.days.from_now,
+        revoked_at: 20.minutes.from_now,
+      )
+
+      result = @obj.send(:build_refreshed_session, @user, token, "refresh-token")
+      payload = Auth::Base::Token.decode(
+        result[:access_token],
+        host: @obj.request.host,
+        resource_type: "user",
+      )
+
+      access_opts = @obj.cookies.options_for(::Auth::User::ACCESS_COOKIE_KEY)
+      refresh_opts = @obj.cookies.options_for(::Auth::User::REFRESH_COOKIE_KEY)
+      device_opts = @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)
+
+      assert_in_delta token.revoked_at.to_i, payload["exp"], 1
+      assert_in_delta token.revoked_at.to_i, access_opts[:expires].to_i, 1
+      assert_in_delta token.revoked_at.to_i, refresh_opts[:expires].to_i, 1
+      assert_in_delta token.revoked_at.to_i, device_opts[:expires].to_i, 1
+      assert_equal 20.minutes.to_i, result[:expires_in]
+    end
   end
 
   test "log_in skips cookies for JSON format" do

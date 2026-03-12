@@ -65,8 +65,7 @@ Rails.application.configure do
   # Require --no-sandbox flag to run destructive console operations
   config.sandbox_by_default = true
 
-  # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :solid_cache_store
+  config.cache_store = :null_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
@@ -80,13 +79,14 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "sign.umaxica.app" }
 
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # Specify outgoing SMTP server. Remember to add credentials via bin/rails credentials:edit.
   config.action_mailer.smtp_settings = {
-    address: ENV["RESEND_SMTP_ENDPOINT"],
-    user_name: ENV["RESEND_SMTP_USER_NAME"],
-    password: Rails.app.creds.require(:RESEND_SMTP_PASSWORD),
+    address: "email-smtp.#{ENV.fetch("AWS_SES_REGION", "ap-northeast-1")}.amazonaws.com",
+    user_name: Rails.app.creds.require(:AWS_SES_SMTP_USER_NAME),
+    password: Rails.app.creds.require(:AWS_SES_SMTP_PASSWORD),
     port: 465,
     tls: true,
+    authentication: :login,
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 0209a70c57ebef4fb1e271444ec7e62794932db3
+  revision: 5233d7365d1491e37df77289c83b0c2e5314c809
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -103,7 +103,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    action_text-trix (2.1.16)
+    action_text-trix (2.1.17)
       railties
     addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
@@ -117,7 +117,7 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1223.0)
+    aws-partitions (1.1224.0)
     aws-sdk-core (3.243.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -239,8 +239,9 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
-    ethon (0.15.0)
+    ethon (0.18.0)
       ffi (>= 1.15.0)
+      logger
     eventmachine (1.2.7)
     faraday (2.14.1)
       faraday-net_http (>= 2.0, < 3.5)
@@ -444,10 +445,11 @@ GEM
     openssl (4.0.1)
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
-    opentelemetry-api (1.7.0)
+    opentelemetry-api (1.8.0)
+      logger
     opentelemetry-common (0.23.0)
       opentelemetry-api (~> 1.0)
-    opentelemetry-exporter-otlp (0.31.1)
+    opentelemetry-exporter-otlp (0.32.0)
       google-protobuf (>= 3.18)
       googleapis-common-protos-types (~> 1.3)
       opentelemetry-api (~> 1.1)
@@ -746,7 +748,7 @@ GEM
       rubocop-ast (>= 1.49.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.49.0)
+    rubocop-ast (1.49.1)
       parser (>= 3.3.7.2)
       prism (~> 1.7)
     rubocop-i18n (3.2.3)
@@ -785,7 +787,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-graphviz (1.2.5)
       rexml
-    ruby-lsp (0.26.7)
+    ruby-lsp (0.26.8)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
@@ -822,7 +824,8 @@ GEM
     snaky_hash (2.0.3)
       hashie (>= 0.1.0, < 6)
       version_gem (>= 1.1.8, < 3)
-    solid_cache (1.0.10)
+    solid_cable (3.0.12)
+      actioncable (>= 7.2)
       activejob (>= 7.2)
       activerecord (>= 7.2)
       railties (>= 7.2)
@@ -833,13 +836,13 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12997)
-      sorbet-static (= 0.6.12997)
-    sorbet-runtime (0.6.12997)
-    sorbet-static (0.6.12997-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12997)
-      sorbet (= 0.6.12997)
-      sorbet-runtime (= 0.6.12997)
+    sorbet (0.6.13011)
+      sorbet-static (= 0.6.13011)
+    sorbet-runtime (0.6.13011)
+    sorbet-static (0.6.13011-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13011)
+      sorbet (= 0.6.13011)
+      sorbet-runtime (= 0.6.13011)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -850,7 +853,7 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.2.0)
-    stripe (18.4.1)
+    stripe (18.4.2)
     strong_migrations (2.5.2)
       activerecord (>= 7.1)
     tailwindcss-rails (4.4.0)
@@ -879,8 +882,8 @@ GEM
     turbo-rails (2.0.23)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
-    typhoeus (1.5.0)
-      ethon (>= 0.9.0, < 0.16.0)
+    typhoeus (1.6.0)
+      ethon (>= 0.18.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)
@@ -992,7 +995,7 @@ DEPENDENCIES
   shrine
   simplecov
   simplecov-lcov
-  solid_cache
+  solid_cable
   solid_queue
   sorbet
   sorbet-runtime
@@ -1008,7 +1011,7 @@ DEPENDENCIES
   yard
 
 CHECKSUMS
-  action_text-trix (2.1.16) sha256=f645a2c21821b8449fd1d6770708f4031c91a2eedf9ef476e9be93c64e703a8a
+  action_text-trix (2.1.17) sha256=b44691639d77e67169dc054ceacd1edc04d44dc3e4c6a427aa155a2beb4cc951
   actioncable (8.2.0.alpha)
   actionmailbox (8.2.0.alpha)
   actionmailer (8.2.0.alpha)
@@ -1027,7 +1030,7 @@ CHECKSUMS
   argon2 (2.3.3) sha256=535276457cabf71940f21ac31b49b9d3b0d0a4640fe9db2b46b9677e2838453d
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   aws-eventstream (1.4.0) sha256=116bf85c436200d1060811e6f5d2d40c88f65448f2125bc77ffce5121e6e183b
-  aws-partitions (1.1223.0) sha256=cdc1b936c2d343c4235f8a0a276bfc27ce17b389b1848a70479b9a686e1f48f3
+  aws-partitions (1.1224.0) sha256=739db16108b2f39917948e046572061ffed5e875db7d4006ed7af42d9070d335
   aws-sdk-core (3.243.0) sha256=a014eef785124b71d28325783fa422a1512f8421ec9b6e3931c8b0ca3fbb0f1c
   aws-sdk-sns (1.112.0) sha256=aff1b1b5bbcb4229599221c558a41790c1cd1a1fed47ac3d27d27512ad24b254
   aws-sigv4 (1.12.1) sha256=6973ff95cb0fd0dc58ba26e90e9510a2219525d07620c8babeb70ef831826c00
@@ -1076,7 +1079,7 @@ CHECKSUMS
   erb_lint (0.9.0) sha256=dfb5e40ad839e8d1f0d56ca85ec9a7ac4c9cd966ec281138282f35b323ca7c31
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   et-orbi (1.4.0) sha256=6c7e3c90779821f9e3b324c5e96fda9767f72995d6ae435b96678a4f3e2de8bc
-  ethon (0.15.0) sha256=0809805a035bc10f54162ca99f15ded49e428e0488bcfe1c08c821e18261a74d
+  ethon (0.18.0) sha256=b598afc9f30448cb068b850714b7d6948e941476095d04f90a4ac65b8d6efcb2
   eventmachine (1.2.7) sha256=994016e42aa041477ba9cff45cbe50de2047f25dd418eba003e84f0d16560972
   faraday (2.14.1) sha256=a43cceedc1e39d188f4d2cdd360a8aaa6a11da0c407052e426ba8d3fb42ef61c
   faraday-follow_redirects (0.5.0) sha256=5cde93c894b30943a5d2b93c2fe9284216a6b756f7af406a1e55f211d97d10ad
@@ -1152,9 +1155,9 @@ CHECKSUMS
   openapi_parser (2.3.1) sha256=c5415a8123c148692617a607a086f71e26d843339aa0bfa10c24e18d446d5e8b
   openssl (4.0.1) sha256=e27974136b7b02894a1bce46c5397ee889afafe704a839446b54dc81cb9c5f7d
   openssl-signature_algorithm (1.3.0) sha256=a3b40b5e8276162d4a6e50c7c97cdaf1446f9b2c3946a6fa2c14628e0c957e80
-  opentelemetry-api (1.7.0) sha256=ccfd264ea6f2db5bf4185e3c07a1297977b44a944e2ce65457c4fe63a697214f
+  opentelemetry-api (1.8.0) sha256=3af51183daf0f56a164bc1579782245be70a40678566b9a393cbe5af28ea87c6
   opentelemetry-common (0.23.0) sha256=da721190479d57bae0ad2207468f47f3e2c3b9a91024b5bc32c9d280183eb32c
-  opentelemetry-exporter-otlp (0.31.1) sha256=5358be17d7849cbcc4f49e1fc24105edc780a6f96c8e57b64192ab9a8e47474a
+  opentelemetry-exporter-otlp (0.32.0) sha256=fd4c77a07bb96919e8ff8bbd19ed96d07cac1e368d8e920af2bf2ab02bfb1ec3
   opentelemetry-helpers-mysql (0.4.0) sha256=d309c0b20825bdd14d4dbc75e0d3b381ffdad37d16424ceca3cb8453d9cb5a4f
   opentelemetry-helpers-sql (0.3.0) sha256=4bb08017d6a16dd41c4d1c53c7fd30f9c5bb691195d8b458933724627b3f37f9
   opentelemetry-helpers-sql-processor (0.4.0) sha256=ec238d7a2887219bd247dc31d0eb8a1a03d414a899963b68e14bb9f4d18b23f4
@@ -1260,7 +1263,7 @@ CHECKSUMS
   rqrcode (3.2.0) sha256=64c1494ca6bb67d731330f38b50e3fd09eeab4f5dcd04b608e21218d1d0b9542
   rqrcode_core (2.1.0) sha256=f303b85df89c1b8fc5ee8dc19808c9dc4330e6329b660d99d4a8cbb36ca13051
   rubocop (1.85.1) sha256=3dbcf9e961baa4c376eeeb2a03913dca5e3987033b04d38fa538aa1e7406cc77
-  rubocop-ast (1.49.0) sha256=49c3676d3123a0923d333e20c6c2dbaaae2d2287b475273fddee0c61da9f71fd
+  rubocop-ast (1.49.1) sha256=4412f3ee70f6fe4546cc489548e0f6fcf76cafcfa80fa03af67098ffed755035
   rubocop-i18n (3.2.3) sha256=9620228f372892c0e6c0a3a73d7caed964a932404bee567e5ff4b8292e2a2bda
   rubocop-minitest (0.39.1) sha256=998398d6da4026d297f0f9bf709a1eac5f2b6947c24431f94af08138510cf7ed
   rubocop-performance (1.26.1) sha256=cd19b936ff196df85829d264b522fd4f98b6c89ad271fa52744a8c11b8f71834
@@ -1271,7 +1274,7 @@ CHECKSUMS
   rubocop-sorbet (0.12.0) sha256=195521e132500555819313df5accaaf56bf721a63de3e5b7b1d0b25f696b1f39
   rubocop-thread_safety (0.7.3) sha256=067cdd52fbf5deffc18995437e45b5194236eaff4f71de3375a1f6052e48f431
   ruby-graphviz (1.2.5) sha256=1c2bb44e3f6da9e2b829f5e7fd8d75a521485fb6b4d1fc66ff0f93f906121504
-  ruby-lsp (0.26.7) sha256=60a1199fc7e329348d63a2479854f94435725d833eeabf3d539b790185cbf21f
+  ruby-lsp (0.26.8) sha256=fa607c342736c6ea791c945ae05025bc306ef9dd72c640b0b660478c5832f968
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   ruby-vips (2.3.0) sha256=e685ec02c13969912debbd98019e50492e12989282da5f37d05f5471442f5374
   rubyzip (2.4.1) sha256=8577c88edc1fde8935eb91064c5cb1aef9ad5494b940cf19c775ee833e075615
@@ -1290,16 +1293,16 @@ CHECKSUMS
   simplecov_json_formatter (0.1.4) sha256=529418fbe8de1713ac2b2d612aa3daa56d316975d307244399fa4838c601b428
   smart_properties (1.17.0) sha256=f9323f8122e932341756ddec8e0ac9ec6e238408a7661508be99439ca6d6384b
   snaky_hash (2.0.3) sha256=25a3d299566e8153fb02fa23fd9a9358845950f7a523ddbbe1fa1e0d79a6d456
-  solid_cache (1.0.10) sha256=bc05a2fb3ac78a6f43cbb5946679cf9db67dd30d22939ededc385cb93e120d41
+  solid_cable (3.0.12) sha256=a168a54731a455d5627af48d8441ea3b554b8c1f6e6cd6074109de493e6b0460
   solid_queue (1.3.2) sha256=44a53047be4255f616ff13fa5d35980e7b3eee6e31d957eadb88fbe8e0db4509
-  sorbet (0.6.12997) sha256=720e78e7dc42b2c399063f8d8cce8e805320b6fc238bf407b5e83b444acdd7ca
-  sorbet-runtime (0.6.12997) sha256=5e84f6168c10e15b994fccb808ba64bbb8b3b027ea7bf083a9a3815a8b765c3f
-  sorbet-static (0.6.12997-x86_64-linux) sha256=89a1ee021115d1fd4ae9422843dca61b4ca342f9cf11f429675d76060c7e5eba
-  sorbet-static-and-runtime (0.6.12997) sha256=ba630308405d85efc7647508b8d307c71c77f2cff51c454cf4b3c55aa2b4a9f1
+  sorbet (0.6.13011) sha256=bdfd7868ac57fad68004f0b860a98c02e9301a047fca5cbcaca233a59c132c3e
+  sorbet-runtime (0.6.13011) sha256=d451e380097747d64d39595fbbb6db2a198310f9eff0f810cd6e5696b402833f
+  sorbet-static (0.6.13011-x86_64-linux) sha256=43f7fa7bb5f34aef0f798f455d7beb30f0b577e6203004955397bab69d31221f
+  sorbet-static-and-runtime (0.6.13011) sha256=d0c302ead887ec62e2f4c731f3b054985a48ab12039e48acb3130aa02d834314
   spoom (1.6.3) sha256=0d05a501a643a2e3cb75357583fcd0a400e92e05cd05a1bf1a08cda6d321d153
   stimulus-rails (1.3.4) sha256=765676ffa1f33af64ce026d26b48e8ffb2e0b94e0f50e9119e11d6107d67cb06
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
-  stripe (18.4.1) sha256=f4fe9bbd90b501928a1052d277977385f036964384097479d84bc20d68188c5c
+  stripe (18.4.2) sha256=fd08a73ab87fc0b0ad938ca71293e1051e593001b70de5e9fcf12d1097133831
   strong_migrations (2.5.2) sha256=06faff4782b24c8a0a4b1a5a1613d809339ff26c5ac135fde75a932a5c9b454e
   tailwindcss-rails (4.4.0) sha256=efa2961351a52acebe616e645a81a30bb4f27fde46cc06ce7688d1cd1131e916
   tailwindcss-ruby (4.2.0-x86_64-linux-gnu) sha256=5d5822135ba81bbd81cb9a81c479bea9e5954e39d4a31f5f4dafbef952993baf
@@ -1311,7 +1314,7 @@ CHECKSUMS
   tpm-key_attestation (0.14.1) sha256=7fd4e4653a7afd0a386632ddfb05d10ecfdd47678299c5e69165bc9ae111193f
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   turbo-rails (2.0.23) sha256=ee0d90733aafff056cf51ff11e803d65e43cae258cc55f6492020ec1f9f9315f
-  typhoeus (1.5.0) sha256=120b67ed1ef515e6c0e938176db880f15b0916f038e78ce2a66290f3f1de3e3b
+  typhoeus (1.6.0) sha256=bacc41c23e379547e29801dc235cd1699b70b955a1ba3d32b2b877aa844c331d
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
   unicode-display_width (3.2.0) sha256=0cdd96b5681a5949cdbc2c55e7b420facae74c4aaf9a9815eee1087cb1853c42
   unicode-emoji (4.2.0) sha256=519e69150f75652e40bf736106cfbc8f0f73aa3fb6a65afe62fefa7f80b0f80f

@@ -56,6 +56,12 @@ module ConsumeOnceToken
         device_id: new_device_id,
         expires_at: now + PREFERENCE_REFRESH_TTL,
         jti: Jit::Security::Jwt::JtiGenerator.generate,
+        binding_method_id: consumed.binding_method_id,
+        dbsc_status_id: consumed.dbsc_status_id,
+        dbsc_session_id: consumed.dbsc_session_id,
+        dbsc_public_key: consumed.dbsc_public_key,
+        dbsc_challenge: consumed.dbsc_challenge,
+        dbsc_challenge_issued_at: consumed.dbsc_challenge_issued_at,
       }
 
       replacement = create!(attrs)

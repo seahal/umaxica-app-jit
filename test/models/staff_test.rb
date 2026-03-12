@@ -7,18 +7,20 @@
 # Database name: operator
 #
 #  id                   :bigint           not null, primary key
+#  deletable_at         :datetime         default(Infinity), not null
 #  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
 #  shreddable_at        :datetime         default(Infinity), not null
 #  withdrawn_at         :datetime
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  public_id            :string           not null
+#  public_id            :string(16)       not null
 #  status_id            :bigint           default(2), not null
 #  visibility_id        :bigint           default(2), not null
 #
 # Indexes
 #
+#  index_staffs_on_deletable_at   (deletable_at)
 #  index_staffs_on_public_id      (public_id) UNIQUE
 #  index_staffs_on_shreddable_at  (shreddable_at)
 #  index_staffs_on_status_id      (status_id)
@@ -35,6 +37,8 @@ require "test_helper"
 
 class StaffTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
+  VALID_PUBLIC_ID = "ABCDEFGH2345WXYZ"
+  SECOND_VALID_PUBLIC_ID = "BCDEFGHJ2345WXYZ"
 
   def setup
     [0, 1, 2, 3].each { |id| StaffVisibility.find_or_create_by!(id: id) }
@@ -53,10 +57,10 @@ class StaffTest < ActiveSupport::TestCase
     assert_predicate staff.public_id, :present?
   end
 
-  test "auto-generated public_id is exactly 8 characters" do
+  test "auto-generated public_id is exactly 16 characters" do
     staff = Staff.create!
 
-    assert_equal 8, staff.public_id.length
+    assert_equal 16, staff.public_id.length
   end
 
   test "default visibility_id is staff (2)" do
@@ -72,12 +76,8 @@ class StaffTest < ActiveSupport::TestCase
   end
 
   test "invalid visibility_id is rejected by foreign key" do
-    valid_public_id = Array.new(8) {
-      Staff::PUBLIC_ID_ALPHABET[SecureRandom.random_number(Staff::PUBLIC_ID_ALPHABET.length)]
-    }.join
-
     staff = Staff.new(
-      public_id: valid_public_id,
+      public_id: Staff.generate_public_id,
       status_id: StaffStatus::NOTHING,
       visibility_id: 9_999,
     )
@@ -86,19 +86,16 @@ class StaffTest < ActiveSupport::TestCase
     end
   end
 
-  test "auto-generated public_id is lowercase" do
+  test "auto-generated public_id is uppercase" do
     staff = Staff.create!
 
-    assert_equal staff.public_id, staff.public_id.downcase
+    assert_equal staff.public_id, staff.public_id.upcase
   end
 
-  test "auto-generated public_id contains only allowed characters" do
+  test "auto-generated public_id contains only base32 characters" do
     staff = Staff.create!
-    allowed = Staff::PUBLIC_ID_ALPHABET.chars
 
-    staff.public_id.chars.each do |char|
-      assert_includes allowed, char, "Character '#{char}' is not in allowed set"
-    end
+    assert_match(/\A[0-9A-FGHJKMNPQRSTVWXYZ]{16}\z/, staff.public_id)
   end
 
   test "auto-generated public_id is unique across multiple records" do
@@ -113,77 +110,82 @@ class StaffTest < ActiveSupport::TestCase
   # This ensures case-insensitivity and tolerance for common formatting.
   # ==========================================================================
 
-  test "normalization: uppercase input is converted to lowercase" do
-    staff = Staff.new(public_id: "ABCDEFHJ")
+  test "normalization: lowercase input is converted to uppercase" do
+    staff = Staff.new(public_id: "abcdefgh2345wxyz")
     staff.validate
 
-    assert_equal "abcdefhj", staff.public_id
+    assert_equal VALID_PUBLIC_ID, staff.public_id
   end
 
-  test "normalization: lowercase input remains lowercase" do
-    staff = Staff.new(public_id: "abcdefhj")
+  test "normalization: uppercase input remains uppercase" do
+    staff = Staff.new(public_id: VALID_PUBLIC_ID)
     staff.validate
 
-    assert_equal "abcdefhj", staff.public_id
+    assert_equal VALID_PUBLIC_ID, staff.public_id
   end
 
-  test "normalization: mixed case input is converted to lowercase" do
-    staff = Staff.new(public_id: "AbCdEfHj")
+  test "normalization: mixed case input is converted to uppercase" do
+    staff = Staff.new(public_id: "AbCdEfGh2345WxYz")
     staff.validate
 
-    assert_equal "abcdefhj", staff.public_id
+    assert_equal VALID_PUBLIC_ID, staff.public_id
   end
 
-  # Hyphen/underscore normalization tests per spec:
-  # "ABCD-EFGH" -> "abcdefgh", "abcd_efgh" -> "abcdefgh", " abcd-efgh " -> "abcdefgh"
-
-  test "normalization: ABCD-EFGH with hyphen is normalized to abcdefgh" do
-    staff = Staff.new(public_id: "ABCD-EFHJ")
+  test "normalization: hyphens are removed before validation" do
+    staff = Staff.new(public_id: "ABCD-EFGH-2345-WXYZ")
     staff.validate
 
-    assert_equal "abcdefhj", staff.public_id
+    assert_equal VALID_PUBLIC_ID, staff.public_id
   end
 
-  test "normalization: abcd_efgh with underscore is normalized to abcdefgh" do
-    staff = Staff.new(public_id: "abcd_efhj")
+  test "normalization: underscores are removed before validation" do
+    staff = Staff.new(public_id: "ABCD_EFGH_2345_WXYZ")
     staff.validate
 
-    assert_equal "abcdefhj", staff.public_id
+    assert_equal VALID_PUBLIC_ID, staff.public_id
   end
 
   test "normalization: leading/trailing whitespace is stripped" do
-    staff = Staff.new(public_id: " abcd-efhj ")
+    staff = Staff.new(public_id: "  abcd-efgh-2345-wxyz  ")
     staff.validate
 
-    assert_equal "abcdefhj", staff.public_id
+    assert_equal VALID_PUBLIC_ID, staff.public_id
   end
 
   test "normalization: multiple hyphens and underscores are all removed" do
-    staff = Staff.new(public_id: "ab-cd_ef-hj")
+    staff = Staff.new(public_id: "ab-cd_efgh-23_45wxyz")
     staff.validate
 
-    assert_equal "abcdefhj", staff.public_id
+    assert_equal VALID_PUBLIC_ID, staff.public_id
+  end
+
+  test "save normalizes public_id to uppercase" do
+    staff = Staff.create!(public_id: "abcd-efgh-2345-wxyz")
+
+    staff.update!(public_id: "bcde-fghj-2345-wxyz")
+
+    assert_equal SECOND_VALID_PUBLIC_ID, staff.reload.public_id
   end
 
   # ==========================================================================
   # C. Boundary Value Analysis
   # ==========================================================================
 
-  test "boundary: length 7 is invalid" do
-    staff = Staff.new(public_id: "abcdefh")
+  test "boundary: length 15 is invalid" do
+    staff = Staff.new(public_id: "ABCDEFGH2345WXY")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
   end
 
-  test "boundary: length 8 is valid" do
-    staff = Staff.new(public_id: "abcdefhj")
+  test "boundary: length 16 is valid" do
+    staff = Staff.new(public_id: VALID_PUBLIC_ID)
 
     assert_predicate staff, :valid?
   end
 
-  test "boundary: length 9 is invalid" do
-    staff = Staff.new(public_id: "abcdefhjk")
+  test "boundary: length 17 is invalid" do
+    staff = Staff.new(public_id: "ABCDEFGH2345WXYZ2")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
@@ -193,83 +195,107 @@ class StaffTest < ActiveSupport::TestCase
   # D. Equivalence Partitioning
   # ==========================================================================
 
-  test "equivalence: valid set - allowed characters only (8 chars) is valid" do
-    staff = Staff.new(public_id: "abcdef23")
+  test "equivalence: valid set - allowed base32 characters only (16 chars) is valid" do
+    staff = Staff.new(public_id: VALID_PUBLIC_ID)
 
     assert_predicate staff, :valid?
   end
 
-  test "equivalence: invalid set - contains forbidden character 'i'" do
-    staff = Staff.new(public_id: "abcdifhj")
+  test "equivalence: secure random base32 alphabet input is valid" do
+    staff = Staff.new(public_id: "01ABCDGHJKMNPQRS")
+
+    assert_predicate staff, :valid?
+  end
+
+  test "equivalence: invalid set - contains disallowed letter I" do
+    staff = Staff.new(public_id: "I1ABCDGHJKMNPQRS")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
   end
 
-  test "equivalence: invalid set - contains forbidden character 'o'" do
-    staff = Staff.new(public_id: "abcdofhj")
+  test "equivalence: invalid set - contains disallowed letter L" do
+    staff = Staff.new(public_id: "L1ABCDGHJKMNPQRS")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
   end
 
-  test "equivalence: invalid set - contains forbidden character '0'" do
-    staff = Staff.new(public_id: "abcd0fhj")
+  test "equivalence: invalid set - contains disallowed letter O" do
+    staff = Staff.new(public_id: "O1ABCDGHJKMNPQRS")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
   end
 
-  test "equivalence: invalid set - contains forbidden character '1'" do
-    staff = Staff.new(public_id: "abcd1fhj")
+  test "equivalence: invalid set - contains disallowed letter U" do
+    staff = Staff.new(public_id: "U1ABCDGHJKMNPQRS")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
   end
 
-  test "equivalence: invalid set - contains forbidden character 's'" do
-    staff = Staff.new(public_id: "abcdsfhj")
+  test "equivalence: invalid set - contains punctuation" do
+    staff = Staff.new(public_id: "ABCD!FGH2345WXYZ")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
   end
 
-  test "equivalence: invalid set - contains forbidden character 'z'" do
-    staff = Staff.new(public_id: "abcdzfhj")
-
-    assert_not staff.valid?
-    assert_not_empty staff.errors[:public_id]
-  end
-
-  test "equivalence: invalid set - contains forbidden character 'g'" do
-    staff = Staff.new(public_id: "abcdgfhj")
+  test "equivalence: invalid set - contains non-ascii" do
+    staff = Staff.new(public_id: "ABCDあFGH2345WXYZ")
 
     assert_not staff.valid?
     assert_not_empty staff.errors[:public_id]
   end
 
   test "equivalence: invalid set - valid characters but wrong length" do
-    staff = Staff.new(public_id: "abcde")
+    staff = Staff.new(public_id: "ABCDE")
 
     assert_not staff.valid?
+  end
+
+  test "equivalence: invalid set - nil input is rejected when explicitly provided" do
+    staff = Staff.new(public_id: nil)
+
+    assert_not staff.valid?
+    assert_nil staff.public_id
+    assert_not_empty staff.errors[:public_id]
+  end
+
+  test "equivalence: invalid set - empty string input is rejected" do
+    staff = Staff.new(public_id: "")
+
+    assert_not staff.valid?
+    assert_equal "", staff.public_id
+    assert_not_empty staff.errors[:public_id]
+  end
+
+  test "equivalence: invalid set - whitespace only input is rejected" do
+    staff = Staff.new(public_id: "   ")
+
+    assert_not staff.valid?
+    assert_equal "", staff.public_id
+    assert_not_empty staff.errors[:public_id]
+  end
+
+  test "equivalence: invalid set - separators only input is rejected" do
+    staff = Staff.new(public_id: "--__--")
+
+    assert_not staff.valid?
+    assert_equal "", staff.public_id
+    assert_not_empty staff.errors[:public_id]
   end
 
   # ==========================================================================
   # E. Negative testing (failure modes)
   # ==========================================================================
 
-  test "negative: public_id with '0' is invalid" do
-    staff = Staff.new(public_id: "abcd0fgh")
+  test "negative: public_id with lowercase letters normalizes and remains valid" do
+    staff = Staff.new(public_id: "abcdefgh2345wxy2")
 
-    assert_not staff.valid?
-    assert_not_empty staff.errors[:public_id]
-  end
-
-  test "negative: public_id with 'i' is invalid" do
-    staff = Staff.new(public_id: "abcdifgh")
-
-    assert_not staff.valid?
-    assert_not_empty staff.errors[:public_id]
+    assert_predicate staff, :valid?
+    assert_equal "ABCDEFGH2345WXY2", staff.public_id
   end
 
   test "negative: duplicate public_id is invalid (uniqueness)" do
@@ -308,13 +334,51 @@ class StaffTest < ActiveSupport::TestCase
     ) do
       new_staff = Staff.new
       # Stub generate_public_id to return existing_public_id first, then a different one
-      generated_ids = [existing_public_id, "newvalid"]
-      new_staff.stub(:generate_public_id, -> { generated_ids.shift || "fallback8" }) do
+      generated_ids = [existing_public_id, SECOND_VALID_PUBLIC_ID]
+      new_staff.stub(:generate_public_id, -> { generated_ids.shift || VALID_PUBLIC_ID }) do
         new_staff.valid?
 
-        assert_equal "newvalid", new_staff.public_id
+        assert_equal SECOND_VALID_PUBLIC_ID, new_staff.public_id
       end
     end
+  end
+
+  test "retry_on_public_id_collision regenerates public_id and retries" do
+    staff = Staff.new
+    generated_ids = [SECOND_VALID_PUBLIC_ID]
+    attempts = 0
+
+    staff.stub(:assign_public_id!, -> { staff.public_id = generated_ids.shift }) do
+      staff.send(:retry_on_public_id_collision) do
+        attempts += 1
+        raise ActiveRecord::RecordNotUnique, "duplicate key" if attempts == 1
+      end
+    end
+
+    assert_equal 2, attempts
+    assert_equal SECOND_VALID_PUBLIC_ID, staff.public_id
+  end
+
+  test "retry_on_public_id_collision logs and raises after retry limit" do
+    staff = Staff.new(public_id: VALID_PUBLIC_ID)
+    logger = Minitest::Mock.new
+
+    logger.expect(:error, nil, [String])
+    logger.expect(:error, nil, [String])
+
+    error =
+      assert_raises(ActiveRecord::RecordNotUnique) do
+        Rails.stub(:logger, logger) do
+          staff.stub(:assign_public_id!, -> { staff.public_id = VALID_PUBLIC_ID }) do
+            staff.send(:retry_on_public_id_collision) do
+              raise ActiveRecord::RecordNotUnique, "duplicate key"
+            end
+          end
+        end
+      end
+
+    assert_equal "duplicate key", error.message
+    logger.verify
   end
 
   test "determinism: auto-generated public_id does not collide with existing records" do

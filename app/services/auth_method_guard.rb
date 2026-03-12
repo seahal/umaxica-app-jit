@@ -121,4 +121,9 @@ class AuthMethodGuard
     end
     count
   end
+
+  private_class_method :verified_emails_count,
+                       :verified_telephones_count,
+                       :active_passkeys_count,
+                       :active_social_count
 end

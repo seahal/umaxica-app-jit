@@ -33,13 +33,15 @@ module Sign
         # Handles successful OmniAuth authentication
         def omniauth
           auth = request.env["omniauth.auth"] || mock_auth_from_test_mode
-          Rails.logger.debug do
-            "[OmniAuth] Callback received - provider: #{auth&.provider}, uid: #{auth&.uid&.first(8)}***, " \
-              "logged_in: #{logged_in?}"
-          end
+          Rails.event.debug(
+            "sign.social.omniauth.callback_received",
+            provider: auth&.provider,
+            uid: auth&.uid&.first(8),
+            logged_in: logged_in?,
+          )
 
           unless auth
-            Rails.logger.error("[OmniAuth] No auth hash found in request")
+            Rails.event.error("sign.social.omniauth.missing_auth_hash", message: "No auth hash found in request")
             return redirect_to new_sign_app_in_path,
                                alert: I18n.t("sign.app.social.sessions.create.failure")
           end
@@ -47,22 +49,24 @@ module Sign
           ActiveRecord::Base.connected_to(role: :writing) do
             # Validate state parameter (applies to ALL providers)
             # Note: validation is skipped if session[SOCIAL_INTENT_SESSION_KEY] is blank
-            Rails.logger.debug { "[OmniAuth] Validating state" }
+            Rails.event.debug("sign.social.omniauth.validating_state")
             validate_social_auth_state!
 
             intent = current_social_auth_intent
 
             # Process the callback through service
             # IMPORTANT: Auto-link behavior is handled by overriding current_social_auth_intent
-            Rails.logger.debug { "[OmniAuth] Processing callback with intent: #{intent}" }
+            Rails.event.debug("sign.social.omniauth.processing_callback", intent: intent)
             result = process_social_auth_callback
             user = result[:user]
             existing_account = result[:existing_account]
 
-            Rails.logger.debug do
-              "[OmniAuth] Callback processed - user_id: #{user&.id}, intent: #{intent}, " \
-                "existing_account: #{existing_account}"
-            end
+            Rails.event.debug(
+              "sign.social.omniauth.callback_processed",
+              user_id: user&.id,
+              intent: intent,
+              existing_account: existing_account,
+            )
 
             provider_name = SocialIdentifiable.normalize_provider(auth.provider).humanize
             intent = intent.presence || "login"
@@ -73,7 +77,11 @@ module Sign
             )
           end
         rescue SocialAuth::BaseError => e
-          Rails.logger.debug { "[OmniAuth] SocialAuth error: #{e.class.name} - #{e.message}" }
+          Rails.event.debug(
+            "sign.social.omniauth.social_auth_error",
+            error_class: e.class.name,
+            error_message: e.message,
+          )
           handle_social_auth_error(e)
         rescue StandardError => e
           handle_unexpected_error(e, auth)
@@ -85,13 +93,15 @@ module Sign
           message = params[:message] || "unknown_error"
           strategy = params[:strategy] || "unknown"
 
-          Rails.logger.debug do
-            "[OmniAuth] Failure callback - message: #{message}, strategy: #{strategy}"
-          end
+          Rails.event.debug(
+            "sign.social.omniauth.failure_callback",
+            message: message,
+            strategy: strategy,
+          )
 
           clear_social_auth_intent!
 
-          Rails.event.notify(
+          Rails.event.record(
             "sign.social.omniauth_failure",
             message: message,
             strategy: strategy,
@@ -126,11 +136,15 @@ module Sign
 
         # rubocop:disable Metrics/MethodLength
         def handle_successful_auth(user, intent, provider_name, _identity, existing_account: nil)
-          Rails.logger.debug { "[OmniAuth] handle_successful_auth - intent: #{intent}, user_id: #{user&.id}" }
+          Rails.event.debug(
+            "sign.social.omniauth.handle_successful_auth",
+            intent: intent,
+            user_id: user&.id,
+          )
 
           case intent
           when "link"
-            Rails.logger.debug { "[OmniAuth] Link intent - redirecting to configuration" }
+            Rails.event.debug("sign.social.omniauth.link_intent", message: "Redirecting to configuration")
             default_notice = I18n.t(
               "sign.app.social.sessions.link.default",
               provider: provider_name,
@@ -143,7 +157,7 @@ module Sign
                           default: default_notice,
                         )
           when "reauth"
-            Rails.logger.debug { "[OmniAuth] Reauth intent - signing in with reauth" }
+            Rails.event.debug("sign.social.omniauth.reauth_intent", message: "Signing in with reauth")
             login_result = sign_in_with_reauth(user)
 
             if login_result.is_a?(Hash) && login_result[:status] != :success
@@ -158,14 +172,16 @@ module Sign
             redirect_to social_auth_success_redirect_path,
                         notice: I18n.t("sign.app.social.sessions.reauth.success", provider: provider_name)
           else
-            Rails.logger.debug { "[OmniAuth] Login intent - signing in user" }
+            Rails.event.debug("sign.social.omniauth.login_intent", message: "Signing in user")
             login_result = sign_in(user)
 
             # Check if login failed
             if login_result.is_a?(Hash) && login_result[:status] != :success
-              Rails.logger.warn do
-                "[OmniAuth] Login failed - status: #{login_result[:status]}, user_id: #{user.id}"
-              end
+              Rails.event.warn(
+                "sign.social.omniauth.login_failed",
+                status: login_result[:status],
+                user_id: user.id,
+              )
               return handle_login_failure(login_result, provider_name, user)
             end
 
@@ -175,7 +191,7 @@ module Sign
                                  notice: I18n.t("sign.app.in.session.restricted_notice")
             end
 
-            Rails.logger.debug { "[OmniAuth] Login successful - redirecting" }
+            Rails.event.debug("sign.social.omniauth.login_successful", message: "Redirecting after login")
             if existing_account
               issue_checkpoint!
               redirect_to sign_app_in_checkpoint_path(ri: params[:ri]),
@@ -194,15 +210,12 @@ module Sign
         # rubocop:enable Metrics/MethodLength
 
         def handle_unexpected_error(error, auth)
-          Rails.event.notify(
-            "sign.social.unexpected_error",
+          Rails.event.error(
+            "sign.social.omniauth.unexpected_error",
             error_class: error.class.name,
             error_message: error.message,
             provider: auth&.provider,
-          )
-          backtrace_lines = error.backtrace&.first(10) || []
-          Rails.logger.error(
-            (["[OmniAuth] Unexpected error: #{error.class} - #{error.message}"] + backtrace_lines).join("\n"),
+            exception: error,
           )
 
           clear_social_auth_intent!
@@ -214,7 +227,7 @@ module Sign
           result = complete_sign_in_or_start_mfa!(
             user, rt: nil, ri: params[:ri], auth_method: "social",
           )
-          Rails.logger.debug { "[OmniAuth] sign_in result: #{result.inspect}" }
+          Rails.event.debug("sign.social.omniauth.sign_in_result", result: result.inspect)
           result
         end
 
@@ -223,7 +236,7 @@ module Sign
           result = complete_sign_in_or_start_mfa!(
             user, rt: nil, ri: params[:ri], auth_method: "social",
           )
-          Rails.logger.debug { "[OmniAuth] sign_in (reauth) result: #{result.inspect}" }
+          Rails.event.debug("sign.social.omniauth.sign_in_reauth_result", result: result.inspect)
           result
         end
 
@@ -238,18 +251,18 @@ module Sign
               http_status: login_result[:http_status],
             )
           when :session_limit_exceeded
-            Rails.logger.debug { "[OmniAuth] Session limit exceeded for user" }
+            Rails.event.debug("sign.social.omniauth.session_limit_exceeded")
             redirect_to new_sign_app_in_path,
                         alert: I18n.t("sign.app.social.sessions.create.session_limit")
           when :mfa_required
-            Rails.logger.debug { "[OmniAuth] MFA required for user" }
+            Rails.event.debug("sign.social.omniauth.mfa_required")
             safe_redirect_to(
               login_result[:redirect_path],
               fallback: new_sign_app_in_path,
               notice: I18n.t("sign.app.in.mfa.required"),
             )
           else
-            Rails.logger.warn { "[OmniAuth] Unknown login failure status: #{status}" }
+            Rails.event.warn("sign.social.omniauth.unknown_login_failure", status: status)
             redirect_to new_sign_app_in_path,
                         alert: I18n.t("sign.app.social.sessions.create.failure")
           end

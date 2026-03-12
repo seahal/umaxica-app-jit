@@ -26,7 +26,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    OmniAuth.config.mock_auth[:google_app] = nil
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
@@ -34,7 +34,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     google_identity = UserSocialGoogle.create!(
       user: @user,
       uid: "reauth_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -47,7 +47,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       updated_at: 2.hours.ago,
     )
 
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     assert_response :unprocessable_content
@@ -90,14 +90,14 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     google_identity = UserSocialGoogle.create!(
       user: @user,
       uid: "last_google_identity_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
 
     # Try to unlink
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     # Should redirect with error
@@ -140,7 +140,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     google_identity = UserSocialGoogle.create!(
       user: @user,
       uid: "google_to_unlink_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -155,7 +155,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       user_social_apple_status: user_social_apple_statuses(:active),
     )
 
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -184,7 +184,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: @user,
       uid: "google_backup_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -218,7 +218,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     google_identity = UserSocialGoogle.create!(
       user: @user,
       uid: "google_only_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -240,7 +240,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     email.destroy!
 
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -257,7 +257,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     google_identity = UserSocialGoogle.create!(
       user: @user,
       uid: "google_with_passkey_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
@@ -277,7 +277,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       description: "Test Passkey",
     )
 
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -304,7 +304,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       user_social_apple_status: user_social_apple_statuses(:active),
     )
 
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -317,13 +317,13 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: @user,
       uid: "revoked_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:revoked),
     )
 
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -334,7 +334,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
   test "unlink requires authentication" do
     # No auth header
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: { "Host" => @host }
 
     # Should redirect to login
@@ -352,7 +352,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     UserSocialGoogle.create!(
       user: @user,
       uid: "revoked_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:revoked),
@@ -404,14 +404,14 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     google_identity = UserSocialGoogle.create!(
       user: @user,
       uid: "only_active_google_#{SecureRandom.hex(4)}",
-      provider: "google_oauth2",
+      provider: "google_app",
       token: "token",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
 
     # Try to unlink Google - should fail because it's the only ACTIVE identity
-    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect

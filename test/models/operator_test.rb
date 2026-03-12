@@ -35,7 +35,7 @@ class OperatorTest < ActiveSupport::TestCase
   fixtures :staffs, :staff_statuses, :operators, :operator_statuses
 
   test "can create operator with staff" do
-    staff = Staff.create!(public_id: "abcdef23")
+    staff = Staff.create!(public_id: "ABCDEFGH2345WXYZ")
     operator = Operator.create!(staff: staff)
 
     assert_predicate operator, :persisted?
@@ -43,14 +43,14 @@ class OperatorTest < ActiveSupport::TestCase
   end
 
   test "staff has many operators" do
-    staff = Staff.create!(public_id: "abcdef24")
+    staff = Staff.create!(public_id: "ABCDEFGH2345WXY2")
     operator = Operator.create!(staff: staff)
 
     assert_includes staff.operators, operator
   end
 
   test "belongs to staff" do
-    staff = Staff.create!(public_id: "abcdef25")
+    staff = Staff.create!(public_id: "ABCDEFGH2345WXY3")
     operator = Operator.create!(staff: staff)
 
     assert_equal staff, operator.staff

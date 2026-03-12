@@ -272,7 +272,7 @@ end
 2. **結果整合性で許容できるか？**
    - Identity を先に作成し、Personality は非同期で作成
    - 実装は簡単だが、一時的に不整合な状態が発生する可能性
-   - バックグラウンドジョブ（Karafka）を使用
+   - 必要ならバックグラウンドジョブを使用
 
 3. **Saga Pattern の導入**
    - 複数ステップのトランザクションを管理
@@ -338,7 +338,7 @@ end
 
 - **認証**: WebAuthn, TOTP, Apple/Google OAuth, recovery codes
 - **認可**: Pundit + Rolify
-- **バックグラウンドジョブ**: Karafka (Kafka-based)
+- **バックグラウンドジョブ**: 未定
 - **パスワードハッシュ**: argon2
 - **セキュリティ**: Rack::Attack (レート制限)
 

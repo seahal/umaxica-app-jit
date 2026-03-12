@@ -40,7 +40,9 @@ class Core::Org::Configuration::EmailsControllerTest < ActionDispatch::Integrati
   fixtures :staffs, :staff_statuses
 
   setup do
-    host! ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
+    @host = ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
+    @sign_host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! @host
     @staff = staffs(:one)
     @headers = { "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
   end
@@ -55,7 +57,7 @@ class Core::Org::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     get new_core_org_configuration_email_url(ri: "jp")
     rt = Base64.urlsafe_encode64(new_core_org_configuration_email_url(ri: "jp"))
 
-    assert_redirected_to new_sign_org_in_url(rt: rt, host: "sign.org.localhost")
+    assert_redirected_to new_sign_org_in_url(rt: rt, host: @sign_host)
     assert_equal I18n.t("errors.messages.login_required"), flash[:alert]
   end
 
@@ -63,7 +65,7 @@ class Core::Org::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     post core_org_configuration_emails_url(ri: "jp")
     rt = Base64.urlsafe_encode64(core_org_configuration_emails_url(ri: "jp"))
 
-    assert_redirected_to new_sign_org_in_url(rt: rt, host: "sign.org.localhost")
+    assert_redirected_to new_sign_org_in_url(rt: rt, host: @sign_host)
     assert_equal I18n.t("errors.messages.login_required"), flash[:alert]
   end
 end

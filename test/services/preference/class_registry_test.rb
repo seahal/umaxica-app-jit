@@ -6,9 +6,9 @@ require "test_helper"
 module Preference
   class ClassRegistryTest < ActiveSupport::TestCase
     test "resolves preference class from controller path" do
-      assert_equal AppPreference, Preference::ClassRegistry.for_controller_path("core/app/edge/v1/preferences")
-      assert_equal ComPreference, Preference::ClassRegistry.for_controller_path("core/com/edge/v1/preferences")
-      assert_equal OrgPreference, Preference::ClassRegistry.for_controller_path("core/org/edge/v1/preferences")
+      assert_equal AppPreference, Preference::ClassRegistry.for_controller_path("core/app/edge/v0/preferences")
+      assert_equal ComPreference, Preference::ClassRegistry.for_controller_path("core/com/edge/v0/preferences")
+      assert_equal OrgPreference, Preference::ClassRegistry.for_controller_path("core/org/edge/v0/preferences")
     end
 
     test "resolves option classes by prefix and type" do
