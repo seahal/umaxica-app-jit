@@ -169,8 +169,8 @@ Phase 1 (MVP - 2-3 days):
 Phase 2 (Anti-abuse - 1 day): 9. Add Turnstile gem (or recaptcha gem) 10. Wrap in thin adapter if
 you really need swappability
 
-Phase 3 (Production hardening - 1-2 days): 11. Add audit logging (separate table) 12. Add
-monitoring (OpenTelemetry already configured) 13. Load testing + tune rate limits
+Phase 3 (Production hardening - 1-2 days): 11. Add audit logging (separate table) 12. Add monitoring
+(OpenTelemetry already configured) 13. Load testing + tune rate limits
 
 🚨 Critical Issues to Fix Immediately
 

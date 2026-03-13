@@ -75,8 +75,8 @@ detailed cases, and acceptance criteria derived from the SRS and HLD.
   sanitization, Turnstile failure handling, PII encryption.
 - **Performance tests**: k6 or wrk for `/sign` and `/help` flows; Lighthouse (or WebPageTest) for
   marketing pages. Target 300 ms p95 for health endpoints.
-- **Observability verification**: OTEL traces appear in Tempo; Loki logs capture Turnstile
-  failures; Grafana dashboards show request rate and application error signals.
+- **Observability verification**: OTEL traces appear in Tempo; Loki logs capture Turnstile failures;
+  Grafana dashboards show request rate and application error signals.
 - **Automation**: CI pipeline runs all tests plus linting (`pnpm run lint`, `pnpm run format`,
   `pnpm run check`, `bundle exec rubocop`, `bundle exec erb_lint`, `bundle exec brakeman`,
   `bundle exec bundler-audit`).
@@ -85,11 +85,11 @@ detailed cases, and acceptance criteria derived from the SRS and HLD.
 
 ## 5. Test Environments
 
-| Env                     | Purpose                                 | Stack                                                                                                                                     |
-| ----------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Local                   | Developer loop                          | Docker Compose (Postgres primaries/replicas, Valkey, MinIO, Loki, Tempo, Grafana), Foreman with Rails + pnpm-managed JS tooling          |
-| Staging                 | Integrated QA, performance & regression | Mirrors production hostnames, uses managed Postgres/Valkey, OTEL exports to staging Tempo                                                  |
-| Production Verification | Smoke tests post-deploy                 | Fastly/Cloudflare fronted hosts, managed infra                                                                                            |
+| Env                     | Purpose                                 | Stack                                                                                                                           |
+| ----------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Local                   | Developer loop                          | Docker Compose (Postgres primaries/replicas, Valkey, MinIO, Loki, Tempo, Grafana), Foreman with Rails + pnpm-managed JS tooling |
+| Staging                 | Integrated QA, performance & regression | Mirrors production hostnames, uses managed Postgres/Valkey, OTEL exports to staging Tempo                                       |
+| Production Verification | Smoke tests post-deploy                 | Fastly/Cloudflare fronted hosts, managed infra                                                                                  |
 
 **Data**: Seed states provided via fixtures; Compose services start with empty DBs. Sensitive data
 must be synthetic. Contact forms require Turnstile test keys or bypass for automated runs.
@@ -192,6 +192,7 @@ must be synthetic. Contact forms require Turnstile test keys or bypass for autom
 
 - **TC-OBS-701** OTEL span creation: hitting `/sign` while `OTEL_EXPORTER_OTLP_ENDPOINT` is set
   emits span visible in Tempo.
+
 ---
 
 ## 8. Non-Functional Tests
@@ -203,7 +204,7 @@ must be synthetic. Contact forms require Turnstile test keys or bypass for autom
 | Reliability   | Restart Compose services mid-request; ensure graceful error pages and health endpoints report BOOTING vs OK.                  |
 | Security      | Brakeman, Bundler Audit, RuboCop security cops; manual pen-test for JWT tampering, Turnstile bypass attempts, redirect abuse. |
 | Localization  | Preferences propagate `lx`, `ri`, `tz`, `ct` through redirects; fallback defaults apply when cookies absent.                  |
-| Observability | Verify health dashboards chart request rates, OTP failures, and Turnstile errors.                                              |
+| Observability | Verify health dashboards chart request rates, OTP failures, and Turnstile errors.                                             |
 
 ---
 

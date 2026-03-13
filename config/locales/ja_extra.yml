@@ -49,6 +49,7 @@ ja:
     webauthn:
       email_required: メールアドレスを入力してください
       identifier_required: メールアドレスまたはスタッフコードを入力してください
+      identifier_invalid: 16文字の有効なスタッフコードを入力してください
       pii_required: メールアドレスまたは電話番号を入力してください
       no_passkeys_available: 利用可能なパスキーがありません
       origin_invalid: このサイトからの認証は許可されていません
@@ -69,6 +70,7 @@ ja:
       webauthn:
         email_required: メールアドレスを入力してください
         identifier_required: メールアドレスまたはスタッフコードを入力してください
+        identifier_invalid: 16文字の有効なスタッフコードを入力してください
         pii_required: メールアドレスまたは電話番号を入力してください
         no_passkeys_available: 利用可能なパスキーがありません
         origin_invalid: このサイトからの認証は許可されていません

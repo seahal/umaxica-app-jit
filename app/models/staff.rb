@@ -89,6 +89,7 @@ class Staff < OperatorRecord
            class_name: "Operator",
            inverse_of: :staff,
            dependent: :destroy
+  has_many :staff_org_preferences, dependent: :delete_all
 
   validates :public_id,
             presence: true,

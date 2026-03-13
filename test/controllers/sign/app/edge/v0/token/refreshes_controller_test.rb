@@ -54,7 +54,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 4, 5, 6, 7, 8)
 
-    with_env("COOKIE_DOMAIN_APP", ".app.refresh.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.refresh.example.test") do
       controller.any_instance.stub(
         :decode_and_verify_preference_jwt,
         { "preferences" => { "consented" => true }, "public_id" => "pref-app-public-id" },
@@ -87,7 +87,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 6, 7, 8, 9, 10)
 
-    with_env("COOKIE_DOMAIN_APP", ".app.refresh.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.refresh.example.test") do
       controller.any_instance.stub(
         :decode_and_verify_preference_jwt,
         { "preferences" => { "consent" => false, "consented" => false }, "public_id" => "pref-app-public-id" },
@@ -498,11 +498,12 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     @csrf_token ||= "test_csrf_token"
   end
 
-  def with_env(key, value)
-    previous = ENV[key]
-    ENV[key] = value
-    yield
-  ensure
-    ENV[key] = previous
+  def with_cookie_domain_credentials(overrides)
+    creds = Rails.app.creds
+    fetch = ->(key, default: nil) { overrides.fetch(key, default) }
+
+    creds.stub(:option, fetch) do
+      yield
+    end
   end
 end

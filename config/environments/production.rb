@@ -102,8 +102,8 @@ Rails.application.configure do
   # Enable DNS rebinding protection and other `Host` header attacks.
   # Collect all host ENV vars used in route constraints.
   config.hosts = ENV.values_at(
-    "SIGN_SERVICE_URL", "AUTH_SERVICE_URL",
-    "SIGN_STAFF_URL", "AUTH_STAFF_URL",
+    "SIGN_SERVICE_URL",
+    "SIGN_STAFF_URL",
     "APEX_SERVICE_URL", "APEX_STAFF_URL", "APEX_CORPORATE_URL",
     "CORE_SERVICE_URL", "CORE_STAFF_URL", "CORE_CORPORATE_URL",
     "DOCS_SERVICE_URL", "DOCS_STAFF_URL", "DOCS_CORPORATE_URL",

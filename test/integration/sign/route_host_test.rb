@@ -3,11 +3,11 @@
 
 require "test_helper"
 
-class SignRouteHostCompatibilityTest < ActionDispatch::IntegrationTest
-  test "sign app routes still match AUTH_SERVICE_URL during migration" do
-    with_env("SIGN_SERVICE_URL" => nil, "AUTH_SERVICE_URL" => "legacy-sign.app.example.test") do
+class SignRouteHostTest < ActionDispatch::IntegrationTest
+  test "sign app routes match SIGN_SERVICE_URL" do
+    with_env("SIGN_SERVICE_URL" => "sign.app.example.test") do
       Rails.application.reload_routes!
-      host! "legacy-sign.app.example.test"
+      host! "sign.app.example.test"
 
       get "/"
 
@@ -17,10 +17,10 @@ class SignRouteHostCompatibilityTest < ActionDispatch::IntegrationTest
     Rails.application.reload_routes!
   end
 
-  test "sign org routes still match AUTH_STAFF_URL during migration" do
-    with_env("SIGN_STAFF_URL" => nil, "AUTH_STAFF_URL" => "legacy-sign.org.example.test") do
+  test "sign org routes match SIGN_STAFF_URL" do
+    with_env("SIGN_STAFF_URL" => "sign.org.example.test") do
       Rails.application.reload_routes!
-      host! "legacy-sign.org.example.test"
+      host! "sign.org.example.test"
 
       get "/"
 

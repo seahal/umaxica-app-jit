@@ -37,12 +37,6 @@ pre-commit:
         else
           docker compose run core bundle exec erb_lint -a .
         fi
-    # secret-scan:
-    #   run: gitleaks protect
-
-pre-push:
-  parallel: true
-  commands:
     pnpm_audit:
       run: |
         #!/bin/sh
@@ -97,3 +91,5 @@ pre-push:
         else
           docker compose run core bash -c "bundle exec rails test"
         fi
+    # secret-scan:
+    #   run: gitleaks protect

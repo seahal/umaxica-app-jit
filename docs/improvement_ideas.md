@@ -40,4 +40,4 @@
 19. Swap the `rubocop -A` pre-commit hook for a safer variant (e.g., `--safe-auto-correct`) to
     reduce unintended edits from unsafe cops.
 20. Document the intended development workflow for any future asynchronous processing instead of
-   assuming an always-on background worker.
+    assuming an always-on background worker.

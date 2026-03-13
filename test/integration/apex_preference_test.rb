@@ -382,10 +382,17 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   def assert_preference_created(domain)
     get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
 
+    puts "DEBUG: response.status = #{response.status}"
+    puts "DEBUG: response.location = #{response.location}"
+    puts "DEBUG: cookies = #{cookies.to_hash.inspect}"
+    puts "DEBUG: Set-Cookie header = #{response.headers["Set-Cookie"].inspect}"
+
     assert_response :success
 
     cookie_name = preference_refresh_cookie_name
     token = cookies[cookie_name]
+
+    puts "DEBUG: cookie_name = #{cookie_name}, token = #{token.inspect}"
 
     assert_not_nil token
     token_digest = refresh_token_digest_for(token)

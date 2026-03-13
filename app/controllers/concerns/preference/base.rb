@@ -596,7 +596,7 @@ module Preference
     def ensure_preference_option_defaults(prefix)
       %w(Timezone Language Region Colortheme).each do |type|
         klass = Preference::ClassRegistry.option_class(prefix, type)
-        klass.ensure_defaults! if klass.respond_to?(:ensure_defaults!)
+        ensure_model_defaults!(klass)
       end
     end
 
@@ -715,6 +715,8 @@ module Preference
       normalized_event_id = normalize_preference_audit_event_id(event_id)
 
       ActivityRecord.connected_to(role: :writing) do
+        ensure_model_defaults!(preference_audit_level_class)
+
         if normalized_event_id.present?
           preference_audit_event_class.find_or_create_by!(id: normalized_event_id)
         end
@@ -842,9 +844,29 @@ module Preference
     end
 
     def ensure_preference_reference_defaults!
-      Preference::ClassRegistry.status_class_for(preference_class).ensure_defaults!
-      preference_binding_method_class.ensure_defaults!
-      preference_dbsc_status_class.ensure_defaults!
+      ensure_model_defaults!(Preference::ClassRegistry.status_class_for(preference_class))
+      ensure_model_defaults!(preference_audit_level_class)
+      ensure_model_defaults!(preference_audit_event_class)
+      ensure_model_defaults!(preference_binding_method_class)
+      ensure_model_defaults!(preference_dbsc_status_class)
+    end
+
+    def ensure_model_defaults!(klass)
+      return if klass.blank? || !klass.respond_to?(:ensure_defaults!)
+
+      connection_owner =
+        klass.ancestors.find do |ancestor|
+          ancestor.is_a?(Class) && ancestor < ActiveRecord::Base && ancestor.abstract_class?
+        end
+
+      if connection_owner.blank?
+        klass.ensure_defaults!
+        return
+      end
+
+      connection_owner.connected_to(role: :writing) do
+        klass.ensure_defaults!
+      end
     end
 
     # ==========================================================================
@@ -1029,6 +1051,11 @@ module Preference
       set_preference_device_id_cookie!(rotated_preference.device_id, expires_at: new_expiry)
       @refresh_token_value = new_token
       issue_preference_dbsc_registration_header_for(rotated_preference)
+
+      return unless respond_to?(:adopt_rotated_preference!, true) && respond_to?(:current_resource, true)
+
+      resource = begin; current_resource; rescue; nil; end
+      adopt_rotated_preference!(resource, rotated_preference) if resource
     end
 
     def issue_access_token_from(preference)

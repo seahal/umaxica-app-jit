@@ -67,7 +67,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::Org::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2035, 5, 6, 7, 8, 9)
 
-    with_env("COOKIE_DOMAIN_ORG", ".org.refresh.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_ORG: ".org.refresh.example.test") do
       controller.any_instance.stub(
         :decode_and_verify_preference_jwt,
         { "preferences" => { "consented" => false }, "public_id" => "pref-org-public-id" },
@@ -181,11 +181,12 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
   private
 
-  def with_env(key, value)
-    previous = ENV[key]
-    ENV[key] = value
-    yield
-  ensure
-    ENV[key] = previous
+  def with_cookie_domain_credentials(overrides)
+    creds = Rails.app.creds
+    fetch = ->(key, default: nil) { overrides.fetch(key, default) }
+
+    creds.stub(:option, fetch) do
+      yield
+    end
   end
 end

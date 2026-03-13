@@ -16,6 +16,16 @@ class ComPreferenceTimezoneOptionTest < ActiveSupport::TestCase
     ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NOTHING)
   end
 
+  test "ensure_defaults! creates default timezone options" do
+    ComPreferenceTimezoneOption.where(id: ComPreferenceTimezoneOption::DEFAULTS).delete_all
+
+    assert_empty ComPreferenceTimezoneOption.where(id: ComPreferenceTimezoneOption::DEFAULTS)
+
+    ComPreferenceTimezoneOption.ensure_defaults!
+
+    assert_equal ComPreferenceTimezoneOption::DEFAULTS.sort, ComPreferenceTimezoneOption.where(id: ComPreferenceTimezoneOption::DEFAULTS).pluck(:id).sort
+  end
+
   test "can be created" do
     option = ComPreferenceTimezoneOption.create!(id: 99)
 

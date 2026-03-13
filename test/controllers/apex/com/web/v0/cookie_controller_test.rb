@@ -23,7 +23,7 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     controller = Apex::Com::Web::V0::CookiesController
     expires_at = Time.utc(2031, 2, 3, 4, 5, 6)
 
-    with_env("COOKIE_DOMAIN_COM", ".com.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_COM: ".com.example.test") do
       controller.any_instance.stub(
         :decode_and_verify_preference_jwt,
         { "preferences" => { "consented" => false }, "public_id" => "pref-com-public-id" },
@@ -80,11 +80,12 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def with_env(key, value)
-    previous = ENV[key]
-    ENV[key] = value
-    yield
-  ensure
-    ENV[key] = previous
+  def with_cookie_domain_credentials(overrides)
+    creds = Rails.app.creds
+    fetch = ->(key, default: nil) { overrides.fetch(key, default) }
+
+    creds.stub(:option, fetch) do
+      yield
+    end
   end
 end

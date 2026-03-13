@@ -40,15 +40,15 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 
 ## 2. Stakeholders and Roles
 
-| Role                  | Responsibilities                                                                                                             | Tooling / Notes                                           |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Product Owner         | Defines feature scope, localization priorities, and compliance targets                                                       | Roadmap, Notion/Jira                                      |
-| Tech Lead / Architect | Owns multi-surface Rails architecture, multi-DB strategy, and integration points (Valkey, SMS, email)                        | Rails, Docker Compose                                     |
-| Front-End Engineer    | Builds Turbo/React views in `app/javascript`, owns theme and preference UX                                                   | pnpm, Biome, Tailwind, Turbo                              |
-| Back-End Engineer     | Implements controller logic (e.g., `config/routes/*.rb` namespaces), models, encryption, OTP/passkey workflows               | Rails 8, PostgreSQL, Valkey                               |
-| Platform/DevOps       | Manages Compose stack (PostgreSQL shards, Valkey, MinIO, Grafana/Loki/Tempo), CI (`integration.yml`), and deployments        | Docker, Foreman, GitHub Actions                           |
-| QA Engineer           | Designs Minitest/spec + JS/TS tests (via pnpm), Rswag/OpenAPI verification, smoke/load tests                                 | `bin/rails test`, `pnpm test` (when added), Playwright/k6 |
-| Security/Compliance   | Oversees JWT keys, Cloudflare Turnstile secrets, GDPR/ePrivacy consent storage                                               | Secrets management, monitoring                            |
+| Role                  | Responsibilities                                                                                                      | Tooling / Notes                                           |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Product Owner         | Defines feature scope, localization priorities, and compliance targets                                                | Roadmap, Notion/Jira                                      |
+| Tech Lead / Architect | Owns multi-surface Rails architecture, multi-DB strategy, and integration points (Valkey, SMS, email)                 | Rails, Docker Compose                                     |
+| Front-End Engineer    | Builds Turbo/React views in `app/javascript`, owns theme and preference UX                                            | pnpm, Biome, Tailwind, Turbo                              |
+| Back-End Engineer     | Implements controller logic (e.g., `config/routes/*.rb` namespaces), models, encryption, OTP/passkey workflows        | Rails 8, PostgreSQL, Valkey                               |
+| Platform/DevOps       | Manages Compose stack (PostgreSQL shards, Valkey, MinIO, Grafana/Loki/Tempo), CI (`integration.yml`), and deployments | Docker, Foreman, GitHub Actions                           |
+| QA Engineer           | Designs Minitest/spec + JS/TS tests (via pnpm), Rswag/OpenAPI verification, smoke/load tests                          | `bin/rails test`, `pnpm test` (when added), Playwright/k6 |
+| Security/Compliance   | Oversees JWT keys, Cloudflare Turnstile secrets, GDPR/ePrivacy consent storage                                        | Secrets management, monitoring                            |
 
 ---
 
@@ -68,7 +68,7 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
   Loki/Grafana (docker/observability stack).
 - **Storage & CDN**: Active Storage/Shrine configured for Google Cloud Storage or MinIO (dev).
   Fastly and Cloudflare R2 provide CDN and asset edge.
-- **Surface mapping** (driven by ENV such as `TOP_CORPORATE_URL`, `AUTH_SERVICE_URL`, etc.): |
+- **Surface mapping** (driven by ENV such as `TOP_CORPORATE_URL`, `SIGN_SERVICE_URL`, etc.): |
   Surface | Host examples | Namespace | Responsibilites |
   |---------|---------------|-----------|-----------------| | Top (marketing / preferences) |
   `www.umaxica.com`, `www.umaxica.app`, `www.umaxica.org` | `Top::Com/App/Org` | Redirects to edge,
@@ -194,7 +194,7 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Performance          | P95 response time ≤ 300 ms for `/health` endpoints; OTP submissions and preference updates complete within 2 s end-to-end; pnpm lint/format cycles and Tailwind watch rebuilds complete within 5 s. |
 | Availability         | ≥ 99.0 % uptime for top/sign/help hosts, measured monthly; automated failover to replica PostgreSQL instances for read-heavy queries.                                                               |
-| Scalability          | Support ≥ 1k req/min per host with linear scale-out via additional Rails pods.                                                                                                                   |
+| Scalability          | Support ≥ 1k req/min per host with linear scale-out via additional Rails pods.                                                                                                                      |
 | Security             | Enforce HTTPS-only traffic, HSTS headers, CSRF protection, signed cookies, JWT validation, Cloudflare Turnstile challenge, rate limiters, and WebAuthn/TOTP options.                                |
 | Privacy & Compliance | Preference cookies must capture consent state (GDPR/ePrivacy). PII stored encrypted with separation by database cluster. Audit logs retained ≥ 180 days.                                            |
 | Maintainability      | Namespaced controllers/views keep code per host ≤ 500 LOC; shared concerns (`Authn`, `PreferenceRegions`, `Theme`, etc.) must remain framework-agnostic.                                            |
@@ -213,12 +213,12 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
   `POSTGRESQL_BEHAVIOR_PUB`).
 - Asset pipeline relies on Rails Tailwind CLI and pnpm-managed JS tooling; Vite is intentionally not
   used.
-- Dependencies include ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine,
-  SolidCache, Fastly gem, AWS SDK.
+- Dependencies include ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine, SolidCache,
+  Fastly gem, AWS SDK.
 
 ### 6.2 Environmental & configuration constraints
 
-- Required ENV keys: host mappings (e.g., `TOP_CORPORATE_URL`, `AUTH_SERVICE_URL`, `API_STAFF_URL`),
+- Required ENV keys: host mappings (e.g., `TOP_CORPORATE_URL`, `SIGN_SERVICE_URL`, `API_STAFF_URL`),
   downstream edge hosts (`EDGE_*`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`),
   Cloudflare Turnstile secret, JWT private/public keys, SMS provider selector, storage credentials
   (GCS/MinIO), OTLP endpoint.
@@ -240,18 +240,18 @@ staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 
 ## 7. Acceptance Criteria
 
-| ID    | Condition                                                                                                                                                 |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AC-01 | `GET https://www.umaxica.com/health` returns 200 HTML, `GET .../v1/health` returns JSON `{status:"OK"}` for each host namespace.                          |
-| AC-02 | Editing language/region/timezone/theme updates cookies and redirects back to the proper Top scope with query parameters preserved.                        |
-| AC-03 | Email registration flow issues an OTP via ActionMailer only when Turnstile succeeds and saves `UserIdentityEmail` with encrypted address.                |
-| AC-04 | Telephone registration rejects invalid E.164 numbers and uses the configured SMS provider.                                                                |
-| AC-05 | Passkey flow returns creation options, stores the challenge in session, and accepts subsequent verification payloads.                                     |
-| AC-06 | Help contact form cannot submit without policy consent; valid submissions persist to `service_site_contacts` and emit a Mailer call.                      |
-| AC-07 | API inquiry endpoints validate addresses/phones using shared rules (no divergent regex).                                                                  |
-| AC-08 | Rate limiting, JWT verification, and Cloudflare Turnstile secrets are configurable per environment and validated during smoke tests.                      |
-| AC-09 | OpenTelemetry traces are visible in Grafana Tempo for at least the top/sign/help flows in staging/production.                                             |
-| AC-10 | CI pipeline executes `bundle exec rails test`, `pnpm run lint`, `pnpm run check`, `rubocop`, and `erb_lint` before merging.                               |
+| ID    | Condition                                                                                                                                 |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| AC-01 | `GET https://www.umaxica.com/health` returns 200 HTML, `GET .../v1/health` returns JSON `{status:"OK"}` for each host namespace.          |
+| AC-02 | Editing language/region/timezone/theme updates cookies and redirects back to the proper Top scope with query parameters preserved.        |
+| AC-03 | Email registration flow issues an OTP via ActionMailer only when Turnstile succeeds and saves `UserIdentityEmail` with encrypted address. |
+| AC-04 | Telephone registration rejects invalid E.164 numbers and uses the configured SMS provider.                                                |
+| AC-05 | Passkey flow returns creation options, stores the challenge in session, and accepts subsequent verification payloads.                     |
+| AC-06 | Help contact form cannot submit without policy consent; valid submissions persist to `service_site_contacts` and emit a Mailer call.      |
+| AC-07 | API inquiry endpoints validate addresses/phones using shared rules (no divergent regex).                                                  |
+| AC-08 | Rate limiting, JWT verification, and Cloudflare Turnstile secrets are configurable per environment and validated during smoke tests.      |
+| AC-09 | OpenTelemetry traces are visible in Grafana Tempo for at least the top/sign/help flows in staging/production.                             |
+| AC-10 | CI pipeline executes `bundle exec rails test`, `pnpm run lint`, `pnpm run check`, `rubocop`, and `erb_lint` before merging.               |
 
 ---
 

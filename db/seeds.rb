@@ -3,19 +3,31 @@
 return if Rails.env.production?
 
 sample_user_secret = "00000000000000000000000000000000"
-sample_staff_secret = "11111111111111111111111111111111"
+sample_staff_public_id = "2222222222222222"
+sample_staff_secret = "22222222222222222222222222222222"
+sample_staff_email_address = "sample-staff@example.test"
 
-UserVisibility.find_or_create_by!(id: UserVisibility::STAFF)
-UserStatus.find_or_create_by!(id: UserStatus::ACTIVE)
-UserEmailStatus.find_or_create_by!(id: UserEmailStatus::VERIFIED)
-UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
-UserSecretKind.find_or_create_by!(id: UserSecretKind::PERMANENT)
+def ensure_reference_rows(model_class, ids)
+  ids.each do |id|
+    model_class.find_or_create_by!(id: id)
+  end
+end
 
-StaffVisibility.find_or_create_by!(id: StaffVisibility::STAFF)
-StaffStatus.find_or_create_by!(id: StaffStatus::ACTIVE)
-StaffEmailStatus.find_or_create_by!(id: StaffEmailStatus::VERIFIED)
-StaffSecretStatus.find_or_create_by!(id: StaffSecretStatus::ACTIVE)
-StaffSecretKind.find_or_create_by!(id: StaffSecretKind::LOGIN)
+ensure_reference_rows(UserVisibility, [UserVisibility::STAFF])
+ensure_reference_rows(UserStatus, [UserStatus::ACTIVE])
+ensure_reference_rows(UserEmailStatus, [UserEmailStatus::VERIFIED])
+ensure_reference_rows(UserSecretStatus, [UserSecretStatus::ACTIVE, UserSecretStatus::USED])
+ensure_reference_rows(UserSecretKind, [UserSecretKind::PERMANENT])
+
+ensure_reference_rows(StaffVisibility, [StaffVisibility::STAFF])
+ensure_reference_rows(StaffStatus, [StaffStatus::ACTIVE])
+ensure_reference_rows(StaffEmailStatus, [StaffEmailStatus::VERIFIED])
+ensure_reference_rows(
+  StaffSecretStatus,
+  [StaffSecretStatus::ACTIVE, StaffSecretStatus::DELETED, StaffSecretStatus::EXPIRED,
+   StaffSecretStatus::REVOKED, StaffSecretStatus::USED,],
+)
+ensure_reference_rows(StaffSecretKind, [StaffSecretKind::LOGIN])
 
 user = User.find_or_initialize_by(public_id: "sample_user")
 user.status_id = UserStatus::ACTIVE
@@ -33,11 +45,12 @@ user_secret.uses_remaining = 10
 user_secret.password = sample_user_secret
 user_secret.save!
 
-staff = Staff.find_or_initialize_by(public_id: "TMPL2345WXYZ67AB")
+staff = Staff.find_or_initialize_by(public_id: sample_staff_public_id)
 staff.status_id = StaffStatus::ACTIVE
 staff.save!
 
-staff_email = staff.staff_emails.find_or_initialize_by(address: "sample-staff@example.test")
+staff_email = StaffEmail.find_or_initialize_by(address: sample_staff_email_address)
+staff_email.staff = staff
 staff_email.staff_email_status_id = StaffEmailStatus::VERIFIED
 staff_email.save!
 

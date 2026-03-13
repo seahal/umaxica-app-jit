@@ -4,7 +4,6 @@
 class Sign::Org::Edge::V0::Token::DbscRegistrationsController < Sign::Org::Edge::V0::BaseController
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token
-  skip_forgery_protection
 
   def create
     response.set_header("Cache-Control", "no-store")

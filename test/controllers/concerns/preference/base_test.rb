@@ -6,7 +6,7 @@ require "test_helper"
 class PreferenceSanitizeTestController < ::Core::App::ApplicationController
   include Preference::Base
 
-  attr_accessor :test_params
+  attr_accessor :test_params, :test_controller_path
 
   def initialize(*)
     super
@@ -14,7 +14,7 @@ class PreferenceSanitizeTestController < ::Core::App::ApplicationController
   end
 
   def controller_path
-    "core/app/preferences"
+    @test_controller_path || "core/app/preferences"
   end
 
   def params
@@ -23,6 +23,10 @@ class PreferenceSanitizeTestController < ::Core::App::ApplicationController
 
   def test_sanitize_option_id(params_hash, option_type:)
     sanitize_option_id(params_hash.dup.with_indifferent_access, option_type: option_type)
+  end
+
+  def test_ensure_preference_reference_defaults!
+    send(:ensure_preference_reference_defaults!)
   end
 end
 
@@ -127,6 +131,35 @@ module Preference
       result = @controller.test_sanitize_option_id({ option_id: "asia-tokyo" }, option_type: :timezone)
 
       assert_equal AppPreferenceTimezoneOption::ASIA_TOKYO, result[:option_id]
+    end
+  end
+
+  class EnsureReferenceDefaultsTest < ActiveSupport::TestCase
+    setup do
+      @controller = PreferenceSanitizeTestController.new
+    end
+
+    test "recreates missing app preference activity level defaults" do
+      AppPreferenceActivity.delete_all
+      AppPreferenceActivityLevel.where(id: AppPreferenceActivityLevel::INFO).delete_all
+
+      assert_nil AppPreferenceActivityLevel.find_by(id: AppPreferenceActivityLevel::INFO)
+
+      @controller.test_ensure_preference_reference_defaults!
+
+      assert_not_nil AppPreferenceActivityLevel.find_by(id: AppPreferenceActivityLevel::INFO)
+    end
+
+    test "recreates missing org preference activity level defaults on the activity writer" do
+      @controller.test_controller_path = "core/org/preferences"
+      OrgPreferenceActivity.delete_all
+      OrgPreferenceActivityLevel.where(id: OrgPreferenceActivityLevel::INFO).delete_all
+
+      assert_nil OrgPreferenceActivityLevel.find_by(id: OrgPreferenceActivityLevel::INFO)
+
+      @controller.test_ensure_preference_reference_defaults!
+
+      assert_not_nil OrgPreferenceActivityLevel.find_by(id: OrgPreferenceActivityLevel::INFO)
     end
   end
 end

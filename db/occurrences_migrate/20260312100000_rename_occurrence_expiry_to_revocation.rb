@@ -3,7 +3,7 @@
 class RenameOccurrenceExpiryToRevocation < ActiveRecord::Migration[8.2]
   disable_ddl_transaction!
 
-  TABLES = %i[
+  TABLES = %i(
     area_occurrences
     domain_occurrences
     email_occurrences
@@ -13,7 +13,7 @@ class RenameOccurrenceExpiryToRevocation < ActiveRecord::Migration[8.2]
     telephone_occurrences
     user_occurrences
     zip_occurrences
-  ].freeze
+  ).freeze
 
   def up
     TABLES.each do |table|

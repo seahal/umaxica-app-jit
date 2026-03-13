@@ -6,6 +6,7 @@ module Apex
     class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::Preference::Global
+      include ::Preference::Adoption
       include ::Authentication::User
       include ::Authorization::User
       include ::Verification::User

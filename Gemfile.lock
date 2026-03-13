@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 5233d7365d1491e37df77289c83b0c2e5314c809
+  revision: 367f7df55d1d66ac3df7e116d50ec029debba598
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -117,7 +117,7 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1224.0)
+    aws-partitions (1.1225.0)
     aws-sdk-core (3.243.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -836,13 +836,13 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13011)
-      sorbet-static (= 0.6.13011)
-    sorbet-runtime (0.6.13011)
-    sorbet-static (0.6.13011-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13011)
-      sorbet (= 0.6.13011)
-      sorbet-runtime (= 0.6.13011)
+    sorbet (0.6.13023)
+      sorbet-static (= 0.6.13023)
+    sorbet-runtime (0.6.13023)
+    sorbet-static (0.6.13023-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13023)
+      sorbet (= 0.6.13023)
+      sorbet-runtime (= 0.6.13023)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -1030,7 +1030,7 @@ CHECKSUMS
   argon2 (2.3.3) sha256=535276457cabf71940f21ac31b49b9d3b0d0a4640fe9db2b46b9677e2838453d
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   aws-eventstream (1.4.0) sha256=116bf85c436200d1060811e6f5d2d40c88f65448f2125bc77ffce5121e6e183b
-  aws-partitions (1.1224.0) sha256=739db16108b2f39917948e046572061ffed5e875db7d4006ed7af42d9070d335
+  aws-partitions (1.1225.0) sha256=eb348951c2e5e375897843afc0ecff16830d346d53149441d9677508195172b2
   aws-sdk-core (3.243.0) sha256=a014eef785124b71d28325783fa422a1512f8421ec9b6e3931c8b0ca3fbb0f1c
   aws-sdk-sns (1.112.0) sha256=aff1b1b5bbcb4229599221c558a41790c1cd1a1fed47ac3d27d27512ad24b254
   aws-sigv4 (1.12.1) sha256=6973ff95cb0fd0dc58ba26e90e9510a2219525d07620c8babeb70ef831826c00
@@ -1295,10 +1295,10 @@ CHECKSUMS
   snaky_hash (2.0.3) sha256=25a3d299566e8153fb02fa23fd9a9358845950f7a523ddbbe1fa1e0d79a6d456
   solid_cable (3.0.12) sha256=a168a54731a455d5627af48d8441ea3b554b8c1f6e6cd6074109de493e6b0460
   solid_queue (1.3.2) sha256=44a53047be4255f616ff13fa5d35980e7b3eee6e31d957eadb88fbe8e0db4509
-  sorbet (0.6.13011) sha256=bdfd7868ac57fad68004f0b860a98c02e9301a047fca5cbcaca233a59c132c3e
-  sorbet-runtime (0.6.13011) sha256=d451e380097747d64d39595fbbb6db2a198310f9eff0f810cd6e5696b402833f
-  sorbet-static (0.6.13011-x86_64-linux) sha256=43f7fa7bb5f34aef0f798f455d7beb30f0b577e6203004955397bab69d31221f
-  sorbet-static-and-runtime (0.6.13011) sha256=d0c302ead887ec62e2f4c731f3b054985a48ab12039e48acb3130aa02d834314
+  sorbet (0.6.13023) sha256=20a7e3982894a9b95ca4e117c01a4d8754617c4e20670c632578d2d8df97d69d
+  sorbet-runtime (0.6.13023) sha256=c00d11cc54951efbc0aece994dd6b20b1d1cb2a2606100c24d4ae7f840383073
+  sorbet-static (0.6.13023-x86_64-linux) sha256=9531f44b90b2515598a53131dd621845f027e641ed20bbfee1a50aabd5e5079a
+  sorbet-static-and-runtime (0.6.13023) sha256=b80c6a67796507ba275553a2fcd34743edb627499c09bd6e3e0cd3f262e73374
   spoom (1.6.3) sha256=0d05a501a643a2e3cb75357583fcd0a400e92e05cd05a1bf1a08cda6d321d153
   stimulus-rails (1.3.4) sha256=765676ffa1f33af64ce026d26b48e8ffb2e0b94e0f50e9119e11d6107d67cb06
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
