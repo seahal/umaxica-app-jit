@@ -152,7 +152,7 @@ Always verify initial understanding against primary sources. Never proceed on as
 
 Use ISO/IEC 25010 as a quality lens when designing, implementing, reviewing, and testing changes.
 
-- Consider the relevant characteristics explicitly: functional suitability, performance
-  efficiency, compatibility, usability, reliability, security, maintainability, and portability.
+- Consider the relevant characteristics explicitly: functional suitability, performance efficiency,
+  compatibility, usability, reliability, security, maintainability, and portability.
 - When tradeoffs materially affect scope, architecture, or test coverage, call out which quality
   characteristics were prioritized and which were deferred.

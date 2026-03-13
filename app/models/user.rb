@@ -142,6 +142,7 @@ class User < PrincipalRecord
            class_name: "Member",
            dependent: :nullify,
            inverse_of: :user
+  has_many :user_app_preferences, dependent: :delete_all
   has_many :avatar_assignments, dependent: :destroy
   has_many :assigned_avatars, through: :avatar_assignments, source: :avatar
   has_many :owned_avatars,

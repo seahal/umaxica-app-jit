@@ -12,6 +12,11 @@ module Sign
       identifier = normalized_passkey_identifier
       return render_error(passkey_identifier_required_error_key, :unprocessable_content) if identifier.blank?
 
+      return render_error(
+        passkey_identifier_invalid_error_key,
+        :unprocessable_content,
+      ) unless valid_passkey_identifier?(identifier)
+
       actor = find_active_passkey_actor(identifier)
       return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) unless actor
       return unless allow_passkey_options_for_actor?(actor)
@@ -46,6 +51,14 @@ module Sign
 
     def passkey_identifier_required_error_key
       "errors.webauthn.identifier_required"
+    end
+
+    def valid_passkey_identifier?(_identifier)
+      true
+    end
+
+    def passkey_identifier_invalid_error_key
+      passkey_identifier_required_error_key
     end
 
     def find_active_passkey_actor(_identifier)

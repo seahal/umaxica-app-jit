@@ -64,4 +64,4 @@ controllers, views, and routes.
 
 - Secret management: Rails credentials; never commit plaintext secrets.
 - WebAuthn commands require `TRUSTED_ORIGINS` set in environment.
-- Run hooks before push: `lefthook run pre-commit` (audit, lint, Brakeman, tests).
+- Run hooks before commit: `lefthook run pre-commit` (audit, lint, Brakeman, tests).

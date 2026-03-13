@@ -16,6 +16,16 @@ class OrgPreferenceTimezoneOptionTest < ActiveSupport::TestCase
     OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NOTHING)
   end
 
+  test "ensure_defaults! creates default timezone options" do
+    OrgPreferenceTimezoneOption.where(id: OrgPreferenceTimezoneOption::DEFAULTS).delete_all
+
+    assert_empty OrgPreferenceTimezoneOption.where(id: OrgPreferenceTimezoneOption::DEFAULTS)
+
+    OrgPreferenceTimezoneOption.ensure_defaults!
+
+    assert_equal OrgPreferenceTimezoneOption::DEFAULTS.sort, OrgPreferenceTimezoneOption.where(id: OrgPreferenceTimezoneOption::DEFAULTS).pluck(:id).sort
+  end
+
   test "can be created" do
     option = OrgPreferenceTimezoneOption.create!(id: 99)
 

@@ -9,6 +9,7 @@ module Sign
       include ::Authorization::User
       include ::Verification::User
       include ::Preference::Global
+      include ::Preference::Adoption
       include Pundit::Authorization
       include ::RestrictedSessionGuard # TODO: remove this.
       include ::Current

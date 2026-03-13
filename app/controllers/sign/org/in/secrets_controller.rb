@@ -14,10 +14,21 @@ module Sign
           attr_accessor :identifier, :secret_value
 
           validates :identifier, presence: true
+          validate :identifier_matches_staff_public_id_format
           validates :secret_value, presence: true
 
           def self.model_name
             ActiveModel::Name.new(self, nil, "secret_login_form")
+          end
+
+          private
+
+          def identifier_matches_staff_public_id_format
+            normalized_identifier = Staff.normalize_public_id(identifier)
+            return if normalized_identifier.blank?
+            return if Staff::PUBLIC_ID_FORMAT.match?(normalized_identifier)
+
+            errors.add(:identifier, :invalid)
           end
         end
 

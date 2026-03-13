@@ -663,6 +663,8 @@ module Auth
         )
       end
 
+      adopt_preference_for!(resource) if respond_to?(:adopt_preference_for!, true)
+
       result
     end
 

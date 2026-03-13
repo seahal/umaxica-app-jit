@@ -21,6 +21,11 @@
              data-passkey-authentication-target="identifier"
              placeholder="<%= t("sign.org.authentication.passkey.new.identifier_placeholder") %>"
              autocomplete="username webauthn"
+             autocapitalize="characters"
+             minlength="<%= Staff::PUBLIC_ID_LENGTH %>"
+             maxlength="<%= Staff::PUBLIC_ID_LENGTH %>"
+             pattern="[0-9A-FGHJKMNPQRSTVWXYZ]{16}"
+             spellcheck="false"
              required>
     </div>
 

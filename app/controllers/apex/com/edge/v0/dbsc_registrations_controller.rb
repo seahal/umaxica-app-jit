@@ -17,8 +17,6 @@ module Apex
           skip_before_action :transparent_refresh_access_token, raise: false
           skip_before_action :enforce_verification_if_required, raise: false
 
-          skip_forgery_protection
-
           def create
             response.set_header("Cache-Control", "no-store")
 

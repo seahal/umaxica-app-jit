@@ -20,8 +20,7 @@ host—marketing, authentication, docs/news, help/support, BFF, and API—consis
 - Namespaced controllers for `Top`, `Sign`, `Help`, `Docs`, `News`, `Bff`, and `Api` surfaces
 - Turbo/React front-end with pnpm-managed tooling (`app/javascript/**`)
 - Multi-database Active Record setup (identity, guest, universal, token, etc.)
-- Supporting infrastructure: PostgreSQL primary/replica pairs, Valkey, MinIO,
-  Grafana/Loki/Tempo
+- Supporting infrastructure: PostgreSQL primary/replica pairs, Valkey, MinIO, Grafana/Loki/Tempo
 - CI/CD automation (GitHub Actions, Lefthook) and local workflows (Foreman + Docker Compose)
 
 ### 1.3 References
@@ -92,7 +91,7 @@ Downstream: Google Cloud (Run/Build/Storage), Cloudflare R2, Fastly CDN
 | Namespace            | Host variables                                          | Responsibilities                                                                                                           |
 | -------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `Top::Com/App/Org`   | `TOP_CORPORATE_URL`, `TOP_SERVICE_URL`, `TOP_STAFF_URL` | Redirect to `EDGE_*` hosts, render `/health` & `/v1/health`, expose preference UIs (`cookie`, `region`, `theme`, `reset`). |
-| `Auth::App/Org`      | `AUTH_SERVICE_URL`, `AUTH_STAFF_URL`                    | Registration (email/phone), authentication, passkeys, OAuth, recovery, withdrawal.                                         |
+| `Auth::App/Org`      | `SIGN_SERVICE_URL`, `SIGN_STAFF_URL`                    | Registration (email/phone), authentication, passkeys, OAuth, recovery, withdrawal.                                         |
 | `Help::Com/App/Org`  | `HELP_*`                                                | Contact forms with Turnstile, OTP validation, email/SMS confirmation, success receipts.                                    |
 | `Docs::*`, `News::*` | `DOCS_*`, `NEWS_*`                                      | Documentation and newsroom placeholders with branded health endpoints.                                                     |
 | `Bff::*`             | `BFF_*`                                                 | Preference APIs for non-authenticated clients (email/locale endpoints).                                                    |
@@ -273,11 +272,10 @@ Sensitive columns leverage Active Record encryption.
 
 - `config/initializers/opentelemetry.rb` configures service names (`umaxica-app-jit-core`) and
   instrumentation; production enables `use_all`.
-- Compose-provisioned Loki/Tempo/Grafana host logs/traces locally; dashboards highlight request
-  rate and OTP/passkey errors.
+- Compose-provisioned Loki/Tempo/Grafana host logs/traces locally; dashboards highlight request rate
+  and OTP/passkey errors.
 - Health endpoints per host feed edge monitors and CI smoke tests.
-- Future: integrate alerting (PagerDuty/Grafana Cloud) for Turnstile error spikes beyond
-  thresholds.
+- Future: integrate alerting (PagerDuty/Grafana Cloud) for Turnstile error spikes beyond thresholds.
 
 ---
 

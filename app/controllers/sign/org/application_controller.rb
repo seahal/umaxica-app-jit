@@ -9,6 +9,7 @@ module Sign
       include ::Authorization::Staff
       include ::Verification::Staff
       include ::Preference::Global
+      include ::Preference::Adoption
       include Pundit::Authorization
       include ::Current
       include ::Finisher

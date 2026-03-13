@@ -400,6 +400,7 @@ en:
       webauthn:
         email_required: Please enter your email address
         identifier_required: Please enter your email or staff code
+        identifier_invalid: Please enter a valid 16-character staff code
         pii_required: Please enter your email address or telephone number
         no_passkeys_available: No passkeys available
         origin_invalid: Authentication from this site is not allowed
@@ -420,6 +421,7 @@ en:
     webauthn:
       email_required: Please enter your email address
       identifier_required: Please enter your email or staff code
+      identifier_invalid: Please enter a valid 16-character staff code
       pii_required: Please enter your email address or telephone number
       no_passkeys_available: No passkeys available
       origin_invalid: Authentication from this site is not allowed

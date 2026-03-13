@@ -41,6 +41,12 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "label", text: "ID"
+    assert_select "input#identifier[required]"
+    assert_select "input#identifier[minlength='16']"
+    assert_select "input#identifier[maxlength='16']"
+    assert_select "input#identifier[pattern='[0-9A-FGHJKMNPQRSTVWXYZ]{16}']"
+    assert_select "input#identifier[autocapitalize='characters']"
+    assert_select "input#identifier[spellcheck='false']"
   end
 
   test "options returns error if identifier blank" do
@@ -54,7 +60,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: "unknown@example.com" }
 
     assert_response :unprocessable_content
-    assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
+    assert_includes response.body, I18n.t("errors.webauthn.identifier_invalid")
   end
 
   test "options returns error if staff has no passkeys" do
@@ -71,7 +77,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: "staff_test@example.com" }
 
     assert_response :unprocessable_content
-    assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
+    assert_includes response.body, I18n.t("errors.webauthn.identifier_invalid")
   end
 
   test "options returns challenge and allowCredentials for lowercase staff public_id identifier" do

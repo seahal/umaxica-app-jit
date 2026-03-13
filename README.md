@@ -3,197 +3,232 @@
 
 # Umaxica App (JIT)
 
-Multi-domain Rails 8.2 application organized around three audience tiers — **app** (end users),
-**org** (staff), and **com** (corporate/public) — with host-constrained routing per domain.
+Multi-domain Rails application for three audience surfaces:
 
-## Environments & Endpoints
+- `app`: end users
+- `org`: staff
+- `com`: corporate/public
 
-### Corporate Site
+Routing is host-constrained, so domain and subdomain matter in both development and production.
 
-- `www.umaxica.com`
-- `www.news.[jp|us].umaxica.com`
-- `www.help.[jp|us].umaxica.com`
-- `www.docs.[jp|us].umaxica.com`
+## Stack
 
-### Service Endpoints
+- Ruby `4.0.1`
+- Rails `main` branch (tracking Rails 8 development)
+- PostgreSQL
+- Valkey/Redis
+- Solid Queue
+- Importmap + Stimulus + Turbo
+- Tailwind CSS via `tailwindcss-rails`
+- Propshaft
+- `pnpm` only for JavaScript linting/formatting tooling
 
-- `www.umaxica.app`
-- `sign.umaxica.app`
-- `www.[jp|us].docs.umaxica.app`
-- `www.[jp|us].help.umaxica.app`
-- `www.[jp|us].news.umaxica.app`
+## Frontend and Assets
 
-### Staff Site
+This repository does not use a JavaScript bundler.
 
-- `www.umaxica.org`
-- `sign.umaxica.org`
-- `www.[jp|us].docs.umaxica.org`
-- `www.[jp|us].help.umaxica.org`
-- `www.[jp|us].news.umaxica.org`
+- JavaScript is served through `importmap-rails`
+- Stimulus controllers live in `app/javascript/controllers`
+- CSS is built by `tailwindcss-rails`
+- Static assets are served by Propshaft
 
-### Network Endpoints
+Useful commands:
 
-- `a[jp|us].umaxica.net`
+```bash
+bin/rails tailwindcss:watch     # Tailwind watch mode
+bin/rails assets:precompile     # Production asset build
+bin/rails assets:clobber        # Remove compiled assets
+bin/importmap audit             # Audit pinned JS packages
+```
 
-## Getting Started
+## Local Setup
 
 ### Prerequisites
 
-| Tool                    |   Version    |                             Notes |
-| :---------------------- | :----------: | --------------------------------: |
-| Ruby                    |   `4.0.1`    |                     See `Gemfile` |
-| Bundler                 | Ruby-bundled |                                   |
-| Node.js                 |     20+      |                                   |
-| pnpm                    |  `10.27.0`   |                See `package.json` |
-| Docker / Docker Compose |    Latest    | Required for local infrastructure |
+- Docker and Docker Compose
+- Ruby `4.0.1`
+- Bundler
+- Node.js `20+`
+- `pnpm@10.27.0`
 
-### Quick Start
+### 1. Start local infrastructure
 
 ```bash
-docker compose up -d        # PostgreSQL 18, Valkey, Kafka, observability stack
+docker compose up -d primary replica valkey
+```
+
+If you need the full local stack, `compose.yml` also includes Kafka and observability services.
+
+### 2. Install dependencies
+
+```bash
 bundle install
 pnpm install
-bin/rails db:prepare         # Create, migrate, seed all databases
-bin/dev                      # Web server + Tailwind watcher + SolidQueue jobs
 ```
 
-For first-time setup in one command:
+`bin/setup` currently installs Ruby gems and prepares the database, but it does not install `pnpm`
+packages.
 
-```bash
-bin/setup
-```
+### 3. Configure environment
 
-### Development Checks
+`TRUSTED_ORIGINS` is required for boot because WebAuthn origin validation fails fast when it is
+missing.
 
-Use the project wrappers so local tooling runs with repository defaults:
-
-```bash
-bin/rubocop
-bin/brakeman
-bin/debride
-```
-
-`bin/debride` runs with Rails-aware analysis against `app/models`, `app/services`, `app/jobs`, and
-`app/policies`. Override the noise floor with `DEBRIDE_MINIMUM=5 bin/debride`, or pass paths
-explicitly such as `bin/debride app/services`.
-
-### Local Domains (Development)
-
-This app uses host-constrained routing in development. Access each surface with these hosts:
-
-| Surface  | URL Pattern                                  |                 Notes |
-| :------- | :------------------------------------------- | --------------------: |
-| App apex | `http://app.localhost:3000`                  |      end-user surface |
-| Com apex | `http://com.localhost:3000`                  | corporate/preferences |
-| Org apex | `http://org.localhost:3000`                  |         staff surface |
-| App sign | `http://sign.app.localhost:3000`             |       passkey sign-in |
-| Org sign | `http://sign.org.localhost:3000`             |       passkey sign-in |
-| App core | `http://www.app.localhost:3000`              |           main app UI |
-| Com core | `http://www.com.localhost:3000`              |          corporate UI |
-| Org core | `http://www.org.localhost:3000`              |              staff UI |
-| Docs     | `http://docs.[app\|com\|org].localhost:3000` |       content surface |
-| Help     | `http://help.[app\|com\|org].localhost:3000` |       content surface |
-| News     | `http://news.[app\|com\|org].localhost:3000` |       content surface |
-
-`*.localhost` resolves to `127.0.0.1` by default in modern environments, so `/etc/hosts` updates are
-usually unnecessary.
-
-### Required Environment Variables
-
-`TRUSTED_ORIGINS` is mandatory. The application fails fast at boot when this is missing or empty.
-
-Create/update `.env` with at least:
+Example `.env`:
 
 ```bash
 TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000
 ```
 
-### WebAuthn
-
-WebAuthn/FIDO2 flows use `TRUSTED_ORIGINS` as a comma-separated allowlist. Example for production:
+### 4. Prepare the databases
 
 ```bash
-TRUSTED_ORIGINS=https://sign.umaxica.app,https://sign.umaxica.org
+bin/setup
 ```
 
-### Secrets & Credentials
-
-- All sensitive configuration lives in **Rails encrypted credentials**
-  (`config/credentials/*.yml.enc`). Development and test credentials are shared with team members as
-  needed — the encryption key will be provided separately.
-- Never commit plaintext credentials. CI runs [Gitleaks](https://github.com/gitleaks/gitleaks) to
-  detect accidental credential exposure.
-
-### External Services
-
-- **Google OAuth** for social sign-in.
-- **AWS** for SMS delivery via SNS.
-- **Cloudflare** for Turnstile and R2-based asset delivery.
-- **Fastly** for cache purge and edge delivery support.
-- **Sentry** for error monitoring.
-- **Amazon SES** for SMTP-based email delivery.
-
-## Development
-
-### Linting & Formatting
+Or manually:
 
 ```bash
-bundle exec rubocop -a       # Ruby auto-fix
-bundle exec erb_lint .       # ERB templates
-pnpm run check               # JS (oxlint + oxfmt, CI-safe)
+bin/rails db:prepare
 ```
 
-### Testing
+### 5. Start development
 
 ```bash
-bundle exec rails test                                    # Full suite
-bundle exec rails test test/models/user_test.rb           # Single file
-bundle exec rails test test/models/user_test.rb -n test_validation  # Single test
-SKIP_DB=1 bundle exec rails test test/unit/               # Unit tests without DB
-COVERAGE=true bundle exec rails test                      # With coverage report
+bin/dev
 ```
 
-### Security
+`bin/dev` does the following:
+
+- ensures `foreman` is available
+- runs `bin/rails db:prepare` unless `SKIP_DB_PREPARE=1`
+- starts the processes from `Procfile.dev`
+
+Current development processes:
+
+- `web`: Rails server on port `3000`
+- `css`: `bin/rails tailwindcss:watch`
+- `job`: `bin/jobs start`
+
+## Development URLs
+
+Modern browsers resolve `*.localhost` to `127.0.0.1`, so extra `/etc/hosts` entries are usually not
+needed.
+
+| Surface  | URL                              |
+| :------- | :------------------------------- | --- | -------------------- |
+| App apex | `http://app.localhost:3000`      |
+| Com apex | `http://com.localhost:3000`      |
+| Org apex | `http://org.localhost:3000`      |
+| App sign | `http://sign.app.localhost:3000` |
+| Org sign | `http://sign.org.localhost:3000` |
+| App core | `http://www.app.localhost:3000`  |
+| Com core | `http://www.com.localhost:3000`  |
+| Org core | `http://www.org.localhost:3000`  |
+| Docs     | `http://docs.[app                | com | org].localhost:3000` |
+| Help     | `http://help.[app                | com | org].localhost:3000` |
+| News     | `http://news.[app                | com | org].localhost:3000` |
+
+## Linting and Formatting
+
+### Ruby and ERB
 
 ```bash
-bundle exec brakeman --no-pager           # Static analysis
-bundle exec bundler-audit check --update  # Dependency audit
-pnpm audit                                # JS dependency audit
-trivy fs .                                # Container & filesystem vulnerability scan
+bundle exec rubocop
+bundle exec rubocop -a
+bundle exec erb_lint .
+bundle exec erb_lint -a .
 ```
 
-### Git Hooks (Lefthook)
+### JavaScript tooling
+
+`pnpm` is used for linting and formatting, not for application bundling.
 
 ```bash
-lefthook run pre-commit
-lefthook run pre-push
+pnpm run lint
+pnpm run lint:fix
+pnpm run format
+pnpm run format:check
+pnpm run check
+```
+
+`pnpm run check` runs formatter verification first, then `oxlint`.
+
+## Testing
+
+```bash
+bundle exec rails test
+bundle exec rails test test/models/user_test.rb
+COVERAGE=true bundle exec rails test
+```
+
+If schema changes are involved, run:
+
+```bash
+bin/rails db:prepare
+bundle exec rails test
+```
+
+## Security and Quality Checks
+
+```bash
+bundle exec brakeman --no-pager
+bundle exec bundler-audit check --update
+bundle exec database_consistency
+bin/importmap audit
+pnpm audit
+bin/debride
+```
+
+`bin/debride` is configured for Rails-aware analysis and can also be scoped to specific paths:
+
+```bash
+bin/debride app/services
+DEBRIDE_MINIMUM=5 bin/debride
 ```
 
 ## Logging
 
-Rails 8.1 structured logging is enabled. Application logs are JSON and should use
-`Rails.event.notify` rather than `Rails.logger`.
+Application logging is structured. Prefer event-style logging over ad hoc `Rails.logger` calls when
+adding domain events or operational signals.
 
 ```ruby
-Rails.event.notify("user.created", user_id: user.id, plan: "pro")
-Rails.event.tagged("auth") do
-  Rails.event.notify("login.success", user_id: user.id)
-end
+Rails.event.notify("user.created", user_id: user.id)
+Rails.event.tagged("auth") { Rails.event.notify("login.success", user_id: user.id) }
 ```
+
+## Git Hooks
+
+Before committing, the repository expects Lefthook pre-commit checks to pass:
+
+```bash
+lefthook run pre-commit
+```
+
+The configured hooks cover:
+
+- `oxlint`
+- `oxfmt --check`
+- RuboCop
+- ERB Lint
+- `bundler-audit`
+- `importmap audit`
+- Brakeman
+- `database_consistency`
+- Rails tests
 
 ## Troubleshooting
 
-| Problem                                     | Fix                                                                                                                                                                                                                                        |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Frontend assets not updating                | `bin/rails assets:clobber` then rebuild                                                                                                                                                                                                    |
-| Tests failing on missing databases          | `bin/rails db:create`                                                                                                                                                                                                                      |
-| Devcontainer fails to start                 | Rebuild the devcontainer                                                                                                                                                                                                                   |
-| Cannot decrypt credentials                  | The encryption key is shared separately from the repo                                                                                                                                                                                      |
-| Cookies not shared across subdomains in dev | Browser security prevents cookie sharing on `localhost` subdomains (e.g. `app.localhost` vs `help.app.localhost`). This does not affect test or production. Use a `.test` domain with `/etc/hosts` if subdomain sharing is needed locally. |
+| Problem                                            | Fix                                                                                         |
+| :------------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| Tailwind changes are not reflected                 | Run `bin/rails assets:clobber` and restart `bin/dev` or `bin/rails tailwindcss:watch`       |
+| Tests fail because databases are missing           | Run `bin/rails db:prepare`                                                                  |
+| `bin/dev` stops during boot                        | Check `TRUSTED_ORIGINS` and database availability                                           |
+| Credentials cannot be decrypted                    | Use the shared Rails credentials key for this environment                                   |
+| Cookies are not shared across localhost subdomains | Use a custom dev domain such as `.test` if you need cross-subdomain cookie behavior locally |
 
-## Disclaimer
+## Notes
 
-- This project is a work in progress.
+- Secrets must stay in Rails credentials; do not commit plaintext secrets.
+- WebAuthn origins are controlled by `TRUSTED_ORIGINS`.
 - Public availability of this repository is not guaranteed permanently.
-- No warranty is provided. The authors shall not be held liable for any damages arising from the use
-  of this repository.

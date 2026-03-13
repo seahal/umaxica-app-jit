@@ -47,6 +47,14 @@ module Sign
           Staff.normalize_public_id(params[:identifier])
         end
 
+        def valid_passkey_identifier?(identifier)
+          Staff::PUBLIC_ID_FORMAT.match?(identifier)
+        end
+
+        def passkey_identifier_invalid_error_key
+          "errors.webauthn.identifier_invalid"
+        end
+
         def find_active_passkey_actor(identifier)
           normalized_identifier = Staff.normalize_public_id(identifier)
           return if normalized_identifier.blank?

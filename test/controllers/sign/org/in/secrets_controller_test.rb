@@ -4,7 +4,7 @@
 require "test_helper"
 
 class Sign::Org::In::SecretsControllerTest < ActionDispatch::IntegrationTest
-  fixtures :staffs, :staff_secrets, :staff_statuses
+  fixtures :staffs, :staff_secrets, :staff_statuses, :staff_secret_statuses, :staff_secret_kinds
 
   setup do
     @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
@@ -26,7 +26,12 @@ class Sign::Org::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "label", text: "ID"
-    assert_select "input[name='secret_login_form[identifier]']"
+    assert_select "input[name='secret_login_form[identifier]'][required]"
+    assert_select "input[name='secret_login_form[identifier]'][minlength='16']"
+    assert_select "input[name='secret_login_form[identifier]'][maxlength='16']"
+    assert_select "input[name='secret_login_form[identifier]'][pattern='[0-9A-FGHJKMNPQRSTVWXYZ]{16}']"
+    assert_select "input[name='secret_login_form[identifier]'][autocapitalize='characters']"
+    assert_select "input[name='secret_login_form[identifier]'][spellcheck='false']"
     assert_select "input[name='secret_login_form[totp_code]']", count: 0
   end
 

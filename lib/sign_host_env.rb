@@ -2,22 +2,24 @@
 # frozen_string_literal: true
 
 module SignHostEnv
+  class MissingHostError < StandardError; end
+
   module_function
 
   def service_url
-    first_present("SIGN_SERVICE_URL", "AUTH_SERVICE_URL")
+    ENV["SIGN_SERVICE_URL"].presence
   end
 
   def staff_url
-    first_present("SIGN_STAFF_URL", "AUTH_STAFF_URL")
+    ENV["SIGN_STAFF_URL"].presence
   end
 
-  def apply_legacy_fallbacks!
-    ENV["SIGN_SERVICE_URL"] ||= service_url
-    ENV["SIGN_STAFF_URL"] ||= staff_url
-  end
+  def validate!
+    missing = []
+    missing << "SIGN_SERVICE_URL" if service_url.blank?
+    missing << "SIGN_STAFF_URL" if staff_url.blank?
+    return if missing.empty?
 
-  def first_present(*keys)
-    keys.filter_map { |key| ENV[key].presence }.first
+    raise MissingHostError, "Missing required sign host env: #{missing.join(", ")}"
   end
 end

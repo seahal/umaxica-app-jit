@@ -4,16 +4,16 @@
 module Core
   module CookieDomain
     HOST_ONLY = "HOST_ONLY"
-    SURFACE_ENV = {
-      app: "COOKIE_DOMAIN_APP",
-      com: "COOKIE_DOMAIN_COM",
-      org: "COOKIE_DOMAIN_ORG",
+    SURFACE_CREDENTIAL_KEYS = {
+      app: :COOKIE_DOMAIN_APP,
+      com: :COOKIE_DOMAIN_COM,
+      org: :COOKIE_DOMAIN_ORG,
     }.freeze
 
     module_function
 
     def for(surface:, request_host:)
-      configured = ENV[SURFACE_ENV.fetch(surface.to_sym)]&.strip
+      configured = Rails.app.creds.option(SURFACE_CREDENTIAL_KEYS.fetch(surface.to_sym))&.strip
       return normalize_configured(configured) if configured.present?
 
       derive_from_host(request_host)

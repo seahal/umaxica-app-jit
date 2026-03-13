@@ -28,4 +28,20 @@ class OrgPreferenceColorthemeOption < PreferenceRecord
     when SYSTEM then "system"
     end
   end
+
+  DEFAULTS = [LIGHT, DARK, SYSTEM].freeze
+
+  def self.ensure_defaults!
+    return if DEFAULTS.blank?
+
+    existing_ids = where(id: DEFAULTS).pluck(:id)
+    missing_ids = DEFAULTS - existing_ids
+    return if missing_ids.empty?
+
+    if defined?(Prosopite)
+      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
+    else
+      missing_ids.each { |id| create!(id: id) }
+    end
+  end
 end

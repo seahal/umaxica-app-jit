@@ -50,12 +50,12 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 
 ### 2.2 Primary Modules
 
-| Layer          | Components                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------------------ |
-| Presentation   | Namespaced controllers and Turbo/React views under `app/javascript`                              |
-| Domain Logic   | Concerns in `app/controllers/concerns`, services in `app/services`, models per DB                |
-| Integration    | `app/mailers`, `AwsSmsService`, OTEL instrumentation                                              |
-| Infrastructure | Compose services (Postgres, Valkey, MinIO, Loki, Tempo, Grafana), pnpm/Tailwind toolchain        |
+| Layer          | Components                                                                                |
+| -------------- | ----------------------------------------------------------------------------------------- |
+| Presentation   | Namespaced controllers and Turbo/React views under `app/javascript`                       |
+| Domain Logic   | Concerns in `app/controllers/concerns`, services in `app/services`, models per DB         |
+| Integration    | `app/mailers`, `AwsSmsService`, OTEL instrumentation                                      |
+| Infrastructure | Compose services (Postgres, Valkey, MinIO, Loki, Tempo, Grafana), pnpm/Tailwind toolchain |
 
 ---
 
@@ -294,8 +294,8 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`,
   `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`, including the
   `POSTGRESQL_ACTIVITY_PUB/SUB` pair and `POSTGRESQL_BEHAVIOR_PUB`), Redis URLs
-  (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile keys, JWT keys,
-  AWS/Infobip credentials, OTLP endpoint.
+  (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip
+  credentials, OTLP endpoint.
 - `compose.yml` launches all infra dependencies with sensible defaults; volumes store data per
   service.
 - `Procfile.dev` ensures the Rails server and local development processes run concurrently; Tailwind
@@ -339,8 +339,8 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - Turnstile failures are logged at warn/error level with context.
 - `ServiceSiteContact` `before_create` raises if required content missing to prevent blank
   submissions.
-- OTEL instrumentation emits spans for HTTP requests, Redis calls, and ActionMailer deliveries
-  (once instrumentation enabled).
+- OTEL instrumentation emits spans for HTTP requests, Redis calls, and ActionMailer deliveries (once
+  instrumentation enabled).
 - Logs stream to STDOUT → Loki (when Compose stack used) or platform logging (Cloud Run).
 
 ---

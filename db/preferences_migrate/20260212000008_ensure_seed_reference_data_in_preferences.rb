@@ -4,15 +4,69 @@ class EnsureSeedReferenceDataInPreferences < ActiveRecord::Migration[8.2]
   DATA = {
     app_preference_statuses: {
       1 => "DELETED",
-      2 => "NEYO",
+      2 => "NOTHING",
     },
     com_preference_statuses: {
       1 => "DELETED",
-      2 => "NEYO",
+      2 => "NOTHING",
     },
     org_preference_statuses: {
       1 => "DELETED",
-      2 => "NEYO",
+      2 => "NOTHING",
+    },
+    app_preference_timezone_options: {
+      1 => "ETC/UTC",
+      2 => "ASIA/TOKYO",
+    },
+    com_preference_timezone_options: {
+      1 => "ETC/UTC",
+      2 => "ASIA/TOKYO",
+    },
+    org_preference_timezone_options: {
+      1 => "ETC/UTC",
+      2 => "ASIA/TOKYO",
+    },
+    app_preference_language_options: {
+      0 => "NOTHING",
+      1 => "JA",
+      2 => "EN",
+    },
+    com_preference_language_options: {
+      1 => "JA",
+      2 => "EN",
+    },
+    org_preference_language_options: {
+      1 => "JA",
+      2 => "EN",
+    },
+    app_preference_region_options: {
+      0 => "NOTHING",
+      1 => "US",
+      2 => "JP",
+    },
+    com_preference_region_options: {
+      1 => "US",
+      2 => "JP",
+    },
+    org_preference_region_options: {
+      1 => "US",
+      2 => "JP",
+    },
+    app_preference_colortheme_options: {
+      0 => "NOTHING",
+      1 => "LIGHT",
+      2 => "DARK",
+      3 => "SYSTEM",
+    },
+    com_preference_colortheme_options: {
+      1 => "LIGHT",
+      2 => "DARK",
+      3 => "SYSTEM",
+    },
+    org_preference_colortheme_options: {
+      1 => "LIGHT",
+      2 => "DARK",
+      3 => "SYSTEM",
     },
   }.freeze
 
