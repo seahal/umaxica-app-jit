@@ -11,6 +11,7 @@ module Sign
       include ::Preference::Global
       include ::Preference::Adoption
       include Pundit::Authorization
+      include ::RestrictedSessionGuard
       include ::Current
       include ::Finisher
 

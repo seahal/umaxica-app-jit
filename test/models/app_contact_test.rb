@@ -199,4 +199,100 @@ class AppContactTest < ActiveSupport::TestCase
     assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
     assert_raise(ActiveRecord::RecordNotFound) { topic.reload }
   end
+
+  test "email_pending? returns true for SET_UP status" do
+    contact = build_contact(status_id: AppContactStatus::SET_UP)
+
+    assert_predicate contact, :email_pending?
+  end
+
+  test "email_pending? returns false for other statuses" do
+    contact = build_contact(status_id: AppContactStatus::CHECKED_EMAIL_ADDRESS)
+
+    assert_not_predicate contact, :email_pending?
+  end
+
+  test "email_verified? returns true for CHECKED_EMAIL_ADDRESS" do
+    contact = build_contact(status_id: AppContactStatus::CHECKED_EMAIL_ADDRESS)
+
+    assert_predicate contact, :email_verified?
+  end
+
+  test "email_verified? returns false for other statuses" do
+    contact = build_contact(status_id: AppContactStatus::SET_UP)
+
+    assert_not_predicate contact, :email_verified?
+  end
+
+  test "phone_verified? returns true for CHECKED_TELEPHONE_NUMBER" do
+    contact = build_contact(status_id: AppContactStatus::CHECKED_TELEPHONE_NUMBER)
+
+    assert_predicate contact, :phone_verified?
+  end
+
+  test "phone_verified? returns false for other statuses" do
+    contact = build_contact(status_id: AppContactStatus::SET_UP)
+
+    assert_not_predicate contact, :phone_verified?
+  end
+
+  test "generate_final_token creates token digest and returns raw token" do
+    contact = build_contact
+
+    raw_token = contact.generate_final_token
+
+    assert_not_nil contact.token_digest
+    assert_not_nil contact.token_expires_at
+    assert_equal 32, raw_token.length
+  end
+
+  test "verify_token returns true for valid token" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+
+    assert contact.verify_token(raw_token)
+    assert_predicate contact, :token_viewed?
+  end
+
+  test "verify_token returns false when already viewed" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+    contact.verify_token(raw_token)
+
+    assert_not contact.verify_token(raw_token)
+  end
+
+  test "verify_token returns false for invalid token" do
+    contact = build_contact
+    contact.generate_final_token
+
+    assert_not contact.verify_token("invalid_token")
+  end
+
+  test "verify_token returns false for expired token" do
+    contact = build_contact
+    contact.update!(token_expires_at: 1.day.ago)
+
+    assert_not contact.verify_token("any_token")
+  end
+
+  test "token_expired? returns true when expired" do
+    contact = build_contact
+    contact.update!(token_expires_at: 1.day.ago)
+
+    assert_predicate contact, :token_expired?
+  end
+
+  test "token_expired? returns false when not expired" do
+    contact = build_contact
+    contact.update!(token_expires_at: 7.days.from_now)
+
+    assert_not_predicate contact, :token_expired?
+  end
+
+  test "to_param returns public_id" do
+    contact = build_contact
+
+    assert_equal contact.public_id, contact.to_param
+  end
 end

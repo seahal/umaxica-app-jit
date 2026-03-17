@@ -23,7 +23,7 @@ module Preference
     end
 
     def set_consented_buffer_cookie!
-      set_jit_preference_consented_buffer!(
+      set_preference_consented_buffer!(
         consented: extract_cookie_consented(decoded_preference_payload),
         expires_at: refresh_token_expires_at || Preference::Base::REFRESH_TOKEN_TTL.from_now,
       )

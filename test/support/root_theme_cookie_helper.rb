@@ -9,10 +9,16 @@ module RootThemeCookieHelper
 
     assert_response :success
 
-    token = cookies["jit_preference_access"]
+    token = cookies["preference_access"]
 
-    assert_not_nil token, "#{label} should set cookies[jit_preference_access]"
+    assert_not_nil token, "#{label} should set cookies[preference_access]"
 
-    cookies.delete("jit_preference_access")
+    # Validate the token is a decodable JWT (3 dot-separated base64 segments)
+    segments = token.split(".")
+
+    assert_equal 3, segments.size,
+                 "#{label}: preference_access cookie should be a valid JWT (got #{segments.size} segments)"
+
+    cookies.delete("preference_access")
   end
 end

@@ -419,6 +419,7 @@ module Sign::App::In
     end
 
     test "options returns turnstile error when response token is missing" do
+      CloudflareTurnstile.test_mode = false
       Jit::Security::TurnstileVerifier.test_mode = false
       Jit::Security::TurnstileVerifier.test_response = nil
 

@@ -107,6 +107,17 @@ module Sign
           end
         end
 
+        def passkey_success_restricted?(result)
+          result[:restricted]
+        end
+
+        def render_passkey_restricted_success(_result)
+          render json: {
+            status: "session_restricted",
+            redirect_url: sign_org_in_session_path,
+          }, status: :ok
+        end
+
         def passkey_checkpoint_redirect_url
           sign_org_in_checkpoint_path(rd: retrieve_redirect_parameter_for_checkpoint, ri: params[:ri])
         end

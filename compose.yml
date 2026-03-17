@@ -16,7 +16,10 @@ services:
       - /home/jit/workspace/tmp
       - /home/jit/workspace/log
     ports:
-      - "3001:3000"
+      - "3001:3000" # development (all-in-one)
+      - "3101:3100" # global
+      - "3201:3200" # local jp
+      - "3301:3300" # local us
     volumes:
       - type: bind
         source: .

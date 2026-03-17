@@ -70,4 +70,11 @@ class Sign::App::In::TotpsControllerTest < ActionDispatch::IntegrationTest
 
     assert_includes before_actions, :reject_logged_in_session
   end
+
+  test "TotpChallengeForm validates token is digits only" do
+    form = Sign::App::In::TotpsController::TotpChallengeForm.new
+    form.token = "abcdef"
+
+    assert_not form.valid?
+  end
 end

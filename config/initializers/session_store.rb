@@ -20,7 +20,7 @@ force_secure_cookies =
 
 Rails.application.config.session_store :cookie_store,
                                        expire_after: 14.days,
-                                       key: force_secure_cookies ? "__Secure-jit_session" : "jit_session",
+                                       key: force_secure_cookies ? "__Secure-session" : "session",
                                        secure: force_secure_cookies,
                                        httponly: true,
                                        same_site: :lax

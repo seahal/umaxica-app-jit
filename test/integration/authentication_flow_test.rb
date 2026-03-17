@@ -44,7 +44,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Access /in/new with refresh cookie but no access cookie
     # This simulates an expired access token
-    cookies_header = "jit_auth_refresh=#{refresh_plain}"
+    cookies_header = "auth_refresh=#{refresh_plain}"
 
     get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
 
@@ -58,13 +58,13 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_configuration_path
 
     # Verify cookies updated (rotated)
-    new_refresh = response.cookies["jit_auth_refresh"] || cookies["jit_auth_refresh"]
+    new_refresh = response.cookies["auth_refresh"] || cookies["auth_refresh"]
 
     assert_not_nil new_refresh
     # Note: refresh_plain string matching might be complex if cookies are encoded/encrypted differently in response
     # but at least one should exist.
 
-    assert_not_nil response.cookies["jit_auth_access"] || cookies["jit_auth_access"]
+    assert_not_nil response.cookies["auth_access"] || cookies["auth_access"]
   end
 
   test "audit event is created on refresh" do
@@ -81,7 +81,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     )
     refresh_plain = token_record.rotate_refresh_token!
 
-    cookies_header = "jit_auth_refresh=#{refresh_plain}"
+    cookies_header = "auth_refresh=#{refresh_plain}"
     get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
 
     if response.redirect? && response.location.include?("in/new")
@@ -114,7 +114,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Stub AuditWriter.write to simulate audit failure
     Auth::AuditWriter.stub(:write, false) do
-      cookies_header = "jit_auth_refresh=#{refresh_plain}"
+      cookies_header = "auth_refresh=#{refresh_plain}"
 
       # Subscribe to Rails.event to verify audit failure was observed
       events = []
@@ -135,7 +135,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
                            "Should redirect to configuration (guest_only enforcement) even when audit fails"
 
       # Verify new access token was set (refresh succeeded)
-      assert_not_nil response.cookies["jit_auth_access"] || cookies["jit_auth_access"],
+      assert_not_nil response.cookies["auth_access"] || cookies["auth_access"],
                      "Access token should be set despite audit failure"
 
       ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
@@ -158,7 +158,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Stub AuditWriter.write to simulate audit failure
     Auth::AuditWriter.stub(:write, false) do
-      cookies_header = "jit_auth_refresh=#{refresh_plain}"
+      cookies_header = "auth_refresh=#{refresh_plain}"
       get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
 
       if response.redirect? && response.location.include?("in/new")
@@ -174,8 +174,12 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
   test "S3: inactive resource does not destroy token, only revokes" do
     # Create inactive user by setting withdrawn_at (which makes active? return false)
-    inactive_user = users(:two) # Assuming fixture has a second user
+    inactive_user = users(:two)
+
+    assert_not_nil inactive_user, "Fixture users(:two) must exist for this test"
     inactive_user.update!(withdrawn_at: Time.current) # This makes active? return false
+
+    assert_not inactive_user.active?, "User should be inactive after setting withdrawn_at"
 
     token_record = UserToken.create!(
       user: inactive_user,
@@ -184,7 +188,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     refresh_plain = token_record.rotate_refresh_token!
     token_id = token_record.id
 
-    cookies_header = "jit_auth_refresh=#{refresh_plain}"
+    cookies_header = "auth_refresh=#{refresh_plain}"
     get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
 
     # Refresh should fail due to inactive user

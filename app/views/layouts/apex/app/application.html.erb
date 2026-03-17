@@ -15,7 +15,6 @@
 
   <%= javascript_importmap_tags %>
 
-  <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 
   <%= yield :head %>
 </head>
@@ -28,7 +27,7 @@
     <%= render "layouts/shared/header",
                service_name: "APEX",
                namespace: "app",
-               home_path: "http://app.localhost:3000/" do %>
+               home_path: "#{request.protocol}#{ENV.fetch('APEX_SERVICE_URL', 'app.localhost')}#{request.port_string}/" do %>
       <% unless logged_in? %>
         <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_url(host: ENV['SIGN_SERVICE_URL']) %>
         <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_url(host: ENV['SIGN_SERVICE_URL']) %>
@@ -45,8 +44,8 @@
       <%= yield %>
     </main>
 
-    <%= render "layouts/shared/footer" do %>
-      <a href="http://app.localhost:3000/"><%= t('apex.app.preferences.footer.home') %></a>
+    <%= render "layouts/shared/footer", scope: :app do %>
+      <a href="<%= "#{request.protocol}#{ENV.fetch('APEX_SERVICE_URL', 'app.localhost')}#{request.port_string}/" %>"><%= t('apex.app.preferences.footer.home') %></a>
       <%= link_to t('apex.app.preferences.footer.preference'), apex_app_preference_url %>
       <%= link_to t("apex.app.configurations.title"), apex_app_configuration_path %>
     <% end %>

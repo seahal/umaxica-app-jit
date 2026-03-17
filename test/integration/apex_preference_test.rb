@@ -424,7 +424,6 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       _pref, _token, cookie_name = assert_preference_created(domain)
 
       cookies[Preference::Base::THEME_COOKIE_KEY] = "dr"
-      cookies[Preference::Base::LEGACY_THEME_COOKIE_KEY] = "dark"
       cookies[Preference::Base::LANGUAGE_COOKIE_KEY] = "en"
       cookies[Preference::Base::TIMEZONE_COOKIE_KEY] = "etc/utc"
 
@@ -435,10 +434,9 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
         cookie_name,
         preference_access_cookie_name,
         Preference::Base::THEME_COOKIE_KEY,
-        Preference::Base::LEGACY_THEME_COOKIE_KEY,
         Preference::Base::LANGUAGE_COOKIE_KEY,
         Preference::Base::TIMEZONE_COOKIE_KEY,
-      ].uniq
+      ]
 
       assert cookie_names.all? { |name| cookies[name].to_s.empty? },
              "Preference-related cookies should be deleted"
@@ -507,17 +505,10 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   def assert_preference_created(domain)
     get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
 
-    puts "DEBUG: response.status = #{response.status}"
-    puts "DEBUG: response.location = #{response.location}"
-    puts "DEBUG: cookies = #{cookies.to_hash.inspect}"
-    puts "DEBUG: Set-Cookie header = #{response.headers["Set-Cookie"].inspect}"
-
     assert_response :success
 
     cookie_name = preference_refresh_cookie_name
     token = cookies[cookie_name]
-
-    puts "DEBUG: cookie_name = #{cookie_name}, token = #{token.inspect}"
 
     assert_not_nil token
     token_digest = refresh_token_digest_for(token)

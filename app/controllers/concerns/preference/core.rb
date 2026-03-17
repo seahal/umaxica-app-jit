@@ -185,6 +185,16 @@ module Preference::Core
     params.expect(preference_colortheme: [:option_id])
   end
 
+  def safe_return_to_path
+    return if params[:return_to].blank?
+
+    candidate = params[:return_to].to_s
+    return unless candidate.start_with?("/")
+    return if candidate.start_with?("//")
+
+    candidate
+  end
+
   def delete_preference_cookie
     preference = find_preference_for_delete
     delete_preference_record(preference) if preference.present?
@@ -235,10 +245,9 @@ module Preference::Core
 
     cookie_names = [
       Preference::Base::THEME_COOKIE_KEY,
-      Preference::Base::LEGACY_THEME_COOKIE_KEY,
       Preference::Base::LANGUAGE_COOKIE_KEY,
       Preference::Base::TIMEZONE_COOKIE_KEY,
-    ].uniq
+    ]
     cookie_names.each do |cookie_name|
       cookies.delete(cookie_name, **preference_cookie_deletion_options)
     end

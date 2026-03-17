@@ -13,6 +13,16 @@ require "test_helper"
 class OrgPreferenceStatusTest < ActiveSupport::TestCase
   fixtures :org_preference_statuses
 
+  test "has correct constants" do
+    assert_equal 1, OrgPreferenceStatus::DELETED
+    assert_equal 2, OrgPreferenceStatus::NOTHING
+  end
+
+  test "defaults includes DELETED and NOTHING" do
+    assert_includes OrgPreferenceStatus::DEFAULTS, OrgPreferenceStatus::DELETED
+    assert_includes OrgPreferenceStatus::DEFAULTS, OrgPreferenceStatus::NOTHING
+  end
+
   test "returns all statuses" do
     ids = OrgPreferenceStatus.pluck(:id)
 
@@ -23,5 +33,11 @@ class OrgPreferenceStatusTest < ActiveSupport::TestCase
     status = OrgPreferenceStatus.new(id: 3)
 
     assert_predicate status, :valid?
+  end
+
+  test "ensure_defaults! does nothing when defaults exist" do
+    assert_no_difference "OrgPreferenceStatus.count" do
+      OrgPreferenceStatus.ensure_defaults!
+    end
   end
 end

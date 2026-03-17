@@ -11,7 +11,25 @@
 require "test_helper"
 
 class AppPreferenceDbscStatusTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "has correct constants" do
+    assert_equal 0, AppPreferenceDbscStatus::NOTHING
+    assert_equal 1, AppPreferenceDbscStatus::PENDING
+    assert_equal 2, AppPreferenceDbscStatus::ACTIVE
+    assert_equal 3, AppPreferenceDbscStatus::FAILED
+    assert_equal 4, AppPreferenceDbscStatus::REVOKE
+  end
+
+  test "defaults includes all status values" do
+    assert_includes AppPreferenceDbscStatus::DEFAULTS, AppPreferenceDbscStatus::NOTHING
+    assert_includes AppPreferenceDbscStatus::DEFAULTS, AppPreferenceDbscStatus::PENDING
+    assert_includes AppPreferenceDbscStatus::DEFAULTS, AppPreferenceDbscStatus::ACTIVE
+    assert_includes AppPreferenceDbscStatus::DEFAULTS, AppPreferenceDbscStatus::FAILED
+    assert_includes AppPreferenceDbscStatus::DEFAULTS, AppPreferenceDbscStatus::REVOKE
+  end
+
+  test "ensure_defaults! does nothing when defaults exist" do
+    assert_no_difference "AppPreferenceDbscStatus.count" do
+      AppPreferenceDbscStatus.ensure_defaults!
+    end
+  end
 end

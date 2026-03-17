@@ -38,7 +38,7 @@
 # App (user) Google credentials
 google_app_client_id = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_APP_CLIENT_ID)
 google_app_client_secret = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_APP_CLIENT_SECRET)
-# Org (staff) Google credentials — separate OAuth client for staff domain
+# Org (staff) Google credentials - separate OAuth client for staff domain
 google_org_client_id = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_ORG_CLIENT_ID)
 google_org_client_secret = Rails.app.creds.option(:OMNI_AUTH_GOOGLE_ORG_CLIENT_SECRET)
 
@@ -58,7 +58,7 @@ end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   # ---------------------------------------------------------------------------
-  # Google OAuth2 — App (user sign-in/sign-up)
+  # Google OAuth2 - App (user sign-in/sign-up)
   # ---------------------------------------------------------------------------
   # Callback: GET /auth/google_app/callback
   provider :google_oauth2,
@@ -73,7 +73,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
            }
 
   # ---------------------------------------------------------------------------
-  # Google OAuth2 — Org (staff sign-in only)
+  # Google OAuth2 - Org (staff sign-in only)
   # ---------------------------------------------------------------------------
   # Callback: GET /auth/google_org/callback
   provider :google_oauth2,

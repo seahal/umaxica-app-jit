@@ -26,7 +26,8 @@ module Dbsc
       return failure("invalid_algorithm") unless ALLOWED_ALGORITHMS.include?(unverified_header["alg"].to_s)
 
       return failure("missing_audience") if unverified_payload["aud"].to_s.blank?
-      return failure("audience_mismatch") if expected_audience.present? && unverified_payload["aud"] != expected_audience
+      return failure("audience_mismatch") if expected_audience.present? &&
+        unverified_payload["aud"] != expected_audience
       return failure("missing_issued_at") unless unverified_payload["iat"].is_a?(Numeric)
 
       issued_at = Time.zone.at(unverified_payload["iat"])

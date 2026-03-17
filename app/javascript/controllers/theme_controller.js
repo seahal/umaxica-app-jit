@@ -24,8 +24,9 @@ export default class extends Controller {
 
   setTheme(theme) {
     localStorage.setItem("theme", theme);
-    // Sync with server-side cookie helper (jit_ct)
-    document.cookie = `jit_ct=${theme}; path=/; max-age=31536000; samesite=lax`;
+    // Sync with server-side cookie helper (ct)
+    const secure = location.protocol === "https:" ? "; secure" : "";
+    document.cookie = `ct=${theme}; path=/; max-age=31536000; samesite=lax${secure}`;
     this.applyTheme();
   }
 

@@ -8,7 +8,7 @@ module Preference
     private
 
     # Write-only buffer cookie for JS. Rails must not read this cookie.
-    def set_jit_preference_consented_buffer!(consented:, expires_at:)
+    def set_preference_consented_buffer!(consented:, expires_at:)
       cookie_options = ::Core::CookieOptions.for(
         surface: ::Core::Surface.current(request),
         request: request,

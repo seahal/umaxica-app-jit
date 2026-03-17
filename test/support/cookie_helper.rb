@@ -4,15 +4,15 @@
 # Helper methods for working with cookies in integration tests
 module CookieHelper
   def preference_refresh_cookie_name
-    Rails.env.production? ? "__Secure-jit_preference_refresh" : "jit_preference_refresh"
+    Rails.env.production? ? "__Secure-preference_refresh" : "preference_refresh"
   end
 
   def preference_access_cookie_name
-    Rails.env.production? ? "__Secure-jit_preference_access" : "jit_preference_access"
+    Rails.env.production? ? "__Secure-preference_access" : "preference_access"
   end
 
   def preference_device_id_cookie_name
-    preference_refresh_cookie_name.sub("jit_preference_refresh", "jit_preference_device_id")
+    preference_refresh_cookie_name.sub("preference_refresh", "preference_device_id")
   end
 
   # Read a signed cookie value by key

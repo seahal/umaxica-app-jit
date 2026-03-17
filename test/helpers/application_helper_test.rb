@@ -9,7 +9,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   def stub_cookie(value)
-    define_singleton_method(:cookies) { { "jit_ct" => value } }
+    define_singleton_method(:cookies) { { "ct" => value } }
   end
 
   test "theme_cookie_value maps short codes" do
@@ -58,5 +58,30 @@ class ApplicationHelperTest < ActionView::TestCase
     stub_cookie("system")
 
     assert_equal "theme-system", theme_html_class
+  end
+
+  test "page_title sets content for with title" do
+    view.extend(ApplicationHelper)
+    view.content_for(:page_title, nil)
+
+    view.page_title("Test Title")
+
+    assert_equal "Test Title", view.content_for(:page_title)
+  end
+
+  test "page_title returns translation default when no title set" do
+    view.extend(ApplicationHelper)
+
+    result = view.page_title
+
+    expected = I18n.t("meta.default_title", default: "")
+
+    assert_equal expected, result
+  end
+
+  test "theme_class is backward compatible alias for theme_html_class" do
+    stub_cookie("dark")
+
+    assert_equal theme_html_class, theme_class
   end
 end

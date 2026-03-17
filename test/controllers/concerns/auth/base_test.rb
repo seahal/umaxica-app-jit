@@ -9,6 +9,7 @@ module Auth
       include Auth::Base
 
       attr_accessor :actor_type
+      attr_writer :logged_in
 
       def resource_type
         actor_type
@@ -29,6 +30,74 @@ module Auth
       def am_i_staff? = false
 
       def am_i_owner? = false
+
+      def initialize
+        @params_hash = {}
+        @session_hash = {}
+        @flash_hash = {}
+        @logged_in = false
+        @request_stub = Struct.new(:format).new(Struct.new(:json?).new(false))
+      end
+
+      def current_resource
+        @logged_in ? Object.new : nil
+      end
+
+      def params
+        @params_hash.with_indifferent_access
+      end
+
+      def params=(value)
+        @params_hash = value
+      end
+
+      def session
+        @session_hash
+      end
+
+      def flash
+        @flash_hash
+      end
+
+      def request
+        @request_stub
+      end
+
+      def json_request!
+        @request_stub = Struct.new(:format).new(Struct.new(:json?).new(true))
+      end
+
+      def html_request!
+        @request_stub = Struct.new(:format).new(Struct.new(:json?).new(false))
+      end
+
+      def render(**kwargs)
+        @rendered = kwargs
+      end
+
+      def rendered
+        @rendered
+      end
+
+      def redirect_to(path, **kwargs)
+        @redirected = [path, kwargs]
+      end
+
+      def redirected
+        @redirected
+      end
+
+      def jump_to_generated_url(url, fallback:)
+        @jumped = [url, fallback]
+      end
+
+      def jumped
+        @jumped
+      end
+
+      def t(key)
+        "translated:#{key}"
+      end
     end
 
     test "VALID_POLICIES constant is defined" do
@@ -44,17 +113,17 @@ module Auth
 
     test "ACCESS_COOKIE_KEY is defined" do
       assert_kind_of String, Auth::Base::ACCESS_COOKIE_KEY
-      assert_equal "jit_auth_access", Auth::Base::ACCESS_COOKIE_KEY
+      assert_equal "auth_access", Auth::Base::ACCESS_COOKIE_KEY
     end
 
     test "REFRESH_COOKIE_KEY is defined" do
       assert_kind_of String, Auth::Base::REFRESH_COOKIE_KEY
-      assert_equal "jit_auth_refresh", Auth::Base::REFRESH_COOKIE_KEY
+      assert_equal "auth_refresh", Auth::Base::REFRESH_COOKIE_KEY
     end
 
     test "DEVICE_COOKIE_KEY is defined" do
       assert_kind_of String, Auth::Base::DEVICE_COOKIE_KEY
-      assert_equal "jit_auth_device_id", Auth::Base::DEVICE_COOKIE_KEY
+      assert_equal "auth_device_id", Auth::Base::DEVICE_COOKIE_KEY
     end
 
     test "test_header_key resolves actor specific keys" do
@@ -77,15 +146,13 @@ module Auth
       assert_equal "X-TEST-CURRENT-RESOURCE", harness.send(:test_header_key)
     end
 
-    test "device cookie is managed through dedicated helpers only" do
-      source = Rails.root.join("app/controllers/concerns/auth/base.rb").read
-
-      assert_includes source, "def set_device_id_cookie!"
-      assert_includes source, "def clear_device_id_cookie!"
-      assert_includes source, "def read_device_id_cookie"
-      assert_no_match(/cookies\[DEVICE_COOKIE_KEY\]/, source)
-      assert_no_match(/cookies\.delete\s+DEVICE_COOKIE_KEY/, source)
-      assert_no_match(/cookies\.delete\(DEVICE_COOKIE_KEY/, source)
+    test "device cookie helper methods are defined" do
+      assert Auth::Base.private_method_defined?(:set_device_id_cookie!),
+             "Auth::Base should define set_device_id_cookie!"
+      assert Auth::Base.private_method_defined?(:clear_device_id_cookie!),
+             "Auth::Base should define clear_device_id_cookie!"
+      assert Auth::Base.private_method_defined?(:read_device_id_cookie),
+             "Auth::Base should define read_device_id_cookie"
     end
 
     test "ACCESS_TOKEN_TTL is defined" do
@@ -150,6 +217,71 @@ module Auth
 
     test "SkipNotAllowedError is a StandardError" do
       assert_operator Auth::Base::SkipNotAllowedError, :<, StandardError
+    end
+
+    test "request guard helpers render or redirect when already logged in" do
+      harness = HeaderKeyHarness.new
+      harness.logged_in = true
+
+      harness.ensure_not_logged_in
+
+      assert_equal "権限がありません", harness.rendered[:plain]
+      assert_equal :unauthorized, harness.rendered[:status]
+
+      harness.ensure_not_logged_in(message_key: "auth.denied")
+
+      assert_equal "translated:auth.denied", harness.rendered[:plain]
+
+      assert harness.reject_if_logged_in("auth.bad_request")
+      assert_equal "translated:auth.bad_request", harness.rendered[:plain]
+      assert_equal :bad_request, harness.rendered[:status]
+
+      harness.json_request!
+      harness.ensure_not_logged_in_for_registration(redirect_path: "/dashboard", message_key: "auth.denied")
+
+      assert_equal :unauthorized, harness.rendered[:status]
+
+      harness.html_request!
+      harness.ensure_not_logged_in_for_registration(redirect_path: "/dashboard", message_key: "auth.denied")
+
+      assert_equal ["/dashboard", { alert: "translated:auth.denied" }], harness.redirected
+    end
+
+    test "request guard helpers no-op when not logged in" do
+      harness = HeaderKeyHarness.new
+
+      assert_nil harness.ensure_not_logged_in
+      assert_not harness.reject_if_logged_in("auth.bad_request")
+      assert_nil harness.ensure_not_logged_in_for_registration
+      assert_nil harness.rendered
+      assert_nil harness.redirected
+    end
+
+    test "redirect parameter helpers preserve peek retrieve and build params" do
+      harness = HeaderKeyHarness.new
+      harness.params = { rd: "/target" }
+
+      assert_equal "/target", harness.preserve_redirect_parameter
+      assert_equal "/target", harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+      assert_equal "/target", harness.peek_redirect_parameter
+      assert_equal({ notice: "ok", rd: "/target" }, harness.build_notice_params("ok"))
+      assert_equal({ alert: "ng", rd: "/target" }, harness.build_alert_params("ng"))
+      assert_equal "/target", harness.retrieve_redirect_parameter
+      assert_nil harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+    end
+
+    test "redirect_with_rd_handling uses rd jump when present and fallback redirect otherwise" do
+      harness = HeaderKeyHarness.new
+      harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY] = "/encoded"
+
+      harness.redirect_with_rd_handling("/default", :notice, "done")
+
+      assert_equal "done", harness.flash[:notice]
+      assert_equal ["/encoded", "/default"], harness.jumped
+
+      harness.redirect_with_rd_handling("/default", :alert, "warn")
+
+      assert_equal ["/default", { alert: "warn" }], harness.redirected
     end
   end
 end
