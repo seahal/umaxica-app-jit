@@ -17,10 +17,7 @@ module ApplicationHelper
     # Support both symbol and string access, and handle nil
     # Fallback to request.cookies for integration tests where helper cookies might be empty
     raw = (
-      cookies[:jit_ct] ||
-        cookies["jit_ct"] ||
-        request.cookies["jit_ct"] ||
-        cookies[:ct] ||
+      cookies[:ct] ||
         cookies["ct"] ||
         request.cookies["ct"]
     ).to_s.downcase

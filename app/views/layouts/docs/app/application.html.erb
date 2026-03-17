@@ -11,7 +11,6 @@
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "docs/app/main" %>
   <%= javascript_importmap_tags %>
-  <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
 
 <body>
@@ -53,6 +52,7 @@
         <% end %>
         <%= link_to t("docs.app.preferences.footer.preference"), apex_app_preference_url %>
       </nav>
+      <%= render "layouts/shared/footer_theme_controls", scope: :app %>
       <div>
         <%= render "shared/copyright" %>
       </div>

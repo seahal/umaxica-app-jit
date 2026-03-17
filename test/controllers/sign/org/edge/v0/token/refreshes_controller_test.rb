@@ -23,7 +23,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     refresh_plain = token_record.rotate_refresh_token!
 
     csrf_token = "test_csrf_token"
-    cookies["jit_csrf_token"] = csrf_token
+    cookies["csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
     cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
 
@@ -55,12 +55,12 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert json["refreshed"]
   end
 
-  test "POST refresh syncs jit_preference_consented cookie on success" do
+  test "POST refresh syncs preference_consented cookie on success" do
     token_record = StaffToken.create!(staff: @staff, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
 
     csrf_token = "test_csrf_token"
-    cookies["jit_csrf_token"] = csrf_token
+    cookies["csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
     cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
 
@@ -87,10 +87,10 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :ok
     set_cookie = response.headers["Set-Cookie"].to_s
 
-    assert_includes set_cookie, "jit_preference_consented=0"
+    assert_includes set_cookie, "preference_consented=0"
     assert_includes set_cookie, "domain=.org.refresh.example.test"
     assert_includes set_cookie.downcase, "path=/"
-    expires = response_cookie_expiry("jit_preference_consented")
+    expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
     assert_in_delta expires_at.to_i, expires.to_i, 1
@@ -101,7 +101,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     refresh_plain = token_record.rotate_refresh_token!
 
     csrf_token = "test_csrf_token"
-    cookies["jit_csrf_token"] = csrf_token
+    cookies["csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
     cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
 
@@ -134,7 +134,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record.rotate_refresh_token!
 
     csrf_token = "test_csrf_token"
-    cookies["jit_csrf_token"] = csrf_token
+    cookies["csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
     cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
 
@@ -157,7 +157,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     refresh_plain = token_record.rotate_refresh_token!
 
     csrf_token = "test_csrf_token"
-    cookies["jit_csrf_token"] = csrf_token
+    cookies["csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",

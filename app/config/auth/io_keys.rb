@@ -6,10 +6,10 @@ module Auth
     SECURE_COOKIE_PREFIX = "__Secure-"
 
     module Cookies
-      ACCESS_BASENAME = "jit_auth_access"
-      REFRESH_BASENAME = "jit_auth_refresh"
-      DBSC_BASENAME = "jit_auth_dbsc"
-      DEVICE_BASENAME = "jit_auth_device_id"
+      ACCESS_BASENAME = "auth_access"
+      REFRESH_BASENAME = "auth_refresh"
+      DBSC_BASENAME = "auth_dbsc"
+      DEVICE_BASENAME = "auth_device_id"
     end
 
     module Headers
@@ -40,7 +40,7 @@ module Auth
     end
 
     module Env
-      AUTH_REFRESHED_FLAG = "jit_auth_refreshed"
+      AUTH_REFRESHED_FLAG = "auth_refreshed"
     end
   end
 end

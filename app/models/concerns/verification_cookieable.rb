@@ -4,7 +4,7 @@
 module VerificationCookieable
   extend ActiveSupport::Concern
 
-  COOKIE_BASENAME = "jit_verification"
+  COOKIE_BASENAME = "verification"
   SECURE_COOKIE_PREFIX = "__Secure-"
 
   class_methods do

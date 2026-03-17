@@ -39,7 +39,7 @@ class CookieServiceTest < ActiveSupport::TestCase
     request = MockRequest.new
     service = Auth::CookieService.new(cookies, request)
 
-    assert_equal "jit_auth_access", service.access_cookie_key
+    assert_equal "auth_access", service.access_cookie_key
   end
 
   test "refresh_cookie_key returns refresh cookie name" do
@@ -47,7 +47,7 @@ class CookieServiceTest < ActiveSupport::TestCase
     request = MockRequest.new
     service = Auth::CookieService.new(cookies, request)
 
-    assert_equal "jit_auth_refresh", service.refresh_cookie_key
+    assert_equal "auth_refresh", service.refresh_cookie_key
   end
 
   test "device_cookie_key returns device cookie name" do
@@ -55,12 +55,12 @@ class CookieServiceTest < ActiveSupport::TestCase
     request = MockRequest.new
     service = Auth::CookieService.new(cookies, request)
 
-    assert_equal "jit_auth_device_id", service.device_cookie_key
+    assert_equal "auth_device_id", service.device_cookie_key
   end
 
   test "read_device_id_cookie returns device id" do
     cookies = MockCookies.new
-    cookies.cookies_hash["jit_auth_device_id"] = "device_456"
+    cookies.cookies_hash["auth_device_id"] = "device_456"
     request = MockRequest.new
     service = Auth::CookieService.new(cookies, request)
 
@@ -103,7 +103,7 @@ class CookieServiceTest < ActiveSupport::TestCase
 
   test "extract_access_token_from_request falls back to cookie" do
     cookies = MockCookies.new
-    cookies.cookies_hash["jit_auth_access"] = "cookie_token"
+    cookies.cookies_hash["auth_access"] = "cookie_token"
     request = MockRequest.new
     service = Auth::CookieService.new(cookies, request)
 

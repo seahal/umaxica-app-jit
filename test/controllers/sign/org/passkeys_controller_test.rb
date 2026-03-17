@@ -46,8 +46,33 @@ class Sign::Org::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
   test "new assigns StaffTelephone" do
     controller = Sign::Org::PasskeysController.new
-    controller.instance_variable_set(:@staff_telephone, StaffTelephone.new)
+    controller.new
 
-    assert_not_nil controller.instance_variable_get(:@staff_telephone)
+    assert_instance_of StaffTelephone, controller.instance_variable_get(:@staff_telephone)
+  end
+
+  test "edit assigns StaffTelephone" do
+    controller = Sign::Org::PasskeysController.new
+    controller.edit
+
+    assert_instance_of StaffTelephone, controller.instance_variable_get(:@staff_telephone)
+  end
+
+  test "create responds ok" do
+    controller = Sign::Org::PasskeysController.new
+    controller.define_singleton_method(:head) { |status| @_test_head = status }
+
+    controller.create
+
+    assert_equal :ok, controller.instance_variable_get(:@_test_head)
+  end
+
+  test "update responds ok" do
+    controller = Sign::Org::PasskeysController.new
+    controller.define_singleton_method(:head) { |status| @_test_head = status }
+
+    controller.update
+
+    assert_equal :ok, controller.instance_variable_get(:@_test_head)
   end
 end

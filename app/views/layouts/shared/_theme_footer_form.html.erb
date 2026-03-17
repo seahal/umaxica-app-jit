@@ -1,0 +1,16 @@
+<%= form_with scope: :preference_colortheme,
+              url: public_send("apex_#{scope}_preference_theme_path", return_to: request.fullpath),
+              method: :patch do %>
+  <%= submit_tag "system",
+                 name: "preference_colortheme[option_id]",
+                 value: "system",
+                 aria: { pressed: theme_cookie_value == "system" } %>
+  <%= submit_tag "light",
+                 name: "preference_colortheme[option_id]",
+                 value: "light",
+                 aria: { pressed: theme_cookie_value == "light" } %>
+  <%= submit_tag "dark",
+                 name: "preference_colortheme[option_id]",
+                 value: "dark",
+                 aria: { pressed: theme_cookie_value == "dark" } %>
+<% end %>

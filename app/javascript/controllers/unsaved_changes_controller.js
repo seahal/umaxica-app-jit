@@ -6,10 +6,6 @@ export default class extends Controller {
 
   connect() {
     this.dirty = false;
-    this.handleInput = this.handleInput.bind(this);
-    this.handleBeforeVisit = this.handleBeforeVisit.bind(this);
-    this.handleBeforeUnload = this.handleBeforeUnload.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
 
     this.element.addEventListener("input", this.handleInput);
     this.element.addEventListener("change", this.handleInput);
@@ -26,15 +22,15 @@ export default class extends Controller {
     window.removeEventListener("beforeunload", this.handleBeforeUnload);
   }
 
-  handleInput() {
+  handleInput = () => {
     this.dirty = true;
-  }
+  };
 
-  handleSubmit() {
+  handleSubmit = () => {
     this.dirty = false;
-  }
+  };
 
-  handleBeforeVisit(event) {
+  handleBeforeVisit = (event) => {
     if (!this.dirty) {
       return;
     }
@@ -43,14 +39,14 @@ export default class extends Controller {
     if (!window.confirm(message)) {
       event.preventDefault();
     }
-  }
+  };
 
-  handleBeforeUnload(event) {
+  handleBeforeUnload = (event) => {
     if (!this.dirty) {
       return;
     }
     const message = this.messageValue || "変更は保存されていません。移動しますか？";
     event.preventDefault();
     event.returnValue = message;
-  }
+  };
 }

@@ -6,15 +6,14 @@ module Preference
     SECURE_COOKIE_PREFIX = "__Secure-"
 
     module Cookies
-      THEME = "jit_ct"
-      LEGACY_THEME = "ct"
-      LANGUAGE = "jit_lx"
-      TIMEZONE = "jit_tz"
-      CONSENTED = "jit_preference_consented"
-      ACCESS_BASENAME = "jit_preference_access"
-      REFRESH_BASENAME = "jit_preference_refresh"
-      DBSC_BASENAME = "jit_preference_dbsc"
-      DEVICE_BASENAME = "jit_preference_device_id"
+      THEME = "ct"
+      LANGUAGE = "language"
+      TIMEZONE = "tz"
+      CONSENTED = "preference_consented"
+      ACCESS_BASENAME = "preference_access"
+      REFRESH_BASENAME = "preference_refresh"
+      DBSC_BASENAME = "preference_dbsc"
+      DEVICE_BASENAME = "preference_device_id"
     end
 
     module Headers

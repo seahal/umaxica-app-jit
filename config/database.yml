@@ -112,13 +112,13 @@ development:
   billing:
     !!merge <<: *default
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_OCCURRENCE_PUB"] || ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || default_host %>
     migrations_paths: db/billing_migrate
   billing_replica:
     !!merge <<: *default
     replica: true
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_OCCURRENCE_SUB"] || ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || default_host %>
     migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default

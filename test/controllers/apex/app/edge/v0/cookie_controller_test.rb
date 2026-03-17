@@ -4,8 +4,11 @@
 require "test_helper"
 
 class Apex::App::Edge::V0::CookieControllerTest < ActionDispatch::IntegrationTest
+  include PreferenceJwtHelper
+
   setup do
-    host! ENV.fetch("APEX_SERVICE_URL", "app.localhost")
+    @host = ENV.fetch("APEX_SERVICE_URL", "app.localhost")
+    host! @host
   end
 
   test "GET show returns 200 with boolean show_banner" do
@@ -15,7 +18,7 @@ class Apex::App::Edge::V0::CookieControllerTest < ActionDispatch::IntegrationTes
     assert_includes [true, false], response.parsed_body["show_banner"]
   end
 
-  test "PATCH update returns 200 with boolean show_banner and sets jit_preference_consented cookie" do
+  test "PATCH update returns 200 with boolean show_banner and sets preference_consented cookie" do
     preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING)
     AppPreferenceCookie.create!(
       preference: preference,
@@ -25,13 +28,14 @@ class Apex::App::Edge::V0::CookieControllerTest < ActionDispatch::IntegrationTes
       consented: false,
       consented_at: nil,
     )
-    cookies[Preference::CookieName.access] = "dummy.preference.token"
+    token = encode_preference_jwt(
+      preferences: { "consented" => false },
+      host: @host,
+      public_id: preference.public_id,
+    )
+    cookies[Preference::CookieName.access] = token
 
-    controller = Apex::App::Edge::V0::CookiesController
-    controller.any_instance.stub(
-      :decode_and_verify_preference_jwt,
-      { "preferences" => { "consented" => false }, "public_id" => preference.public_id },
-    ) do
+    with_preference_jwt_keys(host: @host) do
       patch apex_app_edge_v0_cookie_path,
             params: { consented: true },
             headers: json_headers(with_csrf: true),
@@ -40,7 +44,7 @@ class Apex::App::Edge::V0::CookieControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :ok
     assert_includes [true, false], response.parsed_body["show_banner"]
-    assert_includes response.headers["Set-Cookie"].to_s, "jit_preference_consented="
+    assert_includes response.headers["Set-Cookie"].to_s, "preference_consented="
   end
 
   test "PATCH update without CSRF token returns 422" do
@@ -57,9 +61,9 @@ class Apex::App::Edge::V0::CookieControllerTest < ActionDispatch::IntegrationTes
   private
 
   def json_headers(with_csrf:)
-    headers = { "Host" => ENV.fetch("APEX_SERVICE_URL", "app.localhost"), "Accept" => "application/json" }
+    headers = { "Host" => @host, "Accept" => "application/json" }
     if with_csrf
-      cookies["jit_csrf_token"] = csrf_token
+      cookies["csrf_token"] = csrf_token
       headers["X-CSRF-Token"] = csrf_token
     end
     headers

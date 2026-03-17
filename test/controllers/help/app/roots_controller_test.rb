@@ -42,7 +42,6 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: "#{brand_name} (app) Help Center | クイックステータス"
-      assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1
@@ -64,7 +63,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_app_root_path
 
     assert_redirected_to help_app_root_url(ri: "jp", host: "app.localhost")
-    assert_not_nil cookies["jit_preference_access"]
+    assert_not_nil cookies["preference_access"]
   end
 
   private

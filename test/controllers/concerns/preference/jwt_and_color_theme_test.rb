@@ -27,14 +27,218 @@ class PreferenceOptionMappingTest < ActiveSupport::TestCase
   end
 
   test "THEME_COOKIE_KEY is correct" do
-    assert_equal "jit_ct", Preference::Base::THEME_COOKIE_KEY
+    assert_equal "ct", Preference::Base::THEME_COOKIE_KEY
   end
 
   test "LANGUAGE_COOKIE_KEY is correct" do
-    assert_equal "jit_lx", Preference::Base::LANGUAGE_COOKIE_KEY
+    assert_equal "language", Preference::Base::LANGUAGE_COOKIE_KEY
   end
 
   test "TIMEZONE_COOKIE_KEY is correct" do
-    assert_equal "jit_tz", Preference::Base::TIMEZONE_COOKIE_KEY
+    assert_equal "tz", Preference::Base::TIMEZONE_COOKIE_KEY
+  end
+end
+
+class PreferenceJwtConfigurationTest < ActiveSupport::TestCase
+  test "jwt configuration reads environment values and normalizes audiences" do
+    with_env(
+      "PREFERENCE_JWT_ACTIVE_KID" => "kid-1",
+      "PREFERENCE_JWT_LEEWAY_SECONDS" => "45",
+      "PREFERENCE_JWT_ISSUER" => "jit-test",
+      "PREFERENCE_JWT_AUDIENCES" => "app.localhost, org.localhost , ,com.localhost",
+    ) do
+      assert_equal "kid-1", Preference::JwtConfiguration.active_kid
+      assert_equal 45, Preference::JwtConfiguration.leeway_seconds
+      assert_equal "jit-test", Preference::JwtConfiguration.issuer
+      assert_equal %w(app.localhost org.localhost com.localhost), Preference::JwtConfiguration.audiences
+    end
+  end
+
+  test "jwt configuration parsing helpers handle invalid input safely" do
+    assert_equal({}, Preference::JwtConfiguration.send(:parse_keyset, nil))
+    assert_equal({}, Preference::JwtConfiguration.send(:parse_keyset, "[]"))
+    assert_equal({}, Preference::JwtConfiguration.send(:parse_keyset, "{"))
+    assert_nil Preference::JwtConfiguration.send(:decode_key, nil)
+    assert_equal({}, Preference::JwtConfiguration.parse_header("invalid.jwt"))
+  end
+
+  private
+
+  def with_env(vars)
+    original = {}
+    vars.each_key { |key| original[key] = ENV[key] }
+
+    vars.each do |key, value|
+      value.nil? ? ENV.delete(key) : ENV[key] = value
+    end
+
+    yield
+  ensure
+    original.each do |key, value|
+      value.nil? ? ENV.delete(key) : ENV[key] = value
+    end
+  end
+end
+
+class PreferenceTokenTest < ActiveSupport::TestCase
+  test "extract helpers and audience normalization handle common shapes" do
+    payload = {
+      "preferences" => { "ct" => "dr" },
+      "public_id" => "pref_123",
+      "preference_type" => "app",
+      "jti" => "jti-1",
+    }
+
+    assert_equal({ "ct" => "dr" }, Preference::Token.extract_preferences(payload))
+    assert_equal "pref_123", Preference::Token.extract_public_id(payload)
+    assert_equal "app", Preference::Token.extract_preference_type(payload)
+    assert_equal "jti-1", Preference::Token.extract_jti(payload)
+    assert_equal ["app.localhost"], Preference::Token.send(:normalize_audiences, "app.localhost")
+    assert_equal %w(app.localhost org.localhost),
+                 Preference::Token.send(:normalize_audiences, %w(app.localhost org.localhost))
+    assert_equal [], Preference::Token.send(:normalize_audiences, 123)
+  end
+
+  test "header and payload validation require expected algorithm, type, host, and audience" do # rubocop:disable Minitest/MultipleAssertions
+    assert Preference::Token.send(
+      :valid_header?,
+      { "alg" => Preference::Token::JWT_ALGORITHM, "kid" => "kid-1", "typ" => Preference::Token::TOKEN_TYPE },
+    )
+    assert_not Preference::Token.send(:valid_header?, {})
+    assert Preference::Token.send(:host_matches?, "app.localhost", "app.localhost")
+    assert Preference::Token.send(:host_matches?, "app.localhost", "sign.app.localhost")
+    assert_not Preference::Token.send(:host_matches?, "app.localhost", "evil.localhost")
+    assert Preference::Token.send(:audience_matches?, ["app.localhost"], "sign.app.localhost")
+    assert_not Preference::Token.send(:audience_matches?, ["app.localhost"], "evil.localhost")
+
+    payload = {
+      "typ" => Preference::Token::TOKEN_TYPE,
+      "host" => "app.localhost",
+      "aud" => ["app.localhost"],
+    }
+
+    assert_equal payload, Preference::Token.send(:validate_payload, payload, "sign.app.localhost")
+    assert_nil Preference::Token.send(:validate_payload, payload.merge("typ" => "wrong"), "sign.app.localhost")
+    assert_nil Preference::Token.send(
+      :validate_payload, payload.merge("host" => "evil.localhost"),
+      "sign.app.localhost",
+    )
+    assert_nil Preference::Token.send(
+      :validate_payload, payload.merge("aud" => ["evil.localhost"]),
+      "sign.app.localhost",
+    )
+  end
+
+  test "invalid header reports precise anomaly reasons" do
+    reasons = []
+
+    reporter =
+      lambda do |**kwargs|
+        reasons << kwargs[:reason]
+      end
+
+    Jit::Security::Jwt::AnomalyReporter.stub :report_preference, reporter do
+      Preference::Token.send(:report_invalid_header, host: "app.localhost", header: {})
+      Preference::Token.send(
+        :report_invalid_header, host: "app.localhost",
+                                header: { "alg" => Preference::Token::JWT_ALGORITHM, "typ" => Preference::Token::TOKEN_TYPE },
+      )
+      Preference::Token.send(
+        :report_invalid_header, host: "app.localhost",
+                                header: { "alg" => "none", "kid" => "kid-1", "typ" => Preference::Token::TOKEN_TYPE },
+      )
+      Preference::Token.send(
+        :report_invalid_header, host: "app.localhost",
+                                header: { "alg" => "HS256", "kid" => "kid-1", "typ" => Preference::Token::TOKEN_TYPE },
+      )
+      Preference::Token.send(
+        :report_invalid_header, host: "app.localhost",
+                                header: { "alg" => Preference::Token::JWT_ALGORITHM, "kid" => "kid-1" },
+      )
+      Preference::Token.send(
+        :report_invalid_header, host: "app.localhost",
+                                header: { "alg" => Preference::Token::JWT_ALGORITHM, "kid" => "kid-1", "typ" => "wrong" },
+      )
+    end
+
+    assert_equal %w(MALFORMED_TOKEN MISSING_KID ALG_NONE ALG_MISMATCH MISSING_TYP TYP_MISMATCH), reasons
+  end
+
+  test "invalid payload, claim, and decode errors report anomaly reasons" do
+    reasons = []
+
+    reporter =
+      lambda do |**kwargs|
+        reasons << kwargs[:reason]
+      end
+
+    Jit::Security::Jwt::AnomalyReporter.stub :report_preference, reporter do
+      Preference::Token.send(
+        :report_invalid_payload, host: "app.localhost", header: {}, payload: { "typ" => "wrong" },
+      )
+      token_type = Preference::Token::TOKEN_TYPE
+      Preference::Token.send(
+        :report_invalid_payload, host: "app.localhost", header: {},
+        payload: { "typ" => token_type, "host" => "evil.localhost", "aud" => ["app.localhost"] },
+      )
+      Preference::Token.send(
+        :report_invalid_payload, host: "app.localhost", header: {},
+        payload: { "typ" => token_type, "host" => "app.localhost", "aud" => ["evil.localhost"] },
+      )
+      Preference::Token.send(
+        :report_invalid_payload, host: "app.localhost", header: {},
+        payload: { "typ" => token_type, "host" => "app.localhost", "aud" => ["app.localhost"] },
+      )
+      Preference::Token.send(
+        :report_claim_error, host: "app.localhost", header: {},
+                             error: JWT::InvalidIssuerError.new("bad iss"),
+      )
+      Preference::Token.send(
+        :report_claim_error, host: "app.localhost", header: {},
+                             error: JWT::InvalidIatError.new("bad iat"),
+      )
+      Preference::Token.send(
+        :report_claim_error, host: "app.localhost", header: {},
+                             error: JWT::ImmatureSignature.new("too early"),
+      )
+    end
+
+    Jit::Security::Jwt::AnomalyReporter.stub :reason_for_missing_claim, "MISSING_PUBLIC_ID" do
+      Jit::Security::Jwt::AnomalyReporter.stub :report_preference, reporter do
+        Preference::Token.send(
+          :report_decode_error, host: "app.localhost", header: {},
+                                error: StandardError.new("Missing required claim public_id"),
+        )
+        Preference::Token.send(
+          :report_decode_error, host: "app.localhost", header: {},
+                                error: StandardError.new("Signature verification failed"),
+        )
+        Preference::Token.send(
+          :report_decode_error, host: "app.localhost", header: {},
+                                error: StandardError.new("Not enough or too many segments"),
+        )
+        Preference::Token.send(
+          :report_decode_error, host: "app.localhost", header: {},
+                                error: StandardError.new("misc"),
+        )
+      end
+    end
+
+    assert_equal(
+      %w(
+        TYP_MISMATCH
+        HOST_MISMATCH
+        AUD_MISMATCH
+        OTHER
+        ISS_MISMATCH
+        IAT_INVALID
+        IMMATURE
+        MISSING_PUBLIC_ID
+        SIGNATURE_INVALID
+        MALFORMED_TOKEN
+        DECODE_ERROR
+      ),
+      reasons,
+    )
   end
 end

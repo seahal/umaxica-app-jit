@@ -30,6 +30,6 @@ class Sign::Org::InsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    assert_select "a[href=?]", apex_org_root_path(ri: "jp"), text: "ホーム"
+    assert_select "a[href=?]", apex_org_root_path(ri: "jp"), text: "UMAXICA"
   end
 end

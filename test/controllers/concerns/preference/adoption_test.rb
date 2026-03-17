@@ -158,13 +158,22 @@ module Preference
       assert UserAppPreference.exists?(user_id: @user.id, app_preference_id: @new_preference.id)
     end
 
-    test "adopt_preference_for! does not raise on error" do
+    test "adopt_preference_for! does not raise on error and logs event" do
       adoption = build_adoption_context(@preference)
       adoption.define_singleton_method(:adoptable_preference_class?) { raise StandardError, "boom" }
 
-      assert_nothing_raised do
-        adoption.send(:adopt_preference_for!, @user)
+      recorded_events = []
+      mock_record = ->(name, payload = {}) { recorded_events << { name: name, payload: payload } }
+
+      Rails.event.stub(:record, mock_record) do
+        assert_nothing_raised do
+          adoption.send(:adopt_preference_for!, @user)
+        end
       end
+
+      assert_equal 1, recorded_events.size, "Expected adoption error event to be recorded"
+      assert_equal "preference.adoption.error", recorded_events.first[:name]
+      assert_equal "StandardError", recorded_events.first[:payload][:error]
     end
 
     test "adopt_preference_for! is no-op when resource is blank" do
@@ -181,13 +190,22 @@ module Preference
       end
     end
 
-    test "adopt_rotated_preference! does not raise on error" do
+    test "adopt_rotated_preference! does not raise on error and logs event" do
       adoption = build_adoption_context(@preference)
       adoption.define_singleton_method(:adoptable_preference_class?) { raise StandardError, "boom" }
 
-      assert_nothing_raised do
-        adoption.send(:adopt_rotated_preference!, @user, @new_preference)
+      recorded_events = []
+      mock_record = ->(name, payload = {}) { recorded_events << { name: name, payload: payload } }
+
+      Rails.event.stub(:record, mock_record) do
+        assert_nothing_raised do
+          adoption.send(:adopt_rotated_preference!, @user, @new_preference)
+        end
       end
+
+      assert_equal 1, recorded_events.size, "Expected adoption rotation error event to be recorded"
+      assert_equal "preference.adoption.rotation_error", recorded_events.first[:name]
+      assert_equal "StandardError", recorded_events.first[:payload][:error]
     end
 
     test "adopt_rotated_preference! is no-op when resource is blank" do
@@ -198,8 +216,21 @@ module Preference
 
     private
 
+    PREFERENCE_CLASSES = {
+      "AppPreference" => AppPreference,
+      "ComPreference" => ComPreference,
+      "OrgPreference" => OrgPreference,
+    }.freeze
+
+    CHILD_CLASSES = {
+      language: AppPreferenceLanguage,
+      timezone: AppPreferenceTimezone,
+      region: AppPreferenceRegion,
+      colortheme: AppPreferenceColortheme,
+    }.freeze
+
     def build_adoption_context(preference, preference_class_name: "AppPreference")
-      pref_class = preference_class_name.constantize
+      pref_class = PREFERENCE_CLASSES.fetch(preference_class_name)
       ctx = Object.new
       ctx.extend(Preference::Adoption)
 
@@ -213,7 +244,7 @@ module Preference
     end
 
     def create_child_record!(preference, type, option_id)
-      klass = "AppPreference#{type.to_s.capitalize}".constantize
+      klass = CHILD_CLASSES.fetch(type)
       PreferenceRecord.connected_to(role: :writing) do
         klass.create!(preference_id: preference.id, option_id: option_id)
       end

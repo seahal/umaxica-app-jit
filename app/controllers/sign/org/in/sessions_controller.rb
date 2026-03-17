@@ -2,108 +2,235 @@
 # frozen_string_literal: true
 
 # Manages session (refresh token) limits for Org staff.
+#
 # When a staff member exceeds their maximum concurrent sessions during login,
-# they are redirected here to revoke existing sessions before proceeding.
+# they are logged in with a "restricted" session that only allows session management.
+# This controller handles:
+#   - show: Display active and restricted sessions
+#   - update: Promote restricted session to active (after revoking an active session)
+#   - destroy: Cancel the restricted session (logout) or revoke a specific session
 #
 # Routes:
-#   GET  /in/passkeys/:passkey_id/sessions/edit -> #edit
-#   PATCH /in/passkeys/:passkey_id/sessions     -> #update
-#   GET  /in/secret/sessions/edit               -> #edit
-#   PATCH /in/secret/sessions                   -> #update
-class Sign::Org::In::SessionsController < ApplicationController
+#   GET    /in/session  -> #show
+#   PATCH  /in/session  -> #update
+#   DELETE /in/session  -> #destroy
+#
+# The restricted session approach avoids blocking login while ensuring staff
+# can manage their sessions. Invariant: max 1 restricted session per staff.
+class Sign::Org::In::SessionsController < Sign::Org::ApplicationController
   include SessionLimitGate
 
-  # The gate is required for both edit and update actions
-  before_action :require_valid_gate
+  # This controller handles session management for both authenticated staff
+  # and staff who are in the process of logging in (with a pending gate).
+  # Override the default guest_only! policy to allow access.
+  public_strict!
 
-  # Display active sessions for the staff to select which to revoke
+  # For show/update/destroy, staff must be logged in (even if restricted)
+  before_action :require_authentication_or_gate
+
+  # Display active and restricted sessions for the staff
   def show
-    @pending_staff = load_pending_staff
-    unless @pending_staff
-      return redirect_to login_path,
-                         alert: I18n.t(
-                           "session_limit.staff_not_found",
-                           default: "スタッフが見つかりません。もう一度ログインしてください。",
-                         )
-    end
-
-    @active_sessions = @pending_staff.staff_tokens.where(expired_at: nil).order(created_at: :desc)
+    load_session_data
   end
 
-  # Revoke selected sessions
+  # Revoke selected sessions and optionally promote restricted to active
   def update
-    @pending_staff = load_pending_staff
-    unless @pending_staff
-      return redirect_to login_path,
-                         alert: I18n.t(
-                           "session_limit.staff_not_found",
-                           default: "スタッフが見つかりません。もう一度ログインしてください。",
-                         )
-    end
+    @current_staff = resolve_current_staff
+    return redirect_to_login unless @current_staff
 
-    revoke_ids = Array(params[:revoke_session_ids]).compact_blank
+    ref = params[:ref]
 
-    if revoke_ids.empty?
-      flash[:alert] = I18n.t("session_limit.no_sessions_selected", default: "無効化するセッションを選択してください。")
-      @active_sessions = @pending_staff.staff_tokens.where(expired_at: nil).order(created_at: :desc)
-      return render :show, status: :unprocessable_content
-    end
-
-    revoke_sessions_for_staff(@pending_staff, revoke_ids)
-    consume_session_limit_gate!
-
-    # Redirect back to the original login flow
-    return_path = session_limit_return_to
-    if return_path.present?
-      redirect_to return_path,
-                  notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
+    if ref.present?
+      # Revoke a specific session by signed reference
+      revoke_session_by_ref(@current_staff, ref)
     else
-      redirect_to login_path,
-                  notice: I18n.t("session_limit.sessions_revoked", default: "セッションを無効化しました。ログインを続行してください。")
+      # Revoke selected sessions by signed references
+      refs = Array(params[:revoke_refs]).compact_blank
+      if refs.empty?
+        flash[:alert] = I18n.t(
+          "sign.org.in.session.no_sessions_selected",
+          default: "無効化するセッションを選択してください。",
+        )
+        load_session_data
+        return render :show, status: :unprocessable_content
+      end
+
+      revoke_sessions_by_refs(@current_staff, refs)
     end
+
+    # Check if we can promote restricted session to active
+    if current_session_restricted? && can_promote_session?(@current_staff)
+      promote_current_session!
+      consume_session_limit_gate!
+      session.delete(:pending_login_staff_id)
+      return redirect_to_return_path(
+        notice: I18n.t(
+          "sign.org.in.session.promoted",
+          default: "セッションが昇格しました。",
+        ),
+      )
+    end
+
+    # Still restricted, stay on session management
+    flash[:notice] = I18n.t(
+      "sign.org.in.session.sessions_revoked",
+      default: "セッションを無効化しました。",
+    )
+    load_session_data
+    render :show
   end
 
-  # Reserved for future explicit logout/session-cancel endpoint.
+  # Cancel the restricted session (logout) or revoke a specific session
   def destroy
-    reset_session
-    redirect_to login_path
+    @current_staff = resolve_current_staff
+    return redirect_to_login unless @current_staff
+
+    ref = params[:ref]
+
+    if ref.present?
+      # Revoke a specific session by signed reference
+      revoke_session_by_ref(@current_staff, ref)
+      load_session_data
+      render :show
+    else
+      # Cancel: revoke current restricted session and logout
+      if current_session&.restricted?
+        current_session.revoke!
+      end
+      consume_session_limit_gate!
+      session.delete(:pending_login_staff_id)
+      log_out
+      redirect_to new_sign_org_in_path, notice: I18n.t(
+        "sign.org.in.session.cancelled",
+        default: "セッションをキャンセルしました。",
+      )
+    end
   end
 
   private
 
-  def require_valid_gate
-    require_session_limit_gate!(login_path: login_path)
+  def require_authentication_or_gate
+    # If logged in with a restricted session, allow access (this is the intended staff)
+    if logged_in? && current_session_restricted?
+      return
+    end
+
+    # If logged in with an active (non-restricted) session, deny access.
+    # This page is only for staff in the restricted session state (3rd login).
+    if logged_in?
+      head :forbidden
+      return
+    end
+
+    # If not logged in but has a valid gate, try to load pending staff
+    if session_limit_gate_valid? && session[:pending_login_staff_id].present?
+      return
+    end
+
+    redirect_to_login
   end
 
-  def login_path
-    new_sign_org_in_path
+  def redirect_to_login
+    redirect_to new_sign_org_in_path,
+                alert: I18n.t(
+                  "sign.org.in.session.login_required",
+                  default: "ログインが必要です。",
+                )
   end
 
-  # Load the staff whose session we're managing.
-  # The staff ID is stored in the session during the login flow.
-  def load_pending_staff
+  def redirect_to_return_path(notice:)
+    return_path = retrieve_redirect_parameter || session_limit_return_to
+    consume_session_limit_gate!
+
+    if return_path.present?
+      flash[:notice] = notice
+      jump_to_generated_url(return_path, fallback: sign_org_configuration_path)
+    else
+      redirect_to sign_org_configuration_path, notice: notice
+    end
+  end
+
+  def resolve_current_staff
+    # Prefer current_resource (logged in staff)
+    return current_resource if current_resource
+
+    # Fall back to pending staff from gate
     staff_id = session[:pending_login_staff_id]
-    return nil unless staff_id
-
-    Staff.find_by(id: staff_id)
+    Staff.find_by(id: staff_id) if staff_id
   end
 
-  # Revoke selected sessions in a transaction with row locking
-  def revoke_sessions_for_staff(staff, session_ids)
+  def load_session_data
+    @current_staff = resolve_current_staff
+    return unless @current_staff
+
+    @active_sessions = @current_staff.staff_tokens.active_status.order(created_at: :desc)
+    @restricted_sessions = @current_staff.staff_tokens.restricted_status.order(created_at: :desc)
+    @current_session_public_id = current_session_public_id
+  end
+
+  def can_promote_session?(staff)
+    # Can promote if active session count is below limit
+    active_count =
+      TokenRecord.connected_to(role: :writing) do
+        StaffToken.active_status.where(staff_id: staff.id).count
+      end
+    active_count < StaffToken::MAX_SESSIONS_PER_STAFF
+  end
+
+  def promote_current_session!
+    return unless current_session&.restricted?
+
+    TokenRecord.connected_to(role: :writing) do
+      current_session.promote_to_active!
+    end
+    @current_session = nil # Clear cached session
+  end
+
+  def revoke_session_by_ref(staff, ref)
+    token = StaffToken.find_from_signed_ref(ref)
+    unless token && token.staff_id == staff.id
+      flash[:alert] = I18n.t(
+        "sign.org.in.session.invalid_session",
+        default: "無効なセッションです。",
+      )
+      return
+    end
+
+    # Don't allow revoking the current session via ref (use destroy without ref for that)
+    if token.public_id == current_session_public_id
+      flash[:alert] = I18n.t(
+        "sign.org.in.session.cannot_revoke_current",
+        default: "現在のセッションは無効化できません。",
+      )
+      return
+    end
+
+    TokenRecord.connected_to(role: :writing) do
+      token.revoke!
+    end
+
+    flash[:notice] = I18n.t(
+      "sign.org.in.session.session_revoked",
+      default: "セッションを無効化しました。",
+    )
+  end
+
+  def revoke_sessions_by_refs(staff, refs)
+    revoked_count = 0
+
     TokenRecord.connected_to(role: :writing) do
       StaffToken.transaction do
-        # Lock the staff row to serialize concurrent operations
-        staff.lock! if staff.respond_to?(:lock!)
+        refs.each do |ref|
+          token = StaffToken.find_from_signed_ref(ref)
+          next unless token && token.staff_id == staff.id
+          next if token.public_id == current_session_public_id # Skip current session
 
-        sessions_to_revoke = staff.staff_tokens
-          .where(id: session_ids, expired_at: nil)
-
-        sessions_to_revoke.find_each do |token|
-          # Add revoked_reason once the column is added via migration:
-          #   add_column :staff_tokens, :revoked_reason, :string
           token.revoke!
+          revoked_count += 1
         end
       end
     end
+
+    revoked_count
   end
 end

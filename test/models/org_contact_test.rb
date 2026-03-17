@@ -142,4 +142,129 @@ class OrgContactTest < ActiveSupport::TestCase
     assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
     assert_raise(ActiveRecord::RecordNotFound) { topic.reload }
   end
+
+  test "phone_verified? returns true when status is CHECKED_TELEPHONE_NUMBER" do
+    contact = build_contact(status_id: OrgContactStatus::CHECKED_TELEPHONE_NUMBER)
+
+    assert_predicate contact, :phone_verified?
+  end
+
+  test "phone_verified? returns false when status is not CHECKED_TELEPHONE_NUMBER" do
+    contact = build_contact(status_id: OrgContactStatus::SET_UP)
+
+    assert_not_predicate contact, :phone_verified?
+  end
+
+  test "can_verify_phone? returns true when email is verified" do
+    contact = build_contact(status_id: OrgContactStatus::CHECKED_EMAIL_ADDRESS)
+
+    assert_predicate contact, :can_verify_phone?
+  end
+
+  test "can_verify_phone? returns false when email is not verified" do
+    contact = build_contact(status_id: OrgContactStatus::SET_UP)
+
+    assert_not_predicate contact, :can_verify_phone?
+  end
+
+  test "verify_phone! transitions status to CHECKED_TELEPHONE_NUMBER" do
+    contact = build_contact(status_id: OrgContactStatus::CHECKED_EMAIL_ADDRESS)
+
+    assert contact.verify_phone!
+    assert_equal OrgContactStatus::CHECKED_TELEPHONE_NUMBER, contact.status_id
+  end
+
+  test "verify_phone! adds error when cannot verify phone" do
+    contact = build_contact(status_id: OrgContactStatus::NOTHING)
+
+    assert_not contact.verify_phone!
+    assert_includes contact.errors[:base], "Cannot verify phone at this time"
+  end
+
+  test "can_complete? returns true when phone is verified" do
+    contact = build_contact(status_id: OrgContactStatus::CHECKED_TELEPHONE_NUMBER)
+
+    assert_predicate contact, :can_complete?
+  end
+
+  test "complete! transitions status to COMPLETED_CONTACT_ACTION" do
+    contact = build_contact(status_id: OrgContactStatus::CHECKED_TELEPHONE_NUMBER)
+
+    assert contact.complete!
+    assert_equal OrgContactStatus::COMPLETED_CONTACT_ACTION, contact.status_id
+  end
+
+  test "complete! adds error when cannot complete" do
+    contact = build_contact(status_id: OrgContactStatus::SET_UP)
+
+    assert_not contact.complete!
+    assert_includes contact.errors[:base], "Cannot complete contact at this time"
+  end
+
+  test "generate_final_token creates token digest and returns raw token" do
+    contact = build_contact
+
+    raw_token = contact.generate_final_token
+
+    assert_not_nil contact.token_digest
+    assert_not_nil contact.token_expires_at
+    assert_equal 32, raw_token.length
+  end
+
+  test "verify_token returns true for valid token" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+
+    assert contact.verify_token(raw_token)
+    assert_predicate contact, :token_viewed?
+  end
+
+  test "verify_token returns false when token already viewed" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+    contact.verify_token(raw_token)
+
+    assert_not contact.verify_token(raw_token)
+  end
+
+  test "verify_token returns false for expired token" do
+    contact = build_contact
+    contact.update!(token_expires_at: 1.day.ago)
+
+    assert_not contact.verify_token("any_token")
+  end
+
+  test "verify_token returns false for invalid token" do
+    contact = build_contact
+    contact.generate_final_token
+
+    assert_not contact.verify_token("invalid_token")
+  end
+
+  test "token_expired? returns true when token is expired" do
+    contact = build_contact
+    contact.update!(token_expires_at: 1.day.ago)
+
+    assert_predicate contact, :token_expired?
+  end
+
+  test "token_expired? returns false when token is not expired" do
+    contact = build_contact
+    contact.update!(token_expires_at: 7.days.from_now)
+
+    assert_not_predicate contact, :token_expired?
+  end
+
+  test "token_expired? returns false when token_expires_at is nil" do
+    contact = build_contact
+    contact.update!(token_expires_at: nil)
+
+    assert_not_predicate contact, :token_expired?
+  end
+
+  test "to_param returns public_id" do
+    contact = build_contact
+
+    assert_equal contact.public_id, contact.to_param
+  end
 end

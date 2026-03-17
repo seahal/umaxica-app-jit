@@ -3,7 +3,7 @@
 # ============================================================================
 # Shared build arguments
 # ============================================================================
-ARG RUBY_VERSION=4.0.1
+ARG RUBY_VERSION=4.0.2
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
@@ -202,5 +202,15 @@ RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
 # Install pnpm for development use only (available by default on PATH).
 RUN npm install -g pnpm@10.27.0 && \
     rm -rf "${HOME}/.cache" "${HOME}/.local"
+
+# Install Vite+ (unified frontend toolchain: Vite, Vitest, Oxlint, Oxfmt, tsdown)
+RUN curl -fsSL https://vite.plus | bash
+
+RUN install -d -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
+    "${HOME}/.cache" \
+    "${HOME}/.config" \
+    "${HOME}/.npm" \
+    "${HOME}/.local" \
+    "${HOME}/.bundle"
 
 USER ${DOCKER_USER}

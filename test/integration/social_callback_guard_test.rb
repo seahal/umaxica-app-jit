@@ -117,6 +117,59 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "module helpers normalize methods, hosts, and origins" do
+    assert SocialCallbackGuard.allowed_request_method?("google_app", "GET")
+    assert SocialCallbackGuard.allowed_callback_method?("apple", "POST")
+    assert_not SocialCallbackGuard.allowed_callback_method?("apple", "GET")
+    assert_equal "sign.app.localhost", SocialCallbackGuard.normalize_host_port("https://sign.app.localhost")
+    assert_equal "sign.app.localhost:444", SocialCallbackGuard.normalize_host_port("https://sign.app.localhost:444")
+    assert_nil SocialCallbackGuard.normalize_host_port("::not a uri::")
+    assert_equal "https://sign.app.localhost", SocialCallbackGuard.normalize_origin("https://sign.app.localhost")
+    assert_equal "https://sign.app.localhost:444", SocialCallbackGuard.normalize_origin("https://sign.app.localhost:444/path")
+    assert_nil SocialCallbackGuard.normalize_origin("ftp://sign.app.localhost")
+    assert_equal "https://sign.app.localhost", SocialCallbackGuard.sanitize_source_header("https://sign.app.localhost/path")
+  end
+
+  test "request phase helpers derive source, enforce state, and reject bad methods" do
+    env = Rack::MockRequest.env_for(
+      "https://#{@host}/auth/google_app?foo=bar",
+      "REQUEST_METHOD" => "GET",
+      "HTTP_ORIGIN" => "https://#{@host}",
+      "rack.session" => {},
+    )
+
+    source, normalized = SocialCallbackGuard.normalized_request_source(Rack::Request.new(env))
+
+    assert_equal :origin, source
+    assert_equal "https://#{@host}", normalized
+
+    SocialCallbackGuard.ensure_state_query_param!(env, Rack::Request.new(env), "google_app")
+
+    assert_includes env["QUERY_STRING"], "state="
+    assert_equal "google_app", env["rack.session"][SocialCallbackGuard::SOCIAL_STATE_PROVIDER_SESSION_KEY]
+
+    env_with_state = Rack::MockRequest.env_for(
+      "https://#{@host}/auth/google_app?state=known",
+      "REQUEST_METHOD" => "GET",
+      "HTTP_ORIGIN" => "https://#{@host}",
+      "rack.session" => {},
+    )
+
+    assert_nil SocialCallbackGuard.verify_request_phase!(env_with_state)
+    assert_equal "known", env_with_state["rack.session"][SocialCallbackGuard::SOCIAL_STATE_SESSION_KEY]
+
+    rejected = SocialCallbackGuard.verify_request_phase!(
+      Rack::MockRequest.env_for(
+        "https://#{@host}/auth/google_app",
+        "REQUEST_METHOD" => "DELETE",
+        "HTTP_ORIGIN" => "https://#{@host}",
+        "rack.session" => {},
+      ),
+    )
+
+    assert_equal 403, rejected.first
+  end
+
   private
 
   def prepare_callback_flow(provider:, user:)

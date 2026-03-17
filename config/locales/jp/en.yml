@@ -562,6 +562,12 @@ en:
           links:
             sign_in_text: Already have an account?
             sign_in_link: Sign in here
+      preferences:
+        title: Preferences
+        footer:
+          home: Home
+          preference: Preference
+          configuration: Settings
       preference:
         cookie:
           edit:

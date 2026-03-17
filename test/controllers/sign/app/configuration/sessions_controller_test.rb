@@ -12,9 +12,14 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     @user = users(:one)
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
     @headers = as_user_headers(@user, host: @host)
+    @unauthenticated_headers = { "Host" => @host }.freeze
   end
 
-  test "index returns active sessions" do
+  # ===================================================================
+  # index
+  # ===================================================================
+
+  test "index returns active sessions as JSON" do
     headers = as_user_headers(@user, host: @host, headers: { "Accept" => "application/json" })
     get sign_app_configuration_sessions_url(ri: "jp", format: :json), headers: headers
 
@@ -22,8 +27,42 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert response.parsed_body.key?("sessions")
   end
 
+  test "index excludes expired sessions from JSON response" do
+    expired_token = UserToken.create!(
+      user_id: @user.id,
+      public_id: "expired_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+    expired_token.revoke!
+
+    headers = as_user_headers(@user, host: @host, headers: { "Accept" => "application/json" })
+    get sign_app_configuration_sessions_url(ri: "jp", format: :json), headers: headers
+
+    assert_response :success
+    body = response.parsed_body
+    public_ids = body["sessions"].pluck("public_id")
+
+    assert_not_includes public_ids, expired_token.public_id
+  end
+
+  test "index returns HTML by default" do
+    get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+  end
+
+  test "index requires authentication" do
+    get sign_app_configuration_sessions_url(ri: "jp"), headers: @unauthenticated_headers
+
+    assert_response :redirect
+  end
+
+  # ===================================================================
+  # destroy
+  # ===================================================================
+
   test "destroy revokes session and returns see_other" do
-    # Create a user token to revoke
     user_token = UserToken.create!(
       user_id: @user.id,
       public_id: "test_session_#{SecureRandom.hex(4)}",
@@ -40,11 +79,64 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert_not_nil user_token.expired_at
   end
 
-  test "requires authentication" do
-    get sign_app_configuration_sessions_url(ri: "jp"), headers: { "Host" => @host }
+  test "destroy current session returns error redirect instead of revoking" do
+    current_session_id = @headers["X-TEST-SESSION-PUBLIC-ID"]
+    delete sign_app_configuration_session_url(current_session_id, ri: "jp"), headers: @headers
 
     assert_response :redirect
+    assert_match(/configuration\/sessions/, response.location)
+
+    # Current session must remain alive
+    current_token = UserToken.find_by!(public_id: current_session_id)
+
+    assert_nil current_token.expired_at
   end
+
+  test "destroy non-existent session returns 404" do
+    delete sign_app_configuration_session_url("nonexistent_public_id", ri: "jp"), headers: @headers
+
+    assert_response :not_found
+  end
+
+  test "destroy requires authentication" do
+    user_token = UserToken.create!(
+      user_id: @user.id,
+      public_id: "noauth_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+
+    delete sign_app_configuration_session_url(user_token.public_id, ri: "jp"),
+           headers: @unauthenticated_headers
+
+    assert_response :redirect
+    user_token.reload
+
+    assert_nil user_token.expired_at
+  end
+
+  test "destroy does not revoke session belonging to another user" do
+    other_user = users(:two)
+    other_user_token = UserToken.create!(
+      user_id: other_user.id,
+      public_id: "other_user_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+
+    delete sign_app_configuration_session_url(other_user_token.public_id, ri: "jp"),
+           headers: @headers
+
+    # set_session scopes to current_user so it won't find it → 404
+    assert_response :not_found
+    other_user_token.reload
+
+    assert_nil other_user_token.expired_at
+  end
+
+  # ===================================================================
+  # others
+  # ===================================================================
 
   test "others revokes active sessions except current session" do
     current_session_id = @headers["X-TEST-SESSION-PUBLIC-ID"]
@@ -75,11 +167,47 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert_not response_has_cookie?(::Auth::Base::REFRESH_COOKIE_KEY)
   end
 
+  test "others with no other sessions still succeeds (boundary: 0 other sessions)" do
+    # Only the current session exists (created by as_user_headers)
+    # Clean up any extra tokens
+    current_session_id = @headers["X-TEST-SESSION-PUBLIC-ID"]
+    UserToken.where(user_id: @user.id).where.not(public_id: current_session_id).delete_all
+
+    delete others_sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :see_other
+    current_session = UserToken.find_by!(public_id: current_session_id)
+
+    assert_nil current_session.expired_at
+  end
+
   test "others requires authentication" do
-    delete others_sign_app_configuration_sessions_url(ri: "jp"), headers: { "Host" => @host }
+    delete others_sign_app_configuration_sessions_url(ri: "jp"), headers: @unauthenticated_headers
 
     assert_response :redirect
   end
+
+  test "others does not revoke already-expired sessions" do
+    already_expired = UserToken.create!(
+      user_id: @user.id,
+      public_id: "already_exp_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+    already_expired.revoke!
+    original_expired_at = already_expired.reload.expired_at
+
+    delete others_sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :see_other
+    already_expired.reload
+
+    assert_equal original_expired_at.to_i, already_expired.expired_at.to_i
+  end
+
+  # ===================================================================
+  # HTML UI elements
+  # ===================================================================
 
   test "index shows revoke all other sessions button" do
     UserToken.create!(

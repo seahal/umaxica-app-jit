@@ -141,4 +141,64 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
     assert_response :not_found
   end
+
+  test "create redirects for html requests" do
+    I18n.backend.store_translations(:ja, messages: { not_implemented: "Not implemented" })
+    post sign_org_configuration_passkeys_url(ri: "jp"), headers: @headers
+
+    assert_redirected_to new_sign_org_configuration_passkey_path(ri: "jp")
+  end
+
+  test "create returns json error for api clients" do
+    I18n.backend.store_translations(:ja, messages: { not_implemented: "Not implemented" })
+    post sign_org_configuration_passkeys_url(ri: "jp"), headers: @headers, as: :json
+
+    assert_response :unprocessable_content
+    assert_equal "Not implemented", response.parsed_body["error"]
+  end
+
+  test "verification rejects missing challenge id" do
+    post verification_sign_org_configuration_passkeys_url(ri: "jp"),
+         params: { credential: { id: "cred-id" } },
+         headers: @headers,
+         as: :json
+
+    assert_response :bad_request
+    assert_equal I18n.t("errors.webauthn.challenge_id_required"), response.parsed_body["error"]
+  end
+
+  test "update returns ok json when request format is json" do
+    passkey = StaffPasskey.create!(
+      staff: @staff,
+      webauthn_id: "test_webauthn_id_json",
+      external_id: "test_external_id_json",
+      public_key: "test_public_key_json",
+      name: "Old Name",
+      status_id: StaffPasskeyStatus::ACTIVE,
+    )
+
+    patch sign_org_configuration_passkey_url(passkey, ri: "jp"),
+          params: { passkey: { description: "Updated Name" } },
+          headers: @headers,
+          as: :json
+
+    assert_response :ok
+    assert_equal "ok", response.parsed_body["status"]
+    assert_equal "Updated Name", passkey.reload.description
+  end
+
+  test "destroy returns no content for json requests" do
+    passkey = StaffPasskey.create!(
+      staff: @staff,
+      webauthn_id: "test_webauthn_id_json_destroy",
+      external_id: "test_external_id_json_destroy",
+      public_key: "test_public_key_json_destroy",
+      name: "Delete Me",
+      status_id: StaffPasskeyStatus::ACTIVE,
+    )
+
+    delete sign_org_configuration_passkey_url(passkey, ri: "jp"), headers: @headers, as: :json
+
+    assert_response :no_content
+  end
 end

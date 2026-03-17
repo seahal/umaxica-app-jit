@@ -49,7 +49,9 @@
       "version": "0.1.4",
       "resolved": "ghcr.io/stu-bell/devcontainer-features/gemini-cli@sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
       "integrity": "sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
-      "dependsOn": ["ghcr.io/stu-bell/devcontainer-features/node"]
+      "dependsOn": [
+        "ghcr.io/stu-bell/devcontainer-features/node"
+      ]
     },
     "ghcr.io/stu-bell/devcontainer-features/node": {
       "version": "0.5.0",

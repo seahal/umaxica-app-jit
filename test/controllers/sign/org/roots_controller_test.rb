@@ -28,9 +28,11 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "footer" do
       assert_select "a"
-      assert_select "a[href*=?]", apex_org_preference_url,
+      assert_select "a[href=?]", sign_org_root_url(ri: "jp"),
+                    text: I18n.t("sign.org.preferences.footer.home")
+      assert_select "a[href=?]", apex_org_preference_url(ri: "jp"),
                     text: I18n.t("sign.org.preferences.footer.preference")
-      assert_select "a[href*=?]", sign_org_configuration_path,
+      assert_select "a[href=?]", sign_org_configuration_url(ri: "jp"),
                     text: I18n.t("sign.org.preferences.footer.configuration")
     end
   end

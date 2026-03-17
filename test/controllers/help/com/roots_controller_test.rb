@@ -62,7 +62,7 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_com_root_path
 
     assert_redirected_to help_com_root_url(ri: "jp", host: "com.localhost")
-    assert_not_nil cookies["jit_preference_access"]
+    assert_not_nil cookies["preference_access"]
   end
 
   private

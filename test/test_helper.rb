@@ -6,33 +6,60 @@ require "active_model"
 coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
 require_relative "support/simplecov_setup" if coverage_enabled
 
-ENV["RAILS_ENV"] ||= "test"
-ENV["SIGN_SERVICE_URL"] ||= "sign.app.localhost"
-ENV["SIGN_STAFF_URL"] ||= "sign.org.localhost"
-ENV["CORE_SERVICE_URL"] ||= "www.app.localhost"
-ENV["CORE_STAFF_URL"] ||= "www.org.localhost"
-ENV["CORE_CORPORATE_URL"] ||= "www.com.localhost"
-ENV["APEX_SERVICE_URL"] ||= "app.localhost"
-ENV["APEX_STAFF_URL"] ||= "org.localhost"
-ENV["APEX_CORPORATE_URL"] ||= "com.localhost"
-ENV["DOCS_SERVICE_URL"] ||= "docs.app.localhost"
-ENV["DOCS_STAFF_URL"] ||= "docs.org.localhost"
-ENV["DOCS_CORPORATE_URL"] ||= "docs.com.localhost"
-ENV["NEWS_SERVICE_URL"] ||= "news.app.localhost"
-ENV["NEWS_STAFF_URL"] ||= "news.org.localhost"
-ENV["NEWS_CORPORATE_URL"] ||= "news.com.localhost"
-ENV["HELP_SERVICE_URL"] ||= "help.app.localhost"
-ENV["HELP_STAFF_URL"] ||= "help.org.localhost"
-ENV["HELP_CORPORATE_URL"] ||= "help.com.localhost"
-ENV["REGION_CODE"] ||= "jp"
-ENV["TRUSTED_ORIGINS"] ||= "http://sign.app.localhost:3001,http://sign.org.localhost:3001"
-ENV["PREFERENCE_JWT_AUDIENCES"] ||= "app.localhost,org.localhost,com.localhost"
+ENV["RAILS_ENV"] = "test"
+ENV["SIGN_SERVICE_URL"] = "sign.app.localhost"
+ENV["SIGN_STAFF_URL"] = "sign.org.localhost"
+ENV["CORE_SERVICE_URL"] = "www.app.localhost"
+ENV["CORE_STAFF_URL"] = "www.org.localhost"
+ENV["CORE_CORPORATE_URL"] = "www.com.localhost"
+ENV["APEX_SERVICE_URL"] = "app.localhost"
+ENV["APEX_STAFF_URL"] = "org.localhost"
+ENV["APEX_CORPORATE_URL"] = "com.localhost"
+ENV["DOCS_SERVICE_URL"] = "docs.app.localhost"
+ENV["DOCS_STAFF_URL"] = "docs.org.localhost"
+ENV["DOCS_CORPORATE_URL"] = "docs.com.localhost"
+ENV["NEWS_SERVICE_URL"] = "news.app.localhost"
+ENV["NEWS_STAFF_URL"] = "news.org.localhost"
+ENV["NEWS_CORPORATE_URL"] = "news.com.localhost"
+ENV["HELP_SERVICE_URL"] = "help.app.localhost"
+ENV["HELP_STAFF_URL"] = "help.org.localhost"
+ENV["HELP_CORPORATE_URL"] = "help.com.localhost"
+ENV["REGION_CODE"] = "jp"
+ENV["TRUSTED_ORIGINS"] = "http://sign.app.localhost:3001,http://sign.org.localhost:3001"
+ENV["PREFERENCE_JWT_AUDIENCES"] = "app.localhost,org.localhost,com.localhost"
 
 require_relative "../config/environment"
 require "rails/test_help"
 
 # Load all support files
 Rails.root.glob("test/support/**/*.rb").each { |f| require f }
+
+module TestRateLimitReset
+  module_function
+
+  def clear!
+    clear_rails_rate_limit_store!
+    clear_cache_rate_limit_state!
+  end
+
+  def clear_rails_rate_limit_store!
+    return unless defined?(RailsRateLimit)
+
+    RailsRateLimit.store.clear!
+  rescue StandardError => e
+    warn "[test_helper] failed to clear RailsRateLimit store: #{e.class}: #{e.message}"
+  end
+
+  def clear_cache_rate_limit_state!
+    return unless defined?(Rails.cache)
+
+    Rails.cache.clear
+  rescue NotImplementedError
+    nil
+  rescue StandardError => e
+    warn "[test_helper] failed to clear Rails.cache rate limit state: #{e.class}: #{e.message}"
+  end
+end
 
 module ActiveSupport
   class TestCase
@@ -49,13 +76,19 @@ module ActiveSupport
     requested_workers = Integer(ENV["PARALLEL_WORKERS"], exception: false)
     workers =
       if coverage_enabled
-        1
+        0
       elsif requested_workers&.positive?
         [requested_workers, max_parallel_workers].min
       else
         [Etc.nprocessors - 1, max_parallel_workers].min
       end
-    parallelize(workers: workers)
+
+    unless coverage_enabled
+      parallelize(workers: workers)
+      parallelize_setup do |_worker|
+        TestRateLimitReset.clear!
+      end
+    end
 
     self.use_transactional_tests = true
 
@@ -63,5 +96,9 @@ module ActiveSupport
     fixtures :all unless ENV["SKIP_DB"] == "1"
 
     include ActiveJob::TestHelper
+
+    setup do
+      TestRateLimitReset.clear!
+    end
   end
 end

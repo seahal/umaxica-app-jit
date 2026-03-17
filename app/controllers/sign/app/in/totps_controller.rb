@@ -14,7 +14,7 @@ module Sign
           Struct.new(:token, keyword_init: true) do
             include ActiveModel::Model
 
-            validates :token, presence: true, length: { is: 6 }
+            validates :token, presence: true, length: { is: 6 }, numericality: { only_integer: true }
 
             def self.model_name
               ActiveModel::Name.new(self, nil, "totp_challenge_form")

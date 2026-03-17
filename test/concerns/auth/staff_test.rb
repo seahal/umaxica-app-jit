@@ -152,14 +152,16 @@ class Auth::StaffTest < ActiveSupport::TestCase
   test "log_in returns tokens hash" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
-    tokens = @obj.send(:log_in, @staff)
+    freeze_time do
+      tokens = @obj.send(:log_in, @staff)
 
-    assert_kind_of Hash, tokens
-    assert tokens[:access_token]
-    assert tokens[:refresh_token]
-    assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
-    assert_equal "Bearer", tokens[:token_type]
-    assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+      assert_kind_of Hash, tokens
+      assert tokens[:access_token]
+      assert tokens[:refresh_token]
+      assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
+      assert_equal "Bearer", tokens[:token_type]
+      assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+    end
   end
 
   test "log_in schedules forced logout and delayed deletion for staff token" do

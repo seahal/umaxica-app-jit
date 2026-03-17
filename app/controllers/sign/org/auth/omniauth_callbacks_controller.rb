@@ -128,8 +128,11 @@ module Sign
                           alert: I18n.t("sign.org.social.sessions.create.failure")
             end
           elsif result.is_a?(Hash) && result[:restricted]
-            redirect_to new_sign_org_in_path,
-                        alert: I18n.t("sign.org.social.sessions.create.session_limit")
+            redirect_to sign_org_in_session_path,
+                        notice: I18n.t(
+                          "sign.org.in.session.restricted_notice",
+                          default: "セッション数が上限に達しています。既存セッションを管理してください。",
+                        )
           else
             issue_checkpoint!
             redirect_to sign_org_in_checkpoint_path(ri: params[:ri]),

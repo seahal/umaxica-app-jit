@@ -8,11 +8,17 @@
     "format": "pnpm exec oxfmt --write .",
     "format:check": "pnpm exec oxfmt --check .",
     "lint": "pnpm exec oxlint app/javascript",
-    "lint:fix": "pnpm exec oxlint --fix app/javascript"
+    "lint:fix": "pnpm exec oxlint --fix app/javascript",
+    "prepare": "vp config"
   },
   "devDependencies": {
-    "oxfmt": "^0.33.0",
-    "oxlint": "^1.51.0"
+    "vite-plus": "latest"
   },
-  "packageManager": "pnpm@10.27.0"
+  "packageManager": "pnpm@10.27.0",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    }
+  }
 }

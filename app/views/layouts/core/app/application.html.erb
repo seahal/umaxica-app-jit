@@ -15,7 +15,6 @@
 
   <%= javascript_importmap_tags %>
 
-  <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 
   <%= yield :head %>
 </head>
@@ -28,7 +27,7 @@
     <%= render "layouts/shared/header",
                service_name: "Core",
                namespace: "app",
-               home_path: "http://localhost:4444/" do %>
+               home_path: "#{request.protocol}#{ENV.fetch('CORE_SERVICE_URL', 'www.app.localhost')}#{request.port_string}/" do %>
       <% unless logged_in? %>
         <%= link_to t("core.app.layout.nav.sign_up"), new_sign_app_up_url %>
         <%= link_to t("core.app.layout.nav.log_in"), new_sign_app_in_url %>
@@ -45,8 +44,8 @@
       <%= yield %>
     </main>
 
-    <%= render "layouts/shared/footer" do %>
-      <a href="http://localhost:4444/">Home</a>
+    <%= render "layouts/shared/footer", scope: :app do %>
+      <a href="<%= "#{request.protocol}#{ENV.fetch('CORE_SERVICE_URL', 'www.app.localhost')}#{request.port_string}/" %>">Home</a>
       <%= link_to t("core.app.preferences.footer.preference"), apex_app_preference_url %>
       <%= link_to t("core.app.layout.nav.contact"), new_core_app_contact_path %>
     <% end %>

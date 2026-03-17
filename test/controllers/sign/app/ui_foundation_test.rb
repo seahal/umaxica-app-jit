@@ -61,7 +61,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     # Testing the theme_html_class helper's effect via integration
     headers = as_user_headers(@user, host: @host)
     existing_cookie = headers["Cookie"]
-    headers["Cookie"] = [existing_cookie, "jit_ct=dark"].compact.join("; ")
+    headers["Cookie"] = [existing_cookie, "ct=dark"].compact.join("; ")
     get sign_app_configuration_url, headers: headers
 
     follow_redirect!(headers: headers) if response.redirect?
@@ -70,7 +70,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
 
     headers = as_user_headers(@user, host: @host)
     existing_cookie = headers["Cookie"]
-    headers["Cookie"] = [existing_cookie, "jit_ct=light"].compact.join("; ")
+    headers["Cookie"] = [existing_cookie, "ct=light"].compact.join("; ")
     get sign_app_configuration_url, headers: headers
     follow_redirect!(headers: headers) if response.redirect?
 

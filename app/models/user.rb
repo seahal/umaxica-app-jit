@@ -84,12 +84,18 @@ class User < PrincipalRecord
   has_many :user_secrets,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_passkeys,
-           dependent: :destroy,
-           inverse_of: :user
   has_many :user_one_time_passwords,
            dependent: :destroy,
            inverse_of: :user
+  has_many :user_passkeys,
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :active_totps,
+           -> { where(user_identity_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE) },
+           class_name: "UserOneTimePassword",
+           dependent: :restrict_with_exception,
+           inverse_of: :user
+
   has_many :user_activities,
            foreign_key: :subject_id,
            dependent: :destroy,

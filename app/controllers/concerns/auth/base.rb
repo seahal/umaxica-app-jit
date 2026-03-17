@@ -596,8 +596,13 @@ module Auth
       token_record = create_login_token_record(resource, kind_id, status: token_status)
 
       # Generate SHA3-based refresh token
+      # Must use writing role explicitly because GET-based OAuth callbacks
+      # are auto-routed to the reading replica by DatabaseSelector middleware.
       restricted_expires_at = is_restricted ? restricted_session_expires_at : nil
-      refresh_plain = token_record.rotate_refresh_token!(expires_at: restricted_expires_at)
+      refresh_plain =
+        TokenRecord.connected_to(role: :writing) do
+          token_record.rotate_refresh_token!(expires_at: restricted_expires_at)
+        end
 
       if is_restricted
         Rails.event.notify(
@@ -610,7 +615,8 @@ module Auth
       end
 
       # Generate JWT access token with explicit resource_type
-      access_expires_at = access_token_expires_at_for(token_record)
+      now = Time.current
+      access_expires_at = access_token_expires_at_for(token_record, now: now)
       refresh_cookie_expires_at = refresh_cookie_expires_at_for(token_record)
 
       access_token = Token.encode(
@@ -649,7 +655,7 @@ module Auth
         access_token: access_token,
         refresh_token: refresh_plain,
         token_type: "Bearer",
-        expires_in: expires_in_for(access_expires_at),
+        expires_in: expires_in_for(access_expires_at, now: now),
         dbsc: dbsc_payload_for(token_record),
       }
 

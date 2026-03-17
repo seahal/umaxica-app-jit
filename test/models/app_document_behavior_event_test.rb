@@ -29,4 +29,21 @@ class AppDocumentBehaviorEventTest < ActiveSupport::TestCase
 
     assert_predicate record, :valid?
   end
+
+  test "ensure_defaults! does nothing when defaults exist" do
+    assert_no_difference "AppDocumentBehaviorEvent.count" do
+      AppDocumentBehaviorEvent.ensure_defaults!
+    end
+  end
+
+  test "ensure_defaults! creates missing defaults" do
+    AppDocumentBehaviorEvent.where(id: AppDocumentBehaviorEvent::DEFAULTS).delete_all
+
+    assert_difference "AppDocumentBehaviorEvent.count", 2 do
+      AppDocumentBehaviorEvent.ensure_defaults!
+    end
+
+    assert_not_nil AppDocumentBehaviorEvent.find_by(id: AppDocumentBehaviorEvent::NOTHING)
+    assert_not_nil AppDocumentBehaviorEvent.find_by(id: AppDocumentBehaviorEvent::CREATED)
+  end
 end

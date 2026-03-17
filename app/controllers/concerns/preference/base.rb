@@ -375,7 +375,6 @@ module Preference
     ACCESS_TOKEN_TTL = 7.days
     REFRESH_TOKEN_TTL = 400.days
     THEME_COOKIE_KEY = Preference::IoKeys::Cookies::THEME
-    LEGACY_THEME_COOKIE_KEY = Preference::IoKeys::Cookies::LEGACY_THEME
     LANGUAGE_COOKIE_KEY = Preference::IoKeys::Cookies::LANGUAGE
     TIMEZONE_COOKIE_KEY = Preference::IoKeys::Cookies::TIMEZONE
 
@@ -516,13 +515,12 @@ module Preference
     def set_color_theme
       theme = normalize_colortheme(params[Preference::IoKeys::Params::CT].presence)
       theme ||= normalize_colortheme(cookies[THEME_COOKIE_KEY])
-      theme ||= normalize_colortheme(cookies[LEGACY_THEME_COOKIE_KEY])
       theme ||= normalize_colortheme(preference_payload_value("ct"))
       if theme.blank? && @preferences.present?
         option_id = @preferences.public_send(preference_colortheme_association)&.option_id
         theme = colortheme_short_code(option_id_to_colortheme(option_id, preference_prefix))
       end
-      # Rails must not trust this value; use jit_preference_access instead.
+      # Rails must not trust this value; use preference_access instead.
       # However, for theme, we allow cookie to override stored preference to support local toggling/anonymous.
       theme ||= "sy"
 

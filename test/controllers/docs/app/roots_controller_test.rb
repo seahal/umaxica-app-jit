@@ -25,10 +25,6 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get docs_app_root_url
 
     assert_layout_contract
-    assert_select "head", count: 1 do
-      assert_select "link[rel=?]", "icon", count: 1
-      assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
-    end
     assert_select "body", count: 1 do
       assert_select "header" do
         assert_select "h1", text: /#{brand_name}.*\(app\)/

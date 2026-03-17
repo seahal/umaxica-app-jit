@@ -43,7 +43,7 @@ function applyTheme(theme) {
 }
 
 function initThemeFromCookie() {
-  const raw = readCookie("jit_ct") || readCookie("ct");
+  const raw = readCookie("ct");
   const theme = resolveTheme(raw);
   applyTheme(theme);
 

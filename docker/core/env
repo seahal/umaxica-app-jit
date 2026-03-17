@@ -16,7 +16,7 @@ OPEN_TELEMETRY=false
 # Node Environment
 NODE_ENV=development
 # Region
-GLOBAL_MODE=true
+# GLOBAL_MODE=true
 REGION_CODE=jp
 # Database Configuration
 ## Redis (use local Redis service inside Compose)
@@ -68,6 +68,8 @@ POSTGRESQL_FINDER_PUB=primary
 POSTGRESQL_FINDER_SUB=replica
 POSTGRESQL_SEARCH_PUB=primary
 POSTGRESQL_SEARCH_SUB=replica
+POSTGRESQL_BILLING_PUB=primary
+POSTGRESQL_BILLING_SUB=replica
 # Object Storage Configuration
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin

@@ -8,79 +8,79 @@ module Sign
         auth_required!
 
         before_action :authenticate_staff!
-        before_action :load_sessions
-        before_action :set_session, only: %i(show edit update destroy)
+        before_action :set_session, only: %i(destroy)
 
         def index
-          render json: { sessions: @sessions }
-        end
+          @sessions = current_staff.staff_tokens.where(expired_at: nil).order(created_at: :desc)
 
-        def show
-          render json: { session: @session }
-        end
-
-        def new
-          render json: { session: default_session_payload }
-        end
-
-        def edit
-          render json: { session: @session }
-        end
-
-        def create
-          session_record = default_session_payload.merge(session_params.stringify_keys).merge("id" => SecureRandom.uuid)
-          @sessions << session_record
-          persist_sessions!
-
-          render json: { session: session_record }, status: :created
-        end
-
-        def update
-          @session.merge!(session_params.stringify_keys)
-          persist_sessions!
-
-          render json: { session: @session }
+          respond_to do |format|
+            format.html
+            format.json do
+              render json: { sessions: @sessions.map { |s|
+                { public_id: s.public_id, created_at: s.created_at }
+              } }
+            end
+          end
         end
 
         def destroy
-          @sessions.delete_if { |record| record["id"] == @session["id"] }
-          persist_sessions!
+          if @session.public_id == current_session_public_id
+            return render_current_session_error
+          end
 
-          head :see_other
+          revoke_sessions!([@session])
+          render_revoke_success
         end
 
         def others
-          @sessions.clear
-          persist_sessions!
-
-          head :see_other
+          revoke_sessions!(other_active_sessions)
+          render_revoke_success
         end
 
         private
 
-        def load_sessions
-          session[:org_setting_sessions] ||= []
-          @sessions = session[:org_setting_sessions].map { |record| record.stringify_keys }
+        def render_revoke_success
+          redirect_to(
+            sign_org_configuration_sessions_path,
+            status: :see_other,
+            notice: t(
+              "sign.org.configuration.sessions.revoke.success",
+              default: "セッションを無効化しました。",
+            ),
+          )
+        end
+
+        def other_active_sessions
+          sessions = current_staff.staff_tokens.where(expired_at: nil)
+          return sessions if current_session_public_id.blank?
+
+          sessions.where.not(public_id: current_session_public_id)
+        end
+
+        def revoke_sessions!(sessions)
+          if sessions.respond_to?(:find_each)
+            sessions.find_each(&:revoke!)
+          else
+            sessions.each(&:revoke!)
+          end
+        end
+
+        def render_current_session_error
+          redirect_to(
+            sign_org_configuration_sessions_path,
+            alert: t(
+              "sign.org.configuration.sessions.revoke.failure",
+              default: "現在のセッションは無効化できません。",
+            ),
+          )
         end
 
         def set_session
-          @session = @sessions.find { |record| record["id"] == params[:id] }
+          @session = current_staff.staff_tokens.find_by(public_id: params[:id])
           return if @session
 
           head :not_found
           nil
-        end
-
-        def session_params
-          params.fetch(:session, {}).permit(:name, :status).to_h.symbolize_keys
-        end
-
-        def persist_sessions!
-          session[:org_setting_sessions] = @sessions
-        end
-
-        def default_session_payload
-          { "name" => "Connected app", "status" => "active" }
         end
       end
     end

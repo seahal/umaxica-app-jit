@@ -46,7 +46,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert json["refreshed"]
   end
 
-  test "POST refresh syncs jit_preference_consented cookie on success" do
+  test "POST refresh syncs preference_consented cookie on success" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
@@ -70,16 +70,16 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :ok
     set_cookie = response.headers["Set-Cookie"].to_s
 
-    assert_includes set_cookie, "jit_preference_consented=1"
+    assert_includes set_cookie, "preference_consented=1"
     assert_includes set_cookie, "domain=.app.refresh.example.test"
     assert_includes set_cookie.downcase, "path=/"
-    expires = response_cookie_expiry("jit_preference_consented")
+    expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
     assert_in_delta expires_at.to_i, expires.to_i, 1
   end
 
-  test "POST refresh syncs jit_preference_consented=0 when consent is false" do
+  test "POST refresh syncs preference_consented=0 when consent is false" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
@@ -103,10 +103,10 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :ok
     set_cookie = response.headers["Set-Cookie"].to_s
 
-    assert_includes set_cookie, "jit_preference_consented=0"
+    assert_includes set_cookie, "preference_consented=0"
     assert_includes set_cookie, "domain=.app.refresh.example.test"
     assert_includes set_cookie.downcase, "path=/"
-    expires = response_cookie_expiry("jit_preference_consented")
+    expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
     assert_in_delta expires_at.to_i, expires.to_i, 1

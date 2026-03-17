@@ -1,11 +1,20 @@
 # typed: false
 # frozen_string_literal: true
 
+require "ostruct"
 require "test_helper"
 
 class CookieDomainTest < ActiveSupport::TestCase
+  def stub_creds(_key, value)
+    creds_mock = Object.new
+    creds_mock.define_singleton_method(:option) { |_key| value }
+    Rails.stub :app, OpenStruct.new(creds: creds_mock) do
+      yield
+    end
+  end
+
   test "for returns nil when env variable is blank and request host is localhost" do
-    ENV.stub :[], nil do
+    stub_creds(:COOKIE_DOMAIN_APP, nil) do
       result = Core::CookieDomain.for(surface: :app, request_host: "localhost")
 
       assert_nil result
@@ -13,7 +22,7 @@ class CookieDomainTest < ActiveSupport::TestCase
   end
 
   test "for returns nil when env variable is set to HOST_ONLY" do
-    ENV.stub :[], "HOST_ONLY" do
+    stub_creds(:COOKIE_DOMAIN_APP, "HOST_ONLY") do
       result = Core::CookieDomain.for(surface: :app, request_host: "app.example.com")
 
       assert_nil result
@@ -21,7 +30,7 @@ class CookieDomainTest < ActiveSupport::TestCase
   end
 
   test "for derives domain from request host" do
-    ENV.stub :[], nil do
+    stub_creds(:COOKIE_DOMAIN_APP, nil) do
       result = Core::CookieDomain.for(surface: :app, request_host: "app.example.com")
 
       assert_equal ".example.com", result
@@ -29,7 +38,7 @@ class CookieDomainTest < ActiveSupport::TestCase
   end
 
   test "for derives domain from request host with subdomain" do
-    ENV.stub :[], nil do
+    stub_creds(:COOKIE_DOMAIN_APP, nil) do
       result = Core::CookieDomain.for(surface: :app, request_host: "www.app.example.com")
 
       assert_equal ".example.com", result
@@ -37,7 +46,7 @@ class CookieDomainTest < ActiveSupport::TestCase
   end
 
   test "for handles IP address" do
-    ENV.stub :[], nil do
+    stub_creds(:COOKIE_DOMAIN_APP, nil) do
       result = Core::CookieDomain.for(surface: :app, request_host: "192.168.1.1")
 
       assert_equal ".1.1", result
@@ -45,7 +54,7 @@ class CookieDomainTest < ActiveSupport::TestCase
   end
 
   test "for uses configured env variable" do
-    ENV.stub :[], nil do
+    stub_creds(:COOKIE_DOMAIN_ORG, nil) do
       result = Core::CookieDomain.for(surface: :org, request_host: "localhost")
 
       assert_nil result
