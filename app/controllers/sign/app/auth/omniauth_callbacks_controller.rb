@@ -158,6 +158,9 @@ module Sign
                         )
           when "reauth"
             Rails.event.debug("sign.social.omniauth.reauth_intent", message: "Signing in with reauth")
+            return redirect_to new_sign_app_in_path,
+                               alert: I18n.t("sign.app.social.sessions.create.failure") unless user&.login_allowed?
+
             login_result = sign_in_with_reauth(user)
 
             if login_result.is_a?(Hash) && login_result[:status] != :success
@@ -173,6 +176,9 @@ module Sign
                         notice: I18n.t("sign.app.social.sessions.reauth.success", provider: provider_name)
           else
             Rails.event.debug("sign.social.omniauth.login_intent", message: "Signing in user")
+            return redirect_to new_sign_app_in_path,
+                               alert: I18n.t("sign.app.social.sessions.create.failure") unless user&.login_allowed?
+
             login_result = sign_in(user)
 
             # Check if login failed

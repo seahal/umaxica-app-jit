@@ -91,6 +91,7 @@ scope module: :sign, as: :sign do
             to: "omniauth_callbacks#failure"
       end
 
+      # step up verification
       resource :verification, only: %i(show), controller: :verification
       namespace :verification do
         resource :setup, only: %i(new)
@@ -98,6 +99,11 @@ scope module: :sign, as: :sign do
         resource :totp, only: %i(new create)
         resources :emails, only: %i(new create edit update)
       end
+
+      # OIDC
+      resource :authorize, only: %i(show)
+      resource :token, only: %i(show)
+      resource :jwks, only: %i(show)
 
       resource :configuration, only: %i(show edit)
       namespace :configuration do
@@ -201,6 +207,11 @@ scope module: :sign, as: :sign do
         resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
       end
+
+      # OIDC
+      resource :authorize, only: %i(show)
+      resource :token, only: %i(show)
+      resource :jwks, only: %i(show)
 
       resource :configuration, only: :show
       namespace :configuration do

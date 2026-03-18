@@ -69,3 +69,8 @@ sample_user:
   public_id: "sample_user"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
+reserved_user:
+  status_id: <%= UserStatus::RESERVED %>
+  public_id: "reserved_user"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_18_041659) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "app_banners", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", default: "9999-12-31 23:59:59", null: false
+    t.boolean "published", default: false, null: false
+    t.datetime "starts_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "title", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.check_constraint "ends_at > starts_at", name: "app_banners_ends_at_after_starts_at"
+  end
 
   create_table "client_notifications", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -21,6 +33,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.bigint "user_notification_id", null: false
     t.index ["public_id"], name: "index_client_notifications_on_public_id", unique: true
     t.index ["user_notification_id"], name: "index_client_notifications_on_user_notification_id"
+  end
+
+  create_table "com_banners", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", default: "9999-12-31 23:59:59", null: false
+    t.boolean "published", default: false, null: false
+    t.datetime "starts_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "title", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.check_constraint "ends_at > starts_at", name: "com_banners_ends_at_after_starts_at"
   end
 
   create_table "member_notifications", force: :cascade do |t|
@@ -39,6 +62,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_operator_notifications_on_public_id", unique: true
     t.index ["staff_notification_id"], name: "index_operator_notifications_on_staff_notification_id"
+  end
+
+  create_table "org_banners", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", default: "9999-12-31 23:59:59", null: false
+    t.boolean "published", default: false, null: false
+    t.bigint "staff_id", null: false
+    t.datetime "starts_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "title", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.check_constraint "ends_at > starts_at", name: "org_banners_ends_at_after_starts_at"
   end
 
   create_table "staff_notifications", force: :cascade do |t|

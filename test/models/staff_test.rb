@@ -69,6 +69,18 @@ class StaffTest < ActiveSupport::TestCase
     assert_equal StaffVisibility::STAFF, staff.visibility_id
   end
 
+  test "login_allowed? is false for reserved status" do
+    staff = Staff.create!(public_id: Staff.generate_public_id, status_id: StaffStatus::RESERVED)
+
+    assert_not staff.login_allowed?
+  end
+
+  test "login_allowed? remains true for nothing status while active" do
+    staff = Staff.create!(public_id: Staff.generate_public_id, status_id: StaffStatus::NOTHING)
+
+    assert_predicate staff, :login_allowed?
+  end
+
   test "visibility association resolves to StaffVisibility with id 2 by default" do
     staff = Staff.create!
 

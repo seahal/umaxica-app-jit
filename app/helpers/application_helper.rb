@@ -42,4 +42,28 @@ module ApplicationHelper
   def theme_class
     theme_html_class
   end
+
+  def current_banner_for(surface)
+    banner_model_for(surface)&.current&.first
+  end
+
+  def render_current_banner(surface)
+    banner = current_banner_for(surface)
+    return unless banner
+
+    render "layouts/shared/banner", banner: banner
+  end
+
+  private
+
+  def banner_model_for(surface)
+    case surface.to_sym
+    when :app
+      AppBanner
+    when :org
+      OrgBanner
+    when :com
+      ComBanner
+    end
+  end
 end

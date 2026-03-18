@@ -12,6 +12,8 @@
 require "test_helper"
 
 class UserStatusTest < ActiveSupport::TestCase
+  fixtures :user_statuses
+
   test "status constants are defined" do
     expected_status_constants = {
       ACTIVE: 1,
@@ -26,6 +28,7 @@ class UserStatusTest < ActiveSupport::TestCase
       VERIFIED_WITH_SIGN_UP: 10,
       NOTHING: 11,
       GHOST: 12,
+      RESERVED: 13,
     }
 
     actual_status_constants = {
@@ -41,8 +44,13 @@ class UserStatusTest < ActiveSupport::TestCase
       VERIFIED_WITH_SIGN_UP: UserStatus::VERIFIED_WITH_SIGN_UP,
       NOTHING: UserStatus::NOTHING,
       GHOST: UserStatus::GHOST,
+      RESERVED: UserStatus::RESERVED,
     }
 
     assert_equal expected_status_constants, actual_status_constants
+  end
+
+  test "reserved fixture exists" do
+    assert_equal UserStatus::RESERVED, user_statuses(:reserved).id
   end
 end

@@ -46,6 +46,7 @@ class User < PrincipalRecord
   include ::PublicId
   include ::Identity
 
+  LOGIN_BLOCKED_STATUS_IDS = [UserStatus::RESERVED].freeze
   # what is this?
   VERIFIED_RECOVERY_EMAIL_STATUS_IDS = [
     UserEmailStatus::VERIFIED,

@@ -10,3 +10,5 @@ nothing:
   id: 2
 active:
   id: 1
+reserved:
+  id: 3

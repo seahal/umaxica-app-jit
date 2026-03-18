@@ -40,6 +40,7 @@ class Staff < OperatorRecord
 
   include ::Identity
 
+  LOGIN_BLOCKED_STATUS_IDS = [StaffStatus::RESERVED].freeze
   PUBLIC_ID_LENGTH = 16
   PUBLIC_ID_ALPHABET = SecureRandom::BASE32_ALPHABET.join.freeze
   PUBLIC_ID_FORMAT = /\A[0-9A-FGHJKMNPQRSTVWXYZ]{16}\z/

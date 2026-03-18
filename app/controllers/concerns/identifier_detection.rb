@@ -34,7 +34,8 @@ module IdentifierDetection
       bidx = IdentifierBlindIndex.bidx_for_email(normalized)
       return nil if bidx.blank?
 
-      UserEmail.find_by(address_bidx: bidx)&.user
+      user = UserEmail.find_by(address_bidx: bidx)&.user
+      user if user&.login_allowed?
     when :telephone
       normalized = TelephoneNormalization.normalize_to_e164(identifier.strip)
       return nil if normalized.blank?
@@ -42,7 +43,8 @@ module IdentifierDetection
       bidx = IdentifierBlindIndex.bidx_for_telephone(normalized)
       return nil if bidx.blank?
 
-      UserTelephone.find_by(number_bidx: bidx)&.user
+      user = UserTelephone.find_by(number_bidx: bidx)&.user
+      user if user&.login_allowed?
     end
   end
 end

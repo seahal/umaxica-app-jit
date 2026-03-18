@@ -156,7 +156,7 @@ module Sign
         def process_email_authentication(normalized_address)
           existing_email = find_email_with_timing_protection(normalized_address)
 
-          if existing_email
+          if existing_email&.user&.login_allowed?
             # Pre-check session limit before sending OTP.
             # If the user is already at the hard limit (2 active + 1 restricted),
             # skip sending OTP and flag for the create action to handle.
@@ -199,6 +199,10 @@ module Sign
 
           if result[:success]
             user = user_from_user_email(user_email)
+            unless user&.login_allowed?
+              return { success: false, error: t("sign.app.authentication.email.update.invalid_code") }
+            end
+
             clear_otp(user_email)
             session[:user_email_authentication_id] = nil
             rd = peek_redirect_parameter
@@ -214,8 +218,10 @@ module Sign
                 http_status: result[:http_status], }
             elsif result[:restricted]
               { success: true, restricted: true, redirect_path: sign_app_in_session_path }
-            else
+            elsif result[:status] == :success
               { success: true, tokens: result }
+            else
+              { success: false, error: t("sign.app.authentication.email.update.invalid_code") }
             end
           else
             user = user_from_user_email(user_email)

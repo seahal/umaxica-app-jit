@@ -95,6 +95,16 @@ class UserTest < ActiveSupport::TestCase
     assert_equal UserVisibility::STAFF, user.visibility_id
   end
 
+  test "login_allowed? is false for reserved status" do
+    @user.update!(status_id: UserStatus::RESERVED)
+
+    assert_not @user.login_allowed?
+  end
+
+  test "login_allowed? remains true for nothing status while active" do
+    assert_predicate @user, :login_allowed?
+  end
+
   test "visibility association resolves to UserVisibility with id 2 by default" do
     user = User.create!
 

@@ -554,6 +554,8 @@ module Auth
 
     # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
+      return { status: :login_forbidden } unless resource.login_allowed?
+
       check_login_cooldown!(resource)
 
       reset_session
@@ -1888,8 +1890,10 @@ module Auth
         { status: :session_limit_hard_reject, message: result[:message], http_status: result[:http_status] }
       elsif result[:restricted]
         { status: :restricted, redirect_path: session_management_path }
-      else
+      elsif result[:status] == :success
         { status: :success, redirect_path: return_to.presence }
+      else
+        result
       end
     end
 

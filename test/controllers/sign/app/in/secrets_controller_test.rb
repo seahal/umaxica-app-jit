@@ -149,6 +149,29 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
   end
 
+  test "reserved user cannot sign in with secret" do
+    reserved_user = users(:reserved_user)
+    email = reserved_user.user_emails.create!(
+      address: "reserved_secret_#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+    secret, raw_secret = UserSecret.issue!(
+      name: "Reserved secret",
+      user_id: reserved_user.id,
+      user_secret_kind_id: UserSecretKind::PERMANENT,
+      uses: 10,
+      status: :active,
+    )
+
+    post sign_app_in_secret_url(ri: "jp"),
+         params: login_params(identifier: email.address, secret_value: raw_secret),
+         headers: default_headers
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
+    assert_equal UserSecretStatus::ACTIVE, secret.reload.user_secret_status_id
+  end
+
   test "secret login returns same response for secret mismatch and missing verified pii" do
     _secret, _raw_secret = issue_secret!(kind: UserSecretKind::PERMANENT, uses: 10)
 

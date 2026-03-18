@@ -58,10 +58,12 @@ module Sign
             render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           elsif result[:restricted]
             redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
-          else
+          elsif result[:status] == :success
             issue_checkpoint!
             redirect_to sign_app_in_checkpoint_path(ri: params[:ri]),
                         notice: t("sign.app.authentication.totp.success")
+          else
+            redirect_to new_sign_app_in_path, alert: t("sign.app.authentication.totp.invalid"), status: :see_other
           end
         end
 
