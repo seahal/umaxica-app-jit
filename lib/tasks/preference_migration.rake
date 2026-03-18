@@ -1,0 +1,114 @@
+# frozen_string_literal: true
+
+namespace :preference do
+  desc "Migrate UserAppPreference/StaffOrgPreference data to UserPreference/StaffPreference"
+  task migrate_to_user_staff: :environment do
+    migrate_user_preferences!
+    migrate_staff_preferences!
+  end
+
+  def migrate_user_preferences!
+    puts "Migrating UserAppPreference → UserPreference..."
+    migrated = 0
+    skipped = 0
+
+    # Find the most recent UserAppPreference for each user
+    UserAppPreference.select("DISTINCT ON (user_id) *")
+      .order(:user_id, created_at: :desc)
+      .find_each do |join_record|
+      next if UserPreference.exists?(user_id: join_record.user_id)
+
+      app_pref = join_record.app_preference
+      next if app_pref.blank?
+
+      PrincipalRecord.connected_to(role: :writing) do
+        user_pref = UserPreference.create!(user_id: join_record.user_id)
+        copy_preference_options!(app_pref, user_pref, "App", "User")
+        copy_cookie_consent_to_user_pref!(app_pref, user_pref)
+        migrated += 1
+      end
+    rescue StandardError => e
+      puts "  WARN: Failed to migrate user_id=#{join_record.user_id}: #{e.message}"
+      skipped += 1
+    end
+
+    puts "  Done: #{migrated} migrated, #{skipped} skipped"
+  end
+
+  def migrate_staff_preferences!
+    puts "Migrating StaffOrgPreference → StaffPreference..."
+    migrated = 0
+    skipped = 0
+
+    StaffOrgPreference.select("DISTINCT ON (staff_id) *")
+      .order(:staff_id, created_at: :desc)
+      .find_each do |join_record|
+      next if StaffPreference.exists?(staff_id: join_record.staff_id)
+
+      org_pref = join_record.org_preference
+      next if org_pref.blank?
+
+      PrincipalRecord.connected_to(role: :writing) do
+        staff_pref = StaffPreference.create!(staff_id: join_record.staff_id)
+        copy_preference_options!(org_pref, staff_pref, "Org", "Staff")
+        copy_cookie_consent_to_staff_pref!(org_pref, staff_pref)
+        migrated += 1
+      end
+    rescue StandardError => e
+      puts "  WARN: Failed to migrate staff_id=#{join_record.staff_id}: #{e.message}"
+      skipped += 1
+    end
+
+    puts "  Done: #{migrated} migrated, #{skipped} skipped"
+  end
+
+  def copy_preference_options!(source_pref, target_pref, source_prefix, target_prefix)
+    source_assoc = source_pref.class.name.underscore
+
+    %w(language timezone region colortheme).each do |type|
+      source_child = source_pref.public_send("#{source_assoc}_#{type}")
+      next unless source_child&.option_id
+
+      source_option = source_child.option
+      next unless source_option&.name
+
+      target_option_class = Preference::ClassRegistry.option_class(target_prefix, type)
+      target_option_class.ensure_defaults!
+      target_option = target_option_class.find_each.find { |o| o.name&.downcase == source_option.name.downcase }
+      next unless target_option
+
+      Preference::ClassRegistry.record_class(target_prefix, type).create!(
+        preference_id: target_pref.id,
+        option_id: target_option.id,
+      )
+    end
+  end
+
+  def copy_cookie_consent_to_user_pref!(app_pref, user_pref)
+    cookie = app_pref.app_preference_cookie
+    return unless cookie
+
+    user_pref.update!(
+      consented: cookie.consented,
+      functional: cookie.functional,
+      performant: cookie.performant,
+      targetable: cookie.targetable,
+      consented_at: cookie.consented_at,
+      consent_version: cookie.consent_version,
+    )
+  end
+
+  def copy_cookie_consent_to_staff_pref!(org_pref, staff_pref)
+    cookie = org_pref.org_preference_cookie
+    return unless cookie
+
+    staff_pref.update!(
+      consented: cookie.consented,
+      functional: cookie.functional,
+      performant: cookie.performant,
+      targetable: cookie.targetable,
+      consented_at: cookie.consented_at,
+      consent_version: cookie.consent_version,
+    )
+  end
+end

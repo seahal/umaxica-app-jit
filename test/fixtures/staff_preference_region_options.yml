@@ -1,12 +1,13 @@
 # == Schema Information
 #
-# Table name: org_preference_activity_levels
-# Database name: activity
+# Table name: staff_preference_region_options
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
 nothing:
   id: 0
-
-info:
+us:
   id: 1
+jp:
+  id: 2

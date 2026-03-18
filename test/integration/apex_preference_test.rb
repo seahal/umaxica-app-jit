@@ -284,7 +284,8 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       pref.reload
 
-      assert_equal 1, pref.status_id
+      # Reset to defaults keeps the preference active (status stays NOTHING)
+      assert_equal 2, pref.status_id
       assert_not_nil pref.expires_at
     end
 
@@ -305,9 +306,9 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_operator pref.expires_at, :>=, original_expires_at
     end
 
-    test "#{domain[:name]} domain creates new preference after reset" do
+    test "#{domain[:name]} domain keeps same preference after reset" do
       host!(domain[:host])
-      pref, token, cookie_name = assert_preference_created(domain)
+      pref, _token, cookie_name = assert_preference_created(domain)
 
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
              params: { confirm_reset: "1" }
@@ -316,15 +317,14 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       assert_response :success
 
-      new_token = cookies[cookie_name]
+      # Reset to defaults keeps the same preference record and cookie
+      current_token = cookies[cookie_name]
 
-      assert_not_equal token, new_token
+      assert_not_nil current_token
 
-      new_token_digest = refresh_token_digest_for(new_token)
-      new_pref = domain[:preference_model].find_by(token_digest: new_token_digest)
+      pref.reload
 
-      assert_not_equal pref.id, new_pref.id
-      assert_equal 2, new_pref.status_id
+      assert_equal 2, pref.status_id
     end
 
     test "#{domain[:name]} domain surfaces localized timezone errors" do
@@ -387,7 +387,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_select "label[for='confirm_reset']"
     end
 
-    test "#{domain[:name]} domain reset destroy updates preference status to DELETED" do
+    test "#{domain[:name]} domain reset destroy resets preference to defaults" do
       host!(domain[:host])
       pref, _token, _cookie_name = assert_preference_created(domain)
       audit_class = domain[:audit_class]
@@ -404,11 +404,11 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_reset_url", ri: "jp")
 
-      # Verify database changes
+      # Verify database changes — preference stays active (reset to defaults, not deleted)
       pref.reload
       final_audit_count = audit_class.where(subject_id: pref.id).count
 
-      assert_equal 1, pref.status_id, "Status should be DELETED after reset"
+      assert_equal 2, pref.status_id, "Status should remain NOTHING after reset to defaults"
       assert_operator final_audit_count, :>, initial_audit_count,
                       "Audit log should be created"
 
@@ -419,7 +419,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal event_class::RESET_BY_USER_DECISION, audit.event_id
     end
 
-    test "#{domain[:name]} domain reset destroy deletes preference cookies" do
+    test "#{domain[:name]} domain reset destroy keeps preference cookies" do
       host!(domain[:host])
       _pref, _token, cookie_name = assert_preference_created(domain)
 
@@ -430,16 +430,9 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
              params: { confirm_reset: "1" }
 
-      cookie_names = [
-        cookie_name,
-        preference_access_cookie_name,
-        Preference::Base::THEME_COOKIE_KEY,
-        Preference::Base::LANGUAGE_COOKIE_KEY,
-        Preference::Base::TIMEZONE_COOKIE_KEY,
-      ]
-
-      assert cookie_names.all? { |name| cookies[name].to_s.empty? },
-             "Preference-related cookies should be deleted"
+      # Reset to defaults keeps cookies intact (values are reset in DB, not deleted)
+      assert_not_nil cookies[cookie_name],
+             "Preference refresh cookie should be kept after reset"
     end
 
     test "#{domain[:name]} domain reset destroy fails without confirmation" do
@@ -479,20 +472,10 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
         ActiveSupport::Notifications.unsubscribe(callback)
       end
 
-      # Verify UPDATE query was executed on preferences table
-      update_queries = queries.select { |q| q.include?("UPDATE") && q.include?("preferences") }
-
-      assert_not_empty update_queries, "Should have UPDATE query on preferences table"
-
-      # Verify INSERT query was executed on activity table
+      # Verify INSERT query was executed on activity table (audit log)
       insert_queries = queries.select { |q| q.include?("INSERT") && q.include?("activit") }
 
       assert_not_empty insert_queries, "Should have INSERT query on activity table"
-
-      # Log for debugging
-      Rails.logger.info "=== #{domain[:name]} reset DB operations ==="
-      Rails.logger.info "UPDATE queries: #{update_queries.count}"
-      Rails.logger.info "INSERT queries: #{insert_queries.count}"
     end
   end
 

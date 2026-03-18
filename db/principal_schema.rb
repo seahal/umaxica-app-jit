@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_18_035439) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_18_050103) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -104,6 +104,67 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_18_035439) do
     t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_roles_on_organization_id"
+  end
+
+  create_table "staff_preference_colortheme_options", force: :cascade do |t|
+  end
+
+  create_table "staff_preference_colorthemes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_staff_preference_colorthemes_on_option_id"
+    t.index ["preference_id"], name: "index_staff_preference_colorthemes_on_preference_id", unique: true
+  end
+
+  create_table "staff_preference_language_options", force: :cascade do |t|
+  end
+
+  create_table "staff_preference_languages", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_staff_preference_languages_on_option_id"
+    t.index ["preference_id"], name: "index_staff_preference_languages_on_preference_id", unique: true
+  end
+
+  create_table "staff_preference_region_options", force: :cascade do |t|
+  end
+
+  create_table "staff_preference_regions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_staff_preference_regions_on_option_id"
+    t.index ["preference_id"], name: "index_staff_preference_regions_on_preference_id", unique: true
+  end
+
+  create_table "staff_preference_timezone_options", force: :cascade do |t|
+  end
+
+  create_table "staff_preference_timezones", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_staff_preference_timezones_on_option_id"
+    t.index ["preference_id"], name: "index_staff_preference_timezones_on_preference_id", unique: true
+  end
+
+  create_table "staff_preferences", force: :cascade do |t|
+    t.uuid "consent_version"
+    t.boolean "consented", default: false, null: false
+    t.datetime "consented_at"
+    t.datetime "created_at", null: false
+    t.boolean "functional", default: false, null: false
+    t.boolean "performant", default: false, null: false
+    t.bigint "staff_id", null: false
+    t.boolean "targetable", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["staff_id"], name: "index_staff_preferences_on_staff_id", unique: true
   end
 
   create_table "staff_token_kinds", force: :cascade do |t|
@@ -319,6 +380,67 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_18_035439) do
     t.index ["webauthn_id"], name: "index_user_passkeys_on_webauthn_id", unique: true
   end
 
+  create_table "user_preference_colortheme_options", force: :cascade do |t|
+  end
+
+  create_table "user_preference_colorthemes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_user_preference_colorthemes_on_option_id"
+    t.index ["preference_id"], name: "index_user_preference_colorthemes_on_preference_id", unique: true
+  end
+
+  create_table "user_preference_language_options", force: :cascade do |t|
+  end
+
+  create_table "user_preference_languages", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_user_preference_languages_on_option_id"
+    t.index ["preference_id"], name: "index_user_preference_languages_on_preference_id", unique: true
+  end
+
+  create_table "user_preference_region_options", force: :cascade do |t|
+  end
+
+  create_table "user_preference_regions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_user_preference_regions_on_option_id"
+    t.index ["preference_id"], name: "index_user_preference_regions_on_preference_id", unique: true
+  end
+
+  create_table "user_preference_timezone_options", force: :cascade do |t|
+  end
+
+  create_table "user_preference_timezones", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_user_preference_timezones_on_option_id"
+    t.index ["preference_id"], name: "index_user_preference_timezones_on_preference_id", unique: true
+  end
+
+  create_table "user_preferences", force: :cascade do |t|
+    t.uuid "consent_version"
+    t.boolean "consented", default: false, null: false
+    t.datetime "consented_at"
+    t.datetime "created_at", null: false
+    t.boolean "functional", default: false, null: false
+    t.boolean "performant", default: false, null: false
+    t.boolean "targetable", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_user_preferences_on_user_id", unique: true
+  end
+
   create_table "user_secret_kinds", force: :cascade do |t|
   end
 
@@ -461,6 +583,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_18_035439) do
   add_foreign_key "google_auths", "users", validate: false
   add_foreign_key "members", "member_statuses", column: "status_id", validate: false
   add_foreign_key "members", "users", on_delete: :nullify, validate: false
+  add_foreign_key "staff_preference_colorthemes", "staff_preference_colortheme_options", column: "option_id", name: "fk_staff_preference_colorthemes_on_option_id"
+  add_foreign_key "staff_preference_colorthemes", "staff_preferences", column: "preference_id", name: "fk_staff_preference_colorthemes_on_preference_id"
+  add_foreign_key "staff_preference_languages", "staff_preference_language_options", column: "option_id", name: "fk_staff_preference_languages_on_option_id"
+  add_foreign_key "staff_preference_languages", "staff_preferences", column: "preference_id", name: "fk_staff_preference_languages_on_preference_id"
+  add_foreign_key "staff_preference_regions", "staff_preference_region_options", column: "option_id", name: "fk_staff_preference_regions_on_option_id"
+  add_foreign_key "staff_preference_regions", "staff_preferences", column: "preference_id", name: "fk_staff_preference_regions_on_preference_id"
+  add_foreign_key "staff_preference_timezones", "staff_preference_timezone_options", column: "option_id", name: "fk_staff_preference_timezones_on_option_id"
+  add_foreign_key "staff_preference_timezones", "staff_preferences", column: "preference_id", name: "fk_staff_preference_timezones_on_preference_id"
   add_foreign_key "user_client_deletions", "clients", validate: false
   add_foreign_key "user_client_deletions", "users", validate: false
   add_foreign_key "user_client_discoveries", "clients", validate: false
@@ -496,6 +626,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_18_035439) do
   add_foreign_key "user_one_time_passwords", "users", validate: false
   add_foreign_key "user_passkeys", "user_passkey_statuses", column: "status_id", validate: false
   add_foreign_key "user_passkeys", "users", validate: false
+  add_foreign_key "user_preference_colorthemes", "user_preference_colortheme_options", column: "option_id", name: "fk_user_preference_colorthemes_on_option_id"
+  add_foreign_key "user_preference_colorthemes", "user_preferences", column: "preference_id", name: "fk_user_preference_colorthemes_on_preference_id"
+  add_foreign_key "user_preference_languages", "user_preference_language_options", column: "option_id", name: "fk_user_preference_languages_on_option_id"
+  add_foreign_key "user_preference_languages", "user_preferences", column: "preference_id", name: "fk_user_preference_languages_on_preference_id"
+  add_foreign_key "user_preference_regions", "user_preference_region_options", column: "option_id", name: "fk_user_preference_regions_on_option_id"
+  add_foreign_key "user_preference_regions", "user_preferences", column: "preference_id", name: "fk_user_preference_regions_on_preference_id"
+  add_foreign_key "user_preference_timezones", "user_preference_timezone_options", column: "option_id", name: "fk_user_preference_timezones_on_option_id"
+  add_foreign_key "user_preference_timezones", "user_preferences", column: "preference_id", name: "fk_user_preference_timezones_on_preference_id"
   add_foreign_key "user_secrets", "user_secret_kinds"
   add_foreign_key "user_secrets", "user_secret_statuses", column: "user_identity_secret_status_id"
   add_foreign_key "user_secrets", "users", validate: false

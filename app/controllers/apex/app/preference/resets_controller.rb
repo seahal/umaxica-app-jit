@@ -20,9 +20,8 @@ module Apex
             return
           end
 
-          # delete_preference_cookie calls delete_preference_cookies which removes
-          # ct, lx, tz, and clears the preference auth cookie.
-          delete_preference_cookie
+          # Reset both AppPreference and UserPreference to defaults
+          reset_preference_to_defaults!
 
           # Preserve ri parameter on redirect
           redirect_params = {}

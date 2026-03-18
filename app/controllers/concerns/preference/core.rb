@@ -146,6 +146,33 @@ module Preference::Core
       @preferences.association(assoc_name.to_sym).reload if @preferences.respond_to?(assoc_name)
     end
     issue_access_token_from(@preferences)
+    sync_to_resource_preference!
+  end
+
+  # Dual-write: when logged in, sync current AppPreference/OrgPreference values
+  # to the corresponding UserPreference/StaffPreference.
+  def sync_to_resource_preference!
+    return unless respond_to?(:current_resource, true)
+
+    resource = begin; current_resource; rescue; nil; end
+    return if resource.blank?
+
+    resource_pref = case preference_class.name
+                    when "AppPreference" then resource.user_preference
+                    when "OrgPreference" then resource.staff_preference
+                    end
+    return if resource_pref.blank?
+
+    copy_preference_values!(@preferences, resource_pref, resource_pref_prefix_for_sync)
+  rescue StandardError => e
+    Rails.event.record("preference.sync_to_resource.error", error: e.class.name, message: e.message)
+  end
+
+  def resource_pref_prefix_for_sync
+    case preference_class.name
+    when "AppPreference" then "User"
+    when "OrgPreference" then "Staff"
+    end
   end
 
   def preference_cookie_params
@@ -197,10 +224,29 @@ module Preference::Core
 
   def delete_preference_cookie
     preference = find_preference_for_delete
-    delete_preference_record(preference) if preference.present?
-    delete_preference_cookies
+    if preference.present?
+      log_preference_reset(preference)
+      # Keep cookies and records intact on logout — do not delete or reset preference values.
+      # The preference record and cookies remain so the user retains their settings.
+    end
     reset_preference_state
     nil
+  end
+
+  # Reset preferences to defaults (explicit user action, not logout).
+  # Resets BOTH AppPreference/OrgPreference AND UserPreference/StaffPreference.
+  def reset_preference_to_defaults!
+    return if @preferences.blank?
+
+    reset_app_org_preference_to_defaults!(@preferences)
+    reset_resource_preference_to_defaults!
+
+    create_audit_log(
+      event_id: preference_audit_event_class::RESET_BY_USER_DECISION,
+      context: { preference_reset: true, reset_to_defaults: true },
+    )
+
+    reload_preferences_and_reissue_token!
   end
 
   private
@@ -220,37 +266,76 @@ module Preference::Core
     end
   end
 
-  def delete_preference_record(preference)
-    PreferenceRecord.connected_to(role: :writing) do
-      PreferenceRecord.transaction do
-        preference.update!(
-          status_id: preference_status_class::DELETED,
-          expires_at: Time.current,
-        )
+  def log_preference_reset(preference)
+    @preferences = preference
+    create_audit_log(
+      event_id: preference_audit_event_class::RESET_BY_USER_DECISION,
+      context: { preference_reset: true, kept_values: true },
+    )
+  rescue StandardError => e
+    Rails.logger.error("log_preference_reset failed: #{e.class} - #{e.message}")
+  end
 
-        @preferences = preference
-        create_audit_log(
-          event_id: preference_audit_event_class::RESET_BY_USER_DECISION,
-          context: { preference_deleted: true },
-        )
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey => e
-        Rails.logger.error("delete_preference_cookie failed: #{e.class} - #{e.message}")
-        raise PreferenceOperationError
+  def reset_app_org_preference_to_defaults!(preference)
+    association_prefix = preference.class.name.underscore
+    prefix = preference_prefix
+
+    PreferenceRecord.connected_to(role: :writing) do
+      Preference::Adoption::CHILD_RECORD_TYPES.each do |type|
+        child = preference.public_send("#{association_prefix}_#{type}")
+        next unless child
+
+        option_classes = preference_option_classes(prefix)
+        default_id = case type
+                     when :timezone then option_classes[:timezone]::ASIA_TOKYO
+                     when :language then option_classes[:language]::JA
+                     when :region then option_classes[:region]::JP
+                     when :colortheme then option_classes[:colortheme]::SYSTEM
+                     end
+        child.update!(option_id: default_id) if child.option_id != default_id
       end
     end
   end
 
-  def delete_preference_cookies
-    clear_preference_auth_cookies!
+  def reset_resource_preference_to_defaults!
+    return unless respond_to?(:current_resource, true)
 
-    cookie_names = [
-      Preference::Base::THEME_COOKIE_KEY,
-      Preference::Base::LANGUAGE_COOKIE_KEY,
-      Preference::Base::TIMEZONE_COOKIE_KEY,
-    ]
-    cookie_names.each do |cookie_name|
-      cookies.delete(cookie_name, **preference_cookie_deletion_options)
+    resource = begin; current_resource; rescue; nil; end
+    return if resource.blank?
+
+    resource_pref = case preference_class.name
+                    when "AppPreference" then resource.user_preference
+                    when "OrgPreference" then resource.staff_preference
+                    end
+    return if resource_pref.blank?
+
+    res_prefix = resource_pref_prefix_for_sync
+    resource_assoc = resource_pref.class.name.underscore
+
+    PrincipalRecord.connected_to(role: :writing) do
+      Preference::Adoption::CHILD_RECORD_TYPES.each do |type|
+        child = resource_pref.public_send("#{resource_assoc}_#{type}")
+        next unless child
+
+        option_classes = preference_option_classes(res_prefix)
+        default_id = case type
+                     when :timezone then option_classes[:timezone]::ASIA_TOKYO
+                     when :language then option_classes[:language]::JA
+                     when :region then option_classes[:region]::JP
+                     when :colortheme then option_classes[:colortheme]::SYSTEM
+                     end
+        child.update!(option_id: default_id) if child.option_id != default_id
+      end
+
+      # Reset cookie consent columns
+      resource_pref.update!(
+        consented: false, functional: false,
+        performant: false, targetable: false,
+        consented_at: nil,
+      )
     end
+  rescue StandardError => e
+    Rails.event.record("preference.reset_resource.error", error: e.class.name, message: e.message)
   end
 
   def reset_preference_state
