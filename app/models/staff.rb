@@ -91,6 +91,7 @@ class Staff < OperatorRecord
            inverse_of: :staff,
            dependent: :destroy
   has_many :staff_org_preferences, dependent: :delete_all
+  has_one :staff_preference, dependent: :destroy, inverse_of: :staff
 
   validates :public_id,
             presence: true,

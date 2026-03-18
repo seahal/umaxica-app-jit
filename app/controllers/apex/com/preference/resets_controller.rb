@@ -20,7 +20,7 @@ module Apex
             return
           end
 
-          delete_preference_cookie
+          reset_preference_to_defaults!
 
           # Preserve ri parameter on redirect
           redirect_params = {}

@@ -10,12 +10,13 @@
 #
 class ComPreferenceActivityLevel < ActivityRecord
   self.record_timestamps = false
-  # Fixed IDs - do not modify these values
+  # Fixed IDs - unified across App/Org/Com (aligned to App pattern)
+  NOTHING = 0
   INFO = 1
 
   has_many :com_preference_activities, dependent: :restrict_with_error, inverse_of: :com_preference_activity_level
 
-  DEFAULTS = [INFO].freeze
+  DEFAULTS = [NOTHING, INFO].freeze
 
   def self.ensure_defaults!
     return if DEFAULTS.blank?

@@ -10,15 +10,15 @@
 #
 class AppPreferenceActivityEvent < ActivityRecord
   self.record_timestamps = false
-  # Fixed IDs - do not modify these values
-  REFRESH_TOKEN_ROTATED = 1
-  UPDATE_PREFERENCE_COOKIE = 2
-  UPDATE_PREFERENCE_COLORTHEME = 3
-  RESET_BY_USER_DECISION = 4
+  # Fixed IDs - unified across App/Org/Com (aligned to Org/Com ordering)
+  CREATE_NEW_PREFERENCE_TOKEN = 1
+  REFRESH_TOKEN_ROTATED = 2
+  UPDATE_PREFERENCE_COOKIE = 3
+  UPDATE_PREFERENCE_LANGUAGE = 4
   UPDATE_PREFERENCE_TIMEZONE = 5
-  UPDATE_PREFERENCE_REGION = 6
-  UPDATE_PREFERENCE_LANGUAGE = 7
-  CREATE_NEW_PREFERENCE_TOKEN = 8
+  RESET_BY_USER_DECISION = 6
+  UPDATE_PREFERENCE_REGION = 7
+  UPDATE_PREFERENCE_COLORTHEME = 8
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :app_preference_activities,
@@ -29,14 +29,14 @@ class AppPreferenceActivityEvent < ActivityRecord
            dependent: :restrict_with_error
 
   DEFAULTS = [
+    CREATE_NEW_PREFERENCE_TOKEN,
     REFRESH_TOKEN_ROTATED,
     UPDATE_PREFERENCE_COOKIE,
-    UPDATE_PREFERENCE_COLORTHEME,
-    RESET_BY_USER_DECISION,
-    UPDATE_PREFERENCE_TIMEZONE,
-    UPDATE_PREFERENCE_REGION,
     UPDATE_PREFERENCE_LANGUAGE,
-    CREATE_NEW_PREFERENCE_TOKEN,
+    UPDATE_PREFERENCE_TIMEZONE,
+    RESET_BY_USER_DECISION,
+    UPDATE_PREFERENCE_REGION,
+    UPDATE_PREFERENCE_COLORTHEME,
   ].freeze
 
   def self.ensure_defaults!

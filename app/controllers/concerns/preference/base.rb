@@ -395,14 +395,14 @@ module Preference
 
     PREFERENCE_AUDIT_EVENT_ID_MAP = {
       "AppPreferenceActivityEvent" => {
+        "CREATE_NEW_PREFERENCE_TOKEN" => AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
         "REFRESH_TOKEN_ROTATED" => AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED,
         "UPDATE_PREFERENCE_COOKIE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE,
-        "UPDATE_PREFERENCE_COLORTHEME" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
-        "RESET_BY_USER_DECISION" => AppPreferenceActivityEvent::RESET_BY_USER_DECISION,
-        "UPDATE_PREFERENCE_TIMEZONE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
-        "UPDATE_PREFERENCE_REGION" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
         "UPDATE_PREFERENCE_LANGUAGE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE,
-        "CREATE_NEW_PREFERENCE_TOKEN" => AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
+        "UPDATE_PREFERENCE_TIMEZONE" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE,
+        "RESET_BY_USER_DECISION" => AppPreferenceActivityEvent::RESET_BY_USER_DECISION,
+        "UPDATE_PREFERENCE_REGION" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_REGION,
+        "UPDATE_PREFERENCE_COLORTHEME" => AppPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME,
       }.freeze,
       "ComPreferenceActivityEvent" => {
         "CREATE_NEW_PREFERENCE_TOKEN" => ComPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN,
@@ -440,9 +440,12 @@ module Preference
       clear_preference_refresh_failure!
       return if load_access_token_payload
 
-      preference, _ = load_preference_record_from_refresh_token!(create_if_missing: true)
+      preference, created = load_preference_record_from_refresh_token!(create_if_missing: true)
       return render_preference_refresh_error! if preference_refresh_failed?
       return if preference.blank?
+
+      # If a new preference was created and user is logged in, restore from UserPreference/StaffPreference
+      restore_preference_from_resource!(preference) if created && respond_to?(:current_resource, true)
 
       # Rotate refresh token on access token re-issue to limit replay if leaked.
       refresh_refresh_token_lifetime(preference)
@@ -450,6 +453,16 @@ module Preference
 
       issue_access_token_from(@preferences || preference)
       nil
+    end
+
+    def restore_preference_from_resource!(preference)
+      resource = begin; current_resource; rescue; nil; end
+      return if resource.blank?
+      return unless respond_to?(:adopt_preference_for!, true)
+
+      adopt_preference_for!(resource)
+    rescue StandardError => e
+      Rails.event.record("preference.restore_from_resource.error", error: e.class.name, message: e.message)
     end
 
     def show_cookie_banner?
@@ -1073,6 +1086,11 @@ module Preference
       )
 
       @preference_payload = Token.decode(token, host: request.host)
+      if @preference_payload.blank?
+        clear_preference_auth_cookies!
+        @preference_refresh_failed = true
+        return
+      end
     end
 
     def preference_binding_method_class

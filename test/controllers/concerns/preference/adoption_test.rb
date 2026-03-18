@@ -10,7 +10,8 @@ module Preference
              :app_preference_binding_methods, :app_preference_dbsc_statuses,
              :app_preference_language_options, :app_preference_timezone_options,
              :app_preference_region_options, :app_preference_colortheme_options,
-             :user_app_preferences
+             :user_preference_language_options, :user_preference_timezone_options,
+             :user_preference_region_options, :user_preference_colortheme_options
 
     setup do
       @user = users(:none_user)
@@ -18,9 +19,9 @@ module Preference
       @new_preference = app_preferences(:two)
       @adoption = build_adoption_context(@preference)
 
-      # Clean up any existing links for our test user
-      PreferenceRecord.connected_to(role: :writing) do
-        UserAppPreference.where(user_id: @user.id).delete_all
+      # Clean up any existing UserPreference for our test user
+      PrincipalRecord.connected_to(role: :writing) do
+        UserPreference.where(user_id: @user.id).delete_all
       end
     end
 
@@ -36,126 +37,89 @@ module Preference
       assert_not adoption.send(:adoptable_preference_class?)
     end
 
-    # --- adoption_mapping ---
+    # --- find_resource_preference ---
 
-    test "adoption_mapping returns UserAppPreference for AppPreference" do
-      join_class, resource_fk, preference_fk = @adoption.send(:adoption_mapping)
-
-      assert_equal UserAppPreference, join_class
-      assert_equal :user_id, resource_fk
-      assert_equal :app_preference_id, preference_fk
-    end
-
-    test "adoption_mapping returns StaffOrgPreference for OrgPreference" do
-      adoption = build_adoption_context(@preference, preference_class_name: "OrgPreference")
-      join_class, resource_fk, preference_fk = adoption.send(:adoption_mapping)
-
-      assert_equal StaffOrgPreference, join_class
-      assert_equal :staff_id, resource_fk
-      assert_equal :org_preference_id, preference_fk
-    end
-
-    test "adoption_mapping returns nils for ComPreference" do
-      adoption = build_adoption_context(@preference, preference_class_name: "ComPreference")
-      join_class, resource_fk, preference_fk = adoption.send(:adoption_mapping)
-
-      assert_nil join_class
-      assert_nil resource_fk
-      assert_nil preference_fk
-    end
-
-    # --- link_preference_to! ---
-
-    test "link_preference_to! creates UserAppPreference join record" do
-      assert_difference "UserAppPreference.count", 1 do
-        @adoption.send(:link_preference_to!, @user)
-      end
-
-      join = UserAppPreference.find_by(user_id: @user.id, app_preference_id: @preference.id)
-
-      assert_not_nil join
-    end
-
-    test "link_preference_to! is idempotent" do
-      @adoption.send(:link_preference_to!, @user)
-
-      assert_no_difference "UserAppPreference.count" do
-        @adoption.send(:link_preference_to!, @user)
-      end
-    end
-
-    # --- find_last_linked_preference ---
-
-    test "find_last_linked_preference returns nil when no link exists" do
-      result = @adoption.send(:find_last_linked_preference, @user)
+    test "find_resource_preference returns nil when no UserPreference exists" do
+      result = @adoption.send(:find_resource_preference, @user)
 
       assert_nil result
     end
 
-    test "find_last_linked_preference returns the most recent linked preference" do
-      PreferenceRecord.connected_to(role: :writing) do
-        UserAppPreference.create!(user_id: @user.id, app_preference_id: @preference.id)
-      end
-      # Small sleep to ensure distinct created_at
-      PreferenceRecord.connected_to(role: :writing) do
-        UserAppPreference.create!(user_id: @user.id, app_preference_id: @new_preference.id)
-      end
+    test "find_resource_preference returns UserPreference when it exists" do
+      user_pref = create_user_preference!(@user)
 
-      result = @adoption.send(:find_last_linked_preference, @user)
+      # Reload to pick up association
+      @user.reload
+      result = @adoption.send(:find_resource_preference, @user)
 
-      assert_equal @new_preference, result
+      assert_equal user_pref, result
     end
 
-    # --- restore_preference_from! ---
+    # --- find_or_create_resource_preference! ---
 
-    test "restore_preference_from! copies child record option_ids from source to target" do
+    test "find_or_create_resource_preference! creates UserPreference when none exists" do
+      assert_difference "UserPreference.count", 1 do
+        @adoption.send(:find_or_create_resource_preference!, @user)
+      end
+    end
+
+    test "find_or_create_resource_preference! returns existing UserPreference" do
+      user_pref = create_user_preference!(@user)
+      @user.reload
+
+      assert_no_difference "UserPreference.count" do
+        result = @adoption.send(:find_or_create_resource_preference!, @user)
+        assert_equal user_pref, result
+      end
+    end
+
+    # --- copy_preference_values! ---
+
+    test "copy_preference_values! copies child record option_ids from source to target" do
       create_child_record!(@preference, :language, AppPreferenceLanguageOption::EN)
-      target_lang = create_child_record!(@new_preference, :language, AppPreferenceLanguageOption::JA)
+      user_pref = create_user_preference!(@user)
+      target_lang = user_pref.user_preference_language
 
-      adoption = build_adoption_context(@new_preference)
-      adoption.send(:restore_preference_from!, @preference)
+      @adoption.send(:copy_preference_values!, @preference, user_pref, "User")
 
       target_lang.reload
 
-      assert_equal AppPreferenceLanguageOption::EN, target_lang.option_id
+      assert_equal UserPreferenceLanguageOption::EN, target_lang.option_id
     end
 
-    test "restore_preference_from! does not raise when source has no child records" do
-      create_child_record!(@new_preference, :language, AppPreferenceLanguageOption::JA)
-
-      adoption = build_adoption_context(@new_preference)
+    test "copy_preference_values! does not raise when source has no child records" do
+      user_pref = create_user_preference!(@user)
 
       assert_nothing_raised do
-        adoption.send(:restore_preference_from!, @preference)
+        @adoption.send(:copy_preference_values!, @preference, user_pref, "User")
       end
     end
 
     # --- adopt_preference_for! (integration) ---
 
-    test "adopt_preference_for! links preference on first login" do
-      assert_difference "UserAppPreference.count", 1 do
+    test "adopt_preference_for! creates UserPreference on first login" do
+      assert_difference "UserPreference.count", 1 do
         @adoption.send(:adopt_preference_for!, @user)
       end
     end
 
-    test "adopt_preference_for! restores and links on subsequent login" do
+    test "adopt_preference_for! syncs preferences on subsequent login" do
       create_child_record!(@preference, :language, AppPreferenceLanguageOption::EN)
 
-      # Simulate first login link
-      PreferenceRecord.connected_to(role: :writing) do
-        UserAppPreference.create!(user_id: @user.id, app_preference_id: @preference.id)
-      end
+      # Simulate first login — create UserPreference
+      user_pref = create_user_preference!(@user)
+      @user.reload
 
-      # Now login with new preference
-      target_lang = create_child_record!(@new_preference, :language, AppPreferenceLanguageOption::JA)
-      adoption = build_adoption_context(@new_preference)
+      # Touch app preference to make it newer
+      PreferenceRecord.connected_to(role: :writing) { @preference.touch }
 
+      # Now adopt — should sync AppPreference → UserPreference
+      adoption = build_adoption_context(@preference)
       adoption.send(:adopt_preference_for!, @user)
 
-      target_lang.reload
+      user_pref.user_preference_language.reload
 
-      assert_equal AppPreferenceLanguageOption::EN, target_lang.option_id
-      assert UserAppPreference.exists?(user_id: @user.id, app_preference_id: @new_preference.id)
+      assert_equal UserPreferenceLanguageOption::EN, user_pref.user_preference_language.option_id
     end
 
     test "adopt_preference_for! does not raise on error and logs event" do
@@ -177,17 +141,24 @@ module Preference
     end
 
     test "adopt_preference_for! is no-op when resource is blank" do
-      assert_no_difference "UserAppPreference.count" do
+      assert_no_difference "UserPreference.count" do
         @adoption.send(:adopt_preference_for!, nil)
       end
     end
 
     # --- adopt_rotated_preference! ---
 
-    test "adopt_rotated_preference! links the new preference" do
-      assert_difference "UserAppPreference.count", 1 do
-        @adoption.send(:adopt_rotated_preference!, @user, @new_preference)
-      end
+    test "adopt_rotated_preference! syncs values to existing UserPreference" do
+      user_pref = create_user_preference!(@user)
+      @user.reload
+
+      create_child_record!(@new_preference, :language, AppPreferenceLanguageOption::EN)
+
+      @adoption.send(:adopt_rotated_preference!, @user, @new_preference)
+
+      user_pref.user_preference_language.reload
+
+      assert_equal UserPreferenceLanguageOption::EN, user_pref.user_preference_language.option_id
     end
 
     test "adopt_rotated_preference! does not raise on error and logs event" do
@@ -209,7 +180,7 @@ module Preference
     end
 
     test "adopt_rotated_preference! is no-op when resource is blank" do
-      assert_no_difference "UserAppPreference.count" do
+      assert_no_difference "UserPreference.count" do
         @adoption.send(:adopt_rotated_preference!, nil, @new_preference)
       end
     end
@@ -222,19 +193,21 @@ module Preference
       "OrgPreference" => OrgPreference,
     }.freeze
 
-    CHILD_CLASSES = {
-      language: AppPreferenceLanguage,
-      timezone: AppPreferenceTimezone,
-      region: AppPreferenceRegion,
-      colortheme: AppPreferenceColortheme,
-    }.freeze
-
     def build_adoption_context(preference, preference_class_name: "AppPreference")
       pref_class = PREFERENCE_CLASSES.fetch(preference_class_name)
       ctx = Object.new
       ctx.extend(Preference::Adoption)
 
       ctx.define_singleton_method(:preference_class) { pref_class }
+      ctx.define_singleton_method(:preference_prefix) { |_pref = nil| pref_class.name.gsub("Preference", "") }
+      ctx.define_singleton_method(:preference_option_classes) do |prefix|
+        {
+          language: Preference::ClassRegistry.option_class(prefix, :language),
+          timezone: Preference::ClassRegistry.option_class(prefix, :timezone),
+          region: Preference::ClassRegistry.option_class(prefix, :region),
+          colortheme: Preference::ClassRegistry.option_class(prefix, :colortheme),
+        }
+      end
       ctx.instance_variable_set(:@preferences, preference)
 
       # Stub issue_access_token_from as no-op (JWT issuance not under test)
@@ -243,8 +216,25 @@ module Preference
       ctx
     end
 
+    def create_user_preference!(user)
+      PrincipalRecord.connected_to(role: :writing) do
+        pref = UserPreference.create!(user_id: user.id)
+        UserPreferenceLanguage.create!(preference_id: pref.id, option_id: UserPreferenceLanguageOption::JA)
+        UserPreferenceTimezone.create!(preference_id: pref.id, option_id: UserPreferenceTimezoneOption::ASIA_TOKYO)
+        UserPreferenceRegion.create!(preference_id: pref.id, option_id: UserPreferenceRegionOption::JP)
+        UserPreferenceColortheme.create!(preference_id: pref.id, option_id: UserPreferenceColorthemeOption::SYSTEM)
+        pref.reload
+        pref
+      end
+    end
+
     def create_child_record!(preference, type, option_id)
-      klass = CHILD_CLASSES.fetch(type)
+      klass = {
+        language: AppPreferenceLanguage,
+        timezone: AppPreferenceTimezone,
+        region: AppPreferenceRegion,
+        colortheme: AppPreferenceColortheme,
+      }.fetch(type)
       PreferenceRecord.connected_to(role: :writing) do
         klass.create!(preference_id: preference.id, option_id: option_id)
       end

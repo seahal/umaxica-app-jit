@@ -10,26 +10,32 @@ module Preference
 
     private
 
-    # Called after login to restore the user's/staff's last known preference settings.
+    # Called after login to sync preferences between AppPreference/OrgPreference
+    # and UserPreference/StaffPreference. Uses updated_at to determine which is newer.
     # Non-fatal: never blocks login on failure.
     def adopt_preference_for!(resource)
       return unless adoptable_preference_class?
       return if resource.blank? || @preferences.blank?
 
-      source = find_last_linked_preference(resource)
-      restore_preference_from!(source) if source.present?
-      link_preference_to!(resource)
+      resource_pref = find_or_create_resource_preference!(resource)
+      return if resource_pref.blank?
+
+      sync_preferences!(resource_pref)
     rescue StandardError => e
       Rails.event.record("preference.adoption.error", error: e.class.name, message: e.message)
     end
 
-    # Called during preference rotation to re-link the new preference to the resource.
+    # Called during preference rotation to keep UserPreference/StaffPreference in sync.
     # Non-fatal: never blocks rotation on failure.
     def adopt_rotated_preference!(resource, new_preference)
       return unless adoptable_preference_class?
       return if resource.blank? || new_preference.blank?
 
-      link_preference_record!(resource, new_preference)
+      @preferences = new_preference
+      resource_pref = find_resource_preference(resource)
+      return if resource_pref.blank?
+
+      copy_preference_values!(@preferences, resource_pref, resource_pref_prefix)
     rescue StandardError => e
       Rails.event.record("preference.adoption.rotation_error", error: e.class.name, message: e.message)
     end
@@ -39,85 +45,175 @@ module Preference
       name == "AppPreference" || name == "OrgPreference"
     end
 
-    # Find the most recently linked preference for this resource via the join table.
-    def find_last_linked_preference(resource)
-      join_class, resource_fk, preference_fk = adoption_mapping
-      return nil unless join_class
+    # Find or create the 1:1 UserPreference/StaffPreference for this resource.
+    def find_or_create_resource_preference!(resource)
+      pref = find_resource_preference(resource)
+      return pref if pref.present?
 
-      join_record = join_class
-        .where(resource_fk => resource.id)
-        .order(created_at: :desc)
-        .first
-      return nil unless join_record
-
-      join_record.public_send(preference_fk.to_s.delete_suffix("_id"))
+      create_resource_preference!(resource)
     end
 
-    # Copy child record option_ids and cookie consent from source to @preferences.
-    def restore_preference_from!(source)
-      association_prefix = preference_class.name.underscore
-
-      CHILD_RECORD_TYPES.each do |type|
-        source_child = source.public_send("#{association_prefix}_#{type}")
-        next unless source_child&.option_id
-
-        target_child = @preferences.public_send("#{association_prefix}_#{type}")
-        next unless target_child
-
-        if target_child.option_id != source_child.option_id
-          PreferenceRecord.connected_to(role: :writing) do
-            target_child.update!(option_id: source_child.option_id)
-          end
-        end
-      end
-
-      restore_cookie_consent!(source, association_prefix)
-      issue_access_token_from(@preferences)
-    end
-
-    def restore_cookie_consent!(source, association_prefix)
-      source_cookie = source.public_send("#{association_prefix}_cookie")
-      return unless source_cookie&.consented
-
-      target_cookie = @preferences.public_send("#{association_prefix}_cookie") ||
-        @preferences.public_send("create_#{association_prefix}_cookie!")
-
-      attrs =
-        COOKIE_CONSENT_FIELDS.index_with do |field|
-          source_cookie.public_send(field)
-        end
-
-      PreferenceRecord.connected_to(role: :writing) do
-        target_cookie.update!(attrs)
+    def find_resource_preference(resource)
+      case preference_class.name
+      when "AppPreference"
+        resource.user_preference
+      when "OrgPreference"
+        resource.staff_preference
       end
     end
 
-    # Link @preferences to the resource via the join table.
-    def link_preference_to!(resource)
-      link_preference_record!(resource, @preferences)
+    def create_resource_preference!(resource)
+      pref_class, fk = resource_preference_mapping
+      return nil unless pref_class
+
+      pref = nil
+      PrincipalRecord.connected_to(role: :writing) do
+        pref = pref_class.create!(fk => resource.id)
+        create_resource_preference_options!(pref)
+      end
+      pref
     end
 
-    def link_preference_record!(resource, preference)
-      join_class, resource_fk, preference_fk = adoption_mapping
-      return unless join_class
+    def create_resource_preference_options!(resource_pref)
+      prefix = resource_pref_prefix
+      option_classes = preference_option_classes(prefix)
 
-      PreferenceRecord.connected_to(role: :writing) do
-        join_class.find_or_create_by!(
-          resource_fk => resource.id,
-          preference_fk => preference.id,
+      %w(Timezone Language Region Colortheme).each do |type|
+        Preference::ClassRegistry.record_class(prefix, type).create!(
+          preference_id: resource_pref.id,
+          option_id: default_option_id_for(type, option_classes),
         )
       end
     end
 
-    # Returns [JoinClass, resource_fk_symbol, preference_fk_symbol] based on preference_class.
-    def adoption_mapping
+    def default_option_id_for(type, option_classes)
+      key = type.downcase.to_sym
+      klass = option_classes[key]
+      case type
+      when "Timezone" then klass::ASIA_TOKYO
+      when "Language" then klass::JA
+      when "Region" then klass::JP
+      when "Colortheme" then klass::SYSTEM
+      end
+    end
+
+    # Compare updated_at and sync in the appropriate direction.
+    def sync_preferences!(resource_pref)
+      app_updated = @preferences.updated_at
+      res_updated = resource_pref.updated_at
+
+      if res_updated.present? && (app_updated.blank? || res_updated > app_updated)
+        # UserPreference/StaffPreference is newer → copy to AppPreference/OrgPreference
+        copy_preference_values!(resource_pref, @preferences, preference_prefix)
+        issue_access_token_from(@preferences)
+      else
+        # AppPreference/OrgPreference is newer → copy to UserPreference/StaffPreference
+        copy_preference_values!(@preferences, resource_pref, resource_pref_prefix)
+        issue_access_token_from(@preferences)
+      end
+    end
+
+    # Copy child record option_ids and cookie consent from source to target.
+    def copy_preference_values!(source, target, target_prefix)
+      source_prefix = source.class.name.delete_suffix("Preference")
+      source_assoc = source.class.name.underscore
+      target_assoc = target.class.name.underscore
+
+      CHILD_RECORD_TYPES.each do |type|
+        source_child = source.public_send("#{source_assoc}_#{type}")
+        next unless source_child&.option_id
+
+        target_child = target.public_send("#{target_assoc}_#{type}")
+        next unless target_child
+
+        if target_child.option_id != source_child.option_id
+          target_option_class = Preference::ClassRegistry.option_class(target_prefix, type)
+          # Map option by name since option IDs may differ across databases
+          resolved_id = resolve_cross_db_option_id(source_child, target_option_class)
+          next unless resolved_id
+
+          connection_class = target.class.ancestors.find { |a| a.is_a?(Class) && a < ActiveRecord::Base && a.abstract_class? }
+          if connection_class
+            connection_class.connected_to(role: :writing) { target_child.update!(option_id: resolved_id) }
+          else
+            target_child.update!(option_id: resolved_id)
+          end
+        end
+      end
+
+      copy_cookie_consent!(source, target, source_assoc, target_assoc)
+      touch_target!(target)
+    end
+
+    def resolve_cross_db_option_id(source_child, target_option_class)
+      source_option = source_child.option
+      return source_child.option_id if source_option.blank?
+
+      source_name = source_option.name
+      return source_child.option_id if source_name.blank?
+
+      target_option_class.find_each do |opt|
+        return opt.id if opt.name&.downcase == source_name.downcase
+      end
+      nil
+    end
+
+    def copy_cookie_consent!(source, target, _source_assoc, _target_assoc)
+      if source.respond_to?(:consented)
+        # Source is UserPreference/StaffPreference (direct columns)
+        source_consent = COOKIE_CONSENT_FIELDS.index_with { |f| source.public_send(f) }
+      else
+        source_assoc_name = source.class.name.underscore
+        source_cookie = source.public_send("#{source_assoc_name}_cookie")
+        return unless source_cookie
+        source_consent = COOKIE_CONSENT_FIELDS.index_with { |f| source_cookie.public_send(f) }
+      end
+
+      if target.respond_to?(:consented)
+        # Target is UserPreference/StaffPreference (direct columns)
+        connection_class = target.class.ancestors.find { |a| a.is_a?(Class) && a < ActiveRecord::Base && a.abstract_class? }
+        if connection_class
+          connection_class.connected_to(role: :writing) { target.update!(source_consent) }
+        else
+          target.update!(source_consent)
+        end
+      else
+        target_assoc_name = target.class.name.underscore
+        target_cookie = target.public_send("#{target_assoc_name}_cookie") ||
+          target.public_send("create_#{target_assoc_name}_cookie!")
+        connection_class = target.class.ancestors.find { |a| a.is_a?(Class) && a < ActiveRecord::Base && a.abstract_class? }
+        if connection_class
+          connection_class.connected_to(role: :writing) { target_cookie.update!(source_consent) }
+        else
+          target_cookie.update!(source_consent)
+        end
+      end
+    end
+
+    def touch_target!(target)
+      connection_class = target.class.ancestors.find { |a| a.is_a?(Class) && a < ActiveRecord::Base && a.abstract_class? }
+      if connection_class
+        connection_class.connected_to(role: :writing) { target.touch }
+      else
+        target.touch
+      end
+    end
+
+    def resource_preference_mapping
       case preference_class.name
       when "AppPreference"
-        [UserAppPreference, :user_id, :app_preference_id]
+        [UserPreference, :user_id]
       when "OrgPreference"
-        [StaffOrgPreference, :staff_id, :org_preference_id]
+        [StaffPreference, :staff_id]
       else
-        [nil, nil, nil]
+        [nil, nil]
+      end
+    end
+
+    def resource_pref_prefix
+      case preference_class.name
+      when "AppPreference" then "User"
+      when "OrgPreference" then "Staff"
       end
     end
   end

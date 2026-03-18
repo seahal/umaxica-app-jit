@@ -77,6 +77,36 @@ module Preference
           colortheme: OrgPreferenceColortheme,
         }.freeze,
       }.freeze,
+      "User" => {
+        preference: UserPreference,
+        option_classes: {
+          timezone: UserPreferenceTimezoneOption,
+          language: UserPreferenceLanguageOption,
+          region: UserPreferenceRegionOption,
+          colortheme: UserPreferenceColorthemeOption,
+        }.freeze,
+        record_classes: {
+          timezone: UserPreferenceTimezone,
+          language: UserPreferenceLanguage,
+          region: UserPreferenceRegion,
+          colortheme: UserPreferenceColortheme,
+        }.freeze,
+      }.freeze,
+      "Staff" => {
+        preference: StaffPreference,
+        option_classes: {
+          timezone: StaffPreferenceTimezoneOption,
+          language: StaffPreferenceLanguageOption,
+          region: StaffPreferenceRegionOption,
+          colortheme: StaffPreferenceColorthemeOption,
+        }.freeze,
+        record_classes: {
+          timezone: StaffPreferenceTimezone,
+          language: StaffPreferenceLanguage,
+          region: StaffPreferenceRegion,
+          colortheme: StaffPreferenceColortheme,
+        }.freeze,
+      }.freeze,
     }.freeze
 
     def fetch(prefix)
