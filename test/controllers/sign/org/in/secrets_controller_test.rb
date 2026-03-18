@@ -82,4 +82,24 @@ class Sign::Org::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     assert_equal StaffSecretStatus::ACTIVE, staff_secrets(:sample_login).reload.staff_secret_status_id
   end
+
+  test "create rejects reserved staff" do
+    reserved_staff = staffs(:reserved_staff)
+    secret, raw_secret = StaffSecret.issue!(
+      name: "Reserved login",
+      staff_id: reserved_staff.id,
+      staff_secret_kind_id: StaffSecretKind::LOGIN,
+    )
+
+    post sign_org_in_secret_url(ri: "jp"),
+         params: {
+           secret_login_form: {
+             identifier: reserved_staff.public_id,
+             secret_value: raw_secret,
+           },
+         }
+
+    assert_response :unprocessable_content
+    assert_equal StaffSecretStatus::ACTIVE, secret.reload.staff_secret_status_id
+  end
 end

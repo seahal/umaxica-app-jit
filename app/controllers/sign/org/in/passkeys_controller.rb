@@ -60,7 +60,7 @@ module Sign
           return if normalized_identifier.blank?
 
           staff = Staff.find_by(public_id: normalized_identifier)
-          staff if staff&.active?
+          staff if staff&.login_allowed?
         end
 
         def active_passkeys_for_actor(staff)

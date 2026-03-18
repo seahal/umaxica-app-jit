@@ -21,6 +21,7 @@ class UserStatus < PrincipalRecord
   VERIFIED_WITH_SIGN_UP = 10
   NOTHING = 11
   GHOST = 12
+  RESERVED = 13
 
   has_many :users,
            foreign_key: :status_id,

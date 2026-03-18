@@ -14,6 +14,8 @@ deleted:
   id: 4
 ghost:
   id: 12
+reserved:
+  id: 13
 inactive:
   id: 2
 pending:

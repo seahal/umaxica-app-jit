@@ -1,4 +1,8 @@
 /* dev.css */
+@view-transition {
+  navigation: auto;
+}
+
 *,
 *::before,
 *::after {

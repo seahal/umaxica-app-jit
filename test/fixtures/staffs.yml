@@ -54,3 +54,8 @@ sample_staff:
   public_id: "TMPN2345WXYZ67AB"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
+reserved_staff:
+  status_id: <%= StaffStatus::RESERVED %>
+  public_id: "RZRV2345WXYZ67AB"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

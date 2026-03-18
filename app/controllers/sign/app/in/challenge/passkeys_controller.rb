@@ -103,10 +103,14 @@ module Sign
               render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
             when :restricted
               redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
-            else
+            when :success
               issue_checkpoint!
               redirect_to sign_app_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
                           notice: I18n.t("sign.app.in.mfa.passkey.success")
+            else
+              redirect_to new_sign_app_in_path,
+                          alert: I18n.t("sign.app.in.mfa.verification_failed"),
+                          status: :see_other
             end
           end
         end

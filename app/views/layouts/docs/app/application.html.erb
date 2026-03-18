@@ -37,6 +37,7 @@
         <%= link_to_unless @user&.active?, "login?", new_sign_app_up_path %>
       </nav>
     </header>
+<%= render_current_banner(:app) %>
 <% if show_cookie_banner? %>
   <%= render "shared/cookie_banner" %>
 <% end %>
