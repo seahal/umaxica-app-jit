@@ -366,8 +366,8 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
 
   test "encode returns nil and logs error on StandardError" do
     # Temporarily override with faulty implementation
-    original = Preference::JwtConfiguration.method(:private_key)
-    Preference::JwtConfiguration.define_singleton_method(:private_key) { raise StandardError, "forced error" }
+    original = Preference::JwtConfiguration.method(:private_key_for_active)
+    Preference::JwtConfiguration.define_singleton_method(:private_key_for_active) { raise StandardError, "forced error" }
     begin
       assert_nil Preference::Token.encode(
         @preferences,
@@ -377,7 +377,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         jti: @jti,
       )
     ensure
-      Preference::JwtConfiguration.define_singleton_method(:private_key, &original)
+      Preference::JwtConfiguration.define_singleton_method(:private_key_for_active, &original)
     end
   end
 
@@ -391,12 +391,12 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         jti: @jti,
       )
 
-      original = Preference::JwtConfiguration.method(:public_key)
-      Preference::JwtConfiguration.define_singleton_method(:public_key) { raise StandardError, "forced error" }
+      original = Preference::JwtConfiguration.method(:public_key_for)
+      Preference::JwtConfiguration.define_singleton_method(:public_key_for) { |_kid| raise StandardError, "forced error" }
       begin
         assert_nil Preference::Token.decode(token, host: @host)
       ensure
-        Preference::JwtConfiguration.define_singleton_method(:public_key, &original)
+        Preference::JwtConfiguration.define_singleton_method(:public_key_for, original)
       end
     end
   end
@@ -407,7 +407,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     # Manually stub using define_singleton_method to avoid Minitest stub issues with modules
     # if methods are missing or weirdly defined.
 
-    methods = %i(private_key public_key active_kid issuer audiences)
+    methods = %i(private_key public_key private_key_for_active public_key_for active_kid issuer audiences)
     originals = {}
 
     methods.each do |m|
@@ -428,6 +428,8 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     # Define stubs
     Preference::JwtConfiguration.define_singleton_method(:private_key) { priv_key }
     Preference::JwtConfiguration.define_singleton_method(:public_key) { pub_key }
+    Preference::JwtConfiguration.define_singleton_method(:private_key_for_active) { priv_key }
+    Preference::JwtConfiguration.define_singleton_method(:public_key_for) { |_kid| pub_key }
     Preference::JwtConfiguration.define_singleton_method(:active_kid) { "default" }
     Preference::JwtConfiguration.define_singleton_method(:issuer) { iss }
     Preference::JwtConfiguration.define_singleton_method(:audiences) { auds }

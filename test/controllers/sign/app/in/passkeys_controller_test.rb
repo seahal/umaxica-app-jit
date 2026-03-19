@@ -374,7 +374,6 @@ module Sign::App::In
       email = UserEmail.find_by(user: @user).address
       post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email)
       challenge_id = response.parsed_body["challenge_id"]
-
       mismatch_error = Sign::Webauthn::ChallengePurposeMismatchError.new("purpose mismatch")
 
       Sign::App::In::PasskeysController.any_instance.stub(

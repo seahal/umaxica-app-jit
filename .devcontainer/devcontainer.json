@@ -50,7 +50,6 @@
         "files.trimTrailingWhitespace": true,
         "files.insertFinalNewline": true,
         "editor.codeActionsOnSave": {
-          "source.fixAll.biome": "explicit",
           "source.fixAll.eslint": "explicit",
           "source.fixAll": "explicit"
         },
@@ -64,10 +63,10 @@
           "editor.defaultFormatter": "Shopify.ruby-lsp"
         },
         "[javascript]": {
-          "editor.defaultFormatter": "biomejs.biome"
+          "editor.defaultFormatter": "voidzero.oxfmt"
         },
         "[typescript]": {
-          "editor.defaultFormatter": "biomejs.biome"
+          "editor.defaultFormatter": "voidzero.oxfmt"
         },
         "ruby.lsp.enabledFeatures": {
           "codeActions": true,

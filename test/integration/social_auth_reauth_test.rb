@@ -106,8 +106,8 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(@user, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
     follow_redirect!

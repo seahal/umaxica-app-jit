@@ -7,7 +7,6 @@ module Oidc
 
     included do
       public_strict!
-      skip_forgery_protection only: :show
     end
 
     def show

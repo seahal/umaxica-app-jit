@@ -114,11 +114,11 @@ Rails.application.config.middleware.use OmniAuth::Builder do
              authorized_client_ids: [apple_client_id],
              # Apple's form_post callback is a cross-site POST from appleid.apple.com.
              # SameSite=Lax session cookies are NOT sent on cross-site POSTs, so the
-             # OmniAuth state stored in session is lost. Skip OmniAuth's state check —
+             # OmniAuth state stored in session is lost. Skip OmniAuth's state check
              # Apple's signed id_token (verified via JWKS) already provides CSRF protection.
              provider_ignores_state: true,
              authorize_params: {
-               response_mode: "form_post",
+               response_mode: "query",
                response_type: "code",
              },
            }

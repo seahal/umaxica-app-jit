@@ -120,17 +120,11 @@ module Auth
       end
 
       def self.private_key
-        private_key_base64 = Rails.app.creds.require(:JWT_AUTH_PRIVATE_KEY)
-
-        private_key_der = Base64.decode64(private_key_base64)
-        OpenSSL::PKey::EC.new(private_key_der)
+        Jit::Security::Jwt::Keyring.private_key_for_active
       end
 
       def self.public_key
-        public_key_base64 = Rails.app.creds.require(:JWT_AUTH_PUBLIC_KEY)
-
-        public_key_der = Base64.decode64(public_key_base64)
-        OpenSSL::PKey::EC.new(public_key_der)
+        Jit::Security::Jwt::Keyring.public_key_for_active
       end
 
       def self.normalize_resource_type(resource_type)
@@ -1060,13 +1054,7 @@ module Auth
     def extract_access_token(cookie_key)
       return nil unless respond_to?(:request, true) && request
 
-      auth_header = request.headers[Auth::IoKeys::Headers::AUTHORIZATION]
-      if auth_header.present?
-        prefix, token = auth_header.split(" ", 2)
-        return token if prefix.casecmp("Bearer").zero? && token.present?
-      end
-
-      cookies[cookie_key]
+      Auth::AuthorizationHeader.bearer_token(request) || cookies[cookie_key]
     end
 
     # ----------------------------------------------------------------------
@@ -1133,7 +1121,7 @@ module Auth
 
     def occurrence_ip_hash
       ip = request_ip_address.to_s
-      secret = ENV["OCCURRENCE_HMAC_SECRET"].presence || Rails.application.secret_key_base
+      secret = Rails.app.creds.option(:OCCURRENCE_HMAC_SECRET).presence
       OpenSSL::HMAC.hexdigest("SHA256", secret, ip)
     end
 

@@ -90,6 +90,17 @@ class CookieServiceTest < ActiveSupport::TestCase
     assert_equal "abc123token", result
   end
 
+  test "extract_access_token_from_request accepts lowercase bearer scheme" do
+    cookies = MockCookies.new
+    request = MockRequest.new
+    request.headers["Authorization"] = "bearer abc123token"
+    service = Auth::CookieService.new(cookies, request)
+
+    result = service.extract_access_token_from_request
+
+    assert_equal "abc123token", result
+  end
+
   test "extract_access_token_from_request returns nil for invalid prefix" do
     cookies = MockCookies.new
     request = MockRequest.new

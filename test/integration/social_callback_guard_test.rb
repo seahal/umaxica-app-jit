@@ -106,13 +106,13 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
     assert_not_equal :forbidden, response.status
   end
 
-  test "callback phase enforces apple POST and google GET" do
-    setup_apple_mock_auth(uid: "callback_apple_bad_method_#{SecureRandom.hex(4)}")
+  test "callback phase enforces apple POST/GET and google GET" do
+    setup_google_mock_auth(uid: "callback_google_bad_method_post_#{SecureRandom.hex(4)}")
     user = users(:one)
-    state = prepare_callback_flow(provider: "apple", user: user)
+    state = prepare_callback_flow(provider: "google_app", user: user)
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp", state: state),
-        headers: callback_headers.merge(as_user_headers(user, host: @host))
+    post sign_app_auth_callback_url(provider: "google_app", ri: "jp", state: state),
+         headers: callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :forbidden
   end
@@ -120,7 +120,7 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   test "module helpers normalize methods, hosts, and origins" do
     assert SocialCallbackGuard.allowed_request_method?("google_app", "GET")
     assert SocialCallbackGuard.allowed_callback_method?("apple", "POST")
-    assert_not SocialCallbackGuard.allowed_callback_method?("apple", "GET")
+    assert SocialCallbackGuard.allowed_callback_method?("apple", "GET")
     assert_equal "sign.app.localhost", SocialCallbackGuard.normalize_host_port("https://sign.app.localhost")
     assert_equal "sign.app.localhost:444", SocialCallbackGuard.normalize_host_port("https://sign.app.localhost:444")
     assert_nil SocialCallbackGuard.normalize_host_port("::not a uri::")

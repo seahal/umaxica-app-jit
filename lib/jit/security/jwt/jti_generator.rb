@@ -21,7 +21,7 @@ module Jit
         # Base64URL encoding without padding: 16 bytes -> 22 chars, 20 bytes -> 27 chars.
         def self.generate(nbytes = DEFAULT_BYTES)
           raw = SecureRandom.random_bytes(nbytes)
-          Base64.urlsafe_encode64(raw).tr("=", "")
+          Base64.urlsafe_encode64(raw, padding: false)
         end
 
         def self.encoded_length(nbytes)

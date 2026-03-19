@@ -91,6 +91,10 @@ class CookieDomainTest < ActiveSupport::TestCase
     assert_equal "example.com", Core::CookieDomain.send(:normalize_host, "example.com:8080")
   end
 
+  test "normalize_host extracts host from a URL string" do
+    assert_equal "app.example.com", Core::CookieDomain.send(:normalize_host, "https://APP.EXAMPLE.COM:3000/path")
+  end
+
   test "localhost_host? returns true for localhost" do
     assert Core::CookieDomain.send(:localhost_host?, "localhost")
   end

@@ -38,8 +38,8 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     # Simulate Apple callback as logged-in user
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(user, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(user, host: @host))
 
     # Should redirect to success path (configuration page)
     assert_response :redirect
@@ -107,8 +107,8 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     # First callback
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(user, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :redirect
 
@@ -122,8 +122,8 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     setup_apple_mock_auth(uid: apple_uid)
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(user, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :redirect
 
@@ -161,8 +161,8 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     # Callback as userB should fail with conflict
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user_b, host: @host))
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(user_b, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(user_b, host: @host))
 
     # Should redirect with alert (conflict)
     assert_response :redirect
@@ -186,8 +186,8 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     user_count_before = User.count
 
     # Callback without login (no headers)
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: browser_headers.merge(@callback_headers)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
 

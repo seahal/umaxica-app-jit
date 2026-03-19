@@ -27,26 +27,7 @@ class ConvertTimestampsToTimestamptz < ActiveRecord::Migration[8.1]
   end
 
   def down
-    safety_assured do
-      execute <<~'SQL'.squish
-        DO $$
-        DECLARE
-          rec RECORD;
-        BEGIN
-          FOR rec IN
-            SELECT table_name, column_name
-            FROM information_schema.columns
-            WHERE table_schema = 'public'
-              AND data_type = 'timestamp with time zone'
-          LOOP
-            EXECUTE format(
-              'ALTER TABLE %I ALTER COLUMN %I TYPE timestamp USING %I AT TIME ZONE ''UTC''',
-              rec.table_name, rec.column_name, rec.column_name
-            );
-          END LOOP;
-        END;
-        $$;
-      SQL
-    end
+    raise ActiveRecord::IrreversibleMigration,
+          "Cannot safely reverse: original column types (timestamp vs timestamptz) were not recorded"
   end
 end

@@ -4,6 +4,15 @@
 require "test_helper"
 
 class Oidc::ClientRegistryTest < ActiveSupport::TestCase
+  def with_oidc_client_secret_credentials(overrides)
+    creds = Rails.app.creds
+    fetch = ->(key, default: nil) { overrides.fetch(key, default) }
+
+    creds.stub(:option, fetch) do
+      yield
+    end
+  end
+
   test "find returns client for known client_id" do
     client = Oidc::ClientRegistry.find("core_app")
 
@@ -76,6 +85,21 @@ class Oidc::ClientRegistryTest < ActiveSupport::TestCase
 
   test "authenticate returns false when secrets are not configured" do
     assert_not Oidc::ClientRegistry.authenticate("core_app", "any_secret")
+  end
+
+  test "find resolves secret from flat credential key" do
+    with_oidc_client_secret_credentials(OIDC_CLIENT_SECRETS_CORE_APP: "core-app-secret") do
+      client = Oidc::ClientRegistry.find("core_app")
+
+      assert_equal "core-app-secret", client.client_secret
+    end
+  end
+
+  test "authenticate uses flat credential key" do
+    with_oidc_client_secret_credentials(OIDC_CLIENT_SECRETS_APEX_ORG: "apex-org-secret") do
+      assert Oidc::ClientRegistry.authenticate("apex_org", "apex-org-secret")
+      assert_not Oidc::ClientRegistry.authenticate("apex_org", "wrong-secret")
+    end
   end
 
   test "authenticate returns false for blank secret" do

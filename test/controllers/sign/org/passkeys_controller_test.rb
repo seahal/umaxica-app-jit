@@ -60,19 +60,36 @@ class Sign::Org::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
   test "create responds ok" do
     controller = Sign::Org::PasskeysController.new
-    controller.define_singleton_method(:head) { |status| @_test_head = status }
+    request = build_request_with_session("POST")
+    response = ActionDispatch::TestResponse.new
 
-    controller.create
+    controller.send(:set_request!, request)
+    controller.send(:set_response!, response)
+    controller.process(:create)
 
-    assert_equal :ok, controller.instance_variable_get(:@_test_head)
+    assert_equal 200, response.status
   end
 
   test "update responds ok" do
     controller = Sign::Org::PasskeysController.new
-    controller.define_singleton_method(:head) { |status| @_test_head = status }
+    request = build_request_with_session("PATCH")
+    response = ActionDispatch::TestResponse.new
 
-    controller.update
+    controller.send(:set_request!, request)
+    controller.send(:set_response!, response)
+    controller.process(:update)
 
-    assert_equal :ok, controller.instance_variable_get(:@_test_head)
+    assert_equal 200, response.status
+  end
+
+  private
+
+  def build_request_with_session(method)
+    request = ActionDispatch::TestRequest.create("REQUEST_METHOD" => method)
+    store = Object.new
+    store.define_singleton_method(:session_exists?) { |_req| false }
+    store.define_singleton_method(:load_session) { |_req| [nil, {}] }
+    ActionDispatch::Request::Session.create(store, request, {})
+    request
   end
 end

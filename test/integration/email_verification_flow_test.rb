@@ -25,8 +25,8 @@ class EmailVerificationFlowTest < ActionDispatch::IntegrationTest
     # 1. Start Auth callback
     # We expect NO emails to be sent
     assert_no_emails do
-      post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-           headers: SocialCallbackTestHelper.callback_headers(@host)
+      get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+          headers: SocialCallbackTestHelper.callback_headers(@host)
     end
 
     assert_response :redirect

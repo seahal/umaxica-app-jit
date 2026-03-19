@@ -31,8 +31,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       },
     )
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: browser_headers.merge(@callback_headers)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
 
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
     follow_redirect!
@@ -69,8 +69,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       },
     )
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: browser_headers.merge(@callback_headers)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
 
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
 
@@ -102,8 +102,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       },
     )
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: browser_headers.merge(@callback_headers)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
 
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
 
@@ -135,8 +135,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     # Should create user and identity
     assert_difference("User.count", 1) do
       assert_difference("UserSocialApple.count", 1) do
-        post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-             headers: browser_headers.merge(@callback_headers)
+        get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+            headers: browser_headers.merge(@callback_headers)
       end
     end
 
@@ -175,8 +175,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     uid = OmniAuth.config.mock_auth[:apple].uid
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: browser_headers.merge(@callback_headers)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
 

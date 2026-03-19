@@ -20,6 +20,8 @@ class ComPreferenceBindingMethod < PreferenceRecord
            dependent: :restrict_with_error
 
   def self.ensure_defaults!
+    return if DEFAULTS.blank?
+
     existing_ids = where(id: DEFAULTS).pluck(:id)
     missing_ids = DEFAULTS - existing_ids
     return if missing_ids.empty?

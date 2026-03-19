@@ -43,68 +43,41 @@ bin/importmap audit             # Audit pinned JS packages
 
 ## Local Setup
 
-### Prerequisites
-
 - Docker and Docker Compose
 - Ruby `4.0.1`
 - Bundler
 - Node.js `20+`
 - `pnpm@10.27.0`
 
-### 1. Start local infrastructure
+Start the local stack, install dependencies, and boot the app:
 
 ```bash
-docker compose up -d primary replica valkey
-```
-
-If you need the full local stack, `compose.yml` also includes Kafka and observability services.
-
-### 2. Install dependencies
-
-```bash
+docker compose up
 bundle install
 pnpm install
+TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bin/setup
 ```
-
-`bin/setup` currently installs Ruby gems and prepares the database, but it does not install `pnpm`
-packages.
-
-### 3. Configure environment
 
 `TRUSTED_ORIGINS` is required for boot because WebAuthn origin validation fails fast when it is
 missing.
 
-Example `.env`:
+`docker/core/env` defaults `TRUSTED_ORIGINS` to production sign domains, so override it locally in
+your shell or dev env file, for example:
 
 ```bash
 TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000
 ```
 
-### 4. Prepare the databases
+`bin/setup` installs Ruby gems, runs `bin/rails db:prepare`, clears logs and temp files, then starts
+`bin/dev`. It does not install JavaScript packages, so run `pnpm install` first.
+
+If dependencies are already installed, you can start development directly:
 
 ```bash
-bin/setup
+TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bin/dev
 ```
 
-Or manually:
-
-```bash
-bin/rails db:prepare
-```
-
-### 5. Start development
-
-```bash
-bin/dev
-```
-
-`bin/dev` does the following:
-
-- ensures `foreman` is available
-- runs `bin/rails db:prepare` unless `SKIP_DB_PREPARE=1`
-- starts the processes from `Procfile.dev`
-
-Current development processes:
+`bin/dev` runs `bin/rails db:prepare` unless `SKIP_DB_PREPARE=1`, then starts:
 
 - `web`: Rails server on port `3000`
 - `css`: `bin/rails tailwindcss:watch`
@@ -115,8 +88,8 @@ Current development processes:
 Modern browsers resolve `*.localhost` to `127.0.0.1`, so extra `/etc/hosts` entries are usually not
 needed.
 
-| Surface  | URL                              |
-| :------- | :------------------------------- | --- | -------------------- |
+| Surface  | URL |
+| :------- | :-- |
 | App apex | `http://app.localhost:3000`      |
 | Com apex | `http://com.localhost:3000`      |
 | Org apex | `http://org.localhost:3000`      |
@@ -125,48 +98,28 @@ needed.
 | App core | `http://www.app.localhost:3000`  |
 | Com core | `http://www.com.localhost:3000`  |
 | Org core | `http://www.org.localhost:3000`  |
-| Docs     | `http://docs.[app                | com | org].localhost:3000` |
-| Help     | `http://help.[app                | com | org].localhost:3000` |
-| News     | `http://news.[app                | com | org].localhost:3000` |
+| Docs     | `http://docs.{app,com,org}.localhost:3000` |
+| Help     | `http://help.{app,com,org}.localhost:3000` |
+| News     | `http://news.{app,com,org}.localhost:3000` |
 
 ## Linting and Formatting
-
-### Ruby and ERB
 
 ```bash
 bundle exec rubocop
 bundle exec rubocop -a
 bundle exec erb_lint .
 bundle exec erb_lint -a .
+vp check
+vp check --fix
 ```
 
-### JavaScript tooling
-
-`pnpm` is used for linting and formatting, not for application bundling.
-
-```bash
-pnpm run lint
-pnpm run lint:fix
-pnpm run format
-pnpm run format:check
-pnpm run check
-```
-
-`pnpm run check` runs formatter verification first, then `oxlint`.
+Use `rubocop -a`, `erb_lint -a .`, and `vp check --fix` to apply auto-fixes where available.
 
 ## Testing
 
 ```bash
 bundle exec rails test
-bundle exec rails test test/models/user_test.rb
 COVERAGE=true bundle exec rails test
-```
-
-If schema changes are involved, run:
-
-```bash
-bin/rails db:prepare
-bundle exec rails test
 ```
 
 ## Security and Quality Checks
@@ -197,25 +150,15 @@ Rails.event.notify("user.created", user_id: user.id)
 Rails.event.tagged("auth") { Rails.event.notify("login.success", user_id: user.id) }
 ```
 
-## Git Hooks
+## Pre-commit Checks
 
-Before committing, the repository expects Lefthook pre-commit checks to pass:
+Run the Lefthook pre-commit checks before committing:
 
 ```bash
 lefthook run pre-commit
 ```
 
-The configured hooks cover:
-
-- `oxlint`
-- `oxfmt --check`
-- RuboCop
-- ERB Lint
-- `bundler-audit`
-- `importmap audit`
-- Brakeman
-- `database_consistency`
-- Rails tests
+These checks cover formatting, linting, security audits, database consistency, and Rails tests.
 
 ## Troubleshooting
 
@@ -225,7 +168,6 @@ The configured hooks cover:
 | Tests fail because databases are missing           | Run `bin/rails db:prepare`                                                                  |
 | `bin/dev` stops during boot                        | Check `TRUSTED_ORIGINS` and database availability                                           |
 | Credentials cannot be decrypted                    | Use the shared Rails credentials key for this environment                                   |
-| Cookies are not shared across localhost subdomains | Use a custom dev domain such as `.test` if you need cross-subdomain cookie behavior locally |
 
 ## Notes
 

@@ -65,8 +65,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: SocialCallbackTestHelper.callback_headers(@host)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_redirected_to @expected_redirect
     follow_redirect!
@@ -105,8 +105,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: SocialCallbackTestHelper.callback_headers(@host)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
     assert_match(%r{/in/checkpoint}, response.redirect_url)

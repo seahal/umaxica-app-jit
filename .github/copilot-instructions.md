@@ -43,9 +43,9 @@ bundle exec erb_lint .           # Check
 bundle exec erb_lint -a .        # Auto-fix
 
 # JavaScript/TypeScript
-pnpm run check                   # Biome check & fix
-pnpm run lint                    # Biome lint
-pnpm run format                  # Biome format
+vp check                         # Format, lint, and type check
+vp lint                          # Lint (oxlint)
+vp fmt                           # Format (oxfmt)
 ```
 
 ### Security Checks

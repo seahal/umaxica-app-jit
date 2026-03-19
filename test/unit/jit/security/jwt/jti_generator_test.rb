@@ -24,6 +24,14 @@ module Jit
                        jti.length
         end
 
+        test "generate omits base64url padding for byte counts that would otherwise require it" do
+          jti = Jit::Security::Jwt::JtiGenerator.generate(17)
+
+          assert_match(Jit::Security::Jwt::JtiGenerator::BASE64URL_REGEX, jti)
+          assert_equal Jit::Security::Jwt::JtiGenerator.encoded_length(17), jti.length
+          assert_not_includes jti, "="
+        end
+
         test "generate returns a different value each call" do
           first = Jit::Security::Jwt::JtiGenerator.generate
           second = Jit::Security::Jwt::JtiGenerator.generate

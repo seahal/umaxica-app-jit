@@ -217,6 +217,15 @@ class Auth::UserTest < ActiveSupport::TestCase
     assert_equal token, extracted
   end
 
+  test "extract_access_token accepts lowercase authorization scheme" do
+    token = "sample_jwt_token"
+    @obj.request.headers["Authorization"] = "bearer #{token}"
+
+    extracted = @obj.send(:extract_access_token, ::Auth::User::ACCESS_COOKIE_KEY)
+
+    assert_equal token, extracted
+  end
+
   test "extract_access_token from Cookie when no Authorization header" do
     token = "cookie_jwt_token"
     @obj.cookies[::Auth::User::ACCESS_COOKIE_KEY] = token

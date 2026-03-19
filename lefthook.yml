@@ -1,23 +1,14 @@
 pre-commit:
   parallel: true
   commands:
-    pnpm_oxlint:
+    vp_check:
       run: |
         #!/bin/sh
         set -eu
         if [ -f /.dockerenv ]; then
-          pnpm run lint
+          vp check --fix
         else
-          docker compose run core pnpm run lint
-        fi
-    pnpm_oxfmt:
-      run: |
-        #!/bin/sh
-        set -eu
-        if [ -f /.dockerenv ]; then
-          pnpm run format:check
-        else
-          docker compose run core pnpm run format:check
+          docker compose run core vp check --fix
         fi
     ruby_rubocop:
       run: |

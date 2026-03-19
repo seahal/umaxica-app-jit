@@ -71,7 +71,11 @@ module Health
         klass.connected_to(role: role) do
           klass.with_connection { |conn| conn.execute("SELECT 1") }
         rescue StandardError => e
-          errors << "Database #{klass.name}(#{role}) failed: #{e.message}"
+          Rails.event.record(
+            "health_check.database_failed", database: klass.name, role: role.to_s,
+                                            error_class: e.class.name, error_message: e.message,
+          )
+          errors << "Database #{klass.name}(#{role}) unavailable"
         end
       end
     end
@@ -87,7 +91,8 @@ module Health
       begin
         REDIS_CLIENT.ping
       rescue StandardError => e
-        errors << "Redis connection failed: #{e.message}"
+        Rails.event.record("health_check.redis_failed", error_class: e.class.name, error_message: e.message)
+        errors << "Redis unavailable"
       end
     end
     errors

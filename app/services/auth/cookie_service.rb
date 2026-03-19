@@ -36,13 +36,7 @@ module Auth
     end
 
     def extract_access_token_from_request
-      auth_header = request.headers[Auth::IoKeys::Headers::AUTHORIZATION]
-      if auth_header.present?
-        prefix, token = auth_header.split(" ", 2)
-        return token if prefix.casecmp("Bearer").zero? && token.present?
-      end
-
-      cookies[access_cookie_key]
+      Auth::AuthorizationHeader.bearer_token(request) || cookies[access_cookie_key]
     end
 
     def access_cookie_key

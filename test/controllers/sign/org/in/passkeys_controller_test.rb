@@ -129,7 +129,6 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   test "verification returns bad request on challenge purpose mismatch" do
     post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
-
     mismatch_error = Sign::Webauthn::ChallengePurposeMismatchError.new("purpose mismatch")
 
     Sign::Org::In::PasskeysController.any_instance.stub(

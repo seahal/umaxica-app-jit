@@ -170,12 +170,13 @@ module Oidc
     end
 
     def resolve_secret(client_id)
-      secrets = Rails.app.creds.option(:OIDC_CLIENT_SECRETS)
-      return nil unless secrets
-
-      secrets[client_id.to_sym] || secrets[client_id.to_s]
+      Rails.app.creds.option(credential_key_for(client_id))
     end
 
-    private_class_method :clients, :build_clients, :build_redirect_uris, :resolve_secret
+    def credential_key_for(client_id)
+      :"OIDC_CLIENT_SECRETS_#{client_id.to_s.upcase}"
+    end
+
+    private_class_method :clients, :build_clients, :build_redirect_uris, :resolve_secret, :credential_key_for
   end
 end

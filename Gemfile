@@ -18,6 +18,7 @@ gem "rack"
 gem "rails", github: "rails/rails", branch: "main"
 # Web server
 gem "puma"
+gem "action_push_native"
 # JSON APIs
 # gem "jbuilder" # unused: no .jbuilder templates found
 # Use OpenStruct

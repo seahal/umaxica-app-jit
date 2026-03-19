@@ -43,7 +43,7 @@ module Core
     private_class_method :derive_from_host
 
     def normalize_host(value)
-      value.to_s.downcase.delete_suffix(".").split(":").first
+      Core::HostNormalization.normalize(value)
     end
     private_class_method :normalize_host
 

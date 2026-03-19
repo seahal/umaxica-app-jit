@@ -205,6 +205,7 @@ RUN npm install -g pnpm@10.27.0 && \
 
 # Install Vite+ (unified frontend toolchain: Vite, Vitest, Oxlint, Oxfmt, tsdown)
 RUN curl -fsSL https://vite.plus | bash
+ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
 
 RUN install -d -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
     "${HOME}/.cache" \

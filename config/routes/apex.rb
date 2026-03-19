@@ -5,8 +5,6 @@ scope module: :apex, as: :apex do
   constraints host: ENV["APEX_CORPORATE_URL"] do
     scope module: :com, as: :com do
       root to: "roots#index"
-      # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
       # health check for html
       resource :health, only: :show, format: :html
       resource :sitemap, only: :show, defaults: { format: :xml }
@@ -51,11 +49,16 @@ scope module: :apex, as: :apex do
               } do
     scope module: :app, as: :app do
       root to: "roots#index"
-      # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+
       # endpoint of health check
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
+      end
+
       # Edge API endpoint (browser/Rails view)
       namespace :web do
         namespace :v0 do
@@ -107,7 +110,9 @@ scope module: :apex, as: :apex do
     scope module: :org, as: :org do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html
       resource :health, only: :show, format: :html
       # Edge API endpoint (browser/Rails view)

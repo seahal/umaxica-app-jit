@@ -21,8 +21,8 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
 
     assert_difference("User.count", 1) do
       assert_difference("UserSocialApple.count", 1) do
-        post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-             headers: @callback_headers
+        get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+            headers: @callback_headers
       end
     end
 
@@ -42,8 +42,8 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
 
     setup_apple_mock_auth(uid: "apple_flow_existing", token: "token_new")
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers
 
     assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
     assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"),
@@ -57,8 +57,8 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(user, host: @host)
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(user, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(user, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -79,8 +79,8 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(user, host: @host)
 
     # Simulate Apple POST callback without auth cookies/headers
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers
 
     assert_response :redirect
     follow_redirect!
@@ -111,8 +111,8 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(other, host: @host)
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(other, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(other, host: @host))
 
     assert_response :redirect
     follow_redirect!

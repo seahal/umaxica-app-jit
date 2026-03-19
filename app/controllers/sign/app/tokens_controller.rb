@@ -5,7 +5,7 @@ module Sign
   module App
     class TokensController < ApplicationController
       public_strict!
-      skip_forgery_protection
+      protect_from_forgery with: :null_session
 
       def create
         result = Oidc::TokenExchangeService.call(

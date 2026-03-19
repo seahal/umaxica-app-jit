@@ -24,9 +24,6 @@ module Preference
   # 1) JWT configuration & token primitives
   # ==========================================================================
   module JwtConfiguration
-    EPHEMERAL_PRIVATE_KEY_MUTEX = Mutex.new
-    EPHEMERAL_PRIVATE_KEY_CACHE = Concurrent::AtomicReference.new(nil)
-
     def self.active_kid
       ENV.fetch("PREFERENCE_JWT_ACTIVE_KID", "default")
     end
@@ -51,53 +48,21 @@ module Preference
     end
 
     def self.private_key_for(kid)
-      keyset = parse_keyset(ENV["PREFERENCE_JWT_PRIVATE_KEYSET"])
-      return decode_key(keyset[kid]) if keyset.key?(kid)
-      return private_key if kid == active_kid
-
-      nil
+      keyset = parse_keyset(Rails.app.creds.option(:PREFERENCE_JWT_PRIVATE_KEYSET))
+      decode_key(keyset[kid])
     end
 
     def self.public_key_for(kid)
-      keyset = parse_keyset(ENV["PREFERENCE_JWT_PUBLIC_KEYSET"])
-      return decode_key(keyset[kid]) if keyset.key?(kid)
-      return public_key if kid == active_kid
-
-      nil
+      keyset = parse_keyset(Rails.app.creds.option(:PREFERENCE_JWT_PUBLIC_KEYSET))
+      decode_key(keyset[kid])
     end
 
     def self.private_key
-      private_key_base64 = Rails.app.creds.option(:JWT_PREFERENCE_PRIVATE_KEY)
-      if private_key_base64.blank?
-        return ephemeral_private_key unless Rails.env.production?
-
-        raise "Preference JWT private key not configured in credentials"
-      end
-
-      private_key_der = Base64.decode64(private_key_base64)
-      OpenSSL::PKey::EC.new(private_key_der)
+      private_key_for(active_kid)
     end
 
     def self.public_key
-      public_key_base64 = Rails.app.creds.option(:JWT_PREFERENCE_PUBLIC_KEY)
-      if public_key_base64.blank?
-        return ephemeral_private_key.public_key unless Rails.env.production?
-
-        raise "Preference JWT public key not configured in credentials"
-      end
-
-      public_key_der = Base64.decode64(public_key_base64)
-      OpenSSL::PKey::EC.new(public_key_der)
-    end
-
-    def self.ephemeral_private_key
-      cached_key = EPHEMERAL_PRIVATE_KEY_CACHE.get
-      return cached_key if cached_key
-
-      EPHEMERAL_PRIVATE_KEY_MUTEX.synchronize do
-        EPHEMERAL_PRIVATE_KEY_CACHE.get ||
-          EPHEMERAL_PRIVATE_KEY_CACHE.set(OpenSSL::PKey::EC.generate("secp384r1"))
-      end
+      public_key_for(active_kid)
     end
 
     def self.parse_header(token)

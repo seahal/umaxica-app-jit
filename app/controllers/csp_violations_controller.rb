@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class CspViolationsController < ApplicationController
-  skip_forgery_protection
+  protect_from_forgery with: :null_session
 
   def create
     if request.content_type&.include?("application/csp-report")

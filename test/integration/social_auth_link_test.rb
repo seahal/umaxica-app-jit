@@ -101,8 +101,8 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(@user_two, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user_two, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -118,17 +118,12 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     setup_apple_mock_auth(uid: "apple_state_mismatch_#{SecureRandom.hex(4)}")
 
     # Do not call /social/start to simulate missing link context
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
+    # Use X-STRICT-SOCIAL-STATE to prevent test-mode state bypass
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
+          .merge("X-STRICT-SOCIAL-STATE" => "1")
 
-    assert_response :redirect
-    assert_includes(
-      [sign_app_configuration_apple_url(ri: "jp"), sign_app_configuration_url(ri: "jp")],
-      response.location,
-    )
-    follow_redirect!
-
-    assert_predicate flash[:alert], :present?, "Should have error flash for state mismatch"
+    assert_response :forbidden
 
     identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
 
@@ -144,8 +139,8 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     assert_response :redirect
 
     travel_to 6.minutes.from_now do
-      post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-           headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
+      get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+          headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
     end
 
     assert_response :forbidden
@@ -291,8 +286,8 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
