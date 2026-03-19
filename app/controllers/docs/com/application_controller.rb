@@ -10,6 +10,7 @@ module Docs
       include ::Authorization::Viewer
       include ::Verification::Viewer
       include Pundit::Authorization
+      include ::Oidc::SsoInitiator
       include ::Current
       include ::Finisher
 
@@ -23,6 +24,12 @@ module Docs
       allow_browser versions: :modern
 
       public_strict!
+
+      private
+
+      def oidc_client_id
+        "docs_com"
+      end
     end
   end
 end

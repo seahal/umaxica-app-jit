@@ -16,14 +16,14 @@ class AlignAppPreferenceActivityEventIds < ActiveRecord::Migration[8.1]
   # Note: ID 5 (TIMEZONE) stays the same.
 
   OLD_TO_NEW = {
-    1 => 100, # REFRESH_TOKEN_ROTATED → temp
-    2 => 101, # UPDATE_PREFERENCE_COOKIE → temp
-    3 => 102, # UPDATE_PREFERENCE_COLORTHEME → temp
-    4 => 103, # RESET_BY_USER_DECISION → temp
+    1 => 100, # REFRESH_TOKEN_ROTATED -> temp
+    2 => 101, # UPDATE_PREFERENCE_COOKIE -> temp
+    3 => 102, # UPDATE_PREFERENCE_COLORTHEME -> temp
+    4 => 103, # RESET_BY_USER_DECISION -> temp
     # 5 stays
-    6 => 104, # UPDATE_PREFERENCE_REGION → temp
-    7 => 105, # UPDATE_PREFERENCE_LANGUAGE → temp
-    8 => 106, # CREATE_NEW_PREFERENCE_TOKEN → temp
+    6 => 104, # UPDATE_PREFERENCE_REGION -> temp
+    7 => 105, # UPDATE_PREFERENCE_LANGUAGE -> temp
+    8 => 106, # CREATE_NEW_PREFERENCE_TOKEN -> temp
   }.freeze
 
   TEMP_TO_FINAL = {
@@ -62,7 +62,7 @@ class AlignAppPreferenceActivityEventIds < ActiveRecord::Migration[8.1]
   end
 
   def down
-    # Reverse mapping not implemented — this is a one-way alignment
+    # Reverse mapping is not implemented; this is a one-way alignment.
     raise ActiveRecord::IrreversibleMigration
   end
 end

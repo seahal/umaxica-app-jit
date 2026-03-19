@@ -157,10 +157,11 @@ module Preference::Core
     resource = begin; current_resource; rescue; nil; end
     return if resource.blank?
 
-    resource_pref = case preference_class.name
-                    when "AppPreference" then resource.user_preference
-                    when "OrgPreference" then resource.staff_preference
-                    end
+    resource_pref =
+      case preference_class.name
+      when "AppPreference" then resource.user_preference
+      when "OrgPreference" then resource.staff_preference
+      end
     return if resource_pref.blank?
 
     copy_preference_values!(@preferences, resource_pref, resource_pref_prefix_for_sync)
@@ -226,7 +227,7 @@ module Preference::Core
     preference = find_preference_for_delete
     if preference.present?
       log_preference_reset(preference)
-      # Keep cookies and records intact on logout — do not delete or reset preference values.
+      # Keep cookies and records intact on logout; do not delete or reset preference values.
       # The preference record and cookies remain so the user retains their settings.
     end
     reset_preference_state
@@ -286,12 +287,13 @@ module Preference::Core
         next unless child
 
         option_classes = preference_option_classes(prefix)
-        default_id = case type
-                     when :timezone then option_classes[:timezone]::ASIA_TOKYO
-                     when :language then option_classes[:language]::JA
-                     when :region then option_classes[:region]::JP
-                     when :colortheme then option_classes[:colortheme]::SYSTEM
-                     end
+        default_id =
+          case type
+          when :timezone then option_classes[:timezone]::ASIA_TOKYO
+          when :language then option_classes[:language]::JA
+          when :region then option_classes[:region]::JP
+          when :colortheme then option_classes[:colortheme]::SYSTEM
+          end
         child.update!(option_id: default_id) if child.option_id != default_id
       end
     end
@@ -303,10 +305,11 @@ module Preference::Core
     resource = begin; current_resource; rescue; nil; end
     return if resource.blank?
 
-    resource_pref = case preference_class.name
-                    when "AppPreference" then resource.user_preference
-                    when "OrgPreference" then resource.staff_preference
-                    end
+    resource_pref =
+      case preference_class.name
+      when "AppPreference" then resource.user_preference
+      when "OrgPreference" then resource.staff_preference
+      end
     return if resource_pref.blank?
 
     res_prefix = resource_pref_prefix_for_sync
@@ -318,12 +321,13 @@ module Preference::Core
         next unless child
 
         option_classes = preference_option_classes(res_prefix)
-        default_id = case type
-                     when :timezone then option_classes[:timezone]::ASIA_TOKYO
-                     when :language then option_classes[:language]::JA
-                     when :region then option_classes[:region]::JP
-                     when :colortheme then option_classes[:colortheme]::SYSTEM
-                     end
+        default_id =
+          case type
+          when :timezone then option_classes[:timezone]::ASIA_TOKYO
+          when :language then option_classes[:language]::JA
+          when :region then option_classes[:region]::JP
+          when :colortheme then option_classes[:colortheme]::SYSTEM
+          end
         child.update!(option_id: default_id) if child.option_id != default_id
       end
 

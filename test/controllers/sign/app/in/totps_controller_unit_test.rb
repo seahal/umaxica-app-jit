@@ -64,7 +64,7 @@ class Sign::App::In::TotpsControllerUnitTest < ActiveSupport::TestCase
 
     @controller.send(:clear_mfa_session!)
 
-    assert_nil @session[Sign::App::In::TotpsController::MFA_USER_SESSION_KEY]
+    assert_not @session.key?(Sign::App::In::TotpsController::MFA_USER_SESSION_KEY)
   end
 
   test "verify_totp_for returns first matching totp and nil when nothing matches" do
@@ -152,7 +152,7 @@ class Sign::App::In::TotpsControllerUnitTest < ActiveSupport::TestCase
     @params[:ri] = "jp"
 
     Rails.event.stub :notify, nil do
-      @controller.define_singleton_method(:log_in) { |_user, **_kwargs| { restricted: false } }
+      @controller.define_singleton_method(:log_in) { |_user, **_kwargs| { status: :success, restricted: false } }
       @controller.define_singleton_method(:issue_checkpoint!) { checkpoint_issued = true }
       @controller.define_singleton_method(:sign_app_in_checkpoint_path) { |ri:| "/sign/app/in/checkpoint?ri=#{ri}" }
 
@@ -163,7 +163,7 @@ class Sign::App::In::TotpsControllerUnitTest < ActiveSupport::TestCase
     assert_equal({ last_otp_at: Time.zone.at(123_456) }, updated_values)
     assert_equal ["/sign/app/in/checkpoint?ri=jp", { notice: "translated:sign.app.authentication.totp.success" }],
                  @controller.instance_variable_get(:@_test_redirected)
-    assert_nil @session[Sign::App::In::TotpsController::MFA_USER_SESSION_KEY]
+    assert_not @session.key?(Sign::App::In::TotpsController::MFA_USER_SESSION_KEY)
   end
 
   test "handle_totp_failure adds an error and renders new" do

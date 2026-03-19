@@ -29,8 +29,7 @@
     <% end %>
   </nav>
 </header>
-<%= render_current_banner(:org) %>
-
+<%= render "shared/current_banner", surface: :org %>
 <hr />
 
 <%= render "shared/flash_messages" %>
@@ -38,7 +37,7 @@
   <%= render "shared/cookie_banner" %>
 <% end %>
 
-    <main>
+<main>
   <%= yield %>
 </main>
 

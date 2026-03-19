@@ -102,8 +102,8 @@ scope module: :sign, as: :sign do
 
       # OIDC
       resource :authorize, only: %i(show)
-      resource :token, only: %i(show)
-      resource :jwks, only: %i(show)
+      resource :token, only: %i(create), defaults: { format: :json }
+      resource :jwks, only: %i(show), defaults: { format: :json }
 
       resource :configuration, only: %i(show edit)
       namespace :configuration do
@@ -210,8 +210,8 @@ scope module: :sign, as: :sign do
 
       # OIDC
       resource :authorize, only: %i(show)
-      resource :token, only: %i(show)
-      resource :jwks, only: %i(show)
+      resource :token, only: %i(create), defaults: { format: :json }
+      resource :jwks, only: %i(show), defaults: { format: :json }
 
       resource :configuration, only: :show
       namespace :configuration do

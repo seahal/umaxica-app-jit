@@ -96,7 +96,7 @@ module Sign
         end
 
         def clear_mfa_session!
-          session[MFA_USER_SESSION_KEY] = nil
+          session.delete(MFA_USER_SESSION_KEY)
         end
 
         def verify_totp_for(user, token)

@@ -10,6 +10,7 @@ module Core
       include ::Verification::User
       include ::Preference::Regional
       include Pundit::Authorization
+      include ::Oidc::SsoInitiator
       include ::Current
       include ::Finisher
 
@@ -36,6 +37,12 @@ module Core
       allow_browser versions: :modern
 
       public_strict!
+
+      private
+
+      def oidc_client_id
+        "core_com"
+      end
     end
   end
 end

@@ -10,6 +10,7 @@ module Core
       include ::Verification::Staff
       include ::Preference::Regional
       include Pundit::Authorization
+      include ::Oidc::SsoInitiator
       include ::Current
       include ::Finisher
 
@@ -33,6 +34,16 @@ module Core
       allow_browser versions: :modern
 
       public_strict!
+
+      private
+
+      def oidc_client_id
+        "core_org"
+      end
+
+      def oidc_sign_host
+        ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+      end
     end
   end
 end

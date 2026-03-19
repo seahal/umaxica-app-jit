@@ -11,6 +11,7 @@ module Apex
       include ::Authorization::User
       include ::Verification::User
       include Pundit::Authorization
+      include ::Oidc::SsoInitiator
       include ::Current
       include ::Finisher
 
@@ -31,6 +32,12 @@ module Apex
       allow_browser versions: :modern
 
       public_strict!
+
+      private
+
+      def oidc_client_id
+        "apex_app"
+      end
     end
   end
 end

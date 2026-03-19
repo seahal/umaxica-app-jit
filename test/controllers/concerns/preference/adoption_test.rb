@@ -69,6 +69,7 @@ module Preference
 
       assert_no_difference "UserPreference.count" do
         result = @adoption.send(:find_or_create_resource_preference!, @user)
+
         assert_equal user_pref, result
       end
     end
@@ -106,14 +107,14 @@ module Preference
     test "adopt_preference_for! syncs preferences on subsequent login" do
       create_child_record!(@preference, :language, AppPreferenceLanguageOption::EN)
 
-      # Simulate first login — create UserPreference
+      # Simulate first login and create UserPreference.
       user_pref = create_user_preference!(@user)
       @user.reload
 
       # Touch app preference to make it newer
       PreferenceRecord.connected_to(role: :writing) { @preference.touch }
 
-      # Now adopt — should sync AppPreference → UserPreference
+      # Now adopt and sync AppPreference to UserPreference.
       adoption = build_adoption_context(@preference)
       adoption.send(:adopt_preference_for!, @user)
 

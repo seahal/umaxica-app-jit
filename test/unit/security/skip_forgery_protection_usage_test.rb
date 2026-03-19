@@ -9,6 +9,7 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
 
   ALLOWED_SKIP_FORGERY_PROTECTION_PATHS = [
     "app/controllers/csp_violations_controller.rb", # Browser CSP reports cannot include CSRF tokens
+    "app/controllers/sign/app/tokens_controller.rb", # OIDC token endpoint is a non-browser POST without CSRF tokens
   ].freeze
 
   test "skip_forgery_protection is only used in approved controllers" do

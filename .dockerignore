@@ -118,7 +118,7 @@ build/Release/
 # Docker
 Dockerfile*
 docker-compose*
-compose.yml
+compose.yaml
 compose.yaml
 docker/
 gke/

@@ -11,6 +11,7 @@ module Apex
       include ::Authorization::Staff
       include ::Verification::Staff
       include Pundit::Authorization
+      include ::Oidc::SsoInitiator
       include ::Current
       include ::Finisher
 
@@ -29,6 +30,16 @@ module Apex
       allow_browser versions: :modern
 
       auth_required!
+
+      private
+
+      def oidc_client_id
+        "apex_org"
+      end
+
+      def oidc_sign_host
+        ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+      end
     end
   end
 end

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 namespace :preference do
@@ -7,8 +8,10 @@ namespace :preference do
     migrate_staff_preferences!
   end
 
-  def migrate_user_preferences!
-    puts "Migrating UserAppPreference → UserPreference..."
+  define_method(:migrate_user_preferences!) do
+    # rubocop:disable I18n/RailsI18n/DecorateString
+    puts "Migrating UserAppPreference to UserPreference..."
+    # rubocop:enable I18n/RailsI18n/DecorateString
     migrated = 0
     skipped = 0
 
@@ -28,15 +31,20 @@ namespace :preference do
         migrated += 1
       end
     rescue StandardError => e
-      puts "  WARN: Failed to migrate user_id=#{join_record.user_id}: #{e.message}"
+      puts _("  WARN: Failed to migrate user_id=%{user_id}: %{message}") % {
+        user_id: join_record.user_id,
+        message: e.message,
+      }
       skipped += 1
     end
 
-    puts "  Done: #{migrated} migrated, #{skipped} skipped"
+    puts _("  Done: %{migrated} migrated, %{skipped} skipped") % { migrated: migrated, skipped: skipped }
   end
 
-  def migrate_staff_preferences!
-    puts "Migrating StaffOrgPreference → StaffPreference..."
+  define_method(:migrate_staff_preferences!) do
+    # rubocop:disable I18n/RailsI18n/DecorateString
+    puts "Migrating StaffOrgPreference to StaffPreference..."
+    # rubocop:enable I18n/RailsI18n/DecorateString
     migrated = 0
     skipped = 0
 
@@ -55,14 +63,17 @@ namespace :preference do
         migrated += 1
       end
     rescue StandardError => e
-      puts "  WARN: Failed to migrate staff_id=#{join_record.staff_id}: #{e.message}"
+      puts _("  WARN: Failed to migrate staff_id=%{staff_id}: %{message}") % {
+        staff_id: join_record.staff_id,
+        message: e.message,
+      }
       skipped += 1
     end
 
-    puts "  Done: #{migrated} migrated, #{skipped} skipped"
+    puts _("  Done: %{migrated} migrated, %{skipped} skipped") % { migrated: migrated, skipped: skipped }
   end
 
-  def copy_preference_options!(source_pref, target_pref, source_prefix, target_prefix)
+  define_method(:copy_preference_options!) do |source_pref, target_pref, _source_prefix, target_prefix|
     source_assoc = source_pref.class.name.underscore
 
     %w(language timezone region colortheme).each do |type|
@@ -84,7 +95,7 @@ namespace :preference do
     end
   end
 
-  def copy_cookie_consent_to_user_pref!(app_pref, user_pref)
+  define_method(:copy_cookie_consent_to_user_pref!) do |app_pref, user_pref|
     cookie = app_pref.app_preference_cookie
     return unless cookie
 
@@ -98,7 +109,7 @@ namespace :preference do
     )
   end
 
-  def copy_cookie_consent_to_staff_pref!(org_pref, staff_pref)
+  define_method(:copy_cookie_consent_to_staff_pref!) do |org_pref, staff_pref|
     cookie = org_pref.org_preference_cookie
     return unless cookie
 
