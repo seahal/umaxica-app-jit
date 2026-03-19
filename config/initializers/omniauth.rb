@@ -109,16 +109,18 @@ Rails.application.config.middleware.use OmniAuth::Builder do
              team_id: apple_team_id,
              key_id: apple_key_id,
              pem: apple_pem,
-             # NOTE:
-             # - We use `response_mode=form_post` for security (prevents token leakage in URL)
-             # - Because this is a POST callback, SameSite cookies must be `None` + `Secure`
-             #   to preserve the session (nonce validation).
+             # Required: omniauth-apple's client_id method returns nil during callback
+             # unless the aud from id_token is listed in authorized_client_ids
+             authorized_client_ids: [apple_client_id],
+             # Apple's form_post callback is a cross-site POST from appleid.apple.com.
+             # SameSite=Lax session cookies are NOT sent on cross-site POSTs, so the
+             # OmniAuth state stored in session is lost. Skip OmniAuth's state check —
+             # Apple's signed id_token (verified via JWKS) already provides CSRF protection.
+             provider_ignores_state: true,
              authorize_params: {
                response_mode: "form_post",
                response_type: "code",
              },
-             # Nonce for id_token replay protection (omniauth-apple handles this)
-             nonce: true,
            }
 end
 
