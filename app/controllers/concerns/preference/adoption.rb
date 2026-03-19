@@ -115,7 +115,6 @@ module Preference
 
     # Copy child record option_ids and cookie consent from source to target.
     def copy_preference_values!(source, target, target_prefix)
-      source.class.name.delete_suffix!("Preference")
       source_assoc = source.class.name.underscore
       target_assoc = target.class.name.underscore
 
