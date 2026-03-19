@@ -26,47 +26,55 @@ require "test_helper"
 class StaffPreferenceTest < ActiveSupport::TestCase
   test "belongs to staff" do
     pref = staff_preferences(:one)
-    assert pref.staff.present?
+
+    assert_predicate pref.staff, :present?
   end
 
   test "has one language child" do
     pref = staff_preferences(:one)
-    assert pref.staff_preference_language.present?
+
+    assert_predicate pref.staff_preference_language, :present?
   end
 
   test "has one timezone child" do
     pref = staff_preferences(:one)
-    assert pref.staff_preference_timezone.present?
+
+    assert_predicate pref.staff_preference_timezone, :present?
   end
 
   test "has one region child" do
     pref = staff_preferences(:one)
-    assert pref.staff_preference_region.present?
+
+    assert_predicate pref.staff_preference_region, :present?
   end
 
   test "has one colortheme child" do
     pref = staff_preferences(:one)
-    assert pref.staff_preference_colortheme.present?
+
+    assert_predicate pref.staff_preference_colortheme, :present?
   end
 
   test "staff_id is unique" do
     pref = staff_preferences(:one)
     duplicate = StaffPreference.new(staff_id: pref.staff_id)
+
     assert_not duplicate.valid?
   end
 
   test "cookie consent defaults to false" do
     staff = staffs(:sample_staff)
     pref = StaffPreference.new(staff: staff)
-    assert_equal false, pref.consented
-    assert_equal false, pref.functional
-    assert_equal false, pref.performant
-    assert_equal false, pref.targetable
+
+    assert_not pref.consented
+    assert_not pref.functional
+    assert_not pref.performant
+    assert_not pref.targetable
   end
 
   test "1:1 relationship with staff" do
     staff = staffs(:one)
-    assert staff.staff_preference.present?
+
+    assert_predicate staff.staff_preference, :present?
     assert_equal staff.id, staff.staff_preference.staff_id
   end
 end

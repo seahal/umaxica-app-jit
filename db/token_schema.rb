@@ -10,11 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_12_023001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_19_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "authorization_codes", force: :cascade do |t|
+    t.string "client_id", limit: 64, null: false
+    t.string "code", limit: 64, null: false
+    t.string "code_challenge", null: false
+    t.string "code_challenge_method", limit: 8, default: "S256", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "nonce"
+    t.text "redirect_uri", null: false
+    t.datetime "revoked_at"
+    t.string "scope"
+    t.string "state"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["code"], name: "index_authorization_codes_on_code", unique: true
+    t.index ["expires_at"], name: "index_authorization_codes_on_expires_at"
+    t.index ["user_id"], name: "index_authorization_codes_on_user_id"
+  end
 
   create_table "reauth_sessions", force: :cascade do |t|
     t.bigint "actor_id", null: false

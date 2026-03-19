@@ -96,21 +96,4 @@ class ApplicationHelperTest < ActionView::TestCase
       assert_equal com_banners(:current_com_banner), current_banner_for(:com)
     end
   end
-
-  test "render_current_banner renders current banner partial" do
-    travel_to Time.zone.parse("2026-03-18 00:00:00 UTC") do
-      rendered_banner = render_current_banner(:app)
-
-      assert_includes rendered_banner, "App newer banner"
-      assert_includes rendered_banner, "App newer banner body"
-    end
-  end
-
-  test "render_current_banner returns nothing when current banner is missing" do
-    ComBanner.stub :current, ComBanner.none do
-      rendered_banner = render_current_banner(:com)
-
-      assert_nil rendered_banner
-    end
-  end
 end

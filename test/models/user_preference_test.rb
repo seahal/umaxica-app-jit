@@ -26,47 +26,55 @@ require "test_helper"
 class UserPreferenceTest < ActiveSupport::TestCase
   test "belongs to user" do
     pref = user_preferences(:one)
-    assert pref.user.present?
+
+    assert_predicate pref.user, :present?
   end
 
   test "has one language child" do
     pref = user_preferences(:one)
-    assert pref.user_preference_language.present?
+
+    assert_predicate pref.user_preference_language, :present?
   end
 
   test "has one timezone child" do
     pref = user_preferences(:one)
-    assert pref.user_preference_timezone.present?
+
+    assert_predicate pref.user_preference_timezone, :present?
   end
 
   test "has one region child" do
     pref = user_preferences(:one)
-    assert pref.user_preference_region.present?
+
+    assert_predicate pref.user_preference_region, :present?
   end
 
   test "has one colortheme child" do
     pref = user_preferences(:one)
-    assert pref.user_preference_colortheme.present?
+
+    assert_predicate pref.user_preference_colortheme, :present?
   end
 
   test "user_id is unique" do
     pref = user_preferences(:one)
     duplicate = UserPreference.new(user_id: pref.user_id)
+
     assert_not duplicate.valid?
   end
 
   test "cookie consent defaults to false" do
     user = users(:sample_user)
     pref = UserPreference.new(user: user)
-    assert_equal false, pref.consented
-    assert_equal false, pref.functional
-    assert_equal false, pref.performant
-    assert_equal false, pref.targetable
+
+    assert_not pref.consented
+    assert_not pref.functional
+    assert_not pref.performant
+    assert_not pref.targetable
   end
 
   test "1:1 relationship with user" do
     user = users(:one)
-    assert user.user_preference.present?
+
+    assert_predicate user.user_preference, :present?
     assert_equal user.id, user.user_preference.user_id
   end
 end

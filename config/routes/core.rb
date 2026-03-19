@@ -6,6 +6,8 @@ scope module: :core, as: :core do
   constraints host: (ENV["CORE_CORPORATE_URL"]) do
     scope module: :com, as: :com do
       root to: "roots#index"
+      # OIDC callback
+      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
       # health check for html
       resource :health, only: :show, format: :html
       resource :sitemap, only: :show, defaults: { format: :xml }
@@ -34,6 +36,8 @@ scope module: :core, as: :core do
   constraints host: (ENV["CORE_SERVICE_URL"]) do
     scope module: :app, as: :app do
       root to: "roots#index"
+      # OIDC callback
+      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
       # endpoint of health check
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
@@ -67,6 +71,8 @@ scope module: :core, as: :core do
     # mount Karafka::Web::App, at: "/karafka"
     scope module: :org, as: :org do
       root to: "roots#index"
+      # OIDC callback
+      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
       # health check for html
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }

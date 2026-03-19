@@ -404,7 +404,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_reset_url", ri: "jp")
 
-      # Verify database changes — preference stays active (reset to defaults, not deleted)
+      # Verify database changes; preference stays active after reset to defaults.
       pref.reload
       final_audit_count = audit_class.where(subject_id: pref.id).count
 
@@ -432,7 +432,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Reset to defaults keeps cookies intact (values are reset in DB, not deleted)
       assert_not_nil cookies[cookie_name],
-             "Preference refresh cookie should be kept after reset"
+                     "Preference refresh cookie should be kept after reset"
     end
 
     test "#{domain[:name]} domain reset destroy fails without confirmation" do

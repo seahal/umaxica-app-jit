@@ -34,7 +34,7 @@
         <%= link_to t("core.app.layout.nav.logout"), edit_sign_app_configuration_out_url %>
       <% end %>
     <% end %>
-    <%= render_current_banner(:app) %>
+    <%= render "shared/current_banner", surface: :app %>
 <% if show_cookie_banner? %>
   <%= render "shared/cookie_banner" %>
 <% end %>

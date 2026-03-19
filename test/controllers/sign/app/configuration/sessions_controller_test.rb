@@ -127,7 +127,7 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     delete sign_app_configuration_session_url(other_user_token.public_id, ri: "jp"),
            headers: @headers
 
-    # set_session scopes to current_user so it won't find it → 404
+    # set_session scopes to current_user, so it does not find it and returns 404.
     assert_response :not_found
     other_user_token.reload
 

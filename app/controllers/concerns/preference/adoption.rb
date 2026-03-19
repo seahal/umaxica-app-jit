@@ -103,11 +103,11 @@ module Preference
       res_updated = resource_pref.updated_at
 
       if res_updated.present? && (app_updated.blank? || res_updated > app_updated)
-        # UserPreference/StaffPreference is newer → copy to AppPreference/OrgPreference
+        # UserPreference/StaffPreference is newer; copy to AppPreference/OrgPreference.
         copy_preference_values!(resource_pref, @preferences, preference_prefix)
         issue_access_token_from(@preferences)
       else
-        # AppPreference/OrgPreference is newer → copy to UserPreference/StaffPreference
+        # AppPreference/OrgPreference is newer; copy to UserPreference/StaffPreference.
         copy_preference_values!(@preferences, resource_pref, resource_pref_prefix)
         issue_access_token_from(@preferences)
       end
@@ -115,7 +115,7 @@ module Preference
 
     # Copy child record option_ids and cookie consent from source to target.
     def copy_preference_values!(source, target, target_prefix)
-      source_prefix = source.class.name.delete_suffix("Preference")
+      source.class.name.delete_suffix!("Preference")
       source_assoc = source.class.name.underscore
       target_assoc = target.class.name.underscore
 
@@ -166,6 +166,7 @@ module Preference
         source_assoc_name = source.class.name.underscore
         source_cookie = source.public_send("#{source_assoc_name}_cookie")
         return unless source_cookie
+
         source_consent = COOKIE_CONSENT_FIELDS.index_with { |f| source_cookie.public_send(f) }
       end
 

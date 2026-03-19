@@ -141,7 +141,10 @@ class PreferenceTokenTest < ActiveSupport::TestCase
       Preference::Token.send(:report_invalid_header, host: "app.localhost", header: {})
       Preference::Token.send(
         :report_invalid_header, host: "app.localhost",
-                                header: { "alg" => Preference::Token::JWT_ALGORITHM, "typ" => Preference::Token::TOKEN_TYPE },
+                                header: {
+                                  "alg" => Preference::Token::JWT_ALGORITHM,
+                                  "typ" => Preference::Token::TOKEN_TYPE,
+                                },
       )
       Preference::Token.send(
         :report_invalid_header, host: "app.localhost",
@@ -157,7 +160,11 @@ class PreferenceTokenTest < ActiveSupport::TestCase
       )
       Preference::Token.send(
         :report_invalid_header, host: "app.localhost",
-                                header: { "alg" => Preference::Token::JWT_ALGORITHM, "kid" => "kid-1", "typ" => "wrong" },
+                                header: {
+                                  "alg" => Preference::Token::JWT_ALGORITHM,
+                                  "kid" => "kid-1",
+                                  "typ" => "wrong",
+                                },
       )
     end
 
@@ -179,15 +186,27 @@ class PreferenceTokenTest < ActiveSupport::TestCase
       token_type = Preference::Token::TOKEN_TYPE
       Preference::Token.send(
         :report_invalid_payload, host: "app.localhost", header: {},
-        payload: { "typ" => token_type, "host" => "evil.localhost", "aud" => ["app.localhost"] },
+                                 payload: {
+                                   "typ" => token_type,
+                                   "host" => "evil.localhost",
+                                   "aud" => ["app.localhost"],
+                                 },
       )
       Preference::Token.send(
         :report_invalid_payload, host: "app.localhost", header: {},
-        payload: { "typ" => token_type, "host" => "app.localhost", "aud" => ["evil.localhost"] },
+                                 payload: {
+                                   "typ" => token_type,
+                                   "host" => "app.localhost",
+                                   "aud" => ["evil.localhost"],
+                                 },
       )
       Preference::Token.send(
         :report_invalid_payload, host: "app.localhost", header: {},
-        payload: { "typ" => token_type, "host" => "app.localhost", "aud" => ["app.localhost"] },
+                                 payload: {
+                                   "typ" => token_type,
+                                   "host" => "app.localhost",
+                                   "aud" => ["app.localhost"],
+                                 },
       )
       Preference::Token.send(
         :report_claim_error, host: "app.localhost", header: {},

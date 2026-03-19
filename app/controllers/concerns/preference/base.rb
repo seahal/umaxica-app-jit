@@ -455,7 +455,7 @@ module Preference
       nil
     end
 
-    def restore_preference_from_resource!(preference)
+    def restore_preference_from_resource!(_preference)
       resource = begin; current_resource; rescue; nil; end
       return if resource.blank?
       return unless respond_to?(:adopt_preference_for!, true)
@@ -1086,11 +1086,11 @@ module Preference
       )
 
       @preference_payload = Token.decode(token, host: request.host)
-      if @preference_payload.blank?
-        clear_preference_auth_cookies!
-        @preference_refresh_failed = true
-        return
-      end
+      return if @preference_payload.present?
+
+      clear_preference_auth_cookies!
+      @preference_refresh_failed = true
+      nil
     end
 
     def preference_binding_method_class

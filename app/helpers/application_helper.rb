@@ -47,13 +47,6 @@ module ApplicationHelper
     banner_model_for(surface)&.current&.first
   end
 
-  def render_current_banner(surface)
-    banner = current_banner_for(surface)
-    return unless banner
-
-    render "layouts/shared/banner", banner: banner
-  end
-
   private
 
   def banner_model_for(surface)
