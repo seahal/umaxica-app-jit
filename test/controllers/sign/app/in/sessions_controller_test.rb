@@ -34,6 +34,24 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not response.redirect?
   end
 
+  test "show counts only usable active sessions" do
+    active_token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    rotated_refresh = active_token.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: rotated_refresh)
+
+    current_active = UserToken.where(user_id: @user.id, status: UserToken::STATUS_ACTIVE).order(:created_at).last
+    other_active = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    other_active.rotate_refresh_token!
+    restricted_token = create_restricted_session(@user)
+    headers = as_user_headers_with_token(@user, restricted_token, host: @host)
+
+    get sign_app_in_session_url(ri: "jp"), headers: headers
+
+    assert_response :success
+    assert_includes response.body, "(2/#{UserToken::MAX_SESSIONS_PER_USER})"
+    assert_not_equal active_token.public_id, current_active.public_id
+  end
+
   test "show with active session returns forbidden" do
     active_token = create_active_session(@user)
     headers = as_user_headers_with_token(@user, active_token, host: @host)

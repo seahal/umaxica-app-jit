@@ -105,7 +105,11 @@ module Sign
           if result[:status] == :session_limit_hard_reject
             render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           elsif result[:restricted]
-            redirect_to sign_org_in_session_path, notice: I18n.t("sign.org.in.session.restricted_notice")
+            redirect_to sign_org_in_session_path,
+                        notice: I18n.t(
+                          "sign.org.in.session.restricted_notice",
+                          default: "セッション数が上限に達しています。既存セッションを管理してください。",
+                        )
           else
             issue_checkpoint!
             redirect_to sign_org_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),

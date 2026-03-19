@@ -583,8 +583,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Create 2 active sessions to hit the limit
     2.times do
-      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
-      token.rotate_refresh_token!
+      create_rotated_active_user_session(user, rotations: 3)
     end
 
     test_email = user.user_emails.create!(
@@ -629,8 +628,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     UserToken.where(user_id: user.id).delete_all
 
     2.times do
-      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
-      token.rotate_refresh_token!
+      create_rotated_active_user_session(user, rotations: 3)
     end
 
     test_email = user.user_emails.create!(
@@ -729,5 +727,16 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
   test "sign-in cooldown i18n keys exist in both locales" do
     assert_not_nil I18n.t("sign.app.authentication.email.create.cooldown", locale: :ja, default: nil)
     assert_not_nil I18n.t("sign.app.authentication.email.create.cooldown", locale: :en, default: nil)
+  end
+
+  private
+
+  def create_rotated_active_user_session(user, rotations:)
+    token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+
+    rotations.times do
+      refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+    end
   end
 end

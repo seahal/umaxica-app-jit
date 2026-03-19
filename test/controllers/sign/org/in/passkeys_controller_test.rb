@@ -19,6 +19,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     # Setup active staff with email and passkey
     @staff = staffs(:one)
     @staff.update!(status_id: StaffStatus::ACTIVE)
+    StaffToken.where(staff_id: @staff.id).delete_all
 
     @staff_passkey = StaffPasskey.create!(
       staff: @staff,
@@ -307,6 +308,36 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "verification returns session_restricted when one logical session has many rotated ancestors" do
+    create_rotated_active_staff_session(@staff, rotations: 4)
+
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
+    challenge_id = response.parsed_body["challenge_id"]
+
+    mock_credential = Object.new
+    passkey_id = @staff_passkey.webauthn_id
+    mock_credential.define_singleton_method(:id) { passkey_id }
+    mock_credential.define_singleton_method(:sign_count) { 1 }
+    mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+    WebAuthn::Credential.stub :from_get, mock_credential do
+      post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
+        challenge_id: challenge_id,
+        credential: {
+          id: @staff_passkey.webauthn_id,
+          response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+        },
+      }
+    end
+
+    assert_response :ok
+    json = response.parsed_body
+
+    assert_equal "session_restricted", json["status"]
+    assert_equal sign_org_in_session_path(ri: "jp"), json["redirect_url"]
+    assert_equal 1, StaffToken.where(staff_id: @staff.id, status: StaffToken::STATUS_RESTRICTED).count
+  end
+
   test "verification returns unauthorized for malformed credential payload" do
     post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: @staff.public_id }
     challenge_id = response.parsed_body["challenge_id"]
@@ -318,5 +349,16 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unauthorized
     assert_includes response.body, I18n.t("errors.webauthn.credential_not_found")
+  end
+
+  private
+
+  def create_rotated_active_staff_session(staff, rotations:)
+    token = StaffToken.create!(staff: staff, status: StaffToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+
+    rotations.times do
+      refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+    end
   end
 end

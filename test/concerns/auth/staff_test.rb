@@ -85,6 +85,7 @@ class Auth::StaffTest < ActiveSupport::TestCase
   setup do
     @obj = DummyClass.new
     @staff = staffs(:one)
+    StaffToken.where(staff_id: @staff.id).delete_all
   end
 
   test "module can be included" do

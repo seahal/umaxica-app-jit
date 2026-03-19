@@ -92,9 +92,6 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     active_token1 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
     active_token1.rotate_refresh_token!
 
-    active_token2 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
-    active_token2.rotate_refresh_token!
-
     restricted_token = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_RESTRICTED)
     restricted_token.rotate_refresh_token!
 
@@ -111,20 +108,12 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     active_token1.reload
 
     assert_not_nil active_token1.expired_at
-
-    # Unrevoked active session remains
-    active_token2.reload
-
-    assert_nil active_token2.expired_at
   end
 
   test "update revokes session but does not promote when still at limit" do
-    # Create 2 active sessions -- revoking 0 keeps at limit
+    # Create 1 active session -- revoking 0 keeps at limit
     active_token1 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
     active_token1.rotate_refresh_token!
-
-    active_token2 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
-    active_token2.rotate_refresh_token!
 
     restricted_token = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_RESTRICTED)
     restricted_token.rotate_refresh_token!
@@ -144,12 +133,9 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update skips current session ref in batch revoke" do
-    # Need 2 active sessions to prevent auto-promotion after no-op revoke
+    # Need 1 active session to prevent auto-promotion after no-op revoke
     active_token1 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
     active_token1.rotate_refresh_token!
-
-    active_token2 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
-    active_token2.rotate_refresh_token!
 
     restricted_token = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_RESTRICTED)
     restricted_token.rotate_refresh_token!
@@ -215,12 +201,9 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update with ref param rejects revoking current session" do
-    # Need 2 active sessions to prevent auto-promotion
+    # Need 1 active session to prevent auto-promotion
     active_token1 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
     active_token1.rotate_refresh_token!
-
-    active_token2 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
-    active_token2.rotate_refresh_token!
 
     restricted_token = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_RESTRICTED)
     restricted_token.rotate_refresh_token!
@@ -238,12 +221,9 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update with invalid ref param flashes alert and stays on page" do
-    # Need 2 active sessions to prevent auto-promotion
+    # Need 1 active session to prevent auto-promotion
     active_token1 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
     active_token1.rotate_refresh_token!
-
-    active_token2 = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
-    active_token2.rotate_refresh_token!
 
     restricted_token = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_RESTRICTED)
     restricted_token.rotate_refresh_token!

@@ -15,6 +15,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
 
     @staff = staffs(:one)
     @staff.update!(status_id: StaffStatus::ACTIVE)
+    StaffToken.where(staff_id: @staff.id).delete_all
     @staff_email = StaffEmail.create!(
       staff: @staff,
       address: "google_staff@example.com",
@@ -87,6 +88,17 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
     assert_equal I18n.t("sign.org.social.sessions.create.session_limit"), flash[:alert]
   end
 
+  test "omniauth redirects to session management when one logical staff session has many rotated ancestors" do
+    create_rotated_active_staff_session(@staff, rotations: 4)
+    state = initiate_social_auth_flow!
+
+    get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
+
+    assert_redirected_to sign_org_in_session_path(ri: "jp")
+    assert_equal "セッション数が上限に達しています。既存セッションを管理してください。", flash[:notice]
+    assert_equal 1, StaffToken.where(staff_id: @staff.id, status: StaffToken::STATUS_RESTRICTED).count
+  end
+
   private
 
   # Initiates the social auth flow via /social/session/new, which sets session state,
@@ -117,5 +129,14 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
         expires_at: 1.hour.from_now.to_i,
       },
     )
+  end
+
+  def create_rotated_active_staff_session(staff, rotations:)
+    token = StaffToken.create!(staff: staff, status: StaffToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+
+    rotations.times do
+      refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+    end
   end
 end

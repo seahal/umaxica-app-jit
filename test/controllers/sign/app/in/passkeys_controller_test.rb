@@ -195,8 +195,7 @@ module Sign::App::In
       # Create 2 active sessions to hit the limit
       UserToken.where(user_id: @user.id).delete_all
       2.times do
-        token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
-        token.rotate_refresh_token!
+        create_rotated_active_user_session(@user, rotations: 3)
       end
 
       # Get challenge
@@ -401,8 +400,7 @@ module Sign::App::In
       # Create 2 active + 1 restricted to hit the hard limit
       UserToken.where(user_id: @user.id).delete_all
       2.times do
-        token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
-        token.rotate_refresh_token!
+        create_rotated_active_user_session(@user, rotations: 3)
       end
       restricted = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
       restricted.rotate_refresh_token!(expires_at: 15.minutes.from_now)
@@ -435,6 +433,15 @@ module Sign::App::In
         identifier: identifier,
         "cf-turnstile-response": "test_token",
       }
+    end
+
+    def create_rotated_active_user_session(user, rotations:)
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      refresh = token.rotate_refresh_token!
+
+      rotations.times do
+        refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+      end
     end
   end
 end

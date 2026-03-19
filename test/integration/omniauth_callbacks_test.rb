@@ -232,8 +232,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     # Create 2 active sessions to hit the limit
     UserToken.where(user_id: user.id).delete_all
     2.times do
-      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
-      token.rotate_refresh_token!
+      create_rotated_active_user_session(user, rotations: 3)
     end
 
     OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
@@ -262,4 +261,15 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_equal 1, restricted.count
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  private
+
+  def create_rotated_active_user_session(user, rotations:)
+    token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+
+    rotations.times do
+      refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+    end
+  end
 end

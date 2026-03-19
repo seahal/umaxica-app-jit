@@ -660,8 +660,8 @@ module Auth
         result[:restricted] = true
         result[:session_management_required] = true
         issue_session_limit_gate!(
-          return_to: request.fullpath,
-          flow: "#{controller_path}.session",
+          return_to: session_limit_gate_return_to,
+          flow: session_limit_gate_flow,
         )
       end
 
@@ -1913,6 +1913,20 @@ module Auth
       end
     rescue StandardError
       "/"
+    end
+
+    def session_limit_gate_return_to
+      request&.fullpath.presence || request&.path.presence || "/"
+    rescue StandardError
+      "/"
+    end
+
+    def session_limit_gate_flow
+      return "#{controller_path}.session" if respond_to?(:controller_path, true)
+
+      "auth.#{resource_type}.session"
+    rescue StandardError
+      "auth.session"
     end
 
     def complete_sign_in_or_start_mfa!(resource, rt:, ri:, auth_method:, token_kind_id: "BROWSER_WEB",

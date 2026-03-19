@@ -66,7 +66,7 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for staff.
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
-    @staff = Staff.find_by!(public_id: "BCDE2345FGHJ67KM")
+    @staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
 
     @token = StaffToken.create!(staff: @staff, staff_token_status_id: StaffTokenStatus::ACTIVE)
   end
@@ -308,10 +308,16 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh! rejects revoked compromised and expired tokens" do
-    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
-    revoked = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd1")
-    compromised = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd2")
-    expired = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd3")
+    revoked_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    compromised_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    expired_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    revoked = StaffToken.create!(staff: revoked_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd1")
+    compromised = StaffToken.create!(
+      staff: compromised_staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "sd2",
+    )
+    expired = StaffToken.create!(staff: expired_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd3")
     revoked_raw = revoked.rotate_refresh_token!
     compromised_raw = compromised.rotate_refresh_token!
     expired_raw = expired.rotate_refresh_token!
