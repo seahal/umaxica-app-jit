@@ -14,9 +14,12 @@ class StaffSecretKind < OperatorRecord
   NOTHING = 1
   LOGIN = 2
   TOTP = 3
+  PERMANENT = LOGIN
+  ONE_TIME = NOTHING
 
   # Kind constants
   ALL = [LOGIN, TOTP].freeze
+  ALLOWED_FOR_SECRET_SIGN_IN = [PERMANENT].freeze
 
   has_many :staff_secrets, inverse_of: :staff_secret_kind, dependent: :restrict_with_exception
 

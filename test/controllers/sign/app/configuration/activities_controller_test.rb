@@ -25,12 +25,6 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
     assert_match(/ri=jp/, response.headers["Location"])
   end
 
-  test "activity alias route is available at /configuration/activity" do
-    get sign_app_configuration_activity_url(ri: "jp"), headers: @headers
-
-    assert_response :success
-  end
-
   test "shows only current user activity logs" do
     create_user_audit(
       user: @user,

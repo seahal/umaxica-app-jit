@@ -131,4 +131,25 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
 
     assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
   end
+
+  test "destroy blocks removing an undeletable email" do
+    email = UserEmail.create!(
+      address: "protected@example.com",
+      user: @user,
+      user_email_status_id: UserEmailStatus::VERIFIED,
+      undeletable: true,
+    )
+    UserEmail.create!(
+      address: "other@example.com",
+      user: @user,
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    assert_no_difference("UserEmail.count") do
+      delete sign_app_configuration_email_url(email, ri: "jp"), headers: request_headers
+    end
+
+    assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
+    assert_equal I18n.t("sign.app.configuration.email.destroy.protected"), flash[:alert]
+  end
 end

@@ -23,6 +23,12 @@ ja:
       user_telephone:
         number: "電話番号"
         status: "ステータス"
+      staff_email:
+        address: "メールアドレス"
+        status: "ステータス"
+      staff_telephone:
+        number: "電話番号"
+        status: "ステータス"
       user_secret:
         name: "名前"
         created_at: "作成日時"
@@ -210,6 +216,63 @@ ja:
         new:
           recruit_prompt: "採用情報"
       configuration:
+        show:
+          page_title: "設定"
+          description: "アカウント設定とセキュリティ管理"
+          back: "トップへ戻る"
+          withdrawal: "退会"
+        email:
+          index:
+            new_link: "メールアドレスを追加"
+            edit: "編集"
+            delete: "削除"
+            delete_confirm: "このメールアドレスを削除しますか？"
+            empty: "メールアドレスは登録されていません。"
+          edit:
+            title: "メールアドレス設定"
+          new:
+            page_title: "メールアドレスの追加"
+          destroy:
+            success: "メールアドレスを削除しました。"
+            last_method: "このメールアドレスは削除できません。"
+            protected: "このメールアドレスは保護されているため削除できません。"
+        telephone:
+          index:
+            new_link: "電話番号を追加"
+            edit: "編集"
+            delete: "削除"
+            delete_confirm: "この電話番号を削除しますか？"
+            empty: "電話番号は登録されていません。"
+          edit:
+            title: "電話番号設定"
+          new:
+            title: "電話番号の追加"
+          destroy:
+            success: "電話番号を削除しました。"
+            last_method: "この電話番号は削除できません。"
+        google:
+          show:
+            description: "Google サインインは、確認済みのメールアドレスと紐づいて利用できます。"
+            enabled: "Google サインインを利用できます。"
+            disabled: "確認済みメールアドレスがないため、Google サインインは利用できません。"
+            email_hint: "無効化したい場合は、メールアドレス設定から対象メールアドレスを変更または削除してください。"
+            delete_confirm: "Google サインインの利用方法を確認しますか？"
+          destroy:
+            via_email: "Google サインインの設定はメールアドレス設定から変更してください。"
+        activity:
+          index:
+            page_title: "アクティビティ"
+            description: "最近のサインイン履歴を確認できます。"
+            empty: "アクティビティはありません。"
+            table:
+              occurred_at: "日時"
+              event: "イベント"
+              ip_address: "IPアドレス"
+              context: "コンテキスト"
+          events:
+            logged_in: "ログイン"
+            login_success: "ログイン成功"
+            unknown: "不明なイベント (%{event_id})"
         secrets:
           index:
             title: "シークレット管理"
@@ -231,6 +294,30 @@ ja:
           methods:
             passkey: "パスキーを登録"
             totp: "認証アプリ（TOTP）を登録"
+      registration:
+        email:
+          create:
+            verification_code_sent: "確認コードをメールで送信しました。"
+            turnstile_validation_failed: "検証に失敗しました。時間を置いて再度お試しください。"
+          edit:
+            session_expired: "セッションの有効期限が切れました。"
+          update:
+            code_required: "コードを入力してください"
+            invalid_code: "確認コードが正しくありません"
+            attempts_exceeded: "試行回数の上限を超えました。最初からやり直してください。"
+            success: "メールアドレスを確認しました。"
+        telephone:
+          create:
+            verification_code_sent: "確認コードをSMSで送信しました。"
+          edit:
+            title: "確認コードの入力"
+            description: "SMSで届いた確認コードを入力してください。"
+            session_expired: "セッションの有効期限が切れました。"
+          update:
+            code_required: "コードを入力してください"
+            invalid_code: "確認コードが正しくありません"
+            attempts_exceeded: "試行回数の上限を超えました。最初からやり直してください。"
+            success: "電話番号を確認しました。"
   org_timeline_tags: { "%{id}": "org_timeline_tag_%{id}" }
   app_timeline_tags: { "%{id}": "app_timeline_tag_%{id}" }
   com_timeline_categories: { "%{id}": "com_timeline_category_%{id}" }

@@ -14,6 +14,7 @@
 #  otp_expires_at                 :datetime
 #  otp_last_sent_at               :datetime
 #  otp_private_key                :string           not null
+#  undeletable                    :boolean          default(FALSE), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  public_id                      :string(21)       not null
@@ -130,6 +131,14 @@ class StaffEmailTest < ActiveSupport::TestCase
     staff_email = StaffEmail.create!(@valid_attributes)
 
     assert_equal staff_email.public_id, staff_email.to_param
+  end
+
+  test "blocks destroying an undeletable email" do
+    staff_email = StaffEmail.create!(@valid_attributes.merge(undeletable: true))
+
+    assert_raises(ActiveRecord::RecordNotDestroyed) { staff_email.destroy! }
+    assert_includes staff_email.errors[:base], "cannot delete a protected email address"
+    assert_predicate staff_email.reload, :undeletable?
   end
 
   test "enforces maximum emails per staff" do

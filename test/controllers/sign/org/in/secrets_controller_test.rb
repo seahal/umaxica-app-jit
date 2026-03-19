@@ -47,7 +47,24 @@ class Sign::Org::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     assert_includes response.headers["Location"], "/in/checkpoint"
-    assert_equal StaffSecretStatus::USED, staff_secrets(:sample_login).reload.staff_secret_status_id
+    assert_equal StaffSecretStatus::ACTIVE, staff_secrets(:sample_login).reload.staff_secret_status_id
+    assert_predicate staff_secrets(:sample_login).reload.last_used_at, :present?
+  end
+
+  test "create allows reusing permanent secret for a second login attempt" do
+    2.times do
+      post sign_org_in_secret_url(ri: "jp"),
+           params: {
+             secret_login_form: {
+               identifier: @staff.public_id.downcase,
+               secret_value: @raw_secret,
+             },
+           }
+
+      assert_response :redirect
+    end
+
+    assert_equal StaffSecretStatus::ACTIVE, staff_secrets(:sample_login).reload.staff_secret_status_id
   end
 
   test "create rejects blank form" do
@@ -84,6 +101,21 @@ class Sign::Org::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_equal StaffSecretStatus::ACTIVE, staff_secrets(:sample_login).reload.staff_secret_status_id
   end
 
+  test "create rejects totp secret for secret login" do
+    staff_secrets(:sample_login).update!(staff_secret_kind_id: StaffSecretKind::TOTP)
+
+    post sign_org_in_secret_url(ri: "jp"),
+         params: {
+           secret_login_form: {
+             identifier: @staff.public_id,
+             secret_value: @raw_secret,
+           },
+         }
+
+    assert_response :unprocessable_content
+    assert_equal StaffSecretStatus::ACTIVE, staff_secrets(:sample_login).reload.staff_secret_status_id
+  end
+
   test "create rejects reserved staff" do
     reserved_staff = staffs(:reserved_staff)
     secret, raw_secret = StaffSecret.issue!(
@@ -102,6 +134,41 @@ class Sign::Org::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     assert_equal StaffSecretStatus::ACTIVE, secret.reload.staff_secret_status_id
+  end
+
+  test "create rejects withdrawn staff without consuming secret" do
+    @staff.update!(status_id: StaffStatus::ACTIVE, withdrawn_at: Time.current)
+    secret, raw_secret = StaffSecret.issue!(
+      name: "Withdrawn login",
+      staff_id: @staff.id,
+      staff_secret_kind_id: StaffSecretKind::LOGIN,
+    )
+
+    post sign_org_in_secret_url(ri: "jp"),
+         params: {
+           secret_login_form: {
+             identifier: @staff.public_id,
+             secret_value: raw_secret,
+           },
+         }
+
+    assert_response :unprocessable_content
+    assert_equal StaffSecretStatus::ACTIVE, secret.reload.staff_secret_status_id
+  end
+
+  test "create renders invalid when log_in returns non-success status" do
+    Sign::Org::In::SecretsController.any_instance.stub(:log_in, { status: :unknown }) do
+      post sign_org_in_secret_url(ri: "jp"),
+           params: {
+             secret_login_form: {
+               identifier: @staff.public_id,
+               secret_value: @raw_secret,
+             },
+           }
+    end
+
+    assert_response :unprocessable_content
+    assert_includes response.body, I18n.t("sign.org.authentication.secret.create.invalid")
   end
 
   test "create redirects to session management when logical staff limit is reached despite rotated rows" do

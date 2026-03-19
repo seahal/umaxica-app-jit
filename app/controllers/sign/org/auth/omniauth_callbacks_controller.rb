@@ -60,6 +60,9 @@ module Sign
           )
 
           clear_social_auth_intent!
+          return redirect_to new_sign_org_in_path,
+                             alert: I18n.t("sign.org.social.sessions.create.failure") unless staff.login_allowed?
+
           login_result = log_in(staff, record_login_audit: true)
 
           provider_name = SocialIdentifiable.normalize_provider(auth.provider).humanize
@@ -106,7 +109,14 @@ module Sign
         def find_active_staff_by_google_email(email)
           return nil if email.blank?
 
-          staff_email = StaffEmail.find_by(address: email)
+          staff_email = nil
+          OperatorRecord.connected_to(role: :writing) do
+            staff_email = StaffEmail.find_by(address: email)
+            if staff_email && !staff_email.undeletable?
+              staff_email.update_columns(undeletable: true, updated_at: Time.current)
+            end
+          end
+
           staff = staff_email&.staff
           staff if staff&.status_id == StaffStatus::ACTIVE
         end

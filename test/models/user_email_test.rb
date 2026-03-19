@@ -16,6 +16,7 @@
 #  otp_expires_at            :datetime         default(-Infinity), not null
 #  otp_last_sent_at          :datetime         default(-Infinity), not null
 #  otp_private_key           :string           default(""), not null
+#  undeletable               :boolean          default(FALSE), not null
 #  verification_token_digest :binary
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
@@ -185,6 +186,14 @@ class UserEmailTest < ActiveSupport::TestCase
   end
 
   # Edge case tests
+
+  test "blocks destroying an undeletable email" do
+    user_email = UserEmail.create!(@valid_attributes.merge(undeletable: true))
+
+    assert_raises(ActiveRecord::RecordNotDestroyed) { user_email.destroy! }
+    assert_includes user_email.errors[:base], "cannot delete a protected email address"
+    assert_predicate user_email.reload, :undeletable?
+  end
 
   test "enforces maximum emails per user" do
     user = users(:one)

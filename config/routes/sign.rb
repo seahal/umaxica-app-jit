@@ -138,8 +138,8 @@ scope module: :sign, as: :sign do
             delete :others
           end
         end
+        # TODO: chose one of two line.
         resources :activities, only: :index
-        resource :activity, only: :show, controller: :activities
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
       end
@@ -213,6 +213,7 @@ scope module: :sign, as: :sign do
       resource :token, only: %i(create), defaults: { format: :json }
       resource :jwks, only: %i(show), defaults: { format: :json }
 
+      # config
       resource :configuration, only: :show
       namespace :configuration do
         # TODO: refactor to standard CRUD
@@ -229,6 +230,18 @@ scope module: :sign, as: :sign do
             delete :others
           end
         end
+        namespace :emails do
+          # TODO: nusty code!, delete controller of this line
+          resource :registration, only: %i(new create edit update), controller: :registrations
+        end
+        resources :emails, only: %i(index edit destroy)
+        namespace :telephones do
+          # TODO: nusty code!, delete controller of this line
+          resource :registration, only: %i(new create edit update), controller: :registrations
+        end
+        resources :telephones, only: %i(index new edit create destroy)
+        resource :google, only: %i(show update destroy)
+        resources :activities, only: :index
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(show)
       end

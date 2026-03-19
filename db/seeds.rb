@@ -27,7 +27,7 @@ ensure_reference_rows(
   [StaffSecretStatus::ACTIVE, StaffSecretStatus::DELETED, StaffSecretStatus::EXPIRED,
    StaffSecretStatus::REVOKED, StaffSecretStatus::USED,],
 )
-ensure_reference_rows(StaffSecretKind, [StaffSecretKind::LOGIN])
+ensure_reference_rows(StaffSecretKind, [StaffSecretKind::PERMANENT])
 
 user = User.find_or_initialize_by(public_id: "sample_user")
 user.status_id = UserStatus::ACTIVE
@@ -55,7 +55,7 @@ staff_email.staff_email_status_id = StaffEmailStatus::VERIFIED
 staff_email.save!
 
 staff_secret = staff.staff_secrets.find_or_initialize_by(name: "sample-staff-secret")
-staff_secret.staff_secret_kind_id = StaffSecretKind::LOGIN
+staff_secret.staff_secret_kind_id = StaffSecretKind::PERMANENT
 staff_secret.staff_identity_secret_status_id = StaffSecretStatus::ACTIVE
 staff_secret.password = sample_staff_secret
 staff_secret.save!

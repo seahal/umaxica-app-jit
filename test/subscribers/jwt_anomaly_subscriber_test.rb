@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require Rails.root.join("app/subscribers/jwt_anomaly_subscriber")
 
 class JwtAnomalySubscriberTest < ActiveSupport::TestCase
   fixtures :jwt_occurrences

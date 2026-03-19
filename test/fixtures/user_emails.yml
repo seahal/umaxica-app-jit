@@ -13,6 +13,7 @@
 #  otp_expires_at            :datetime         default(-Infinity), not null
 #  otp_last_sent_at          :datetime         default(-Infinity), not null
 #  otp_private_key           :string           default(""), not null
+#  undeletable               :boolean          default(FALSE), not null
 #  verification_token_digest :binary
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null

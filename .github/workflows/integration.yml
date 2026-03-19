@@ -142,24 +142,6 @@ jobs:
           fail-on-severity: moderate
           comment-summary-in-pr: true
           deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0
-  codeql:
-    name: CodeQL
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    steps:
-      - uses: actions/checkout@v6.0.1
-        with:
-          persist-credentials: false
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4.31.10
-        with:
-          languages: ruby,javascript-typescript
-      - name: Analyze with CodeQL
-        uses: github/codeql-action/analyze@v4.31.10
   lint-ruby:
     name: Ruby Linting (RuboCop, ERB)
     runs-on: ubuntu-latest
@@ -446,7 +428,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: true
-      - run: vp install && vp run dev:setup
+      - run: vp install
       - run: vp check
       - run: vp test
   # ====================

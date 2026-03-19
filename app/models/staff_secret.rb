@@ -38,6 +38,8 @@ class StaffSecret < OperatorRecord
   include StaffSecret::Kinds
 
   MAX_SECRETS_PER_STAFF = 10
+  SIGN_IN_ALLOWED_STATUS_IDS = [StaffSecretStatus::ACTIVE].freeze
+  SIGN_IN_ALLOWED_KIND_IDS = StaffSecretKind::ALLOWED_FOR_SECRET_SIGN_IN
   attr_accessor :raw_secret
 
   attribute :staff_identity_secret_status_id, default: StaffSecretStatus::ACTIVE
@@ -53,6 +55,13 @@ class StaffSecret < OperatorRecord
   validates :staff_identity_secret_status_id, numericality: { only_integer: true }
   validates :staff_secret_kind_id, numericality: { only_integer: true }
   validate :enforce_secret_limit, on: :create
+
+  scope :allowed_for_secret_sign_in, lambda {
+    where(
+      staff_identity_secret_status_id: SIGN_IN_ALLOWED_STATUS_IDS,
+      staff_secret_kind_id: SIGN_IN_ALLOWED_KIND_IDS,
+    )
+  }
 
   def self.identity_secret_status_class
     StaffSecretStatus
@@ -70,7 +79,49 @@ class StaffSecret < OperatorRecord
     public_id
   end
 
+  def usable_for_secret_sign_in?(now: Time.current)
+    return false unless sign_in_status_allowed?
+    return false unless sign_in_kind_allowed?
+    return false if expired_for_secret_sign_in?(now)
+
+    true
+  end
+
+  def verify_for_secret_sign_in!(raw_secret, now: Time.current)
+    with_lock do
+      reload
+
+      auth_result = authenticate(raw_secret)
+      return false unless sign_in_status_allowed?
+      return false unless sign_in_kind_allowed?
+      return false if expired_for_secret_sign_in?(now)
+      return false unless auth_result
+
+      self.last_used_at = now
+      save!
+    end
+
+    true
+  end
+
   private
+
+  def sign_in_status_allowed?
+    SIGN_IN_ALLOWED_STATUS_IDS.include?(staff_secret_status_id)
+  end
+
+  def sign_in_kind_allowed?
+    SIGN_IN_ALLOWED_KIND_IDS.include?(staff_secret_kind_id)
+  end
+
+  def expired_for_secret_sign_in?(now)
+    return false unless respond_to?(:expires_at)
+    return false if expires_at.nil?
+    return false if expires_at.is_a?(Float) && expires_at.infinite?
+
+    comparable_time = expires_at.is_a?(Float) ? Time.zone.at(expires_at) : expires_at
+    now > comparable_time
+  end
 
   def enforce_secret_limit
     return unless staff_id

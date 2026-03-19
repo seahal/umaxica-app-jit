@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require Rails.root.join("app/lib/rails_rate_limit")
 
 class RailsRateLimitCoverageTest < ActiveSupport::TestCase
   class MockRedis

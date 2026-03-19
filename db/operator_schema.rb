@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_18_035440) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_19_125136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -107,6 +107,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_18_035440) do
     t.string "public_id", limit: 21, null: false
     t.bigint "staff_id", null: false
     t.bigint "staff_identity_email_status_id", default: 0, null: false
+    t.boolean "undeletable", default: false, null: false
     t.datetime "updated_at", null: false
     t.index "lower((address)::text)", name: "index_staff_emails_on_lower_address", unique: true
     t.index ["address"], name: "index_staff_emails_on_address"

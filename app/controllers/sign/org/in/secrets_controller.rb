@@ -77,22 +77,21 @@ module Sign
           normalized_identifier = Staff.normalize_public_id(identifier)
           return if normalized_identifier.blank?
 
-          Staff.find_by(public_id: normalized_identifier, status_id: StaffStatus::ACTIVE)
+          staff = Staff.find_by(public_id: normalized_identifier)
+          staff if staff&.login_allowed?
         end
 
         def verify_secret_for_sign_in(staff:, raw_secret:)
           return SecretVerificationResult.new(reason: :identifier_not_found) unless staff
 
-          secret = staff.staff_secrets
-            .where(
-              staff_identity_secret_status_id: StaffSecretStatus::ACTIVE,
-              staff_secret_kind_id: StaffSecretKind::LOGIN,
-            )
-            .order(created_at: :desc)
-            .first
+          latest_secret = staff.staff_secrets.order(created_at: :desc).first
+          return SecretVerificationResult.new(reason: :secret_not_found) unless latest_secret
 
+          secret = staff.staff_secrets.allowed_for_secret_sign_in.order(created_at: :desc).first
           return SecretVerificationResult.new(reason: :secret_not_found) unless secret
-          unless secret.verify_and_consume!(raw_secret.to_s)
+          return SecretVerificationResult.new(reason: :secret_expired) unless secret.usable_for_secret_sign_in?
+
+          unless secret.verify_for_secret_sign_in!(raw_secret.to_s)
             return SecretVerificationResult.new(reason: :secret_mismatch)
           end
 
@@ -110,10 +109,12 @@ module Sign
                           "sign.org.in.session.restricted_notice",
                           default: "セッション数が上限に達しています。既存セッションを管理してください。",
                         )
-          else
+          elsif result[:status] == :success
             issue_checkpoint!
             redirect_to sign_org_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
                         notice: t("sign.org.authentication.secret.create.success")
+          else
+            render_failed_login(result[:status])
           end
         end
 

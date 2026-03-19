@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_18_050103) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_19_125137) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -255,6 +255,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_18_050103) do
     t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
     t.string "public_id", limit: 21, null: false
+    t.boolean "undeletable", default: false, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_email_status_id", default: 0, null: false
     t.bigint "user_id", null: false

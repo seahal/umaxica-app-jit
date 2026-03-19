@@ -251,6 +251,7 @@ ja:
           destroy:
             success: メールアドレスを削除しました。
             last_method: 最後のログイン手段のため削除できません。
+            protected: このメールアドレスは保護されているため削除できません。
         telephone:
           edit:
             title: 電話番号の削除

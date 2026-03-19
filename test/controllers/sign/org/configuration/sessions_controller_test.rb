@@ -223,4 +223,37 @@ class Sign::Org::Configuration::SessionsControllerTest < ActionDispatch::Integra
     # expired_at should not change (already filtered out by visible session scope)
     assert_equal original_expired_at.to_i, already_expired.expired_at.to_i
   end
+
+  # ===================================================================
+  # HTML UI elements
+  # ===================================================================
+
+  test "index shows revoke all other sessions button" do
+    StaffToken.create!(
+      staff_id: @staff.id,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.day.from_now,
+    )
+
+    get sign_org_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "form[action^='#{others_sign_org_configuration_sessions_path}']"
+    assert_select "button", text: "Revoke all other sessions"
+  end
+
+  test "index shows back link on index page" do
+    get sign_org_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_org_configuration_path(ri: "jp")
+  end
+
+  test "index marks the current session" do
+    get sign_org_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_includes response.body, "current"
+    assert_includes response.body, @current_token.public_id
+  end
 end

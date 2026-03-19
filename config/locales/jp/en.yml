@@ -327,6 +327,7 @@ en:
           destroy:
             success: Email address deleted.
             last_method: You must keep at least one login or recovery method.
+            protected: This email address is protected and cannot be deleted.
         telephone:
           edit:
             title: Delete Phone Number

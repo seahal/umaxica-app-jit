@@ -301,6 +301,63 @@ en:
         destroy:
           success: You have been signed out.
       configuration:
+        show:
+          page_title: Settings
+          description: Account settings and security management
+          back: Back to top
+          withdrawal: Withdrawal
+        email:
+          index:
+            new_link: Add email address
+            edit: Edit
+            delete: Delete
+            delete_confirm: Delete this email address?
+            empty: No email addresses registered.
+          edit:
+            title: Email settings
+          new:
+            page_title: Add email address
+          destroy:
+            success: Email address deleted.
+            last_method: This email address cannot be deleted.
+            protected: This email address is protected and cannot be deleted.
+        telephone:
+          index:
+            new_link: Add telephone number
+            edit: Edit
+            delete: Delete
+            delete_confirm: Delete this telephone number?
+            empty: No telephone numbers registered.
+          edit:
+            title: Telephone settings
+          new:
+            title: Add telephone number
+          destroy:
+            success: Telephone number deleted.
+            last_method: This telephone number cannot be deleted.
+        google:
+          show:
+            description: Google sign-in is available through your verified email addresses.
+            enabled: Google sign-in is available.
+            disabled: Google sign-in is unavailable until you verify an email address.
+            email_hint: To disable Google sign-in, update or remove the matching email address from email settings.
+            delete_confirm: Review how Google sign-in is configured?
+          destroy:
+            via_email: Change Google sign-in from the email settings page.
+        activity:
+          index:
+            page_title: Activity Log
+            description: Review your recent sign-in activity.
+            empty: No activity found.
+            table:
+              occurred_at: Time
+              event: Event
+              ip_address: IP Address
+              context: Context
+          events:
+            logged_in: Logged in
+            login_success: Login success
+            unknown: "Unknown event (%{event_id})"
         passkeys:
           new:
             page_title: Register Passkey
@@ -328,11 +385,33 @@ en:
             destroyed: Secret has been successfully deleted.
       registration:
         email:
+          create:
+            verification_code_sent: Verification code sent by email.
+            turnstile_validation_failed: Verification failed. Please try again later.
+          edit:
+            session_expired: Session expired.
+          update:
+            code_required: Enter the code.
+            invalid_code: The verification code is invalid.
+            attempts_exceeded: Too many attempts. Please start over.
+            success: Email address verified.
           destroy:
             cancelled: Registration cancelled.
           flow:
             invalid: Please follow the registration steps in order.
             invalid_step: Please complete the previous step first.
+        telephone:
+          create:
+            verification_code_sent: Verification code sent by SMS.
+          edit:
+            title: Enter verification code
+            description: Enter the verification code sent by SMS.
+            session_expired: Session expired.
+          update:
+            code_required: Enter the code.
+            invalid_code: The verification code is invalid.
+            attempts_exceeded: Too many attempts. Please start over.
+            success: Telephone number verified.
   auth:
     unauthorized: You are not authorized to access this page.
     step_up:

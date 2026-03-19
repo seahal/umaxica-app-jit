@@ -7,6 +7,8 @@ module StaffSecret::Kinds
   # Kind constants (integer IDs)
   LOGIN = StaffSecretKind::LOGIN
   TOTP = StaffSecretKind::TOTP
+  PERMANENT = StaffSecretKind::PERMANENT
+  ONE_TIME = StaffSecretKind::ONE_TIME
 
   ALL = [LOGIN, TOTP].freeze
 
@@ -17,5 +19,13 @@ module StaffSecret::Kinds
 
   def totp_secret?
     staff_secret_kind_id == TOTP
+  end
+
+  def permanent_secret?
+    staff_secret_kind_id == PERMANENT
+  end
+
+  def one_time_secret?
+    staff_secret_kind_id == ONE_TIME
   end
 end

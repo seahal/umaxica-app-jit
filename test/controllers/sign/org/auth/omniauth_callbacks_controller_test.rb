@@ -43,6 +43,15 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
     assert_includes flash[:notice], "Google"
   end
 
+  test "omniauth marks the matched staff email as undeletable" do
+    refute_predicate @staff_email, :undeletable?
+    state = initiate_social_auth_flow!
+
+    get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
+
+    assert_predicate @staff_email.reload, :undeletable?
+  end
+
   # --- Staff not found ---
 
   test "omniauth redirects to sign-in with error when no staff has that email" do
@@ -63,6 +72,16 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
 
     assert_redirected_to new_sign_org_in_path(ri: "jp")
     assert_equal I18n.t("sign.org.social.sessions.create.not_found"), flash[:alert]
+  end
+
+  test "omniauth redirects to sign-in with failure when staff is withdrawn" do
+    @staff.update!(status_id: StaffStatus::ACTIVE, withdrawn_at: Time.current)
+    state = initiate_social_auth_flow!
+
+    get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
+
+    assert_redirected_to new_sign_org_in_path(ri: "jp")
+    assert_equal I18n.t("sign.org.social.sessions.create.failure"), flash[:alert]
   end
 
   # --- Failure callback ---

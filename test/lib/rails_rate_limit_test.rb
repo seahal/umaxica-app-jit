@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require_relative "../../app/lib/rails_rate_limit"
 
 class RailsRateLimitTest < ActiveSupport::TestCase
   class MockRedis

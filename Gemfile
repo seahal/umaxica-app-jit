@@ -53,6 +53,7 @@ gem "propshaft"
 gem "opentelemetry-sdk", require: false
 gem "opentelemetry-exporter-otlp", require: false
 gem "opentelemetry-instrumentation-all", require: false
+gem "pg_search"
 # Sitemap
 # gem "sitemap_generator" # unused: no sitemap config/task found
 # TOTP
@@ -81,8 +82,6 @@ gem "stimulus-rails"
 gem "importmap-rails"
 # Tailwind CSS
 gem "tailwindcss-rails"
-# Fastly cache purge
-gem "fastly"
 # HTML head tags
 gem "meta-tags"
 # ID generation

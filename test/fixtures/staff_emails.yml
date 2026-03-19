@@ -11,6 +11,7 @@
 #  otp_expires_at                 :datetime
 #  otp_last_sent_at               :datetime
 #  otp_private_key                :string           not null
+#  undeletable                    :boolean          default(FALSE), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  public_id                      :string(21)       not null

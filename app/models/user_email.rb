@@ -16,6 +16,7 @@
 #  otp_expires_at            :datetime         default(-Infinity), not null
 #  otp_last_sent_at          :datetime         default(-Infinity), not null
 #  otp_private_key           :string           default(""), not null
+#  undeletable               :boolean          default(FALSE), not null
 #  verification_token_digest :binary
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
@@ -68,6 +69,7 @@ class UserEmail < PrincipalRecord
   validates :user_email_status_id, numericality: { only_integer: true }
   validate :ensure_unique_address_digest
   validate :enforce_user_email_limit, on: :create
+  before_destroy :prevent_destroy_when_undeletable
 
   def to_param
     public_id
@@ -99,6 +101,13 @@ class UserEmail < PrincipalRecord
   end
 
   private
+
+  def prevent_destroy_when_undeletable
+    return unless undeletable?
+
+    errors.add(:base, :undeletable, message: "cannot delete a protected email address")
+    throw(:abort)
+  end
 
   def set_address_digests
     digest = IdentifierBlindIndex.bidx_for_email(raw_address)
