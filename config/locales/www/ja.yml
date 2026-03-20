@@ -1877,3 +1877,22 @@ ja:
         footer:
           home: ホーム
           preference: 設定
+
+  layouts:
+    shared:
+      footer_theme_controls:
+        title: テーマ設定
+        description: 表示テーマを選択してください（システム設定に従うこともできます）
+        options:
+          system: システム設定に従う
+          light: ライト
+          dark: ダーク
+
+      footer_cookie_controls:
+        close_button: 閉じる
+        title: Cookieの利用について
+        description_html: 当サイトでは、必須Cookieおよび分析・マーケティング目的のCookieを使用します。詳細は%{privacy_policy}をご確認ください。
+        privacy_policy: プライバシーポリシー
+        reject_all: すべて拒否
+        open_settings: 設定する
+        accept_all: すべて許可

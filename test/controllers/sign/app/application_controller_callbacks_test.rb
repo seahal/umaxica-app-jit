@@ -11,11 +11,11 @@ module Sign::App
 
       expected_before_filters = %i(
         apply_rate_limit_rules
+        set_preferences_cookie
         enforce_withdrawal_gate!
         transparent_refresh_access_token
         enforce_access_policy!
         enforce_verification_if_required
-        set_preferences_cookie
         resolve_param_context
         set_region
         set_locale

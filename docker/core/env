@@ -24,9 +24,9 @@ VALKEY_URL=redis://valkey:6379/0
 VALKEY_RACK_ATTACK_URL=redis://valkey:6379/1
 REDIS_NORMAL_URL=redis://valkey:6379/7
 ## PostgreSQL (use local PostgreSQL services inside Compose)
+# POSTGRESQL_PASSWORD is managed via Rails credentials (DATABASE.PASSWORD)
 POSTGRESQL_USER=root
 POSTGRESQL_PORT=5432
-POSTGRESQL_PASSWORD=password
 POSTGRESQL_DEFAULT_PUB=primary
 POSTGRESQL_OCCURRENCE_PUB=primary
 POSTGRESQL_OCCURRENCE_SUB=replica

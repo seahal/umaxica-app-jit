@@ -122,6 +122,19 @@ bundle exec rails test
 COVERAGE=true bundle exec rails test
 ```
 
+### JavaScript Tests
+
+Run JavaScript tests with Vitest:
+
+```bash
+vp test                                    # Run all tests
+vp test test/javascript/controllers        # Run controller tests
+vp test theme_controller.test.js           # Run specific test file
+vp test --watch                            # Watch mode
+```
+
+JavaScript tests are located in `test/javascript/` and use Vitest with Vite Plus.
+
 ## Security and Quality Checks
 
 ```bash

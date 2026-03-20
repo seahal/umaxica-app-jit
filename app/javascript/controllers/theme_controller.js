@@ -1,47 +1,83 @@
 import { Controller } from "@hotwired/stimulus";
 
+const THEME_CODE_MAP = {
+  dr: "dark",
+  dark: "dark",
+  li: "light",
+  light: "light",
+  sy: "system",
+  system: "system",
+};
+
+function readCookie(name) {
+  const cookie = document.cookie
+    .split(";")
+    .map((part) => part.trim().split("="))
+    .find(([key]) => key === name);
+  return cookie ? decodeURIComponent(cookie[1]) : null;
+}
+
+function resolveTheme(value) {
+  if (!value) {
+    return "system";
+  }
+  return THEME_CODE_MAP[value.toLowerCase()] || value.toLowerCase();
+}
+
+let systemListenerRegistered = false;
+
+function applyTheme(theme) {
+  const html = document.documentElement;
+  const systemMatch = window.matchMedia("(prefers-color-scheme: dark)");
+  const resolveSystem = () => (systemMatch.matches ? "dark" : "light");
+  const appliedTheme = theme === "system" ? resolveSystem() : theme;
+  html.dataset.theme = theme;
+  html.classList.remove("theme-dark", "theme-light", "theme-system");
+  html.classList.add(`theme-${theme}`);
+  html.classList.toggle("dark", appliedTheme === "dark");
+
+  if (theme === "system" && !systemListenerRegistered) {
+    systemListenerRegistered = true;
+    systemMatch.addEventListener("change", () => {
+      html.classList.toggle("dark", resolveSystem() === "dark");
+    });
+  }
+}
+
+function applyThemeFromCookie() {
+  const raw = readCookie("ct");
+  const theme = resolveTheme(raw);
+  applyTheme(theme);
+
+  const valueEl = document.getElementById("js-theme-cookie-value");
+  if (valueEl) {
+    valueEl.textContent = theme;
+  }
+}
+
 export default class extends Controller {
   connect() {
-    this.applyTheme();
+    this.syncRadio();
   }
 
-  toggle() {
-    const currentTheme = this.getCurrentTheme();
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
-    this.setTheme(newTheme);
-  }
-
-  getCurrentTheme() {
-    // Checking localStorage first allows user override
-    const stored = localStorage.getItem("theme");
-    if (stored) {
-      return stored;
-    }
-
-    // Fallback to system preference
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-
-  setTheme(theme) {
-    localStorage.setItem("theme", theme);
-    // Sync with server-side cookie helper (ct)
+  select(event) {
+    const { value } = event.target;
+    const code = { system: "sy", dark: "dr", light: "li" }[value] ?? "sy";
     const secure = location.protocol === "https:" ? "; secure" : "";
-    document.cookie = `ct=${theme}; path=/; max-age=31536000; samesite=lax${secure}`;
-    this.applyTheme();
+    document.cookie = `ct=${code}; path=/; max-age=31536000; samesite=lax${secure}`;
+    applyThemeFromCookie();
   }
 
-  applyTheme() {
-    const theme = this.getCurrentTheme();
-    const html = document.documentElement;
-
-    if (theme === "dark") {
-      html.classList.add("dark");
-      html.classList.remove("theme-light");
-      html.classList.add("theme-dark");
-    } else {
-      html.classList.remove("dark");
-      html.classList.remove("theme-dark");
-      html.classList.add("theme-light");
+  syncRadio() {
+    const raw = document.cookie
+      .split(";")
+      .map((p) => p.trim().split("="))
+      .find(([k]) => k === "ct")?.[1];
+    const map = { sy: "system", dr: "dark", li: "light" };
+    const value = map[raw] ?? "system";
+    const radio = this.element.querySelector(`input[value="${value}"]`);
+    if (radio) {
+      radio.checked = true;
     }
   }
 }

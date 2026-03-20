@@ -5,7 +5,6 @@
 
 Rails.application.config.permissions_policy do |policy|
   policy.accelerometer :none
-  policy.ambient_light_sensor :none
   policy.camera             :none
   policy.geolocation        :none
   policy.gyroscope          :none

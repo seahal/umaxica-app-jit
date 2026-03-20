@@ -55,3 +55,5 @@ function initThemeFromCookie() {
 
 document.addEventListener("DOMContentLoaded", initThemeFromCookie);
 document.addEventListener("turbo:load", initThemeFromCookie);
+
+export { initThemeFromCookie as applyThemeFromCookie };

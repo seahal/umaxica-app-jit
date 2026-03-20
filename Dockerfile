@@ -207,6 +207,9 @@ RUN npm install -g pnpm@10.27.0 && \
 RUN curl -fsSL https://vite.plus | bash
 ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
 
+# Install gitleaks for secret detection
+RUN curl -fsSL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | bash
+
 RUN install -d -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
     "${HOME}/.cache" \
     "${HOME}/.config" \

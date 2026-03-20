@@ -1321,3 +1321,22 @@ core:
     layout:
       nav:
         contact: Contact
+
+  layouts:
+    shared:
+      footer_theme_controls:
+        title: Theme settings
+        description: Choose your display theme (or follow your system setting)
+        options:
+          system: Follow system setting
+          light: Light
+          dark: Dark
+
+      footer_cookie_controls:
+        close_button: Close
+        title: About our use of cookies
+        description_html: We use essential cookies and cookies for analytics and marketing purposes. Please review our %{privacy_policy} for details.
+        privacy_policy: Privacy Policy
+        reject_all: Reject all
+        open_settings: Manage settings
+        accept_all: Accept all

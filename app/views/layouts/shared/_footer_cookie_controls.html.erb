@@ -1,20 +1,19 @@
 <div
   id="cookie-banner"
+  data-controller="cookie-banner"
   role="dialog"
   aria-live="polite"
   aria-labelledby="cookie-title"
   aria-describedby="cookie-desc"
-  class="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-300 shadow"
->
+  class="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-300 shadow">
   <div class="max-w-4xl mx-auto p-4 space-y-3 relative">
 
-    <!-- 閉じるボタン -->
+    <!-- Close button -->
     <button
       type="button"
-      data-action="invisible"
-      aria-label="閉じる"
-      class="absolute top-2 right-2 p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
+      data-action="cookie-banner#invisible"
+      aria-label="<%= t(".close_button") %>"
+      class="absolute top-2 right-2 p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="w-4 h-4"
@@ -23,56 +22,47 @@
         stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+        stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18" />
         <line x1="6" y1="6" x2="18" y2="18" />
       </svg>
     </button>
 
-    <!-- タイトル -->
+    <!-- Title -->
     <h2 id="cookie-title" class="text-sm font-semibold pr-8">
-      Cookieの利用について
+      <%= t(".title") %>
     </h2>
 
-    <!-- 説明 -->
+    <!-- Description -->
     <p id="cookie-desc" class="text-sm text-gray-700">
-      当サイトでは、必須Cookieおよび分析・マーケティング目的のCookieを使用します。
-      詳細は
-      <a href="/privacy" class="underline text-blue-600">
-        プライバシーポリシー
-      </a>
-      をご確認ください。
+      <%= t(".description_html", privacy_policy: link_to(t(".privacy_policy"), "/privacy", class: "underline text-blue-600")) %>
     </p>
 
-    <!-- 操作 -->
+    <!-- Actions -->
     <div class="flex flex-wrap gap-2">
 
-      <!-- 拒否 -->
+      <!-- Reject -->
       <button
         type="button"
-        data-action="reject"
-        class="px-3 py-1.5 text-sm rounded border border-gray-300 hover:bg-gray-50"
-      >
-        すべて拒否
+        data-action="cookie-banner#reject"
+        class="px-3 py-1.5 text-sm rounded border border-gray-300 hover:bg-gray-50">
+        <%= t(".reject_all") %>
       </button>
 
-      <!-- 設定 -->
+      <!-- Settings -->
       <button
         type="button"
-        data-action="open-settings"
-        class="px-3 py-1.5 text-sm rounded bg-gray-200 hover:bg-gray-300"
-      >
-        設定する
+        data-action="cookie-banner#openSettings"
+        class="px-3 py-1.5 text-sm rounded bg-gray-200 hover:bg-gray-300">
+        <%= t(".open_settings") %>
       </button>
 
-      <!-- 同意 -->
+      <!-- Accept -->
       <button
         type="button"
-        data-action="accept"
-        class="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
-      >
-        すべて許可
+        data-action="cookie-banner#accept"
+        class="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700">
+        <%= t(".accept_all") %>
       </button>
 
     </div>
