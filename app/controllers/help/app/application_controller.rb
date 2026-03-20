@@ -14,6 +14,8 @@ module Help
       include ::Current
       include ::Finisher
 
+      allow_browser versions: :modern
+
       before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
@@ -21,9 +23,10 @@ module Help
       before_action :set_current
       append_after_action :finish_request
 
-      protect_from_forgery with: :exception
-
-      allow_browser versions: :modern
+      # FIXME: Resolve the URL issues before deploying.
+      protect_from_forgery using: :header_or_legacy_token,
+                           trusted_origins: %w(http://help.app.localhost https://help.app.localhost),
+                           with: :exception
 
       public_strict!
 

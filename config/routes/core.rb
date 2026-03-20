@@ -13,6 +13,12 @@ scope module: :core, as: :core do
       # health check for html
       resource :health, only: :show, format: :html
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do
@@ -41,12 +47,17 @@ scope module: :core, as: :core do
       # endpoint of health check
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
-
           resource :preference, only: :show
         end
       end
@@ -78,6 +89,12 @@ scope module: :core, as: :core do
       # health check for html
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do

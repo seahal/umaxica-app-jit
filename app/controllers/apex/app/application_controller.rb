@@ -15,7 +15,10 @@ module Apex
       include ::Current
       include ::Finisher
 
+      allow_browser versions: :modern
+
       before_action :set_preferences_cookie
+
       before_action :resolve_param_context
       before_action :set_region
       before_action :set_locale
@@ -27,9 +30,10 @@ module Apex
       before_action :enforce_verification_if_required
       append_after_action :finish_request
 
-      protect_from_forgery with: :exception
-
-      allow_browser versions: :modern
+      # FIXME: Resolve the URL issues before deploying.
+      protect_from_forgery using: :header_or_legacy_token,
+                           trusted_origins: %w(http://app.localhost https://app.localhost),
+                           with: :exception
 
       public_strict!
 

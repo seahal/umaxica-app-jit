@@ -14,14 +14,17 @@ module Help
       include ::Current
       include ::Finisher
 
+      allow_browser versions: :modern
+
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
       append_after_action :finish_request
 
-      protect_from_forgery with: :exception
-
-      allow_browser versions: :modern
+      # FIXME: Resolve the URL issues before deploying.
+      protect_from_forgery using: :header_or_legacy_token,
+                           trusted_origins: %w(http://help.org.localhost https://help.org.localhost),
+                           with: :exception
 
       public_strict!
 

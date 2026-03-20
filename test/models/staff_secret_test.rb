@@ -155,6 +155,7 @@ class StaffSecretTest < ActiveSupport::TestCase
     end
 
     record.reload
+
     assert_equal StaffSecretStatus::ACTIVE, record.staff_secret_status_id
     assert_operator record.last_used_at, :>, first_last_used_at
   end

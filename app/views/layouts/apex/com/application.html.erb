@@ -1,60 +1,52 @@
 <!DOCTYPE html>
 <html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
 <head>
-  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (com) Apex", title: (content_for(:page_title) if content_for?(:page_title)) %>
+  <%= display_meta_tags site: "#{ENV.fetch('BRAND_NAME', 'Umaxica')} (com) Apex", title: page_title %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="turbo-refresh-method" content="morph">
   <meta name="turbo-refresh-scroll" content="preserve">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "apex/main", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "apex/com/main", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-  <%= stylesheet_link_tag "apex/main" %>
-  <%= stylesheet_link_tag "apex/com/main" %>
   <%= javascript_importmap_tags %>
+  <%= yield :head %>
 </head>
 
 <body>
-<div>
-  <%= render "shared/flash_messages" %>
-  <header>
-    <div>
-      <span>APEX</span>
-      <h1>
 
-        Umaxica (com)
-
-      </h1>
-    </div>
-  </header>
-<%= render "shared/current_banner", surface: :com %>
-
-  <hr>
-<% if show_cookie_banner? %>
-  <%= render "shared/cookie_banner" %>
-<% end %>
-
-    <main>
-    <%= yield %>
-  </main>
-
+<header>
   <nav>
-
+    <%= render "layouts/shared/flash_messages" %>
+    <%= render "layouts/shared/current_banner", surface: :com %>
   </nav>
+  <div>
+    <span>APEX</span>
+    <h1>
+      <a href="<%= "#{request.protocol}#{ENV.fetch('APEX_CORPORATE_URL', 'com.localhost')}#{request.port_string}/" %>"><%= ENV.fetch("BRAND_NAME", "Umaxica") %></a>
+      <span>(com)</span>
+    </h1>
+  </div>
+</header>
 
-  <hr>
+<main>
+  <%= yield %>
+</main>
 
-  <footer>
-    <nav>
-      <a href="<%= "#{request.protocol}#{ENV.fetch('APEX_CORPORATE_URL', 'com.localhost')}#{request.port_string}/" %>"><%= t('apex.com.preferences.footer.home') %></a>
-      <%= link_to t('apex.com.preferences.footer.preference'), apex_com_preference_url %>
-    </nav>
-    <%= render "layouts/shared/footer_theme_controls", scope: :com %>
-    <div>
-      <%= render "shared/copyright" %>
-    </div>
-  </footer>
-</div>
-
+<footer>
+  <nav>
+    <ul>
+      <li><a href="<%= "#{request.protocol}#{ENV.fetch('APEX_CORPORATE_URL', 'com.localhost')}#{request.port_string}/" %>"><%= t('apex.com.preferences.footer.home') %></a></li>
+      <li><%= link_to t('apex.com.preferences.footer.preference'), apex_com_preference_url %></li>
+    </ul>
+  </nav>
+  <%= render "layouts/shared/footer_cookie_controls", scope: :com %>
+  <%= render "layouts/shared/footer_theme_controls", scope: :com %>
+  <div>
+    <%= render "layouts/shared/copyright" %>
+  </div>
+</footer>
 </body>
 </html>

@@ -11,18 +11,6 @@ scope module: :sign, as: :sign do
       resource :health, only: :show, defaults: { format: :html }
       resource :sitemap, only: :show, defaults: { format: :xml }
 
-      namespace :edge do
-        namespace :v0 do
-          resource :health, only: :show
-          resource :sitemap, only: :show
-          namespace :token do
-            resource :check, only: :show
-            resource :dbsc_registration, only: :create
-            resource :refresh, only: :create
-          end
-        end
-      end
-
       namespace :web do
         namespace :v0 do
           namespace :in do
@@ -34,6 +22,20 @@ scope module: :sign, as: :sign do
               # TODO: nusty code!, delete controller of this line
               resource :otp, only: :create, controller: :otps
             end
+          end
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
+
+      namespace :edge do
+        namespace :v0 do
+          resource :health, only: :show
+          resource :sitemap, only: :show
+          namespace :token do
+            resource :check, only: :show
+            resource :dbsc_registration, only: :create
+            resource :refresh, only: :create
           end
         end
       end
@@ -158,6 +160,13 @@ scope module: :sign, as: :sign do
 
       resource :health, only: :show, defaults: { format: :html }
       resource :sitemap, only: :show, defaults: { format: :xml }
+
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
 
       namespace :edge do
         namespace :v0 do

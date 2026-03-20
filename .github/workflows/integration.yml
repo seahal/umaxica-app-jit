@@ -38,7 +38,7 @@ env:
   BUNDLE_DEPLOYMENT: "true"
   BUNDLE_FROZEN: "true"
   # Region Configuration
-  REGION_CODE: jp
+  REGION_CODE: all
   APEX_REGION: true
 jobs:
   # ====================
@@ -213,7 +213,7 @@ jobs:
       # Region
       APEX_REGION: true
       GLOBAL_MODE: true
-      REGION_CODE: jp
+      REGION_CODE: all
       # Valkey
       VALKEY_URL: redis://localhost:6379/0
       VALKEY_RACK_ATTACK_URL: redis://localhost:6379/1
@@ -247,8 +247,8 @@ jobs:
       POSTGRESQL_MESSAGE_SUB: localhost
       POSTGRESQL_NOTIFICATION_PUB: localhost
       POSTGRESQL_NOTIFICATION_SUB: localhost
-      POSTGRESQL_CABLE_PUB: localhost
-      POSTGRESQL_CABLE_SUB: localhost
+      POSTGRESQL_CACHE_PUB: localhost
+      POSTGRESQL_CACHE_SUB: localhost
       POSTGRESQL_QUEUE_PUB: localhost
       POSTGRESQL_QUEUE_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
@@ -377,8 +377,8 @@ jobs:
       POSTGRESQL_MESSAGE_SUB: localhost
       POSTGRESQL_NOTIFICATION_PUB: localhost
       POSTGRESQL_NOTIFICATION_SUB: localhost
-      POSTGRESQL_CABLE_PUB: localhost
-      POSTGRESQL_CABLE_SUB: localhost
+      POSTGRESQL_CACHE_PUB: localhost
+      POSTGRESQL_CACHE_SUB: localhost
       POSTGRESQL_QUEUE_PUB: localhost
       POSTGRESQL_QUEUE_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost

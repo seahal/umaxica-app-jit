@@ -1,0 +1,8 @@
+<% if (banner = current_banner_for(local_assigns.fetch(:surface))) %>
+  <section aria-label="banner">
+    <% if banner.title.present? %>
+      <h2><%= banner.title %></h2>
+    <% end %>
+    <p><%= banner.body %></p>
+  </section>
+<% end %>

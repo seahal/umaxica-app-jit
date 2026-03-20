@@ -93,6 +93,27 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal 1, pref.try("#{domain[:name]}_preference_region").option_id
     end
 
+    test "#{domain[:name]} domain region edit and update do not change preference count" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+      state = default_state.merge(ri: "us")
+
+      assert_no_difference -> { domain[:preference_model].count } do
+        get public_send("edit_apex_#{domain[:name]}_preference_region_url", state)
+
+        assert_response :success
+
+        patch public_send("apex_#{domain[:name]}_preference_region_url", state),
+              params: { preference_region: { option_id: "US" } }
+
+        assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_region_url", state)
+      end
+
+      pref.reload
+
+      assert_equal 1, pref.try("#{domain[:name]}_preference_region").option_id
+    end
+
     test "#{domain[:name]} domain updates timezone" do
       host!(domain[:host])
       pref, = assert_preference_created(domain)
@@ -112,6 +133,27 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal 1, pref.try("#{domain[:name]}_preference_timezone").option_id
     end
 
+    test "#{domain[:name]} domain timezone edit and update do not change preference count" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+      state = default_state.merge(tz: "etc/utc")
+
+      assert_no_difference -> { domain[:preference_model].count } do
+        get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", state)
+
+        assert_response :success
+
+        patch public_send("apex_#{domain[:name]}_preference_region_timezone_url", state),
+              params: { preference_timezone: { option_id: "Etc/UTC" } }
+
+        assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", state)
+      end
+
+      pref.reload
+
+      assert_equal 1, pref.try("#{domain[:name]}_preference_timezone").option_id
+    end
+
     test "#{domain[:name]} domain updates language" do
       host!(domain[:host])
       pref, = assert_preference_created(domain)
@@ -124,6 +166,27 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
         { preference_language: { option_id: "EN" } },
         state,
       )
+
+      pref.reload
+
+      assert_equal 2, pref.try("#{domain[:name]}_preference_language").option_id
+    end
+
+    test "#{domain[:name]} domain language edit and update do not change preference count" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+      state = default_state.merge(lx: "en")
+
+      assert_no_difference -> { domain[:preference_model].count } do
+        get public_send("edit_apex_#{domain[:name]}_preference_region_language_url", state)
+
+        assert_response :success
+
+        patch public_send("apex_#{domain[:name]}_preference_region_language_url", state),
+              params: { preference_language: { option_id: "EN" } }
+
+        assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_region_language_url", state)
+      end
 
       pref.reload
 
@@ -211,6 +274,25 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal "Asia/Tokyo", Time.zone.name
     end
 
+    test "#{domain[:name]} domain redirects timezone edit with updated tz when request omits tz" do
+      host!(domain[:host])
+
+      pref, = assert_preference_created(domain)
+
+      patch public_send("apex_#{domain[:name]}_preference_region_timezone_url", ri: "us"),
+            params: { preference_timezone: { option_id: "Etc/UTC" } }
+
+      assert_redirected_to public_send(
+        "edit_apex_#{domain[:name]}_preference_region_timezone_url",
+        ri: "us",
+        tz: "etc/utc",
+      )
+
+      pref.reload
+
+      assert_equal 1, pref.try("#{domain[:name]}_preference_timezone").option_id
+    end
+
     test "#{domain[:name]} domain language select uses localized options" do
       host!(domain[:host])
       get public_send("edit_apex_#{domain[:name]}_preference_region_language_url", default_state)
@@ -240,6 +322,27 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal 2, pref.try("#{domain[:name]}_preference_colortheme").option_id
     end
 
+    test "#{domain[:name]} domain theme edit and update do not change preference count" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+      state = default_state
+
+      assert_no_difference -> { domain[:preference_model].count } do
+        get public_send("edit_apex_#{domain[:name]}_preference_theme_url", state)
+
+        assert_response :success
+
+        patch public_send("apex_#{domain[:name]}_preference_theme_url", state),
+              params: { preference_colortheme: { option_id: "dr" } }
+
+        assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_theme_url", state)
+      end
+
+      pref.reload
+
+      assert_equal 2, pref.try("#{domain[:name]}_preference_colortheme").option_id
+    end
+
     test "#{domain[:name]} domain timezone select omits blank option" do
       host!(domain[:host])
       get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
@@ -257,6 +360,27 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
         { preference_cookie: { functional: "1" } },
         default_state,
       )
+
+      pref.reload
+
+      assert pref.try("#{domain[:name]}_preference_cookie").functional
+    end
+
+    test "#{domain[:name]} domain cookie edit and update do not change preference count" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+      state = default_state
+
+      assert_no_difference -> { domain[:preference_model].count } do
+        get public_send("edit_apex_#{domain[:name]}_preference_cookie_url", state)
+
+        assert_response :success
+
+        patch public_send("apex_#{domain[:name]}_preference_cookie_url", state),
+              params: { preference_cookie: { functional: "1", performant: "0", targetable: "0" } }
+
+        assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_cookie_url", state)
+      end
 
       pref.reload
 
@@ -287,6 +411,27 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       # Reset to defaults keeps the preference active (status stays NOTHING)
       assert_equal 2, pref.status_id
       assert_not_nil pref.expires_at
+    end
+
+    test "#{domain[:name]} domain reset edit and destroy do not change preference count" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+      state = default_state.merge(ri: "us")
+
+      assert_no_difference -> { domain[:preference_model].count } do
+        get public_send("edit_apex_#{domain[:name]}_preference_reset_url", state)
+
+        assert_response :success
+
+        delete public_send("apex_#{domain[:name]}_preference_reset_url", state),
+               params: { confirm_reset: "1" }
+
+        assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_reset_url", state)
+      end
+
+      pref.reload
+
+      assert_equal 2, pref.status_id
     end
 
     test "#{domain[:name]} domain reset without confirmation returns error" do

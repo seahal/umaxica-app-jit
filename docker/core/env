@@ -17,7 +17,7 @@ OPEN_TELEMETRY=false
 NODE_ENV=development
 # Region
 # GLOBAL_MODE=true
-REGION_CODE=jp
+REGION_CODE=all
 # Database Configuration
 ## Redis (use local Redis service inside Compose)
 VALKEY_URL=redis://valkey:6379/0
@@ -54,8 +54,8 @@ POSTGRESQL_MESSAGE_PUB=primary
 POSTGRESQL_MESSAGE_SUB=replica
 POSTGRESQL_NOTIFICATION_PUB=primary
 POSTGRESQL_NOTIFICATION_SUB=replica
-POSTGRESQL_CABLE_PUB=primary
-POSTGRESQL_CABLE_SUB=replica
+POSTGRESQL_CACHE_PUB=primary
+POSTGRESQL_CACHE_SUB=replica
 POSTGRESQL_STORAGE_PUB=primary
 POSTGRESQL_STORAGE_SUB=replica
 POSTGRESQL_QUEUE_PUB=primary

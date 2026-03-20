@@ -431,18 +431,7 @@ module Preference
     end
 
     def show_cookie_banner?
-      return false unless request.format.html?
-      return false if cookie_banner_endpoint_url.blank?
-
-      token = cookies[Preference::CookieName.access]
-      return true if token.blank?
-
-      payload = Token.decode(token, host: request.host)
-      consent = extract_cookie_banner_consent(payload)
-      consent != true
-    rescue StandardError => e
-      Rails.logger.warn("[Preference::Base] cookie banner fallback to visible: #{e.class}")
-      true
+      false
     end
 
     def cookie_banner_endpoint_url

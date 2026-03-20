@@ -8,6 +8,12 @@ scope module: :help, as: :help do
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do
@@ -24,6 +30,12 @@ scope module: :help, as: :help do
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do
@@ -40,6 +52,12 @@ scope module: :help, as: :help do
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do

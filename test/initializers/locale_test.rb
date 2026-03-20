@@ -22,11 +22,12 @@ class LocaleInitializerTest < ActiveSupport::TestCase
   end
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "REGION_CODE=jp should load jp locale files" do
-    ENV["REGION_CODE"] = "jp"
+  test "REGION_CODE=all should load www and jpn locale files" do
+    ENV["REGION_CODE"] = "all"
 
     assert_nothing_raised { reload_locale_initializer }
-    assert_includes_locale_path("config/locales/jp")
+    assert_includes_locale_path("config/locales/jpn")
+    assert_includes_locale_path("config/locales/www")
     assert_equal [:en, :ja], I18n.available_locales.sort
     assert_equal :ja, I18n.default_locale
     assert_equal [:en, :ja], I18n.fallbacks[:en]
@@ -34,15 +35,15 @@ class LocaleInitializerTest < ActiveSupport::TestCase
   end
   # rubocop:enable Minitest/MultipleAssertions
 
-  # test "REGION_CODE=us should work correctly" do
+  # test "REGION_CODE=usa should work correctly" do
   #   result = system(
-  #     { "REGION_CODE" => "us" },
+  #     { "REGION_CODE" => "usa" },
   #     "bundle exec rails runner 'puts \"OK\"'",
   #     out: File::NULL,
   #     err: File::NULL
   #   )
   #
-  #   assert result, "Rails should start successfully with REGION_CODE=us"
+  #   assert result, "Rails should start successfully with REGION_CODE=usa"
   # end
 
   # test "invalid REGION_CODE should fail with descriptive error" do
@@ -56,17 +57,18 @@ class LocaleInitializerTest < ActiveSupport::TestCase
 
   # test "correct locale files are loaded based on REGION_CODE" do
   #   # Test that jp region loads jp locale files
-  #   output = `REGION_CODE=jp bundle exec rails runner 'puts I18n.load_path.grep(/locales/).first' 2>&1`
-  #   assert_match(/config\/locales\/jp/, output, "Should load locale files from jp directory")
+  #   output = `REGION_CODE=jpn bundle exec rails runner 'puts I18n.load_path.grep(/locales/).first' 2>&1`
+  #   assert_match(/config\/locales\/jpn/, output, "Should load locale files from jp directory")
   #
   #   # Test that us region loads us locale files
-  #   output = `REGION_CODE=us bundle exec rails runner 'puts I18n.load_path.grep(/locales/).first' 2>&1`
-  #   assert_match(/config\/locales\/us/, output, "Should load locale files from us directory")
+  #   output = `REGION_CODE=usa bundle exec rails runner 'puts I18n.load_path.grep(/locales/).first' 2>&1`
+  #   assert_match(/config\/locales\/usa/, output, "Should load locale files from us directory")
   # end
 
   private
 
   def reload_locale_initializer
+    Object.send(:remove_const, :REGION_COMPOSE) if defined?(REGION_COMPOSE)
     load INITIALIZER_PATH
   end
 

@@ -14,11 +14,10 @@ module Apex
 
           def update
             set_timezone_preferences_update
-            redirect_params = {}
-            if params[:tz].present?
-              redirect_params[:tz] =
-                option_id_to_timezone(@preference_timezone.option_id, preference_prefix).downcase
-            end
+            session[:timezone] = option_id_to_timezone(@preference_timezone.option_id, preference_prefix)
+            redirect_params = {
+              tz: option_id_to_timezone(@preference_timezone.option_id, preference_prefix).downcase,
+            }
             redirect_to edit_apex_com_preference_region_timezone_url(redirect_params)
           rescue PreferenceOperationError
             redirect_to edit_apex_com_preference_region_timezone_url,

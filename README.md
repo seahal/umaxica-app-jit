@@ -88,16 +88,16 @@ TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bi
 Modern browsers resolve `*.localhost` to `127.0.0.1`, so extra `/etc/hosts` entries are usually not
 needed.
 
-| Surface  | URL |
-| :------- | :-- |
-| App apex | `http://app.localhost:3000`      |
-| Com apex | `http://com.localhost:3000`      |
-| Org apex | `http://org.localhost:3000`      |
-| App sign | `http://sign.app.localhost:3000` |
-| Org sign | `http://sign.org.localhost:3000` |
-| App core | `http://www.app.localhost:3000`  |
-| Com core | `http://www.com.localhost:3000`  |
-| Org core | `http://www.org.localhost:3000`  |
+| Surface  | URL                                        |
+| :------- | :----------------------------------------- |
+| App apex | `http://app.localhost:3000`                |
+| Com apex | `http://com.localhost:3000`                |
+| Org apex | `http://org.localhost:3000`                |
+| App sign | `http://sign.app.localhost:3000`           |
+| Org sign | `http://sign.org.localhost:3000`           |
+| App core | `http://www.app.localhost:3000`            |
+| Com core | `http://www.com.localhost:3000`            |
+| Org core | `http://www.org.localhost:3000`            |
 | Docs     | `http://docs.{app,com,org}.localhost:3000` |
 | Help     | `http://help.{app,com,org}.localhost:3000` |
 | News     | `http://news.{app,com,org}.localhost:3000` |
@@ -162,12 +162,12 @@ These checks cover formatting, linting, security audits, database consistency, a
 
 ## Troubleshooting
 
-| Problem                                            | Fix                                                                                         |
-| :------------------------------------------------- | :------------------------------------------------------------------------------------------ |
-| Tailwind changes are not reflected                 | Run `bin/rails assets:clobber` and restart `bin/dev` or `bin/rails tailwindcss:watch`       |
-| Tests fail because databases are missing           | Run `bin/rails db:prepare`                                                                  |
-| `bin/dev` stops during boot                        | Check `TRUSTED_ORIGINS` and database availability                                           |
-| Credentials cannot be decrypted                    | Use the shared Rails credentials key for this environment                                   |
+| Problem                                  | Fix                                                                                   |
+| :--------------------------------------- | :------------------------------------------------------------------------------------ |
+| Tailwind changes are not reflected       | Run `bin/rails assets:clobber` and restart `bin/dev` or `bin/rails tailwindcss:watch` |
+| Tests fail because databases are missing | Run `bin/rails db:prepare`                                                            |
+| `bin/dev` stops during boot              | Check `TRUSTED_ORIGINS` and database availability                                     |
+| Credentials cannot be decrypted          | Use the shared Rails credentials key for this environment                             |
 
 ## Notes
 

@@ -10,7 +10,7 @@ class CurrentBannerPartialTest < ActionView::TestCase
 
   test "renders the current banner for a surface" do
     travel_to Time.zone.parse("2026-03-18 00:00:00 UTC") do
-      render partial: "shared/current_banner", locals: { surface: :app }
+      render partial: "layouts/shared/current_banner", locals: { surface: :app }
 
       assert_includes rendered, "App newer banner"
       assert_includes rendered, "App newer banner body"
@@ -19,7 +19,7 @@ class CurrentBannerPartialTest < ActionView::TestCase
 
   test "renders nothing when the current banner is missing" do
     ComBanner.stub :current, ComBanner.none do
-      render partial: "shared/current_banner", locals: { surface: :com }
+      render partial: "layouts/shared/current_banner", locals: { surface: :com }
 
       assert_empty rendered.strip
     end

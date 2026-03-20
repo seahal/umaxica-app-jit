@@ -11,16 +11,21 @@ class Apex::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     host! @host
   end
 
-  test "GET show without access jwt returns show_banner true" do
+  test "GET show without access jwt returns consented false" do
     cookies.delete(Preference::CookieName.access)
 
     get apex_app_web_v0_cookie_path, as: :json
 
     assert_response :ok
-    assert response.parsed_body["show_banner"]
+    body = response.parsed_body
+
+    assert_not body["consented"]
+    assert_not body["functional"]
+    assert_not body["performant"]
+    assert_not body["targetable"]
   end
 
-  test "GET show returns show_banner true when jwt decode fails" do
+  test "GET show returns consented false when jwt decode fails" do
     cookies[Preference::CookieName.access] = "invalid.jwt.token"
 
     with_preference_jwt_keys(host: @host) do
@@ -28,12 +33,12 @@ class Apex::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
-    assert response.parsed_body["show_banner"]
+    assert_not response.parsed_body["consented"]
   end
 
-  test "GET show returns show_banner false when consent is true" do
+  test "GET show returns consent state from jwt payload" do
     token = encode_preference_jwt(
-      preferences: { "consent" => true },
+      preferences: { "consented" => true, "functional" => true, "performant" => false, "targetable" => false },
       host: @host,
       public_id: "pref-app-public-id",
     )
@@ -44,23 +49,12 @@ class Apex::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
-    assert_not response.parsed_body["show_banner"]
-  end
+    body = response.parsed_body
 
-  test "GET show returns show_banner true when consent is false" do
-    token = encode_preference_jwt(
-      preferences: { "consent" => false },
-      host: @host,
-      public_id: "pref-app-public-id",
-    )
-    cookies[Preference::CookieName.access] = token
-
-    with_preference_jwt_keys(host: @host) do
-      get apex_app_web_v0_cookie_path, as: :json
-    end
-
-    assert_response :ok
-    assert response.parsed_body["show_banner"]
+    assert body["consented"]
+    assert body["functional"]
+    assert_not body["performant"]
+    assert_not body["targetable"]
   end
 
   test "PATCH update returns 200 and sets preference_consented cookie with app domain" do
@@ -72,7 +66,7 @@ class Apex::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     cookies[Preference::CookieName.access] = token
     expires_at = Time.utc(2030, 1, 2, 3, 4, 5)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
       with_preference_jwt_keys(host: @host) do
         Apex::App::Web::V0::CookiesController.any_instance.stub(:refresh_token_expires_at, expires_at) do
           patch apex_app_web_v0_cookie_path, as: :json
@@ -81,11 +75,11 @@ class Apex::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
-    assert_not response.parsed_body["show_banner"], "consented=true means banner should not show"
+    assert response.parsed_body["consented"]
     set_cookie = response.headers["Set-Cookie"].to_s
 
     assert_includes set_cookie, "preference_consented=1"
-    assert_includes set_cookie, "domain=.app.example.test"
+    assert_includes set_cookie, "domain=.app.localhost"
     assert_includes set_cookie.downcase, "path=/"
     expires = response_cookie_expiry("preference_consented")
 
@@ -104,7 +98,7 @@ class Apex::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
       consented_at: nil,
     )
     token = encode_preference_jwt(
-      preferences: { "consented" => false, "consent" => nil },
+      preferences: { "consented" => false },
       host: @host,
       public_id: preference.public_id,
     )
@@ -136,7 +130,7 @@ class Apex::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
       consented_at: nil,
     )
     token = encode_preference_jwt(
-      preferences: { "consented" => false, "consent" => nil },
+      preferences: { "consented" => false },
       host: @host,
       public_id: preference.public_id,
     )

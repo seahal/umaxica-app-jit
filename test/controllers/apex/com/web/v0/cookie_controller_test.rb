@@ -11,9 +11,18 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     host! @host
   end
 
-  test "GET show returns show_banner true when consent is false" do
+  test "GET show without access jwt returns consented false" do
+    cookies.delete(Preference::CookieName.access)
+
+    get apex_com_web_v0_cookie_path, as: :json
+
+    assert_response :ok
+    assert_not response.parsed_body["consented"]
+  end
+
+  test "GET show returns consent state from jwt payload" do
     token = encode_preference_jwt(
-      preferences: { "consent" => false },
+      preferences: { "consented" => false, "functional" => false, "performant" => false, "targetable" => false },
       host: @host,
       public_id: "pref-com-public-id",
       preference_type: "ComPreference",
@@ -25,7 +34,7 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
-    assert response.parsed_body["show_banner"]
+    assert_not response.parsed_body["consented"]
   end
 
   test "PATCH update returns 200 and sets preference_consented cookie with com domain" do
@@ -38,7 +47,7 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     cookies[Preference::CookieName.access] = token
     expires_at = Time.utc(2031, 2, 3, 4, 5, 6)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_COM: ".com.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_COM: ".com.localhost") do
       with_preference_jwt_keys(host: @host) do
         Apex::Com::Web::V0::CookiesController.any_instance.stub(:refresh_token_expires_at, expires_at) do
           patch apex_com_web_v0_cookie_path, as: :json
@@ -47,11 +56,10 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
-    assert response.parsed_body["show_banner"]
     set_cookie = response.headers["Set-Cookie"].to_s
 
     assert_includes set_cookie, "preference_consented=0"
-    assert_includes set_cookie, "domain=.com.example.test"
+    assert_includes set_cookie, "domain=.com.localhost"
     assert_includes set_cookie.downcase, "path=/"
     expires = response_cookie_expiry("preference_consented")
 
@@ -70,7 +78,7 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
       consented_at: nil,
     )
     token = encode_preference_jwt(
-      preferences: { "consented" => false, "consent" => nil },
+      preferences: { "consented" => false },
       host: @host,
       public_id: preference.public_id,
       preference_type: "ComPreference",

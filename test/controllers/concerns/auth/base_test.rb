@@ -36,8 +36,35 @@ module Auth
         @session_hash = {}
         @flash_hash = {}
         @logged_in = false
-        @request_stub = Struct.new(:format).new(Struct.new(:json?).new(false))
+        @request_stub = Struct.new(:format, :host, :request_id, :remote_ip).new(
+          Struct.new(:json?).new(false),
+          "app.localhost", "req-123", "127.0.0.1",
+        )
+        @cookies = {}.with_indifferent_access
       end
+
+      def cookies
+        @cookies
+      end
+
+      # Mock encrypted cookies
+      def self.encrypted_cookies
+        @encrypted_cookies ||= {}.with_indifferent_access
+      end
+
+      def cookies_with_mock_delete
+        c = @cookies
+        def c.delete(key, _options = nil)
+          super(key)
+        end
+
+        def c.encrypted
+          Auth::BaseTest::HeaderKeyHarness.encrypted_cookies
+        end
+        c
+      end
+      alias_method :original_cookies, :cookies
+      def cookies; cookies_with_mock_delete; end
 
       def current_resource
         @logged_in ? Object.new : nil
@@ -282,6 +309,65 @@ module Auth
       harness.redirect_with_rd_handling("/default", :alert, "warn")
 
       assert_equal ["/default", { alert: "warn" }], harness.redirected
+    end
+
+    test "set_device_id_cookie! and read_device_id_cookie" do
+      harness = HeaderKeyHarness.new
+      expires_at = 1.day.from_now
+
+      # Mock Core::CookieOptions
+      Core::CookieOptions.stub :for, {} do
+        harness.send(:set_device_id_cookie!, "dev-123", expires_at: expires_at)
+
+        assert_equal "dev-123", HeaderKeyHarness.encrypted_cookies[Auth::Base::DEVICE_COOKIE_KEY][:value]
+
+        # Mock reading from encrypted cookies
+        HeaderKeyHarness.encrypted_cookies[Auth::Base::DEVICE_COOKIE_KEY] = "dev-123"
+
+        assert_equal "dev-123", harness.send(:read_device_id_cookie)
+      end
+    end
+
+    test "clear_auth_cookies! deletes all auth-related cookies" do
+      harness = HeaderKeyHarness.new
+      harness.cookies[Auth::Base::ACCESS_COOKIE_KEY] = "access"
+      harness.cookies[Auth::Base::REFRESH_COOKIE_KEY] = "refresh"
+
+      Core::CookieOptions.stub :for, {} do
+        harness.send(:clear_auth_cookies!)
+
+        assert_nil harness.cookies[Auth::Base::ACCESS_COOKIE_KEY]
+        assert_nil harness.cookies[Auth::Base::REFRESH_COOKIE_KEY]
+      end
+    end
+
+    test "JwtConfiguration.issuer respects resource_type" do
+      assert_equal "umaxica-auth:user", Auth::Base::JwtConfiguration.issuer("user")
+      assert_equal "umaxica-auth:staff", Auth::Base::JwtConfiguration.issuer("staff")
+      assert_equal "umaxica-auth", Auth::Base::JwtConfiguration.issuer("invalid")
+    end
+
+    test "JwtConfiguration.audiences respects resource_type specific env" do
+      with_env("AUTH_JWT_USER_AUDIENCES" => "u1,u2", "AUTH_JWT_AUDIENCES" => "default") do
+        assert_equal %w(u1 u2), Auth::Base::JwtConfiguration.audiences("user")
+        assert_equal %w(default), Auth::Base::JwtConfiguration.audiences("staff")
+      end
+    end
+
+    test "JwtConfiguration.token_type returns correct format" do
+      assert_equal "auth-access-token;user", Auth::Base::JwtConfiguration.token_type("user")
+      assert_equal "auth-access-token;staff", Auth::Base::JwtConfiguration.token_type("staff")
+      assert_raises(ArgumentError) { Auth::Base::JwtConfiguration.token_type("invalid") }
+    end
+
+    private
+
+    def with_env(vars)
+      original = vars.keys.index_with { |k| ENV[k] }
+      vars.each { |k, v| ENV[k] = v }
+      yield
+    ensure
+      original.each { |k, v| ENV[k] = v }
     end
   end
 end

@@ -161,4 +161,169 @@ module Preference
       assert_not_nil OrgPreferenceActivityLevel.find_by(id: OrgPreferenceActivityLevel::INFO)
     end
   end
+
+  class JwtConfigurationTest < ActiveSupport::TestCase
+    test "active_kid returns value from ENV" do
+      with_env("PREFERENCE_JWT_ACTIVE_KID" => "test_kid") do
+        assert_equal "test_kid", Preference::JwtConfiguration.active_kid
+      end
+    end
+
+    test "leeway_seconds returns value from ENV" do
+      with_env("PREFERENCE_JWT_LEEWAY_SECONDS" => "45") do
+        assert_equal 45, Preference::JwtConfiguration.leeway_seconds
+      end
+    end
+
+    test "issuer returns value from ENV" do
+      with_env("PREFERENCE_JWT_ISSUER" => "test-issuer") do
+        assert_equal "test-issuer", Preference::JwtConfiguration.issuer
+      end
+    end
+
+    test "audiences returns split values from ENV" do
+      with_env("PREFERENCE_JWT_AUDIENCES" => "aud1, aud2 , aud3") do
+        assert_equal %w(aud1 aud2 aud3), Preference::JwtConfiguration.audiences
+      end
+    end
+
+    test "parse_header decodes token header" do
+      token = JWT.encode({ foo: "bar" }, nil, "none", { kid: "test_kid" })
+      header = Preference::JwtConfiguration.parse_header(token)
+
+      assert_equal "test_kid", header["kid"]
+    end
+
+    private
+
+    def with_env(vars)
+      original = vars.keys.index_with { |k| ENV[k] }
+      vars.each { |k, v| ENV[k] = v }
+      yield
+    ensure
+      original.each { |k, v| ENV[k] = v }
+    end
+  end
+
+  class TokenTest < ActiveSupport::TestCase
+    setup do
+      @preferences = { "theme" => "dark" }.freeze
+      @host = "app.localhost"
+      @type = "user"
+      @public_id = "test_id"
+      @jti = "test_jti"
+
+      # Generate a test EC key
+      @key = OpenSSL::PKey::EC.generate("secp384r1")
+      @der = Base64.encode64(@key.to_der)
+      @pub_der = Base64.encode64(@key.public_to_der)
+    end
+
+    test "encode and decode a valid token" do
+      Preference::JwtConfiguration.stub(:private_key_for_active, @key) do
+        Preference::JwtConfiguration.stub(:public_key_for, @key) do
+          Preference::JwtConfiguration.stub(:active_kid, "test_kid") do
+            token = Preference::Token.encode(
+              @preferences,
+              host: @host,
+              preference_type: @type,
+              public_id: @public_id,
+              jti: @jti,
+            )
+
+            assert_not_nil token
+
+            decoded = Preference::Token.decode(token, host: @host)
+
+            assert_not_nil decoded
+            assert_equal @preferences, decoded["preferences"]
+            assert_equal @host, decoded["host"]
+            assert_equal @type, decoded["preference_type"]
+            assert_equal @public_id, decoded["public_id"]
+            assert_equal @jti, decoded["jti"]
+          end
+        end
+      end
+    end
+
+    test "decode returns nil for invalid host" do
+      Preference::JwtConfiguration.stub(:private_key_for_active, @key) do
+        Preference::JwtConfiguration.stub(:public_key_for, @key) do
+          Preference::JwtConfiguration.stub(:active_kid, "test_kid") do
+            token = Preference::Token.encode(
+              @preferences,
+              host: @host,
+              preference_type: @type,
+              public_id: @public_id,
+              jti: @jti,
+            )
+
+            assert_nil Preference::Token.decode(token, host: "wrong.host")
+          end
+        end
+      end
+    end
+
+    test "extract_preferences returns preferences from payload" do
+      payload = { "preferences" => { "theme" => "light" } }
+
+      assert_equal({ "theme" => "light" }, Preference::Token.extract_preferences(payload))
+      assert_equal({}, Preference::Token.extract_preferences(nil))
+    end
+  end
+
+  class PreferenceBaseMethodsTest < ActiveSupport::TestCase
+    setup do
+      @controller = PreferenceSanitizeTestController.new
+    end
+
+    test "resolve_option_id_from_param returns default for blank value" do
+      assert_equal 99, @controller.send(:resolve_option_id_from_param, nil, :timezone, 99, "prefix")
+      assert_equal 99, @controller.send(:resolve_option_id_from_param, "", :timezone, 99, "prefix")
+    end
+
+    test "resolve_option_id_from_param returns integer for valid input" do
+      assert_equal AppPreferenceTimezoneOption::ASIA_TOKYO,
+                   @controller.send(:resolve_option_id_from_param, "Asia/Tokyo", :timezone, 99, "prefix")
+    end
+
+    test "normalized_locale returns sym for valid locale" do
+      I18n.stub :available_locales, [:en, :ja] do
+        assert_equal :en, @controller.send(:normalized_locale, "en")
+        assert_equal :ja, @controller.send(:normalized_locale, "JA")
+        assert_nil @controller.send(:normalized_locale, "invalid")
+        assert_nil @controller.send(:normalized_locale, "")
+      end
+    end
+
+    test "locale_from_region returns mapped locale" do
+      assert_equal "ja", @controller.send(:locale_from_region, "jp")
+      assert_equal "en", @controller.send(:locale_from_region, "us")
+      assert_nil @controller.send(:locale_from_region, "unknown")
+    end
+
+    test "available_locale_strings returns unique lowercased strings" do
+      I18n.stub :available_locales, [:en, :JA, :en] do
+        # Clear memoized value
+        @controller.instance_variable_set(:@available_locale_strings, nil)
+
+        assert_equal %w(en ja), @controller.send(:available_locale_strings)
+      end
+    end
+
+    test "host_matches? handles direct and subdomain matches" do
+      # Since host_matches? is in Preference::Token (which is a class)
+      # Wait, I see host_matches? in Preference::Token class << self
+      assert Preference::Token.send(:host_matches?, "example.com", "example.com")
+      assert Preference::Token.send(:host_matches?, "example.com", "sub.example.com")
+      assert_not Preference::Token.send(:host_matches?, "example.com", "other.com")
+      assert_not Preference::Token.send(:host_matches?, nil, "example.com")
+    end
+
+    test "audience_matches? handles multiple audiences" do
+      assert Preference::Token.send(:audience_matches?, ["a.com", "b.com"], "a.com")
+      assert Preference::Token.send(:audience_matches?, ["a.com", "b.com"], "sub.b.com")
+      assert_not Preference::Token.send(:audience_matches?, ["a.com", "b.com"], "c.com")
+    end
+  end
 end

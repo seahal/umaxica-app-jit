@@ -39,6 +39,7 @@ class Sign::Org::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     end
 
     created = StaffTelephone.order(created_at: :desc).first
+
     assert_redirected_to edit_sign_org_configuration_telephone_url(created.id, ri: "jp")
   end
 

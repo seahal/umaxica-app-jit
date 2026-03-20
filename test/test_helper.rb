@@ -24,7 +24,7 @@ ENV["NEWS_CORPORATE_URL"] = "news.com.localhost"
 ENV["HELP_SERVICE_URL"] = "help.app.localhost"
 ENV["HELP_STAFF_URL"] = "help.org.localhost"
 ENV["HELP_CORPORATE_URL"] = "help.com.localhost"
-ENV["REGION_CODE"] = "jp"
+ENV["REGION_CODE"] = "all"
 ENV["TRUSTED_ORIGINS"] = "http://sign.app.localhost:3001,http://sign.org.localhost:3001"
 ENV["PREFERENCE_JWT_AUDIENCES"] = "app.localhost,org.localhost,com.localhost"
 

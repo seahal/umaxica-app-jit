@@ -1,0 +1,17 @@
+development:
+  store_options:
+    max_age: <%= 1.week.to_i %>
+    max_size: <%= 256.megabytes %>
+    namespace: <%= Rails.env %>
+
+test:
+  store_options:
+    max_age: <%= 1.hour.to_i %>
+    max_size: <%= 16.megabytes %>
+    namespace: <%= Rails.env %>
+
+production:
+  store_options:
+    max_age: <%= 1.week.to_i %>
+    max_size: <%= 256.megabytes %>
+    namespace: <%= Rails.env %>

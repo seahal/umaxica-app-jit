@@ -13,6 +13,12 @@ module Core
     module_function
 
     def for(surface:, request_host:)
+      host = normalize_host(request_host)
+
+      # In development/test with localhost, always derive from the request host
+      # so cookies are not set for a production domain the browser will reject.
+      return derive_from_host(request_host) if localhost_host?(host.to_s)
+
       configured = Rails.app.creds.option(SURFACE_CREDENTIAL_KEYS.fetch(surface.to_sym))&.strip
       return normalize_configured(configured) if configured.present?
 

@@ -54,7 +54,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 4, 5, 6, 7, 8)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.refresh.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
       controller.any_instance.stub(
         :decode_and_verify_preference_jwt,
         { "preferences" => { "consented" => true }, "public_id" => "pref-app-public-id" },
@@ -71,7 +71,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     set_cookie = response.headers["Set-Cookie"].to_s
 
     assert_includes set_cookie, "preference_consented=1"
-    assert_includes set_cookie, "domain=.app.refresh.example.test"
+    assert_includes set_cookie, "domain=.app.localhost"
     assert_includes set_cookie.downcase, "path=/"
     expires = response_cookie_expiry("preference_consented")
 
@@ -87,7 +87,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 6, 7, 8, 9, 10)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.refresh.example.test") do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
       controller.any_instance.stub(
         :decode_and_verify_preference_jwt,
         { "preferences" => { "consent" => false, "consented" => false }, "public_id" => "pref-app-public-id" },
@@ -104,7 +104,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     set_cookie = response.headers["Set-Cookie"].to_s
 
     assert_includes set_cookie, "preference_consented=0"
-    assert_includes set_cookie, "domain=.app.refresh.example.test"
+    assert_includes set_cookie, "domain=.app.localhost"
     assert_includes set_cookie.downcase, "path=/"
     expires = response_cookie_expiry("preference_consented")
 

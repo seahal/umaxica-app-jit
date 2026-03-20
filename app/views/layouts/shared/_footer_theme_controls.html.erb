@@ -1,3 +1,51 @@
-<div>
-  <%= render "layouts/shared/theme_footer_form", scope: scope %>
-</div>
+<aside
+  aria-labelledby="theme-title"
+  class="border border-red-300 p-4 rounded">
+  <form>
+    <fieldset class="space-y-3">
+
+      <!-- タイトル -->
+      <legend id="theme-title" class="text-sm font-semibold">
+        テーマ設定
+      </legend>
+
+      <!-- 説明（スクリーンリーダー向けにも有効） -->
+      <p class="text-xs text-gray-600">
+        表示テーマを選択してください（システム設定に従うこともできます）
+      </p>
+
+      <!-- 選択肢 -->
+      <div class="space-y-2">
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="theme"
+            value="system"
+            class="accent-gray-600"
+            checked />
+          <span>システム設定に従う</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="theme"
+            value="light"
+            class="accent-yellow-500" />
+          <span>ライト</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="theme"
+            value="dark"
+            class="accent-black" />
+          <span>ダーク</span>
+        </label>
+
+      </div>
+    </fieldset>
+  </form>
+</aside>

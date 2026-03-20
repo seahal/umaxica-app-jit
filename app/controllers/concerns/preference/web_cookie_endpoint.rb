@@ -10,16 +10,27 @@ module Preference
 
     private
 
-    def show_banner?
-      jwt = cookies[Preference::CookieName.access]
-      return true if jwt.blank?
+    def cookie_consent_state
+      payload = decoded_preference_payload
+      preferences = payload.is_a?(Hash) ? payload["preferences"] : nil
 
-      payload = decode_and_verify_preference_jwt(jwt)
-      consent = extract_cookie_banner_consent(payload)
-      consent != true
+      if preferences.is_a?(Hash)
+        {
+          consented: ActiveModel::Type::Boolean.new.cast(preferences["consented"]),
+          functional: ActiveModel::Type::Boolean.new.cast(preferences["functional"]),
+          performant: ActiveModel::Type::Boolean.new.cast(preferences["performant"]),
+          targetable: ActiveModel::Type::Boolean.new.cast(preferences["targetable"]),
+        }
+      else
+        { consented: false, functional: false, performant: false, targetable: false }
+      end
     rescue StandardError => e
-      Rails.logger.warn("[Preference::WebCookieEndpoint] show_banner fallback to true: #{e.class}")
-      true
+      Rails.logger.warn("[Preference::WebCookieEndpoint] cookie_consent_state fallback: #{e.class}")
+      { consented: false, functional: false, performant: false, targetable: false }
+    end
+
+    def show_banner?
+      false
     end
 
     def set_consented_buffer_cookie!

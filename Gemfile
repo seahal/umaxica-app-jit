@@ -60,8 +60,8 @@ gem "pg_search"
 gem "rotp"
 # QR code generation
 gem "rqrcode"
-# Solid Cable
-gem "solid_cable"
+# Solid Cache
+gem "solid_cache"
 # Solid Queue
 gem "solid_queue"
 gem "mission_control-jobs"

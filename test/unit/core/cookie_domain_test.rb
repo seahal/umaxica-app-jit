@@ -11,21 +11,27 @@ module Core
       end
     end
 
-    test "normalizes example.com credential to .example.com" do
+    test "normalizes example.com credential to .example.com for non-localhost host" do
       with_cookie_domain_credentials(COOKIE_DOMAIN_APP: "example.com") do
-        assert_equal ".example.com", Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
+        assert_equal ".example.com", Core::CookieDomain.for(surface: :app, request_host: "app.example.com")
       end
     end
 
-    test "keeps dotted credential as is" do
+    test "ignores production credential when request host is localhost" do
       with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".example.com") do
-        assert_equal ".example.com", Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
+        assert_equal ".app.localhost", Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
+      end
+    end
+
+    test "keeps dotted credential as is for non-localhost host" do
+      with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".example.com") do
+        assert_equal ".example.com", Core::CookieDomain.for(surface: :app, request_host: "app.example.com")
       end
     end
 
     test "returns host-only when credential is HOST_ONLY" do
       with_cookie_domain_credentials(COOKIE_DOMAIN_APP: "HOST_ONLY") do
-        assert_nil Core::CookieDomain.for(surface: :app, request_host: "app.localhost")
+        assert_nil Core::CookieDomain.for(surface: :app, request_host: "app.example.com")
       end
     end
 

@@ -12,6 +12,7 @@ scope module: :apex, as: :apex do
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
@@ -63,6 +64,7 @@ scope module: :apex, as: :apex do
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
@@ -104,6 +106,7 @@ scope module: :apex, as: :apex do
     end
   end
 
+  # FIXME: what is this?
   constraints lambda { |request|
                 request.host == ENV["APEX_STAFF_URL"] && Core::Surface.matches?(request, :org)
               } do
@@ -119,6 +122,7 @@ scope module: :apex, as: :apex do
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)

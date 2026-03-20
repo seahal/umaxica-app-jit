@@ -55,9 +55,7 @@ module Sign
 
         def removable_telephone?(staff_telephone)
           verified_staff_telephones_for(current_staff).where.not(id: staff_telephone.id).exists? ||
-            current_staff.staff_emails.where(
-              staff_identity_email_status_id: [StaffEmailStatus::ACTIVE, StaffEmailStatus::VERIFIED],
-            ).exists?
+            current_staff.staff_emails.exists?(staff_identity_email_status_id: [StaffEmailStatus::ACTIVE, StaffEmailStatus::VERIFIED])
         end
 
         def verification_required_action?

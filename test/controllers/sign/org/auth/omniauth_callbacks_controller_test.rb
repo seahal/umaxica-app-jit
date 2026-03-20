@@ -44,7 +44,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
   end
 
   test "omniauth marks the matched staff email as undeletable" do
-    refute_predicate @staff_email, :undeletable?
+    assert_not_predicate @staff_email, :undeletable?
     state = initiate_social_auth_flow!
 
     get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
