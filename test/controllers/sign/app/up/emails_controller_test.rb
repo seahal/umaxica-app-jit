@@ -59,7 +59,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_includes response.location, "/up/emails/new"
     assert_not_includes response.location, "notice="
-    assert_equal I18n.t("sign.app.registration.email.edit.session_expired"), flash[:notice]
+    assert_equal I18n.t("sign.app.registration.email.edit.not_found"), flash[:notice]
     assert_includes response.location, "ri=jp"
   end
 

@@ -96,6 +96,7 @@ module Sign
 
           def valid_registration_session?
             @user_telephone.present? &&
+              @user_telephone.user_id == current_user.id &&
               !@user_telephone.otp_expired? &&
               @user_telephone.user_telephone_status_id == UserTelephoneStatus::UNVERIFIED
           end

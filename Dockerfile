@@ -106,6 +106,29 @@ ENV PORT=8080 \
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} /usr/local/bundle /usr/local/bundle
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} ${APP_HOME} ${APP_HOME}
 
+# Harden: lock out root and remove privilege escalation paths
+RUN usermod -s /usr/sbin/nologin root \
+    && usermod -L root \
+    && rm -f /usr/bin/sudo /usr/bin/su /usr/sbin/sudo /usr/sbin/su \
+    && rm -f /usr/bin/chsh /usr/bin/chfn /usr/bin/newgrp /usr/bin/passwd /usr/bin/gpasswd \
+    && find / -xdev -perm /4000 -exec chmod u-s {} + 2>/dev/null || true \
+    && find / -xdev -perm /2000 -exec chmod g-s {} + 2>/dev/null || true
+
+# Writable directories for Rails runtime (owner-only rwx)
+RUN install -d -m 700 -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
+    tmp tmp/pids tmp/cache tmp/sockets \
+    log \
+    storage
+
+# Lock down app files: read + execute only (no write), owner-only
+RUN find "${APP_HOME}" -mindepth 1 \
+    ! -type l \
+    ! -path "${APP_HOME}/tmp/*" \
+    ! -path "${APP_HOME}/log/*" \
+    ! -path "${APP_HOME}/storage/*" \
+    -exec chmod 500 {} + \
+    && find /usr/local/bundle ! -type l -exec chmod 500 {} +
+
 USER ${DOCKER_USER}
 
 EXPOSE 8080
@@ -206,9 +229,6 @@ RUN npm install -g pnpm@10.27.0 && \
 # Install Vite+ (unified frontend toolchain: Vite, Vitest, Oxlint, Oxfmt, tsdown)
 RUN curl -fsSL https://vite.plus | bash
 ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
-
-# Install gitleaks for secret detection
-RUN curl -fsSL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | bash
 
 RUN install -d -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
     "${HOME}/.cache" \

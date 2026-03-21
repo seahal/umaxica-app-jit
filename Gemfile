@@ -47,6 +47,7 @@ gem "shrine"
 gem "image_processing"
 # AWS SDKs
 gem "aws-sdk-sns" # for sms delivery
+gem "aws-sdk-secretsmanager" # for secret_key_base rotation
 # Asset pipeline
 gem "propshaft"
 # OpenTelemetry

@@ -15,12 +15,23 @@ module Sign
 
         def edit
           @user_email = UserEmail.find_by(public_id: params["id"])
-          return if valid_email_session?
 
-          reset_email_flow!
-          redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
-          flash[:notice] = redirect_params.delete(:notice)
-          redirect_to new_sign_app_up_email_path(redirect_params)
+          # Security: Verify email exists and belongs to current session
+          if @user_email.blank?
+            reset_email_flow!
+            redirect_to new_sign_app_up_email_path,
+                        notice: t("sign.app.registration.email.edit.not_found")
+            return
+          end
+
+          # Security: Validate the email belongs to the current registration flow
+          unless valid_email_session?
+            reset_email_flow!
+            redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
+            flash[:notice] = redirect_params.delete(:notice)
+            redirect_to new_sign_app_up_email_path(redirect_params)
+            return
+          end
         end
 
         def create

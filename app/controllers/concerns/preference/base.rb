@@ -847,7 +847,6 @@ module Preference
 
       @preference_payload = payload
 
-      # Load @preferences if public_id is present in the token
       public_id = Token.extract_public_id(payload)
       if public_id.present?
         @preferences = preference_class.includes(preference_associations_to_preload).find_by(public_id: public_id)

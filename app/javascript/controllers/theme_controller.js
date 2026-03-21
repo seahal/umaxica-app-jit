@@ -57,7 +57,7 @@ function applyThemeFromCookie() {
 
 export default class extends Controller {
   connect() {
-    this.syncRadio();
+    void this.fetchAndSyncTheme();
   }
 
   select(event) {
@@ -66,6 +66,22 @@ export default class extends Controller {
     const secure = location.protocol === "https:" ? "; secure" : "";
     document.cookie = `ct=${code}; path=/; max-age=31536000; samesite=lax${secure}`;
     applyThemeFromCookie();
+  }
+
+  async fetchAndSyncTheme() {
+    try {
+      const response = await fetch("/web/v0/theme");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const themeCode = data.theme || "sy";
+      this.syncRadioFromThemeCode(themeCode);
+      this.applyThemeFromCode(themeCode);
+    } catch {
+      this.syncRadio();
+      applyThemeFromCookie();
+    }
   }
 
   syncRadio() {
@@ -78,6 +94,26 @@ export default class extends Controller {
     const radio = this.element.querySelector(`input[value="${value}"]`);
     if (radio) {
       radio.checked = true;
+    }
+  }
+
+  syncRadioFromThemeCode(themeCode) {
+    const map = { sy: "system", dr: "dark", li: "light" };
+    const value = map[themeCode] ?? "system";
+    const radio = this.element.querySelector(`input[value="${value}"]`);
+    if (radio) {
+      radio.checked = true;
+    }
+  }
+
+  applyThemeFromCode(themeCode) {
+    const map = { sy: "system", dr: "dark", li: "light" };
+    const theme = map[themeCode] ?? "system";
+    applyTheme(theme);
+
+    const valueEl = document.getElementById("js-theme-cookie-value");
+    if (valueEl) {
+      valueEl.textContent = theme;
     }
   }
 }

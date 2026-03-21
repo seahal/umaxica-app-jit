@@ -3,9 +3,28 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   // Connects to data-controller="cookie-banner"
   connect() {
-    if (this.hasCookieConsent()) {
-      this.element.remove();
+    void this.checkConsentState();
+  }
+
+  async checkConsentState() {
+    try {
+      const consentState = await this.fetchCookieConsent();
+      if (consentState && consentState.consented) {
+        this.element.remove();
+      }
+    } catch {
+      if (this.hasCookieConsent()) {
+        this.element.remove();
+      }
     }
+  }
+
+  normalizeConsentValue(value) {
+    if (!value) {
+      return null;
+    }
+
+    return value.toLowerCase();
   }
 
   // Handle invisible/close action
@@ -31,8 +50,25 @@ export default class extends Controller {
   // Handle open settings action
   openSettings(event) {
     event.preventDefault();
-    // Dispatch a custom event that can be handled by a settings modal controller
-    this.dispatch("open-settings", { detail: { consent: this.getCookieConsent() } });
+    void this.dispatchSettingsEvent();
+  }
+
+  async dispatchSettingsEvent() {
+    try {
+      const consent = await this.fetchCookieConsent();
+      this.dispatch("open-settings", { detail: { consent } });
+    } catch {
+      this.dispatch("open-settings", { detail: { consent: this.getCookieConsent() } });
+    }
+  }
+
+  // Fetch cookie consent from API endpoint
+  async fetchCookieConsent() {
+    const response = await fetch("/web/v0/cookie");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 
   // Helper: Set cookie consent preference
@@ -50,7 +86,7 @@ export default class extends Controller {
     for (let cookie of cookies) {
       cookie = cookie.trim();
       if (cookie.indexOf(name) === 0) {
-        return cookie.substring(name.length);
+        return this.normalizeConsentValue(cookie.substring(name.length));
       }
     }
     return null;

@@ -114,6 +114,17 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal 1, pref.try("#{domain[:name]}_preference_region").option_id
     end
 
+    test "#{domain[:name]} domain region edit renders a submit button inside the form" do
+      host!(domain[:host])
+
+      get public_send("edit_apex_#{domain[:name]}_preference_region_url", default_state)
+
+      assert_response :success
+      assert_select "form" do
+        assert_select "input[type='submit']", count: 1
+      end
+    end
+
     test "#{domain[:name]} domain updates timezone" do
       host!(domain[:host])
       pref, = assert_preference_created(domain)
@@ -285,8 +296,10 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_redirected_to public_send(
         "edit_apex_#{domain[:name]}_preference_region_timezone_url",
         ri: "us",
-        tz: "etc/utc",
       )
+      follow_redirect!
+
+      assert_select "select[name='preference_timezone[option_id]'] option[selected='selected'][value='1']"
 
       pref.reload
 
@@ -315,6 +328,11 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
         :theme,
         { preference_colortheme: { option_id: "dr" } },
         state,
+      )
+
+      assert_select(
+        "select[name='preference_colortheme[option_id]'] option[selected='selected'][value='dark']",
+        count: 1,
       )
 
       pref.reload
@@ -360,6 +378,8 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
         { preference_cookie: { functional: "1" } },
         default_state,
       )
+
+      assert_select "input[type='checkbox'][name='preference_cookie[functional]'][checked='checked']", count: 1
 
       pref.reload
 

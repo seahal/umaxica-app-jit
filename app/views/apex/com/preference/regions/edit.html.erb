@@ -8,6 +8,8 @@
       <h1>
         <%= t("apex.com.preferences.regions.title") %>
       </h1>
+      <p>
+        <%= t("apex.com.preferences.regions.select_region_prompt") %>
       </p>
     </div>
 
@@ -19,16 +21,17 @@
         <h2>
           <%= t("apex.com.preferences.regions.region_section") %>
         </h2>
-        <%= f.label :option_id, t("apex.com.preferences.regions.select_region") %>
         <div>
-          <%= f.select :option_id,
-                       options_for_select(
-                         ComPreferenceRegionOption.all.order(:id).map { |o| [t("apex.com.preferences.regions.select_region_selector.#{o.name}", default: o.name), o.id] },
-                         @preference_region.option_id
-                       ),
-                       { prompt: t("apex.com.preferences.regions.select_region_prompt") } %>
+          <%= f.label :option_id, t("apex.com.preferences.regions.select_region") %>
+          <div>
+            <%= f.select :option_id,
+                         options_for_select(
+                           ComPreferenceRegionOption.all.order(:id).map { |o| [t("apex.com.preferences.regions.select_region_selector.#{o.name}", default: o.name), o.id] },
+                           @preference_region.option_id
+                         ),
+                         { prompt: t("apex.com.preferences.regions.select_region_prompt") } %>
+          </div>
         </div>
-      </div>
       </div>
 
       <div>
@@ -54,5 +57,5 @@
         <% end %>
       </div>
     </div>
-    </div>
-    </section>
+  </div>
+</section>

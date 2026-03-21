@@ -39,4 +39,19 @@ class OrgPreferenceLanguageOptionTest < ActiveSupport::TestCase
       option.destroy!
     end
   end
+
+  test "name returns ja for JA id" do
+    option = OrgPreferenceLanguageOption.find_or_create_by!(id: OrgPreferenceLanguageOption::JA)
+    assert_equal "ja", option.name
+  end
+
+  test "name returns en for EN id" do
+    option = OrgPreferenceLanguageOption.find_or_create_by!(id: OrgPreferenceLanguageOption::EN)
+    assert_equal "en", option.name
+  end
+
+  test "name returns nil for unknown id" do
+    option = OrgPreferenceLanguageOption.find_or_create_by!(id: 999)
+    assert_nil option.name
+  end
 end

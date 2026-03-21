@@ -36,7 +36,7 @@ module Sign
           render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
         rescue StandardError => e
           Rails.logger.error("WebAuthn options generation failed: #{e.message}")
-          render json: { error: e.message }, status: :unprocessable_content
+          render json: { error: I18n.t("errors.webauthn.options_failed") }, status: :unprocessable_content
         end
 
         def create

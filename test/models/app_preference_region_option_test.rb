@@ -39,4 +39,19 @@ class AppPreferenceRegionOptionTest < ActiveSupport::TestCase
       option.destroy!
     end
   end
+
+  test "name returns US for US id" do
+    option = AppPreferenceRegionOption.find_or_create_by!(id: AppPreferenceRegionOption::US)
+    assert_equal "US", option.name
+  end
+
+  test "name returns JP for JP id" do
+    option = AppPreferenceRegionOption.find_or_create_by!(id: AppPreferenceRegionOption::JP)
+    assert_equal "JP", option.name
+  end
+
+  test "name returns nil for NOTHING id" do
+    option = AppPreferenceRegionOption.find_or_create_by!(id: AppPreferenceRegionOption::NOTHING)
+    assert_nil option.name
+  end
 end

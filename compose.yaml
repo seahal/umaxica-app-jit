@@ -13,8 +13,8 @@ services:
     restart: always
     user: "${UID:-1000}:${GID:-1000}"
     tmpfs:
-      - /home/jit/workspace/tmp
-      - /home/jit/workspace/log
+      - /home/jit/workspace/tmp:uid=${UID:-1000},gid=${GID:-1000}
+      - /home/jit/workspace/log:uid=${UID:-1000},gid=${GID:-1000}
     ports:
       - "3001:3000" # development (all-in-one)
       - "3101:3100" # global

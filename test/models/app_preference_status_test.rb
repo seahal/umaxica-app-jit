@@ -20,4 +20,20 @@ class AppPreferenceStatusTest < ActiveSupport::TestCase
     assert_includes AppPreferenceStatus::DEFAULTS, AppPreferenceStatus::DELETED
     assert_includes AppPreferenceStatus::DEFAULTS, AppPreferenceStatus::NOTHING
   end
+
+  test "ensure_defaults! creates missing default records" do
+    AppPreferenceStatus.where(id: AppPreferenceStatus::DEFAULTS).destroy_all
+    
+    assert_difference("AppPreferenceStatus.count") do
+      AppPreferenceStatus.ensure_defaults!
+    end
+  end
+
+  test "ensure_defaults! skips when all defaults exist" do
+    AppPreferenceStatus.ensure_defaults!
+    
+    assert_no_difference("AppPreferenceStatus.count") do
+      AppPreferenceStatus.ensure_defaults!
+    end
+  end
 end

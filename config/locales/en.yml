@@ -390,6 +390,7 @@ en:
             turnstile_validation_failed: Verification failed. Please try again later.
           edit:
             session_expired: Session expired.
+            not_found: Email address not found.
           update:
             code_required: Enter the code.
             invalid_code: The verification code is invalid.

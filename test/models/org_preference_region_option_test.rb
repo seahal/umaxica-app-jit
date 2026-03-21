@@ -39,4 +39,14 @@ class OrgPreferenceRegionOptionTest < ActiveSupport::TestCase
       option.destroy!
     end
   end
+
+  test "name returns US for US id" do
+    option = OrgPreferenceRegionOption.find_or_create_by!(id: OrgPreferenceRegionOption::US)
+    assert_equal "US", option.name
+  end
+
+  test "name returns JP for JP id" do
+    option = OrgPreferenceRegionOption.find_or_create_by!(id: OrgPreferenceRegionOption::JP)
+    assert_equal "JP", option.name
+  end
 end

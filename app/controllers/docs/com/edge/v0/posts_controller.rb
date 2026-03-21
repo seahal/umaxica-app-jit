@@ -48,10 +48,14 @@ module Docs
 
             if @query.present? && @query != "all"
               # Search by permalink or title in latest version
+              # Sanitize the query to prevent SQL injection via LIKE special characters
+              sanitized_query = ActiveRecord::Base.sanitize_sql_like(@query)
+              like_pattern = "%#{sanitized_query}%"
+
               @documents = documents_scope
                 .joins(:com_document_versions)
                 .where("com_documents.permalink LIKE ? OR com_document_versions.title LIKE ?",
-                       "%#{@query}%", "%#{@query}%",)
+                       like_pattern, like_pattern)
                 .distinct
                 .order("com_documents.created_at DESC")
                 .offset((@page - 1) * @per_page)
@@ -60,7 +64,7 @@ module Docs
               @total_count = documents_scope
                 .joins(:com_document_versions)
                 .where("com_documents.permalink LIKE ? OR com_document_versions.title LIKE ?",
-                       "%#{@query}%", "%#{@query}%",)
+                       like_pattern, like_pattern)
                 .distinct
                 .count
             else

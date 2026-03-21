@@ -23,7 +23,6 @@
         "openai.chatgpt",
         "anthropic.claude-code",
         "anthropic.claude-code",
-
         "-sorbet.sorbet-vscode-extension",
         "-dbaeumer.vscode-eslint",
         "-esbenp.prettier-vscode",
@@ -114,7 +113,7 @@
     "RUBY_DEBUG_OPEN": "false"
   },
   "updateRemoteUserUID": true,
-  "postStartCommand": "sudo chown jit:umaxica log tmp",
+  "postStartCommand": "",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt:1": {},
@@ -123,8 +122,7 @@
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
     "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
     "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
-    "ghcr.io/jasonthedeveloper/features/trivy:1": {},
-    "ghcr.io/rails/devcontainer/features/activestorage": {}
+    "ghcr.io/jasonthedeveloper/features/trivy:1": {}
   },
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
@@ -135,6 +133,7 @@
     "source=${localEnv:HOME}/.config/gh,target=/home/jit/.config/gh,type=bind",
     "source=${localEnv:HOME}/.config/git,target=/home/jit/.config/git,type=bind",
     "source=${localEnv:HOME}/.gitconfig,target=/home/jit/.gitconfig,type=bind",
-    "source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind"
+    "source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind",
+    "source=${localEnv:HOME}/.config/opencode,target=/home/jit/.config/opencode,type=bind"
   ]
 }

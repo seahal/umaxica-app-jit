@@ -13,13 +13,13 @@ module Preference::Core
 
   def set_region_preferences_edit
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_region = load_or_create_preference_child("Region", option_id: nil)
+      @preference_region = load_or_refresh_preference_child("Region", option_id: nil)
     end
   end
 
   def set_region_preferences_update
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_region = load_or_create_preference_child("Region", option_id: nil)
+      @preference_region = load_or_refresh_preference_child("Region", option_id: nil)
 
       update_preference_child_with_audit(
         @preference_region,
@@ -32,13 +32,13 @@ module Preference::Core
 
   def set_language_preferences_edit
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_language = load_or_create_preference_child("Language", option_id: nil)
+      @preference_language = load_or_refresh_preference_child("Language", option_id: nil)
     end
   end
 
   def set_language_preferences_update
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_language = load_or_create_preference_child("Language", option_id: nil)
+      @preference_language = load_or_refresh_preference_child("Language", option_id: nil)
 
       update_preference_child_with_audit(
         @preference_language,
@@ -56,7 +56,7 @@ module Preference::Core
 
   def set_timezone_preferences_edit
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_timezone = load_or_create_preference_child("Timezone", option_id: nil)
+      @preference_timezone = load_or_refresh_preference_child("Timezone", option_id: nil)
     end
   end
 
@@ -64,7 +64,7 @@ module Preference::Core
     raise PreferenceOperationError if @preferences.blank?
 
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_timezone = load_or_create_preference_child("Timezone", option_id: nil)
+      @preference_timezone = load_or_refresh_preference_child("Timezone", option_id: nil)
 
       begin
         update_preference_child_with_audit(
@@ -86,13 +86,13 @@ module Preference::Core
 
   def set_colortheme_preferences_edit
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_colortheme = load_or_create_preference_child("Colortheme", option_id: nil)
+      @preference_colortheme = load_or_refresh_preference_child("Colortheme", option_id: nil)
     end
   end
 
   def set_colortheme_preferences_update
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_colortheme = load_or_create_preference_child("Colortheme", option_id: nil)
+      @preference_colortheme = load_or_refresh_preference_child("Colortheme", option_id: nil)
 
       update_preference_child_with_audit(
         @preference_colortheme,
@@ -111,7 +111,7 @@ module Preference::Core
 
   def set_cookie_preferences_edit
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_cookie = load_or_create_preference_child(
+      @preference_cookie = load_or_refresh_preference_child(
         "Cookie",
         targetable: false, performant: false, functional: false, consented: false,
       )
@@ -120,7 +120,7 @@ module Preference::Core
 
   def set_cookie_preferences_update
     PreferenceRecord.connected_to(role: :writing) do
-      @preference_cookie = load_or_create_preference_child(
+      @preference_cookie = load_or_refresh_preference_child(
         "Cookie",
         targetable: false, performant: false, functional: false, consented: false,
       )
@@ -137,6 +137,20 @@ module Preference::Core
   end
 
   private
+
+  def load_or_refresh_preference_child(child_type, default_attributes = {})
+    association_name = :"#{preference_prefix_underscore}_#{child_type.downcase}"
+
+    # Access-token loading can leave a child association memoized on @preferences.
+    # Reload it here so preference edit/update screens render the latest DB value
+    # without forcing the generic loader to refresh associations for every caller.
+    if @preferences.persisted?
+      association = @preferences.association(association_name)
+      association.reload if association.loaded?
+    end
+
+    load_or_create_preference_child(child_type, default_attributes)
+  end
 
   def reload_preferences_and_reissue_token!
     @preferences.reload

@@ -139,6 +139,9 @@ ja:
         email:
           flow:
             invalid: "無効なフローです。"
+          edit:
+            not_found: "メールアドレスが見つかりません。"
+            session_expired: "セッションの有効期限が切れました。"
         new:
           links:
             sign_in: "ログイン"
@@ -301,6 +304,7 @@ ja:
             turnstile_validation_failed: "検証に失敗しました。時間を置いて再度お試しください。"
           edit:
             session_expired: "セッションの有効期限が切れました。"
+            not_found: "メールアドレスが見つかりません。"
           update:
             code_required: "コードを入力してください"
             invalid_code: "確認コードが正しくありません"
