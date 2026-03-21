@@ -1,45 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: user_emails
-# Database name: principal
-#
-#  id                        :bigint           not null, primary key
-#  address                   :string           default(""), not null
-#  address_bidx              :string
-#  address_digest            :string
-#  locked_at                 :datetime         default(Infinity), not null
-#  otp_attempts_count        :integer          default(0), not null
-#  otp_counter               :text             default(""), not null
-#  otp_expires_at            :datetime         default(-Infinity), not null
-#  otp_last_sent_at          :datetime         default(-Infinity), not null
-#  otp_private_key           :string           default(""), not null
-#  undeletable               :boolean          default(FALSE), not null
-#  verification_token_digest :binary
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  public_id                 :string(21)       not null
-#  user_email_status_id      :bigint           default(1), not null
-#  user_id                   :bigint           not null
-#
-# Indexes
-#
-#  index_user_emails_on_address_bidx            (address_bidx) UNIQUE WHERE (address_bidx IS NOT NULL)
-#  index_user_emails_on_address_digest          (address_digest) UNIQUE WHERE (address_digest IS NOT NULL)
-#  index_user_emails_on_otp_last_sent_at        (otp_last_sent_at)
-#  index_user_emails_on_public_id               (public_id) UNIQUE
-#  index_user_emails_on_user_email_status_id    (user_email_status_id)
-#  index_user_emails_on_user_id                 (user_id)
-#  index_user_identity_emails_on_lower_address  (lower((address)::text)) UNIQUE
-#
-# Foreign Keys
-#
-#  fk_rails_...  (user_email_status_id => user_email_statuses.id)
-#  fk_rails_...  (user_id => users.id)
-#
-
 require "test_helper"
 
 class UserEmailTest < ActiveSupport::TestCase
@@ -54,7 +15,6 @@ class UserEmailTest < ActiveSupport::TestCase
     }.freeze
   end
 
-  # Basic model structure tests
   test "should inherit from PrincipalRecord" do
     assert_operator UserEmail, :<, PrincipalRecord
   end
@@ -84,7 +44,6 @@ class UserEmailTest < ActiveSupport::TestCase
     Turnstile.test_response = nil
   end
 
-  # Email concern validation tests
   test "should be valid with valid email and policy confirmation" do
     user_email = UserEmail.new(@valid_attributes)
 
@@ -100,8 +59,6 @@ class UserEmailTest < ActiveSupport::TestCase
 
   test "should require email presence" do
     user_email = UserEmail.new(@valid_attributes.except(:address))
-    # address is initialized to "" in after_initialize, so it won't be nil, but empty string
-    # validates presence checks for non-blank.
     user_email.address = ""
 
     assert_not user_email.valid?
@@ -142,18 +99,6 @@ class UserEmailTest < ActiveSupport::TestCase
     assert_equal "test@example.com", user_email.address
   end
 
-  # test "should require 6-digit numeric pass_code" do
-  #   user_email = UserEmail.new(pass_code: "12345")
-  #   assert_not user_email.valid?
-  #   assert_includes user_email.errors[:pass_code], "is the wrong length (should be 6 characters)"
-  # end
-
-  # test "should require numeric pass_code" do
-  #   user_email = UserEmail.new(pass_code: "abcdef")
-  #   assert_not user_email.valid?
-  #   assert_includes user_email.errors[:pass_code], "is not a number"
-  # end
-
   test "should be valid when pass_code is present and address is valid" do
     user_email = UserEmail.new(address: "test@example.com", pass_code: "123456", user: @user)
 
@@ -161,31 +106,12 @@ class UserEmailTest < ActiveSupport::TestCase
     assert_not user_email.errors[:confirm_policy].any?
   end
 
-  # test "should generate UUID v7 before creation" do
-  #   user_email = UserEmail.new(@valid_attributes)
-  #   assert_nil user_email.id
-  #   user_email.save!
-  #   assert_not_nil user_email.id
-  #   assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, user_email.id)
-  # end
-
-  # test "should not override manually set id" do
-  #   custom_id = SecureRandom.uuid_v7
-  #   user_email = UserEmail.new(@valid_attributes.merge(id: custom_id))
-  #   user_email.save!
-  #   assert_equal custom_id, user_email.id
-  # end
-
-  # Encryption tests
   test "should encrypt email address" do
     user_email = UserEmail.create!(@valid_attributes)
-    # The address should be encrypted in the database
     query = "SELECT address FROM #{UserEmail.table_name} WHERE id = '#{user_email.id}'"
     raw_data = UserEmail.connection.execute(query).first
     assert_not_equal @valid_attributes[:address], raw_data["address"] if raw_data
   end
-
-  # Edge case tests
 
   test "blocks destroying an undeletable email" do
     user_email = UserEmail.create!(@valid_attributes.merge(undeletable: true))
@@ -216,10 +142,4 @@ class UserEmailTest < ActiveSupport::TestCase
     assert_not extra_email.valid?
     assert_includes extra_email.errors[:base], "exceeds maximum emails per user (#{UserEmail::MAX_EMAILS_PER_USER})"
   end
-
-  # test "should reject both nil address and nil pass_code" do
-  #   user_email = UserEmail.new(address: nil, pass_code: nil)
-  #   assert_not user_email.valid?
-  #   assert_includes user_email.errors[:address], "can't be blank"
-  # end
 end

@@ -2,17 +2,10 @@
 
 <section>
   <h1>
-    <%= t(
-          'apex.com.preference.language.edit.h1',
-          default: t(
-            'apex.com.preference.locale.edit.title',
-            default: t('apex.com.preferences.language_settings'))) %>
+      <%= t("apex.com.preference.language.edit.heading") %>
   </h1>
   <p>
-    <%= t(
-          'apex.com.preference.language.edit.description',
-          default: t(
-            'apex.com.preference.locale.edit.description')) %>
+      <%= t("apex.com.preference.language.edit.description") %>
   </p>
 
   <% selected_language = nil
@@ -30,9 +23,7 @@
   <%= form_with model: @preference_language, scope: :preference_language, url: apex_com_preference_region_language_path, method: :patch do |f| %>
     <div>
       <%= f.label :option_id,
-                  t(
-                    'apex.com.preference.language.edit.language_label',
-                    default: t('apex.com.preference.locale.edit.language_label')) %>
+                  t("apex.com.preference.language.edit.language_label") %>
       <div>
         <%= f.select :option_id,
                      options_for_select(language_options, selected_language),

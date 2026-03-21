@@ -5,7 +5,7 @@
 <% if current_user.deactivated? %>
   <p><%= t("sign.app.configuration.withdrawal.new.already_deactivated") %></p>
   <p>
-    <%= link_to t("sign.app.configuration.withdrawal.recovery.link", default: "Recover account"),
+    <%= link_to t("sign.app.configuration.withdrawal.recovery.link"),
                 edit_sign_app_configuration_withdrawal_path(ri: params[:ri]) %>
   </p>
 <% else %>

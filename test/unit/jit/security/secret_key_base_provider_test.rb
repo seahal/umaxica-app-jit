@@ -24,7 +24,7 @@ module Jit
 
       test "use_secrets_manager? returns false in test env" do
         with_env("SECRET_KEY_BASE_SECRET_ID" => "arn:aws:secretsmanager:ap-northeast-1:123:secret:test") do
-          refute SecretKeyBaseProvider.use_secrets_manager?
+          assert_not_predicate SecretKeyBaseProvider, :use_secrets_manager?
         end
       end
 
@@ -33,6 +33,7 @@ module Jit
       test "fetch_from_local returns ENV SECRET_KEY_BASE as current" do
         with_env("SECRET_KEY_BASE" => "env-key", "SECRET_KEY_BASE_PREVIOUS" => nil) do
           result = SecretKeyBaseProvider.fetch_from_local
+
           assert_equal "env-key", result[:current]
           assert_equal [], result[:previous]
         end
@@ -41,9 +42,10 @@ module Jit
       test "fetch_from_local parses JSON array for previous keys" do
         with_env(
           "SECRET_KEY_BASE" => "current-key",
-          "SECRET_KEY_BASE_PREVIOUS" => '["old-key-1", "old-key-2"]'
+          "SECRET_KEY_BASE_PREVIOUS" => '["old-key-1", "old-key-2"]',
         ) do
           result = SecretKeyBaseProvider.fetch_from_local
+
           assert_equal "current-key", result[:current]
           assert_equal ["old-key-1", "old-key-2"], result[:previous]
         end
@@ -52,9 +54,10 @@ module Jit
       test "fetch_from_local treats non-JSON previous as single key" do
         with_env(
           "SECRET_KEY_BASE" => "current-key",
-          "SECRET_KEY_BASE_PREVIOUS" => "plain-old-key"
+          "SECRET_KEY_BASE_PREVIOUS" => "plain-old-key",
         ) do
           result = SecretKeyBaseProvider.fetch_from_local
+
           assert_equal ["plain-old-key"], result[:previous]
         end
       end
@@ -62,6 +65,7 @@ module Jit
       test "fetch_from_local returns empty previous when env not set" do
         with_env("SECRET_KEY_BASE" => "current-key", "SECRET_KEY_BASE_PREVIOUS" => nil) do
           result = SecretKeyBaseProvider.fetch_from_local
+
           assert_equal [], result[:previous]
         end
       end
@@ -93,6 +97,7 @@ module Jit
           require "aws-sdk-secretsmanager"
           Aws::SecretsManager::Client.stub(:new, mock_client) do
             result = SecretKeyBaseProvider.fetch_from_secrets_manager
+
             assert_equal "sm-key", result[:current]
             assert_equal ["sm-old-1", "sm-old-2"], result[:previous]
           end
@@ -113,6 +118,7 @@ module Jit
           require "aws-sdk-secretsmanager"
           Aws::SecretsManager::Client.stub(:new, mock_client) do
             result = SecretKeyBaseProvider.fetch_from_secrets_manager
+
             assert_equal "sm-key", result[:current]
             assert_equal [], result[:previous]
           end
@@ -127,6 +133,7 @@ module Jit
       test "fetch uses local in test environment" do
         with_env("SECRET_KEY_BASE" => "test-key", "SECRET_KEY_BASE_PREVIOUS" => nil) do
           result = SecretKeyBaseProvider.fetch
+
           assert_equal "test-key", result[:current]
           assert_equal [], result[:previous]
         end

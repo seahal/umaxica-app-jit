@@ -42,11 +42,13 @@ class ComPreferenceRegionOptionTest < ActiveSupport::TestCase
 
   test "name returns US for US id" do
     option = ComPreferenceRegionOption.find_or_create_by!(id: ComPreferenceRegionOption::US)
+
     assert_equal "US", option.name
   end
 
   test "name returns JP for JP id" do
     option = ComPreferenceRegionOption.find_or_create_by!(id: ComPreferenceRegionOption::JP)
+
     assert_equal "JP", option.name
   end
 end

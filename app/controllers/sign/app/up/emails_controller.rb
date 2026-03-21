@@ -6,6 +6,7 @@ module Sign
     module Up
       class EmailsController < ApplicationController
         include Sign::EmailRegistrable
+        include ::CloudflareTurnstile
 
         guest_only! message: I18n.t("sign.app.registration.email.already_logged_in")
 
@@ -25,18 +26,30 @@ module Sign
           end
 
           # Security: Validate the email belongs to the current registration flow
-          unless valid_email_session?
-            reset_email_flow!
-            redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
-            flash[:notice] = redirect_params.delete(:notice)
-            redirect_to new_sign_app_up_email_path(redirect_params)
-            return
-          end
+          return if valid_email_session?
+
+          reset_email_flow!
+          redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
+          flash[:notice] = redirect_params.delete(:notice)
+          redirect_to new_sign_app_up_email_path(redirect_params)
+          nil
         end
 
         def create
           email_params = params.expect(user_email: %i(raw_address address confirm_policy))
           email_address = email_params[:raw_address] || email_params[:address]
+
+          unless cloudflare_turnstile_validation["success"]
+            @user_email = UserEmail.new(address: email_address)
+            @user_email.errors.add(
+              :base, t(
+                "sign.app.registration.email.create.turnstile_failed",
+                default: "ボット検証に失敗しました。もう一度お試しください。",
+              ),
+            )
+            render :new, status: :unprocessable_content
+            return
+          end
 
           result = initiate_email_verification!(
             email_address,

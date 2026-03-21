@@ -31,8 +31,9 @@ class StaffSecrets::DestroyTest < ActiveSupport::TestCase
     assert_difference("StaffActivity.count", 1) do
       StaffSecrets::Destroy.call(actor: @staff, secret: @secret)
     end
-    
+
     activity = StaffActivity.last
+
     assert_equal StaffActivityEvent::STAFF_SECRET_REMOVED, activity.event_id
     assert_equal @staff, activity.actor
     assert_equal @secret.id, activity.subject_id

@@ -55,7 +55,7 @@ module Docs
               @documents = documents_scope
                 .joins(:com_document_versions)
                 .where("com_documents.permalink LIKE ? OR com_document_versions.title LIKE ?",
-                       like_pattern, like_pattern)
+                       like_pattern, like_pattern,)
                 .distinct
                 .order("com_documents.created_at DESC")
                 .offset((@page - 1) * @per_page)
@@ -64,7 +64,7 @@ module Docs
               @total_count = documents_scope
                 .joins(:com_document_versions)
                 .where("com_documents.permalink LIKE ? OR com_document_versions.title LIKE ?",
-                       like_pattern, like_pattern)
+                       like_pattern, like_pattern,)
                 .distinct
                 .count
             else

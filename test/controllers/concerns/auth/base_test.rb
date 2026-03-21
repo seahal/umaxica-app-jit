@@ -6,6 +6,22 @@ require "test_helper"
 module Auth
   class BaseTest < ActiveSupport::TestCase
     class HeaderKeyHarness
+      class MockCookies
+        delegate :[], :[]=, to: :@store
+
+        def initialize(store)
+          @store = store
+        end
+
+        def delete(key, _options = nil)
+          @store.delete(key)
+        end
+
+        def encrypted
+          HeaderKeyHarness.encrypted_cookies
+        end
+      end
+
       include Auth::Base
 
       attr_accessor :actor_type
@@ -40,31 +56,20 @@ module Auth
           Struct.new(:json?).new(false),
           "app.localhost", "req-123", "127.0.0.1",
         )
-        @cookies = {}.with_indifferent_access
+        @cookies = MockCookies.new({}.with_indifferent_access)
       end
 
       def cookies
         @cookies
       end
 
-      # Mock encrypted cookies
       def self.encrypted_cookies
-        @encrypted_cookies ||= {}.with_indifferent_access
+        Thread.current[:auth_base_test_encrypted_cookies] ||= {}.with_indifferent_access
       end
 
-      def cookies_with_mock_delete
-        c = @cookies
-        def c.delete(key, _options = nil)
-          super(key)
-        end
-
-        def c.encrypted
-          Auth::BaseTest::HeaderKeyHarness.encrypted_cookies
-        end
-        c
+      def self.reset_encrypted_cookies!
+        Thread.current[:auth_base_test_encrypted_cookies] = {}.with_indifferent_access
       end
-      alias_method :original_cookies, :cookies
-      def cookies; cookies_with_mock_delete; end
 
       def current_resource
         @logged_in ? Object.new : nil
@@ -315,13 +320,13 @@ module Auth
       harness = HeaderKeyHarness.new
       expires_at = 1.day.from_now
 
-      # Mock Core::CookieOptions
+      HeaderKeyHarness.reset_encrypted_cookies!
+
       Core::CookieOptions.stub :for, {} do
         harness.send(:set_device_id_cookie!, "dev-123", expires_at: expires_at)
 
         assert_equal "dev-123", HeaderKeyHarness.encrypted_cookies[Auth::Base::DEVICE_COOKIE_KEY][:value]
 
-        # Mock reading from encrypted cookies
         HeaderKeyHarness.encrypted_cookies[Auth::Base::DEVICE_COOKIE_KEY] = "dev-123"
 
         assert_equal "dev-123", harness.send(:read_device_id_cookie)
@@ -330,6 +335,7 @@ module Auth
 
     test "clear_auth_cookies! deletes all auth-related cookies" do
       harness = HeaderKeyHarness.new
+      HeaderKeyHarness.reset_encrypted_cookies!
       harness.cookies[Auth::Base::ACCESS_COOKIE_KEY] = "access"
       harness.cookies[Auth::Base::REFRESH_COOKIE_KEY] = "refresh"
 

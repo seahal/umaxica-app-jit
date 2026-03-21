@@ -239,6 +239,7 @@ module Sign
         def handle_failed_otp_attempt(user_email, user = nil)
           user ||= user_from_user_email(user_email)
           audit_user_login_failed(user) if user
+          Sign::Risk::Emitter.emit("auth_failed", user_id: user&.id) if user
 
           if user_email.locked?
             { success: false, error: t("sign.app.authentication.email.locked") }

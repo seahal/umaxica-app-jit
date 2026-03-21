@@ -6,6 +6,7 @@ require "test_helper"
 class AppContactBehaviorTest < ActiveSupport::TestCase
   test "belongs_to associations exist" do
     behavior = AppContactBehavior.new
+
     assert_respond_to behavior, :app_contact
     assert_respond_to behavior, :actor
     assert_respond_to behavior, :app_contact_behavior_level
@@ -13,7 +14,10 @@ class AppContactBehaviorTest < ActiveSupport::TestCase
   end
 
   test "app_contact method returns contact when subject_type matches" do
-    skip("Requires AppContact fixtures")
+    contact = app_contacts(:one)
+    behavior = AppContactBehavior.new(subject_id: contact.id, subject_type: "AppContact")
+
+    assert_equal contact, behavior.app_contact
   end
 
   test "app_contact= method sets subject_id and subject_type" do
@@ -28,13 +32,15 @@ class AppContactBehaviorTest < ActiveSupport::TestCase
 
   test "validates presence of subject_id" do
     behavior = AppContactBehavior.new(subject_id: nil, subject_type: "Test")
+
     assert_not behavior.valid?
-    assert behavior.errors[:subject_id].any?
+    assert_predicate behavior.errors[:subject_id], :any?
   end
 
   test "validates presence of subject_type" do
     behavior = AppContactBehavior.new(subject_id: 1, subject_type: nil)
+
     assert_not behavior.valid?
-    assert behavior.errors[:subject_type].any?
+    assert_predicate behavior.errors[:subject_type], :any?
   end
 end

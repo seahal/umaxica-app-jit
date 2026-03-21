@@ -80,11 +80,14 @@ beforeEach(() => {
 // ──────────────────────────────────────────────
 
 describe("connect", () => {
-  test("syncRadio を呼ぶ", () => {
+  test("syncRadio を呼ぶ", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Failed")));
     const controller = makeController();
     const spy = vi.spyOn(controller, "syncRadio");
     controller.connect();
-    expect(spy).toHaveBeenCalledOnce();
+    await vi.waitFor(() => {
+      expect(spy).toHaveBeenCalledOnce();
+    });
   });
 });
 

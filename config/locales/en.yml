@@ -1,5 +1,10 @@
 ---
 en:
+  actions:
+    back: Back
+    connect: Connect
+    delete: Delete
+    submit: Submit
   otp:
     resend:
       button: Resend code
@@ -14,6 +19,7 @@ en:
     sessions_revoked: Sessions revoked. Please continue logging in.
     login_limit_exceeded: Login limit exceeded. Please end an existing session and try again.
     edit:
+      page_title: Session Management
       title: Session Limit Reached
       description:
         You have reached the maximum number of concurrent sessions. To continue logging in, please
@@ -93,6 +99,14 @@ en:
           new:
             page_title: Withdraw Account
             already_deactivated: Your account is already deactivated.
+          recovery:
+            link: Recover account
+            page_title: Withdrawal recovery
+            deadline: "Recovery deadline: %{date}"
+            available: Your account can still be recovered.
+            submit: Recover account
+            confirm: Recover this account?
+            unavailable: Recovery period has expired.
           schedule:
             title: Schedule deletion
             ack_label: I understand the account will be scheduled for deletion in 31 days.
@@ -106,6 +120,9 @@ en:
           index:
             title: Passkey Management
             description: Manage your registered passkeys
+        totp:
+          index:
+            new_link: Add TOTP credential
         passkeys:
           new:
             page_title: Register Passkey
@@ -198,6 +215,8 @@ en:
           back: Back
         success:
           complete: Verification completed.
+        errors:
+          no_passkey: No passkey is registered.
         setup:
           title: Set up verification methods
           description: Please register a passkey before continuing.
@@ -227,6 +246,23 @@ en:
           invalid_redirect_uri: Apple Sign In redirect URL is misconfigured.
           user_cancelled_authorize: You cancelled the Apple Sign In. Please try again if needed.
     org:
+      in:
+        back: Back to sign in
+        session:
+          restricted_notice: Your active session limit has been reached. Please manage your existing sessions.
+        mfa:
+          title: Multi-factor authentication
+          description: Additional verification is required to continue.
+          verification_failed: Verification failed.
+          no_methods_available: No verification methods are available.
+          methods:
+            passkey: Authenticate with passkey
+          passkey:
+            title: Passkey authentication
+            description: Use your passkey to verify your identity.
+            authenticate: Authenticate with passkey
+            back: Back
+            success: Passkey authentication succeeded.
       social:
         sessions:
           invalid_provider: Invalid provider specified
@@ -257,6 +293,8 @@ en:
           submit: Continue
           back: Back
       verification:
+        errors:
+          no_passkey: No passkey is registered.
         index:
           title: Verification Sessions
           new: New
@@ -340,6 +378,7 @@ en:
             description: Google sign-in is available through your verified email addresses.
             enabled: Google sign-in is available.
             disabled: Google sign-in is unavailable until you verify an email address.
+            disable: Disable
             email_hint: To disable Google sign-in, update or remove the matching email address from email settings.
             delete_confirm: Review how Google sign-in is configured?
           destroy:
@@ -358,6 +397,10 @@ en:
             logged_in: Logged in
             login_success: Login success
             unknown: "Unknown event (%{event_id})"
+        sessions:
+          revoke:
+            others_button: Revoke all other sessions
+            others_confirm: Revoke all other sessions?
         passkeys:
           new:
             page_title: Register Passkey
@@ -601,3 +644,24 @@ en:
         message: We use cookies to improve your experience.
         accept: Accept
         cancel: Cancel
+  help:
+    app:
+      contacts:
+        new:
+          submit: Create
+          cancel: Cancel
+    com:
+      contacts:
+        new:
+          submit: Create
+          cancel: Cancel
+    org:
+      contacts:
+        new:
+          submit: Create
+          cancel: Cancel
+  meta:
+    default_title: ""
+  time:
+    formats:
+      short: "%Y/%m/%d %H:%M"

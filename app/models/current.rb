@@ -29,4 +29,10 @@ class Current < ActiveSupport::CurrentAttributes
   def member?
     actor_type == :member
   end
+
+  def actor
+    raise
+  end
+
+  # TODO: i want to use Current.preference.cookie.functional -> true,false,nil -> Current.preference.timezone -> utc,jst,nil  Current.preference.language -> ja,en,nil
 end

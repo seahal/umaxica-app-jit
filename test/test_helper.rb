@@ -38,16 +38,16 @@ module TestRateLimitReset
   module_function
 
   def clear!
-    clear_rails_rate_limit_store!
+    clear_rate_limit_store!
     clear_cache_rate_limit_state!
   end
 
-  def clear_rails_rate_limit_store!
-    return unless defined?(RailsRateLimit)
+  def clear_rate_limit_store!
+    return unless defined?(RateLimit)
 
-    RailsRateLimit.store.clear!
+    RateLimit.store.clear
   rescue StandardError => e
-    warn "[test_helper] failed to clear RailsRateLimit store: #{e.class}: #{e.message}"
+    warn "[test_helper] failed to clear RateLimit store: #{e.class}: #{e.message}"
   end
 
   def clear_cache_rate_limit_state!

@@ -15,14 +15,14 @@ module Sign
 
     def call
       public_id, verifier = parse_refresh_token!
-      digest = UserToken.digest_refresh_token(verifier)
 
       result = nil
       ActiveRecord::Base.connected_to(role: :writing) do
         token = find_token(public_id)
         raise InvalidRefreshToken, "token_not_found" unless token
-        raise InvalidRefreshToken, "invalid_digest" unless token.refresh_token_digest == digest
+        raise InvalidRefreshToken, "invalid_digest" unless token.refresh_token_digest_matches?(verifier)
 
+        digest = token.class.digest_refresh_token(verifier)
         result = token.class.rotate_refresh!(
           presented_refresh_digest: digest,
           device_id: token.device_id,

@@ -49,8 +49,10 @@ module Sign
       end
 
       def self.feature_enabled?
+        return false if ENV["RISK_ENFORCEMENT_DISABLED"] == "true"
+
         enabled_config = Rails.configuration.try(:x).try(:risk_enforcement).try(:enabled)
-        enabled_config || ENV["RISK_ENFORCEMENT_ENABLED"] == "true"
+        enabled_config || ENV["RISK_ENFORCEMENT_ENABLED"] == "true" || Rails.env.production?
       end
     end
   end

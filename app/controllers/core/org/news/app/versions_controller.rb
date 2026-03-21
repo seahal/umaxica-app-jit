@@ -5,7 +5,9 @@ module Core
   module Org
     module News
       module App
-        class VersionsController < Core::Org::NewsController
+        class VersionsController < Core::Org::ApplicationController
+          public_strict!
+
           def new
             head :ok
           end

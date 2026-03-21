@@ -30,9 +30,12 @@ module Sign
       before_action :set_color_theme
       append_after_action :finish_request
 
-      # FIXME: Resolve the URL issues before deploying.
       protect_from_forgery using: :header_or_legacy_token,
-                           trusted_origins: %w(http://sign.app.localhost https://sign.app.localhost),
+                           trusted_origins: ENV.fetch(
+                             "SIGN_APP_TRUSTED_ORIGINS",
+                             "http://sign.app.localhost,https://sign.app.localhost",
+                           )
+                             .split(",").map(&:strip),
                            with: :exception
 
       guest_only!

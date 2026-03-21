@@ -56,16 +56,23 @@ class OrgPreference < PreferenceRecord
   include ::DbscBindable
 
   attribute :status_id, default: OrgPreferenceStatus::NOTHING
+  attribute :binding_method_id, default: OrgPreferenceBindingMethod::NOTHING
+  attribute :dbsc_status_id, default: OrgPreferenceDbscStatus::NOTHING
 
   belongs_to :org_preference_status,
              foreign_key: :status_id,
              inverse_of: :org_preferences
-  belongs_to :org_preference_binding_method,
-             foreign_key: :binding_method_id,
-             inverse_of: :org_preferences
   belongs_to :org_preference_dbsc_status,
              foreign_key: :dbsc_status_id,
              inverse_of: :org_preferences
+  # waht is this?
+  belongs_to :org_preference_binding_method,
+             foreign_key: :binding_method_id,
+             inverse_of: :org_preferences
+  # waht is this?
+  belongs_to :replaced_by,
+             class_name: "OrgPreference",
+             optional: true
 
   has_one :org_preference_cookie,
           foreign_key: :preference_id,
@@ -91,19 +98,17 @@ class OrgPreference < PreferenceRecord
            foreign_key: :subject_id,
            inverse_of: :org_preference,
            dependent: :destroy
+  # waht is this?
   has_many :staff_org_preferences,
            dependent: :delete_all,
            inverse_of: :org_preference
-  belongs_to :replaced_by,
-             class_name: "OrgPreference",
-             optional: true
+  # waht is this?
   has_many :replacements,
            class_name: "OrgPreference",
            foreign_key: :replaced_by_id,
            inverse_of: :replaced_by,
            dependent: :nullify
+
   validates :status_id, numericality: { only_integer: true }
   validates :jti, uniqueness: true, allow_nil: true
-  attribute :binding_method_id, default: OrgPreferenceBindingMethod::NOTHING
-  attribute :dbsc_status_id, default: OrgPreferenceDbscStatus::NOTHING
 end

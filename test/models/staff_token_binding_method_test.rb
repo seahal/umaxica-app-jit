@@ -32,6 +32,7 @@ class StaffTokenBindingMethodTest < ActiveSupport::TestCase
 
   test "has_many staff_tokens association" do
     method = StaffTokenBindingMethod.new(id: 1)
+
     assert_respond_to method, :staff_tokens
   end
 end

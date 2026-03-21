@@ -216,7 +216,7 @@ jobs:
       REGION_CODE: all
       # Valkey
       VALKEY_URL: redis://localhost:6379/0
-      VALKEY_RACK_ATTACK_URL: redis://localhost:6379/1
+      RATE_LIMIT_REDIS_URL: redis://localhost:6379/1
       # PostgreSQL - Connection
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432

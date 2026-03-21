@@ -1,4 +1,4 @@
-<% content_for :page_title, t("session_limit.edit.title", default: "セッション管理") %>
+<% content_for :page_title, t("session_limit.edit.page_title") %>
 
 <section>
   <div>
@@ -7,11 +7,11 @@
     <div>
       <div>
         <h1>
-          <%= t("session_limit.edit.title", default: "セッション上限に達しました") %>
+          <%= t("session_limit.edit.title") %>
         </h1>
       </div>
       <p>
-        <%= t("session_limit.edit.description", default: "同時にログインできるセッション数の上限に達しています。ログインを続行するには、無効化するセッションを選択してください。") %>
+        <%= t("session_limit.edit.description") %>
       </p>
     </div>
 
@@ -25,7 +25,7 @@
       <%= form_with url: sign_org_in_secret_path, method: :post do |f| %>
         <div>
           <h2>
-            <%= t("session_limit.edit.active_sessions", default: "アクティブなセッション") %>
+            <%= t("session_limit.edit.active_sessions") %>
           </h2>
 
           <% if @active_sessions.present? %>
@@ -38,18 +38,18 @@
                   <div>
                     <div>
                     <span>
-                      <%= t("session_limit.edit.session_label", default: "セッション") %>
+                      <%= t("session_limit.edit.session_label") %>
                       #<%= "#{session.public_id.first(8)}..." %>
                     </span>
                     </div>
                     <div>
                     <span>
-                      <%= t("session_limit.edit.created_at", default: "作成日時") %>:
+                      <%= t("session_limit.edit.created_at") %>:
                       <%= localized_session_timestamp(session.created_at) %>
                     </span>
                       <% if session.last_used_at %>
                       <span>
-                        <%= t("session_limit.edit.last_used", default: "最終使用") %>:
+                        <%= t("session_limit.edit.last_used") %>:
                         <%= localized_session_timestamp(session.last_used_at) %>
                       </span>
                       <% end %>
@@ -60,14 +60,14 @@
             </div>
           <% else %>
             <p>
-              <%= t("session_limit.edit.no_sessions", default: "アクティブなセッションがありません。") %>
+              <%= t("session_limit.edit.no_sessions") %>
             </p>
           <% end %>
         </div>
 
         <div>
-          <%= f.submit t("session_limit.edit.submit", default: "選択したセッションを無効化してログイン") %>
-          <%= link_to t("session_limit.edit.cancel", default: "キャンセル"),
+          <%= f.submit t("session_limit.edit.submit") %>
+          <%= link_to t("session_limit.edit.cancel"),
                       new_sign_org_in_path %>
         </div>
       <% end %>

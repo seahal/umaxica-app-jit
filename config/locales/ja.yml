@@ -6,8 +6,11 @@ ja:
     confirm_delete_totp: "本当にこのTOTPを削除しますか？"
     no_totp_found: "登録済みのTOTPはありません。"
   actions:
+    back: "戻る"
+    connect: "連携する"
     up: "上へ"
     delete: "削除"
+    submit: "送信"
     update: "更新"
   otp:
     resend:
@@ -155,6 +158,8 @@ ja:
         totps:
           invalid_code: "認証コードが正しくありません。"
         totp:
+          index:
+            new_link: "TOTPを追加"
           new:
             page_title: "TOTPの作成"
             description: "認証アプリ（Google Authenticator等）を設定します。"
@@ -184,6 +189,14 @@ ja:
           new:
             page_title: "退会"
             already_deactivated: "すでに退会手続きが完了しています。"
+          recovery:
+            link: "アカウントを復旧する"
+            page_title: "退会の復旧"
+            deadline: "復旧期限: %{date}"
+            available: "アカウントはまだ復旧できます。"
+            submit: "アカウントを復旧する"
+            confirm: "このアカウントを復旧しますか？"
+            unavailable: "復旧可能期間が終了しました。"
           schedule:
             title: "削除予約の確認"
             ack_label: "31日後に削除（削除予約）されることを理解しました"
@@ -194,6 +207,8 @@ ja:
             submit: "退会する"
             confirm: "本日中に利用停止します。よろしいですか？"
       verification:
+        errors:
+          no_passkey: "パスキーが登録されていません。"
         setup:
           title: "認証方法の登録"
           description: "続行する前に、パスキー、メール、電話番号、または認証アプリを登録してください。"
@@ -211,6 +226,23 @@ ja:
           index:
             new_link: "新規追加"
     org:
+      in:
+        back: "ログインに戻る"
+        session:
+          restricted_notice: "セッション数が上限に達しています。既存セッションを管理してください。"
+        mfa:
+          title: "多要素認証"
+          description: "続行するには追加の認証が必要です"
+          verification_failed: "認証に失敗しました。"
+          no_methods_available: "利用可能な認証方法がありません"
+          methods:
+            passkey: "パスキーで認証"
+          passkey:
+            title: "パスキー認証"
+            description: "パスキーを使用して本人確認を行います"
+            authenticate: "パスキーで認証する"
+            back: "戻る"
+            success: "パスキー認証に成功しました"
       authentication:
         secret:
           new:
@@ -258,6 +290,7 @@ ja:
             description: "Google サインインは、確認済みのメールアドレスと紐づいて利用できます。"
             enabled: "Google サインインを利用できます。"
             disabled: "確認済みメールアドレスがないため、Google サインインは利用できません。"
+            disable: "無効にする"
             email_hint: "無効化したい場合は、メールアドレス設定から対象メールアドレスを変更または削除してください。"
             delete_confirm: "Google サインインの利用方法を確認しますか？"
           destroy:
@@ -276,6 +309,10 @@ ja:
             logged_in: "ログイン"
             login_success: "ログイン成功"
             unknown: "不明なイベント (%{event_id})"
+        sessions:
+          revoke:
+            others_button: "他のセッションをすべて削除"
+            others_confirm: "他のセッションをすべて削除しますか？"
         secrets:
           index:
             title: "シークレット管理"
@@ -291,6 +328,8 @@ ja:
             title: "新規シークレット"
             description: "新しいシークレットを作成します。"
       verification:
+        errors:
+          no_passkey: "パスキーが登録されていません。"
         setup:
           title: "認証方法の登録"
           description: "続行する前に、パスキーまたは認証アプリを登録してください。"
@@ -368,6 +407,21 @@ ja:
           edit:
             description: "クッキー設定"
   help:
+    app:
+      contacts:
+        new:
+          submit: "作成"
+          cancel: "キャンセル"
+    com:
+      contacts:
+        new:
+          submit: "作成"
+          cancel: "キャンセル"
+    org:
+      contacts:
+        new:
+          submit: "作成"
+          cancel: "キャンセル"
     com:
       contact:
         telephones:
@@ -381,3 +435,8 @@ ja:
         message: "快適な利用のため Cookie を使用しています。"
         accept: "同意する"
         cancel: "閉じる"
+  meta:
+    default_title: ""
+  time:
+    formats:
+      short: "%Y/%m/%d %H:%M"

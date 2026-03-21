@@ -31,9 +31,10 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-  config.ssl_options = { hsts: { subdomains: true } }
+  # HSTS with preload support (submit to hstspreload.org after deploying).
+  config.ssl_options = {
+    hsts: { subdomains: true, preload: true, expires: 2.years.to_i },
+  }
 
   # Log to STDOUT as JSON for Cloud Run visibility.
   STDOUT.sync = true

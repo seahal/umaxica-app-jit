@@ -4,7 +4,7 @@
 module RateLimitStoreReset
   def setup
     super
-    RailsRateLimit.store.clear! if RailsRateLimit.store.respond_to?(:clear!)
+    RateLimit.store.clear if defined?(RateLimit)
   end
 end
 

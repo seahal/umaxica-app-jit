@@ -5,7 +5,9 @@ module Core
   module Org
     module News
       module App
-        class PostsController < Core::Org::NewsController
+        class PostsController < Core::Org::ApplicationController
+          public_strict!
+
           def index
             head :ok
           end

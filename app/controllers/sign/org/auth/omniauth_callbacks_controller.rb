@@ -113,7 +113,7 @@ module Sign
           OperatorRecord.connected_to(role: :writing) do
             staff_email = StaffEmail.find_by(address: email)
             if staff_email && !staff_email.undeletable?
-              staff_email.update_columns(undeletable: true, updated_at: Time.current)
+              staff_email.update!(undeletable: true)
             end
           end
 

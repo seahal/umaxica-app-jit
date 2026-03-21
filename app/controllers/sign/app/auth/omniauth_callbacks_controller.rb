@@ -109,8 +109,12 @@ module Sign
 
           # Try to find a specific translation, fall back to generic
           failure_key = ["sign.app.social.sessions.failure", message].join(".")
-          default_message = I18n.t("sign.app.social.sessions.create.failure")
-          alert_message = I18n.t(failure_key, default: default_message)
+          alert_message =
+            if I18n.exists?(failure_key)
+              I18n.t(failure_key)
+            else
+              I18n.t("sign.app.social.sessions.create.failure")
+            end
 
           redirect_to new_sign_app_in_path, alert: alert_message
         end

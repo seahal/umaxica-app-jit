@@ -32,6 +32,7 @@ class StaffTokenDbscStatusTest < ActiveSupport::TestCase
 
   test "has_many staff_tokens association" do
     status = StaffTokenDbscStatus.new(id: 1)
+
     assert_respond_to status, :staff_tokens
   end
 end

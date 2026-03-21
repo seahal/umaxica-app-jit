@@ -8,6 +8,7 @@ ja:
     sessions_revoked: セッションを無効化しました。ログインを続行してください。
     login_limit_exceeded: ログイン上限を超えています。既存のセッションを終了してから再度お試しください。
     edit:
+      page_title: セッション管理
       title: セッション上限に達しました
       description: 同時にログインできるセッション数の上限に達しています。ログインを続行するには、無効化するセッションを選択してください。
       active_sessions: アクティブなセッション
@@ -497,6 +498,9 @@ ja:
           edit:
             title: 地域設定
             description: 地域設定を変更します
+            language_options:
+              ja: 日本語
+              en: 英語
             language_label: 言語
             timezone_label: タイムゾーン
             timezone_options:
@@ -539,6 +543,9 @@ ja:
           edit:
             title: 地域設定
             description: 地域設定を変更します
+            language_options:
+              ja: 日本語
+              en: 英語
             language_label: 言語
             timezone_label: タイムゾーン
             timezone_options:
@@ -581,6 +588,9 @@ ja:
           edit:
             title: 地域設定
             description: 地域設定を変更します
+            language_options:
+              ja: 日本語
+              en: 英語
             language_label: 言語
             timezone_label: タイムゾーン
             timezone_options:

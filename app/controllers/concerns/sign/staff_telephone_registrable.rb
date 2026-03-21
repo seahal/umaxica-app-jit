@@ -90,11 +90,11 @@ module Sign
     end
 
     def check_staff_telephone_verification_rate_limit!
-      RateLimiter.limit!(
-        key: "staff_telephone_verification:#{request.remote_ip}",
-        max_requests: TELEPHONE_VERIFICATION_RATE_LIMIT,
-        window: TELEPHONE_VERIFICATION_RATE_WINDOW,
-      )
+      cache_key = "rate-limit:staff_telephone_verification:#{request.remote_ip}"
+      count = RateLimit.store.increment(cache_key, 1, expires_in: TELEPHONE_VERIFICATION_RATE_WINDOW.seconds)
+      return unless count && count > TELEPHONE_VERIFICATION_RATE_LIMIT
+
+      raise ActionController::TooManyRequests
     end
   end
 end

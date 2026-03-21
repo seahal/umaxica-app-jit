@@ -5,6 +5,10 @@ scope module: :docs, as: :docs do
   constraints host: ENV["DOCS_CORPORATE_URL"] do
     scope module: :com, as: :com do
       root to: "roots#index"
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
@@ -32,6 +36,10 @@ scope module: :docs, as: :docs do
   constraints host: ENV["DOCS_SERVICE_URL"] do
     scope module: :app, as: :app do
       root to: "roots#index"
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
@@ -60,6 +68,10 @@ scope module: :docs, as: :docs do
   constraints host: ENV["DOCS_STAFF_URL"] do
     scope module: :org, as: :org do
       root to: "roots#index"
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }

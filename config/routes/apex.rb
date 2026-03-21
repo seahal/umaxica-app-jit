@@ -5,6 +5,10 @@ scope module: :apex, as: :apex do
   constraints host: ENV["APEX_CORPORATE_URL"] do
     scope module: :com, as: :com do
       root to: "roots#index"
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html
       resource :health, only: :show, format: :html
       resource :sitemap, only: :show, defaults: { format: :xml }

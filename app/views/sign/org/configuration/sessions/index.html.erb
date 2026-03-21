@@ -3,12 +3,11 @@
 <% has_other_sessions = @sessions.any? { |session| session.public_id != current_session_public_id } %>
 <% if has_other_sessions %>
   <div>
-    <%= button_to t('sign.org.configuration.sessions.revoke.others_button', default: 'Revoke all other sessions'),
+    <%= button_to t('sign.org.configuration.sessions.revoke.others_button'),
                   others_sign_org_configuration_sessions_path,
                   method: :delete,
                   data: {
-                    confirm: t('sign.org.configuration.sessions.revoke.others_confirm',
-                               default: 'Revoke all other sessions?')
+                    confirm: t('sign.org.configuration.sessions.revoke.others_confirm')
                   } %>
   </div>
 <% end %>

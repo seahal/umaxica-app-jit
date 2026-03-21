@@ -1,17 +1,10 @@
 <% content_for :page_title, 'Edit Language' %>
 <section>
   <h1>
-    <%= t(
-          "apex.org.preference.language.edit.heading",
-          default: t(
-            "apex.org.preference.locale.edit.title",
-            default: t("apex.org.preferences.language_settings"))) %>
+      <%= t("apex.org.preference.language.edit.heading") %>
   </h1>
   <p>
-    <%= t(
-          "apex.org.preference.language.edit.description",
-          default: t(
-            "apex.org.preference.locale.edit.description")) %>
+      <%= t("apex.org.preference.language.edit.description") %>
   </p>
 
   <% selected_language = nil
@@ -29,9 +22,7 @@
   <%= form_with model: @preference_language, scope: :preference_language, url: apex_org_preference_region_language_path, method: :patch do |f| %>
     <div>
       <%= f.label :option_id,
-                  t(
-                    "apex.org.preference.language.edit.language_label",
-                    default: t("apex.org.preference.locale.edit.language_label")) %>
+                  t("apex.org.preference.language.edit.language_label") %>
       <div>
         <%= f.select :option_id,
                      options_for_select(language_options, selected_language),

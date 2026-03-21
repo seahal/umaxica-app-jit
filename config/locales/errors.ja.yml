@@ -1,5 +1,6 @@
 ja:
   errors:
+    invalid_authenticity_token: "セッションが期限切れです。ページを再読み込みしてください。"
     rate_limit:
       exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
     preference:

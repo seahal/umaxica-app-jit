@@ -1,20 +1,13 @@
 <% content_for :page_title, 'Edit Timezone' %>
 <section>
   <h1>
-    <%= t(
-          "apex.org.preference.timezone.edit.heading",
-          default: t(
-            "apex.org.preference.locale.edit.title",
-            default: t("apex.org.preferences.timezone_settings"))) %>
+    <%= t("apex.org.preference.timezone.edit.heading") %>
   </h1>
   <p>
-    <%= t(
-          "apex.org.preference.timezone.edit.description",
-          default: t(
-            "apex.org.preference.locale.edit.description")) %>
+    <%= t("apex.org.preference.timezone.edit.description") %>
   </p>
 
-  <% timezone_labels = I18n.t("apex.org.preference.locale.edit.timezone_options", default: {}) %>
+  <% timezone_labels = I18n.t("apex.org.preference.locale.edit.timezone_options") %>
   <% timezone_options = OrgPreferenceTimezoneOption.order(:id).map do |option|
     label_key = case option.name
                 when "Etc/UTC" then "UTC"
@@ -27,9 +20,7 @@
   <%= form_with model: @preference_timezone, scope: :preference_timezone, url: apex_org_preference_region_timezone_path, method: :patch do |f| %>
     <div>
       <%= f.label :option_id,
-                  t(
-                    "apex.org.preference.timezone.edit.timezone_label",
-                    default: t("apex.org.preference.locale.edit.timezone_label")) %>
+                  t("apex.org.preference.timezone.edit.timezone_label") %>
       <div>
         <%= f.select :option_id,
                      options_for_select(timezone_options, @preference_timezone.option_id),

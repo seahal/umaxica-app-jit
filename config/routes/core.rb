@@ -44,6 +44,10 @@ scope module: :core, as: :core do
   constraints host: (ENV["CORE_SERVICE_URL"]) do
     scope module: :app, as: :app do
       root to: "roots#index"
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # endpoint of health check
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }

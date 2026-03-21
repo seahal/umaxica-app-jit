@@ -7,6 +7,7 @@ module Sign
       module Challenge
         class TotpsController < ApplicationController
           include SessionLimitGate
+          include ::CloudflareTurnstile
 
           class TotpChallengeForm
             include ActiveModel::Model
@@ -30,6 +31,16 @@ module Sign
           def create
             @totp_form = TotpChallengeForm.new(totp_params)
             unless @totp_form.valid?
+              return render :new, status: :unprocessable_content
+            end
+
+            unless cloudflare_turnstile_stealth_validation["success"]
+              @totp_form.errors.add(
+                :base, t(
+                  "sign.app.in.mfa.turnstile_failed",
+                  default: "検証に失敗しました。もう一度お試しください。",
+                ),
+              )
               return render :new, status: :unprocessable_content
             end
 

@@ -68,6 +68,10 @@ module Core
     end
     private_class_method :localhost_cookie_domain
 
+    # SECURITY NOTE: Scoping cookies to the apex domain (e.g., ".example.com") is intentional
+    # for cross-subdomain SSO. This means auth cookies are readable by ALL subdomains.
+    # Accepted risk: an XSS on any subdomain could access auth cookies (mitigated by httponly).
+    # A subdomain compromise would expose session tokens for all services on the same apex.
     def best_effort_apex(host)
       parts = host.split(".")
       return nil if parts.length < 2

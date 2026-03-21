@@ -208,7 +208,10 @@ scope module: :sign, as: :sign do
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
         resource :checkpoint, only: %i(show update destroy)
-        resource :challenge, only: %i(show create)
+        resource :challenge, only: %i(show)
+        namespace :challenge do
+          resource :passkey, only: %i(new create)
+        end
       end
 
       resource :verification, only: %i(show), controller: :verification

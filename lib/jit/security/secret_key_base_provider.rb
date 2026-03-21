@@ -34,7 +34,7 @@ module Jit
         require "aws-sdk-secretsmanager"
 
         client = Aws::SecretsManager::Client.new(
-          region: ENV.fetch("AWS_REGION", "ap-northeast-1")
+          region: ENV.fetch("AWS_REGION", "ap-northeast-1"),
         )
 
         response = client.get_secret_value(secret_id: secret_id)

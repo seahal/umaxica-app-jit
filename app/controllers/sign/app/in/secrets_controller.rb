@@ -302,6 +302,9 @@ module Sign
             errors: @secret_form.errors.full_messages,
             details: details,
           )
+
+          Sign::Risk::Emitter.emit("auth_failed", user_id: user&.id) if user
+
           render_new_with_unprocessable_entity
         end
 

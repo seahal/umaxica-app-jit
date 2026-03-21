@@ -34,8 +34,9 @@ class UserSecrets::DestroyTest < ActiveSupport::TestCase
     assert_difference("UserActivity.count", 1) do
       UserSecrets::Destroy.call(actor: @user, secret: @secret)
     end
-    
+
     activity = UserActivity.last
+
     assert_equal UserActivityEvent::USER_SECRET_REMOVED, activity.event_id
     assert_equal @user, activity.actor
     assert_equal @secret.id.to_s, activity.subject_id

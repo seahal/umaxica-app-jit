@@ -15,7 +15,7 @@ module ApplicationHelper
     if title.present?
       content_for :page_title, title
     else
-      content_for(:page_title) || t("meta.default_title", default: "")
+      content_for(:page_title) || t("meta.default_title")
     end
   end
 

@@ -17,28 +17,28 @@ class StaffSecrets::CreateTest < ActiveSupport::TestCase
 
   test "creates secret with auto-generated raw secret" do
     params = { name: "api-key-1", enabled: true }
-    
+
     result = StaffSecrets::Create.call(actor: @staff, staff: @staff, params: params)
-    
-    assert result.secret.persisted?
-    assert result.raw_secret.present?
+
+    assert_predicate result.secret, :persisted?
+    assert_predicate result.raw_secret, :present?
     assert_equal "api-key-1", result.secret.name
-    assert result.secret.active?
+    assert_predicate result.secret, :active?
   end
 
   test "creates secret with enabled=false as revoked" do
     params = { name: "disabled-key", enabled: false }
-    
+
     result = StaffSecrets::Create.call(actor: @staff, staff: @staff, params: params)
-    
-    assert result.secret.revoked?
+
+    assert_predicate result.secret, :revoked?
   end
 
   test "strips whitespace from name parameter" do
     params = { name: "  test-name-with-spaces  ", enabled: true }
-    
+
     result = StaffSecrets::Create.call(actor: @staff, staff: @staff, params: params)
-    
+
     assert_equal "test-name-with-spaces", result.secret.name
   end
 end

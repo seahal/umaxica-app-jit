@@ -97,7 +97,7 @@ class ApplicationHelperTest < ActionView::TestCase
 
     result = view.page_title
 
-    expected = I18n.t("meta.default_title", default: "")
+    expected = I18n.t("meta.default_title")
 
     assert_equal expected, result
   end

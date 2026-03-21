@@ -27,7 +27,7 @@ module Auth
     end
 
     def with_secure_prefix(basename, production:)
-      return basename unless production
+      return basename unless production || ENV["FORCE_SECURE_COOKIES"].present?
 
       "#{Auth::IoKeys::SECURE_COOKIE_PREFIX}#{basename}"
     end

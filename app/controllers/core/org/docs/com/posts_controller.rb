@@ -5,7 +5,9 @@ module Core
   module Org
     module Docs
       module Com
-        class PostsController < Core::Org::DocsController
+        class PostsController < Core::Org::ApplicationController
+          public_strict!
+
           def index
             head :ok
           end

@@ -32,6 +32,7 @@ class UserTokenBindingMethodTest < ActiveSupport::TestCase
 
   test "has_many user_tokens association" do
     method = UserTokenBindingMethod.new(id: 1)
+
     assert_respond_to method, :user_tokens
   end
 end

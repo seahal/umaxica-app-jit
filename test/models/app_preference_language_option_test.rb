@@ -42,16 +42,19 @@ class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
 
   test "name returns ja for JA id" do
     option = AppPreferenceLanguageOption.find_or_create_by!(id: AppPreferenceLanguageOption::JA)
+
     assert_equal "ja", option.name
   end
 
   test "name returns en for EN id" do
     option = AppPreferenceLanguageOption.find_or_create_by!(id: AppPreferenceLanguageOption::EN)
+
     assert_equal "en", option.name
   end
 
   test "name returns nil for unknown id" do
     option = AppPreferenceLanguageOption.find_or_create_by!(id: 999)
+
     assert_nil option.name
   end
 end

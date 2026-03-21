@@ -15,7 +15,7 @@ module Sign
 
     # Initiates SMS OTP verification for a telephone number.
     # Returns true on success, false on failure (user blank or validation error).
-    # Raises RateLimiter::RateLimitExceeded if rate limit is exceeded.
+    # Raises ActionController::TooManyRequests if rate limit is exceeded.
     def initiate_telephone_verification(user, number, auto_accept_confirmations: false)
       return false if user.blank?
 
@@ -106,19 +106,16 @@ module Sign
     private
 
     def check_telephone_verification_rate_limit!
-      key = "telephone_verification:#{request.remote_ip}"
-      RateLimiter.limit!(
-        key: key,
-        max_requests: TELEPHONE_VERIFICATION_RATE_LIMIT,
-        window: TELEPHONE_VERIFICATION_RATE_WINDOW,
-      )
-    rescue RateLimiter::RateLimitExceeded => e
+      cache_key = "rate-limit:telephone_verification:#{request.remote_ip}"
+      count = RateLimit.store.increment(cache_key, 1, expires_in: TELEPHONE_VERIFICATION_RATE_WINDOW.seconds)
+      return unless count && count > TELEPHONE_VERIFICATION_RATE_LIMIT
+
       Rails.event.notify(
         "telephone.verification.rate_limited",
         ip: request.remote_ip,
-        retry_after: e.retry_after,
+        retry_after: TELEPHONE_VERIFICATION_RATE_WINDOW,
       )
-      raise
+      raise ActionController::TooManyRequests
     end
   end
 end

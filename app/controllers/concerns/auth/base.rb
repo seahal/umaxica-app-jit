@@ -737,7 +737,7 @@ module Auth
       # Loop guard: prevents infinite refresh loops within the same request
       return if request.env[Auth::IoKeys::Env::AUTH_REFRESHED_FLAG]
 
-      refresh_plain = cookies[REFRESH_COOKIE_KEY]
+      refresh_plain = cookies.encrypted[REFRESH_COOKIE_KEY]
       return if refresh_plain.blank?
 
       # Mark as refreshed to prevent recursion
@@ -1031,8 +1031,8 @@ module Auth
         value: access_token,
         expires: access_expires_at,
       )
-      # Refresh cookie - use regular cookies (not encrypted)
-      cookies[REFRESH_COOKIE_KEY] = cookie_options.merge(
+      # Refresh cookie - encrypted for defense-in-depth
+      cookies.encrypted[REFRESH_COOKIE_KEY] = cookie_options.merge(
         value: refresh_token,
         expires: refresh_expires_at,
       )
@@ -1559,8 +1559,7 @@ module Auth
     end
 
     def destroy_refresh_token_from_cookie
-      # Use regular cookies (not encrypted)
-      token_value = cookies[REFRESH_COOKIE_KEY]
+      token_value = cookies.encrypted[REFRESH_COOKIE_KEY]
       return unless token_value
 
       public_id, = token_class.parse_refresh_token(token_value)
@@ -2157,7 +2156,7 @@ module Auth
     end
 
     def mfa_required_for?(resource)
-      return false unless resource.is_a?(::User)
+      return false unless resource.is_a?(::User) || resource.is_a?(::Staff)
       return false unless resource.respond_to?(:multi_factor_enabled?)
 
       resource.multi_factor_enabled?

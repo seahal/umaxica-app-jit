@@ -6,26 +6,31 @@ require "test_helper"
 class StaffPreferenceColorthemeOptionTest < ActiveSupport::TestCase
   test "returns light for LIGHT id" do
     option = StaffPreferenceColorthemeOption.new(id: StaffPreferenceColorthemeOption::LIGHT)
+
     assert_equal "light", option.name
   end
 
   test "returns dark for DARK id" do
     option = StaffPreferenceColorthemeOption.new(id: StaffPreferenceColorthemeOption::DARK)
+
     assert_equal "dark", option.name
   end
 
   test "returns system for SYSTEM id" do
     option = StaffPreferenceColorthemeOption.new(id: StaffPreferenceColorthemeOption::SYSTEM)
+
     assert_equal "system", option.name
   end
 
   test "returns nil for NOTHING id" do
     option = StaffPreferenceColorthemeOption.new(id: StaffPreferenceColorthemeOption::NOTHING)
+
     assert_nil option.name
   end
 
   test "returns nil for unknown id" do
     option = StaffPreferenceColorthemeOption.new(id: 999)
+
     assert_nil option.name
   end
 
@@ -52,6 +57,7 @@ class StaffPreferenceColorthemeOptionTest < ActiveSupport::TestCase
 
   test "has_many association exists" do
     option = StaffPreferenceColorthemeOption.new(id: 1)
+
     assert_respond_to option, :staff_preference_colorthemes
   end
 end
