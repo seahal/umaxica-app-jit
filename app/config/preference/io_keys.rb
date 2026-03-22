@@ -14,6 +14,15 @@ module Preference
       REFRESH_BASENAME = "preference_refresh"
       DBSC_BASENAME = "preference_dbsc"
       DEVICE_BASENAME = "preference_device_id"
+
+      public_constant :THEME
+      public_constant :LANGUAGE
+      public_constant :TIMEZONE
+      public_constant :CONSENTED
+      public_constant :ACCESS_BASENAME
+      public_constant :REFRESH_BASENAME
+      public_constant :DBSC_BASENAME
+      public_constant :DEVICE_BASENAME
     end
 
     module Headers
@@ -22,6 +31,12 @@ module Preference
       DBSC_CHALLENGE = "Secure-Session-Challenge"
       DBSC_SESSION_ID = "Sec-Secure-Session-Id"
       DBSC_RESPONSE = "Secure-Session-Response"
+
+      public_constant :DEVICE_ID
+      public_constant :DBSC_REGISTRATION
+      public_constant :DBSC_CHALLENGE
+      public_constant :DBSC_SESSION_ID
+      public_constant :DBSC_RESPONSE
     end
 
     module Params
@@ -31,6 +46,15 @@ module Preference
       TZ = :tz
       REFRESH_TOKEN = :refresh_token
       OPTION_ID = :option_id
+
+      public_constant :CT
+      public_constant :LX
+      public_constant :RI
+      public_constant :TZ
+      public_constant :REFRESH_TOKEN
+      public_constant :OPTION_ID
     end
+
+    public_constant :SECURE_COOKIE_PREFIX
   end
 end

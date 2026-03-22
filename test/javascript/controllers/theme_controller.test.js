@@ -46,15 +46,11 @@ const documentMock = {
   },
   documentElement: { dataset: {}, classList: classListMock },
   getElementById: vi.fn(() => null),
+  querySelector: vi.fn(() => null),
   addEventListener: vi.fn(),
 };
 
-const windowMock = {
-  matchMedia: vi.fn(() => ({
-    matches: false,
-    addEventListener: vi.fn(),
-  })),
-};
+const windowMock = { matchMedia: vi.fn(() => ({ matches: false, addEventListener: vi.fn() })) };
 
 function makeController() {
   const controller = new ThemeController();
@@ -68,6 +64,7 @@ beforeEach(() => {
   classListMock._store = new Set();
   windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
   documentMock.getElementById.mockReturnValue(null);
+  documentMock.querySelector.mockReturnValue(null);
   documentMock.addEventListener.mockReset();
 
   vi.stubGlobal("document", documentMock);
@@ -271,17 +268,17 @@ describe("applyThemeFromCookie (統合テスト)", () => {
   test("js-theme-cookie-value 要素がある場合、テーマ値を設定する", () => {
     cookieReadValue = "ct=li";
     const valueEl = { textContent: "" };
-    documentMock.getElementById.mockReturnValue(valueEl);
+    documentMock.querySelector.mockReturnValue(valueEl);
     const controller = makeController();
     controller.select({ target: { value: "light" } });
 
-    expect(documentMock.getElementById).toHaveBeenCalledWith("js-theme-cookie-value");
+    expect(documentMock.querySelector).toHaveBeenCalledWith("#js-theme-cookie-value");
     expect(valueEl.textContent).toBe("light");
   });
 
   test("js-theme-cookie-value 要素がない場合、エラーにならない", () => {
     cookieReadValue = "ct=dr";
-    documentMock.getElementById.mockReturnValue(null);
+    documentMock.querySelector.mockReturnValue(null);
     const controller = makeController();
 
     expect(() => controller.select({ target: { value: "dark" } })).not.toThrow();
@@ -289,10 +286,7 @@ describe("applyThemeFromCookie (統合テスト)", () => {
 
   test("システムテーマが選択されると matchMedia が呼ばれる", () => {
     cookieReadValue = "ct=sy";
-    const matchMediaMock = vi.fn(() => ({
-      matches: false,
-      addEventListener: vi.fn(),
-    }));
+    const matchMediaMock = vi.fn(() => ({ matches: false, addEventListener: vi.fn() }));
     windowMock.matchMedia = matchMediaMock;
     const controller = makeController();
 

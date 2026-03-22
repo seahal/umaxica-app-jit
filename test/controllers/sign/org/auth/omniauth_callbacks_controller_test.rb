@@ -124,7 +124,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
   # then follows the redirect through OmniAuth request phase.
   # Returns the state parameter for use in callback requests.
   def initiate_social_auth_flow!
-    get new_sign_org_social_session_path(provider: GOOGLE_PROVIDER, ri: "jp")
+    get(new_sign_org_social_session_path(provider: GOOGLE_PROVIDER, ri: "jp"))
 
     assert_response :redirect
 

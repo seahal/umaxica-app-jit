@@ -36,7 +36,6 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get_root_with_follow(news_com_root_url)
 
@@ -54,7 +53,6 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get_root_with_follow(news_com_root_url)
@@ -78,7 +76,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def get_root_with_follow(url)
-    get url
+    get(url)
     follow_redirect! while response.redirect?
   end
 end

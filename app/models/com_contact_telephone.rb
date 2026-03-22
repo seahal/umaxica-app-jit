@@ -19,7 +19,7 @@
 #  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  com_contact_id         :bigint           not null
+#  com_contact_id         :bigint           default(0), not null
 #
 # Indexes
 #

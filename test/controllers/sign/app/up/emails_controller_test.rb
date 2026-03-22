@@ -74,7 +74,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil I18n.t(update_key, default: nil)
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "can re-register same email if previous registration was unverified" do
     email = "test_re_reg@example.com"
 
@@ -322,23 +321,24 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     email = "turnstile_fail@example.com"
 
     assert_enqueued_emails 0 do
-      post sign_app_up_emails_url(ri: "jp"),
-           params: {
-             user_email: {
-               raw_address: email,
-               confirm_policy: "1",
-             },
-             "cf-turnstile-response": "test",
-           },
-           headers: default_headers
+      post(
+        sign_app_up_emails_url(ri: "jp"),
+        params: {
+          user_email: {
+            raw_address: email,
+            confirm_policy: "1",
+          },
+          "cf-turnstile-response": "test",
+        },
+        headers: default_headers,
+      )
     end
 
     assert_response :unprocessable_content
-    assert_includes @response.body, I18n.t("sign.app.registration.email.create.turnstile_validation_failed")
+    assert_includes @response.body, "ボット検証に失敗しました"
   ensure
     CloudflareTurnstile.test_validation_response = { "success" => true }
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "rejects wrong OTP codes with error message" do
     email = "test_wrong_otp@example.com"
@@ -533,7 +533,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.registration.email.already_logged_in"), flash[:alert]
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "redirects to encoded URL after successful registration when rd parameter is provided" do
     email = "redirect_test@example.com"
     redirect_url = "/dashboard"
@@ -579,10 +578,9 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     # Should redirect to checkpoint and preserve rd
     assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   # Transaction Tests for User Creation
-  # rubocop:disable Minitest/MultipleAssertions
+
   test "successful OTP verification creates user, audit log, and saves email in transaction" do
     email = "transaction_success@example.com"
 
@@ -647,9 +645,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "User", audit.actor_type
     assert_equal UserActivityEvent::SIGNED_UP_WITH_EMAIL, audit.event_id
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "successful OTP verification recreates missing signup audit event" do
     email = "missing_audit_event_signup@example.com"
 
@@ -689,9 +685,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       subject_id: user_email.user_id,
     )
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "sets user session after successful registration" do
     email = "session_set@example.com"
 
@@ -737,7 +731,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil user, "User should be created"
     assert UserToken.exists?(user_id: user.id), "User token should be created"
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "successful registration sets auth cookies with app-localhost domain" do
     email = "cookie_domain_up_#{SecureRandom.hex(4)}@example.com"
@@ -856,7 +849,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_session_id, session.id
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "creates pending user with UNVERIFIED_WITH_SIGN_UP status during email registration" do
     email = "pending_user_test@example.com"
 
@@ -886,9 +878,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user_email.user.status_id
     assert_equal UserEmailStatus::UNVERIFIED_WITH_SIGN_UP, user_email.user_email_status_id
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "does not leave zero or null user_id in database" do
     email = "no_zero_user_id@example.com"
 
@@ -917,9 +907,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     # Verify user actually exists
     assert User.exists?(id: user_email.user_id), "User record should exist for user_id"
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "deletes pending user when unverified email is replaced" do
     email = "replace_pending_test@example.com"
 
@@ -972,9 +960,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       assert_not_nil second_email.user
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "can abandon first email and register with a different email without error" do
     first_email = "first_abandoned@example.com"
     second_email = "second_attempt@example.com"
@@ -1031,7 +1017,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_nil User.find_by(id: first_user_id),
                "First pending user should be cleaned up when registering with a different email"
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   # OTP Resend Cooldown Tests
   test "create returns 429 when resending OTP within cooldown for new signup" do

@@ -163,7 +163,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     mock_credential.define_singleton_method(:sign_count) { 1 }
     mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-    WebAuthn::Credential.stub :from_get, mock_credential do
+    WebAuthn::Credential.stub(:from_get, mock_credential) do
       params = {
         challenge_id: challenge_id,
         credential: {
@@ -181,7 +181,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
       assert_equal "ok", json["status"]
       assert_not_nil json["access_token"]
       assert_equal "Bearer", json["token_type"]
-      assert_equal Auth::Base::ACCESS_TOKEN_TTL.to_i, json["expires_in"]
+      assert_equal Integer(Auth::Base::ACCESS_TOKEN_TTL.to_s, 10), json["expires_in"]
       assert_includes json["redirect_url"], "rd="
 
       # Challenge verification updates sign count
@@ -201,7 +201,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     mock_credential.define_singleton_method(:sign_count) { 1 }
     mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-    WebAuthn::Credential.stub :from_get, mock_credential do
+    WebAuthn::Credential.stub(:from_get, mock_credential) do
       post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
         challenge_id: challenge_id,
         credential: {
@@ -235,7 +235,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     mock_credential.define_singleton_method(:sign_count) { 1 }
     mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-    WebAuthn::Credential.stub :from_get, mock_credential do
+    WebAuthn::Credential.stub(:from_get, mock_credential) do
       post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
         challenge_id: challenge_id,
         credential: {
@@ -260,7 +260,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     mock_credential.define_singleton_method(:verify) { |*_args| true }
 
     Sign::Org::In::PasskeysController.any_instance.stub(:log_in, { status: :unknown }) do
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
           challenge_id: challenge_id,
           credential: {
@@ -290,7 +290,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     mock_credential.define_singleton_method(:sign_count) { 1 }
     mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-    WebAuthn::Credential.stub :from_get, mock_credential do
+    WebAuthn::Credential.stub(:from_get, mock_credential) do
       params = {
         challenge_id: challenge_id,
         credential: {
@@ -320,7 +320,7 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     mock_credential.define_singleton_method(:sign_count) { 1 }
     mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-    WebAuthn::Credential.stub :from_get, mock_credential do
+    WebAuthn::Credential.stub(:from_get, mock_credential) do
       post verification_sign_org_in_passkeys_url(ri: "jp"), params: {
         challenge_id: challenge_id,
         credential: {

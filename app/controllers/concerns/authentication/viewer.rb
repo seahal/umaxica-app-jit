@@ -44,7 +44,7 @@ module Authentication
       if request.format.json?
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
-        redirect_to "/", alert: I18n.t("auth.unauthorized")
+        redirect_to("/", alert: I18n.t("auth.unauthorized"))
       end
     end
 

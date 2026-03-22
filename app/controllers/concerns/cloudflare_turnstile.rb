@@ -5,10 +5,9 @@ module CloudflareTurnstile
   extend ActiveSupport::Concern
 
   # Test helper for mocking Turnstile responses in tests
-  # rubocop:disable ThreadSafety/ClassAndModuleAttributes
+
   mattr_accessor :test_mode
   mattr_accessor :test_validation_response
-  # rubocop:enable ThreadSafety/ClassAndModuleAttributes
 
   private
 

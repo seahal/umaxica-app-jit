@@ -9,12 +9,12 @@ class SetDefaultNilUuidForContactParentIds < ActiveRecord::Migration[8.2]
     tables.each do |table|
       reversible do |dir|
         dir.up do
-          execute "UPDATE #{table} SET parent_id = '#{NIL_UUID}' WHERE parent_id IS NULL"
+          execute("UPDATE #{table} SET parent_id = '#{NIL_UUID}' WHERE parent_id IS NULL")
         end
       end
 
-      change_table table.to_sym, bulk: true do |t|
-        t.change_default :parent_id, from: nil, to: NIL_UUID
+      change_table(table.to_sym, bulk: true) do |t|
+        t.change_default(:parent_id, from: nil, to: NIL_UUID)
       end
     end
   end

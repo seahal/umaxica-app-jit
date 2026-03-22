@@ -35,7 +35,6 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href*=?]", "/contacts/new"
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get help_app_root_url()
 
@@ -49,7 +48,6 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
       assert_select "footer", count: 1
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get help_app_root_url()

@@ -7,10 +7,7 @@
   "workspaceFolder": "/home/jit/workspace",
   "overrideCommand": true,
   "forwardPorts": [3002],
-  "remoteEnv": {
-    "EDITOR": "code --wait --reuse-window",
-    "DEBUGGER_DISABLE": "1"
-  },
+  "remoteEnv": { "EDITOR": "code --wait --reuse-window", "DEBUGGER_DISABLE": "1" },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -37,12 +34,8 @@
         "extensions.verifySignature": false,
         "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.profiles.linux": {
-          "bash": {
-            "path": "/bin/bash"
-          },
-          "zsh": {
-            "path": "/bin/zsh"
-          }
+          "bash": { "path": "/bin/bash" },
+          "zsh": { "path": "/bin/zsh" }
         },
         "editor.formatOnSave": true,
         "editor.tabSize": 2,
@@ -58,15 +51,9 @@
           "compose.yaml": "yaml",
           "*.yml": "yaml"
         },
-        "[ruby]": {
-          "editor.defaultFormatter": "Shopify.ruby-lsp"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "voidzero.oxfmt"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "voidzero.oxfmt"
-        },
+        "[ruby]": { "editor.defaultFormatter": "Shopify.ruby-lsp" },
+        "[javascript]": { "editor.defaultFormatter": "voidzero.oxfmt" },
+        "[typescript]": { "editor.defaultFormatter": "voidzero.oxfmt" },
         "ruby.lsp.enabledFeatures": {
           "codeActions": true,
           "diagnostics": true,
@@ -87,19 +74,14 @@
           "signatureHelp": true,
           "typeHierarchy": true
         },
-        "ruby.lint": {
-          "rubocop": true
-        }
+        "ruby.lint": { "rubocop": true }
       }
     },
     "jetbrains": {
       "remoteId": "intellij",
       "backend": "intellij",
       "plugins": ["org.jetbrains.plugins.ruby"],
-      "containerEnv": {
-        "DEVCONTAINER_IDE": "jetbrains",
-        "DEVCONTAINER_AUTO_START_BIN_DEV": "0"
-      }
+      "containerEnv": { "DEVCONTAINER_IDE": "jetbrains", "DEVCONTAINER_AUTO_START_BIN_DEV": "0" }
     }
   },
   "shutdownAction": "stopCompose",
@@ -120,6 +102,7 @@
     "ghcr.io/devcontainers/features/copilot-cli:1": {},
     "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {},
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+    "ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
     "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
     "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
     "ghcr.io/jasonthedeveloper/features/trivy:1": {}

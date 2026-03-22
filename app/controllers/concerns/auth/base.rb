@@ -48,7 +48,7 @@ module Auth
     DEVICE_COOKIE_KEY = Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
 
     # Token TTLs
-    ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
+    ACCESS_TOKEN_TTL = Integer(ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i), 10).seconds
     REFRESH_TOKEN_TTL = 30.days
     DBSC_COOKIE_TTL = 10.minutes
     RESTRICTED_SESSION_TTL = 15.minutes
@@ -87,7 +87,7 @@ module Auth
       VALID_RESOURCE_TYPES = %w(user staff).freeze
 
       def self.leeway_seconds
-        ENV.fetch("AUTH_JWT_LEEWAY_SECONDS", "30").to_i
+        Integer(ENV.fetch("AUTH_JWT_LEEWAY_SECONDS", "30"), 10)
       end
 
       def self.issuer(resource_type = nil)
@@ -216,7 +216,7 @@ module Auth
       if request.format.json?
         render plain: message, status: :unauthorized
       else
-        redirect_to redirect_path, alert: message
+        redirect_to(redirect_path, alert: message)
       end
     end
 
@@ -329,7 +329,7 @@ module Auth
         flash[message_key] = message_value
         jump_to_generated_url(rd_param, fallback: default_path)
       else
-        redirect_to default_path, message_key => message_value
+        redirect_to(default_path, message_key => message_value)
       end
     end
 
@@ -403,10 +403,10 @@ module Auth
       data = checkpoint_state
       return true if data.blank?
 
-      issued_at = data[:issued_at].to_i
+      issued_at = Integer(data[:issued_at], 10)
       return true if issued_at <= 0
 
-      Time.current.to_i >= issued_at + CHECKPOINT_TIMEOUT.to_i
+      Time.current.to_i >= issued_at + Integer(CHECKPOINT_TIMEOUT, 10)
     end
 
     def refresh_checkpoint_dimension!(state: "updated")
@@ -427,7 +427,7 @@ module Auth
       if rd_param.present?
         jump_to_generated_url(rd_param, fallback: default_path)
       else
-        redirect_to default_path
+        redirect_to(default_path)
       end
     end
 
@@ -496,7 +496,7 @@ module Auth
       return false if session_data.blank?
       return true unless session_data[expiry_key]
 
-      session_data[expiry_key].to_i > Time.now.to_i
+      Integer(session_data[expiry_key], 10) > Time.now.to_i
     end
 
     # Loads a record from session with additional validation
@@ -505,7 +505,7 @@ module Auth
     # @param model_class [Class] The model class to load
     # @param validations [Hash] Additional validations to perform
     # @return [ActiveRecord::Base, nil] The loaded record or nil
-    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/CyclomaticComplexity
     def load_session_record(session_key, model_class, validations = {})
       return nil if session[session_key].blank?
 
@@ -530,7 +530,7 @@ module Auth
       record
     end
 
-    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     def current_account
       current_resource
@@ -546,7 +546,7 @@ module Auth
       @current_resource = load_current_resource
     end
 
-    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
       return { status: :login_forbidden } unless resource.login_allowed?
 
@@ -558,8 +558,9 @@ module Auth
       # This ensures we don't have duplicate cookies with different domains/paths
       # Note: We clear cookies before setting new ones, but preserve @current_resource
       # which will be set to the logged-in user after successful authentication
-      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
-      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      cookies.delete(ACCESS_COOKIE_KEY, cookie_deletion_options)
+      cookies.delete(REFRESH_COOKIE_KEY, cookie_deletion_options)
+      clear_dbsc_cookie!
       clear_device_id_cookie!
 
       if require_totp_check
@@ -636,7 +637,7 @@ module Auth
 
       Sign::Risk::Emitter.emit(
         "session_issued",
-        user_id: resource.id,
+        **risk_actor_payload(resource.id),
         user_token_id: token_record.public_id,
         ip: request&.remote_ip,
         user_agent: request&.user_agent,
@@ -737,7 +738,7 @@ module Auth
       # Loop guard: prevents infinite refresh loops within the same request
       return if request.env[Auth::IoKeys::Env::AUTH_REFRESHED_FLAG]
 
-      refresh_plain = cookies.encrypted[REFRESH_COOKIE_KEY]
+      refresh_plain = cookies[REFRESH_COOKIE_KEY]
       return if refresh_plain.blank?
 
       # Mark as refreshed to prevent recursion
@@ -981,7 +982,6 @@ module Auth
         surface: Core::Surface.current(request),
         request: request,
         httponly: true,
-        secure: Rails.env.production?,
         same_site: :lax,
         path: "/",
       )
@@ -1013,8 +1013,8 @@ module Auth
     end
 
     def clear_auth_cookies!
-      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
-      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+      cookies.delete(ACCESS_COOKIE_KEY, cookie_deletion_options)
+      cookies.delete(REFRESH_COOKIE_KEY, cookie_deletion_options)
       clear_dbsc_cookie!
       clear_device_id_cookie!
       @current_resource = nil
@@ -1031,8 +1031,8 @@ module Auth
         value: access_token,
         expires: access_expires_at,
       )
-      # Refresh cookie - encrypted for defense-in-depth
-      cookies.encrypted[REFRESH_COOKIE_KEY] = cookie_options.merge(
+      # Refresh cookie
+      cookies[REFRESH_COOKIE_KEY] = cookie_options.merge(
         value: refresh_token,
         expires: refresh_expires_at,
       )
@@ -1167,7 +1167,7 @@ module Auth
 
       Sign::Risk::Emitter.emit(
         "refresh_failed",
-        user_id: resource&.id,
+        **risk_actor_payload(resource&.id),
         user_token_id: refresh_public_id,
         ip: request&.remote_ip,
         user_agent: request&.user_agent,
@@ -1220,7 +1220,7 @@ module Auth
 
       Sign::Risk::Emitter.emit(
         "refresh_rotated",
-        user_id: resource.id,
+        **risk_actor_payload(resource.id),
         user_token_id: token_record.public_id,
         ip: request&.remote_ip,
         user_agent: request&.user_agent,
@@ -1330,7 +1330,7 @@ module Auth
 
       Sign::Risk::Emitter.emit(
         "refresh_failed",
-        user_id: resource&.id,
+        **risk_actor_payload(resource&.id),
         user_token_id: refresh_public_id,
         ip: request&.remote_ip,
         user_agent: request&.user_agent,
@@ -1543,12 +1543,22 @@ module Auth
 
       Sign::Risk::Emitter.emit(
         "actor_mismatch",
-        user_id: sub,
+        **risk_actor_payload(sub),
         ip: request&.remote_ip,
         user_agent: request&.user_agent,
         request_id: request&.request_id,
         meta: { expected: resource_type, actual: act },
       )
+    end
+
+    # Returns { user_id: id } or { staff_id: id } based on resource_type.
+    # Used by Risk::Emitter to route events to the correct occurrence table.
+    def risk_actor_payload(id)
+      if resource_type == "staff"
+        { staff_id: id }
+      else
+        { user_id: id }
+      end
     end
 
     def resource_withdrawn?(resource)
@@ -1559,7 +1569,7 @@ module Auth
     end
 
     def destroy_refresh_token_from_cookie
-      token_value = cookies.encrypted[REFRESH_COOKIE_KEY]
+      token_value = cookies[REFRESH_COOKIE_KEY]
       return unless token_value
 
       public_id, = token_class.parse_refresh_token(token_value)
@@ -1593,7 +1603,7 @@ module Auth
       # Preserve redirect parameter if present
       default_rd_key = Auth::IoKeys::Session::DEFAULT_RD
       redirect_params[Auth::IoKeys::Params::RD] = session[default_rd_key] if session[default_rd_key].present?
-      redirect_to redirect_path, redirect_params
+      redirect_to(redirect_path, redirect_params)
     end
 
     # ======================================================================
@@ -1834,11 +1844,11 @@ module Auth
       data = pending_mfa
       return false unless data
 
-      expires_at = data[:expires_at].to_i
+      expires_at = Integer(data[:expires_at], 10)
       if expires_at.positive?
         return false if Time.current.to_i >= expires_at
       else
-        issued_at = data[:issued_at].to_i
+        issued_at = Integer(data[:issued_at], 10)
         return false if issued_at <= 0
         return false if Time.zone.at(issued_at) < pending_mfa_ttl.ago
       end
@@ -2152,7 +2162,7 @@ module Auth
     end
 
     def expires_in_for(expires_at, now: Time.current)
-      [(expires_at.to_i - now.to_i), 0].max
+      [(Integer(expires_at.to_s, 10) - Integer(now.to_s, 10)), 0].max
     end
 
     def mfa_required_for?(resource)

@@ -8,9 +8,9 @@ class AddLockingFieldsToStaffIdentities < ActiveRecord::Migration[8.2]
     )
 
     tables.each do |table|
-      change_table table, bulk: true do |t|
-        t.integer :otp_attempts_count, default: 0, null: false
-        t.datetime :locked_at
+      change_table(table, bulk: true) do |t|
+        t.integer(:otp_attempts_count, default: 0, null: false)
+        t.datetime(:locked_at)
       end
     end
   end

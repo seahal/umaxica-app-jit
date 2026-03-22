@@ -31,9 +31,9 @@ class FixDocumentMastersParentId < ActiveRecord::Migration[8.2]
 
     # Create a root row if none exists
     count = connection.select_value("SELECT COUNT(*) FROM #{table}")
-    if count.to_i == 0
+    if Integer(count.to_s, 10) == 0
       # Insert root row with id = 0
-      execute "INSERT INTO #{table} (id, code, parent_id) VALUES (0, 'ROOT', 0) ON CONFLICT DO NOTHING"
+      execute("INSERT INTO #{table} (id, code, parent_id) VALUES (0, 'ROOT', 0) ON CONFLICT DO NOTHING")
     end
 
     # Get the minimum id (root)
@@ -41,10 +41,10 @@ class FixDocumentMastersParentId < ActiveRecord::Migration[8.2]
     root_id ||= 0
 
     # Set all NULL parent_id to root_id
-    execute "UPDATE #{table} SET parent_id = #{root_id} WHERE parent_id IS NULL"
+    execute("UPDATE #{table} SET parent_id = #{root_id} WHERE parent_id IS NULL")
 
     # Set NOT NULL constraint
-    execute "ALTER TABLE #{table} ALTER COLUMN parent_id SET NOT NULL"
+    execute("ALTER TABLE #{table} ALTER COLUMN parent_id SET NOT NULL")
 
     Rails.logger.debug { "Fixed #{table}.parent_id NOT NULL" }
   rescue => e

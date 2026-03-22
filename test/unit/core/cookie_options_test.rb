@@ -5,10 +5,15 @@ require "test_helper"
 
 class CoreCookieOptionsTest < ActiveSupport::TestCase
   class MockRequest
-    attr_reader :host
+    attr_reader :host, :ssl
 
-    def initialize(host)
+    def initialize(host, ssl: false)
       @host = host
+      @ssl = ssl
+    end
+
+    def ssl?
+      @ssl
     end
   end
 

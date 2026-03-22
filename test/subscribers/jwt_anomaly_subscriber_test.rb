@@ -62,7 +62,7 @@ class JwtAnomalySubscriberTest < ActiveSupport::TestCase
     end
   end
 
-  test "emit creates anomaly event when occurrence exists" do # rubocop:disable Minitest/MultipleAssertions
+  test "emit creates anomaly event when occurrence exists" do
     occurred_at = Time.current.change(usec: 0)
     mock_event = MockEvent.new(
       name: "jwt.anomaly.detected",
@@ -146,8 +146,8 @@ class JwtAnomalySubscriberTest < ActiveSupport::TestCase
       payload: { code: "AUTH_USER_MALFORMED_TOKEN" },
     )
 
-    JwtAnomalyEvent.stub :create!, ->(**) { raise StandardError, "explode" } do
-      Rails.logger.stub :error, ->(message) { logged_message = message } do
+    JwtAnomalyEvent.stub(:create!, ->(**) { raise StandardError, "explode" }) do
+      Rails.logger.stub(:error, ->(message) { logged_message = message }) do
         JwtAnomalySubscriber.new.emit(mock_event)
       end
     end

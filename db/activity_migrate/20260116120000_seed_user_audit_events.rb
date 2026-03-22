@@ -42,7 +42,7 @@ class SeedUserAuditEvents < ActiveRecord::Migration[8.2]
   def insert_event(event_id)
     if column_exists?(:user_audit_events, :created_at)
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_audit_events (id, created_at, updated_at)
           VALUES ('#{event_id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO NOTHING
@@ -50,7 +50,7 @@ class SeedUserAuditEvents < ActiveRecord::Migration[8.2]
       end
     else
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_audit_events (id)
           VALUES ('#{event_id}')
           ON CONFLICT (id) DO NOTHING

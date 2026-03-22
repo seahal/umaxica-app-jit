@@ -91,9 +91,7 @@ export default class extends Controller {
 
       // Step 2: Get credential from authenticator
       const publicKeyOptions = normalizePublicKeyOptions(options);
-      const credential = await navigator.credentials.get({
-        publicKey: publicKeyOptions,
-      });
+      const credential = await navigator.credentials.get({ publicKey: publicKeyOptions });
 
       this.showStatus("サーバーで検証中...");
 
@@ -170,9 +168,7 @@ export default class extends Controller {
         "script[src*='challenges.cloudflare.com/turnstile']",
       );
       if (existingScript) {
-        existingScript.addEventListener("load", () => resolve(), {
-          once: true,
-        });
+        existingScript.addEventListener("load", () => resolve(), { once: true });
         existingScript.addEventListener(
           "error",
           () => reject(new Error(this.turnstileErrorMessageValue)),

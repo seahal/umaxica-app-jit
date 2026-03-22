@@ -17,7 +17,9 @@ class ConvertComTimelineCategoryMastersToSmallint < ActiveRecord::Migration[8.2]
       check_constraint: nil,
       parent_index: "index_com_timeline_category_masters_on_parent_id",
       child_foreign_keys: [
-        { table: :com_timeline_categories, column: :com_timeline_category_master_id, to_table: :com_timeline_category_masters },
+        { table: :com_timeline_categories,
+          column: :com_timeline_category_master_id,
+          to_table: :com_timeline_category_masters, },
       ],
     )
 
@@ -42,7 +44,7 @@ class ConvertComTimelineCategoryMastersToSmallint < ActiveRecord::Migration[8.2]
 
   def remove_timestamps(table_name)
     %i(created_at updated_at).each do |column|
-      safety_assured { remove_column table_name, column, :datetime } if column_exists?(table_name, column)
+      safety_assured { remove_column(table_name, column, :datetime) } if column_exists?(table_name, column)
     end
   end
 end

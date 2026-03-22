@@ -11,18 +11,18 @@ class MigrateOrgPreferenceOptionFksToSmallint < ActiveRecord::Migration[8.2]
       }
 
       mappings.each do |table, ref_table|
-        add_column table, :option_id_small, :integer, limit: 2
-        execute <<~SQL.squish
+        add_column(table, :option_id_small, :integer, limit: 2)
+        execute(<<~SQL.squish)
           UPDATE #{table} t
           SET option_id_small = r.id
           FROM #{ref_table} r
           WHERE t.option_id = r.id_old
         SQL
-        execute "UPDATE #{table} SET option_id_small = 0 WHERE option_id IS NULL OR option_id = ''"
-        remove_column table, :option_id
-        rename_column table, :option_id_small, :option_id
-        add_index table, :option_id
-        add_foreign_key table, ref_table, column: :option_id
+        execute("UPDATE #{table} SET option_id_small = 0 WHERE option_id IS NULL OR option_id = ''")
+        remove_column(table, :option_id)
+        rename_column(table, :option_id_small, :option_id)
+        add_index(table, :option_id)
+        add_foreign_key(table, ref_table, column: :option_id)
       end
     end
   end

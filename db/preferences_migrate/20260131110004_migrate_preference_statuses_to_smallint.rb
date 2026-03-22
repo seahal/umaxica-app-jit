@@ -10,31 +10,31 @@ class MigratePreferenceStatusesToSmallint < ActiveRecord::Migration[8.2]
       )
 
       tables.each do |table|
-        add_column table, :id_small, :integer, limit: 2
+        add_column(table, :id_small, :integer, limit: 2)
 
         # NEYO = 0
-        execute "UPDATE #{table} SET id_small = 0 WHERE id = 'NEYO'"
+        execute("UPDATE #{table} SET id_small = 0 WHERE id = 'NEYO'")
         # Else = position
-        execute "UPDATE #{table} SET id_small = position WHERE id != 'NEYO'"
+        execute("UPDATE #{table} SET id_small = position WHERE id != 'NEYO'")
 
         # Drop PK
-        execute "ALTER TABLE #{table} DROP CONSTRAINT #{table}_pkey CASCADE"
+        execute("ALTER TABLE #{table} DROP CONSTRAINT #{table}_pkey CASCADE")
 
         # Drop format check
         # Name: app_preference_statuses_id_format_check, etc.
-        execute "ALTER TABLE #{table} DROP CONSTRAINT IF EXISTS #{table}_id_format_check"
+        execute("ALTER TABLE #{table} DROP CONSTRAINT IF EXISTS #{table}_id_format_check")
 
-        rename_column table, :id, :id_old
-        # rubocop:disable Rails/DangerousColumnNames
-        rename_column table, :id_small, :id
-        # rubocop:enable Rails/DangerousColumnNames
-        execute "ALTER TABLE #{table} ADD PRIMARY KEY (id)"
+        rename_column(table, :id, :id_old)
 
-        change_column_null table, :id, false
-        change_column_default table, :id, from: nil, to: 0
+        rename_column(table, :id_small, :id)
+
+        execute("ALTER TABLE #{table} ADD PRIMARY KEY (id)")
+
+        change_column_null(table, :id, false)
+        change_column_default(table, :id, from: nil, to: 0)
 
         # Add positive check
-        execute "ALTER TABLE #{table} ADD CONSTRAINT chk_#{table}_id_positive CHECK (id >= 0)"
+        execute("ALTER TABLE #{table} ADD CONSTRAINT chk_#{table}_id_positive CHECK (id >= 0)")
       end
     end
   end

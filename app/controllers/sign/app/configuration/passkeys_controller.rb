@@ -38,7 +38,7 @@ module Sign
 
         # GET /configuration/passkeys/:id
         def show
-          authorize @passkey
+          authorize(@passkey)
         end
 
         # GET /configuration/passkeys/new
@@ -48,13 +48,13 @@ module Sign
 
         # GET /configuration/passkeys/:id/edit
         def edit
-          authorize @passkey
+          authorize(@passkey)
         end
 
         # POST /configuration/passkeys
         def create
           @passkey = current_user.user_passkeys.new(create_params)
-          authorize @passkey, :create?
+          authorize(@passkey, :create?)
 
           if @passkey.save
             render plain: "ok", status: :created
@@ -144,12 +144,14 @@ module Sign
 
         # PATCH/PUT /configuration/passkeys/:id
         def update
-          authorize @passkey
+          authorize(@passkey)
           if @passkey.update(update_params)
             respond_to do |format|
               format.html do
-                redirect_to sign_app_configuration_passkey_path(@passkey),
-                            notice: t("messages.passkey_successfully_updated")
+                redirect_to(
+                  sign_app_configuration_passkey_path(@passkey),
+                  notice: t("messages.passkey_successfully_updated"),
+                )
               end
               format.json { render json: { status: "ok" }, status: :ok }
             end
@@ -165,14 +167,16 @@ module Sign
 
         # DELETE /configuration/passkeys/:id
         def destroy
-          authorize @passkey
+          authorize(@passkey)
 
           unless AuthMethodGuard.can_remove_passkey?(current_user, @passkey)
             respond_to do |format|
               format.html do
-                redirect_to sign_app_configuration_passkeys_path,
-                            status: :see_other,
-                            alert: t("messages.cannot_delete_last_passkey")
+                redirect_to(
+                  sign_app_configuration_passkeys_path,
+                  status: :see_other,
+                  alert: t("messages.cannot_delete_last_passkey"),
+                )
               end
               format.json do
                 render json: { error: t("messages.cannot_delete_last_passkey") },
@@ -186,9 +190,11 @@ module Sign
 
           respond_to do |format|
             format.html do
-              redirect_to sign_app_configuration_passkeys_path,
-                          status: :see_other,
-                          notice: t("messages.passkey_successfully_destroyed")
+              redirect_to(
+                sign_app_configuration_passkeys_path,
+                status: :see_other,
+                notice: t("messages.passkey_successfully_destroyed"),
+              )
             end
             format.json { head :no_content }
           end
@@ -240,7 +246,7 @@ module Sign
         end
 
         def persist_passkey!(passkey)
-          authorize passkey, :create?
+          authorize(passkey, :create?)
           passkey.save!
         end
 

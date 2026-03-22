@@ -28,8 +28,10 @@ module Sign
           enabled = ActiveModel::Type::Boolean.new.cast(params.dig(:user, :multi_factor_enabled))
           current_user.update!(multi_factor_enabled: enabled)
 
-          redirect_to sign_app_configuration_challenge_path,
-                      notice: t("sign.app.configuration.mfa.update.success")
+          redirect_to(
+            sign_app_configuration_challenge_path,
+            notice: t("sign.app.configuration.mfa.update.success"),
+          )
         rescue ActiveRecord::RecordInvalid
           show
           flash.now[:alert] = t("sign.app.configuration.mfa.update.failure")

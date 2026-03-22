@@ -221,7 +221,7 @@ class Sign::Org::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert_response :see_other
     already_expired.reload
     # expired_at should not change (already filtered out by visible session scope)
-    assert_equal original_expired_at.to_i, already_expired.expired_at.to_i
+    assert_equal Integer(original_expired_at.to_s, 10), Integer(already_expired.expired_at.to_s, 10)
   end
 
   # ===================================================================
@@ -239,7 +239,7 @@ class Sign::Org::Configuration::SessionsControllerTest < ActionDispatch::Integra
 
     assert_response :success
     assert_select "form[action^='#{others_sign_org_configuration_sessions_path}']"
-    assert_select "button", text: "Revoke all other sessions"
+    assert_select "button", text: "他のセッションをすべて削除"
   end
 
   test "index shows back link on index page" do

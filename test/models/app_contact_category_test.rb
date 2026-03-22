@@ -86,7 +86,6 @@ class AppContactCategoryTest < ActiveSupport::TestCase
     end
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   # test "should have timestamps" do
   #   category = AppContactCategory.create!(id: "test_app_category")
   #
@@ -95,5 +94,4 @@ class AppContactCategoryTest < ActiveSupport::TestCase
   #   assert_not_nil category.created_at
   #   assert_not_nil category.updated_at
   # end
-  # rubocop:enable Minitest/MultipleAssertions
 end

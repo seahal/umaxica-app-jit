@@ -15,11 +15,11 @@ module TaxonomyTestHelper
       attributes[:created_at] = now
       attributes[:updated_at] = now if klass.column_names.include?("updated_at")
     end
-    # rubocop:disable Rails/SkipsModelValidations
+
     klass.insert_all!(
       [attributes],
     )
-    # rubocop:enable Rails/SkipsModelValidations
+
   end
 
   def build_taxonomy_tree_for(klass)

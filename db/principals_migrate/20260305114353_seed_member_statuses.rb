@@ -5,7 +5,7 @@ class SeedMemberStatuses < ActiveRecord::Migration[8.2]
     return if table_exists?(:member_statuses) && member_statuses_empty?
 
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO member_statuses (id, created_at, updated_at) VALUES
         (1, NOW(), NOW()),
         (2, NOW(), NOW()),
@@ -19,7 +19,7 @@ class SeedMemberStatuses < ActiveRecord::Migration[8.2]
 
   def down
     safety_assured do
-      execute "DELETE FROM member_statuses"
+      execute("DELETE FROM member_statuses")
     end
   end
 

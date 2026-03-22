@@ -63,7 +63,7 @@ module Core
 
           verifier = SmsVerifier.new("+15555555555", /^PassCode => \d{6}$/)
 
-          AwsSmsService.stub :new, verifier do
+          AwsSmsService.stub(:new, verifier) do
             post core_com_contact_email_url(contact_id: @contact.public_id), params: {
               com_contact_email: { hotp_code: code },
             }
@@ -85,7 +85,7 @@ module Core
           code = @contact_email.generate_hotp!
 
           # Should not call AwsSmsService
-          AwsSmsService.stub :new, -> { raise "Should not be called" } do
+          AwsSmsService.stub(:new, -> { raise "Should not be called" }) do
             post core_com_contact_email_url(contact_id: @contact.public_id), params: {
               com_contact_email: { hotp_code: code },
             }
@@ -162,7 +162,7 @@ module Core
 
           verifier = SmsVerifier.new("+15555555555", /^PassCode => \d{6}$/)
 
-          AwsSmsService.stub :new, verifier do
+          AwsSmsService.stub(:new, verifier) do
             post core_com_contact_email_url(contact_id: @contact.public_id, ct: "test"), params: {
               com_contact_email: { hotp_code: code },
             }

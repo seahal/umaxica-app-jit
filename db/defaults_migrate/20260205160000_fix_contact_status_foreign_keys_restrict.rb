@@ -28,9 +28,9 @@ class FixContactStatusForeignKeysRestrict < ActiveRecord::Migration[8.2]
     SQL
 
     rows.each do |row|
-      execute "ALTER TABLE #{table_name} DROP CONSTRAINT #{row["conname"]}"
+      execute("ALTER TABLE #{table_name} DROP CONSTRAINT #{row["conname"]}")
     end
 
-    add_foreign_key table_name, status_table, column: :status_id
+    add_foreign_key(table_name, status_table, column: :status_id)
   end
 end

@@ -159,7 +159,7 @@ module SequentialFlow
   # Override in controller to customize redirect behavior
   def flow_violation_redirect
     flash[:alert] = t("sequential_flow.invalid_step")
-    redirect_to flow_initial_path
+    redirect_to(flow_initial_path)
   end
 
   # Override in controller to specify the initial path

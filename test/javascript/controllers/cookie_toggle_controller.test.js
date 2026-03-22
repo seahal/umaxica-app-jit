@@ -58,10 +58,7 @@ describe("CookieToggleController", () => {
     const consent = { functional: true };
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(consent),
-      }),
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(consent) }),
     );
 
     const syncSpy = vi.spyOn(controller, "syncCheckboxesFromAPI");

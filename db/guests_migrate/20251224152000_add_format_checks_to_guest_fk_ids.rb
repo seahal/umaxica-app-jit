@@ -6,16 +6,16 @@ class AddFormatChecksToGuestFkIds < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :app_contact_histories, :event_id
-    add_format_check :com_contact_audits, :event_id
-    add_format_check :org_contact_histories, :event_id
+    add_format_check(:app_contact_histories, :event_id)
+    add_format_check(:com_contact_audits, :event_id)
+    add_format_check(:org_contact_histories, :event_id)
 
-    add_format_check :app_contacts, :contact_category_title
-    add_format_check :app_contacts, :contact_status_id
-    add_format_check :com_contacts, :contact_category_title
-    add_format_check :com_contacts, :contact_status_id
-    add_format_check :org_contacts, :contact_category_title
-    add_format_check :org_contacts, :contact_status_id
+    add_format_check(:app_contacts, :contact_category_title)
+    add_format_check(:app_contacts, :contact_status_id)
+    add_format_check(:com_contacts, :contact_category_title)
+    add_format_check(:com_contacts, :contact_status_id)
+    add_format_check(:org_contacts, :contact_category_title)
+    add_format_check(:org_contacts, :contact_status_id)
   end
 
   private

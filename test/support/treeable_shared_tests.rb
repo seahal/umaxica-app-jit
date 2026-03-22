@@ -31,9 +31,8 @@ module TreeableSharedTests
     attributes[:created_at] = now if klass.column_names.include?("created_at")
     attributes[:updated_at] = now if klass.column_names.include?("updated_at")
 
-    # rubocop:disable Rails/SkipsModelValidations
     klass.insert_all!([attributes])
-    # rubocop:enable Rails/SkipsModelValidations
+
   end
 
   def create_master!(klass, id: nil, parent: nil, parent_id: nil, position: nil)

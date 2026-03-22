@@ -2,15 +2,19 @@
 
 class CreateAvatarFollows < ActiveRecord::Migration[8.2]
   def change
-    create_table :avatar_follows do |t|
-      t.references :follower_avatar,
-                   null: false,
-                   foreign_key: { to_table: :avatars, validate: false },
-                   type: :string
-      t.references :followed_avatar,
-                   null: false,
-                   foreign_key: { to_table: :avatars, validate: false },
-                   type: :string
+    create_table(:avatar_follows) do |t|
+      t.references(
+        :follower_avatar,
+        null: false,
+        foreign_key: { to_table: :avatars, validate: false },
+        type: :string,
+      )
+      t.references(
+        :followed_avatar,
+        null: false,
+        foreign_key: { to_table: :avatars, validate: false },
+        type: :string,
+      )
 
       t.timestamps
     end

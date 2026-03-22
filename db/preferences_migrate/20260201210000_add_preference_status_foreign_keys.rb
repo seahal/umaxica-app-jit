@@ -20,9 +20,11 @@ class AddPreferenceStatusForeignKeys < ActiveRecord::Migration[7.1]
     return unless column
     return unless [:integer, :bigint].include?(column.type)
 
-    add_foreign_key table, ref_table,
-                    column: :status_id,
-                    on_delete: :restrict,
-                    validate: false
+    add_foreign_key(
+      table, ref_table,
+      column: :status_id,
+      on_delete: :restrict,
+      validate: false,
+    )
   end
 end

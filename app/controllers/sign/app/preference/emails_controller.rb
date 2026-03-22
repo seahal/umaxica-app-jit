@@ -27,7 +27,7 @@ module Sign
           end
 
           store_email(email)
-          redirect_to sign_app_preference_email_path(id: "primary")
+          redirect_to(sign_app_preference_email_path(id: "primary"))
         end
 
         def update
@@ -35,7 +35,7 @@ module Sign
           return render :edit, status: :unprocessable_content if email.blank?
 
           store_email(email)
-          redirect_to sign_app_preference_email_path(id: params[:id])
+          redirect_to(sign_app_preference_email_path(id: params[:id]))
         end
 
         private

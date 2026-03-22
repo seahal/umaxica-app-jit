@@ -14,7 +14,7 @@
 #  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  org_contact_id         :bigint           not null
+#  org_contact_id         :bigint           default(0), not null
 #
 # Indexes
 #
@@ -47,7 +47,6 @@ class OrgContactTelephoneTest < ActiveSupport::TestCase
     assert_not @telephone.valid?
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "generate_otp! should create a code and set expiration" do
     freeze_time do
       raw_otp = @telephone.generate_otp!
@@ -58,7 +57,6 @@ class OrgContactTelephoneTest < ActiveSupport::TestCase
       assert_equal 3, @telephone.otp_attempts_left
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "verify_otp should return true for correct code" do
     raw_otp = @telephone.generate_otp!

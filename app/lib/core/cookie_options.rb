@@ -8,7 +8,7 @@ module Core
     def for(surface:, request:, same_site: nil, expires: nil, httponly: true, secure: nil, path: nil)
       options = {
         httponly: httponly,
-        secure: secure.nil? ? (Rails.env.production? || request.ssl?) : secure,
+        secure: secure.nil? ? resolve_secure(request) : secure,
       }
       options[:same_site] = same_site if same_site
       options[:expires] = expires if expires
@@ -18,5 +18,10 @@ module Core
       options[:domain] = domain if domain.present?
       options
     end
+
+    def resolve_secure(request)
+      Rails.env.production? || ENV["FORCE_SECURE_COOKIES"].present? || request.ssl?
+    end
+    private_class_method :resolve_secure
   end
 end

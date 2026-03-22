@@ -83,7 +83,7 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
 
     expected_deadline = withdrawal_time + 31.days
 
-    assert_in_delta expected_deadline.to_i, user.recovery_deadline.to_i, 1
+    assert_in_delta Integer(expected_deadline.to_s, 10), Integer(user.recovery_deadline.to_s, 10), 1
   end
 
   # can_recover? tests
@@ -166,9 +166,7 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
   end
 
   test "withdrawn scope returns empty when no users are withdrawn" do
-    # rubocop:disable Rails/SkipsModelValidations
     User.update_all(withdrawn_at: nil)
-    # rubocop:enable Rails/SkipsModelValidations
 
     withdrawn_users = User.withdrawn
 

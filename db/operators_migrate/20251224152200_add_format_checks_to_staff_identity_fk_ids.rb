@@ -6,13 +6,13 @@ class AddFormatChecksToStaffIdentityFkIds < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :staff_identity_audits, :event_id
-    add_format_check :staff_identity_audits, :level_id
+    add_format_check(:staff_identity_audits, :event_id)
+    add_format_check(:staff_identity_audits, :level_id)
 
-    add_format_check :staff_identity_emails, :staff_identity_email_status_id
-    add_format_check :staff_identity_secrets, :staff_identity_secret_status_id
-    add_format_check :staff_identity_telephones, :staff_identity_telephone_status_id
-    add_format_check :staffs, :staff_identity_status_id
+    add_format_check(:staff_identity_emails, :staff_identity_email_status_id)
+    add_format_check(:staff_identity_secrets, :staff_identity_secret_status_id)
+    add_format_check(:staff_identity_telephones, :staff_identity_telephone_status_id)
+    add_format_check(:staffs, :staff_identity_status_id)
   end
 
   private

@@ -72,7 +72,6 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "does not expose sensitive keywords" do
     get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
 
@@ -81,7 +80,6 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "secret"
     assert_not_includes response.body, "api_key"
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "sets lang attribute on html element" do
     get news_org_root_url(format: :html)
@@ -91,7 +89,6 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get news_org_root_url
 
@@ -112,7 +109,6 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get news_org_root_url

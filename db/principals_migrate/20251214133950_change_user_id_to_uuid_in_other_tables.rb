@@ -35,23 +35,23 @@ class ChangeUserIdToUuidInOtherTables < ActiveRecord::Migration[8.2]
     return unless table_exists?(table_name)
 
     # Remove the index first
-    remove_index table_name, :user_id if index_exists?(table_name, :user_id)
+    remove_index(table_name, :user_id) if index_exists?(table_name, :user_id)
 
     # Remove the foreign key if it exists
-    remove_foreign_key table_name, :users if foreign_key_exists?(table_name, :users)
+    remove_foreign_key(table_name, :users) if foreign_key_exists?(table_name, :users)
 
     # Remove the old column and add it back as uuid
     # Warning: This will lose existing data in the user_id column
-    remove_column table_name, :user_id, :bigint
-    add_column table_name, :user_id, :bigint
+    remove_column(table_name, :user_id, :bigint)
+    add_column(table_name, :user_id, :bigint)
 
     # Add the index back
-    add_index table_name, :user_id
+    add_index(table_name, :user_id)
 
     # Add foreign key constraint when types match
     return unless compatible_foreign_key_type?(table_name, :user_id, :users)
 
-    add_foreign_key table_name, :users
+    add_foreign_key(table_name, :users)
 
   end
 
@@ -59,22 +59,22 @@ class ChangeUserIdToUuidInOtherTables < ActiveRecord::Migration[8.2]
     return unless table_exists?(table_name)
 
     # Remove the index first
-    remove_index table_name, :user_id if index_exists?(table_name, :user_id)
+    remove_index(table_name, :user_id) if index_exists?(table_name, :user_id)
 
     # Remove the foreign key
-    remove_foreign_key table_name, :users if foreign_key_exists?(table_name, :users)
+    remove_foreign_key(table_name, :users) if foreign_key_exists?(table_name, :users)
 
     # Remove the uuid column and add back as bigint
-    remove_column table_name, :user_id, :uuid
-    add_column table_name, :user_id, :bigint
+    remove_column(table_name, :user_id, :uuid)
+    add_column(table_name, :user_id, :bigint)
 
     # Add the index back
-    add_index table_name, :user_id
+    add_index(table_name, :user_id)
 
     # Add foreign key constraint when types match
     return unless compatible_foreign_key_type?(table_name, :user_id, :users)
 
-    add_foreign_key table_name, :users
+    add_foreign_key(table_name, :users)
 
   end
 

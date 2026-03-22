@@ -18,9 +18,11 @@ force_secure_cookies =
     non_local_host) &&
   !Rails.env.test?
 
-Rails.application.config.session_store :cookie_store,
-                                       expire_after: 14.days,
-                                       key: force_secure_cookies ? "__Secure-session" : "session",
-                                       secure: force_secure_cookies,
-                                       httponly: true,
-                                       same_site: :lax
+Rails.application.config.session_store(
+  :cookie_store,
+  expire_after: 14.days,
+  key: force_secure_cookies ? "__Secure-session" : "session",
+  secure: force_secure_cookies,
+  httponly: true,
+  same_site: :lax,
+)

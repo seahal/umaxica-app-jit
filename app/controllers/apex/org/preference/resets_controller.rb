@@ -27,8 +27,10 @@ module Apex
           redirect_params = {}
           redirect_params[:ri] = params[:ri] if params[:ri].present?
 
-          redirect_to edit_apex_org_preference_reset_path(redirect_params),
-                      notice: t("apex.org.preference.resets.destroyed")
+          redirect_to(
+            edit_apex_org_preference_reset_path(redirect_params),
+            notice: t("apex.org.preference.resets.destroyed"),
+          )
         end
       end
     end

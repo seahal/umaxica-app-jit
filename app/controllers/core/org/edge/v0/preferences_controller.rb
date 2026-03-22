@@ -6,7 +6,7 @@ module Core
     module Edge
       module V0
         class PreferencesController < ApplicationController
-          include Preference::Edge
+          include ::Preference::Edge
         end
       end
     end

@@ -5,7 +5,7 @@ class EnforceUserIdentitySecretLimit < ActiveRecord::Migration[8.2]
   TRIGGER_NAME = "enforce_user_identity_secrets_limit"
 
   def up
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       CREATE OR REPLACE FUNCTION #{FUNCTION_NAME}()
       RETURNS trigger AS $$
       DECLARE
@@ -23,11 +23,11 @@ class EnforceUserIdentitySecretLimit < ActiveRecord::Migration[8.2]
   end
 
   def down
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DROP TRIGGER IF EXISTS #{TRIGGER_NAME} ON user_identity_secrets;
     SQL
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DROP FUNCTION IF EXISTS #{FUNCTION_NAME}();
     SQL
   end

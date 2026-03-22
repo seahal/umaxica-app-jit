@@ -3,13 +3,22 @@
 class SeedIdentityReferenceData < ActiveRecord::Migration[8.2]
   def up
     # UserIdentityStatus
-    seed_ids(:user_identity_statuses, %w(NONE ALIVE VERIFIED_WITH_SIGN_UP PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED))
+    seed_ids(
+      :user_identity_statuses,
+      %w(NONE ALIVE VERIFIED_WITH_SIGN_UP PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED),
+    )
 
     # UserIdentityEmailStatus
-    seed_ids(:user_identity_email_statuses, %w(NONE UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP ALIVE SUSPENDED DELETED))
+    seed_ids(
+      :user_identity_email_statuses,
+      %w(NONE UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP ALIVE SUSPENDED DELETED),
+    )
 
     # UserIdentityTelephoneStatus
-    seed_ids(:user_identity_telephone_statuses, %w(NONE UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP ALIVE SUSPENDED DELETED))
+    seed_ids(
+      :user_identity_telephone_statuses,
+      %w(NONE UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP ALIVE SUSPENDED DELETED),
+    )
 
     # StaffIdentityStatus
     seed_ids(:staff_identity_statuses, %w(NONE ALIVE PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED))
@@ -18,7 +27,10 @@ class SeedIdentityReferenceData < ActiveRecord::Migration[8.2]
     seed_ids(:staff_identity_email_statuses, %w(UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP ALIVE SUSPENDED DELETED))
 
     # StaffIdentityTelephoneStatus
-    seed_ids(:staff_identity_telephone_statuses, %w(UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP ALIVE SUSPENDED DELETED))
+    seed_ids(
+      :staff_identity_telephone_statuses,
+      %w(UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP ALIVE SUSPENDED DELETED),
+    )
 
     # UserIdentitySecretStatus
     seed_ids(:user_identity_secret_statuses, %w(ACTIVE SUSPENDED))
@@ -128,7 +140,7 @@ class SeedIdentityReferenceData < ActiveRecord::Migration[8.2]
         values_with_timestamps = values
       end
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO #{table_name} (#{columns_with_timestamps.join(", ")})
         VALUES (#{values_with_timestamps.join(", ")})
         ON CONFLICT (#{conflict_col}) DO NOTHING

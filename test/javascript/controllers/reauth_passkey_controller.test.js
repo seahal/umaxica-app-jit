@@ -9,18 +9,14 @@ vi.mock("@hotwired/stimulus", () => ({
       this.statusTarget = { textContent: "", classList: { add: vi.fn(), remove: vi.fn() } };
       this.hasErrorTarget = true;
       this.hasStatusTarget = true;
-      this.element = {
-        closest: vi.fn(() => ({ requestSubmit: vi.fn() })),
-      };
+      this.element = { closest: vi.fn(() => ({ requestSubmit: vi.fn() })) };
     }
 
     connect() {}
   },
 }));
 
-vi.mock("controllers/webauthn_utils", () => ({
-  normalizePublicKeyOptions: vi.fn((opt) => opt),
-}));
+vi.mock("controllers/webauthn_utils", () => ({ normalizePublicKeyOptions: vi.fn((opt) => opt) }));
 
 const { default: ReauthPasskeyController } =
   await import("../../../app/javascript/controllers/reauth_passkey_controller.js");
@@ -34,11 +30,7 @@ describe("ReauthPasskeyController", () => {
     controller.challengeIdValue = "challenge-123";
 
     vi.stubGlobal("window", { PublicKeyCredential: true });
-    vi.stubGlobal("navigator", {
-      credentials: {
-        get: vi.fn(),
-      },
-    });
+    vi.stubGlobal("navigator", { credentials: { get: vi.fn() } });
     vi.stubGlobal("btoa", (str) => Buffer.from(str, "binary").toString("base64"));
   });
 

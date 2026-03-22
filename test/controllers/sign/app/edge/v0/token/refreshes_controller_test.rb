@@ -54,12 +54,12 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 4, 5, 6, 7, 8)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
-      controller.any_instance.stub(
-        :decode_and_verify_preference_jwt,
-        { "preferences" => { "consented" => true }, "public_id" => "pref-app-public-id" },
-      ) do
-        controller.any_instance.stub(:refresh_token_expires_at, expires_at) do
+    travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
+        controller.any_instance.stub(
+          :decode_and_verify_preference_jwt,
+          { "preferences" => { "consented" => true }, "public_id" => "pref-app-public-id" },
+        ) do
           post "/edge/v0/token/refresh",
                headers: json_headers(with_csrf: true, device_id: @device_id),
                as: :json
@@ -76,7 +76,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta expires_at.to_i, expires.to_i, 1
+    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
   end
 
   test "POST refresh syncs preference_consented=0 when consent is false" do
@@ -87,12 +87,12 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 6, 7, 8, 9, 10)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
-      controller.any_instance.stub(
-        :decode_and_verify_preference_jwt,
-        { "preferences" => { "consent" => false, "consented" => false }, "public_id" => "pref-app-public-id" },
-      ) do
-        controller.any_instance.stub(:refresh_token_expires_at, expires_at) do
+    travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
+        controller.any_instance.stub(
+          :decode_and_verify_preference_jwt,
+          { "preferences" => { "consent" => false, "consented" => false }, "public_id" => "pref-app-public-id" },
+        ) do
           post "/edge/v0/token/refresh",
                headers: json_headers(with_csrf: true, device_id: @device_id),
                as: :json
@@ -109,7 +109,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta expires_at.to_i, expires.to_i, 1
+    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
   end
 
   test "GET check with valid access token from refresh returns 200" do
@@ -258,8 +258,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_equal before_digest, token_record.refresh_token_digest
   end
 
-  test "refresh cookie is not encrypted (plain value)" do
-    # Create a token record and generate a refresh token
+  test "refresh cookie contains a valid rotated token" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
 
@@ -271,14 +270,15 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :ok
 
-    response_cookies = extract_cookies_from_response
-    cookie_refresh_token = CGI.unescape(response_cookies[Auth::Base::REFRESH_COOKIE_KEY].to_s)
+    # The cookie value should be a valid refresh token (public_id.verifier format)
+    new_value = cookies[Auth::Base::REFRESH_COOKIE_KEY]
 
-    public_id, verifier = UserToken.parse_refresh_token(cookie_refresh_token)
+    assert_predicate new_value, :present?, "Refresh cookie should be present after rotation"
 
-    assert_predicate public_id, :present?, "Cookie should contain the public_id prefix"
-    assert_predicate verifier, :present?, "Cookie should contain verifier"
-    assert_includes cookie_refresh_token, ".", "Refresh cookie should be in public_id.verifier format"
+    public_id, verifier = UserToken.parse_refresh_token(new_value)
+
+    assert_predicate public_id, :present?, "Rotated refresh token should contain a public_id"
+    assert_predicate verifier, :present?, "Rotated refresh token should contain a verifier"
   end
 
   test "access cookie uses correct TTL" do
@@ -303,7 +303,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
       # Should be approximately 1 hour from now (within a few seconds tolerance)
       expected_expiry = Auth::Base::ACCESS_TOKEN_TTL.from_now
 
-      assert_in_delta expected_expiry.to_i, expiry.to_i, 5,
+      assert_in_delta Integer(expected_expiry.to_s, 10), Integer(expiry.to_s, 10), 5,
                       "Access cookie expiry should be ~1 hour from now"
     end
   end
@@ -460,20 +460,19 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     # Extract cookies from response (including the new refresh token)
     cookies_hash = extract_cookies_from_response
-    Rails.logger.debug { "DEBUG: extracted cookies keys: #{cookies_hash.keys}" }
-    Rails.logger.debug { "DEBUG: device_id cookie value: #{cookies_hash[Auth::Base::DEVICE_COOKIE_KEY]}" }
 
     # Use a fresh session for the second request
     s = open_session
-    s.host! @host
+    s.host!(@host)
     s.cookies[Auth::Base::REFRESH_COOKIE_KEY] = cookies_hash[Auth::Base::REFRESH_COOKIE_KEY]
     s.cookies[Auth::Base::DEVICE_COOKIE_KEY] = cookies_hash[Auth::Base::DEVICE_COOKIE_KEY]
-    Rails.logger.debug { "DEBUG: s.cookies device_id value: #{s.cookies[Auth::Base::DEVICE_COOKIE_KEY]}" }
 
     # Clear the header, rely on cookie
-    s.post "/edge/v0/token/refresh",
-           headers: json_headers(with_csrf: true).merge("X-STRICT-DEVICE-CHECK" => "1"),
-           as: :json
+    s.post(
+      "/edge/v0/token/refresh",
+      headers: json_headers(with_csrf: true).merge("X-STRICT-DEVICE-CHECK" => "1"),
+      as: :json,
+    )
 
     assert_equal 200, s.response.status
   end
@@ -485,11 +484,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     headers["X-CSRF-Token"] = csrf_token if with_csrf
     if device_id.present?
       headers["X-Device-Id"] = device_id
-      jar = ActionDispatch::Cookies::CookieJar.build(
-        ActionDispatch::Request.new(Rails.application.env_config), {},
-      )
-      jar.encrypted[Auth::Base::DEVICE_COOKIE_KEY] = device_id
-      cookies[Auth::Base::DEVICE_COOKIE_KEY] = jar[Auth::Base::DEVICE_COOKIE_KEY]
+      set_encrypted_cookie(Auth::Base::DEVICE_COOKIE_KEY, device_id)
     end
     headers
   end

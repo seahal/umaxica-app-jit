@@ -110,9 +110,9 @@ class ApplicationHelperTest < ActionView::TestCase
 
   test "current_banner_for returns current banner for each surface" do
     travel_to Time.zone.parse("2026-03-18 00:00:00 UTC") do
-      assert_equal app_banners(:newer_current_app_banner), current_banner_for(:app)
-      assert_equal org_banners(:current_org_banner), current_banner_for(:org)
-      assert_equal com_banners(:current_com_banner), current_banner_for(:com)
+      assert_equal app_banners(:newer_current_app_banner), current_banner_for(tld: :app, region: :jp, domain: :news)
+      assert_equal org_banners(:current_org_banner), current_banner_for(tld: :org, region: :jp, domain: :news)
+      assert_equal com_banners(:current_com_banner), current_banner_for(tld: :com, region: :jp, domain: :news)
     end
   end
 

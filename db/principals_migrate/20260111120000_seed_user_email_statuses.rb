@@ -14,7 +14,7 @@ class SeedUserEmailStatuses < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
       STATUS_IDS.each do |status_id|
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_email_statuses (id)
           VALUES ('#{status_id}')
           ON CONFLICT (id) DO NOTHING

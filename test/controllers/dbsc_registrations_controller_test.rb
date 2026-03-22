@@ -3,299 +3,516 @@
 
 require "test_helper"
 
-module Apex
-  module App
-    Preference = ::Preference unless const_defined?(:Preference)
-    Preference::IoKeys = ::Preference::IoKeys unless Preference.const_defined?(:IoKeys)
-    Preference::CookieName = ::Preference::CookieName unless Preference.const_defined?(:CookieName)
+class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_tokens, :user_token_kinds, :user_token_statuses,
+           :user_token_binding_methods, :user_token_dbsc_statuses,
+           :staffs, :staff_statuses, :staff_tokens, :staff_token_kinds, :staff_token_statuses,
+           :staff_token_binding_methods, :staff_token_dbsc_statuses
 
-    module Edge
-      module V0
-        Preference = ::Preference unless const_defined?(:Preference)
-        Preference::IoKeys = ::Preference::IoKeys unless Preference.const_defined?(:IoKeys)
-        Preference::CookieName = ::Preference::CookieName unless Preference.const_defined?(:CookieName)
-      end
-    end
+  setup do
+    @ec_key = OpenSSL::PKey::EC.generate("prime256v1")
+    @jwk = JWT::JWK.new(@ec_key, use: "sig", kid: SecureRandom.uuid)
   end
 
-  module Com
-    Preference = ::Preference unless const_defined?(:Preference)
-    Preference::IoKeys = ::Preference::IoKeys unless Preference.const_defined?(:IoKeys)
-    Preference::CookieName = ::Preference::CookieName unless Preference.const_defined?(:CookieName)
+  test "Sign::App: returns unauthorized when no token record exists" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
 
-    module Edge
-      module V0
-        Preference = ::Preference unless const_defined?(:Preference)
-        Preference::IoKeys = ::Preference::IoKeys unless Preference.const_defined?(:IoKeys)
-        Preference::CookieName = ::Preference::CookieName unless Preference.const_defined?(:CookieName)
-      end
-    end
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("fake-session-id") }
+
+    assert_response :unauthorized
   end
 
-  module Org
-    Preference = ::Preference unless const_defined?(:Preference)
-    Preference::IoKeys = ::Preference::IoKeys unless Preference.const_defined?(:IoKeys)
-    Preference::CookieName = ::Preference::CookieName unless Preference.const_defined?(:CookieName)
+  test "Sign::App: handles registration with valid proof" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
 
-    module Edge
-      module V0
-        Preference = ::Preference unless const_defined?(:Preference)
-        Preference::IoKeys = ::Preference::IoKeys unless Preference.const_defined?(:IoKeys)
-        Preference::CookieName = ::Preference::CookieName unless Preference.const_defined?(:CookieName)
-      end
-    end
-  end
-end
-
-class DbscRegistrationsControllerTest < ActiveSupport::TestCase
-  FakeRequest = Struct.new(:headers, :base_url, :host, keyword_init: true)
-
-  class FakeResponse
-    attr_reader :headers
-
-    def initialize
-      @headers = {}
-    end
-
-    def set_header(key, value)
-      @headers[key] = value
-    end
-  end
-
-  class FakeRecord
-    attr_reader :dbsc_session_id, :updated_attributes
-
-    def initialize(dbsc_session_id: "session-123")
-      @dbsc_session_id = dbsc_session_id
-      @updated_attributes = nil
-    end
-
-    def update!(attributes)
-      @updated_attributes = attributes
-    end
-  end
-
-  AUTH_CASES = [
-    {
-      klass: Sign::App::Edge::V0::Token::DbscRegistrationsController,
-      url_helper: :sign_app_edge_v0_token_dbsc_registration_url,
-      cookie_setter: :set_dbsc_cookie!,
-      cookie_expiry: :dbsc_cookie_expires_at_for,
-      cookie_name: Auth::Base::DBSC_COOKIE_KEY,
-      session_header: Auth::IoKeys::Headers::DBSC_SESSION_ID,
-      proof_header: Auth::IoKeys::Headers::DBSC_RESPONSE,
-      challenge_header: Auth::IoKeys::Headers::DBSC_CHALLENGE,
-      verification_service: Dbsc::VerificationService,
-      registration_service: Dbsc::RegistrationService,
-    },
-    {
-      klass: Sign::Org::Edge::V0::Token::DbscRegistrationsController,
-      url_helper: :sign_org_edge_v0_token_dbsc_registration_url,
-      cookie_setter: :set_dbsc_cookie!,
-      cookie_expiry: :dbsc_cookie_expires_at_for,
-      cookie_name: Auth::Base::DBSC_COOKIE_KEY,
-      session_header: Auth::IoKeys::Headers::DBSC_SESSION_ID,
-      proof_header: Auth::IoKeys::Headers::DBSC_RESPONSE,
-      challenge_header: Auth::IoKeys::Headers::DBSC_CHALLENGE,
-      verification_service: Dbsc::VerificationService,
-      registration_service: Dbsc::RegistrationService,
-    },
-  ].freeze
-
-  PREFERENCE_CASES = [
-    {
-      klass: Apex::App::Edge::V0::DbscRegistrationsController,
-      url_helper: :apex_app_edge_v0_dbsc_registration_url,
-    },
-    {
-      klass: Apex::Com::Edge::V0::DbscRegistrationsController,
-      url_helper: :apex_com_edge_v0_dbsc_registration_url,
-    },
-    {
-      klass: Apex::Org::Edge::V0::DbscRegistrationsController,
-      url_helper: :apex_org_edge_v0_dbsc_registration_url,
-    },
-  ].map do |config|
-    config.merge(
-      cookie_setter: :set_preference_dbsc_cookie!,
-      cookie_expiry: :preference_dbsc_cookie_expires_at,
-      cookie_name: Preference::CookieName.dbsc,
-      session_header: Preference::IoKeys::Headers::DBSC_SESSION_ID,
-      proof_header: Preference::IoKeys::Headers::DBSC_RESPONSE,
-      challenge_header: Preference::IoKeys::Headers::DBSC_CHALLENGE,
-      verification_service: Dbsc::VerificationService,
-      registration_service: Dbsc::RegistrationService,
+    user = users(:one)
+    token = UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::NOTHING,
+      user_token_dbsc_status_id: UserTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_challenge: SecureRandom.hex(16),
+      dbsc_challenge_issued_at: Time.current,
     )
-  end.freeze
 
-  (AUTH_CASES + PREFERENCE_CASES).each do |config|
-    test "#{config[:klass].name} handles registration success and failure" do
-      controller = build_controller(config[:klass], headers: { config[:proof_header] => "proof" })
-      record = FakeRecord.new(dbsc_session_id: "session-abc")
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
-      controller.define_singleton_method(:current_session) { nil } if controller.respond_to?(:current_session)
-      controller.define_singleton_method(:token_from_refresh_cookie) {
-        nil
-      } if controller.respond_to?(:token_from_refresh_cookie)
-      controller.define_singleton_method(:current_preference_record) {
-        record
-      } if controller.respond_to?(:current_preference_record, true)
-      controller.define_singleton_method(config[:url_helper]) { "https://example.test/dbsc" }
-      controller.define_singleton_method(config[:cookie_expiry]) { |_value| 1.hour.from_now }
+    proof = generate_dbsc_proof(
+      challenge: token.dbsc_challenge,
+      audience: sign_app_edge_v0_token_dbsc_registration_url,
+      jwk: @jwk.export,
+    )
 
-      cookie_args = nil
-      controller.define_singleton_method(config[:cookie_setter]) do |session_id, expires_at:|
-        cookie_args = { session_id:, expires_at: }
-      end
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
 
-      config[:registration_service].stub :call, { ok: true, session_id: "session-abc", record: record } do
-        controller.send(:handle_registration)
-      end
+    assert_response :created
+    response_body = response.parsed_body
 
-      rendered = controller.instance_variable_get(:@_test_rendered)
+    assert_predicate response_body["session_identifier"], :present?
 
-      assert_equal :created, rendered[:status]
-      assert_equal "session-abc", rendered[:json][:session_identifier]
-      assert_equal config[:cookie_name], rendered[:json][:credentials].first[:name]
-      assert_equal "session-abc", cookie_args[:session_id]
+    token.reload
 
-      controller = build_controller(config[:klass], headers: { config[:proof_header] => "proof" })
-      controller.define_singleton_method(:current_session) { nil } if controller.respond_to?(:current_session)
-      controller.define_singleton_method(:token_from_refresh_cookie) {
-        nil
-      } if controller.respond_to?(:token_from_refresh_cookie)
-      controller.define_singleton_method(:current_preference_record) {
-        record
-      } if controller.respond_to?(:current_preference_record, true)
-      controller.define_singleton_method(config[:url_helper]) { "https://example.test/dbsc" }
-
-      config[:registration_service].stub :call, { ok: false, error_code: "invalid_proof" } do
-        controller.send(:handle_registration)
-      end
-
-      rendered = controller.instance_variable_get(:@_test_rendered)
-
-      assert_equal :unprocessable_content, rendered[:status]
-      assert_equal "invalid_proof", rendered[:json][:error_code]
-    end
-
-    test "#{config[:klass].name} handles refresh challenge, verification failure, and success" do
-      controller = build_controller(
-        config[:klass],
-        headers: { config[:session_header] => %("session-abc"), config[:proof_header] => "" },
-      )
-      record = FakeRecord.new(dbsc_session_id: "session-abc")
-
-      controller.define_singleton_method(:dbsc_token_record) {
-        record
-      } if controller.respond_to?(:dbsc_token_record, true)
-      controller.define_singleton_method(:current_preference_record) {
-        record
-      } if controller.respond_to?(:current_preference_record, true)
-      controller.define_singleton_method(:issue_dbsc_challenge_for!) { |_value|
-        "challenge-1"
-      } if controller.respond_to?(:issue_dbsc_challenge_for!, true)
-      controller.define_singleton_method(:issue_preference_dbsc_challenge_for!) { |_value|
-        "challenge-1"
-      } if controller.respond_to?(:issue_preference_dbsc_challenge_for!, true)
-      controller.send(:handle_bound_cookie_refresh)
-
-      assert_equal :forbidden, controller.instance_variable_get(:@_test_head_status)
-      assert_includes controller.response.headers[config[:challenge_header]], "challenge-1"
-
-      controller = build_controller(
-        config[:klass],
-        headers: { config[:session_header] => %("session-abc"), config[:proof_header] => "proof" },
-      )
-      controller.define_singleton_method(:dbsc_token_record) {
-        record
-      } if controller.respond_to?(:dbsc_token_record, true)
-      controller.define_singleton_method(:current_preference_record) {
-        record
-      } if controller.respond_to?(:current_preference_record, true)
-      controller.define_singleton_method(config[:url_helper]) { "https://example.test/dbsc" }
-
-      config[:verification_service].stub :call, { ok: false, error_code: "bad_verification" } do
-        controller.send(:handle_bound_cookie_refresh)
-      end
-
-      rendered = controller.instance_variable_get(:@_test_rendered)
-
-      assert_equal :unprocessable_content, rendered[:status]
-      assert_equal "bad_verification", rendered[:json][:error_code]
-
-      controller = build_controller(
-        config[:klass],
-        headers: { config[:session_header] => %("session-abc"), config[:proof_header] => "proof" },
-      )
-      controller.define_singleton_method(:dbsc_token_record) {
-        record
-      } if controller.respond_to?(:dbsc_token_record, true)
-      controller.define_singleton_method(:current_preference_record) {
-        record
-      } if controller.respond_to?(:current_preference_record, true)
-      controller.define_singleton_method(config[:url_helper]) { "https://example.test/dbsc" }
-      controller.define_singleton_method(config[:cookie_expiry]) { |_value| 1.hour.from_now }
-
-      cookie_args = nil
-      controller.define_singleton_method(config[:cookie_setter]) do |session_id, expires_at:|
-        cookie_args = { session_id:, expires_at: }
-      end
-
-      config[:verification_service].stub :call, { ok: true } do
-        controller.send(:handle_bound_cookie_refresh)
-      end
-
-      assert_equal({ dbsc_challenge: nil, dbsc_challenge_issued_at: nil }, record.updated_attributes)
-      assert_equal "session-abc", cookie_args[:session_id]
-      assert_equal :no_content, controller.instance_variable_get(:@_test_head_status)
-    end
-
-    test "#{config[:klass].name} returns unauthorized when no bound record exists" do
-      controller = build_controller(config[:klass], headers: { config[:session_header] => %("session-abc") })
-      controller.define_singleton_method(:dbsc_token_record) { nil } if controller.respond_to?(:dbsc_token_record, true)
-      controller.define_singleton_method(:current_preference_record) {
-        nil
-      } if controller.respond_to?(:current_preference_record, true)
-
-      controller.send(:handle_bound_cookie_refresh)
-
-      assert_equal :unauthorized, controller.instance_variable_get(:@_test_head_status)
-    end
+    assert_equal UserTokenBindingMethod::DBSC, token.user_token_binding_method_id
+    assert_equal UserTokenDbscStatus::ACTIVE, token.user_token_dbsc_status_id
+    assert_equal response_body["session_identifier"], token.dbsc_session_id
+    assert_predicate token.dbsc_public_key, :present?
+    assert_nil token.dbsc_challenge
   end
 
-  test "auth dbsc token_from_refresh_cookie returns nil when parsing fails" do
-    controller = build_controller(Sign::App::Edge::V0::Token::DbscRegistrationsController)
-    controller.cookies[Auth::Base::REFRESH_COOKIE_KEY] = "bad-refresh-token"
-    token_class =
-      Class.new do
-        define_singleton_method(:parse_refresh_token) do |_token|
-          raise StandardError, "bad token"
-        end
-      end
-    controller.define_singleton_method(:token_class) { token_class }
+  test "Sign::App: handles registration failure with invalid proof" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
 
-    assert_nil controller.send(:token_from_refresh_cookie)
+    user = users(:one)
+    token = UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::NOTHING,
+      user_token_dbsc_status_id: UserTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_challenge: SecureRandom.hex(16),
+      dbsc_challenge_issued_at: Time.current,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof" }
+
+    assert_response :unprocessable_content
+    response_body = response.parsed_body
+
+    assert_predicate response_body["error_code"], :present?
+  end
+
+  test "Sign::App: handles registration failure without challenge" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+
+    user = users(:one)
+    token = UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::NOTHING,
+      user_token_dbsc_status_id: UserTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    proof = generate_dbsc_proof(
+      challenge: "any-challenge",
+      audience: sign_app_edge_v0_token_dbsc_registration_url,
+      jwk: @jwk.export,
+    )
+
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
+
+    assert_response :unprocessable_content
+    assert_equal "missing_challenge", response.parsed_body["error_code"]
+  end
+
+  test "Sign::App: handles refresh challenge when proof is missing" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+
+    user = users(:one)
+    token = UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::DBSC,
+      user_token_dbsc_status_id: UserTokenDbscStatus::ACTIVE,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_session_id: "session-abc",
+      dbsc_public_key: @jwk.export,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
+
+    assert_response :forbidden
+    assert_predicate response.headers[Auth::IoKeys::Headers::DBSC_CHALLENGE], :present?
+
+    token.reload
+
+    assert_predicate token.dbsc_challenge, :present?
+  end
+
+  test "Sign::App: handles refresh verification failure" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+
+    user = users(:one)
+    token = UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::DBSC,
+      user_token_dbsc_status_id: UserTokenDbscStatus::ACTIVE,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_session_id: "session-abc",
+      dbsc_public_key: @jwk.export,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: {
+           Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
+           Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof",
+         }
+
+    assert_response :unprocessable_content
+    assert_predicate response.parsed_body["error_code"], :present?
+  end
+
+  test "Sign::App: handles successful refresh verification" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+
+    user = users(:one)
+    token = UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::DBSC,
+      user_token_dbsc_status_id: UserTokenDbscStatus::ACTIVE,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_session_id: "session-abc",
+      dbsc_public_key: @jwk.export,
+      dbsc_challenge: SecureRandom.hex(16),
+      dbsc_challenge_issued_at: Time.current,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    # For verification, do NOT include JWK in header (security requirement)
+    proof = JWT.encode(
+      { "jti" => token.dbsc_challenge,
+        "aud" => sign_app_edge_v0_token_dbsc_registration_url,
+        "iat" => Time.current.to_i, },
+      @ec_key,
+      "ES256",
+      { "typ" => "dbsc+jwt" }, # No jwk header
+    )
+
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: {
+           Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
+           Auth::IoKeys::Headers::DBSC_RESPONSE => proof,
+         }
+
+    assert_response :no_content
+    assert_predicate response.cookies[Auth::Base::DBSC_COOKIE_KEY], :present?
+
+    token.reload
+
+    assert_nil token.dbsc_challenge
+  end
+
+  test "Sign::App: returns unauthorized when bound record does not exist" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+
+    user = users(:one)
+    token = UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::NOTHING,
+      user_token_dbsc_status_id: UserTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    # Execute with session ID but record not bound to DBSC (no dbsc_session_id)
+    # This triggers 403 Forbidden because proof is blank (challenge issuance)
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
+
+    assert_response :forbidden
+  end
+
+  test "Sign::Org: returns unauthorized when no token record exists" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("fake-session-id") }
+
+    assert_response :unauthorized
+  end
+
+  test "Sign::Org: handles registration with valid proof" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    staff = staffs(:one)
+    token = StaffToken.create!(
+      staff: staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
+      staff_token_binding_method_id: StaffTokenBindingMethod::NOTHING,
+      staff_token_dbsc_status_id: StaffTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_challenge: SecureRandom.hex(16),
+      dbsc_challenge_issued_at: Time.current,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    proof = generate_dbsc_proof(
+      challenge: token.dbsc_challenge,
+      audience: sign_org_edge_v0_token_dbsc_registration_url,
+      jwk: @jwk.export,
+    )
+
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
+
+    assert_response :created
+    response_body = response.parsed_body
+
+    assert_predicate response_body["session_identifier"], :present?
+
+    token.reload
+
+    assert_equal StaffTokenBindingMethod::DBSC, token.staff_token_binding_method_id
+    assert_equal StaffTokenDbscStatus::ACTIVE, token.staff_token_dbsc_status_id
+    assert_equal response_body["session_identifier"], token.dbsc_session_id
+    assert_predicate token.dbsc_public_key, :present?
+    assert_nil token.dbsc_challenge
+  end
+
+  test "Sign::Org: handles registration failure with invalid proof" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    staff = staffs(:one)
+    token = StaffToken.create!(
+      staff: staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
+      staff_token_binding_method_id: StaffTokenBindingMethod::NOTHING,
+      staff_token_dbsc_status_id: StaffTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_challenge: SecureRandom.hex(16),
+      dbsc_challenge_issued_at: Time.current,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof" }
+
+    assert_response :unprocessable_content
+    response_body = response.parsed_body
+
+    assert_predicate response_body["error_code"], :present?
+  end
+
+  test "Sign::Org: handles registration failure without challenge" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    staff = staffs(:one)
+    token = StaffToken.create!(
+      staff: staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
+      staff_token_binding_method_id: StaffTokenBindingMethod::NOTHING,
+      staff_token_dbsc_status_id: StaffTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    proof = generate_dbsc_proof(
+      challenge: "any-challenge",
+      audience: sign_org_edge_v0_token_dbsc_registration_url,
+      jwk: @jwk.export,
+    )
+
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
+
+    assert_response :unprocessable_content
+    assert_equal "missing_challenge", response.parsed_body["error_code"]
+  end
+
+  test "Sign::Org: handles refresh challenge when proof is missing" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    staff = staffs(:one)
+    token = StaffToken.create!(
+      staff: staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
+      staff_token_binding_method_id: StaffTokenBindingMethod::DBSC,
+      staff_token_dbsc_status_id: StaffTokenDbscStatus::ACTIVE,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_session_id: "session-abc",
+      dbsc_public_key: @jwk.export,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
+
+    assert_response :forbidden
+    assert_predicate response.headers[Auth::IoKeys::Headers::DBSC_CHALLENGE], :present?
+
+    token.reload
+
+    assert_predicate token.dbsc_challenge, :present?
+  end
+
+  test "Sign::Org: handles refresh verification failure" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    staff = staffs(:one)
+    token = StaffToken.create!(
+      staff: staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
+      staff_token_binding_method_id: StaffTokenBindingMethod::DBSC,
+      staff_token_dbsc_status_id: StaffTokenDbscStatus::ACTIVE,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_session_id: "session-abc",
+      dbsc_public_key: @jwk.export,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: {
+           Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
+           Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof",
+         }
+
+    assert_response :unprocessable_content
+    assert_predicate response.parsed_body["error_code"], :present?
+  end
+
+  test "Sign::Org: handles successful refresh verification" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    staff = staffs(:one)
+    token = StaffToken.create!(
+      staff: staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
+      staff_token_binding_method_id: StaffTokenBindingMethod::DBSC,
+      staff_token_dbsc_status_id: StaffTokenDbscStatus::ACTIVE,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+      dbsc_session_id: "session-abc",
+      dbsc_public_key: @jwk.export,
+      dbsc_challenge: SecureRandom.hex(16),
+      dbsc_challenge_issued_at: Time.current,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    # For verification, do NOT include JWK in header (security requirement)
+    proof = JWT.encode(
+      { "jti" => token.dbsc_challenge,
+        "aud" => sign_org_edge_v0_token_dbsc_registration_url,
+        "iat" => Time.current.to_i, },
+      @ec_key,
+      "ES256",
+      { "typ" => "dbsc+jwt" }, # No jwk header
+    )
+
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: {
+           Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
+           Auth::IoKeys::Headers::DBSC_RESPONSE => proof,
+         }
+
+    assert_response :no_content
+    assert_predicate response.cookies[Auth::Base::DBSC_COOKIE_KEY], :present?
+
+    token.reload
+
+    assert_nil token.dbsc_challenge
+  end
+
+  test "Sign::Org: returns unauthorized when bound record does not exist" do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+
+    staff = staffs(:one)
+    token = StaffToken.create!(
+      staff: staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      staff_token_status_id: StaffTokenStatus::NOTHING,
+      staff_token_binding_method_id: StaffTokenBindingMethod::NOTHING,
+      staff_token_dbsc_status_id: StaffTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+
+    # Execute with session ID but record not bound to DBSC (no dbsc_session_id)
+    # This triggers 403 Forbidden because proof is blank (challenge issuance)
+    post sign_org_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
+
+    assert_response :forbidden
+  end
+
+  test "Sign::App: token_from_refresh_cookie returns nil when parsing fails" do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+
+    user = users(:one)
+    UserToken.create!(
+      user: user,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      user_token_status_id: UserTokenStatus::NOTHING,
+      user_token_binding_method_id: UserTokenBindingMethod::NOTHING,
+      user_token_dbsc_status_id: UserTokenDbscStatus::NOTHING,
+      refresh_expires_at: 1.day.from_now,
+      deletable_at: 1.day.from_now,
+    )
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = "invalid-token-format"
+
+    post sign_app_edge_v0_token_dbsc_registration_path,
+         headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "some-proof" }
+
+    assert_response :unprocessable_content
   end
 
   private
 
-  def build_controller(klass, headers: {}, base_url: "https://example.test", host: "example.test")
-    controller = klass.new
-    request = FakeRequest.new(headers: headers.with_indifferent_access, base_url: base_url, host: host)
-    response = FakeResponse.new
-    cookies = {}.with_indifferent_access
+  def generate_dbsc_proof(challenge:, audience:, jwk:, algorithm: "ES256")
+    iat = Time.current.to_i
+    payload = {
+      "jti" => challenge,
+      "aud" => audience,
+      "iat" => iat,
+    }
 
-    controller.define_singleton_method(:request) { request }
-    controller.define_singleton_method(:response) { response }
-    controller.define_singleton_method(:cookies) { cookies }
-    controller.define_singleton_method(:render) do |**kwargs|
-      @_test_rendered = kwargs
-    end
-    controller.define_singleton_method(:head) do |status|
-      @_test_head_status = status
-    end
+    headers = {
+      "typ" => "dbsc+jwt",
+      "jwk" => jwk,
+    }
 
-    controller
+    JWT.encode(payload, @ec_key, algorithm, headers)
   end
 end

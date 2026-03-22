@@ -71,10 +71,11 @@ module Sign
         actor.update!(attrs)
       end
 
+      actor_key = actor_identifier_column(token) || :user_id
       Sign::Risk::Emitter.emit(
         "refresh_reuse_detected",
-        user_id: actor_identifier(token),
-        user_token_id: token.public_id,
+        actor_key => actor_identifier(token),
+        :user_token_id => token.public_id,
       )
 
       Rails.event.notify(

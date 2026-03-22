@@ -17,8 +17,15 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
     ],
   )
 
-  SimpleCov.start "rails" do
+  SimpleCov.start("rails") do
     enable_coverage :branch
+
+    # Coverage thresholds: fail build if line < 95%, branch < 90%
+    minimum_coverage line: 95, branch: 90
+
+    # Do not allow coverage drops (fail if decreased from previous run)
+    refuse_coverage_drop :line, :branch
+
     filters.clear
     add_filter ".bundle/"
     add_filter "vendor/"

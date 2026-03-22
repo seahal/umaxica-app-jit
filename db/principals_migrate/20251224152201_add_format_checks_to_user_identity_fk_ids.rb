@@ -6,17 +6,17 @@ class AddFormatChecksToUserIdentityFkIds < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :user_identity_audits, :event_id
-    add_format_check :user_identity_audits, :level_id
+    add_format_check(:user_identity_audits, :event_id)
+    add_format_check(:user_identity_audits, :level_id)
 
-    add_format_check :user_identity_emails, :user_identity_email_status_id
-    add_format_check :user_identity_one_time_passwords, :user_identity_one_time_password_status_id
-    add_format_check :user_identity_passkeys, :user_identity_passkey_status_id
-    add_format_check :user_identity_secrets, :user_identity_secret_status_id
-    add_format_check :user_identity_social_apples, :user_identity_social_apple_status_id
-    add_format_check :user_identity_social_googles, :user_identity_social_google_status_id
-    add_format_check :user_identity_telephones, :user_identity_telephone_status_id
-    add_format_check :users, :user_identity_status_id
+    add_format_check(:user_identity_emails, :user_identity_email_status_id)
+    add_format_check(:user_identity_one_time_passwords, :user_identity_one_time_password_status_id)
+    add_format_check(:user_identity_passkeys, :user_identity_passkey_status_id)
+    add_format_check(:user_identity_secrets, :user_identity_secret_status_id)
+    add_format_check(:user_identity_social_apples, :user_identity_social_apple_status_id)
+    add_format_check(:user_identity_social_googles, :user_identity_social_google_status_id)
+    add_format_check(:user_identity_telephones, :user_identity_telephone_status_id)
+    add_format_check(:users, :user_identity_status_id)
   end
 
   private

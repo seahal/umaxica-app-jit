@@ -51,8 +51,10 @@ module Sign
         def create
           respond_to do |format|
             format.html do
-              redirect_to new_sign_org_configuration_passkey_path,
-                          alert: t("messages.not_implemented")
+              redirect_to(
+                new_sign_org_configuration_passkey_path,
+                alert: t("messages.not_implemented"),
+              )
             end
             format.json do
               render json: { error: t("messages.not_implemented") }, status: :unprocessable_content
@@ -166,8 +168,10 @@ module Sign
           if @passkey.update(update_params)
             respond_to do |format|
               format.html do
-                redirect_to sign_org_configuration_passkey_path(@passkey),
-                            notice: t("messages.passkey_successfully_updated")
+                redirect_to(
+                  sign_org_configuration_passkey_path(@passkey),
+                  notice: t("messages.passkey_successfully_updated"),
+                )
               end
               format.json { render json: { status: "ok" }, status: :ok }
             end
@@ -187,9 +191,11 @@ module Sign
 
           respond_to do |format|
             format.html do
-              redirect_to sign_org_configuration_passkeys_path,
-                          status: :see_other,
-                          notice: t("messages.passkey_successfully_destroyed")
+              redirect_to(
+                sign_org_configuration_passkeys_path,
+                status: :see_other,
+                notice: t("messages.passkey_successfully_destroyed"),
+              )
             end
             format.json { head :no_content }
           end

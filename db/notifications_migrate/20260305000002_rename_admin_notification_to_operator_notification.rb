@@ -3,7 +3,7 @@
 class RenameAdminNotificationToOperatorNotification < ActiveRecord::Migration[8.2]
   def change
     safety_assured do
-      rename_table :admin_notifications, :operator_notifications
+      rename_table(:admin_notifications, :operator_notifications)
       rename_public_id_index
       rename_staff_notification_id_index
     end
@@ -17,7 +17,7 @@ class RenameAdminNotificationToOperatorNotification < ActiveRecord::Migration[8.
 
     return unless index_exists?(:operator_notifications, :public_id, name: old_name)
 
-    rename_index :operator_notifications, old_name, new_name
+    rename_index(:operator_notifications, old_name, new_name)
   end
 
   def rename_staff_notification_id_index
@@ -26,6 +26,6 @@ class RenameAdminNotificationToOperatorNotification < ActiveRecord::Migration[8.
 
     return unless index_exists?(:operator_notifications, :staff_notification_id, name: old_name)
 
-    rename_index :operator_notifications, old_name, new_name
+    rename_index(:operator_notifications, old_name, new_name)
   end
 end

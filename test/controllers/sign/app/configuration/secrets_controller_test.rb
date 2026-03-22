@@ -226,7 +226,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
       password_digest: "test_password_digest",
       user_secret_kind_id: UserSecret::Kinds::LOGIN,
     )
-    user.user_emails.update_all(user_email_status_id: UserEmailStatus::UNVERIFIED) # rubocop:disable Rails/SkipsModelValidations
+    user.user_emails.update_all(user_email_status_id: UserEmailStatus::UNVERIFIED)
 
     assert_no_difference("UserSecret.count") do
       delete sign_app_configuration_secret_url(secret, ri: "jp"),

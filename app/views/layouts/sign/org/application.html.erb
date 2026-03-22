@@ -20,7 +20,7 @@
 <header>
   <nav>
     <%= render "layouts/shared/flash_messages" %>
-    <%= render "layouts/shared/current_banner", surface: :org %>
+    <%= render "layouts/shared/current_banner", tld: :org, domain: :sign, region: :global %>
     <% if logged_in? %>
       <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_configuration_out_url(host: ENV["SIGN_STAFF_URL"]) %>
     <% else %>

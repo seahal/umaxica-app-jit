@@ -11,7 +11,7 @@ class RemoveRedundantMemberIndexesAvatar < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
       INDEXES.each do |table, index_name|
-        remove_index table, name: index_name, algorithm: :concurrently, if_exists: true
+        remove_index(table, name: index_name, algorithm: :concurrently, if_exists: true)
       end
     end
   end
@@ -19,7 +19,13 @@ class RemoveRedundantMemberIndexesAvatar < ActiveRecord::Migration[8.2]
   def down
     safety_assured do
       INDEXES.each do |table, index_name|
-        add_index table, :member_id, name: index_name, algorithm: :concurrently unless index_exists?(table, :member_id, name: index_name)
+        add_index(
+          table, :member_id, name: index_name,
+                             algorithm: :concurrently,
+        ) unless index_exists?(
+          table, :member_id,
+          name: index_name,
+        )
       end
     end
   end

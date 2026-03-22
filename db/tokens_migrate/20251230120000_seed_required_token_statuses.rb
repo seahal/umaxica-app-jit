@@ -14,7 +14,7 @@ class SeedRequiredTokenStatuses < ActiveRecord::Migration[8.2]
   def insert_statuses(table_name)
     return unless table_exists?(table_name)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       INSERT INTO #{table_name} (id)
       VALUES ('NEYO'), ('ACTIVE')
       ON CONFLICT (id) DO NOTHING;
@@ -24,6 +24,6 @@ class SeedRequiredTokenStatuses < ActiveRecord::Migration[8.2]
   def delete_statuses(table_name)
     return unless table_exists?(table_name)
 
-    execute "DELETE FROM #{table_name} WHERE id IN ('NEYO', 'ACTIVE');"
+    execute("DELETE FROM #{table_name} WHERE id IN ('NEYO', 'ACTIVE');")
   end
 end

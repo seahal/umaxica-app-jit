@@ -91,7 +91,7 @@ class SeedPrincipalStatusTables < ActiveRecord::Migration[8.2]
       target_tables.each do |table_name, mapping|
         # Insert fixed IDs (skip if already exists)
         mapping.each do |id, _name|
-          execute <<~SQL.squish
+          execute(<<~SQL.squish)
             INSERT INTO #{table_name} (id)
             VALUES (#{id})
             ON CONFLICT (id) DO NOTHING
@@ -100,7 +100,7 @@ class SeedPrincipalStatusTables < ActiveRecord::Migration[8.2]
 
         # Update sequence to ensure next auto-generated ID doesn't conflict
         max_id = mapping.keys.max
-        execute "SELECT setval(pg_get_serial_sequence('#{table_name}', 'id'), #{max_id}, true)"
+        execute("SELECT setval(pg_get_serial_sequence('#{table_name}', 'id'), #{max_id}, true)")
       end
     end
   end

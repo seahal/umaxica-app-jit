@@ -8,7 +8,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   include ActiveSupport::Testing::TimeHelpers
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do
     get new_sign_app_in_email_url(ri: "jp"), headers: { "Host" => @host }
 
@@ -22,7 +21,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     #                  I18n.t("sign.app.authentication.new.back")
     assert_response :success
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "reject already logged in user" do
     user = users(:one)
@@ -70,7 +68,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to %r{/in/email/edit}
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "POST create with unknown email does not issue otp" do
     assert_no_difference -> { ActionMailer::Base.deliveries.count } do
       post sign_app_in_email_url(ri: "jp"),
@@ -83,21 +80,24 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
       assert_nil session[:user_email_authentication_id]
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "POST create responds the same for existing and missing emails" do
     user = users(:one)
     existing_email = user.user_emails.create!(address: "enum_test@example.com")
 
     existing_session = open_session
-    existing_session.post sign_app_in_email_url(ri: "jp"),
-                          params: { user_email: { address: existing_email.address } },
-                          headers: { "Host" => @host }
+    existing_session.post(
+      sign_app_in_email_url(ri: "jp"),
+      params: { user_email: { address: existing_email.address } },
+      headers: { "Host" => @host },
+    )
 
     missing_session = open_session
-    missing_session.post sign_app_in_email_url(ri: "jp"),
-                         params: { user_email: { address: "missing-enum@example.com" } },
-                         headers: { "Host" => @host }
+    missing_session.post(
+      sign_app_in_email_url(ri: "jp"),
+      params: { user_email: { address: "missing-enum@example.com" } },
+      headers: { "Host" => @host },
+    )
 
     assert_equal existing_session.response.status, missing_session.response.status
     assert_equal existing_session.response.location, missing_session.response.location
@@ -185,7 +185,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # Login Tests
-  # rubocop:disable Minitest/MultipleAssertions
+
   test "successful OTP verification redirects to configuration" do
     # Create email with user association
     user = users(:one)
@@ -278,7 +278,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_in_challenge_path(ri: "jp")
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "otp resend enforces cooldown" do
     user = users(:one)
     test_email = user.user_emails.create!(
@@ -346,7 +345,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
       assert_operator test_email.reload.otp_last_sent_at, :>, initial_sent_at
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "successful OTP verification records login audit event" do
     user = users(:one)
@@ -378,7 +376,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal UserActivityEvent::LOGGED_IN, audit.event_id
     assert_equal user, audit.user
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "invalid OTP code returns error message" do
     user = users(:one)
@@ -411,7 +408,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, I18n.t("sign.app.authentication.email.update.invalid_code", locale: :ja)
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "invalid OTP attempt records login failed audit event" do
     user = users(:one)
     test_email = user.user_emails.create!(
@@ -442,7 +438,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal UserActivityEvent::LOGIN_FAILED, audit.event_id
     assert_equal user, audit.user
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "already logged in user cannot authenticate via post" do
     user = users(:one)
@@ -453,7 +448,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "redirects to encoded URL after successful login when rd parameter is provided" do
     # Create a test user and email
     user = users(:one)
@@ -499,9 +493,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :found
     assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "rejects external rd parameter after successful login" do
     user = users(:one)
     test_email = user.user_emails.create!(
@@ -538,7 +530,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :found
     assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
   end
-  # rubocop:enable Minitest/MultipleAssertions
+
   test "resets session ID after successful email login" do
     # Create email with user association
     user = users(:one)
@@ -576,7 +568,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_session_id, session.id
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "email login with session limit exceeded redirects to session management" do
     user = users(:one)
     UserToken.where(user_id: user.id).delete_all
@@ -659,9 +650,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "session_restricted", json["status"]
     assert_equal sign_app_in_session_path(ri: "jp"), json["redirect_url"]
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "cooldown applies identically for non-existing emails (anti-enumeration)" do
     non_existing = "does_not_exist_#{SecureRandom.hex(4)}@example.com"
 
@@ -698,7 +687,6 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
       assert_response :found
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "cooldown does not block different email addresses" do
     first_email = "first_signin_#{SecureRandom.hex(4)}@example.com"

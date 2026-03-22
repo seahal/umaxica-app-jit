@@ -58,7 +58,6 @@ module Auth
         surface: Core::Surface.current(request),
         request: request,
         httponly: true,
-        secure: Rails.env.production?,
         same_site: :lax,
         path: "/",
         expires: expires,

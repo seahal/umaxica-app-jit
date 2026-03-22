@@ -28,12 +28,12 @@ class FixComContactStatusFkNullify < ActiveRecord::Migration[8.2]
     SQL
 
     fk_rows.each do |row|
-      execute "ALTER TABLE #{from_table} DROP CONSTRAINT #{row["conname"]}"
+      execute("ALTER TABLE #{from_table} DROP CONSTRAINT #{row["conname"]}")
     end
 
     # Add new FK with ON DELETE SET NULL
     fk_name = "fk_#{from_table}_on_#{column}_nullify"
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       ALTER TABLE #{from_table}#{" "}
       ADD CONSTRAINT #{fk_name}#{" "}
       FOREIGN KEY (#{column}) REFERENCES #{to_table} (id)#{" "}

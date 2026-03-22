@@ -51,8 +51,10 @@ class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
     OmniAuth.config.logger = Logger.new(nil)
 
     begin
-      get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
-          headers: { "Host" => @host }
+      get(
+        sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
+        headers: { "Host" => @host },
+      )
     ensure
       OmniAuth.config.logger = old_logger
     end

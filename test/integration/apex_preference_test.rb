@@ -631,8 +631,10 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       ActiveSupport::Notifications.subscribe("sql.active_record", callback)
 
       begin
-        delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
-               params: { confirm_reset: "1" }
+        delete(
+          public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
+          params: { confirm_reset: "1" },
+        )
       ensure
         ActiveSupport::Notifications.unsubscribe(callback)
       end
@@ -651,7 +653,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   end
 
   def assert_preference_created(domain)
-    get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+    get(public_send("apex_#{domain[:name]}_preference_url", ri: "jp"))
 
     assert_response :success
 
@@ -675,11 +677,11 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
   def assert_preference_update(domain, kind, params, state)
     suffix = preference_route_suffix(kind)
-    get public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
+    get(public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state))
 
     assert_response :success
 
-    patch public_send("apex_#{domain[:name]}_preference_#{suffix}_url", state), params: params
+    patch(public_send("apex_#{domain[:name]}_preference_#{suffix}_url", state), params: params)
 
     assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
     follow_redirect!

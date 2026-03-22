@@ -161,7 +161,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         params = {
           challenge_id: challenge_id,
           credential: {
@@ -182,7 +182,7 @@ module Sign::App::In
         assert_equal "ok", json["status"]
         assert_not_nil json["access_token"]
         assert_equal "Bearer", json["token_type"]
-        assert_equal Auth::Base::ACCESS_TOKEN_TTL.to_i, json["expires_in"]
+        assert_equal Integer(Auth::Base::ACCESS_TOKEN_TTL.to_s, 10), json["expires_in"]
         assert_includes json["redirect_url"], "rd="
 
         # Challenge verification updates sign count
@@ -190,7 +190,6 @@ module Sign::App::In
       end
     end
 
-    # rubocop:disable Minitest/MultipleAssertions
     test "verification with session limit exceeded returns session_restricted" do
       # Create 2 active sessions to hit the limit
       UserToken.where(user_id: @user.id).delete_all
@@ -211,7 +210,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         params = {
           challenge_id: challenge_id,
           credential: {
@@ -240,7 +239,6 @@ module Sign::App::In
         assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
       end
     end
-    # rubocop:enable Minitest/MultipleAssertions
 
     test "verification returns same response for credential mismatch and missing verified pii" do
       # Baseline: credential mismatch
@@ -283,7 +281,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
           challenge_id: pii_challenge_id,
           credential: {
@@ -320,7 +318,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
           challenge_id: challenge_id,
           credential: {
@@ -351,7 +349,7 @@ module Sign::App::In
       Sign::App::In::PasskeysController.any_instance.stub(
         :complete_sign_in_or_start_mfa!, { status: :unknown },
       ) do
-        WebAuthn::Credential.stub :from_get, mock_credential do
+        WebAuthn::Credential.stub(:from_get, mock_credential) do
           post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
             challenge_id: challenge_id,
             credential: {

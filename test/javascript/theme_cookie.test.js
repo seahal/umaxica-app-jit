@@ -31,15 +31,11 @@ const documentMock = {
   },
   documentElement: { dataset: {}, classList: classListMock },
   getElementById: vi.fn(() => null),
+  querySelector: vi.fn(() => null),
   addEventListener: vi.fn(),
 };
 
-const windowMock = {
-  matchMedia: vi.fn(() => ({
-    matches: false,
-    addEventListener: vi.fn(),
-  })),
-};
+const windowMock = { matchMedia: vi.fn(() => ({ matches: false, addEventListener: vi.fn() })) };
 
 vi.stubGlobal("document", documentMock);
 vi.stubGlobal("window", windowMock);
@@ -51,6 +47,7 @@ beforeEach(() => {
   classListMock._store = new Set();
   windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
   documentMock.getElementById.mockReturnValue(null);
+  documentMock.querySelector.mockReturnValue(null);
   documentMock.addEventListener.mockReset();
 });
 
@@ -98,8 +95,9 @@ describe("applyThemeFromCookie", () => {
   test("js-theme-cookie-value 要素がある場合、テーマ値を設定する", () => {
     cookieReadValue = "ct=li";
     const valueEl = { textContent: "" };
-    documentMock.getElementById.mockReturnValue(valueEl);
+    documentMock.querySelector.mockReturnValue(valueEl);
     applyThemeFromCookie();
+    expect(documentMock.querySelector).toHaveBeenCalledWith("#js-theme-cookie-value");
     expect(valueEl.textContent).toBe("light");
   });
 });

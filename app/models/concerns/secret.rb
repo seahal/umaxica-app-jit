@@ -96,7 +96,7 @@ module Secret
       return false if expire_if_needed!(now: now)
 
       if uses_remaining_available?
-        return false unless uses_remaining.to_i.positive?
+        return false unless Integer(uses_remaining.to_s, 10).positive?
       end
       return false unless auth_result
 

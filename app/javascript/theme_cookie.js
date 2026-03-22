@@ -47,7 +47,7 @@ function initThemeFromCookie() {
   const theme = resolveTheme(raw);
   applyTheme(theme);
 
-  const valueEl = document.getElementById("js-theme-cookie-value");
+  const valueEl = document.querySelector("#js-theme-cookie-value");
   if (valueEl) {
     valueEl.textContent = theme;
   }

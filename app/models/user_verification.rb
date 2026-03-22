@@ -53,9 +53,8 @@ class UserVerification < TokenRecord
 
     verification =
       transaction do
-        # rubocop:disable Rails/SkipsModelValidations
         where(user_token_id: token.id).active.update_all(revoked_at: now, updated_at: now)
-        # rubocop:enable Rails/SkipsModelValidations
+
         create!(
           user_token: token,
           token_digest: digest,

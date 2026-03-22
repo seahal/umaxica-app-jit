@@ -22,7 +22,7 @@
 #  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  com_contact_id         :bigint           not null
+#  com_contact_id         :bigint           default(0), not null
 #
 # Indexes
 #
@@ -202,7 +202,6 @@ class ComContactEmailTest < ActiveSupport::TestCase
     assert_kind_of Integer, email.id
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     contact = create_contact(
       public_id: "unique_contact_8",
@@ -220,9 +219,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     assert_not_nil email.created_at
     assert_not_nil email.updated_at
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should have all expected attributes" do
     contact = create_contact(
       public_id: "unique_contact_9",
@@ -241,7 +238,6 @@ class ComContactEmailTest < ActiveSupport::TestCase
     assert_respond_to email, :remaining_views
     assert_respond_to email, :expires_at
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have default values" do
     contact = create_contact(
@@ -310,7 +306,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   # Verifier tests
-  # rubocop:disable Minitest/MultipleAssertions
+
   test "should generate verifier code" do
     contact = create_contact(
       public_id: "unique_contact_13",
@@ -332,7 +328,6 @@ class ComContactEmailTest < ActiveSupport::TestCase
     assert_not_nil email.verifier_expires_at
     assert_equal 3, email.verifier_attempts_left
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "should verify correct code" do
     contact = create_contact(

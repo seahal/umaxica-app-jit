@@ -17,13 +17,13 @@ class AddExpiresAtIndexesToContactTables < ActiveRecord::Migration[8.2]
     TABLES.each do |table|
       next unless column_exists?(table, :expires_at)
 
-      add_index table, :expires_at, name: index_name_for(table), if_not_exists: true
+      add_index(table, :expires_at, name: index_name_for(table), if_not_exists: true)
     end
   end
 
   def down
     TABLES.each do |table|
-      remove_index table, name: index_name_for(table), if_exists: true
+      remove_index(table, name: index_name_for(table), if_exists: true)
     end
   end
 

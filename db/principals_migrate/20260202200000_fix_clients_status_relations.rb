@@ -12,14 +12,14 @@ class FixClientsStatusRelations < ActiveRecord::Migration[8.2]
       if table_exists?(:clients)
         # Add status_id column if missing
         unless column_exists?(:clients, :status_id)
-          execute "ALTER TABLE clients ADD COLUMN status_id bigint DEFAULT 0 NOT NULL"
+          execute("ALTER TABLE clients ADD COLUMN status_id bigint DEFAULT 0 NOT NULL")
           # Copy from client_status_id
-          execute "UPDATE clients SET status_id = client_status_id"
+          execute("UPDATE clients SET status_id = client_status_id")
         end
 
         # Add index on status_id
         unless index_exists?(:clients, :status_id)
-          add_index :clients, :status_id, algorithm: :concurrently
+          add_index(:clients, :status_id, algorithm: :concurrently)
         end
 
         # Add FK: clients.status_id -> client_statuses.id
@@ -27,8 +27,8 @@ class FixClientsStatusRelations < ActiveRecord::Migration[8.2]
 
         # Enforce NOT NULL on public_id (backfill with UUIDv7)
         if column_exists?(:clients, :public_id)
-          execute "UPDATE clients SET public_id = '' WHERE public_id IS NULL OR public_id = ''"
-          execute "ALTER TABLE clients ALTER COLUMN public_id SET NOT NULL"
+          execute("UPDATE clients SET public_id = '' WHERE public_id IS NULL OR public_id = ''")
+          execute("ALTER TABLE clients ALTER COLUMN public_id SET NOT NULL")
         end
       end
     end
@@ -44,7 +44,7 @@ class FixClientsStatusRelations < ActiveRecord::Migration[8.2]
     fk_name = "fk_#{from_table}_on_#{column}"
     result = connection.select_value("SELECT 1 FROM pg_constraint WHERE conname = '#{fk_name}'")
     unless result
-      execute "ALTER TABLE #{from_table} ADD CONSTRAINT #{fk_name} FOREIGN KEY (#{column}) REFERENCES #{to_table} (id)"
+      execute("ALTER TABLE #{from_table} ADD CONSTRAINT #{fk_name} FOREIGN KEY (#{column}) REFERENCES #{to_table} (id)")
     end
   rescue => e
     Rails.logger.debug { "Error adding FK #{fk_name}: #{e.message}" }

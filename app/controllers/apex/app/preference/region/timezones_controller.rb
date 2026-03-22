@@ -20,8 +20,10 @@ module Apex
               notice: t("apex.app.preferences.update_success"),
             )
           rescue PreferenceOperationError
-            redirect_to edit_apex_app_preference_region_timezone_url,
-                        alert: I18n.t("errors.messages.preference_operation_failed")
+            redirect_to(
+              edit_apex_app_preference_region_timezone_url,
+              alert: I18n.t("errors.messages.preference_operation_failed"),
+            )
           end
         end
       end

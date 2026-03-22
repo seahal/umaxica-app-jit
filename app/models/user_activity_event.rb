@@ -77,6 +77,36 @@ class UserActivityEvent < ActivityRecord
     STEP_UP_VERIFIED,
   ].freeze
 
+  public_constant :ACCOUNT_RECOVERED
+  public_constant :ACCOUNT_WITHDRAWN
+  public_constant :AUTHORIZATION_FAILED
+  public_constant :LOGGED_IN
+  public_constant :LOGGED_OUT
+  public_constant :LOGIN_FAILED
+  public_constant :LOGIN_SUCCESS
+  public_constant :LOGOUT
+  public_constant :NOTHING
+  public_constant :NON_EXISTENT_EVENT
+  public_constant :PASSKEY_REGISTERED
+  public_constant :PASSKEY_REMOVED
+  public_constant :RECOVERY_CODES_GENERATED
+  public_constant :RECOVERY_CODE_USED
+  public_constant :SIGNED_UP_WITH_APPLE
+  public_constant :SIGNED_UP_WITH_EMAIL
+  public_constant :SIGNED_UP_WITH_GOOGLE
+  public_constant :SIGNED_UP_WITH_TELEPHONE
+  public_constant :TOKEN_REFRESHED
+  public_constant :TOTP_DISABLED
+  public_constant :TOTP_ENABLED
+  public_constant :USER_SECRET_CREATED
+  public_constant :USER_SECRET_REMOVED
+  public_constant :USER_SECRET_UPDATED
+  public_constant :EMAIL_REMOVED
+  public_constant :TELEPHONE_REMOVED
+  public_constant :SOCIAL_UNLINKED
+  public_constant :STEP_UP_VERIFIED
+  public_constant :DEFAULTS
+
   def self.ensure_defaults!
     return if DEFAULTS.blank?
 

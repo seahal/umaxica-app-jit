@@ -107,7 +107,7 @@ class AuthCookieHelpersTest < ActiveSupport::TestCase
   end
 
   test "ACCESS_TOKEN_TTL defaults to 1 hour" do
-    assert_equal 1.hour.to_i, Auth::Base::ACCESS_TOKEN_TTL.to_i
+    assert_equal 1.hour.to_i, Integer(Auth::Base::ACCESS_TOKEN_TTL.to_s, 10)
   end
 
   test "REFRESH_TOKEN_TTL is 30 days" do

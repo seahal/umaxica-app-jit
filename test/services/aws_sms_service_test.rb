@@ -7,7 +7,7 @@ require "minitest/mock"
 class AwsSmsServiceTest < ActiveSupport::TestCase
   test "validates required parameters (1)" do
     # Avoid AWS connection during initialization using stub
-    Aws::SNS::Client.stub :new, Object.new do
+    Aws::SNS::Client.stub(:new, Object.new) do
       service = AwsSmsService.new
 
       error =
@@ -20,7 +20,7 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
 
   test "validates required parameters (2)" do
     # Avoid AWS connection during initialization using stub
-    Aws::SNS::Client.stub :new, Object.new do
+    Aws::SNS::Client.stub(:new, Object.new) do
       service = AwsSmsService.new
 
       assert_raises(ArgumentError) do
@@ -42,9 +42,9 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
       message: "Hello World",
       subject: "SMS",
     }
-    mock_client.expect :publish, { message_id: "msg-123" }, [expected_params]
+    mock_client.expect(:publish, { message_id: "msg-123" }, [expected_params])
 
-    Aws::SNS::Client.stub :new, mock_client do
+    Aws::SNS::Client.stub(:new, mock_client) do
       service = AwsSmsService.new
       result = service.send_message(to: "+819012345678", message: "Hello World")
 
@@ -61,9 +61,9 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
       message: "Hello World",
       subject: "Important",
     }
-    mock_client.expect :publish, { message_id: "msg-456" }, [expected_params]
+    mock_client.expect(:publish, { message_id: "msg-456" }, [expected_params])
 
-    Aws::SNS::Client.stub :new, mock_client do
+    Aws::SNS::Client.stub(:new, mock_client) do
       service = AwsSmsService.new
       result = service.send_message(to: "+819012345678", message: "Hello World", subject: "Important")
 

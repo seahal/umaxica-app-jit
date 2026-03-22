@@ -1,6 +1,13 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: staff_preference_language_options
+# Database name: principal
+#
+#  id :bigint           not null, primary key
+#
 require "test_helper"
 
 class StaffPreferenceLanguageOptionTest < ActiveSupport::TestCase

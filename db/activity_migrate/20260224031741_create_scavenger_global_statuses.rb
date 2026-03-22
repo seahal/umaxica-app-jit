@@ -2,6 +2,6 @@
 
 class CreateScavengerGlobalStatuses < ActiveRecord::Migration[8.2]
   def change
-    create_table :scavenger_global_statuses, id: :bigserial
+    create_table(:scavenger_global_statuses, id: :bigserial)
   end
 end

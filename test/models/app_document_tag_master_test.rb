@@ -56,11 +56,11 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     # We need a row whose `id` and `parent_id` are the sentinel value to satisfy the
     # self-referential FK on `parent_id`. This sentinel id is intentionally lowercase
     # and would fail `StringPrimaryKey` validations/callbacks, so we insert directly.
-    # rubocop:disable Rails/SkipsModelValidations
+
     AppDocumentTagMaster.insert_all!(
       [{ id: ROOT_SENTINEL, parent_id: ROOT_SENTINEL }],
     )
-    # rubocop:enable Rails/SkipsModelValidations
+
   end
 
   def build_tree!

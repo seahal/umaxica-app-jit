@@ -27,7 +27,7 @@ class FixPrimaryKeyTypes < ActiveRecord::Migration[8.2]
     return unless column.type == from
 
     safety_assured do
-      change_column table, :id, to_type, using: using
+      change_column(table, :id, to_type, using: using)
     end
   end
 

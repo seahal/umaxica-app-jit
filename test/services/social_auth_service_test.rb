@@ -15,6 +15,21 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
         id.expires_at = 1.hour.from_now.to_i
         id.user_social_google_status_id = @status.id
       end
+
+    # Add a verified email to have 2 login methods (Google + Email)
+    # This ensures login_methods_remaining? returns true without stubbing
+    verified_email_status =
+      UserEmailStatus.find_or_create_by!(id: UserEmailStatus::VERIFIED) do |s|
+        s.name = "verified"
+      end
+    UserEmail.create!(
+      user: @user,
+      address: "test-#{SecureRandom.hex(4)}@example.com",
+      address_digest: "digest-#{SecureRandom.hex(8)}",
+      user_email_status_id: verified_email_status.id,
+      public_id: SecureRandom.alphanumeric(21),
+    )
+
     @auth_hash = Struct.new(:provider, :uid, :credentials, :info).new(
       "google",
       "uid123",
@@ -46,12 +61,12 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
   end
 
   test "unlink google identity" do
-    @user.stub(:login_methods_remaining?, true) do
-      result = SocialAuthService.unlink(provider: "google", user: @user)
+    # User now has 2 login methods: Google + Email (set up in setup)
+    # login_methods_remaining? returns true without stubbing
+    result = SocialAuthService.unlink(provider: "google", user: @user)
 
-      assert result[:success]
-      assert_equal "google", result[:provider]
-      assert_equal UserSocialGoogleStatus::REVOKED, @identity.reload.user_identity_social_google_status_id
-    end
+    assert result[:success]
+    assert_equal "google", result[:provider]
+    assert_equal UserSocialGoogleStatus::REVOKED, @identity.reload.user_identity_social_google_status_id
   end
 end

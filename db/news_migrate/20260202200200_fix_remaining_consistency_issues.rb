@@ -39,10 +39,10 @@ class FixRemainingConsistencyIssues < ActiveRecord::Migration[8.2]
     return if nullable == 'NO' # Already NOT NULL
 
     # Set all NULL parent_id to 0 (assuming 0 is always valid as root)
-    execute "UPDATE #{table} SET parent_id = 0 WHERE parent_id IS NULL"
+    execute("UPDATE #{table} SET parent_id = 0 WHERE parent_id IS NULL")
 
     # Set NOT NULL constraint
-    execute "ALTER TABLE #{table} ALTER COLUMN parent_id SET NOT NULL"
+    execute("ALTER TABLE #{table} ALTER COLUMN parent_id SET NOT NULL")
 
     Rails.logger.debug { "Fixed #{table}.parent_id NOT NULL" }
   rescue => e

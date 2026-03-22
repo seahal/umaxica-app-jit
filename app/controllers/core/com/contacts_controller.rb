@@ -59,10 +59,12 @@ module Core
             pass_code: token,
           ).create.deliver_later
 
-          redirect_to new_core_com_contact_email_url(
-            contact_id: @contact.public_id,
-            **core_corporate_redirect_options,
-          ), notice: I18n.t("help.com.contacts.create.success")
+          redirect_to(
+            new_core_com_contact_email_url(
+              contact_id: @contact.public_id,
+              **core_corporate_redirect_options,
+            ), notice: I18n.t("help.com.contacts.create.success"),
+          )
         else
           render :new, status: :unprocessable_content
         end

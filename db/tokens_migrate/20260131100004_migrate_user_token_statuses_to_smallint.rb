@@ -3,7 +3,7 @@
 class MigrateUserTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
-      add_column :user_token_statuses, :id_small, :integer, limit: 2
+      add_column(:user_token_statuses, :id_small, :integer, limit: 2)
 
       # Ensure required
       %w(ACTIVE).each do |val|
@@ -21,7 +21,7 @@ class MigrateUserTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
       execute("UPDATE user_token_statuses SET id_small = 0 WHERE id IN ('NEYO', '')")
 
       # Backfill Others
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         WITH numbered AS (
           SELECT id, ROW_NUMBER() OVER (ORDER BY id) + 1 AS rn
           FROM user_token_statuses
@@ -33,20 +33,20 @@ class MigrateUserTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
         WHERE user_token_statuses.id = numbered.id
       SQL
 
-      change_column_null :user_token_statuses, :id_small, false, 0
+      change_column_null(:user_token_statuses, :id_small, false, 0)
 
-      execute "ALTER TABLE user_token_statuses DROP CONSTRAINT user_token_statuses_pkey CASCADE"
+      execute("ALTER TABLE user_token_statuses DROP CONSTRAINT user_token_statuses_pkey CASCADE")
 
-      execute "DROP INDEX IF EXISTS index_user_token_statuses_on_lower_id"
-      execute "ALTER TABLE user_token_statuses DROP CONSTRAINT IF EXISTS chk_user_token_statuses_id_format"
+      execute("DROP INDEX IF EXISTS index_user_token_statuses_on_lower_id")
+      execute("ALTER TABLE user_token_statuses DROP CONSTRAINT IF EXISTS chk_user_token_statuses_id_format")
 
-      rename_column :user_token_statuses, :id, :id_old_string
-      # rubocop:disable Rails/DangerousColumnNames
-      rename_column :user_token_statuses, :id_small, :id
-      # rubocop:enable Rails/DangerousColumnNames
-      execute "ALTER TABLE user_token_statuses ADD PRIMARY KEY (id)"
+      rename_column(:user_token_statuses, :id, :id_old_string)
 
-      execute "ALTER TABLE user_token_statuses ADD CONSTRAINT chk_user_token_statuses_id_positive CHECK (id >= 0)"
+      rename_column(:user_token_statuses, :id_small, :id)
+
+      execute("ALTER TABLE user_token_statuses ADD PRIMARY KEY (id)")
+
+      execute("ALTER TABLE user_token_statuses ADD CONSTRAINT chk_user_token_statuses_id_positive CHECK (id >= 0)")
     end
   end
 

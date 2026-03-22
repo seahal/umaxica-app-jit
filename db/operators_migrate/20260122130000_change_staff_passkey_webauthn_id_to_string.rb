@@ -16,29 +16,29 @@ class ChangeStaffPasskeyWebauthnIdToString < ActiveRecord::Migration[8.0]
   NOT_NULL_CONSTRAINT = "staff_passkeys_webauthn_id_not_null"
 
   def up
-    add_column :staff_passkeys, :webauthn_id_string, :string
+    add_column(:staff_passkeys, :webauthn_id_string, :string)
 
     backfill_webauthn_id_string
-    change_column_default :staff_passkeys, :webauthn_id_string, ""
-    add_index :staff_passkeys, :webauthn_id_string, unique: true, name: TEMP_INDEX, algorithm: :concurrently
+    change_column_default(:staff_passkeys, :webauthn_id_string, "")
+    add_index(:staff_passkeys, :webauthn_id_string, unique: true, name: TEMP_INDEX, algorithm: :concurrently)
 
     if index_name_exists?(:staff_passkeys, LEGACY_INDEX)
-      remove_index :staff_passkeys, name: LEGACY_INDEX
+      remove_index(:staff_passkeys, name: LEGACY_INDEX)
     end
 
     safety_assured do
-      rename_column :staff_passkeys, :webauthn_id, :webauthn_id_binary
-      rename_column :staff_passkeys, :webauthn_id_string, :webauthn_id
+      rename_column(:staff_passkeys, :webauthn_id, :webauthn_id_binary)
+      rename_column(:staff_passkeys, :webauthn_id_string, :webauthn_id)
     end
 
-    change_column_default :staff_passkeys, :webauthn_id, ""
-    add_check_constraint :staff_passkeys, "webauthn_id IS NOT NULL", name: NOT_NULL_CONSTRAINT, validate: false
+    change_column_default(:staff_passkeys, :webauthn_id, "")
+    add_check_constraint(:staff_passkeys, "webauthn_id IS NOT NULL", name: NOT_NULL_CONSTRAINT, validate: false)
 
-    remove_index :staff_passkeys, name: TEMP_INDEX, algorithm: :concurrently
-    add_index :staff_passkeys, :webauthn_id, unique: true, name: LEGACY_INDEX, algorithm: :concurrently
+    remove_index(:staff_passkeys, name: TEMP_INDEX, algorithm: :concurrently)
+    add_index(:staff_passkeys, :webauthn_id, unique: true, name: LEGACY_INDEX, algorithm: :concurrently)
 
     safety_assured do
-      remove_column :staff_passkeys, :webauthn_id_binary
+      remove_column(:staff_passkeys, :webauthn_id_binary)
     end
 
     add_external_id_if_missing
@@ -66,11 +66,11 @@ class ChangeStaffPasskeyWebauthnIdToString < ActiveRecord::Migration[8.0]
   def add_external_id_if_missing
     return if column_exists?(:staff_passkeys, :external_id)
 
-    add_column :staff_passkeys, :external_id, :bigint
+    add_column(:staff_passkeys, :external_id, :bigint)
     StaffPasskey.reset_column_information
     StaffPasskey.find_each do |passkey|
       passkey.update!(external_id: SecureRandom.uuid)
     end
-    change_column_null :staff_passkeys, :external_id, false
+    change_column_null(:staff_passkeys, :external_id, false)
   end
 end

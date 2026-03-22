@@ -24,7 +24,7 @@ class Sign::Org::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   test "creates verification on success" do
     return_to = Base64.urlsafe_encode64(sign_org_configuration_passkeys_path(ri: "jp"))
 
-    Sign::Org::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
+    Sign::Org::VerificationController.any_instance.stub(:available_step_up_methods, [:passkey]) do
       Sign::Org::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
         Sign::Org::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
           get sign_org_verification_url(scope: "configuration_passkey", return_to: return_to, ri: "jp"),

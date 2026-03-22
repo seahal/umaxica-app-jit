@@ -3,10 +3,7 @@ import { normalizePublicKeyOptions } from "controllers/webauthn_utils";
 
 export default class extends Controller {
   static targets = ["challengeId", "credentialJson", "error", "status"];
-  static values = {
-    options: String,
-    challengeId: String,
-  };
+  static values = { options: String, challengeId: String };
 
   async authenticate(event) {
     event.preventDefault();

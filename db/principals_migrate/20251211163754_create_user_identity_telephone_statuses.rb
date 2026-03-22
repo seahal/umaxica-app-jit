@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
-# rubocop:disable Rails/CreateTableWithTimestamps
 class CreateUserIdentityTelephoneStatuses < ActiveRecord::Migration[8.2]
   def up
-    create_table :user_identity_telephone_statuses, id: :string, limit: 255
+    create_table(:user_identity_telephone_statuses, id: :string, limit: 255)
 
-    execute "ALTER TABLE user_identity_telephone_statuses ALTER COLUMN id SET DEFAULT 'UNVERIFIED'"
+    execute("ALTER TABLE user_identity_telephone_statuses ALTER COLUMN id SET DEFAULT 'UNVERIFIED'")
   end
 
   def down
-    drop_table :user_identity_telephone_statuses
+    drop_table(:user_identity_telephone_statuses)
   end
 end
-
-# rubocop:enable Rails/CreateTableWithTimestamps

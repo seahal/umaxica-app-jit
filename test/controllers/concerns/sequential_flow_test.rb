@@ -20,7 +20,7 @@ class SequentialFlowDummyController < ApplicationController
 
   def create
     advance_step!
-    redirect_to "/edit"
+    redirect_to("/edit")
   end
 
   def edit
@@ -29,7 +29,7 @@ class SequentialFlowDummyController < ApplicationController
 
   def update
     advance_step!
-    redirect_to "/show"
+    redirect_to("/show")
   end
 
   def show
@@ -38,7 +38,7 @@ class SequentialFlowDummyController < ApplicationController
 
   def destroy
     reset_flow!
-    redirect_to "/new"
+    redirect_to("/new")
   end
 
   private

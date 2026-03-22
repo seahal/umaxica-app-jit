@@ -24,8 +24,8 @@ module Sign
       test "does nothing if feature flag is off" do
         ENV["RISK_ENFORCEMENT_ENABLED"] = "false"
 
-        Engine.stub :score, 100 do
-          Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
+        Engine.stub(:score, 100) do
+          Enforcer.stub(:revoke!, ->(_) { raise "Should not be called" }) do
             result = Enforcer.call(@user)
 
             assert_nil result
@@ -34,10 +34,10 @@ module Sign
       end
 
       test "revokes if score is 100" do
-        Engine.stub :score, 100 do
+        Engine.stub(:score, 100) do
           # Enforcer.revoke! should be called
           called = false
-          Enforcer.stub :revoke!, ->(u) { called = true; assert_equal @user, u } do
+          Enforcer.stub(:revoke!, ->(u) { called = true; assert_equal @user, u }) do
             Enforcer.call(@user)
           end
 
@@ -46,9 +46,9 @@ module Sign
       end
 
       test "requires step up if score is 60" do
-        Engine.stub :score, 60 do
+        Engine.stub(:score, 60) do
           called = false
-          Enforcer.stub :require_step_up!, ->(u) { called = true; assert_equal @user, u } do
+          Enforcer.stub(:require_step_up!, ->(u) { called = true; assert_equal @user, u }) do
             Enforcer.call(@user)
           end
 
@@ -57,9 +57,9 @@ module Sign
       end
 
       test "does nothing if score is 0" do
-        Engine.stub :score, 0 do
-          Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
-            Enforcer.stub :require_step_up!, ->(_) { raise "Should not be called" } do
+        Engine.stub(:score, 0) do
+          Enforcer.stub(:revoke!, ->(_) { raise "Should not be called" }) do
+            Enforcer.stub(:require_step_up!, ->(_) { raise "Should not be called" }) do
               result = Enforcer.call(@user)
 
               assert_nil result
@@ -82,7 +82,7 @@ module Sign
         def zrangebyscore(key, min, _max)
           return [] unless @data[key]
 
-          min_val = min.to_f
+          min_val = Float(min)
           @data[key].select { |item| item[:score] >= min_val }.pluck(:member)
         end
 

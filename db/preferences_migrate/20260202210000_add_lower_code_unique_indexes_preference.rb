@@ -32,7 +32,7 @@ class AddLowerCodeUniqueIndexesPreference < ActiveRecord::Migration[8.2]
   def down
     TABLES.each do |table|
       index_name = "index_#{table}_on_lower_code"
-      remove_index table, name: index_name if index_exists?(table, nil, name: index_name)
+      remove_index(table, name: index_name) if index_exists?(table, nil, name: index_name)
     end
   end
 
@@ -44,6 +44,6 @@ class AddLowerCodeUniqueIndexesPreference < ActiveRecord::Migration[8.2]
     index_name = "index_#{table}_on_lower_code"
     return if index_exists?(table, nil, name: index_name)
 
-    add_index table, "lower(code)", unique: true, name: index_name, algorithm: :concurrently
+    add_index(table, "lower(code)", unique: true, name: index_name, algorithm: :concurrently)
   end
 end

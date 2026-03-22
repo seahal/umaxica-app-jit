@@ -21,8 +21,8 @@ class PublicIdTest < ActiveSupport::TestCase
 
   setup do
     # Create a temporary dummy_models table that has a public_id column
-    ActiveRecord::Base.connection.create_table :dummy_models, temporary: true do |t|
-      t.string :public_id
+    ActiveRecord::Base.connection.create_table(:dummy_models, temporary: true) do |t|
+      t.string(:public_id)
       t.timestamps
     end
     # Mock Nanoid so that it always returns the same ID for stability
@@ -32,7 +32,7 @@ class PublicIdTest < ActiveSupport::TestCase
 
   teardown do
     # Remove the temporary table
-    ActiveRecord::Base.connection.drop_table :dummy_models, if_exists: true
+    ActiveRecord::Base.connection.drop_table(:dummy_models, if_exists: true)
     # Restore the original Nanoid mock
     Nanoid.define_singleton_method(:generate, @original_nanoid_generate)
   end

@@ -48,7 +48,7 @@ class Oidc::SingleLogoutServiceTest < ActiveSupport::TestCase
 
     token.reload
     # revoked_at should not change since it was already set
-    assert_in_delta revoked_at.to_f, token.revoked_at.to_f, 1.0
+    assert_in_delta Float(revoked_at), Float(token.revoked_at), 1.0
   end
 
   test "does not affect other users tokens" do

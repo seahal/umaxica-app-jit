@@ -49,7 +49,7 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
     return unless table_exists?(table) && column_exists?(table, column)
 
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         UPDATE #{table}
         SET #{column} = '#{to}'
         WHERE #{column} = '#{from}'
@@ -74,6 +74,6 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
   def change_column_default_if_exists(table, column, from:, to:)
     return unless table_exists?(table) && column_exists?(table, column)
 
-    change_column_default table, column, from: from, to: to
+    change_column_default(table, column, from: from, to: to)
   end
 end

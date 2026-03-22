@@ -74,7 +74,7 @@ module RefreshTokenable
 
       attrs = {
         refresh_token_family_id: previous_token.refresh_token_family_id.presence || SecureRandom.uuid,
-        refresh_token_generation: previous_token.refresh_token_generation.to_i + 1,
+        refresh_token_generation: Integer(previous_token.refresh_token_generation.to_s, 10) + 1,
         refresh_expires_at: previous_token.refresh_expires_at,
         device_id: previous_token.device_id,
         dbsc_session_id: previous_token.dbsc_session_id,
@@ -89,10 +89,14 @@ module RefreshTokenable
       attrs[actor_key] = previous_token.public_send(actor_key) if actor_key
       attrs[token_status_key] = previous_token.public_send(token_status_key) if token_status_key
       attrs[token_kind_key] = previous_token.public_send(token_kind_key) if token_kind_key
-      attrs[:user_token_binding_method_id] = previous_token.user_token_binding_method_id if previous_token.has_attribute?(:user_token_binding_method_id)
-      attrs[:staff_token_binding_method_id] = previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
-      attrs[:user_token_dbsc_status_id] = previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
-      attrs[:staff_token_dbsc_status_id] = previous_token.staff_token_dbsc_status_id if previous_token.has_attribute?(:staff_token_dbsc_status_id)
+      attrs[:user_token_binding_method_id] =
+        previous_token.user_token_binding_method_id if previous_token.has_attribute?(:user_token_binding_method_id)
+      attrs[:staff_token_binding_method_id] =
+        previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
+      attrs[:user_token_dbsc_status_id] =
+        previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
+      attrs[:staff_token_dbsc_status_id] =
+        previous_token.staff_token_dbsc_status_id if previous_token.has_attribute?(:staff_token_dbsc_status_id)
 
       replacement = create!(attrs)
       raw_refresh_token, verifier = generate_refresh_token(public_id: replacement.public_id)
@@ -146,7 +150,7 @@ module RefreshTokenable
       self.refresh_token_digest = digest_refresh_token(verifier)
       self.refresh_expires_at = expires_at || default_refresh_expires_at
       self.last_used_at = Time.current
-      self.refresh_token_generation = refresh_token_generation.to_i + 1
+      self.refresh_token_generation = Integer(refresh_token_generation.to_s, 10) + 1
       save!
 
       # Return the combined token for the client.

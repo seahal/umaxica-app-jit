@@ -47,7 +47,7 @@ module TestRateLimitReset
 
     RateLimit.store.clear
   rescue StandardError => e
-    warn "[test_helper] failed to clear RateLimit store: #{e.class}: #{e.message}"
+    warn("[test_helper] failed to clear RateLimit store: #{e.class}: #{e.message}")
   end
 
   def clear_cache_rate_limit_state!
@@ -57,7 +57,7 @@ module TestRateLimitReset
   rescue NotImplementedError
     nil
   rescue StandardError => e
-    warn "[test_helper] failed to clear Rails.cache rate limit state: #{e.class}: #{e.message}"
+    warn("[test_helper] failed to clear Rails.cache rate limit state: #{e.class}: #{e.message}")
   end
 end
 
@@ -96,6 +96,7 @@ module ActiveSupport
     fixtures :all unless ENV["SKIP_DB"] == "1"
 
     include ActiveJob::TestHelper
+    include ActiveSupport::Testing::TimeHelpers
 
     setup do
       TestRateLimitReset.clear!

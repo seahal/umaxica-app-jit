@@ -42,7 +42,7 @@ module ApiCsrfProtection
   end
 
   def handle_invalid_origin
-    Rails.logger.warn "CSRF Origin Mismatch: Origin=#{request.headers["Origin"]} RequestHost=#{request.host}"
+    Rails.logger.warn("CSRF Origin Mismatch: Origin=#{request.headers["Origin"]} RequestHost=#{request.host}")
     raise ActionController::InvalidCrossOriginRequest, "CSRF Origin Mismatch"
   end
 end

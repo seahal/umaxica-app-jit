@@ -6,7 +6,7 @@ class RemoveEmptyTokenStatusIds < ActiveRecord::Migration[8.2]
       next unless table_exists?(table)
 
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           DELETE FROM #{table}
           WHERE id = ''
         SQL

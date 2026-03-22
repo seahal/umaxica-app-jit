@@ -32,7 +32,7 @@ class AddPositionToPreferenceReferenceTables < ActiveRecord::Migration[8.2]
       next unless table_exists?(table)
 
       unless column_exists?(table, :position)
-        add_column table, :position, :integer
+        add_column(table, :position, :integer)
       end
 
       quoted_table = "\"#{table}\""
@@ -40,7 +40,7 @@ class AddPositionToPreferenceReferenceTables < ActiveRecord::Migration[8.2]
       safety_assured do
         reversible do |dir|
           dir.up do
-            execute <<~SQL.squish
+            execute(<<~SQL.squish)
               WITH numbered AS (
                 SELECT id, row_number() OVER (ORDER BY id) as rn
                 FROM #{quoted_table}
@@ -53,18 +53,18 @@ class AddPositionToPreferenceReferenceTables < ActiveRecord::Migration[8.2]
           end
         end
 
-        change_column_null table, :position, false
+        change_column_null(table, :position, false)
 
         # Check constraints and indexes carefully
         # Note: index_exists? and checking constraints prevents duplication errors
 
         unless index_exists?(table, :position, unique: true, name: "#{table}_position_unique")
-          add_index table, :position, unique: true, name: "#{table}_position_unique"
+          add_index(table, :position, unique: true, name: "#{table}_position_unique")
         end
 
         # Handling constraint checks with rescue as check_constraint_exists? might vary in availability/reliability
         begin
-          add_check_constraint table, "position > 0", name: "#{table}_position_positive"
+          add_check_constraint(table, "position > 0", name: "#{table}_position_positive")
         rescue ActiveRecord::StatementInvalid => e
           raise e unless e.message.include?("already exists")
         end

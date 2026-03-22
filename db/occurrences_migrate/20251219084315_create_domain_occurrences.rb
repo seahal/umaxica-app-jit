@@ -2,11 +2,11 @@
 
 class CreateDomainOccurrences < ActiveRecord::Migration[8.2]
   def change
-    create_table :domain_occurrences do |t|
-      t.string :public_id, limit: 21
-      t.string :body, limit: 253
-      t.string :status_id, limit: 255
-      t.string :memo, limit: 1024
+    create_table(:domain_occurrences) do |t|
+      t.string(:public_id, limit: 21)
+      t.string(:body, limit: 253)
+      t.string(:status_id, limit: 255)
+      t.string(:memo, limit: 1024)
 
       t.timestamps
     end

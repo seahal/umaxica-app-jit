@@ -97,6 +97,6 @@ module Preference::Regional
         "#{request.base_url}#{request.path}"
       end
 
-    redirect_to redirect_url, status: :moved_permanently, allow_other_host: false
+    redirect_to(redirect_url, status: :moved_permanently, allow_other_host: false)
   end
 end

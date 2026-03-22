@@ -147,5 +147,5 @@ Rails.application.configure do
   config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
 
   # Enable Gzip compression
-  config.middleware.use Rack::Deflater
+  config.middleware.use(Rack::Deflater)
 end

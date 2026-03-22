@@ -86,7 +86,7 @@ module Sign::App::In
         true
       end
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post sign_app_in_challenge_passkey_path(ri: "jp"), params: {
           mfa_passkey_form: {
             challenge_id: challenge_id,
@@ -115,13 +115,15 @@ module Sign::App::In
     private
 
     def establish_pending_mfa_via_secret!
-      post sign_app_in_secret_path(ri: "jp"), params: {
-        secret_login_form: {
-          identifier: @email,
-          secret_value: @raw_secret,
+      post(
+        sign_app_in_secret_path(ri: "jp"), params: {
+          secret_login_form: {
+            identifier: @email,
+            secret_value: @raw_secret,
+          },
+          "cf-turnstile-response": "test_token",
         },
-        "cf-turnstile-response": "test_token",
-      }
+      )
       # Skip redirect verification - route helper sign_app_in_mfa_path is undefined
       # assert_redirected_to sign_app_in_mfa_path(ri: "jp")
       assert_response :redirect

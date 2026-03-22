@@ -14,9 +14,16 @@ class SetPublicIdDefaultsAndSeedNullPublicIds < ActiveRecord::Migration[8.2]
   end
 
   def down
-    change_column_default :handles, :public_id, from: "", to: nil if table_exists?(:handles) && column_exists?(:handles, :public_id)
-    change_column_default :avatars, :public_id, from: "", to: nil if table_exists?(:avatars) && column_exists?(:avatars, :public_id)
-    change_column_default :posts, :public_id, from: "", to: nil if table_exists?(:posts) && column_exists?(:posts, :public_id)
+    change_column_default(:handles, :public_id, from: "", to: nil) if table_exists?(:handles) && column_exists?(
+      :handles, :public_id,
+    )
+    change_column_default(:avatars, :public_id, from: "", to: nil) if table_exists?(:avatars) && column_exists?(
+      :avatars, :public_id,
+    )
+    change_column_default(:posts, :public_id, from: "", to: nil) if table_exists?(:posts) && column_exists?(
+      :posts,
+      :public_id,
+    )
 
     delete_null_public_id_row(:users)
     delete_null_public_id_row(:staffs)
@@ -28,7 +35,7 @@ class SetPublicIdDefaultsAndSeedNullPublicIds < ActiveRecord::Migration[8.2]
     return unless table_exists?(table)
     return unless column_exists?(table, :public_id)
 
-    change_column_default table, :public_id, from: nil, to: ""
+    change_column_default(table, :public_id, from: nil, to: "")
   end
 
   def ensure_null_public_id_row(table, _status_column)

@@ -3,10 +3,7 @@ import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 vi.mock("@hotwired/stimulus", () => ({
   Controller: class {
     constructor() {
-      this.element = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      };
+      this.element = { addEventListener: vi.fn(), removeEventListener: vi.fn() };
     }
 
     connect() {}
@@ -22,15 +19,8 @@ describe("UnsavedChangesController", () => {
   let windowMock;
 
   beforeEach(() => {
-    documentMock = {
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    };
-    windowMock = {
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      confirm: vi.fn(),
-    };
+    documentMock = { addEventListener: vi.fn(), removeEventListener: vi.fn() };
+    windowMock = { addEventListener: vi.fn(), removeEventListener: vi.fn(), confirm: vi.fn() };
     vi.stubGlobal("document", documentMock);
     vi.stubGlobal("window", windowMock);
 

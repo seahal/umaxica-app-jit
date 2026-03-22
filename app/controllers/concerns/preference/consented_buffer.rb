@@ -13,7 +13,6 @@ module Preference
         surface: ::Core::Surface.current(request),
         request: request,
         same_site: :lax,
-        secure: Rails.env.production?,
         path: "/",
       )
 

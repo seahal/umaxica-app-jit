@@ -33,7 +33,7 @@ class SeedContactCategories < ActiveRecord::Migration[8.2]
         ON CONFLICT (id) DO UPDATE SET #{updates}
       SQL
 
-      execute sql
+      execute(sql)
     end
   end
 end

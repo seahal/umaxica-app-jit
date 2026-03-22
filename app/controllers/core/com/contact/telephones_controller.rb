@@ -55,7 +55,7 @@ module Core
               **core_corporate_redirect_options,
             )
 
-            redirect_to redirect_url, notice: I18n.t("help.com.contact.telephones.update.success")
+            redirect_to(redirect_url, notice: I18n.t("help.com.contact.telephones.update.success"))
           else
             # Reload to get updated attempts_left, but save it before reload clears errors
             @contact_telephone.reload

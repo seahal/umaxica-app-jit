@@ -52,7 +52,8 @@ class UserTelephone < PrincipalRecord
 
   attribute :user_identity_telephone_status_id, default: UserTelephoneStatus::UNVERIFIED
 
-  belongs_to :user_telephone_status, optional: true, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id
+  belongs_to :user_telephone_status, optional: true, inverse_of: :user_telephones,
+                                     foreign_key: :user_identity_telephone_status_id
   belongs_to :user, inverse_of: :user_telephones
 
   # Note: :number validation is now handled by Telephone concern (E.164 normalization)

@@ -16,7 +16,7 @@ module Sign
         def destroy
           Oidc::SingleLogoutService.call_for_staff(staff: current_staff) if current_staff
           log_out
-          redirect_to sign_org_root_path, notice: t("sign.shared.sign_out.success")
+          redirect_to(sign_org_root_path, notice: t("sign.shared.sign_out.success"))
         end
 
         private

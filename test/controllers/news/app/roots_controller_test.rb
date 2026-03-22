@@ -20,7 +20,6 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get news_app_root_url
 
@@ -41,7 +40,6 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get news_app_root_url

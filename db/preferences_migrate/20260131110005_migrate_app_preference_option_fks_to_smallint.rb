@@ -12,10 +12,10 @@ class MigrateAppPreferenceOptionFksToSmallint < ActiveRecord::Migration[8.2]
       }
 
       mappings.each do |table, ref_table|
-        add_column table, :option_id_small, :integer, limit: 2
+        add_column(table, :option_id_small, :integer, limit: 2)
 
         # Backfill
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           UPDATE #{table} t
           SET option_id_small = r.id
           FROM #{ref_table} r
@@ -24,13 +24,13 @@ class MigrateAppPreferenceOptionFksToSmallint < ActiveRecord::Migration[8.2]
 
         # NULL/Empty -> 0 (if we want to normalize, but existing schema had it nullable)
         # Let's keep it 0 as sentinel if it was null/empty
-        execute "UPDATE #{table} SET option_id_small = 0 WHERE option_id IS NULL OR option_id = ''"
+        execute("UPDATE #{table} SET option_id_small = 0 WHERE option_id IS NULL OR option_id = ''")
 
-        remove_column table, :option_id
-        rename_column table, :option_id_small, :option_id
+        remove_column(table, :option_id)
+        rename_column(table, :option_id_small, :option_id)
 
-        add_index table, :option_id
-        add_foreign_key table, ref_table, column: :option_id
+        add_index(table, :option_id)
+        add_foreign_key(table, ref_table, column: :option_id)
       end
     end
   end

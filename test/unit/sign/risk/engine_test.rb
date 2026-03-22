@@ -22,7 +22,7 @@ module Sign
 
           # Simplified range logic for test
           # Assuming max is "+inf" and min is a float
-          min_val = min.to_f
+          min_val = Float(min)
 
           @data[key]
             .select { |item| item[:score] >= min_val }

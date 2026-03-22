@@ -2,8 +2,8 @@
 
 class CreateOrgPreferenceCookies < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_preference_cookies do |t|
-      t.references :preference, null: false, foreign_key: { to_table: :org_preferences }, type: :bigint
+    create_table(:org_preference_cookies) do |t|
+      t.references(:preference, null: false, foreign_key: { to_table: :org_preferences }, type: :bigint)
 
       t.timestamps
     end

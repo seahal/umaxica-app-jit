@@ -8,13 +8,26 @@ class RemoveRedundantOccurrenceStatusIndexes < ActiveRecord::Migration[8.2]
 
   def up
     safety_assured do
-      remove_index :user_occurrences, name: USER_INDEX, algorithm: :concurrently if index_exists?(:user_occurrences, :status_id, name: USER_INDEX)
-      remove_index :staff_occurrences, name: STAFF_INDEX, algorithm: :concurrently if index_exists?(:staff_occurrences, :status_id, name: STAFF_INDEX)
+      remove_index(:user_occurrences, name: USER_INDEX, algorithm: :concurrently) if index_exists?(
+        :user_occurrences,
+        :status_id, name: USER_INDEX,
+      )
+      remove_index(
+        :staff_occurrences, name: STAFF_INDEX,
+                            algorithm: :concurrently,
+      ) if index_exists?(
+        :staff_occurrences,
+        :status_id, name: STAFF_INDEX,
+      )
     end
   end
 
   def down
-    add_index :user_occurrences, :status_id, name: USER_INDEX, algorithm: :concurrently unless index_exists?(:user_occurrences, :status_id, name: USER_INDEX)
-    add_index :staff_occurrences, :status_id, name: STAFF_INDEX, algorithm: :concurrently unless index_exists?(:staff_occurrences, :status_id, name: STAFF_INDEX)
+    add_index(:user_occurrences, :status_id, name: USER_INDEX, algorithm: :concurrently) unless index_exists?(
+      :user_occurrences, :status_id, name: USER_INDEX,
+    )
+    add_index(:staff_occurrences, :status_id, name: STAFF_INDEX, algorithm: :concurrently) unless index_exists?(
+      :staff_occurrences, :status_id, name: STAFF_INDEX,
+    )
   end
 end

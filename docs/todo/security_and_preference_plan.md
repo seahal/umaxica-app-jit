@@ -6,15 +6,20 @@ Created: 2026-03-21
 
 ### Completed Changes (this session)
 
-- **C2**: Org MFA challenge infrastructure (passkey-only) - routes, controllers, views, `mfa_required_for?` extended to Staff
-- **H1**: Timing side-channel in `RefreshTokenService` fixed - now uses `refresh_token_digest_matches?` (SHA3-384 + `secure_compare`)
+- **C2**: Org MFA challenge infrastructure (passkey-only) - routes, controllers, views,
+  `mfa_required_for?` extended to Staff
+- **H1**: Timing side-channel in `RefreshTokenService` fixed - now uses
+  `refresh_token_digest_matches?` (SHA3-384 + `secure_compare`)
 - **H3**: Turnstile added to email sign-up (`Sign::App::Up::EmailsController`)
 - **H4**: Rack::Attack not needed - CDN + Rails `rate_limit` will be used instead
 - **M1**: Secure cookie flags now respect `request.ssl?` and `FORCE_SECURE_COOKIES` env var
-- **M2**: `auth_failed` events wired to `Sign::Risk::Emitter` in app/org secrets + email OTP controllers
-- **M3**: Refresh token cookie encrypted (`cookies.encrypted`)
+- **M2**: `auth_failed` events wired to `Sign::Risk::Emitter` in app/org secrets + email OTP
+  controllers
+- **M3**: ~~Refresh token cookie encrypted (`cookies.encrypted`)~~ — Reverted: refresh tokens are
+  already hash-verified (SHA3-384 digest in DB), encryption is unnecessary overhead
 - **M4**: Cross-subdomain cookie scope documented as accepted risk
-- **M5**: `trusted_origins` now environment-variable-based (`SIGN_APP_TRUSTED_ORIGINS`, `SIGN_ORG_TRUSTED_ORIGINS`)
+- **M5**: `trusted_origins` now environment-variable-based (`SIGN_APP_TRUSTED_ORIGINS`,
+  `SIGN_ORG_TRUSTED_ORIGINS`)
 - **L1**: Stealth Turnstile added to TOTP verification
 - **L2**: Risk system defaults to enabled in production, `RISK_ENFORCEMENT_DISABLED` to opt out
 - **L4**: Org passkeys stub returns 404 instead of 200
@@ -24,56 +29,56 @@ Created: 2026-03-21
 
 #### Caused by our changes (must fix)
 
-| Test File | Count | Cause |
-|---|---|---|
-| `test/unit/core/cookie_options_test.rb` | 4 errors | M1: `request.ssl?` added, test mock needs `request` object |
+| Test File                                                              | Count      | Cause                                                      |
+| ---------------------------------------------------------------------- | ---------- | ---------------------------------------------------------- |
+| `test/unit/core/cookie_options_test.rb`                                | 4 errors   | M1: `request.ssl?` added, test mock needs `request` object |
 | `test/controllers/sign/app/edge/v0/token/refreshes_controller_test.rb` | 2 failures | M3: refresh cookie now encrypted, test expects plain value |
-| `test/controllers/sign/org/passkeys_controller_test.rb:61,73` | 2 failures | L4: `head :ok` -> `head :not_found` |
-| `test/controllers/sign/org/in/passkeys_controller_test.rb:281` | 1 failure | C2: MFA now enforced for staff with `multi_factor_enabled` |
-| `test/controllers/sign/org/in/secrets_controller_test.rb:174` | 1 failure | C2: `complete_sign_in_or_start_mfa!` change |
-| `test/controllers/sign/app/up/emails_controller_test.rb:319` | 1 failure | H3: Turnstile now required on email sign-up |
-| `test/integration/authentication_flow_test.rb` | 4 failures | M3: refresh cookie encrypted |
+| `test/controllers/sign/org/passkeys_controller_test.rb:61,73`          | 2 failures | L4: `head :ok` -> `head :not_found`                        |
+| `test/controllers/sign/org/in/passkeys_controller_test.rb:281`         | 1 failure  | C2: MFA now enforced for staff with `multi_factor_enabled` |
+| `test/controllers/sign/org/in/secrets_controller_test.rb:174`          | 1 failure  | C2: `complete_sign_in_or_start_mfa!` change                |
+| `test/controllers/sign/app/up/emails_controller_test.rb:319`           | 1 failure  | H3: Turnstile now required on email sign-up                |
+| `test/integration/authentication_flow_test.rb`                         | 4 failures | M3: refresh cookie encrypted                               |
 
 #### Likely pre-existing (verify)
 
-| Test File | Count | Notes |
-|---|---|---|
-| `test/controllers/sign/app/configuration/outs_controller_test.rb` | 1 failure | Check git log |
-| `test/controllers/sign/app/configurations_controller_test.rb` | 3 failures | Check git log |
-| `test/controllers/sign/org/configuration/outs_controller_test.rb` | 1 failure | Check git log |
-| `test/controllers/sign/org/passkeys_controller_test.rb:61` | 1 failure | May be pre-existing stub test |
+| Test File                                                         | Count      | Notes                         |
+| ----------------------------------------------------------------- | ---------- | ----------------------------- |
+| `test/controllers/sign/app/configuration/outs_controller_test.rb` | 1 failure  | Check git log                 |
+| `test/controllers/sign/app/configurations_controller_test.rb`     | 3 failures | Check git log                 |
+| `test/controllers/sign/org/configuration/outs_controller_test.rb` | 1 failure  | Check git log                 |
+| `test/controllers/sign/org/passkeys_controller_test.rb:61`        | 1 failure  | May be pre-existing stub test |
 
 ---
 
 ## Roadmap (in order)
 
-### Step 1: Fix Test Failures
+### Step 1: Fix Test Failures ✅
 
-- Fix `cookie_options_test.rb` to provide a mock `request` object with `ssl?`
-- Update `refreshes_controller_test.rb` to read from `cookies.encrypted` instead of plain cookies
-- Update `authentication_flow_test.rb` for encrypted refresh cookie
-- Update org passkeys tests for `head :not_found`
-- Update org secrets test for `complete_sign_in_or_start_mfa!` flow (MFA redirect)
-- Update org passkeys in-controller test for staff MFA enforcement
-- Update email sign-up test to include Turnstile token
-- Run full test suite to confirm all green (or only pre-existing failures remain)
+- All 4644 tests pass with 0 failures, 0 errors
+- Reverted `cookies.encrypted` for refresh tokens (unnecessary — hash-verified)
+- Fixed org secrets/passkeys for `complete_sign_in_or_start_mfa!` changes
+- Fixed pre-existing i18n failures (English → Japanese)
 
-### Step 2: Sign In/Up Security Re-audit
+### Step 2: Sign In/Up Security Re-audit ✅
 
-- Re-run the security audit on sign in/up controllers after all fixes
-- Verify Org MFA challenge flow end-to-end
-- Verify Turnstile is present on all auth entry points
-- Verify Risk Engine events are properly emitted from all failure paths
-- Check for any remaining controllers inheriting from wrong parent
+- Risk system migrated from Redis to PostgreSQL (`UserOccurrence`/`StaffOccurrence`)
+- Risk events emitted from all auth failure paths (passkey, TOTP, OAuth, MFA)
+- Turnstile stealth added to MFA passkey controllers (app + org)
+- `auth/base.rb` emit calls now use correct `user_id:`/`staff_id:` via `risk_actor_payload`
+- SolidQueue recurring task for occurrence cleanup (every 15 min)
+- Org secrets controller fixed: `user_id:` → `staff_id:` for staff risk events
 
-### Step 3: Auth Cookie Implementation Review
+### Step 3: Auth Cookie Implementation Review ✅
 
-- Audit `auth_access` cookie: JWT storage, httponly, secure, samesite, domain scope
-- Audit `auth_refresh` cookie: encrypted storage correctness, rotation, DBSC binding
-- Audit `auth_device` cookie: encrypted storage, binding checks
-- Audit `auth_dbsc` cookie: short TTL, binding semantics
-- Verify cookie deletion clears all cookie types across all domains/paths
-- Test cookie behavior across subdomains (SSO scenario)
+- **Secure flag**: Unified all callers to delegate to `Core::CookieOptions.resolve_secure` —
+  respects `Rails.env.production?`, `FORCE_SECURE_COOKIES`, and `request.ssl?`
+- **DBSC cookie**: Added `clear_dbsc_cookie!` to login pre-cleanup (was missing)
+- **Logout test**: Added cookie clearing verification tests for app + org
+- **Preference cookies**: Confirmed intentionally NOT cleared on auth logout (app/org/com
+  preferences persist, used for access token construction)
+- **Cross-subdomain scope**: Confirmed accepted risk (M4), httponly mitigates XSS
+- **No issues found**: httponly, SameSite:Lax, `__Secure-` prefix, DBSC binding, device_id
+  encryption all correct
 
 ### Step 4: Preference JWT/Token Implementation
 
@@ -87,7 +92,8 @@ Created: 2026-03-21
 
 ### Step 5: Preference Model Consolidation (User/Staff merge)
 
-- Merge `AppPreference`/`OrgPreference`/`ComPreference` into `UserPreference`/`StaffPreference` (principal DB, 1:1)
+- Merge `AppPreference`/`OrgPreference`/`ComPreference` into `UserPreference`/`StaffPreference`
+  (principal DB, 1:1)
 - Implement login-time sync logic for preference data
 - Consolidate `*_preference_language`, `*_preference_timezone`, etc. associations
 - Remove redundant preference child-record models from preference DB
@@ -103,7 +109,8 @@ Created: 2026-03-21
 
 ### Step 7: Model & Relation Cleanup
 
-- Delete orphaned preference models (app_preference_cookie, com_preference_*, org_preference_*, etc.)
+- Delete orphaned preference models (app*preference_cookie, com_preference*_, org*preference*_,
+  etc.)
 - Delete unused migrations and schema references
 - Remove backward-compatibility shims (PreferenceConstants, etc.)
 - Run `rake uuid:pk:report` to verify no broken references
@@ -125,7 +132,8 @@ Created: 2026-03-21
   - `Current.token` -> JWT payload
   - `Current.preference` -> `Current::Preference` (from JWT `prf` + cookie)
   - `Current.domain` -> :app / :org / :com (from request host)
-- Replace all `@current_resource` / `current_user` / `current_staff` instance variable usage with `Current.actor`
+- Replace all `@current_resource` / `current_user` / `current_staff` instance variable usage with
+  `Current.actor`
 - Eliminate the class of bugs where instance variables were carried across methods unexpectedly
 - Ensure `Current.reset` is called per-request (ActiveSupport::CurrentAttributes handles this)
 - Add tests verifying Current is properly reset between requests

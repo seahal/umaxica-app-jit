@@ -52,7 +52,7 @@ class FixAuditPksAndFks < ActiveRecord::Migration[8.2]
 
     return unless audit_table
 
-    execute "TRUNCATE TABLE #{audit_table} CASCADE" if table_exists?(audit_table)
+    execute("TRUNCATE TABLE #{audit_table} CASCADE") if table_exists?(audit_table)
 
     recreate_pk_table(events_table)
     recreate_pk_table(levels_table)
@@ -60,13 +60,13 @@ class FixAuditPksAndFks < ActiveRecord::Migration[8.2]
     [:event_id, :level_id].each do |col|
       if column_exists?(audit_table, col)
         # Use execute for altering type
-        execute "ALTER TABLE #{audit_table} ALTER COLUMN #{col} TYPE bigint USING #{col}::bigint"
-        execute "ALTER TABLE #{audit_table} ALTER COLUMN #{col} SET DEFAULT 0"
-        execute "ALTER TABLE #{audit_table} ALTER COLUMN #{col} SET NOT NULL"
+        execute("ALTER TABLE #{audit_table} ALTER COLUMN #{col} TYPE bigint USING #{col}::bigint")
+        execute("ALTER TABLE #{audit_table} ALTER COLUMN #{col} SET DEFAULT 0")
+        execute("ALTER TABLE #{audit_table} ALTER COLUMN #{col} SET NOT NULL")
 
         to_table = (col == :event_id) ? events_table : levels_table
         unless foreign_key_exists?(audit_table, to_table)
-          add_foreign_key audit_table, to_table, column: col, validate: false
+          add_foreign_key(audit_table, to_table, column: col, validate: false)
         end
       end
     end
@@ -75,10 +75,10 @@ class FixAuditPksAndFks < ActiveRecord::Migration[8.2]
   def recreate_pk_table(table_name)
     return unless table_exists?(table_name)
 
-    drop_table table_name, force: :cascade
-    create_table table_name do |t|
-      t.citext :code, null: false
-      t.index :code, unique: true
+    drop_table(table_name, force: :cascade)
+    create_table(table_name) do |t|
+      t.citext(:code, null: false)
+      t.index(:code, unique: true)
     end
   end
 end

@@ -16,7 +16,7 @@ module Sign
 
         def update
           refresh_checkpoint_dimension!
-          redirect_to sign_org_in_checkpoint_path(rd: params[:rd], ri: params[:ri])
+          redirect_to(sign_org_in_checkpoint_path(rd: params[:rd], ri: params[:ri]))
         end
 
         def destroy

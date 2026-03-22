@@ -76,10 +76,12 @@ module Verification
 
       flash[:alert] = I18n.t("auth.step_up.required")
       if request.get? || request.head?
-        redirect_to actor_verification_path(
-          scope: scope,
-          rd: encoded_relative_return_to(request.fullpath),
-          ri: params[:ri],
+        redirect_to(
+          actor_verification_path(
+            scope: scope,
+            rd: encoded_relative_return_to(request.fullpath),
+            ri: params[:ri],
+          ),
         )
         return false
       end

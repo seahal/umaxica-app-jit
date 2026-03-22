@@ -16,7 +16,7 @@ module RateLimit
   # Lazy-initialised per-process store.
   # In test mode each forked parallel worker gets its own MemoryStore
   # so that concurrent workers do not interfere with each other's counters.
-  STORE_REGISTRY = {} # rubocop:disable ThreadSafety/MutableClassInstanceVariable
+  STORE_REGISTRY = {}
   private_constant :STORE_REGISTRY
 
   def self.store
@@ -62,7 +62,7 @@ module RateLimit
   private
 
   def handle_rate_limit_exceeded!(rule_name, retry_after = DEFAULT_RETRY_AFTER)
-    retry_after_seconds = retry_after.to_i.positive? ? retry_after.to_i : DEFAULT_RETRY_AFTER
+    retry_after_seconds = Integer(retry_after.to_s, 10).positive? ? Integer(retry_after.to_s, 10) : DEFAULT_RETRY_AFTER
     message = I18n.t("errors.rate_limit.exceeded")
 
     response.headers["X-RateLimit-Layer"] = "rails"

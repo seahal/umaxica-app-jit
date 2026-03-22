@@ -20,9 +20,9 @@ module Auth
       assert_equal 42, payload["sub"]
       assert_equal "user", payload["act"]
       assert_equal "sess_abc", payload["sid"]
-      assert_equal issued_at.to_i, payload["iat"]
-      assert_equal issued_at.to_i, payload["nbf"]
-      assert_equal (issued_at + 10.minutes).to_i, payload["exp"]
+      assert_equal Integer(issued_at.to_s, 10), payload["iat"]
+      assert_equal Integer(issued_at.to_s, 10), payload["nbf"]
+      assert_equal Integer((issued_at + 10.minutes).to_s, 10), payload["exp"]
       assert_equal "auth-access-token;user", payload["typ"]
       assert_equal Auth::Base::JwtConfiguration.issuer("user"), payload["iss"]
       assert_equal Auth::Base::JwtConfiguration.audiences("user"), payload["aud"]
@@ -41,7 +41,7 @@ module Auth
         expires_at: expires_at,
       )
 
-      assert_equal expires_at.to_i, payload["exp"]
+      assert_equal Integer(expires_at.to_s, 10), payload["exp"]
     end
 
     test "extractors return nil when payload is nil" do

@@ -17,7 +17,7 @@ class RemoveLowerCodeIndexesOperator < ActiveRecord::Migration[8.2]
       SQL
 
       indexes.each do |row|
-        execute "DROP INDEX IF EXISTS #{row["indexname"]}"
+        execute("DROP INDEX IF EXISTS #{row["indexname"]}")
       end
     end
   end

@@ -7,9 +7,9 @@ class SignRouteHostTest < ActionDispatch::IntegrationTest
   test "sign app routes match SIGN_SERVICE_URL" do
     with_env("SIGN_SERVICE_URL" => "sign.app.example.test") do
       Rails.application.reload_routes!
-      host! "sign.app.example.test"
+      host!("sign.app.example.test")
 
-      get "/"
+      get("/")
 
       assert_not_equal 404, response.status
     end
@@ -20,9 +20,9 @@ class SignRouteHostTest < ActionDispatch::IntegrationTest
   test "sign org routes match SIGN_STAFF_URL" do
     with_env("SIGN_STAFF_URL" => "sign.org.example.test") do
       Rails.application.reload_routes!
-      host! "sign.org.example.test"
+      host!("sign.org.example.test")
 
-      get "/"
+      get("/")
 
       assert_not_equal 404, response.status
     end

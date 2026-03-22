@@ -12,7 +12,7 @@ module Jit
       VERIFY_URI = URI("https://challenges.cloudflare.com/turnstile/v0/siteverify").freeze
 
       # Configuration for testing
-      # rubocop:disable ThreadSafety/ClassAndModuleAttributes, ThreadSafety/ClassInstanceVariable
+
       class << self
         attr_accessor :test_mode, :test_response
 
@@ -20,7 +20,6 @@ module Jit
           @test_mode == true
         end
       end
-      # rubocop:enable ThreadSafety/ClassAndModuleAttributes, ThreadSafety/ClassInstanceVariable
 
       def self.verify(token:, remote_ip:, secret_key: nil, mode: nil)
         new(token: token, remote_ip: remote_ip, secret_key: secret_key, mode: mode).verify

@@ -18,9 +18,9 @@ class EnforceContactStatusNotNull < ActiveRecord::Migration[8.2]
 
   def down
     safety_assured do
-      change_column_null :org_contacts, :status_id, true
-      change_column_null :com_contacts, :status_id, true
-      change_column_null :app_contacts, :status_id, true
+      change_column_null(:org_contacts, :status_id, true)
+      change_column_null(:com_contacts, :status_id, true)
+      change_column_null(:app_contacts, :status_id, true)
     end
   end
 
@@ -31,7 +31,7 @@ class EnforceContactStatusNotNull < ActiveRecord::Migration[8.2]
 
     # Ensure a default row exists in the status table
     # Using code 'NEYO' (common in this app) or 'default'
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       INSERT INTO #{status_table} (code)
       VALUES ('NEYO')
       ON CONFLICT (code) DO NOTHING
@@ -44,18 +44,18 @@ class EnforceContactStatusNotNull < ActiveRecord::Migration[8.2]
     return unless default_id
 
     # Update NULLs to default_id
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       UPDATE #{table_name} SET #{column_name} = #{default_id} WHERE #{column_name} IS NULL
     SQL
 
     # Set NOT NULL
-    change_column_null table_name, column_name, false
+    change_column_null(table_name, column_name, false)
 
     # Ensure index exists
     index_name = "index_#{table_name}_on_#{column_name}"
     return if index_exists?(table_name, column_name, name: index_name)
 
-    add_index table_name, column_name, name: index_name, algorithm: :concurrently
+    add_index(table_name, column_name, name: index_name, algorithm: :concurrently)
 
   end
 end

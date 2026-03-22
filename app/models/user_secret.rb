@@ -96,7 +96,7 @@ class UserSecret < PrincipalRecord
     return false if expired_for_secret_sign_in?(now)
     return true if permanent_secret?
 
-    uses_remaining.to_i.positive?
+    Integer(uses_remaining.to_s, 10).positive?
   end
 
   def verify_for_secret_sign_in!(raw_secret, now: Time.current)
@@ -111,7 +111,7 @@ class UserSecret < PrincipalRecord
 
       self.last_used_at = now
       if one_time_secret?
-        return false unless uses_remaining.to_i.positive?
+        return false unless Integer(uses_remaining.to_s, 10).positive?
 
         self.uses_remaining -= 1
         self[self.class.identity_secret_status_id_column] = self.class.status_id_for(:used) if uses_remaining.zero?

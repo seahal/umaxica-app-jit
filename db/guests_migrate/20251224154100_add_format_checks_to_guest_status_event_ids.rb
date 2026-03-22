@@ -6,13 +6,13 @@ class AddFormatChecksToGuestStatusEventIds < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :app_contact_statuses, :id
-    add_format_check :com_contact_statuses, :id
-    add_format_check :org_contact_statuses, :id
+    add_format_check(:app_contact_statuses, :id)
+    add_format_check(:com_contact_statuses, :id)
+    add_format_check(:org_contact_statuses, :id)
 
-    add_format_check :app_contact_audit_events, :id
-    add_format_check :com_contact_audit_events, :id
-    add_format_check :org_contact_audit_events, :id
+    add_format_check(:app_contact_audit_events, :id)
+    add_format_check(:com_contact_audit_events, :id)
+    add_format_check(:org_contact_audit_events, :id)
   end
 
   private

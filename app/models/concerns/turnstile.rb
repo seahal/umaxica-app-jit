@@ -8,9 +8,8 @@ module Turnstile
   extend ActiveSupport::Concern
 
   # Test helper for mocking Turnstile responses in tests
-  # rubocop:disable ThreadSafety/ClassAndModuleAttributes
+
   mattr_accessor :test_response
-  # rubocop:enable ThreadSafety/ClassAndModuleAttributes
 
   included do
     attr_accessor :turnstile_response, :turnstile_remote_ip

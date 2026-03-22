@@ -36,10 +36,7 @@ describe("CookieBannerController", () => {
     test("同意済みの場合、要素を削除する (API)", async () => {
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: () => Promise.resolve({ consented: true }),
-        }),
+        vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ consented: true }) }),
       );
 
       await controller.checkConsentState();
@@ -57,10 +54,7 @@ describe("CookieBannerController", () => {
     test("未同意の場合、要素を削除しない", async () => {
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: () => Promise.resolve({ consented: false }),
-        }),
+        vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ consented: false }) }),
       );
 
       await controller.checkConsentState();
@@ -97,10 +91,7 @@ describe("CookieBannerController", () => {
     test("openSettings: open-settings イベントをディスパッチする", async () => {
       vi.stubGlobal(
         "fetch",
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: () => Promise.resolve({ consented: true }),
-        }),
+        vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ consented: true }) }),
       );
 
       controller.openSettings(event);

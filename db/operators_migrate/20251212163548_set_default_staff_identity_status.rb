@@ -10,6 +10,6 @@ class SetDefaultStaffIdentityStatus < ActiveRecord::Migration[8.2]
     end
 
     # Add default value to column
-    change_column_default :staffs, :staff_identity_status_id, from: nil, to: "NONE"
+    change_column_default(:staffs, :staff_identity_status_id, from: nil, to: "NONE")
   end
 end

@@ -9,6 +9,9 @@ class Current < ActiveSupport::CurrentAttributes
   attribute :actor_type
   attribute :session
   attribute :token
+  attribute :preference
+
+  resets { self.preference = Current::Preference::NULL }
 
   # TODO: return :org, :app or :com
   def domain
@@ -34,5 +37,11 @@ class Current < ActiveSupport::CurrentAttributes
     raise
   end
 
-  # TODO: i want to use Current.preference.cookie.functional -> true,false,nil -> Current.preference.timezone -> utc,jst,nil  Current.preference.language -> ja,en,nil
+  # Preference is always available -- returns Current::Preference::NULL for guests/bearer tokens.
+  # Assign a real Current::Preference after resolving from JWT or DB.
+  #
+  # Usage:
+  #   Current.preference.language    # => "ja"
+  #   Current.preference.cookie.consented?  # => false
+  #   Current.preference.null?       # => true (for guests)
 end

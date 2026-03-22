@@ -126,7 +126,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   # Case D-3: Untrusted origin
   test "options rejects untrusted origin" do
     # Temporarily remove trusted origins
-    Webauthn.stub :trusted_origins, [] do
+    Webauthn.stub(:trusted_origins, []) do
       post options_sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
 
       assert_response :forbidden
@@ -163,7 +163,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       true
     end
 
-    WebAuthn::Credential.stub :from_create, mock_credential do
+    WebAuthn::Credential.stub(:from_create, mock_credential) do
       params = {
         challenge_id: challenge_id,
         credential: {
@@ -196,7 +196,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       true
     end
 
-    WebAuthn::Credential.stub :from_create, mock_credential do
+    WebAuthn::Credential.stub(:from_create, mock_credential) do
       params = {
         challenge_id: challenge_id,
         credential: {
@@ -228,7 +228,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       raise WebAuthn::Error, "Verification failed"
     end
 
-    WebAuthn::Credential.stub :from_create, mock_credential do
+    WebAuthn::Credential.stub(:from_create, mock_credential) do
       params = {
         challenge_id: challenge_id,
         credential: { id: "id", response: {} },
@@ -388,7 +388,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       user_secret_kind_id: UserSecret::Kinds::LOGIN,
       user_identity_secret_status_id: UserSecretStatus::ACTIVE,
     )
-    user.user_emails.update_all(user_email_status_id: UserEmailStatus::UNVERIFIED) # rubocop:disable Rails/SkipsModelValidations
+    user.user_emails.update_all(user_email_status_id: UserEmailStatus::UNVERIFIED)
 
     assert_no_difference("UserPasskey.count") do
       delete sign_app_configuration_passkey_path(passkey.public_id, ri: "jp"), headers: headers

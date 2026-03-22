@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_23_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -21,7 +21,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
 
   create_table "app_contact_emails", force: :cascade do |t|
     t.boolean "activated", default: false, null: false
-    t.bigint "app_contact_id", null: false
+    t.bigint "app_contact_id", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "email_address", limit: 1000, default: "", null: false
     t.string "token_digest", limit: 255
@@ -52,7 +52,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
 
   create_table "app_contact_telephones", force: :cascade do |t|
     t.boolean "activated", default: false, null: false
-    t.bigint "app_contact_id", null: false
+    t.bigint "app_contact_id", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -85,7 +85,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   end
 
   create_table "app_contacts", force: :cascade do |t|
-    t.bigint "category_id", null: false
+    t.bigint "category_id", default: 0, null: false
     t.datetime "created_at", null: false
     t.inet "ip_address"
     t.string "public_id", limit: 21, null: false
@@ -120,7 +120,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
 
   create_table "com_contact_emails", force: :cascade do |t|
     t.boolean "activated", default: false, null: false
-    t.bigint "com_contact_id", null: false
+    t.bigint "com_contact_id", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
@@ -144,7 +144,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
 
   create_table "com_contact_telephones", force: :cascade do |t|
     t.boolean "activated", default: false, null: false
-    t.bigint "com_contact_id", null: false
+    t.bigint "com_contact_id", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.boolean "deletable", default: false, null: false
     t.datetime "expires_at", precision: nil, default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
@@ -182,7 +182,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   end
 
   create_table "com_contacts", force: :cascade do |t|
-    t.bigint "category_id", null: false
+    t.bigint "category_id", default: 0, null: false
     t.datetime "created_at", null: false
     t.inet "ip_address"
     t.string "public_id", limit: 21, null: false
@@ -207,7 +207,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.bigint "org_contact_id", null: false
+    t.bigint "org_contact_id", default: 0, null: false
     t.string "token_digest", limit: 255
     t.datetime "token_expires_at", precision: nil
     t.boolean "token_viewed", default: false, null: false
@@ -237,7 +237,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "org_contact_telephones", force: :cascade do |t|
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.bigint "org_contact_id", null: false
+    t.bigint "org_contact_id", default: 0, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
@@ -269,7 +269,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   end
 
   create_table "org_contacts", force: :cascade do |t|
-    t.bigint "category_id", null: false
+    t.bigint "category_id", default: 0, null: false
     t.datetime "created_at", null: false
     t.inet "ip_address"
     t.string "public_id", limit: 21, null: false

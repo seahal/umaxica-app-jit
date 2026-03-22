@@ -167,7 +167,7 @@ module Sign
       challenges[challenge_id] = {
         "challenge" => challenge,
         "purpose" => purpose.to_s,
-        "expires_at" => (Time.current + CHALLENGE_TTL).to_i,
+        "expires_at" => Integer((Time.current + CHALLENGE_TTL).to_s, 10),
       }
 
       session[CHALLENGE_SESSION_KEY] = challenges
@@ -189,7 +189,7 @@ module Sign
 
       raise ChallengeNotFoundError, "Challenge not found" unless data
 
-      if Time.current.to_i > data["expires_at"].to_i
+      if Time.current.to_i > Integer(data["expires_at"].to_s, 10)
         raise ChallengeExpiredError, "Challenge has expired"
       end
 
@@ -204,7 +204,7 @@ module Sign
     # Removes expired challenges from the hash.
     def cleanup_expired_challenges!(challenges)
       now = Time.current.to_i
-      challenges.delete_if { |_, data| data["expires_at"].to_i < now }
+      challenges.delete_if { |_, data| Integer(data["expires_at"].to_s, 10) < now }
     end
 
     # Removes oldest challenges if limit exceeded.
@@ -212,7 +212,7 @@ module Sign
       return if challenges.size < MAX_CHALLENGES_PER_SESSION
 
       # Sort by expires_at and remove oldest
-      sorted = challenges.sort_by { |_, data| data["expires_at"].to_i }
+      sorted = challenges.sort_by { |_, data| Integer(data["expires_at"].to_s, 10) }
       oldest_id, = sorted.first
       challenges.delete(oldest_id)
     end

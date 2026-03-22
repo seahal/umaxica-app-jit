@@ -43,7 +43,7 @@ class EnsureNeyoOrgDocumentStatus < ActiveRecord::Migration[8.2]
     end
 
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO #{table} (#{cols.join(", ")})
         VALUES (#{vals.map { |v| connection.quote(v) }.join(", ")})
         ON CONFLICT (id) DO NOTHING

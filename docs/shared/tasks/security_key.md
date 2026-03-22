@@ -130,9 +130,7 @@ app/javascript/webauthn/
 export class WebAuthnRegistration {
   static async register(options) {
     try {
-      const credential = await navigator.credentials.create({
-        publicKey: options,
-      });
+      const credential = await navigator.credentials.create({ publicKey: options });
 
       return {
         id: credential.id,
@@ -157,9 +155,7 @@ export class WebAuthnRegistration {
 export class WebAuthnAuthentication {
   static async authenticate(options) {
     try {
-      const assertion = await navigator.credentials.get({
-        publicKey: options,
-      });
+      const assertion = await navigator.credentials.get({ publicKey: options });
 
       return {
         id: assertion.id,

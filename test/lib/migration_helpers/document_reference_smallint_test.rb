@@ -143,7 +143,7 @@ class MigrationHelpersDocumentReferenceSmallintTest < ActiveSupport::TestCase
     assert_includes migration.calls, [:remove_foreign_key, "children", { column: "legacy_id" }]
   end
 
-  test "convert_string_id_pk_table orchestrates schema changes" do # rubocop:disable Minitest/MultipleAssertions
+  test "convert_string_id_pk_table orchestrates schema changes" do
     migration = FakeMigration.new(existing_columns: [:id], existing_indexes: ["index_documents_on_lower_name"])
 
     migration.convert_string_id_pk_table(

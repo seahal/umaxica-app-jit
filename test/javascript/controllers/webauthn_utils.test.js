@@ -39,29 +39,20 @@ describe("webauthn_utils", () => {
 
   describe("normalizePublicKeyOptions", () => {
     test("challenge と user.id を Base64URL から ArrayBuffer に変換する", () => {
-      const options = {
-        challenge: "Y2hhbGxlbmdl",
-        user: { id: "dXNlcmlk" },
-      };
+      const options = { challenge: "Y2hhbGxlbmdl", user: { id: "dXNlcmlk" } };
       const normalized = normalizePublicKeyOptions(options);
       expect(normalized.challenge).toBeInstanceOf(ArrayBuffer);
       expect(normalized.user.id).toBeInstanceOf(ArrayBuffer);
     });
 
     test("publicKey プロパティがある場合、その中身を正規化する", () => {
-      const options = {
-        publicKey: {
-          challenge: "Y2hhbGxlbmdl",
-        },
-      };
+      const options = { publicKey: { challenge: "Y2hhbGxlbmdl" } };
       const normalized = normalizePublicKeyOptions(options);
       expect(normalized.challenge).toBeInstanceOf(ArrayBuffer);
     });
 
     test("excludeCredentials の id を正規化する", () => {
-      const options = {
-        excludeCredentials: [{ id: "Y3JlZGlk" }],
-      };
+      const options = { excludeCredentials: [{ id: "Y3JlZGlk" }] };
       const normalized = normalizePublicKeyOptions(options);
       expect(normalized.excludeCredentials[0].id).toBeInstanceOf(ArrayBuffer);
     });

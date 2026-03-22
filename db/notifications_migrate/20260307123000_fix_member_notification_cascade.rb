@@ -25,10 +25,10 @@ class FixMemberNotificationCascade < ActiveRecord::Migration[8.2]
     SQL
 
     fk_rows.each do |row|
-      execute "ALTER TABLE #{from_table} DROP CONSTRAINT #{row["conname"]}"
+      execute("ALTER TABLE #{from_table} DROP CONSTRAINT #{row["conname"]}")
     end
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       ALTER TABLE #{from_table}
       ADD CONSTRAINT fk_#{from_table}_on_#{column}_cascade
       FOREIGN KEY (#{column}) REFERENCES #{to_table} (id)

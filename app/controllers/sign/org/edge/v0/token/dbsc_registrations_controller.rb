@@ -1,7 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
-class Sign::Org::Edge::V0::Token::DbscRegistrationsController < Sign::Org::Edge::V0::BaseController
+class Sign::Org::Edge::V0::Token::DbscRegistrationsController < Sign::Org::ApplicationController
+  include Sign::EdgeV0JsonApi
+
+  public_strict!
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token
 

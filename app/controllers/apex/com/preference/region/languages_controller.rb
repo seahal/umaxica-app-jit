@@ -25,7 +25,7 @@ module Apex
               redirect_params[:lx] =
                 option_id_to_language(@preference_language.option_id, preference_prefix)
             end
-            redirect_to edit_apex_com_preference_region_language_url(redirect_params)
+            redirect_to(edit_apex_com_preference_region_language_url(redirect_params))
           end
         end
       end

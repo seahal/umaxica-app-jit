@@ -216,7 +216,6 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "google login with session limit exceeded redirects to session management" do
     # Create an existing user with Google social identity
     user = User.create!
@@ -260,7 +259,6 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
     assert_equal 1, restricted.count
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   private
 

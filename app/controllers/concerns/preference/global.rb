@@ -31,9 +31,11 @@ module Preference::Global
     desired = required_ri
     return if desired.blank? || desired == normalized_current
 
-    redirect_to build_ri_redirect_url(desired),
-                allow_other_host: false,
-                status: redirect_status_for_ri?
+    redirect_to(
+      build_ri_redirect_url(desired),
+      allow_other_host: false,
+      status: redirect_status_for_ri?,
+    )
   end
 
   def default_context
@@ -195,7 +197,7 @@ module Preference::Global
       only_path: false,
     )
 
-    redirect_to redirect_url
+    redirect_to(redirect_url)
   end
 
   def set_locale

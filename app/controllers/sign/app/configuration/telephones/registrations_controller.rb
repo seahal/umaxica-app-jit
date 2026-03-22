@@ -23,8 +23,10 @@ module Sign
             return if valid_registration_session?
 
             reset_registration_session!
-            redirect_to new_sign_app_configuration_telephones_registration_path,
-                        notice: t("sign.app.registration.telephone.edit.session_expired")
+            redirect_to(
+              new_sign_app_configuration_telephones_registration_path,
+              notice: t("sign.app.registration.telephone.edit.session_expired"),
+            )
           end
 
           def create
@@ -40,8 +42,10 @@ module Sign
             end
 
             session[registration_session_key] = @user_telephone.id
-            redirect_to edit_sign_app_configuration_telephones_registration_path,
-                        notice: t("sign.app.registration.telephone.create.verification_code_sent")
+            redirect_to(
+              edit_sign_app_configuration_telephones_registration_path,
+              notice: t("sign.app.registration.telephone.create.verification_code_sent"),
+            )
           end
 
           def update
@@ -49,8 +53,10 @@ module Sign
 
             unless valid_registration_session?
               reset_registration_session!
-              redirect_to new_sign_app_configuration_telephones_registration_path,
-                          notice: t("sign.app.registration.telephone.edit.session_expired")
+              redirect_to(
+                new_sign_app_configuration_telephones_registration_path,
+                notice: t("sign.app.registration.telephone.edit.session_expired"),
+              )
               return
             end
 
@@ -73,16 +79,20 @@ module Sign
             case status
             when :success
               reset_registration_session!
-              redirect_to sign_app_configuration_telephones_path,
-                          notice: t("sign.app.registration.telephone.update.success")
+              redirect_to(
+                sign_app_configuration_telephones_path,
+                notice: t("sign.app.registration.telephone.update.success"),
+              )
             when :session_expired
               reset_registration_session!
-              redirect_to new_sign_app_configuration_telephones_registration_path,
-                          notice: t("sign.app.registration.telephone.edit.session_expired")
+              redirect_to(
+                new_sign_app_configuration_telephones_registration_path,
+                notice: t("sign.app.registration.telephone.edit.session_expired"),
+              )
             when :locked
               reset_registration_session!
               flash[:alert] = t("sign.app.registration.telephone.update.attempts_exceeded")
-              redirect_to new_sign_app_configuration_telephones_registration_path
+              redirect_to(new_sign_app_configuration_telephones_registration_path)
             else
               render :edit, status: :unprocessable_content
             end

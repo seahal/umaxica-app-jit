@@ -103,21 +103,24 @@ module Sign
             staff, rt: params[:rd], ri: params[:ri], auth_method: "secret",
           )
 
-          case result[:status]
-          when :session_limit_hard_reject
+          if result[:status] == :mfa_required
+            redirect_to(result[:redirect_path])
+          elsif result[:status] == :session_limit_hard_reject
             render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
-          when :restricted
-            redirect_to sign_org_in_session_path,
-                        notice: I18n.t(
-                          "sign.org.in.session.restricted_notice",
-                          default: "セッション数が上限に達しています。既存セッションを管理してください。",
-                        )
-          when :mfa_required
-            redirect_to result[:redirect_path]
-          when :success
+          elsif result[:restricted]
+            redirect_to(
+              sign_org_in_session_path(ri: params[:ri]),
+              notice: I18n.t(
+                "sign.org.in.session.restricted_notice",
+                default: "セッション数が上限に達しています。既存セッションを管理してください。",
+              ),
+            )
+          elsif result[:status] == :success
             issue_checkpoint!
-            redirect_to sign_org_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-                        notice: t("sign.org.authentication.secret.create.success")
+            redirect_to(
+              sign_org_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
+              notice: t("sign.org.authentication.secret.create.success"),
+            )
           else
             render_failed_login(result[:status])
           end
@@ -137,7 +140,7 @@ module Sign
             errors: @secret_form.errors.full_messages,
           )
 
-          Sign::Risk::Emitter.emit("auth_failed", user_id: staff&.id) if staff
+          Sign::Risk::Emitter.emit("auth_failed", staff_id: staff&.id) if staff
 
           render :new, status: :unprocessable_content, formats: :html
         end

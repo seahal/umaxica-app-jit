@@ -8,7 +8,7 @@ class CookieDomainTest < ActiveSupport::TestCase
   def stub_creds(_key, value)
     creds_mock = Object.new
     creds_mock.define_singleton_method(:option) { |_key| value }
-    Rails.stub :app, OpenStruct.new(creds: creds_mock) do
+    Rails.stub(:app, OpenStruct.new(creds: creds_mock)) do
       yield
     end
   end

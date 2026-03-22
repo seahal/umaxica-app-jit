@@ -16,7 +16,7 @@ class EnsureActiveExpiredOccurrenceStatuses < ActiveRecord::Migration[8.2]
     add_column(table_name, :name, :string, null: false, default: "") unless column_exists?(table_name, :name)
 
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO #{table_name} (id, name)
         VALUES (1, 'active'), (2, 'expired')
         ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name

@@ -14,9 +14,11 @@ class AddExpiresAtToOccurrenceStatuses < ActiveRecord::Migration[8.2]
 
   def change
     TABLES.each do |table|
-      add_column table, :expires_at, :datetime, null: false,
-                                                default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }
-      add_index table, :expires_at
+      add_column(
+        table, :expires_at, :datetime, null: false,
+                                       default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" },
+      )
+      add_index(table, :expires_at)
     end
   end
 end

@@ -12,11 +12,11 @@ class ConvertAvatarRolePermissionCapabilityToSmallint < ActiveRecord::Migration[
     TABLES.each do |table|
       safety_assured do
         # 1. Add new column
-        add_column table, :id_small, :integer, limit: 2
+        add_column(table, :id_small, :integer, limit: 2)
 
         # 2. Backfill: ORDER BY key for stable numbering (key is unique)
         # Starting from 1, 0 reserved for NEYO/none/unknown if needed
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           WITH numbered AS (
             SELECT id, ROW_NUMBER() OVER (ORDER BY key) AS rn
             FROM #{table}
@@ -28,28 +28,27 @@ class ConvertAvatarRolePermissionCapabilityToSmallint < ActiveRecord::Migration[
         SQL
 
         # 3. Set NOT NULL
-        change_column_null table, :id_small, false, 0
+        change_column_null(table, :id_small, false, 0)
 
         # 4. Drop old PK (CASCADE drops dependent FKs)
-        execute "ALTER TABLE #{table} DROP CONSTRAINT #{table}_pkey CASCADE"
+        execute("ALTER TABLE #{table} DROP CONSTRAINT #{table}_pkey CASCADE")
 
         # 5. Rename old id for reference in next step
-        rename_column table, :id, :id_old_string
+        rename_column(table, :id, :id_old_string)
 
         # 6. Promote smallint to id
-        # rubocop:disable Rails/DangerousColumnNames
-        rename_column table, :id_small, :id
-        # rubocop:enable Rails/DangerousColumnNames
+
+        rename_column(table, :id_small, :id)
 
         # 7. Add new PK
-        execute "ALTER TABLE #{table} ADD PRIMARY KEY (id)"
+        execute("ALTER TABLE #{table} ADD PRIMARY KEY (id)")
 
         # 8. Add CHECK constraint
-        execute "ALTER TABLE #{table} ADD CONSTRAINT chk_#{table}_id_positive CHECK (id >= 0)"
+        execute("ALTER TABLE #{table} ADD CONSTRAINT chk_#{table}_id_positive CHECK (id >= 0)")
 
         # 9. Maintain unique index on key
         # The index should already exist, but we ensure it's there
-        add_index table, :key, unique: true, name: "index_#{table}_on_key", if_not_exists: true
+        add_index(table, :key, unique: true, name: "index_#{table}_on_key", if_not_exists: true)
       end
     end
   end

@@ -29,23 +29,23 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
     return unless table_exists?(table_name)
 
     # Remove the index first
-    remove_index table_name, :staff_id if index_exists?(table_name, :staff_id)
+    remove_index(table_name, :staff_id) if index_exists?(table_name, :staff_id)
 
     # Remove the foreign key if it exists
-    remove_foreign_key table_name, :staffs if foreign_key_exists?(table_name, :staffs)
+    remove_foreign_key(table_name, :staffs) if foreign_key_exists?(table_name, :staffs)
 
     # Remove the old column and add it back as uuid
     # Warning: This will lose existing data in the staff_id column
-    remove_column table_name, :staff_id, :bigint
-    add_column table_name, :staff_id, :bigint
+    remove_column(table_name, :staff_id, :bigint)
+    add_column(table_name, :staff_id, :bigint)
 
     # Add the index back
-    add_index table_name, :staff_id
+    add_index(table_name, :staff_id)
 
     # Add foreign key constraint when types match
     return unless compatible_foreign_key_type?(table_name, :staff_id, :staffs)
 
-    add_foreign_key table_name, :staffs
+    add_foreign_key(table_name, :staffs)
 
   end
 
@@ -53,22 +53,22 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
     return unless table_exists?(table_name)
 
     # Remove the index first
-    remove_index table_name, :staff_id if index_exists?(table_name, :staff_id)
+    remove_index(table_name, :staff_id) if index_exists?(table_name, :staff_id)
 
     # Remove the foreign key
-    remove_foreign_key table_name, :staffs if foreign_key_exists?(table_name, :staffs)
+    remove_foreign_key(table_name, :staffs) if foreign_key_exists?(table_name, :staffs)
 
     # Remove the uuid column and add back as bigint
-    remove_column table_name, :staff_id, :uuid
-    add_column table_name, :staff_id, :bigint
+    remove_column(table_name, :staff_id, :uuid)
+    add_column(table_name, :staff_id, :bigint)
 
     # Add the index back
-    add_index table_name, :staff_id
+    add_index(table_name, :staff_id)
 
     # Add foreign key constraint when types match
     return unless compatible_foreign_key_type?(table_name, :staff_id, :staffs)
 
-    add_foreign_key table_name, :staffs
+    add_foreign_key(table_name, :staffs)
 
   end
 

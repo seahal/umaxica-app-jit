@@ -7,7 +7,7 @@ module Sign
       public_strict!
 
       def show
-        expires_in 1.hour, public: true
+        expires_in(1.hour, public: true)
         render json: Oidc::JwksService.jwk_set
       end
     end

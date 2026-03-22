@@ -69,7 +69,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     get edit_sign_app_configuration_withdrawal_url(ri: "jp"), headers: @headers
 
     assert_response :success
-    assert_includes response.body, "Recover"
+    assert_includes response.body, "復旧"
   end
 
   test "create recovers account within 31 days" do

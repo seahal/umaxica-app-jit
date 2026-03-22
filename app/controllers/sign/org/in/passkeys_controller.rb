@@ -84,7 +84,9 @@ module Sign
         end
 
         def perform_passkey_sign_in(passkey)
-          log_in(passkey.staff, record_login_audit: true)
+          complete_sign_in_or_start_mfa!(
+            passkey.staff, rt: retrieve_redirect_parameter_for_checkpoint, ri: params[:ri], auth_method: "passkey",
+          )
         end
 
         def handle_domain_specific_login_status(result)

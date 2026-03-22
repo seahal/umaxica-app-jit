@@ -29,7 +29,7 @@ module Preference
     end
 
     def self.leeway_seconds
-      ENV.fetch("PREFERENCE_JWT_LEEWAY_SECONDS", "30").to_i
+      Integer(ENV.fetch("PREFERENCE_JWT_LEEWAY_SECONDS", "30").to_s, 10)
     end
 
     def self.issuer
@@ -200,7 +200,7 @@ module Preference
           nonce: SecureRandom.uuid,
           iat: now,
           nbf: now,
-          exp: now + ACCESS_TOKEN_TTL.to_i,
+          exp: now + Integer(ACCESS_TOKEN_TTL.to_s, 10),
         }
       end
 
@@ -741,7 +741,7 @@ module Preference
       # If option_id is already an integer, use it as-is
       option_id_key = Preference::IoKeys::Params::OPTION_ID
       if params[option_id_key].is_a?(Integer) || params[option_id_key].to_s.match?(/^\d+$/)
-        params[option_id_key] = params[option_id_key].to_i
+        params[option_id_key] = Integer(params[option_id_key].to_s, 10)
         return params
       end
 
@@ -1375,7 +1375,6 @@ module Preference
         request: request,
         expires: expires_at,
         httponly: httponly,
-        secure: Rails.env.production?,
         same_site: :lax,
       )
     end

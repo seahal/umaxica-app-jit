@@ -53,7 +53,7 @@ class AddFixedIdsToTimelineTables < ActiveRecord::Migration[8.0]
     safety_assured do
       target_tables.each do |table_name, mapping|
         # 1. Truncate table and cascade to clear references
-        execute "TRUNCATE TABLE #{table_name} RESTART IDENTITY CASCADE"
+        execute("TRUNCATE TABLE #{table_name} RESTART IDENTITY CASCADE")
 
         # 2. Insert fixed IDs
         # Check if table has parent_id (for master tables)
@@ -63,17 +63,17 @@ class AddFixedIdsToTimelineTables < ActiveRecord::Migration[8.0]
           if has_parent_id
             # For master tables with self-referential parent_id, set parent_id to id (root node pattern)
             # Note: Code column doesn't exist in these tables - we're just inserting the initial data
-            execute "INSERT INTO #{table_name} (id, parent_id) VALUES (#{id}, #{id})"
+            execute("INSERT INTO #{table_name} (id, parent_id) VALUES (#{id}, #{id})")
           else
             # For status tables - these tables also don't have code column yet
             # Just insert the id to establish the fixed IDs
-            execute "INSERT INTO #{table_name} (id) VALUES (#{id})"
+            execute("INSERT INTO #{table_name} (id) VALUES (#{id})")
           end
         end
 
         # 3. Update sequence
         max_id = mapping.keys.max
-        execute "SELECT setval(pg_get_serial_sequence('#{table_name}', 'id'), #{max_id})"
+        execute("SELECT setval(pg_get_serial_sequence('#{table_name}', 'id'), #{max_id})")
       end
     end
   end

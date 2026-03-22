@@ -23,8 +23,10 @@ module Sign
             return if valid_registration_session?
 
             reset_registration_session!
-            redirect_to new_sign_org_configuration_emails_registration_path,
-                        notice: t("sign.org.registration.email.edit.session_expired")
+            redirect_to(
+              new_sign_org_configuration_emails_registration_path,
+              notice: t("sign.org.registration.email.edit.session_expired"),
+            )
           end
 
           def create
@@ -53,16 +55,20 @@ module Sign
             ).create.deliver_later
 
             session[registration_session_key] = @staff_email.public_id
-            redirect_to edit_sign_org_configuration_emails_registration_path,
-                        notice: t("sign.org.registration.email.create.verification_code_sent")
+            redirect_to(
+              edit_sign_org_configuration_emails_registration_path,
+              notice: t("sign.org.registration.email.create.verification_code_sent"),
+            )
           end
 
           def update
             @staff_email = current_registration_email
             unless valid_registration_session?
               reset_registration_session!
-              redirect_to new_sign_org_configuration_emails_registration_path,
-                          notice: t("sign.org.registration.email.edit.session_expired")
+              redirect_to(
+                new_sign_org_configuration_emails_registration_path,
+                notice: t("sign.org.registration.email.edit.session_expired"),
+              )
               return
             end
 
@@ -79,8 +85,10 @@ module Sign
               if @staff_email.locked?
                 @staff_email.destroy!
                 reset_registration_session!
-                redirect_to new_sign_org_configuration_emails_registration_path,
-                            alert: t("sign.org.registration.email.update.attempts_exceeded")
+                redirect_to(
+                  new_sign_org_configuration_emails_registration_path,
+                  alert: t("sign.org.registration.email.update.attempts_exceeded"),
+                )
                 return
               end
 
@@ -93,8 +101,10 @@ module Sign
             @staff_email.update!(staff_email_status_id: StaffEmailStatus::VERIFIED)
             reset_registration_session!
 
-            redirect_to sign_org_configuration_emails_path,
-                        notice: t("sign.org.registration.email.update.success")
+            redirect_to(
+              sign_org_configuration_emails_path,
+              notice: t("sign.org.registration.email.update.success"),
+            )
           end
 
           private

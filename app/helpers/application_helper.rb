@@ -13,7 +13,7 @@ module ApplicationHelper
 
   def page_title(title = nil)
     if title.present?
-      content_for :page_title, title
+      content_for(:page_title, title)
     else
       content_for(:page_title) || t("meta.default_title")
     end
@@ -49,8 +49,10 @@ module ApplicationHelper
     theme_html_class
   end
 
-  def current_banner_for(surface)
-    banner_model_for(surface)&.current&.first
+  def current_banner_for(tld:, region:, domain:)
+    region = :ww if region&.to_sym == :global
+    validate_banner_args!(tld: tld, region: region, domain: domain)
+    banner_model_for(tld)&.current&.first
   end
 
   def edge_host
@@ -62,8 +64,25 @@ module ApplicationHelper
 
   private
 
-  def banner_model_for(surface)
-    case surface.to_sym
+  def validate_banner_args!(tld:, region:, domain:)
+    allowed_tlds = %i(app org com)
+    allowed_domains = %i(sign core apex docs news help)
+
+    raise ArgumentError, "Invalid tld: #{tld}" unless allowed_tlds.include?(tld&.to_sym)
+    raise ArgumentError, "Invalid domain: #{domain}" unless allowed_domains.include?(domain&.to_sym)
+
+    allowed_regions =
+      case domain.to_sym
+      when :sign, :apex then [:ww]
+      else [:jp, :us]
+      end
+
+    raise ArgumentError,
+          "Invalid region: #{region} for domain: #{domain}" unless allowed_regions.include?(region&.to_sym)
+  end
+
+  def banner_model_for(tld)
+    case tld.to_sym
     when :app
       AppBanner
     when :org

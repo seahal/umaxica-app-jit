@@ -102,7 +102,7 @@ module Oidc
           token_response: {
             access_token: access_token,
             token_type: "Bearer",
-            expires_in: Auth::Base::ACCESS_TOKEN_TTL.to_i,
+            expires_in: Integer(Auth::Base::ACCESS_TOKEN_TTL.to_s, 10),
             refresh_token: refresh_plain,
           },
           error: nil,

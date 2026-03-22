@@ -19,7 +19,7 @@ class HealthCheckTest < ActionDispatch::IntegrationTest
       errors << "Database PrincipalRecord(writing) failed: connection refused"
     end
 
-    get sign_app_health_url(ri: "jp")
+    get(sign_app_health_url(ri: "jp"))
 
     assert_response :service_unavailable
     assert_includes response.body, "UNHEALTHY"
@@ -32,7 +32,7 @@ class HealthCheckTest < ActionDispatch::IntegrationTest
       errors << "Database PrincipalRecord(reading) failed: replica unavailable"
     end
 
-    get sign_app_health_url(ri: "jp")
+    get(sign_app_health_url(ri: "jp"))
 
     assert_response :service_unavailable
     assert_includes response.body, "UNHEALTHY"
@@ -45,7 +45,7 @@ class HealthCheckTest < ActionDispatch::IntegrationTest
       errors << "Redis connection failed: Redis down"
     end
 
-    get sign_app_health_url(ri: "jp")
+    get(sign_app_health_url(ri: "jp"))
 
     assert_response :service_unavailable
     assert_includes response.body, "UNHEALTHY"
@@ -61,7 +61,7 @@ class HealthCheckTest < ActionDispatch::IntegrationTest
       ]
     end
 
-    get sign_app_health_url(ri: "jp")
+    get(sign_app_health_url(ri: "jp"))
 
     assert_response :service_unavailable
     assert_includes response.body, "UNHEALTHY"
@@ -81,7 +81,7 @@ class HealthCheckTest < ActionDispatch::IntegrationTest
   test "returns 503 ERROR when an unexpected exception occurs" do
     inject_health_method(:check_dependencies) { raise RuntimeError, "unexpected" }
 
-    get sign_app_health_url(ri: "jp")
+    get(sign_app_health_url(ri: "jp"))
 
     assert_response :service_unavailable
     assert_includes response.body, "ERROR"

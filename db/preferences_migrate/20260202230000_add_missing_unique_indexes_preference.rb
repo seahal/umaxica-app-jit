@@ -7,8 +7,8 @@ class AddMissingUniqueIndexesPreference < ActiveRecord::Migration[8.2]
     safety_assured do
       %w(org_preferences com_preferences app_preferences).each do |table|
         unless index_exists?(table, :public_id, unique: true)
-          remove_index table, :public_id if index_exists?(table, :public_id)
-          add_index table, :public_id, unique: true, algorithm: :concurrently
+          remove_index(table, :public_id) if index_exists?(table, :public_id)
+          add_index(table, :public_id, unique: true, algorithm: :concurrently)
         end
       end
     end

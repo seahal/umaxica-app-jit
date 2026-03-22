@@ -89,7 +89,7 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
       consume_session_limit_gate!
       session.delete(:pending_login_user_id)
       log_out
-      redirect_to new_sign_app_in_path, notice: I18n.t("sign.app.in.session.cancelled")
+      redirect_to(new_sign_app_in_path, notice: I18n.t("sign.app.in.session.cancelled"))
     end
   end
 
@@ -117,8 +117,10 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
   end
 
   def redirect_to_login
-    redirect_to new_sign_app_in_path,
-                alert: I18n.t("sign.app.in.session.login_required")
+    redirect_to(
+      new_sign_app_in_path,
+      alert: I18n.t("sign.app.in.session.login_required"),
+    )
   end
 
   def redirect_to_return_path(notice:)
@@ -129,7 +131,7 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
       flash[:notice] = notice
       jump_to_generated_url(return_path, fallback: sign_app_configuration_path)
     else
-      redirect_to sign_app_configuration_path, notice: notice
+      redirect_to(sign_app_configuration_path, notice: notice)
     end
   end
 

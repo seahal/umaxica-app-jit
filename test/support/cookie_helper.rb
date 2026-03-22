@@ -24,6 +24,26 @@ module CookieHelper
     cookie_jar.signed[key]
   end
 
+  # Set an encrypted cookie value for integration tests.
+  # Rack::Test::CookieJar does not support .encrypted, so we build a
+  # real ActionDispatch cookie jar, encrypt through it, then copy the
+  # raw (already-encrypted) value into the test cookie jar.
+  def set_encrypted_cookie(key, value, cookie_jar: cookies)
+    jar = ActionDispatch::Cookies::CookieJar.build(
+      ActionDispatch::Request.new(Rails.application.env_config), {},
+    )
+    jar.encrypted[key] = value
+    cookie_jar[key] = jar[key]
+  end
+
+  # Read an encrypted cookie value from the integration test cookie jar.
+  def read_encrypted_cookie(key, cookie_jar: cookies)
+    jar = ActionDispatch::Cookies::CookieJar.build(
+      ActionDispatch::Request.new(Rails.application.env_config), { key => cookie_jar[key] },
+    )
+    jar.encrypted[key]
+  end
+
   def preference_cookie_payload(key, host: request&.host)
     token = cookies[key]
     return nil if token.blank?

@@ -6,7 +6,7 @@ class AddIdFormatConstraintsToPreferenceTables < ActiveRecord::Migration[8.2]
   def up
     tables_to_constrain.each do |table_name|
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           ALTER TABLE #{table_name}
           ADD CONSTRAINT #{table_name}_id_format_check
           CHECK (id ~ '^[A-Z0-9_]+$')
@@ -18,7 +18,7 @@ class AddIdFormatConstraintsToPreferenceTables < ActiveRecord::Migration[8.2]
   def down
     tables_to_constrain.each do |table_name|
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           ALTER TABLE #{table_name}
           DROP CONSTRAINT IF EXISTS #{table_name}_id_format_check
         SQL

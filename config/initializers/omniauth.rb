@@ -56,7 +56,7 @@ if google_org_client_id.blank? || google_org_client_secret.blank?
   Rails.logger.warn("[OmniAuth] Google OAuth (org) credentials are missing. Google sign-in for staff will not work.")
 end
 
-Rails.application.config.middleware.use OmniAuth::Builder do
+Rails.application.config.middleware.use(OmniAuth::Builder) do
   # ---------------------------------------------------------------------------
   # Google OAuth2 - App (user sign-in/sign-up)
   # ---------------------------------------------------------------------------

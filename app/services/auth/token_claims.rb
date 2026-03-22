@@ -8,9 +8,9 @@ module Auth
     def build(resource:, session_public_id:, resource_type:, issued_at:, access_token_ttl:, expires_at: nil)
       token_type = Auth::Base::JwtConfiguration.token_type(resource_type)
       payload = {
-        "iat" => issued_at.to_i,
-        "nbf" => issued_at.to_i,
-        "exp" => (expires_at || (issued_at + access_token_ttl)).to_i,
+        "iat" => Integer(issued_at.to_s, 10),
+        "nbf" => Integer(issued_at.to_s, 10),
+        "exp" => Integer((expires_at || (issued_at + access_token_ttl)).to_s, 10),
         "jti" => Jit::Security::Jwt::JtiGenerator.generate,
         "sub" => resource.id,
         "act" => resource_type,

@@ -18,8 +18,10 @@ module Apex
           ::Preference::Global::PARAM_CONTEXT_KEYS.each do |key|
             redirect_params[key] = params[key] if params[key].present?
           end
-          redirect_to edit_apex_org_preference_cookie_url(redirect_params),
-                      notice: t("apex.org.preferences.update_success")
+          redirect_to(
+            edit_apex_org_preference_cookie_url(redirect_params),
+            notice: t("apex.org.preferences.update_success"),
+          )
         end
       end
     end

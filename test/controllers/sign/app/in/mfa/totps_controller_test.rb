@@ -108,13 +108,15 @@ module Sign::App::In
     private
 
     def establish_pending_mfa_via_secret!
-      post sign_app_in_secret_path(ri: "jp"), params: {
-        secret_login_form: {
-          identifier: @email,
-          secret_value: @raw_secret,
+      post(
+        sign_app_in_secret_path(ri: "jp"), params: {
+          secret_login_form: {
+            identifier: @email,
+            secret_value: @raw_secret,
+          },
+          "cf-turnstile-response": "test_token",
         },
-        "cf-turnstile-response": "test_token",
-      }
+      )
 
       assert_response :redirect
     end

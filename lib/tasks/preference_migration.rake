@@ -9,9 +9,8 @@ namespace :preference do
   end
 
   define_method(:migrate_user_preferences!) do
-    # rubocop:disable I18n/RailsI18n/DecorateString
     puts "Migrating UserAppPreference to UserPreference..."
-    # rubocop:enable I18n/RailsI18n/DecorateString
+
     migrated = 0
     skipped = 0
 
@@ -42,9 +41,8 @@ namespace :preference do
   end
 
   define_method(:migrate_staff_preferences!) do
-    # rubocop:disable I18n/RailsI18n/DecorateString
     puts "Migrating StaffOrgPreference to StaffPreference..."
-    # rubocop:enable I18n/RailsI18n/DecorateString
+
     migrated = 0
     skipped = 0
 

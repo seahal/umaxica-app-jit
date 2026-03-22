@@ -99,7 +99,7 @@ class PreferenceTokenTest < ActiveSupport::TestCase
     assert_equal [], Preference::Token.send(:normalize_audiences, 123)
   end
 
-  test "header and payload validation require expected algorithm, type, host, and audience" do # rubocop:disable Minitest/MultipleAssertions
+  test "header and payload validation require expected algorithm, type, host, and audience" do
     assert Preference::Token.send(
       :valid_header?,
       { "alg" => Preference::Token::JWT_ALGORITHM, "kid" => "kid-1", "typ" => Preference::Token::TOKEN_TYPE },
@@ -137,7 +137,7 @@ class PreferenceTokenTest < ActiveSupport::TestCase
         reasons << kwargs[:reason]
       end
 
-    Jit::Security::Jwt::AnomalyReporter.stub :report_preference, reporter do
+    Jit::Security::Jwt::AnomalyReporter.stub(:report_preference, reporter) do
       Preference::Token.send(:report_invalid_header, host: "app.localhost", header: {})
       Preference::Token.send(
         :report_invalid_header, host: "app.localhost",
@@ -179,7 +179,7 @@ class PreferenceTokenTest < ActiveSupport::TestCase
         reasons << kwargs[:reason]
       end
 
-    Jit::Security::Jwt::AnomalyReporter.stub :report_preference, reporter do
+    Jit::Security::Jwt::AnomalyReporter.stub(:report_preference, reporter) do
       Preference::Token.send(
         :report_invalid_payload, host: "app.localhost", header: {}, payload: { "typ" => "wrong" },
       )
@@ -222,8 +222,8 @@ class PreferenceTokenTest < ActiveSupport::TestCase
       )
     end
 
-    Jit::Security::Jwt::AnomalyReporter.stub :reason_for_missing_claim, "MISSING_PUBLIC_ID" do
-      Jit::Security::Jwt::AnomalyReporter.stub :report_preference, reporter do
+    Jit::Security::Jwt::AnomalyReporter.stub(:reason_for_missing_claim, "MISSING_PUBLIC_ID") do
+      Jit::Security::Jwt::AnomalyReporter.stub(:report_preference, reporter) do
         Preference::Token.send(
           :report_decode_error, host: "app.localhost", header: {},
                                 error: StandardError.new("Missing required claim public_id"),

@@ -36,7 +36,7 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         # Ensure credentials/env return nil for secret key
-        TurnstileConfig.stub :visible_secret_key, nil do
+        TurnstileConfig.stub(:visible_secret_key, nil) do
           result = TurnstileVerifier.verify(token: "token", remote_ip: "127.0.0.1")
 
           assert_not result["success"]
@@ -63,9 +63,9 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         mock_response = Minitest::Mock.new
-        mock_response.expect :body, '{"success": true}'
+        mock_response.expect(:body, '{"success": true}')
 
-        Net::HTTP.stub :post_form, mock_response do
+        Net::HTTP.stub(:post_form, mock_response) do
           result = TurnstileVerifier.verify(token: "valid", remote_ip: "1.2.3.4", secret_key: "secret")
 
           assert result["success"]
@@ -80,10 +80,10 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         mock_response = Minitest::Mock.new
-        mock_response.expect :body, '{"success": true}'
+        mock_response.expect(:body, '{"success": true}')
 
-        TurnstileConfig.stub :stealth_secret_key, "stealth-secret" do
-          Net::HTTP.stub :post_form, mock_response do
+        TurnstileConfig.stub(:stealth_secret_key, "stealth-secret") do
+          Net::HTTP.stub(:post_form, mock_response) do
             result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4", mode: :stealth)
 
             assert result["success"]
@@ -98,8 +98,8 @@ module Jit
 
         http_called = false
 
-        TurnstileConfig.stub :stealth_secret_key, nil do
-          Net::HTTP.stub :post_form, ->(_uri, _params) { http_called = true } do
+        TurnstileConfig.stub(:stealth_secret_key, nil) do
+          Net::HTTP.stub(:post_form, ->(_uri, _params) { http_called = true }) do
             result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4", mode: :stealth)
 
             assert_not result["success"]
@@ -114,10 +114,10 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         mock_response = Minitest::Mock.new
-        mock_response.expect :body, '{"success": true}'
+        mock_response.expect(:body, '{"success": true}')
 
-        TurnstileConfig.stub :visible_secret_key, "visible-secret" do
-          Net::HTTP.stub :post_form, mock_response do
+        TurnstileConfig.stub(:visible_secret_key, "visible-secret") do
+          Net::HTTP.stub(:post_form, mock_response) do
             result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4", mode: :visible)
 
             assert result["success"]
@@ -131,10 +131,10 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         mock_response = Minitest::Mock.new
-        mock_response.expect :body, '{"success": true}'
+        mock_response.expect(:body, '{"success": true}')
 
-        TurnstileConfig.stub :visible_secret_key, "visible-secret" do
-          Net::HTTP.stub :post_form, mock_response do
+        TurnstileConfig.stub(:visible_secret_key, "visible-secret") do
+          Net::HTTP.stub(:post_form, mock_response) do
             result = TurnstileVerifier.verify(token: "tok", remote_ip: "1.2.3.4")
 
             assert result["success"]
@@ -148,12 +148,12 @@ module Jit
         TurnstileVerifier.test_mode = false
 
         mock_response = Minitest::Mock.new
-        mock_response.expect :body, '{"success": true}'
+        mock_response.expect(:body, '{"success": true}')
 
         config_called = false
         fake = -> { config_called = true; "should-not-use" }
-        TurnstileConfig.stub :stealth_secret_key, fake do
-          Net::HTTP.stub :post_form, mock_response do
+        TurnstileConfig.stub(:stealth_secret_key, fake) do
+          Net::HTTP.stub(:post_form, mock_response) do
             result = TurnstileVerifier.verify(
               token: "tok", remote_ip: "1.2.3.4", secret_key: "explicit",
               mode: :stealth,

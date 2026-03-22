@@ -31,16 +31,16 @@ module Core
 
           test "should get show with existing preference" do
             s = open_session
-            s.host! @host
+            s.host!(@host)
 
             # First request to get a preference and cookie
-            s.get core_app_edge_v0_preference_url
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
             first_json = s.response.parsed_body
             first_public_id = first_json["preference"]["public_id"]
 
             # Second request should use the cookie from the first request
-            s.get core_app_edge_v0_preference_url
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
             second_json = s.response.parsed_body
 
@@ -62,14 +62,14 @@ module Core
 
           test "should not create duplicate preference for same cookie" do
             s = open_session
-            s.host! @host
+            s.host!(@host)
 
-            s.get core_app_edge_v0_preference_url
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
             public_id = s.response.parsed_body.dig("preference", "public_id")
 
             s.assert_no_difference -> { AppPreference.count } do
-              s.get core_app_edge_v0_preference_url
+              s.get(core_app_edge_v0_preference_url)
             end
 
             assert_equal public_id, s.response.parsed_body.dig("preference", "public_id")
@@ -89,7 +89,7 @@ module Core
             end
 
             recent_audits = AppPreferenceActivity.order(created_at: :desc).limit(2)
-            event_ids = recent_audits.map { |a| a.app_preference_activity_event.id.to_i }
+            event_ids = recent_audits.map { |a| Integer(a.app_preference_activity_event.id.to_s, 10) }
 
             assert_includes event_ids, AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN
             assert_includes event_ids, AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED
@@ -98,14 +98,14 @@ module Core
           test "invalid refresh_token is ignored and new preference is created" do
             # Use a fresh session
             s = open_session
-            s.host! @host
+            s.host!(@host)
             s.cookies[preference_refresh_cookie_name] = "invalid.token"
 
             # Note: without a device ID, it might fail early if we don't have it.
             # But the requirement is to ignore invalid tokens.
 
             s.assert_difference -> { AppPreference.count }, 1 do
-              s.get core_app_edge_v0_preference_url
+              s.get(core_app_edge_v0_preference_url)
             end
             s.assert_response :success
 
@@ -115,8 +115,8 @@ module Core
           test "legacy refresh token is accepted" do
             # First request to get a valid device ID
             s = open_session
-            s.host! @host
-            s.get core_app_edge_v0_preference_url
+            s.host!(@host)
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
 
             current_public_id = s.response.parsed_body.dig("preference", "public_id")
@@ -137,12 +137,12 @@ module Core
 
             # Use ANOTHER fresh session
             s2 = open_session
-            s2.host! @host
+            s2.host!(@host)
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = legacy_token
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
-            s2.get core_app_edge_v0_preference_url
+            s2.get(core_app_edge_v0_preference_url)
             s2.assert_response :success
 
             new_token = s2.cookies[preference_refresh_cookie_name]
@@ -157,46 +157,46 @@ module Core
 
           test "refresh fails when device_id is missing and clears preference auth cookies" do
             s = open_session
-            s.host! @host
-            s.get core_app_edge_v0_preference_url
+            s.host!(@host)
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
             refresh_token = s.cookies[preference_refresh_cookie_name]
 
             # Use a fresh session WITHOUT device ID
             s2 = open_session
-            s2.host! @host
+            s2.host!(@host)
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = refresh_token
 
-            s2.get core_app_edge_v0_preference_url
+            s2.get(core_app_edge_v0_preference_url)
 
             assert_equal 401, s2.response.status
           end
 
           test "refresh fails when header and cookie device_id mismatch and clears cookies" do
             s = open_session
-            s.host! @host
-            s.get core_app_edge_v0_preference_url
+            s.host!(@host)
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
             refresh_token = s.cookies[preference_refresh_cookie_name]
             device_id_encrypted = s.cookies[preference_device_id_cookie_name]
 
             # Use a fresh session with mismatched device ID in header
             s2 = open_session
-            s2.host! @host
+            s2.host!(@host)
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = refresh_token
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
-            s2.get core_app_edge_v0_preference_url, headers: { "X-Device-Id" => SecureRandom.uuid }
+            s2.get(core_app_edge_v0_preference_url, headers: { "X-Device-Id" => SecureRandom.uuid })
 
             assert_equal 401, s2.response.status
           end
 
           test "refresh fails when stored device_id does not match cookie and clears cookies" do
             s = open_session
-            s.host! @host
-            s.get core_app_edge_v0_preference_url
+            s.host!(@host)
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
             refresh_token = s.cookies[preference_refresh_cookie_name]
             device_id_encrypted = s.cookies[preference_device_id_cookie_name]
@@ -206,20 +206,20 @@ module Core
 
             # Use a fresh session
             s2 = open_session
-            s2.host! @host
+            s2.host!(@host)
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = refresh_token
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
-            s2.get core_app_edge_v0_preference_url
+            s2.get(core_app_edge_v0_preference_url)
 
             assert_equal 401, s2.response.status
           end
 
           test "refresh replay is detected and rejected" do
             s = open_session
-            s.host! @host
-            s.get core_app_edge_v0_preference_url
+            s.host!(@host)
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
 
             old_refresh = s.cookies[preference_refresh_cookie_name]
@@ -229,17 +229,17 @@ module Core
 
             # Trigger rotation by clearing access token to force refresh
             s.cookies.delete(preference_access_cookie_name)
-            s.get core_app_edge_v0_preference_url
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
 
             # Replay the old token in a fresh session
             s2 = open_session
-            s2.host! @host
+            s2.host!(@host)
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = old_refresh
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
-            s2.get core_app_edge_v0_preference_url
+            s2.get(core_app_edge_v0_preference_url)
 
             assert_equal 401, s2.response.status
             assert_predicate old_preference.reload.compromised_at, :present?
@@ -247,8 +247,8 @@ module Core
 
           test "refresh succeeds when stored and request device_id match" do
             s = open_session
-            s.host! @host
-            s.get core_app_edge_v0_preference_url
+            s.host!(@host)
+            s.get(core_app_edge_v0_preference_url)
             s.assert_response :success
 
             first_public_id = s.response.parsed_body.dig("preference", "public_id")
@@ -258,12 +258,12 @@ module Core
 
             # Use a fresh session
             s2 = open_session
-            s2.host! @host
+            s2.host!(@host)
             s2.cookies[preference_access_cookie_name] = "invalid.access.token"
             s2.cookies[preference_refresh_cookie_name] = refresh_token
             s2.cookies[preference_device_id_cookie_name] = device_id_encrypted
 
-            s2.get core_app_edge_v0_preference_url
+            s2.get(core_app_edge_v0_preference_url)
             s2.assert_response :success
 
             second_public_id = s2.response.parsed_body.dig("preference", "public_id")

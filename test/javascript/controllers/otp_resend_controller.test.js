@@ -47,10 +47,7 @@ describe("OtpResendController", () => {
   test("resend: 成功時にステータスを更新し、入力をクリアする", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        status: 200,
-        json: () => Promise.resolve({ resendable: true }),
-      }),
+      vi.fn().mockResolvedValue({ status: 200, json: () => Promise.resolve({ resendable: true }) }),
     );
 
     const event = { preventDefault: vi.fn() };
@@ -64,10 +61,7 @@ describe("OtpResendController", () => {
   test("resend: 429 (Too Many Requests) のときにカウントダウンを開始する", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        status: 429,
-        json: () => Promise.resolve({ retry_after: 10 }),
-      }),
+      vi.fn().mockResolvedValue({ status: 429, json: () => Promise.resolve({ retry_after: 10 }) }),
     );
 
     const event = { preventDefault: vi.fn() };
@@ -88,10 +82,7 @@ describe("OtpResendController", () => {
   test("resend: 失敗時にエラーメッセージを表示する", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        status: 500,
-        json: () => Promise.resolve({}),
-      }),
+      vi.fn().mockResolvedValue({ status: 500, json: () => Promise.resolve({}) }),
     );
 
     const event = { preventDefault: vi.fn() };

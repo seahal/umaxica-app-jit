@@ -33,7 +33,7 @@ Rails.application.configure do
 
   # HSTS with preload support (submit to hstspreload.org after deploying).
   config.ssl_options = {
-    hsts: { subdomains: true, preload: true, expires: 2.years.to_i },
+    hsts: { subdomains: true, preload: true, expires: Integer(2.years, 10) },
   }
 
   # Log to STDOUT as JSON for Cloud Run visibility.
@@ -54,8 +54,15 @@ Rails.application.configure do
   # Prevent health checks from clogging up the logs.
   config.silence_healthcheck_path = "/health"
 
-  # Don't log any deprecations.
-  config.active_support.report_deprecations = false
+  # Report deprecations via Sentry (do not silence them)
+  config.active_support.report_deprecations = true
+  config.active_support.deprecation = :notify
+
+  # Treat PostgreSQL warnings as errors (same strict setting as dev/test)
+  config.active_record.db_warnings_action = :raise
+
+  # Warn on excessive record fetches (early detection of N+1 and query design issues)
+  config.active_record.warn_on_records_fetched_greater_than = 10_000
 
   # Cache query log tags for performance
   config.active_record.cache_query_log_tags = true
@@ -121,5 +128,23 @@ Rails.application.configure do
   config.public_file_server.enabled = false
 
   # Enable Gzip compression
-  config.middleware.use Rack::Deflater
+  config.middleware.use(Rack::Deflater)
+
+  # Additional security headers
+  config.action_dispatch.default_headers.merge!(
+    "Referrer-Policy" => "strict-origin-when-cross-origin",
+    "X-Permitted-Cross-Domain-Policies" => "none",
+  )
+
+  # Explicit SameSite cookie protection (matches Rails 8.1 default, pinned against future changes)
+  config.action_dispatch.cookies_same_site_protection = :lax
+
+  # Raise on missing callback actions (same as dev/test)
+  config.action_controller.raise_on_missing_callback_actions = true
+
+  # Raise on email delivery errors (immediate detection of SES failures)
+  config.action_mailer.raise_delivery_errors = true
+
+  # Raise on missing translation keys (quality assurance for i18n)
+  config.i18n.raise_on_missing_translations = true
 end

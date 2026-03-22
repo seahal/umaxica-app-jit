@@ -160,7 +160,7 @@ module Sign
           }
 
           email.reload
-          otp_code = ROTP::HOTP.new(email.otp_private_key).at(email.otp_counter.to_i)
+          otp_code = ROTP::HOTP.new(email.otp_private_key).at(Integer(email.otp_counter.to_s, 10))
 
           patch sign_app_in_email_url(ri: "jp"), params: {
             user_email: { pass_code: otp_code },

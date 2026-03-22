@@ -105,8 +105,10 @@ module Sign
                 error: I18n.t("sign.app.registration.telephone.edit.session_expired"),
               }, status: :unprocessable_content
             else
-              redirect_to new_sign_app_up_telephone_path(ri: params[:ri]),
-                          notice: I18n.t("sign.app.registration.telephone.edit.session_expired")
+              redirect_to(
+                new_sign_app_up_telephone_path(ri: params[:ri]),
+                notice: I18n.t("sign.app.registration.telephone.edit.session_expired"),
+              )
             end
             return
           end
@@ -117,7 +119,7 @@ module Sign
                 error: I18n.t("sign.app.registration.telephone.update.passkey_required"),
               }, status: :unprocessable_content
             else
-              redirect_to edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri])
+              redirect_to(edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri]))
             end
             return
           end

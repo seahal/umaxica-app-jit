@@ -1,18 +1,18 @@
 # typed: false
 # frozen_string_literal: true
 
-class Sign::App::Edge::V0::Token::RefreshesController < Sign::App::Edge::V0::BaseController
+class Sign::App::Edge::V0::Token::RefreshesController < Sign::App::ApplicationController
+  include Sign::EdgeV0JsonApi
   include ::Preference::WebCookieEndpoint
 
+  public_strict!
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token
-  protect_from_forgery with: :exception
 
   def create
     response.set_header("Cache-Control", "no-store")
 
-    # Read refresh token from params or cookie (regular cookie, not encrypted)
-    # Use Auth::Base constants for cookie keys
+    # Read refresh token from params or cookie
     refresh_plain = params[:refresh_token].presence || cookies[Auth::Base::REFRESH_COOKIE_KEY]
 
     if refresh_plain.blank?

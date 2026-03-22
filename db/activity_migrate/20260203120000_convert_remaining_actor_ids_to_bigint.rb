@@ -19,7 +19,7 @@ class ConvertRemainingActorIdsToBigint < ActiveRecord::Migration[8.2]
 
     tables.each do |table|
       # First drop the default to allow type change
-      change_column_default table, :actor_id, nil
+      change_column_default(table, :actor_id, nil)
 
       # Change the column type to bigint using appropriate casting
       # Since data inheritance is not needed (new DB), we can just cast or reset.
@@ -36,7 +36,7 @@ class ConvertRemainingActorIdsToBigint < ActiveRecord::Migration[8.2]
       # The new default should be 0.
 
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           ALTER TABLE #{table}#{" "}
             ALTER COLUMN actor_id DROP DEFAULT,
             ALTER COLUMN actor_id TYPE bigint USING (CASE WHEN actor_id::text ~ '^[0-9]+$' THEN actor_id::text::bigint ELSE 0 END),

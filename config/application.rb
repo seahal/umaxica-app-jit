@@ -16,7 +16,7 @@ require_relative "../app/middleware/core/surface_middleware" if File.exist?(surf
 module Jit
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.1
+    config.load_defaults(8.1)
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -45,7 +45,7 @@ module Jit
       end
 
     # Active Record Encryption Configuration
-    if %w(test production development).include? Rails.env
+    if %w(test production development).include?(Rails.env)
       config.active_record.encryption.primary_key = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY)
       config.active_record.encryption.deterministic_key = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY)
       config.active_record.encryption.key_derivation_salt = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT)
@@ -72,7 +72,7 @@ module Jit
 
     # Set bigserial as default primary key for new tables
     config.generators do |g|
-      g.orm :active_record, primary_key_type: :bigserial
+      g.orm(:active_record, primary_key_type: :bigserial)
     end
 
     # Multi-database async query executor (one thread pool per database)

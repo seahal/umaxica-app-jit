@@ -40,7 +40,7 @@ module Docs
 
           def list_documents
             @query = params[:q]
-            @page = (params[:page] || 1).to_i
+            @page = Integer((params[:page] || 1).to_s, 10)
             @per_page = 20
 
             # Search documents by permalink or title
@@ -77,7 +77,7 @@ module Docs
               @total_count = documents_scope.count
             end
 
-            @total_pages = (@total_count.to_f / @per_page).ceil
+            @total_pages = (Float(@total_count) / @per_page).ceil
 
             Rails.event.notify(
               "docs.posts.listed",

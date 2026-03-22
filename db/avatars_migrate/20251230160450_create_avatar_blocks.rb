@@ -2,17 +2,21 @@
 
 class CreateAvatarBlocks < ActiveRecord::Migration[8.2]
   def change
-    create_table :avatar_blocks do |t|
-      t.references :blocker_avatar,
-                   null: false,
-                   foreign_key: { to_table: :avatars, validate: false },
-                   type: :string
-      t.references :blocked_avatar,
-                   null: false,
-                   foreign_key: { to_table: :avatars, validate: false },
-                   type: :string
-      t.string :reason
-      t.datetime :expires_at
+    create_table(:avatar_blocks) do |t|
+      t.references(
+        :blocker_avatar,
+        null: false,
+        foreign_key: { to_table: :avatars, validate: false },
+        type: :string,
+      )
+      t.references(
+        :blocked_avatar,
+        null: false,
+        foreign_key: { to_table: :avatars, validate: false },
+        type: :string,
+      )
+      t.string(:reason)
+      t.datetime(:expires_at)
 
       t.timestamps
     end

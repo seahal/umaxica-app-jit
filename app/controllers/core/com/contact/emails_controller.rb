@@ -60,7 +60,7 @@ module Core
 
           generate_and_send_telephone_token
 
-          redirect_to redirect_url, notice: I18n.t("help.com.contact.emails.update.success")
+          redirect_to(redirect_url, notice: I18n.t("help.com.contact.emails.update.success"))
         end
 
         def generate_and_send_telephone_token

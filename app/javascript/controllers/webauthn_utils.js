@@ -68,10 +68,7 @@ export function normalizePublicKeyOptions(options) {
   }
 
   if (source.user && "id" in source.user) {
-    normalized.user = {
-      ...source.user,
-      id: toArrayBuffer(source.user.id, "user.id"),
-    };
+    normalized.user = { ...source.user, id: toArrayBuffer(source.user.id, "user.id") };
   }
 
   if ("excludeCredentials" in source) {

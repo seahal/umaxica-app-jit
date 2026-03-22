@@ -11,7 +11,8 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
         "staff_identity_statuses" => %w(NEYO ALIVE PRE_WITHDRAWAL_CONDITION WITHDRAWAL_COMPLETED),
         "user_token_statuses" => %w(NEYO ACTIVE),
         "staff_token_statuses" => %w(NEYO ACTIVE),
-        "user_identity_email_statuses" => %w(NEYO UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP UNVERIFIED ALIVE SUSPENDED DELETED),
+        "user_identity_email_statuses" => %w(NEYO UNVERIFIED_WITH_SIGN_UP VERIFIED_WITH_SIGN_UP UNVERIFIED ALIVE
+                                             SUSPENDED DELETED),
         "staff_identity_email_statuses" => %w(NEYO UNVERIFIED VERIFIED SUSPENDED DELETED),
         "user_identity_telephone_statuses" => %w(NEYO UNVERIFIED VERIFIED SUSPENDED DELETED ACTIVE),
         "staff_identity_telephone_statuses" => %w(NEYO UNVERIFIED VERIFIED SUSPENDED DELETED),

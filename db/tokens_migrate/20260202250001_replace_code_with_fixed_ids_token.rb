@@ -26,19 +26,19 @@ class ReplaceCodeWithFixedIdsToken < ActiveRecord::Migration[8.0]
     safety_assured do
       target_tables.each do |table_name, mapping|
         # 1. Truncate table and cascade to clear references
-        execute "TRUNCATE TABLE #{table_name} RESTART IDENTITY CASCADE"
+        execute("TRUNCATE TABLE #{table_name} RESTART IDENTITY CASCADE")
 
         # 2. Insert fixed IDs
         mapping.each do |id, code|
-          execute "INSERT INTO #{table_name} (id, code) VALUES (#{id}, '#{code}')"
+          execute("INSERT INTO #{table_name} (id, code) VALUES (#{id}, '#{code}')")
         end
 
         # 3. Update sequence
         max_id = mapping.keys.max
-        execute "SELECT setval(pg_get_serial_sequence('#{table_name}', 'id'), #{max_id})"
+        execute("SELECT setval(pg_get_serial_sequence('#{table_name}', 'id'), #{max_id})")
 
         # 4. Remove code column and index
-        remove_column table_name, :code
+        remove_column(table_name, :code)
       end
     end
   end

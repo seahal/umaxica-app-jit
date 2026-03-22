@@ -14,7 +14,7 @@ module Sign
         )
 
         if result.success?
-          redirect_to result.redirect_url, allow_other_host: true
+          redirect_to(result.redirect_url, allow_other_host: true)
         else
           render json: { error: result.error, error_description: result.error_description },
                  status: :bad_request

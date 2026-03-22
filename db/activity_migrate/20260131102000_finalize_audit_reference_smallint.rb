@@ -98,13 +98,13 @@ class FinalizeAuditReferenceSmallint < ActiveRecord::Migration[8.2]
 
       REFERENCE_TABLES.each do |table_name|
         drop_primary_key_constraint(table_name)
-        remove_column table_name, :id if column_exists?(table_name, :id)
-        # rubocop:disable Rails/DangerousColumnNames
-        rename_column table_name, :id_small, :id
-        # rubocop:enable Rails/DangerousColumnNames
-        change_column_default table_name, :id, from: 0, to: 0
-        change_column_null table_name, :id, false
-        add_check_constraint table_name, "id >= 0", name: "#{table_name}_id_non_negative"
+        remove_column(table_name, :id) if column_exists?(table_name, :id)
+
+        rename_column(table_name, :id_small, :id)
+
+        change_column_default(table_name, :id, from: 0, to: 0)
+        change_column_null(table_name, :id, false)
+        add_check_constraint(table_name, "id >= 0", name: "#{table_name}_id_non_negative")
         add_primary_key_constraint(table_name)
       end
 
@@ -127,7 +127,7 @@ class FinalizeAuditReferenceSmallint < ActiveRecord::Migration[8.2]
       com_preference_audit_events
       com_preference_audit_levels
     ).each do |table_name|
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE #{table_name}
         DROP CONSTRAINT IF EXISTS #{table_name}_id_format_check
       SQL
@@ -135,14 +135,14 @@ class FinalizeAuditReferenceSmallint < ActiveRecord::Migration[8.2]
   end
 
   def drop_primary_key_constraint(table_name)
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       ALTER TABLE #{table_name}
       DROP CONSTRAINT IF EXISTS #{table_name}_pkey
     SQL
   end
 
   def add_primary_key_constraint(table_name)
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       ALTER TABLE #{table_name}
       ADD PRIMARY KEY (id)
     SQL
@@ -151,7 +151,7 @@ class FinalizeAuditReferenceSmallint < ActiveRecord::Migration[8.2]
   def add_child_foreign_keys
     CHILD_COLUMNS.each do |table_name, columns|
       columns.each do |column_name, parent_table|
-        add_foreign_key table_name, parent_table, column: column_name, primary_key: :id
+        add_foreign_key(table_name, parent_table, column: column_name, primary_key: :id)
       end
     end
   end

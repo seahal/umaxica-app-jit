@@ -185,6 +185,10 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
     user_count_before = User.count
 
+    # Start OAuth flow to set up session state (required by SocialCallbackGuard)
+    get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
+
     # Callback without login (no headers)
     get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
         headers: browser_headers.merge(@callback_headers)

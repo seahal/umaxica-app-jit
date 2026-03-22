@@ -1,6 +1,65 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: staff_tokens
+# Database name: token
+#
+#  id                            :bigint           not null, primary key
+#  compromised_at                :datetime
+#  dbsc_challenge                :text
+#  dbsc_challenge_issued_at      :datetime
+#  dbsc_public_key               :jsonb
+#  deletable_at                  :datetime         default(Infinity), not null
+#  expired_at                    :datetime
+#  last_step_up_at               :datetime
+#  last_step_up_scope            :string
+#  last_used_at                  :datetime
+#  refresh_expires_at            :datetime         not null
+#  refresh_token_digest          :binary
+#  refresh_token_generation      :integer          default(0), not null
+#  revoked_at                    :datetime
+#  rotated_at                    :datetime
+#  status                        :string(20)       default("active"), not null
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  dbsc_session_id               :string
+#  device_id                     :string           default(""), not null
+#  public_id                     :string(21)       default(""), not null
+#  refresh_token_family_id       :string
+#  staff_id                      :bigint           not null
+#  staff_token_binding_method_id :bigint           default(0), not null
+#  staff_token_dbsc_status_id    :bigint           default(0), not null
+#  staff_token_kind_id           :bigint           default(1), not null
+#  staff_token_status_id         :bigint           default(0), not null
+#
+# Indexes
+#
+#  index_staff_tokens_on_compromised_at                 (compromised_at)
+#  index_staff_tokens_on_dbsc_session_id                (dbsc_session_id) UNIQUE
+#  index_staff_tokens_on_deletable_at                   (deletable_at)
+#  index_staff_tokens_on_device_id                      (device_id)
+#  index_staff_tokens_on_expired_at                     (expired_at)
+#  index_staff_tokens_on_public_id                      (public_id) UNIQUE
+#  index_staff_tokens_on_refresh_expires_at             (refresh_expires_at)
+#  index_staff_tokens_on_refresh_token_digest           (refresh_token_digest) UNIQUE
+#  index_staff_tokens_on_refresh_token_family_id        (refresh_token_family_id)
+#  index_staff_tokens_on_revoked_at                     (revoked_at)
+#  index_staff_tokens_on_staff_id_and_last_step_up_at   (staff_id,last_step_up_at)
+#  index_staff_tokens_on_staff_token_binding_method_id  (staff_token_binding_method_id)
+#  index_staff_tokens_on_staff_token_dbsc_status_id     (staff_token_dbsc_status_id)
+#  index_staff_tokens_on_staff_token_kind_id            (staff_token_kind_id)
+#  index_staff_tokens_on_staff_token_status_id          (staff_token_status_id)
+#  index_staff_tokens_on_status                         (status)
+#
+# Foreign Keys
+#
+#  fk_staff_tokens_on_staff_token_binding_method_id  (staff_token_binding_method_id => staff_token_binding_methods.id)
+#  fk_staff_tokens_on_staff_token_dbsc_status_id     (staff_token_dbsc_status_id => staff_token_dbsc_statuses.id)
+#  fk_staff_tokens_on_staff_token_kind_id            (staff_token_kind_id => staff_token_kinds.id)
+#  fk_staff_tokens_on_staff_token_status_id          (staff_token_status_id => staff_token_statuses.id)
+#
 require "test_helper"
 
 class StaffTokenTest < ActiveSupport::TestCase
@@ -149,8 +208,8 @@ class StaffTokenTest < ActiveSupport::TestCase
       replacement = result[:token]
 
       assert_equal :rotated, result[:status]
-      assert_equal token.revoked_at.to_i, replacement.revoked_at.to_i
-      assert_equal token.deletable_at.to_i, replacement.deletable_at.to_i
+      assert_equal Integer(token.revoked_at.to_s, 10), Integer(replacement.revoked_at.to_s, 10)
+      assert_equal Integer(token.deletable_at.to_s, 10), Integer(replacement.deletable_at.to_s, 10)
     end
   end
 
@@ -250,13 +309,19 @@ class StaffTokenTest < ActiveSupport::TestCase
     revoked_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
     compromised_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
     expired_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
-    revoked = StaffToken.create!(staff: revoked_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd1")
+    revoked = StaffToken.create!(
+      staff: revoked_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "sd1",
+    )
     compromised = StaffToken.create!(
       staff: compromised_staff,
       staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
       device_id: "sd2",
     )
-    expired = StaffToken.create!(staff: expired_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd3")
+    expired = StaffToken.create!(
+      staff: expired_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "sd3",
+    )
     revoked_raw = revoked.rotate_refresh_token!
     compromised_raw = compromised.rotate_refresh_token!
     expired_raw = expired.rotate_refresh_token!

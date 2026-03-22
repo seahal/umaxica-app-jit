@@ -97,7 +97,7 @@ module Sign::App::Up
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |_challenge| true }
 
-      WebAuthn::Credential.stub :from_create, mock_credential do
+      WebAuthn::Credential.stub(:from_create, mock_credential) do
         assert_difference("UserPasskey.count", 1) do
           post sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp"), params: {
             challenge_id: challenge_id,
@@ -129,7 +129,7 @@ module Sign::App::Up
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |_challenge| true }
 
-      WebAuthn::Credential.stub :from_create, mock_credential do
+      WebAuthn::Credential.stub(:from_create, mock_credential) do
         post sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp"), params: {
           challenge_id: challenge_id,
           credential: {
@@ -161,7 +161,7 @@ module Sign::App::Up
 
       rt = "/welcome?ri=jp"
 
-      WebAuthn::Credential.stub :from_create, mock_credential do
+      WebAuthn::Credential.stub(:from_create, mock_credential) do
         post sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp"), params: {
           rt: rt,
           challenge_id: challenge_id,
@@ -190,7 +190,7 @@ module Sign::App::Up
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |_challenge| true }
 
-      WebAuthn::Credential.stub :from_create, mock_credential do
+      WebAuthn::Credential.stub(:from_create, mock_credential) do
         assert_difference("UserActivity.count", 1) do
           post sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp"), params: {
             challenge_id: challenge_id,
@@ -220,7 +220,7 @@ module Sign::App::Up
         raise WebAuthn::Error, "verification failed"
       end
 
-      WebAuthn::Credential.stub :from_create, mock_credential do
+      WebAuthn::Credential.stub(:from_create, mock_credential) do
         assert_no_difference("UserPasskey.count") do
           post sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp"), params: {
             challenge_id: challenge_id,
@@ -239,23 +239,27 @@ module Sign::App::Up
     private
 
     def verify_telephone_via_otp!
-      post sign_app_up_telephones_url(ri: "jp"), params: {
-        user_telephone: {
-          raw_number: "+1234567890",
-          confirm_policy: "1",
-          confirm_using_mfa: "1",
+      post(
+        sign_app_up_telephones_url(ri: "jp"), params: {
+          user_telephone: {
+            raw_number: "+1234567890",
+            confirm_policy: "1",
+            confirm_using_mfa: "1",
+          },
+          "cf-turnstile-response": "test",
         },
-        "cf-turnstile-response": "test",
-      }
+      )
 
       telephone = registration_telephone
       otp_data = telephone.get_otp
       hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
       code = hotp.at(otp_data[:otp_counter])
 
-      patch sign_app_up_telephone_url(telephone, ri: "jp"), params: {
-        user_telephone: { pass_code: code },
-      }
+      patch(
+        sign_app_up_telephone_url(telephone, ri: "jp"), params: {
+          user_telephone: { pass_code: code },
+        },
+      )
 
       assert_redirected_to sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp")
       telephone.reload

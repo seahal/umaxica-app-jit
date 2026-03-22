@@ -4,7 +4,6 @@
 require "test_helper"
 
 class Email::App::RegistrationMailerTest < ActionMailer::TestCase
-  # rubocop:disable Minitest/MultipleAssertions
   test "create" do
     mail = Email::App::RegistrationMailer.with(hotp_token: "123456", email_address: "user@example.com").create
 
@@ -17,7 +16,6 @@ class Email::App::RegistrationMailerTest < ActionMailer::TestCase
     assert_match "123456", mail.html_part.body.decoded
     assert_match "123456", mail.text_part.body.decoded
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "create with different hotp_token" do
     mail = Email::App::RegistrationMailer.with(hotp_token: "654321", email_address: "test@example.com").create

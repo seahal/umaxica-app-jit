@@ -4,7 +4,7 @@
 class ConvertTimestampsToTimestamptz < ActiveRecord::Migration[8.1]
   def up
     safety_assured do
-      execute <<~'SQL'.squish
+      execute(<<~'SQL'.squish)
         DO $$
         DECLARE
           rec RECORD;

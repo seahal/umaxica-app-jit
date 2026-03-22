@@ -22,8 +22,14 @@ class RenameNoneToNeyoInUserIdentityReferenceData < ActiveRecord::Migration[8.2]
 
     change_column_default_if_exists(:users, :user_identity_status_id, from: "NONE", to: "NEYO")
     change_column_default_if_exists(:user_identity_emails, :user_identity_email_status_id, from: "NONE", to: "NEYO")
-    change_column_default_if_exists(:user_identity_telephones, :user_identity_telephone_status_id, from: "NONE", to: "NEYO")
-    change_column_default_if_exists(:user_identity_one_time_passwords, :user_identity_one_time_password_status_id, from: "NONE", to: "NEYO")
+    change_column_default_if_exists(
+      :user_identity_telephones, :user_identity_telephone_status_id, from: "NONE",
+                                                                     to: "NEYO",
+    )
+    change_column_default_if_exists(
+      :user_identity_one_time_passwords, :user_identity_one_time_password_status_id,
+      from: "NONE", to: "NEYO",
+    )
     change_column_default_if_exists(:user_identity_audits, :event_id, from: "NONE", to: "NEYO")
     change_column_default_if_exists(:user_identity_audits, :level_id, from: "NONE", to: "NEYO")
 
@@ -60,8 +66,14 @@ class RenameNoneToNeyoInUserIdentityReferenceData < ActiveRecord::Migration[8.2]
 
     change_column_default_if_exists(:users, :user_identity_status_id, from: "NEYO", to: "NONE")
     change_column_default_if_exists(:user_identity_emails, :user_identity_email_status_id, from: "NEYO", to: "NONE")
-    change_column_default_if_exists(:user_identity_telephones, :user_identity_telephone_status_id, from: "NEYO", to: "NONE")
-    change_column_default_if_exists(:user_identity_one_time_passwords, :user_identity_one_time_password_status_id, from: "NEYO", to: "NONE")
+    change_column_default_if_exists(
+      :user_identity_telephones, :user_identity_telephone_status_id, from: "NEYO",
+                                                                     to: "NONE",
+    )
+    change_column_default_if_exists(
+      :user_identity_one_time_passwords, :user_identity_one_time_password_status_id,
+      from: "NEYO", to: "NONE",
+    )
     change_column_default_if_exists(:user_identity_audits, :event_id, from: "NEYO", to: "NONE")
     change_column_default_if_exists(:user_identity_audits, :level_id, from: "NEYO", to: "NONE")
 
@@ -105,7 +117,7 @@ class RenameNoneToNeyoInUserIdentityReferenceData < ActiveRecord::Migration[8.2]
     return unless string_column?(table, column)
 
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         UPDATE #{table}
         SET #{column} = '#{to}'
         WHERE #{column} = '#{from}'
@@ -117,7 +129,7 @@ class RenameNoneToNeyoInUserIdentityReferenceData < ActiveRecord::Migration[8.2]
     return unless table_exists?(table) && column_exists?(table, column)
     return unless string_column?(table, column)
 
-    change_column_default table, column, from: from, to: to
+    change_column_default(table, column, from: from, to: to)
   end
 
   def delete_id_tables(tables, id:)

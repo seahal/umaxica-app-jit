@@ -6,12 +6,12 @@ class SeedTokenKinds < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
       TOKEN_KINDS.each do |kind_id|
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_token_kinds (id, created_at, updated_at)
           VALUES (#{connection.quote(kind_id)}, NOW(), NOW())
           ON CONFLICT (id) DO NOTHING
         SQL
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO staff_token_kinds (id, created_at, updated_at)
           VALUES (#{connection.quote(kind_id)}, NOW(), NOW())
           ON CONFLICT (id) DO NOTHING
@@ -22,10 +22,10 @@ class SeedTokenKinds < ActiveRecord::Migration[8.2]
 
   def down
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         DELETE FROM user_token_kinds WHERE id IN (#{TOKEN_KINDS.map { |k| connection.quote(k) }.join(", ")})
       SQL
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         DELETE FROM staff_token_kinds WHERE id IN (#{TOKEN_KINDS.map { |k| connection.quote(k) }.join(", ")})
       SQL
     end

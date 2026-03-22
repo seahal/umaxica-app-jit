@@ -35,7 +35,7 @@ class SeedGuestStatuses < ActiveRecord::Migration[7.1]
         ON CONFLICT (id) DO UPDATE SET #{updates}
       SQL
 
-      execute sql
+      execute(sql)
     end
   end
 end

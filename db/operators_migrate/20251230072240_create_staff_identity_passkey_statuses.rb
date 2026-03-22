@@ -2,12 +2,11 @@
 
 require "digest"
 
-# rubocop:disable Rails/CreateTableWithTimestamps
 class CreateStaffIdentityPasskeyStatuses < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def up
-    create_table :staff_identity_passkey_statuses, id: :string, limit: 255, primary_key: :id
+    create_table(:staff_identity_passkey_statuses, id: :string, limit: 255, primary_key: :id)
 
     safety_assured do
       # No-op: intentionally left blank.
@@ -19,14 +18,16 @@ class CreateStaffIdentityPasskeyStatuses < ActiveRecord::Migration[8.2]
       name: constraint_name(:staff_identity_passkey_statuses, :id),
     )
 
-    add_index :staff_identity_passkey_statuses, "lower(id)",
-              unique: true,
-              name: "index_staff_identity_passkey_statuses_on_lower_id",
-              if_not_exists: true
+    add_index(
+      :staff_identity_passkey_statuses, "lower(id)",
+      unique: true,
+      name: "index_staff_identity_passkey_statuses_on_lower_id",
+      if_not_exists: true,
+    )
   end
 
   def down
-    drop_table :staff_identity_passkey_statuses
+    drop_table(:staff_identity_passkey_statuses)
   end
 
   private
@@ -39,5 +40,3 @@ class CreateStaffIdentityPasskeyStatuses < ActiveRecord::Migration[8.2]
     "chk_#{table}_#{column}_#{digest}"
   end
 end
-
-# rubocop:enable Rails/CreateTableWithTimestamps

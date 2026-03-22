@@ -6,9 +6,9 @@ class AddFormatChecksToContactCategoryIds < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :app_contact_categories, :id
-    add_format_check :com_contact_categories, :id
-    add_format_check :org_contact_categories, :id
+    add_format_check(:app_contact_categories, :id)
+    add_format_check(:com_contact_categories, :id)
+    add_format_check(:org_contact_categories, :id)
   end
 
   private

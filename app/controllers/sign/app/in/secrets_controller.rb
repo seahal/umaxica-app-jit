@@ -146,7 +146,7 @@ module Sign
           when :session_limit_hard_reject
             render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           when :restricted
-            redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
+            redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
           when :success
             issue_checkpoint!
             redirect_to(
@@ -172,15 +172,17 @@ module Sign
             user, rt: nil, ri: params[:ri], auth_method: "secret",
           )
           if result[:status] == :mfa_required
-            redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
+            redirect_to(result[:redirect_path], notice: t("sign.app.in.mfa.required"))
           elsif result[:status] == :session_limit_hard_reject
             render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
           elsif result[:restricted]
-            redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
+            redirect_to(sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice"))
           else
             issue_checkpoint!
-            redirect_to sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-                        notice: t("sign.app.authentication.secret.create.success")
+            redirect_to(
+              sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
+              notice: t("sign.app.authentication.secret.create.success"),
+            )
           end
         end
 

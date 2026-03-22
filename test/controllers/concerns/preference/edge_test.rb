@@ -4,7 +4,7 @@
 require "test_helper"
 
 class PreferenceEdgeTestController < ::Core::App::ApplicationController
-  include Preference::Edge
+  include ::Preference::Edge
 
   attr_accessor :payload_preferences, :payload_public_id
 

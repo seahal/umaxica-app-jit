@@ -16,14 +16,14 @@ class RenameDocumentStatusDefaultNoneToNeyo < ActiveRecord::Migration[7.1]
       next unless column_exists?(table, :status_id)
 
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           UPDATE #{table}
           SET status_id = #{connection.quote(to)}
           WHERE status_id = #{connection.quote(from)}
         SQL
       end
 
-      change_column_default table, :status_id, from: from, to: to
+      change_column_default(table, :status_id, from: from, to: to)
     end
   end
 end

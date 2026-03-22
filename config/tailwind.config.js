@@ -11,28 +11,14 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
-      },
+      fontFamily: { sans: ["Inter var", ...defaultTheme.fontFamily.sans] },
       colors: {
         bg: "hsl(var(--bg))",
         fg: "hsl(var(--fg))",
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          fg: "hsl(var(--muted-fg))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          fg: "hsl(var(--card-fg))",
-        },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          fg: "hsl(var(--primary-fg))",
-        },
-        danger: {
-          DEFAULT: "hsl(var(--danger))",
-          fg: "hsl(var(--danger-fg))",
-        },
+        muted: { DEFAULT: "hsl(var(--muted))", fg: "hsl(var(--muted-fg))" },
+        card: { DEFAULT: "hsl(var(--card))", fg: "hsl(var(--card-fg))" },
+        primary: { DEFAULT: "hsl(var(--primary))", fg: "hsl(var(--primary-fg))" },
+        danger: { DEFAULT: "hsl(var(--danger))", fg: "hsl(var(--danger-fg))" },
         border: "hsl(var(--border))",
         ring: "hsl(var(--ring))",
       },
@@ -49,12 +35,8 @@ module.exports = {
     require("@tailwindcss/container-queries"),
     plugin(({ addBase, theme }) => {
       addBase({
-        "a:link": {
-          color: theme("colors.blue.600"),
-        },
-        "a:visited": {
-          color: theme("colors.blue.600"),
-        },
+        "a:link": { color: theme("colors.blue.600") },
+        "a:visited": { color: theme("colors.blue.600") },
       });
     }),
   ],

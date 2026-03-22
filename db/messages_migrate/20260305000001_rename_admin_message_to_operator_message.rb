@@ -3,7 +3,7 @@
 class RenameAdminMessageToOperatorMessage < ActiveRecord::Migration[8.2]
   def change
     safety_assured do
-      rename_table :admin_messages, :operator_messages
+      rename_table(:admin_messages, :operator_messages)
       rename_public_id_index
       rename_staff_message_id_index
     end
@@ -17,7 +17,7 @@ class RenameAdminMessageToOperatorMessage < ActiveRecord::Migration[8.2]
 
     return unless index_exists?(:operator_messages, :public_id, name: old_name)
 
-    rename_index :operator_messages, old_name, new_name
+    rename_index(:operator_messages, old_name, new_name)
   end
 
   def rename_staff_message_id_index
@@ -26,6 +26,6 @@ class RenameAdminMessageToOperatorMessage < ActiveRecord::Migration[8.2]
 
     return unless index_exists?(:operator_messages, :staff_message_id, name: old_name)
 
-    rename_index :operator_messages, old_name, new_name
+    rename_index(:operator_messages, old_name, new_name)
   end
 end

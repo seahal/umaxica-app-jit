@@ -9,16 +9,16 @@
 
 Rails.application.configure do
   config.content_security_policy do |policy|
-    policy.default_src :self, :https
-    policy.font_src :self, :https, :data
-    policy.img_src :self, :https, :data
-    policy.object_src :none
-    policy.script_src :self, :https, "https://challenges.cloudflare.com", "https://static.cloudflareinsights.com"
-    policy.frame_src :self, :https, "https://challenges.cloudflare.com"
-    policy.style_src :self, :https
-    policy.connect_src :self, :https, "https://cloudflareinsights.com"
+    policy.default_src(:self, :https)
+    policy.font_src(:self, :https, :data)
+    policy.img_src(:self, :https, :data)
+    policy.object_src(:none)
+    policy.script_src(:self, :https, "https://challenges.cloudflare.com", "https://static.cloudflareinsights.com")
+    policy.frame_src(:self, :https, "https://challenges.cloudflare.com")
+    policy.style_src(:self, :https)
+    policy.connect_src(:self, :https, "https://cloudflareinsights.com")
     # Report CSP violations to our logging endpoint
-    policy.report_uri "/csp-violation-report"
+    policy.report_uri("/csp-violation-report")
   end
 
   # Generate session nonces for permitted importmap, inline scripts, and inline styles.

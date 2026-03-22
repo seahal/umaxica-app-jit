@@ -86,7 +86,7 @@ module Sign::App::In::Passkey
         true
       end
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post verification_sign_app_in_passkeys_url(ri: "jp"), params: {
           challenge_id: challenge_id,
           credential: {
@@ -139,7 +139,7 @@ module Sign::App::In::Passkey
         true
       end
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post verification_sign_app_in_passkeys_url(ri: "jp"), params: {
           challenge_id: challenge_id,
           credential: {

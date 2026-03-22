@@ -20,7 +20,7 @@
 <header>
   <nav>
     <%= render "layouts/shared/flash_messages" %>
-    <%= render "layouts/shared/current_banner", surface: :app %>
+    <%= render "layouts/shared/current_banner", tld: :app, domain: :docs, region: :jp %>
     <%= link_to_if !@user&.active?, "logout?", new_sign_app_up_path %>
     <%= link_to_unless @user&.active?, "login?", new_sign_app_up_path %>
   </nav>

@@ -54,7 +54,7 @@ module Sign
           preserve_redirect_parameter
 
           flash[:notice] = t("sign.app.authentication.email.create.verification_code_sent")
-          redirect_to edit_sign_app_in_email_path(rd: peek_redirect_parameter)
+          redirect_to(edit_sign_app_in_email_path(rd: peek_redirect_parameter))
         end
 
         # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
@@ -82,14 +82,16 @@ module Sign
             respond_to do |format|
               format.html do
                 if result[:restricted]
-                  redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
+                  redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
                 elsif result[:redirect_path]
-                  redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
+                  redirect_to(result[:redirect_path], notice: t("sign.app.in.mfa.required"))
                 else
                   rd_param = retrieve_redirect_parameter
                   issue_checkpoint!
-                  redirect_to sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri]),
-                              notice: t("sign.app.authentication.email.update.success")
+                  redirect_to(
+                    sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri]),
+                    notice: t("sign.app.authentication.email.update.success"),
+                  )
                 end
               end
               format.json do
@@ -136,7 +138,7 @@ module Sign
 
             unless @user_email
               flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
-              redirect_to new_sign_app_in_email_path(rd: peek_redirect_parameter)
+              redirect_to(new_sign_app_in_email_path(rd: peek_redirect_parameter))
               return
             end
             @otp_resend_state = Sign::In::OtpResendState.issue(kind: :email, target: @user_email.address)
@@ -149,7 +151,7 @@ module Sign
           else
 
             flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
-            redirect_to new_sign_app_in_email_path(rd: peek_redirect_parameter)
+            redirect_to(new_sign_app_in_email_path(rd: peek_redirect_parameter))
           end
         end
 
@@ -272,7 +274,7 @@ module Sign
           last_sent_at = session[:sign_in_email_cooldown_at]
           return false if last_sent_at.blank?
 
-          last_sent_at.to_i > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
+          Integer(last_sent_at.to_s, 10) > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
         end
 
         def record_sign_in_email_cooldown!(normalized_address)

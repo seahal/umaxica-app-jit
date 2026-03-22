@@ -24,7 +24,7 @@ module Oidc
       if result.success?
         set_auth_cookies_from_token_response(result.token_response)
         return_to = session.delete(:oidc_return_to)
-        redirect_to return_to || "/", allow_other_host: false
+        redirect_to(return_to || "/", allow_other_host: false)
       else
         Rails.event.notify(
           "oidc.callback.failed",
@@ -33,7 +33,7 @@ module Oidc
           client_id: oidc_client_id,
           host: request.host,
         )
-        redirect_to "/", alert: I18n.t("errors.messages.login_required")
+        redirect_to("/", alert: I18n.t("errors.messages.login_required"))
       end
     end
 

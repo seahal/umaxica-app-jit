@@ -68,7 +68,10 @@ class CreateOccurrenceConstraints < ActiveRecord::Migration[8.2]
       remove_index(table, name: body_index_name(table)) if index_exists?(table, :body, name: body_index_name(table))
     end
 
-    remove_index(table, name: public_id_index_name(table)) if index_exists?(table, :public_id, name: public_id_index_name(table))
+    remove_index(table, name: public_id_index_name(table)) if index_exists?(
+      table, :public_id,
+      name: public_id_index_name(table),
+    )
 
     change_column_null(table, :status_id, true) if column_exists?(table, :status_id)
     change_column_null(table, :body, true) if column_exists?(table, :body)

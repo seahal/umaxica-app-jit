@@ -173,8 +173,10 @@ class SocialCallbackGuardTest < ActionDispatch::IntegrationTest
   private
 
   def prepare_callback_flow(provider:, user:)
-    get sign_app_social_start_url(provider: provider, intent: "link", ri: "jp"),
-        headers: as_user_headers(user, host: @host)
+    get(
+      sign_app_social_start_url(provider: provider, intent: "link", ri: "jp"),
+      headers: as_user_headers(user, host: @host),
+    )
 
     assert_response :redirect
     uri = URI.parse(response.location)

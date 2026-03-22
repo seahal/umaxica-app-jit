@@ -2,12 +2,12 @@
 
 class CreateOrgTimelineTagMasters < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_timeline_tag_masters, id: :string, limit: 255 do |t|
-      t.string :parent_id, null: false, default: "none", limit: 255
+    create_table(:org_timeline_tag_masters, id: :string, limit: 255) do |t|
+      t.string(:parent_id, null: false, default: "none", limit: 255)
 
       t.timestamps
     end
 
-    add_index :org_timeline_tag_masters, :parent_id
+    add_index(:org_timeline_tag_masters, :parent_id)
   end
 end

@@ -17,7 +17,7 @@ class AddRequiredDocumentStatuses < ActiveRecord::Migration[8.2]
     statuses = %w(NEYO ACTIVE DRAFT ARCHIVED PUBLISHED)
 
     statuses.each_with_index do |status_id, index|
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO #{table_name} (id, position, created_at, updated_at)
         VALUES ('#{status_id}', #{index}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO NOTHING

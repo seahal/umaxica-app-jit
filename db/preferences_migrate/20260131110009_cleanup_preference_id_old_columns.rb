@@ -16,7 +16,7 @@ class CleanupPreferenceIdOldColumns < ActiveRecord::Migration[8.2]
       )
 
       (option_tables + status_tables).each do |table|
-        remove_column table, :id_old
+        remove_column(table, :id_old)
       end
     end
   end

@@ -67,12 +67,12 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     controller = Sign::Org::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2035, 5, 6, 7, 8, 9)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_ORG: ".org.refresh.example.test") do
-      controller.any_instance.stub(
-        :decode_and_verify_preference_jwt,
-        { "preferences" => { "consented" => false }, "public_id" => "pref-org-public-id" },
-      ) do
-        controller.any_instance.stub(:refresh_token_expires_at, expires_at) do
+    travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      with_cookie_domain_credentials(COOKIE_DOMAIN_ORG: ".org.refresh.example.test") do
+        controller.any_instance.stub(
+          :decode_and_verify_preference_jwt,
+          { "preferences" => { "consented" => false }, "public_id" => "pref-org-public-id" },
+        ) do
           post "/edge/v0/token/refresh",
                headers: {
                  "Host" => @host,
@@ -93,7 +93,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta expires_at.to_i, expires.to_i, 1
+    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
   end
 
   test "GET check with valid access token from refresh returns 200" do

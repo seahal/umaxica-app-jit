@@ -4,7 +4,7 @@
 require "test_helper"
 
 class PreferenceSanitizeTestController < ::Core::App::ApplicationController
-  include Preference::Base
+  include ::Preference::Base
 
   attr_accessor :test_params, :test_controller_path
 
@@ -288,7 +288,7 @@ module Preference
     end
 
     test "normalized_locale returns sym for valid locale" do
-      I18n.stub :available_locales, [:en, :ja] do
+      I18n.stub(:available_locales, [:en, :ja]) do
         assert_equal :en, @controller.send(:normalized_locale, "en")
         assert_equal :ja, @controller.send(:normalized_locale, "JA")
         assert_nil @controller.send(:normalized_locale, "invalid")
@@ -303,7 +303,7 @@ module Preference
     end
 
     test "available_locale_strings returns unique lowercased strings" do
-      I18n.stub :available_locales, [:en, :JA, :en] do
+      I18n.stub(:available_locales, %i(en JA en)) do
         # Clear memoized value
         @controller.instance_variable_set(:@available_locale_strings, nil)
 

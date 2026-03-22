@@ -216,7 +216,7 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
   def with_dummy_route
     with_routing do |set|
       set.draw do
-        get "/test_rate_limit", to: "rate_limit_dummy#index"
+        get("/test_rate_limit", to: "rate_limit_dummy#index")
       end
 
       yield

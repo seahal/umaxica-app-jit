@@ -121,7 +121,7 @@ class RenameAuditTablesToActivity < ActiveRecord::Migration[8.2]
         next unless check_constraint_named?(table, from)
         next if check_constraint_named?(table, to)
 
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           ALTER TABLE #{quote_table_name(table)}
           RENAME CONSTRAINT #{quote_column_name(from)} TO #{quote_column_name(to)}
         SQL

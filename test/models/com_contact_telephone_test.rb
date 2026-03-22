@@ -19,7 +19,7 @@
 #  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  com_contact_id         :bigint           not null
+#  com_contact_id         :bigint           default(0), not null
 #
 # Indexes
 #
@@ -142,7 +142,6 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_kind_of Integer, telephone.id
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     contact = create_contact(public_id: "phone_7", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
@@ -156,9 +155,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_not_nil telephone.created_at
     assert_not_nil telephone.updated_at
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should have all expected attributes" do
     contact = create_contact(public_id: "phone_8", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
@@ -175,7 +172,6 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_respond_to telephone, :hotp_secret
     assert_respond_to telephone, :hotp_counter
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have default values" do
     contact = create_contact(public_id: "phone_9", created_at: Time.current, updated_at: Time.current)
@@ -280,7 +276,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   # OTP tests
-  # rubocop:disable Minitest/MultipleAssertions
+
   test "should generate OTP" do
     contact = create_contact(public_id: "phone_14", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
@@ -298,7 +294,6 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_not_nil telephone.otp_expires_at
     assert_equal 3, telephone.otp_attempts_left
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "should verify correct OTP" do
     contact = create_contact(public_id: "phone_15", created_at: Time.current, updated_at: Time.current)
@@ -425,7 +420,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   # HOTP tests
-  # rubocop:disable Minitest/MultipleAssertions
+
   test "should generate and verify HOTP" do
     contact = create_contact(public_id: "phone_23", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
@@ -460,7 +455,6 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
 
     assert telephone.verify_hotp_code(code2)
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "should reject reuse of HOTP code" do
     contact = create_contact(public_id: "phone_24", created_at: Time.current, updated_at: Time.current)

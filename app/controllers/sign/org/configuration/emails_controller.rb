@@ -28,21 +28,27 @@ module Sign
           @staff_email = current_staff.staff_emails.find_by!(public_id: params[:id])
 
           if @staff_email.undeletable?
-            redirect_to sign_org_configuration_emails_path,
-                        alert: t("sign.org.configuration.email.destroy.protected")
+            redirect_to(
+              sign_org_configuration_emails_path,
+              alert: t("sign.org.configuration.email.destroy.protected"),
+            )
             return
           end
 
           unless removable_email?(@staff_email)
-            redirect_to sign_org_configuration_emails_path,
-                        alert: t("sign.org.configuration.email.destroy.last_method")
+            redirect_to(
+              sign_org_configuration_emails_path,
+              alert: t("sign.org.configuration.email.destroy.last_method"),
+            )
             return
           end
 
           @staff_email.destroy!
-          redirect_to sign_org_configuration_emails_path,
-                      notice: t("sign.org.configuration.email.destroy.success"),
-                      status: :see_other
+          redirect_to(
+            sign_org_configuration_emails_path,
+            notice: t("sign.org.configuration.email.destroy.success"),
+            status: :see_other,
+          )
         end
 
         private

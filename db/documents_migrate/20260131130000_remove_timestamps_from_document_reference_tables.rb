@@ -17,7 +17,7 @@ class RemoveTimestampsFromDocumentReferenceTables < ActiveRecord::Migration[8.2]
   def up
     REFERENCE_TABLES.each do |table|
       TIMESTAMP_COLUMNS.each do |column|
-        safety_assured { remove_column table, column, :datetime } if column_exists?(table, column)
+        safety_assured { remove_column(table, column, :datetime) } if column_exists?(table, column)
       end
     end
   end

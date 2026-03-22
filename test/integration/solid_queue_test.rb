@@ -69,7 +69,7 @@ class SolidQueueTest < ActiveSupport::TestCase
 
     assert_not_nil solid_queue_job
     assert_not_nil solid_queue_job.scheduled_at
-    assert_in_delta future_time.to_i, solid_queue_job.scheduled_at.to_i, 2
+    assert_in_delta Integer(future_time.to_s, 10), Integer(solid_queue_job.scheduled_at.to_s, 10), 2
   end
 
   test "jobs use queue database connection" do

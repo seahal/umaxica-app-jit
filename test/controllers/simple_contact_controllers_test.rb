@@ -42,7 +42,7 @@ class SimpleContactControllersTest < ActiveSupport::TestCase
       )
 
       controller = build_controller(config[:klass], contact_id: "missing")
-      config[:model].stub :find_by, nil do
+      config[:model].stub(:find_by, nil) do
         controller.send(:set_contact)
       end
 
@@ -53,7 +53,7 @@ class SimpleContactControllersTest < ActiveSupport::TestCase
 
       controller = build_controller(config[:klass], contact_id: "contact-1")
       contact = Struct.new(:id).new(42)
-      config[:model].stub :find_by, contact do
+      config[:model].stub(:find_by, contact) do
         controller.send(:set_contact)
         controller.new
 

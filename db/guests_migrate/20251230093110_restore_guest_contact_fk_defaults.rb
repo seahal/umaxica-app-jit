@@ -39,12 +39,12 @@ class RestoreGuestContactFkDefaults < ActiveRecord::Migration[8.2]
   def update_fk_defaults(table_name, column)
     return unless table_exists?(table_name) && column_exists?(table_name, column)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       UPDATE #{table_name}
       SET #{column} = 'NEYO'
       WHERE #{column} = '' OR #{column} IS NULL
     SQL
 
-    change_column_default table_name, column, from: "", to: "NEYO"
+    change_column_default(table_name, column, from: "", to: "NEYO")
   end
 end

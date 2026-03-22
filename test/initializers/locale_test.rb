@@ -21,7 +21,6 @@ class LocaleInitializerTest < ActiveSupport::TestCase
     assert_raises(KeyError) { reload_locale_initializer }
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "REGION_CODE=all should load www and jpn locale files" do
     ENV["REGION_CODE"] = "all"
 
@@ -33,7 +32,6 @@ class LocaleInitializerTest < ActiveSupport::TestCase
     assert_equal [:en, :ja], I18n.fallbacks[:en]
     assert_equal [:ja, :en], I18n.fallbacks[:ja]
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   # test "REGION_CODE=usa should work correctly" do
   #   result = system(
@@ -69,7 +67,7 @@ class LocaleInitializerTest < ActiveSupport::TestCase
 
   def reload_locale_initializer
     Object.send(:remove_const, :REGION_COMPOSE) if defined?(REGION_COMPOSE)
-    load INITIALIZER_PATH
+    load(INITIALIZER_PATH)
   end
 
   def assert_includes_locale_path(location)

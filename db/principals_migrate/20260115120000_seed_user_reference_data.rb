@@ -39,7 +39,7 @@ class SeedUserReferenceData < ActiveRecord::Migration[8.2]
 
   def seed_user_statuses
     USER_STATUS_IDS.each do |status_id|
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO user_statuses (id)
         VALUES ('#{status_id}')
         ON CONFLICT (id) DO NOTHING
@@ -49,7 +49,7 @@ class SeedUserReferenceData < ActiveRecord::Migration[8.2]
 
   def seed_users
     USER_DEFINITIONS.each_value do |user|
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO users (id, public_id, status_id, created_at, updated_at)
         VALUES (
           '#{user[:id]}',
@@ -68,7 +68,7 @@ class SeedUserReferenceData < ActiveRecord::Migration[8.2]
       user = USER_DEFINITIONS[entry[:user]]
       next unless user
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         INSERT INTO user_emails (
           id,
           address,

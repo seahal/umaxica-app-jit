@@ -34,8 +34,10 @@ module Sign
 
           unless auth
             Rails.event.error("sign.social.org.omniauth.missing_auth_hash")
-            return redirect_to new_sign_org_in_path,
-                               alert: I18n.t("sign.org.social.sessions.create.failure")
+            return redirect_to(
+              new_sign_org_in_path,
+              alert: I18n.t("sign.org.social.sessions.create.failure"),
+            )
           end
 
           validate_social_auth_state!
@@ -50,8 +52,10 @@ module Sign
               email_present: email.present?,
             )
             clear_social_auth_intent!
-            return redirect_to new_sign_org_in_path,
-                               alert: I18n.t("sign.org.social.sessions.create.not_found")
+            return redirect_to(
+              new_sign_org_in_path,
+              alert: I18n.t("sign.org.social.sessions.create.not_found"),
+            )
           end
 
           Rails.event.debug(
@@ -60,8 +64,16 @@ module Sign
           )
 
           clear_social_auth_intent!
-          return redirect_to new_sign_org_in_path,
-                             alert: I18n.t("sign.org.social.sessions.create.failure") unless staff.login_allowed?
+          unless staff.login_allowed?
+            Sign::Risk::Emitter.emit(
+              "auth_failed", staff_id: staff.id, ip: request.remote_ip,
+                             reason: "social_login_not_allowed",
+            )
+            return redirect_to(
+              new_sign_org_in_path,
+              alert: I18n.t("sign.org.social.sessions.create.failure"),
+            )
+          end
 
           login_result = log_in(staff, record_login_audit: true)
 
@@ -78,8 +90,10 @@ module Sign
           message = params[:message] || "unknown_error"
           clear_social_auth_intent!
           Rails.event.record("sign.social.org.omniauth_failure", message: message)
-          redirect_to new_sign_org_in_path,
-                      alert: I18n.t("sign.org.social.sessions.create.failure")
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+          )
         end
 
         private
@@ -131,22 +145,30 @@ module Sign
                 http_status: result[:http_status],
               )
             when :session_limit_exceeded
-              redirect_to new_sign_org_in_path,
-                          alert: I18n.t("sign.org.social.sessions.create.session_limit")
+              redirect_to(
+                new_sign_org_in_path,
+                alert: I18n.t("sign.org.social.sessions.create.session_limit"),
+              )
             else
-              redirect_to new_sign_org_in_path,
-                          alert: I18n.t("sign.org.social.sessions.create.failure")
+              redirect_to(
+                new_sign_org_in_path,
+                alert: I18n.t("sign.org.social.sessions.create.failure"),
+              )
             end
           elsif result.is_a?(Hash) && result[:restricted]
-            redirect_to sign_org_in_session_path,
-                        notice: I18n.t(
-                          "sign.org.in.session.restricted_notice",
-                          default: "セッション数が上限に達しています。既存セッションを管理してください。",
-                        )
+            redirect_to(
+              sign_org_in_session_path,
+              notice: I18n.t(
+                "sign.org.in.session.restricted_notice",
+                default: "セッション数が上限に達しています。既存セッションを管理してください。",
+              ),
+            )
           else
             issue_checkpoint!
-            redirect_to sign_org_in_checkpoint_path(ri: params[:ri]),
-                        notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name)
+            redirect_to(
+              sign_org_in_checkpoint_path(ri: params[:ri]),
+              notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name),
+            )
           end
         end
 
@@ -161,8 +183,10 @@ module Sign
             exception: error,
           )
           clear_social_auth_intent!
-          redirect_to new_sign_org_in_path,
-                      alert: I18n.t("sign.org.social.sessions.create.failure")
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+          )
         end
 
         def mock_auth_from_test_mode
@@ -189,9 +213,11 @@ module Sign
             "[SocialCallbackGuard] org phase=callback provider=#{provider.inspect} " \
             "reason=#{reason} details=#{details.inspect}",
           )
-          redirect_to new_sign_org_in_path,
-                      alert: I18n.t("sign.org.social.sessions.create.failure"),
-                      status: :forbidden
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+            status: :forbidden,
+          )
         end
       end
     end

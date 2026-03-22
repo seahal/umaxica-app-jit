@@ -322,7 +322,7 @@ module Auth
 
       HeaderKeyHarness.reset_encrypted_cookies!
 
-      Core::CookieOptions.stub :for, {} do
+      Core::CookieOptions.stub(:for, {}) do
         harness.send(:set_device_id_cookie!, "dev-123", expires_at: expires_at)
 
         assert_equal "dev-123", HeaderKeyHarness.encrypted_cookies[Auth::Base::DEVICE_COOKIE_KEY][:value]
@@ -337,9 +337,9 @@ module Auth
       harness = HeaderKeyHarness.new
       HeaderKeyHarness.reset_encrypted_cookies!
       harness.cookies[Auth::Base::ACCESS_COOKIE_KEY] = "access"
-      harness.cookies[Auth::Base::REFRESH_COOKIE_KEY] = "refresh"
+      harness.cookies.encrypted[Auth::Base::REFRESH_COOKIE_KEY] = "refresh"
 
-      Core::CookieOptions.stub :for, {} do
+      Core::CookieOptions.stub(:for, {}) do
         harness.send(:clear_auth_cookies!)
 
         assert_nil harness.cookies[Auth::Base::ACCESS_COOKIE_KEY]

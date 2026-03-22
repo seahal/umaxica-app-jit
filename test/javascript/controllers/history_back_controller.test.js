@@ -15,15 +15,10 @@ describe("HistoryBackController", () => {
   let historyMock;
 
   beforeEach(() => {
-    historyMock = {
-      length: 1,
-      back: vi.fn(),
-    };
+    historyMock = { length: 1, back: vi.fn() };
     vi.stubGlobal("window", { history: historyMock });
 
-    event = {
-      preventDefault: vi.fn(),
-    };
+    event = { preventDefault: vi.fn() };
 
     controller = new HistoryBackController();
   });

@@ -6,7 +6,7 @@ class EnforceUserTokenLimit < ActiveRecord::Migration[8.2]
   LIMIT = 2
 
   def up
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       CREATE OR REPLACE FUNCTION #{FUNCTION_NAME}()
       RETURNS trigger AS $$
       DECLARE
@@ -22,11 +22,11 @@ class EnforceUserTokenLimit < ActiveRecord::Migration[8.2]
       $$ LANGUAGE plpgsql;
     SQL
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DROP TRIGGER IF EXISTS #{TRIGGER_NAME} ON user_tokens;
     SQL
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       CREATE TRIGGER #{TRIGGER_NAME}
       BEFORE INSERT ON user_tokens
       FOR EACH ROW EXECUTE FUNCTION #{FUNCTION_NAME}();
@@ -34,11 +34,11 @@ class EnforceUserTokenLimit < ActiveRecord::Migration[8.2]
   end
 
   def down
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DROP TRIGGER IF EXISTS #{TRIGGER_NAME} ON user_tokens;
     SQL
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DROP FUNCTION IF EXISTS #{FUNCTION_NAME}();
     SQL
   end

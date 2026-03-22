@@ -50,7 +50,7 @@ class SeedTestDocumentReferenceIds < ActiveRecord::Migration[8.2]
       vals << "CURRENT_TIMESTAMP"
     end
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       INSERT INTO #{table_name} (#{cols.join(", ")})
       VALUES (#{vals.join(", ")})
       ON CONFLICT (id) DO NOTHING

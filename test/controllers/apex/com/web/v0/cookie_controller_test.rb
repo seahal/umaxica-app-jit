@@ -47,9 +47,9 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     cookies[Preference::CookieName.access] = token
     expires_at = Time.utc(2031, 2, 3, 4, 5, 6)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_COM: ".com.localhost") do
-      with_preference_jwt_keys(host: @host) do
-        Apex::Com::Web::V0::CookiesController.any_instance.stub(:refresh_token_expires_at, expires_at) do
+    travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      with_cookie_domain_credentials(COOKIE_DOMAIN_COM: ".com.localhost") do
+        with_preference_jwt_keys(host: @host) do
           patch apex_com_web_v0_cookie_path, as: :json
         end
       end
@@ -64,7 +64,7 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta expires_at.to_i, expires.to_i, 1
+    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
   end
 
   test "PATCH update with consented true updates com preference cookie and issues access token" do

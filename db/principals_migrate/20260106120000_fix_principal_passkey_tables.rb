@@ -8,7 +8,7 @@ class FixPrincipalPasskeyTables < ActiveRecord::Migration[8.2]
       # Fix User Passkeys
       if connection.table_exists?(:user_passkeys) && connection.column_exists?(:user_passkeys, :external_id)
         # This is the collision table (wrong schema)
-        drop_table :user_passkeys
+        drop_table(:user_passkeys)
       end
 
       if connection.table_exists?(:user_identity_passkeys) && !connection.table_exists?(:user_passkeys)
@@ -16,8 +16,11 @@ class FixPrincipalPasskeyTables < ActiveRecord::Migration[8.2]
       end
 
       # Rename columns on the newly established user_passkeys table
-      if connection.table_exists?(:user_passkeys) && connection.column_exists?(:user_passkeys, :user_identity_passkey_status_id)
-        rename_column :user_passkeys, :user_identity_passkey_status_id, :user_passkey_status_id
+      if connection.table_exists?(:user_passkeys) && connection.column_exists?(
+        :user_passkeys,
+        :user_identity_passkey_status_id,
+      )
+        rename_column(:user_passkeys, :user_identity_passkey_status_id, :user_passkey_status_id)
       end
     end
   end

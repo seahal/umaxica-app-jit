@@ -164,7 +164,7 @@ class Auth::UserTest < ActiveSupport::TestCase
     assert tokens[:refresh_token]
     assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
     assert_equal "Bearer", tokens[:token_type]
-    assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+    assert_equal Integer(::Auth::Base::ACCESS_TOKEN_TTL.to_s, 10), tokens[:expires_in]
   end
 
   test "build_refreshed_session caps cookie and jwt expiry to revoked_at" do
@@ -190,10 +190,10 @@ class Auth::UserTest < ActiveSupport::TestCase
       refresh_opts = @obj.cookies.options_for(::Auth::User::REFRESH_COOKIE_KEY)
       device_opts = @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)
 
-      assert_in_delta token.revoked_at.to_i, payload["exp"], 1
-      assert_in_delta token.revoked_at.to_i, access_opts[:expires].to_i, 1
-      assert_in_delta token.revoked_at.to_i, refresh_opts[:expires].to_i, 1
-      assert_in_delta token.revoked_at.to_i, device_opts[:expires].to_i, 1
+      assert_in_delta Integer(token.revoked_at.to_s, 10), payload["exp"], 1
+      assert_in_delta Integer(token.revoked_at.to_s, 10), Integer(access_opts[:expires].to_s, 10), 1
+      assert_in_delta Integer(token.revoked_at.to_s, 10), Integer(refresh_opts[:expires].to_s, 10), 1
+      assert_in_delta Integer(token.revoked_at.to_s, 10), Integer(device_opts[:expires].to_s, 10), 1
       assert_equal 20.minutes.to_i, result[:expires_in]
     end
   end
@@ -298,7 +298,7 @@ class Auth::UserTest < ActiveSupport::TestCase
       restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED).order(:created_at).last
 
       assert_not_nil restricted
-      assert_in_delta 15.minutes.from_now.to_i, restricted.refresh_expires_at.to_i, 1
+      assert_in_delta 15.minutes.from_now.to_i, Integer(restricted.refresh_expires_at.to_s, 10), 1
     end
   end
 end

@@ -6,7 +6,7 @@ module Email
     class ContactMailer < ApplicationMailer
       def create
         @pass_code = params[:pass_code]
-        mail to: params[:email_address]
+        mail(to: params[:email_address])
       end
     end
   end

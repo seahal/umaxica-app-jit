@@ -17,7 +17,7 @@
 #  undeletable                    :boolean          default(FALSE), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
-#  public_id                      :string(21)       not null
+#  public_id                      :string(21)       default(""), not null
 #  staff_id                       :bigint           not null
 #  staff_identity_email_status_id :bigint           default(6), not null
 #

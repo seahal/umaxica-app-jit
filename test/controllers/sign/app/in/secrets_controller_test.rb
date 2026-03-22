@@ -310,7 +310,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
   test "guest request does not query users with null mfa_user_id" do
     queries =
       capture_sql_queries do
-        get new_sign_app_in_secret_url(ri: "jp"), headers: default_headers
+        get(new_sign_app_in_secret_url(ri: "jp"), headers: default_headers)
       end
 
     assert_response :success
@@ -374,7 +374,6 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
   public
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "secret login with session limit exceeded redirects to session management" do
     UserToken.where(user_id: @user.id).delete_all
 
@@ -402,5 +401,4 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     # Session limit gate should be issued
     assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
   end
-  # rubocop:enable Minitest/MultipleAssertions
 end

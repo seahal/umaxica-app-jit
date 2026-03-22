@@ -87,7 +87,7 @@ class VerificationPasskeyChecksTest < ActiveSupport::TestCase
     passkey_model =
       Class.new do
         class << self
-          attr_accessor :record # rubocop:disable ThreadSafety/ClassAndModuleAttributes
+          attr_accessor :record
 
           define_method(:find_by) do |webauthn_id:|
             record if record&.webauthn_id == webauthn_id
@@ -98,7 +98,7 @@ class VerificationPasskeyChecksTest < ActiveSupport::TestCase
     harness.passkey_model_class = passkey_model
     harness.verification_params_value = { challenge_id: "challenge-1", credential_json: { id: "cred-1" }.to_json }
 
-    WebAuthn::Credential.stub :from_get, credential do
+    WebAuthn::Credential.stub(:from_get, credential) do
       assert_not harness.send(:verify_passkey!)
       assert_equal [I18n.t("errors.webauthn.credential_not_found")], harness.verification_errors
     end
@@ -115,7 +115,7 @@ class VerificationPasskeyChecksTest < ActiveSupport::TestCase
     end
     passkey.define_singleton_method(:updated_payload) { @updated_payload }
 
-    WebAuthn::Credential.stub :from_get, credential do
+    WebAuthn::Credential.stub(:from_get, credential) do
       assert harness.send(:verify_passkey!)
     end
 

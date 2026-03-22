@@ -37,7 +37,6 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_layout_contract
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "footer contains navigation links" do
     get sign_app_root_url(ri: "jp")
 
@@ -52,7 +51,6 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
                     text: I18n.t("sign.app.preferences.footer.configuration")
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get sign_app_root_url(ri: "jp")

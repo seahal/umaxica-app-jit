@@ -44,9 +44,9 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Access /in/new with refresh cookie but no access cookie
     # This simulates an expired access token
-    cookies_header = "auth_refresh=#{refresh_plain}"
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
-    get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
+    get new_sign_app_in_path, headers: { "Host" => @host }
 
     # Handle possible locale redirect
     if response.redirect? && response.location.include?("in/new")

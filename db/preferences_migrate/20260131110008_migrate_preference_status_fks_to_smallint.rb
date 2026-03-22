@@ -10,10 +10,10 @@ class MigratePreferenceStatusFksToSmallint < ActiveRecord::Migration[8.2]
       }
 
       mappings.each do |table, ref_table|
-        add_column table, :status_id_small, :integer, limit: 2, default: 0
+        add_column(table, :status_id_small, :integer, limit: 2, default: 0)
 
         # Backfill
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           UPDATE #{table} t
           SET status_id_small = r.id
           FROM #{ref_table} r
@@ -22,14 +22,14 @@ class MigratePreferenceStatusFksToSmallint < ActiveRecord::Migration[8.2]
 
         # 'NEYO' / '' / NULL -> 0 is already default 0 by add_column
 
-        remove_column table, :status_id
-        rename_column table, :status_id_small, :status_id
+        remove_column(table, :status_id)
+        rename_column(table, :status_id_small, :status_id)
 
-        change_column_null table, :status_id, false
-        change_column_default table, :status_id, from: nil, to: 0
+        change_column_null(table, :status_id, false)
+        change_column_default(table, :status_id, from: nil, to: 0)
 
-        add_index table, :status_id
-        add_foreign_key table, ref_table, column: :status_id
+        add_index(table, :status_id)
+        add_foreign_key(table, ref_table, column: :status_id)
       end
     end
   end

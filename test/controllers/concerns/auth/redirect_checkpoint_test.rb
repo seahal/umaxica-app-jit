@@ -210,7 +210,7 @@ class AuthRedirectCheckpointTest < ActiveSupport::TestCase
   end
 
   test "checkpoint_expired? returns true for old checkpoint" do
-    old_time = (3.hours.ago).to_i
+    old_time = Integer((3.hours.ago), 10)
     @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY] = {
       "issued_at" => old_time,
       "kind" => "mfa",

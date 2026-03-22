@@ -17,7 +17,9 @@ class ConvertAppDocumentCategoryMastersToSmallint < ActiveRecord::Migration[8.2]
       check_constraint: nil,
       parent_index: "index_app_document_category_masters_on_parent_id",
       child_foreign_keys: [
-        { table: :app_document_categories, column: :app_document_category_master_id, to_table: :app_document_category_masters },
+        { table: :app_document_categories,
+          column: :app_document_category_master_id,
+          to_table: :app_document_category_masters, },
       ],
     )
 

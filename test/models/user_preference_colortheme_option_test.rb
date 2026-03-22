@@ -1,6 +1,13 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: user_preference_colortheme_options
+# Database name: principal
+#
+#  id :bigint           not null, primary key
+#
 require "test_helper"
 
 class UserPreferenceColorthemeOptionTest < ActiveSupport::TestCase

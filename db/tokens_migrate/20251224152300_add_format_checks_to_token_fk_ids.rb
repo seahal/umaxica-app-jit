@@ -6,8 +6,8 @@ class AddFormatChecksToTokenFkIds < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :staff_tokens, :staff_token_status_id
-    add_format_check :user_tokens, :user_token_status_id
+    add_format_check(:staff_tokens, :staff_token_status_id)
+    add_format_check(:user_tokens, :user_token_status_id)
   end
 
   private

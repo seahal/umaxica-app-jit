@@ -10,7 +10,7 @@ class EnsurePreferenceLanguageOptions < ActiveRecord::Migration[8.2]
       safety_assured do
         values_sql = language_ids.map { |id| "('#{id}')" }.join(", ")
 
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           WITH max_pos AS (
             SELECT COALESCE(MAX(position), 0) AS max_pos FROM #{table_name}
           ),
@@ -35,7 +35,7 @@ class EnsurePreferenceLanguageOptions < ActiveRecord::Migration[8.2]
       table_name = "#{namespace}_preference_language_options"
 
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           DELETE FROM #{table_name}
           WHERE id IN (#{ids_sql});
         SQL

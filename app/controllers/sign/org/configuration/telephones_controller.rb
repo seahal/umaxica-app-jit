@@ -33,22 +33,26 @@ module Sign
             return
           end
 
-          redirect_to edit_sign_org_configuration_telephone_path(@staff_telephone.id)
+          redirect_to(edit_sign_org_configuration_telephone_path(@staff_telephone.id))
         end
 
         def destroy
           @staff_telephone = current_staff.staff_telephones.find(params[:id])
 
           unless removable_telephone?(@staff_telephone)
-            redirect_to sign_org_configuration_telephones_path,
-                        alert: t("sign.org.configuration.telephone.destroy.last_method")
+            redirect_to(
+              sign_org_configuration_telephones_path,
+              alert: t("sign.org.configuration.telephone.destroy.last_method"),
+            )
             return
           end
 
           @staff_telephone.destroy!
-          redirect_to sign_org_configuration_telephones_path,
-                      notice: t("sign.org.configuration.telephone.destroy.success"),
-                      status: :see_other
+          redirect_to(
+            sign_org_configuration_telephones_path,
+            notice: t("sign.org.configuration.telephone.destroy.success"),
+            status: :see_other,
+          )
         end
 
         private

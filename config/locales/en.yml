@@ -525,6 +525,7 @@ en:
         identifier_required: Please enter your email or staff code
         identifier_invalid: Please enter a valid 16-character staff code
         pii_required: Please enter your email address or telephone number
+        no_passkey: No passkey registered
         no_passkeys_available: No passkeys available
         origin_invalid: Authentication from this site is not allowed
         origin_not_trusted:
@@ -546,6 +547,7 @@ en:
       identifier_required: Please enter your email or staff code
       identifier_invalid: Please enter a valid 16-character staff code
       pii_required: Please enter your email address or telephone number
+      no_passkey: No passkey registered
       no_passkeys_available: No passkeys available
       origin_invalid: Authentication from this site is not allowed
       origin_not_trusted:

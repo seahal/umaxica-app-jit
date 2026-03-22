@@ -14,7 +14,7 @@
 #  token_viewed     :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :bigint           not null
+#  category_id      :bigint           default(0), not null
 #  public_id        :string(21)       not null
 #  status_id        :bigint           not null
 #
@@ -98,19 +98,28 @@ class AppContact < GuestRecord
   end
 
   def verify_email!
-    transition_status(status: AppContactStatus::CHECKED_EMAIL_ADDRESS, error_message: "Cannot verify email at this time") do
+    transition_status(
+      status: AppContactStatus::CHECKED_EMAIL_ADDRESS,
+      error_message: "Cannot verify email at this time",
+    ) do
       can_verify_email?
     end
   end
 
   def verify_phone!
-    transition_status(status: AppContactStatus::CHECKED_TELEPHONE_NUMBER, error_message: "Cannot verify phone at this time") do
+    transition_status(
+      status: AppContactStatus::CHECKED_TELEPHONE_NUMBER,
+      error_message: "Cannot verify phone at this time",
+    ) do
       can_verify_phone?
     end
   end
 
   def complete!
-    transition_status(status: AppContactStatus::COMPLETED_CONTACT_ACTION, error_message: "Cannot complete contact at this time") do
+    transition_status(
+      status: AppContactStatus::COMPLETED_CONTACT_ACTION,
+      error_message: "Cannot complete contact at this time",
+    ) do
       can_complete?
     end
   end

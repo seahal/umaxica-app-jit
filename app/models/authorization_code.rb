@@ -48,7 +48,8 @@ class AuthorizationCode < TokenRecord
       SecureRandom.urlsafe_base64(CODE_BYTES)
     end
 
-    def issue!(user:, client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil, nonce: nil)
+    def issue!(user:, client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil,
+               nonce: nil)
       create!(
         code: generate_code,
         user: user,
