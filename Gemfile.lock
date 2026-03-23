@@ -182,7 +182,7 @@ GEM
       openssl-signature_algorithm (~> 1.0)
     crass (1.0.6)
     csv (3.3.5)
-    database_consistency (3.0.1)
+    database_consistency (3.0.2)
       activerecord (>= 3.2)
     date (3.5.1)
     debride (1.15.1)
@@ -1066,7 +1066,7 @@ CHECKSUMS
   cose (1.3.1) sha256=d5d4dbcd6b035d513edc4e1ab9bc10e9ce13b4011c96e3d1b8fe5e6413fd6de5
   crass (1.0.6) sha256=dc516022a56e7b3b156099abc81b6d2b08ea1ed12676ac7a5657617f012bd45d
   csv (3.3.5) sha256=6e5134ac3383ef728b7f02725d9872934f523cb40b961479f69cf3afa6c8e73f
-  database_consistency (3.0.1) sha256=3daa4f2e3bfb7bd426d55a1e62a19a511f8b385b42eb493e27cfce41ff12c4c7
+  database_consistency (3.0.2) sha256=7dbcccee51e125de5512eeb36a26ec78196904f6db84e95beeb859a971bd79e0
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
   debride (1.15.1) sha256=25bc96aa745d4f8c88e500010e18ef1d084154baae1d10d3b205a1b76a325a2e
   debug (1.11.1) sha256=2e0b0ac6119f2207a6f8ac7d4a73ca8eb4e440f64da0a3136c30343146e952b6
