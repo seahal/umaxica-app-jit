@@ -165,4 +165,26 @@ class Current::PreferenceTest < ActiveSupport::TestCase
     assert_predicate pref.cookie, :consented?
     assert_predicate pref.cookie, :functional?
   end
+
+  test "with_cookie keeps preference values and updates cookie state" do
+    pref = Current::Preference.new(language: "en", region: "us", timezone: "America/New_York", theme: "dr")
+
+    updated = pref.with_cookie(
+      consented: true,
+      functional: true,
+      performant: false,
+      targetable: true,
+      consent_version: "v2",
+    )
+
+    assert_equal "en", updated.language
+    assert_equal "us", updated.region
+    assert_equal "America/New_York", updated.timezone
+    assert_equal "dr", updated.theme
+    assert_predicate updated.cookie, :consented?
+    assert_predicate updated.cookie, :functional?
+    assert_not updated.cookie.performant?
+    assert_predicate updated.cookie, :targetable?
+    assert_equal "v2", updated.cookie.consent_version
+  end
 end

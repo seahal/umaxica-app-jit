@@ -56,7 +56,7 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
     get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
 
-    Sign::App::Verification::BaseController.any_instance.stub(:verify_totp!, -> { raise "unexpected" }) do
+    Sign::App::Verification::BaseController.any_instance.stub(:verify_totp!, -> { raise RuntimeError, "unexpected" }) do
       post sign_app_verification_totp_url(ri: "jp"),
            params: { verification: { code: "000000" } },
            headers: @headers

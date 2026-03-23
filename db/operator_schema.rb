@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_23_000000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_23_013709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -90,6 +90,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_23_000000) do
     t.index ["role_id"], name: "index_role_assignments_on_role_id"
     t.index ["staff_id"], name: "index_role_assignments_on_staff_id"
     t.index ["user_id"], name: "index_role_assignments_on_user_id"
+  end
+
+  create_table "staff_bulletins", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "public_id", limit: 21, null: false
+    t.datetime "read_at"
+    t.bigint "staff_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["public_id"], name: "index_staff_bulletins_on_public_id", unique: true
+    t.index ["staff_id"], name: "index_staff_bulletins_on_staff_id"
   end
 
   create_table "staff_email_statuses", force: :cascade do |t|
@@ -285,6 +297,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_23_000000) do
   add_foreign_key "operators", "staffs", validate: false
   add_foreign_key "organizations", "organization_statuses", column: "workspace_status_id"
   add_foreign_key "role_assignments", "staffs", on_delete: :cascade, validate: false
+  add_foreign_key "staff_bulletins", "staffs"
   add_foreign_key "staff_emails", "staff_email_statuses", column: "staff_identity_email_status_id"
   add_foreign_key "staff_emails", "staffs", validate: false
   add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id", validate: false

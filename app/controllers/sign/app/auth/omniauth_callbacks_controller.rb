@@ -217,20 +217,35 @@ module Sign
 
             Rails.event.debug("sign.social.omniauth.login_successful", message: "Redirecting after login")
             if existing_account
-              issue_checkpoint!
-              redirect_to(
-                sign_app_in_checkpoint_path(ri: params[:ri]),
-                notice: I18n.t(
-                  "sign.app.social.sessions.create.already_registered",
-                  provider: provider_name,
-                ),
-              )
+              if issue_bulletin!
+                redirect_to(
+                  sign_app_in_bulletin_path(ri: params[:ri]),
+                  notice: I18n.t(
+                    "sign.app.social.sessions.create.already_registered",
+                    provider: provider_name,
+                  ),
+                )
+              else
+                redirect_to(
+                  sign_app_configuration_path(ri: params[:ri]),
+                  notice: I18n.t(
+                    "sign.app.social.sessions.create.already_registered",
+                    provider: provider_name,
+                  ),
+                )
+              end
             else
-              issue_checkpoint!
-              redirect_to(
-                sign_app_in_checkpoint_path(ri: params[:ri]),
-                notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name),
-              )
+              if issue_bulletin!
+                redirect_to(
+                  sign_app_in_bulletin_path(ri: params[:ri]),
+                  notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name),
+                )
+              else
+                redirect_to(
+                  sign_app_configuration_path(ri: params[:ri]),
+                  notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name),
+                )
+              end
             end
           end
         end

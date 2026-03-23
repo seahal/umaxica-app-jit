@@ -26,7 +26,7 @@ module Sign
         ENV["RISK_ENFORCEMENT_ENABLED"] = "false"
 
         Engine.stub(:score, 100) do
-          Enforcer.stub(:revoke!, ->(_) { raise "Should not be called" }) do
+          Enforcer.stub(:revoke!, ->(_) { raise RuntimeError, "Should not be called" }) do
             result = Enforcer.call(@user)
 
             assert_nil result
@@ -59,8 +59,8 @@ module Sign
 
       test "does nothing if score is 0" do
         Engine.stub(:score, 0) do
-          Enforcer.stub(:revoke!, ->(_) { raise "Should not be called" }) do
-            Enforcer.stub(:require_step_up!, ->(_) { raise "Should not be called" }) do
+          Enforcer.stub(:revoke!, ->(_) { raise RuntimeError, "Should not be called" }) do
+            Enforcer.stub(:require_step_up!, ->(_) { raise RuntimeError, "Should not be called" }) do
               result = Enforcer.call(@user)
 
               assert_nil result

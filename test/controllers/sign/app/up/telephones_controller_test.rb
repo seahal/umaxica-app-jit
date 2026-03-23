@@ -218,7 +218,7 @@ module Sign::App::Up
         }
       end
 
-      assert_redirected_to sign_app_in_checkpoint_url(ri: "jp")
+      assert_redirected_to sign_app_configuration_url(ri: "jp")
       assert_predicate cookies[Auth::Base::ACCESS_COOKIE_KEY], :present?
     end
 

@@ -82,9 +82,9 @@ class AuthorizationCode < TokenRecord
   end
 
   def consume!
-    raise "Authorization code already consumed" if consumed?
-    raise "Authorization code revoked" if revoked?
-    raise "Authorization code expired" if expired?
+    raise RuntimeError, "Authorization code already consumed" if consumed?
+    raise RuntimeError, "Authorization code revoked" if revoked?
+    raise RuntimeError, "Authorization code expired" if expired?
 
     update!(consumed_at: Time.current)
   end

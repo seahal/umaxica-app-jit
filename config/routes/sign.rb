@@ -66,7 +66,7 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
-        resource :checkpoint, only: %i(show update destroy)
+        resource :bulletin, only: %i(show update destroy)
         resource :challenge, only: %i(show)
         namespace :challenge do
           resource :totp, only: %i(new create)
@@ -207,7 +207,7 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
-        resource :checkpoint, only: %i(show update destroy)
+        resource :bulletin, only: %i(show update destroy)
         resource :challenge, only: %i(show)
         namespace :challenge do
           resource :passkey, only: %i(new create)

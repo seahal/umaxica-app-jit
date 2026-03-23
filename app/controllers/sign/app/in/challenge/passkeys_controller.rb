@@ -137,11 +137,17 @@ module Sign
             when :restricted
               redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
             when :success
-              issue_checkpoint!
-              redirect_to(
-                sign_app_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
-                notice: I18n.t("sign.app.in.mfa.passkey.success"),
-              )
+              if issue_bulletin!
+                redirect_to(
+                  sign_app_in_bulletin_path(rd: result[:redirect_path], ri: params[:ri]),
+                  notice: I18n.t("sign.app.in.mfa.passkey.success"),
+                )
+              else
+                safe_redirect_to_rd_or_default!(
+                  result[:redirect_path],
+                  default_path: sign_app_configuration_path(ri: params[:ri]),
+                )
+              end
             else
               redirect_to(
                 new_sign_app_in_path,

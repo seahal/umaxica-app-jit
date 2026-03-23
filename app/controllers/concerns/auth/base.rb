@@ -12,7 +12,7 @@ module Auth
     # TOC (approximate)
     # 1) JWT & Token primitives ....................................... L40-L210
     # 2) Request guards (public API, I/O boundary) .................... L215-L275
-    # 3) Redirect/checkpoint session flows (I/O boundary) ............. L277-L462
+    # 3) Redirect/bulletin session flows (I/O boundary) ............... L277-L462
     # 4) Session auth lifecycle (public API, I/O boundary) ............ L464-L775
     # 5) Abstract contract & policy DSL ............................... L778-L907
     # 6) Private request/cookie/token I/O ............................. L909-L1505
@@ -243,14 +243,14 @@ module Auth
     end
 
     # ======================================================================
-    # 3) Redirect/checkpoint session flows (Session/params I/O boundary)
+    # 3) Redirect/bulletin session flows (Session/params I/O boundary)
     # - Reads/writes params, flash, session
     # ======================================================================
 
     # Default session key for storing redirect parameter
     DEFAULT_RD_SESSION_KEY = Auth::IoKeys::Session::DEFAULT_RD
-    CHECKPOINT_SESSION_KEY = Auth::IoKeys::Session::CHECKPOINT
-    CHECKPOINT_TIMEOUT = 2.hours
+    BULLETIN_SESSION_KEY = Auth::IoKeys::Session::BULLETIN
+    BULLETIN_TIMEOUT = 2.hours
 
     # Preserves the redirect parameter in session and returns it for immediate use
     #
@@ -364,63 +364,77 @@ module Auth
     end
 
     # ======================================================================
-    # 3-1) Checkpoint flow (Session/header I/O boundary + test hook)
+    # 3-1) Bulletin flow (Session/header I/O boundary + test hook)
     # ======================================================================
 
-    def issue_checkpoint!(kind: "mock", state: "new", payload: {})
-      session[CHECKPOINT_SESSION_KEY] = {
+    def issue_bulletin!(kind: "mock", state: "new", payload: {})
+      bulletin = find_unread_bulletin
+      return false unless bulletin
+
+      session[BULLETIN_SESSION_KEY] = {
         "issued_at" => Time.current.to_i,
         "kind" => kind.to_s,
         "state" => state.to_s,
+        "bulletin_id" => bulletin.id,
       }.merge(payload.stringify_keys)
+      true
     end
 
-    # Injects checkpoint state from a test header (X-TEST-CHECKPOINT).
-    # Used as a before_action in checkpoint controllers to seed session
+    # Injects bulletin state from a test header (X-TEST-BULLETIN).
+    # Used as a before_action in bulletin controllers to seed session
     # state for integration tests that cannot set session directly.
-    def maybe_inject_test_checkpoint!
+    def maybe_inject_test_bulletin!
       return unless Rails.env.test?
 
-      raw = request.headers[Auth::IoKeys::Headers::TEST_CHECKPOINT]
+      raw = request.headers[Auth::IoKeys::Headers::TEST_BULLETIN]
       return if raw.blank?
-      return if session[CHECKPOINT_SESSION_KEY].present?
+      return if session[BULLETIN_SESSION_KEY].present?
 
-      session[CHECKPOINT_SESSION_KEY] = JSON.parse(raw)
+      session[BULLETIN_SESSION_KEY] = JSON.parse(raw)
     end
 
-    def checkpoint_state
-      raw = session[CHECKPOINT_SESSION_KEY]
+    def bulletin_state
+      raw = session[BULLETIN_SESSION_KEY]
       return nil unless raw.is_a?(Hash)
 
       raw.with_indifferent_access
     end
 
-    def checkpoint_active?
-      checkpoint_state.present? && !checkpoint_expired?
+    def bulletin_active?
+      bulletin_state.present? && !bulletin_expired?
     end
 
-    def checkpoint_expired?
-      data = checkpoint_state
+    def bulletin_expired?
+      data = bulletin_state
       return true if data.blank?
 
       issued_at = epoch_seconds(data[:issued_at])
       return true if issued_at <= 0
 
-      Time.current.to_i >= issued_at + CHECKPOINT_TIMEOUT.to_i
+      Time.current.to_i >= issued_at + BULLETIN_TIMEOUT.to_i
     end
 
-    def refresh_checkpoint_dimension!(state: "updated")
-      data = checkpoint_state
+    def refresh_bulletin_dimension!(state: "updated")
+      data = bulletin_state
       return unless data
 
-      session[CHECKPOINT_SESSION_KEY] = data.merge(
+      session[BULLETIN_SESSION_KEY] = data.merge(
         "issued_at" => Time.current.to_i,
         "state" => state.to_s,
       )
     end
 
-    def consume_checkpoint!
-      session.delete(CHECKPOINT_SESSION_KEY)
+    def consume_bulletin!
+      mark_current_bulletin_as_read!
+      session.delete(BULLETIN_SESSION_KEY)
+    end
+
+    def current_bulletin
+      data = bulletin_state
+      return nil unless data
+      return nil unless data[:bulletin_id]
+
+      bulletin_association_for_resource&.find_by(id: data[:bulletin_id])
     end
 
     def safe_redirect_to_rd_or_default!(rd_param, default_path:)
@@ -920,6 +934,43 @@ module Auth
     end
 
     private
+
+    # ----------------------------------------------------------------------
+    # 3-2) Bulletin private helpers
+    # ----------------------------------------------------------------------
+
+    def find_unread_bulletin
+      bulletin_association_for_resource&.unread&.oldest_first&.first
+    end
+
+    def mark_current_bulletin_as_read!
+      current_bulletin&.mark_as_read!
+    end
+
+    def bulletin_association_for_resource
+      resource = current_resource
+      return nil unless resource
+
+      case resource
+      when User then resource.user_bulletins
+      when Staff then resource.staff_bulletins
+      end
+    end
+
+    def create_welcome_bulletin!(resource)
+      case resource
+      when User
+        resource.user_bulletins.create!(
+          title: I18n.t("sign.app.in.bulletins.welcome.title"),
+          body: I18n.t("sign.app.in.bulletins.welcome.body"),
+        )
+      when Staff
+        resource.staff_bulletins.create!(
+          title: I18n.t("sign.org.in.bulletins.welcome.title"),
+          body: I18n.t("sign.org.in.bulletins.welcome.body"),
+        )
+      end
+    end
 
     # ======================================================================
     # 6) Private request/cookie/token I/O helpers
@@ -2241,7 +2292,7 @@ module Auth
       return :expired_at if klass.column_names.include?("expired_at")
       return :revoked_at if klass.column_names.include?("revoked_at")
 
-      raise "#{klass.name} does not have expired_at/revoked_at column"
+      raise ArgumentError, "#{klass.name} does not have expired_at/revoked_at column"
     end
 
     def access_token_expires_at_for(token_record, now: Time.current)
@@ -2257,16 +2308,10 @@ module Auth
     end
 
     def epoch_seconds(value)
-      case value
-      when Time, DateTime, ActiveSupport::TimeWithZone
-        value.to_i
-      when ActiveSupport::Duration
-        value.to_i
-      when Numeric
-        value.to_i
-      else
-        Integer(value.to_s, 10)
-      end
+      return value.to_i if value.is_a?(Time) || value.is_a?(DateTime) || value.is_a?(ActiveSupport::TimeWithZone)
+      return value.to_i if value.is_a?(ActiveSupport::Duration) || value.is_a?(Numeric)
+
+      Integer(value.to_s, 10)
     rescue ArgumentError, TypeError
       0
     end

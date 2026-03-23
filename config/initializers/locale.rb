@@ -23,7 +23,8 @@ region_dirs =
 region_dirs.each do |dir|
   next if dir.directory?
 
-  raise "REGION_CODE='#{region_code}' is invalid. Directory not found: #{dir}. " \
+  raise ArgumentError,
+        "REGION_CODE='#{region_code}' is invalid. Directory not found: #{dir}. " \
         "Valid values are: #{locale_root.children.filter_map { |child|
           child.basename if child.directory?
         }.join(", ")}, all"

@@ -3,7 +3,7 @@
 
 require "test_helper"
 
-class AuthRedirectCheckpointTest < ActiveSupport::TestCase
+class AuthRedirectBulletinTest < ActiveSupport::TestCase
   class RedirectHarness
     include Auth::Base
 
@@ -115,12 +115,12 @@ class AuthRedirectCheckpointTest < ActiveSupport::TestCase
     assert_includes Auth::Base::DEFAULT_RD_SESSION_KEY.to_s, "rd"
   end
 
-  test "CHECKPOINT_SESSION_KEY is defined" do
-    assert_equal :in_checkpoint, Auth::Base::CHECKPOINT_SESSION_KEY
+  test "BULLETIN_SESSION_KEY is defined" do
+    assert_equal :in_bulletin, Auth::Base::BULLETIN_SESSION_KEY
   end
 
-  test "CHECKPOINT_TIMEOUT is 2 hours" do
-    assert_equal 2.hours, Auth::Base::CHECKPOINT_TIMEOUT
+  test "BULLETIN_TIMEOUT is 2 hours" do
+    assert_equal 2.hours, Auth::Base::BULLETIN_TIMEOUT
   end
 
   test "preserve_redirect_parameter stores rd in session" do
@@ -181,65 +181,81 @@ class AuthRedirectCheckpointTest < ActiveSupport::TestCase
     assert_equal "Warning", result[:alert]
   end
 
-  test "issue_checkpoint! sets checkpoint in session" do
+  test "issue_bulletin! sets bulletin in session when unread bulletin exists" do
+    mock_bulletin = Minitest::Mock.new
+    mock_bulletin.expect(:id, 42)
+
     freeze_time do
-      @harness.issue_checkpoint!(kind: "mfa", state: "pending")
+      @harness.stub(:find_unread_bulletin, mock_bulletin) do
+        result = @harness.issue_bulletin!(kind: "mfa", state: "pending")
 
-      checkpoint = @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY]
+        assert result
+        bulletin = @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
 
-      assert_equal "mfa", checkpoint["kind"]
-      assert_equal "pending", checkpoint["state"]
-      assert_equal Time.current.to_i, checkpoint["issued_at"]
+        assert_equal "mfa", bulletin["kind"]
+        assert_equal "pending", bulletin["state"]
+        assert_equal Time.current.to_i, bulletin["issued_at"]
+        assert_equal 42, bulletin["bulletin_id"]
+      end
     end
   end
 
-  test "checkpoint_state returns nil when no checkpoint" do
-    assert_nil @harness.checkpoint_state
+  test "issue_bulletin! returns false when no unread bulletin" do
+    @harness.stub(:find_unread_bulletin, nil) do
+      result = @harness.issue_bulletin!(kind: "mfa", state: "pending")
+
+      assert_not result
+      assert_nil @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
+    end
   end
 
-  test "checkpoint_state returns hash with indifferent access" do
-    @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY] = { "kind" => "mfa", "state" => "pending" }
-    result = @harness.checkpoint_state
+  test "bulletin_state returns nil when no bulletin" do
+    assert_nil @harness.bulletin_state
+  end
+
+  test "bulletin_state returns hash with indifferent access" do
+    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = { "kind" => "mfa", "state" => "pending" }
+    result = @harness.bulletin_state
 
     assert_equal "mfa", result[:kind]
     assert_equal "pending", result[:state]
   end
 
-  test "checkpoint_active? returns false when no checkpoint" do
-    assert_not @harness.checkpoint_active?
+  test "bulletin_active? returns false when no bulletin" do
+    assert_not @harness.bulletin_active?
   end
 
-  test "checkpoint_expired? returns true for old checkpoint" do
+  test "bulletin_expired? returns true for old bulletin" do
     old_time = 3.hours.ago.to_i
-    @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY] = {
+    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = {
       "issued_at" => old_time,
       "kind" => "mfa",
       "state" => "pending",
     }
 
-    assert_predicate @harness, :checkpoint_expired?
+    assert_predicate @harness, :bulletin_expired?
   end
 
-  test "consume_checkpoint! removes checkpoint from session" do
-    @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY] = { "kind" => "mfa" }
-    @harness.consume_checkpoint!
+  test "consume_bulletin! removes bulletin from session" do
+    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = { "kind" => "mfa" }
+    @harness.consume_bulletin!
 
-    assert_nil @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY]
+    assert_nil @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
   end
 
-  test "refresh_checkpoint_dimension! updates issued_at and state" do
+  test "refresh_bulletin_dimension! updates issued_at and state" do
     old_time = 1.hour.ago.to_i
-    @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY] = {
+    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = {
       "issued_at" => old_time,
       "kind" => "mfa",
       "state" => "pending",
     }
 
     travel_to(1.second.from_now)
-    @harness.refresh_checkpoint_dimension!(state: "updated")
-    checkpoint = @harness.session[Auth::Base::CHECKPOINT_SESSION_KEY]
+    @harness.refresh_bulletin_dimension!(state: "updated")
+    bulletin = @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
 
-    assert_operator checkpoint["issued_at"], :>, old_time
-    assert_equal "updated", checkpoint["state"]
+    assert_operator bulletin["issued_at"], :>, old_time
+    assert_equal "updated", bulletin["state"]
   end
 end

@@ -218,9 +218,9 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
           params: { user_email: { pass_code: valid_pass_code } },
           headers: { "Host" => @host }
 
-    # Should redirect to checkpoint on success
+    # Should redirect to configuration on success
     assert_response :found
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
   end
 
   test "successful OTP verification sets auth cookies with app-localhost domain" do
@@ -489,9 +489,9 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: { "Host" => @host }
 
-    # Should redirect to checkpoint with rd preserved
+    # Should redirect directly to the decoded rd destination
     assert_response :found
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
+    assert_redirected_to redirect_url
   end
 
   test "rejects external rd parameter after successful login" do
@@ -527,8 +527,9 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: { "Host" => @host }
 
+    # External rd is rejected, falls back to configuration
     assert_response :found
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
   end
 
   test "resets session ID after successful email login" do

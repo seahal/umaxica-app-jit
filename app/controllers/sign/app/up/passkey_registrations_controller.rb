@@ -68,12 +68,13 @@ module Sign
 
             record_signup_audit!(@user)
             log_in(@user, record_login_audit: false)
-            issue_checkpoint!
+            create_welcome_bulletin!(@user)
+            has_bulletin = issue_bulletin!
             session[:user_telephone_registration] = nil
 
             render json: {
               status: "ok",
-              redirect_url: success_redirect_url,
+              redirect_url: has_bulletin ? success_redirect_url : sign_app_configuration_path(ri: params[:ri]),
             }, status: :created
           end
         rescue Sign::Webauthn::ChallengeNotFoundError,
@@ -157,7 +158,7 @@ module Sign
 
         def success_redirect_url
           rd_param = params[:rd].presence || generate_redirect_url(params[:rt])
-          sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri])
+          sign_app_in_bulletin_path(rd: rd_param, ri: params[:ri])
         end
       end
     end

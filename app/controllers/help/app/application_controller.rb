@@ -11,7 +11,7 @@ module Help
       include ::Verification::User
       include Pundit::Authorization
       include ::Oidc::SsoInitiator
-      include ::Current
+      include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern

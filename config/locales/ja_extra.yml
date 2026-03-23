@@ -111,13 +111,16 @@ ja:
     default_passkey_description: マイパスキー
     app:
       in:
-        checkpoints:
+        bulletins:
           show:
-            title: チェックポイント
+            title: ブリテン
             body: mfa をおんにしてください。重要な規約の変更があります、承諾しますか？
             actions:
               update: 更新する
               continue: 続行する
+          welcome:
+            title: ようこそ
+            body: アカウントの作成が完了しました。ご利用ありがとうございます。
           forbidden: アクセス権限がありません
           timeout: timeout しました
         session:
@@ -346,13 +349,16 @@ ja:
           invalid_step: 前のステップを完了してください。
     org:
       in:
-        checkpoints:
+        bulletins:
           show:
-            title: チェックポイント
+            title: ブリテン
             body: mfa をおんにしてください。重要な規約の変更があります、承諾しますか？
             actions:
               update: 更新する
               continue: 続行する
+          welcome:
+            title: ようこそ
+            body: スタッフアカウントの作成が完了しました。ご利用ありがとうございます。
           forbidden: アクセス権限がありません
           timeout: timeout しました
       reauth:

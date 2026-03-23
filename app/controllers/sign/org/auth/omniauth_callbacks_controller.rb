@@ -164,11 +164,17 @@ module Sign
               ),
             )
           else
-            issue_checkpoint!
-            redirect_to(
-              sign_org_in_checkpoint_path(ri: params[:ri]),
-              notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name),
-            )
+            if issue_bulletin!
+              redirect_to(
+                sign_org_in_bulletin_path(ri: params[:ri]),
+                notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name),
+              )
+            else
+              redirect_to(
+                sign_org_root_path(ri: params[:ri]),
+                notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name),
+              )
+            end
           end
         end
 

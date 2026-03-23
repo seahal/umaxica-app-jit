@@ -85,7 +85,7 @@ module Preference
 
           preference.reload
           issue_access_token_from(preference)
-          raise "failed_to_issue_preference_access_token" if @preference_payload.blank?
+          raise RuntimeError, "failed_to_issue_preference_access_token" if @preference_payload.blank?
         end
       end
     end

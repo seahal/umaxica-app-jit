@@ -8,7 +8,7 @@ class MigrateOrgContactStatusesToSmallint < ActiveRecord::Migration[8.2]
 
       # 2. Safety check
       count = ActiveRecord::Base.connection.select_value("SELECT COUNT(*) FROM org_contact_statuses")
-      raise "Too many records in org_contact_statuses" if count > 32_767
+      raise RuntimeError, "Too many records in org_contact_statuses" if count > 32_767
 
       # 3. Backfill id_small
       has_neyo = ActiveRecord::Base.connection.select_value("SELECT 1 FROM org_contact_statuses WHERE id = 'NEYO'")

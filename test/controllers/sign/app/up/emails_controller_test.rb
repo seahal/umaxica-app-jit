@@ -575,8 +575,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: default_headers
 
-    # Should redirect to checkpoint and preserve rd
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
+    # Should redirect directly to the decoded rd destination
+    assert_redirected_to redirect_url
   end
 
   # Transaction Tests for User Creation
@@ -620,7 +620,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     # Verify success response
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
 
     # Verify User count unchanged (pending user was updated, not created)
     assert_equal initial_user_count, User.count
@@ -678,7 +678,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: default_headers
 
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
     assert UserActivityEvent.exists?(id: UserActivityEvent::SIGNED_UP_WITH_EMAIL)
     assert UserActivity.exists?(
       event_id: UserActivityEvent::SIGNED_UP_WITH_EMAIL,

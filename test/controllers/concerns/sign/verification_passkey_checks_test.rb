@@ -48,7 +48,7 @@ class VerificationPasskeyChecksTest < ActiveSupport::TestCase
     end
 
     def with_challenge(_challenge_id, purpose:)
-      raise "wrong purpose" unless purpose == :authentication
+      raise RuntimeError, "wrong purpose" unless purpose == :authentication
 
       yield "challenge"
     end

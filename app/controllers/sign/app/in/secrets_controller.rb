@@ -148,11 +148,17 @@ module Sign
           when :restricted
             redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
           when :success
-            issue_checkpoint!
-            redirect_to(
-              sign_app_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
-              notice: t("sign.app.authentication.secret.create.success"),
-            )
+            if issue_bulletin!
+              redirect_to(
+                sign_app_in_bulletin_path(rd: result[:redirect_path], ri: params[:ri]),
+                notice: t("sign.app.authentication.secret.create.success"),
+              )
+            else
+              safe_redirect_to_rd_or_default!(
+                result[:redirect_path],
+                default_path: sign_app_configuration_path(ri: params[:ri]),
+              )
+            end
           else
             render_failed_login(reason: result[:status], user: user)
           end
@@ -178,11 +184,14 @@ module Sign
           elsif result[:restricted]
             redirect_to(sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice"))
           else
-            issue_checkpoint!
-            redirect_to(
-              sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-              notice: t("sign.app.authentication.secret.create.success"),
-            )
+            if issue_bulletin!
+              redirect_to(
+                sign_app_in_bulletin_path(rd: params[:rd], ri: params[:ri]),
+                notice: t("sign.app.authentication.secret.create.success"),
+              )
+            else
+              safe_redirect_to_rd_or_default!(params[:rd], default_path: sign_app_configuration_path(ri: params[:ri]))
+            end
           end
         end
 

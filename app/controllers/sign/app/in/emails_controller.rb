@@ -92,11 +92,17 @@ module Sign
                   redirect_to(result[:redirect_path], notice: t("sign.app.in.mfa.required"))
                 else
                   rd_param = retrieve_redirect_parameter
-                  issue_checkpoint!
-                  redirect_to(
-                    sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri]),
-                    notice: t("sign.app.authentication.email.update.success"),
-                  )
+                  if issue_bulletin!
+                    redirect_to(
+                      sign_app_in_bulletin_path(rd: rd_param, ri: params[:ri]),
+                      notice: t("sign.app.authentication.email.update.success"),
+                    )
+                  else
+                    safe_redirect_to_rd_or_default!(
+                      rd_param,
+                      default_path: sign_app_configuration_path(ri: params[:ri]),
+                    )
+                  end
                 end
               end
               format.json do

@@ -12,7 +12,7 @@ module Apex
       include ::Verification::User
       include Pundit::Authorization
       include ::Oidc::SsoInitiator
-      include ::Current
+      include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern
@@ -28,6 +28,7 @@ module Apex
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
+      before_action :set_current
       append_after_action :finish_request
 
       # FIXME: Resolve the URL issues before deploying.

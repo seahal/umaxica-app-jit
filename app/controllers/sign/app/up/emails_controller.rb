@@ -119,11 +119,15 @@ module Sign
           end
 
           progress_email_flow!(:update)
-          issue_checkpoint!
-          redirect_to(
-            sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-            notice: t("sign.app.registration.email.update.success"),
-          )
+          create_welcome_bulletin!(current_resource)
+          if issue_bulletin!
+            redirect_to(
+              sign_app_in_bulletin_path(rd: params[:rd], ri: params[:ri]),
+              notice: t("sign.app.registration.email.update.success"),
+            )
+          else
+            safe_redirect_to_rd_or_default!(params[:rd], default_path: sign_app_configuration_path(ri: params[:ri]))
+          end
         end
 
         private

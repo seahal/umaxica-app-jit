@@ -32,13 +32,13 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
 
   # --- Successful sign-in ---
 
-  test "omniauth redirects to checkpoint on successful staff sign-in" do
+  test "omniauth redirects to destination on successful staff sign-in" do
     state = initiate_social_auth_flow!
 
     get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
 
     assert_nil flash[:alert], "Unexpected alert: #{flash[:alert]}"
-    assert_redirected_to sign_org_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_org_root_path(ri: "jp")
     assert_not_nil flash[:notice]
     assert_includes flash[:notice], "Google"
   end

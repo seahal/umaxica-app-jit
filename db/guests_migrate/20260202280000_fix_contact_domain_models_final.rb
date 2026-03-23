@@ -75,9 +75,11 @@ class FixContactDomainModelsFinal < ActiveRecord::Migration[8.2]
           add_missing_column.call(t_name, :deletable, :boolean, null: false, default: false)
           add_missing_column.call(t_name, :remaining_views, :integer, limit: 2, default: 10, null: false)
           add_missing_column.call(
-            t_name, :expires_at, :timestamptz, null: false, default: -> {
-                                                 "CURRENT_TIMESTAMP + interval '1 day'"
-                                               },
+            t_name,
+            :expires_at,
+            :timestamptz,
+            null: false,
+            default: -> { "CURRENT_TIMESTAMP + interval '1 day'" },
           )
           add_missing_column.call(t_name, :hotp_secret, :string)
           add_missing_column.call(t_name, :hotp_counter, :integer)
@@ -102,9 +104,11 @@ class FixContactDomainModelsFinal < ActiveRecord::Migration[8.2]
           add_missing_column.call(t_name, :deletable, :boolean, null: false, default: false)
           add_missing_column.call(t_name, :remaining_views, :integer, limit: 2, default: 10, null: false)
           add_missing_column.call(
-            t_name, :expires_at, :timestamptz, null: false, default: -> {
-                                                 "CURRENT_TIMESTAMP + interval '1 day'"
-                                               },
+            t_name,
+            :expires_at,
+            :timestamptz,
+            null: false,
+            default: -> { "CURRENT_TIMESTAMP + interval '1 day'" },
           )
           add_missing_column.call(t_name, :hotp_secret, :string)
           add_missing_column.call(t_name, :hotp_counter, :integer)

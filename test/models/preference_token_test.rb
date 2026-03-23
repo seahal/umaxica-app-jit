@@ -415,7 +415,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         if Preference::JwtConfiguration.respond_to?(m)
           Preference::JwtConfiguration.method(m)
         else
-          proc { raise "Method #{m} was missing!" }
+          proc { raise RuntimeError, "Method #{m} was missing!" }
         end
     end
 

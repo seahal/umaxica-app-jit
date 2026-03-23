@@ -46,7 +46,7 @@ class Sign::Org::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          }
 
     assert_response :redirect
-    assert_includes response.headers["Location"], "/in/checkpoint"
+    assert_includes response.headers["Location"], sign_org_root_path(ri: "jp")
     assert_equal StaffSecretStatus::ACTIVE, staff_secrets(:sample_login).reload.staff_secret_status_id
     assert_predicate staff_secrets(:sample_login).reload.last_used_at, :present?
   end

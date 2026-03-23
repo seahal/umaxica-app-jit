@@ -12,7 +12,7 @@ module Sign
       include ::Preference::Adoption
       include Pundit::Authorization
       include ::RestrictedSessionGuard # TODO: remove this.
-      include ::Current
+      include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern
@@ -28,6 +28,7 @@ module Sign
       before_action :set_locale
       before_action :set_timezone
       before_action :set_color_theme
+      before_action :set_current
       append_after_action :finish_request
 
       protect_from_forgery using: :header_or_legacy_token,

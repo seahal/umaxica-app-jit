@@ -192,7 +192,7 @@ module Sign
 
       assert_raises(RuntimeError) do
         @controller.send(:with_webauthn_config) do
-          raise "Test error"
+          raise RuntimeError, "Test error"
         end
       end
 

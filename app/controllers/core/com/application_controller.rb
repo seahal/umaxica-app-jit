@@ -11,7 +11,7 @@ module Core
       include ::Preference::Regional
       include Pundit::Authorization
       include ::Oidc::SsoInitiator
-      include ::Current
+      include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern

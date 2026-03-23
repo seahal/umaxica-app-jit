@@ -323,11 +323,15 @@ module Sign
 
           log_in(user, record_login_audit: true)
           session[:user_telephone_registration] = nil
-          issue_checkpoint!
-          redirect_to(
-            sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-            notice: t("sign.app.registration.telephone.update.success"),
-          )
+          create_welcome_bulletin!(current_resource)
+          if issue_bulletin!
+            redirect_to(
+              sign_app_in_bulletin_path(rd: params[:rd], ri: params[:ri]),
+              notice: t("sign.app.registration.telephone.update.success"),
+            )
+          else
+            safe_redirect_to_rd_or_default!(params[:rd], default_path: sign_app_configuration_path(ri: params[:ri]))
+          end
         end
 
         def otp_resend_rate_limited?

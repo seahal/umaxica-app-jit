@@ -81,7 +81,7 @@ Browsers / Mobile Apps
 Rails 8 Monolith (Top / Sign / Help / Docs / News / API / BFF)
     │ ├─ Postgres clusters (identity, guest, universal, profile, token, etc.)
     │ ├─ Valkey (sessions, rate limiting, Memorize cache)
-    │ ├─ ActionMailer + SMTP / AwsSmsService providers
+    │ ├─ ActionMailer + SMTP / AwsSmsService
     │ └─ OpenTelemetry exporter (Tempo) + Loki logging
 Downstream: Google Cloud (Run/Build/Storage), Cloudflare R2, Fastly CDN
 ```
@@ -134,8 +134,7 @@ concerns scoped.
 - Registration flow (`Sign::App::Registration::EmailsController`) resets session, validates
   Turnstile, issues HOTP tokens (ROTP), stores metadata in `session[:user_email_registration]`, and
   sends OTP with `Email::App::RegistrationMailer`.
-- Telephone registration mirrors email and uses `AwsSmsService`, which chooses between AWS SNS,
-  Infobip, or a test driver.
+- Telephone registration mirrors email and uses `AwsSmsService`.
 - Authentication controllers set up JWT access/refresh cookies using the `Authn` concern
   (`generate_access_token`, `log_in`, `log_out`, `logged_in?`).
 - Passkey endpoints (`Sign::App::Setting::PasskeysController`) expose `/setting/passkeys/challenge`
@@ -174,8 +173,7 @@ concerns scoped.
 
 ### 4.6 Background services
 
-- `SmsProviders::*` classes implement provider-specific HTTP clients; `AwsSmsService` selects the
-  configured provider.
+- `AwsSmsService` handles SMS dispatch for OTP-related flows.
 - `Memorize` concern wraps a Redis pool with per-session prefixes and encryption for ephemeral
   key/value storage.
 
@@ -261,7 +259,7 @@ Sensitive columns leverage Active Record encryption.
 | -------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | HTTP           | REST                      | Host-scoped routes for top/sign/help/docs/news/api/bff, including `/health`, `/v1/health`, `/sign/...`, `/help/...`, `/api/v1/inquiry/...`. |
 | Mail           | SMTP / API                | `Email::App/Com/Org::*Mailer` deliver OTPs, contact confirmations, receipts (SES/Twilio SendGrid as configured).                            |
-| SMS            | HTTPS (AWS SNS / Infobip) | `SmsProviders::*` classes send OTP codes.                                                                                                   |
+| SMS            | HTTPS                     | `AwsSmsService` sends OTP codes.                                                                                                            |
 | Redis/Valkey   | RESP                      | Sessions, rate limiting, Memorize store.                                                                                                    |
 | OTLP           | HTTP/gRPC                 | OpenTelemetry exporter pushes spans to Tempo (`http://tempo:4318/v1/traces`).                                                               |
 | Object storage | S3-compatible             | MinIO (dev) / Google Cloud Storage (prod) for uploads.                                                                                      |

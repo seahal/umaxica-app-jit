@@ -6,9 +6,11 @@ class AddDeletableAtToStaffs < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
       add_column(
-        :staffs, :deletable_at, :datetime, null: false, default: -> {
-                                             "'infinity'"
-                                           },
+        :staffs,
+        :deletable_at,
+        :datetime,
+        null: false,
+        default: -> { "'infinity'" },
       ) unless column_exists?(:staffs, :deletable_at)
     end
 

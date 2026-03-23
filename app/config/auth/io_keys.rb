@@ -25,7 +25,7 @@ module Auth
       DBSC_SESSION_ID = "Sec-Secure-Session-Id"
       DBSC_RESPONSE = "Secure-Session-Response"
       STRICT_DEVICE_CHECK = "X-STRICT-DEVICE-CHECK"
-      TEST_CHECKPOINT = "X-TEST-CHECKPOINT"
+      TEST_BULLETIN = "X-TEST-BULLETIN"
       TEST_CURRENT_RESOURCE = "X-TEST-CURRENT-RESOURCE"
       TEST_CURRENT_USER = "X-TEST-CURRENT-USER"
       TEST_CURRENT_STAFF = "X-TEST-CURRENT-STAFF"
@@ -39,7 +39,7 @@ module Auth
       public_constant :DBSC_SESSION_ID
       public_constant :DBSC_RESPONSE
       public_constant :STRICT_DEVICE_CHECK
-      public_constant :TEST_CHECKPOINT
+      public_constant :TEST_BULLETIN
       public_constant :TEST_CURRENT_RESOURCE
       public_constant :TEST_CURRENT_USER
       public_constant :TEST_CURRENT_STAFF
@@ -59,10 +59,10 @@ module Auth
 
     module Session
       DEFAULT_RD = :user_email_authentication_rd
-      CHECKPOINT = :in_checkpoint
+      BULLETIN = :in_bulletin
 
       public_constant :DEFAULT_RD
-      public_constant :CHECKPOINT
+      public_constant :BULLETIN
     end
 
     module Env

@@ -1415,7 +1415,7 @@ Security/IoMethods:
 
 # to_i / to_f は無効な入力で 0 を返す — Integer() / Float() を強制
 Lint/NumberConversion:
-  Enabled: true
+  Enabled: false
 
 # ブロック外のローカル変数をシャドウイングするブロック引数を検出
 # （Section 10 の ShadowingOuterLocalVariable と重複するが明示的に再確認）

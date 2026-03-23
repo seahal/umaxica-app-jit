@@ -141,11 +141,17 @@ module Sign
                 ),
               )
             when :success
-              issue_checkpoint!
-              redirect_to(
-                sign_org_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
-                notice: I18n.t("sign.org.in.mfa.passkey.success"),
-              )
+              if issue_bulletin!
+                redirect_to(
+                  sign_org_in_bulletin_path(rd: result[:redirect_path], ri: params[:ri]),
+                  notice: I18n.t("sign.org.in.mfa.passkey.success"),
+                )
+              else
+                safe_redirect_to_rd_or_default!(
+                  result[:redirect_path],
+                  default_path: sign_org_root_path(ri: params[:ri]),
+                )
+              end
             else
               redirect_to(
                 new_sign_org_in_path,

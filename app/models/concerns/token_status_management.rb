@@ -88,7 +88,7 @@ module TokenStatusManagement
       return :expired_at if column_names.include?("expired_at")
       return :revoked_at if column_names.include?("revoked_at")
 
-      raise "#{name} does not have expired_at/revoked_at column"
+      raise ArgumentError, "#{name} does not have expired_at/revoked_at column"
     end
   end
 end

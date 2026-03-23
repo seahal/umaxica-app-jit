@@ -50,32 +50,6 @@ paths:
                   value:
                     status: OK
 
-  /v1/csrf:
-    get:
-      summary: CSRF token endpoint
-      description: Returns a CSRF token for form submissions
-      operationId: getCsrfToken
-      tags:
-        - Security
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - csrf_token
-                properties:
-                  csrf_token:
-                    type: string
-                    description: CSRF token for form submissions
-                    minLength: 1
-              examples:
-                success:
-                  value:
-                    csrf_token: "abc123def456"
-
 components:
   securitySchemes:
     cookieAuth:
@@ -103,5 +77,3 @@ components:
 tags:
   - name: Health
     description: Health check endpoints
-  - name: Security
-    description: Security-related endpoints (CSRF, etc.)

@@ -95,7 +95,7 @@ module Sign
         end
 
         def perform_passkey_sign_in(passkey)
-          rd = retrieve_redirect_parameter_for_checkpoint
+          rd = retrieve_redirect_parameter_for_bulletin
           complete_sign_in_or_start_mfa!(
             passkey.user, rt: rd, ri: params[:ri], auth_method: "passkey",
           )
@@ -126,11 +126,15 @@ module Sign
           }, status: :ok
         end
 
-        def passkey_checkpoint_redirect_url
-          sign_app_in_checkpoint_path(
-            rd: retrieve_redirect_parameter_for_checkpoint,
+        def passkey_bulletin_redirect_url
+          sign_app_in_bulletin_path(
+            rd: retrieve_redirect_parameter_for_bulletin,
             ri: params[:ri],
           )
+        end
+
+        def passkey_default_redirect_url
+          sign_app_configuration_path(ri: params[:ri])
         end
 
         def minimum_response_budget_enabled?

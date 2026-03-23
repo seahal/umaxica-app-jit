@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_22_100000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_23_013703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -179,6 +179,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_22_100000) do
   create_table "staff_token_statuses", force: :cascade do |t|
     t.citext "code", null: false
     t.index ["code"], name: "index_staff_token_statuses_on_code", unique: true
+  end
+
+  create_table "user_bulletins", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "public_id", limit: 21, null: false
+    t.datetime "read_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["public_id"], name: "index_user_bulletins_on_public_id", unique: true
+    t.index ["user_id"], name: "index_user_bulletins_on_user_id"
   end
 
   create_table "user_client_deletions", force: :cascade do |t|
@@ -600,6 +612,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_22_100000) do
   add_foreign_key "staff_preference_regions", "staff_preferences", column: "preference_id", name: "fk_staff_preference_regions_on_preference_id"
   add_foreign_key "staff_preference_timezones", "staff_preference_timezone_options", column: "option_id", name: "fk_staff_preference_timezones_on_option_id"
   add_foreign_key "staff_preference_timezones", "staff_preferences", column: "preference_id", name: "fk_staff_preference_timezones_on_preference_id"
+  add_foreign_key "user_bulletins", "users"
   add_foreign_key "user_client_deletions", "clients", validate: false
   add_foreign_key "user_client_deletions", "users", validate: false
   add_foreign_key "user_client_discoveries", "clients", validate: false

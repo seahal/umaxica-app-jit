@@ -12,7 +12,7 @@ module Sign
       include ::Preference::Adoption
       include Pundit::Authorization
       include ::RestrictedSessionGuard
-      include ::Current
+      include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern

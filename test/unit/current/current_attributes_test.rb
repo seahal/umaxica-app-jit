@@ -30,11 +30,30 @@ class CurrentAttributesTest < ActiveSupport::TestCase
 
     assert_predicate Current, :staff?
     assert_not Current.user?
+    assert_nil Current.user
 
     Current.actor_type = :user
 
     assert_predicate Current, :user?
     assert_not Current.staff?
+    assert_nil Current.staff
+  end
+
+  test "user and staff return actor for matching actor_type" do
+    user = Object.new
+    staff = Object.new
+
+    Current.actor = user
+    Current.actor_type = :user
+
+    assert_equal user, Current.user
+    assert_nil Current.staff
+
+    Current.actor = staff
+    Current.actor_type = :staff
+
+    assert_equal staff, Current.staff
+    assert_nil Current.user
   end
 
   test "preference defaults to NULL" do

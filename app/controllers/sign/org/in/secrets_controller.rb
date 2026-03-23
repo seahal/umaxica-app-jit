@@ -116,11 +116,14 @@ module Sign
               ),
             )
           elsif result[:status] == :success
-            issue_checkpoint!
-            redirect_to(
-              sign_org_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-              notice: t("sign.org.authentication.secret.create.success"),
-            )
+            if issue_bulletin!
+              redirect_to(
+                sign_org_in_bulletin_path(rd: params[:rd], ri: params[:ri]),
+                notice: t("sign.org.authentication.secret.create.success"),
+              )
+            else
+              safe_redirect_to_rd_or_default!(params[:rd], default_path: sign_org_root_path(ri: params[:ri]))
+            end
           else
             render_failed_login(result[:status])
           end

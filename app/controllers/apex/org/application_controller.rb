@@ -12,7 +12,7 @@ module Apex
       include ::Verification::Staff
       include Pundit::Authorization
       include ::Oidc::SsoInitiator
-      include ::Current
+      include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern
@@ -26,6 +26,7 @@ module Apex
       before_action :set_color_theme
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
+      before_action :set_current
       append_after_action :finish_request
 
       # FIXME: Resolve the URL issues before deploying.
