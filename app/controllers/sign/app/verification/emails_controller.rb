@@ -1,9 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-class Sign::App::Verification::EmailsController < ApplicationController
-  include Sign::AppVerificationBase
-
+class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseController
   def new
     return unless require_reauth_session!
     return if redirect_if_recent_verification_for_get!

@@ -174,10 +174,16 @@ module Sign
       end
 
       def build_memo(issued_timestamps:, retry_after: nil)
-        values = issued_timestamps.last(MAX_HISTORY).map { |i| Integer(i.to_s, 10) }.join(",")
+        values = issued_timestamps.last(MAX_HISTORY).map { |i| epoch_seconds(i) }.join(",")
         memo = "purpose=in issued=#{values}"
         memo += " retry_after=#{Integer(retry_after.to_s, 10)}" if retry_after
         memo[0, 1000]
+      end
+
+      def epoch_seconds(value)
+        return value.to_i if value.respond_to?(:to_i)
+
+        Integer(value.to_s, 10)
       end
 
       class << self

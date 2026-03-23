@@ -50,7 +50,7 @@ module Telephone
     {
       otp_private_key: otp_private_key,
       otp_counter: Integer(otp_counter.to_s, 10),
-      otp_expires_at: Integer(otp_expires_at.to_s, 10),
+      otp_expires_at: otp_expires_at.to_i,
     }
   end
 

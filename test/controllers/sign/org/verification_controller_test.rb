@@ -4,30 +4,15 @@
 require "test_helper"
 
 class Sign::Org::VerificationControllerTest < ActionDispatch::IntegrationTest
-  fixtures :staffs
+  fixtures :staffs, :staff_tokens, :staff_passkeys
 
   setup do
     @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     @staff = staffs(:one)
     @headers = as_staff_headers(@staff, host: @host)
-    @token = StaffToken.create!(
-      staff: @staff,
-      staff_token_status_id: StaffTokenStatus::NOTHING,
-      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
-      public_id: "org_verify_#{SecureRandom.hex(4)}",
-      refresh_expires_at: 1.day.from_now,
-    )
+    @token = staff_tokens(:one)
     @headers["X-TEST-SESSION-PUBLIC-ID"] = @token.public_id
-
-    StaffPasskey.create!(
-      staff: @staff,
-      name: "Org Verification Passkey",
-      webauthn_id: "org-verify-#{SecureRandom.hex(4)}",
-      external_id: SecureRandom.uuid,
-      public_key: "public_key",
-      sign_count: 0,
-      status_id: StaffPasskeyStatus::ACTIVE,
-    )
+    @passkey = staff_passkeys(:one)
   end
 
   test "should get show" do

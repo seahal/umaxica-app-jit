@@ -109,4 +109,60 @@ class Current::PreferenceTest < ActiveSupport::TestCase
   ensure
     Current.reset
   end
+
+  test "from_jwt returns NULL for nil input" do
+    assert_equal Current::Preference::NULL, Current::Preference.from_jwt(nil)
+  end
+
+  test "from_jwt returns NULL for non-hash input" do
+    assert_equal Current::Preference::NULL, Current::Preference.from_jwt("string")
+    assert_equal Current::Preference::NULL, Current::Preference.from_jwt(123)
+    assert_equal Current::Preference::NULL, Current::Preference.from_jwt([])
+  end
+
+  test "from_jwt constructs correct Preference from valid prf hash" do
+    prf = { "lx" => "en", "ri" => "us", "tz" => "America/New_York", "ct" => "dr" }
+    pref = Current::Preference.from_jwt(prf)
+
+    assert_not pref.null?
+    assert_equal "en", pref.language
+    assert_equal "us", pref.region
+    assert_equal "America/New_York", pref.timezone
+    assert_equal "dr", pref.theme
+  end
+
+  test "from_jwt falls back to DEFAULTS for missing keys" do
+    prf = { "lx" => "en" } # Only language provided
+    pref = Current::Preference.from_jwt(prf)
+
+    assert_equal "en", pref.language
+    assert_equal "jp", pref.region # DEFAULTS[:region]
+    assert_equal "Asia/Tokyo", pref.timezone # DEFAULTS[:timezone]
+    assert_equal "sy", pref.theme # DEFAULTS[:theme]
+  end
+
+  test "from_jwt handles empty hash" do
+    pref = Current::Preference.from_jwt({})
+
+    assert_equal "ja", pref.language
+    assert_equal "jp", pref.region
+    assert_equal "Asia/Tokyo", pref.timezone
+    assert_equal "sy", pref.theme
+  end
+
+  test "from_jwt with cookie parameter" do
+    cookie = Current::Preference::Cookie.new(
+      consented: true,
+      functional: true,
+      performant: false,
+      targetable: false,
+      consent_version: "v1",
+      consented_at: Time.zone.parse("2026-01-01"),
+    )
+    prf = { "lx" => "en" }
+    pref = Current::Preference.from_jwt(prf, cookie: cookie)
+
+    assert_predicate pref.cookie, :consented?
+    assert_predicate pref.cookie, :functional?
+  end
 end

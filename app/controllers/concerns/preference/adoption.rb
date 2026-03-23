@@ -140,6 +140,7 @@ module Preference
         end
       end
 
+      copy_flat_preference_values!(source, target)
       copy_cookie_consent!(source, target, source_assoc, target_assoc)
       touch_target!(target)
     end
@@ -187,6 +188,56 @@ module Preference
         else
           target_cookie.update!(source_consent)
         end
+      end
+    end
+
+    def copy_flat_preference_values!(source, target)
+      return unless target.respond_to?(:language=)
+
+      snapshot = preference_snapshot_for(source)
+      return if snapshot.blank?
+
+      connection_class = target.class.ancestors.find { |a| a.is_a?(Class) && a < ActiveRecord::Base && a.abstract_class? }
+      if connection_class
+        connection_class.connected_to(role: :writing) { target.update!(snapshot) }
+      else
+        target.update!(snapshot)
+      end
+    end
+
+    def preference_snapshot_for(preference)
+      return if preference.blank?
+
+      if preference.respond_to?(:language) &&
+          preference.respond_to?(:region) &&
+          preference.respond_to?(:timezone) &&
+          preference.respond_to?(:theme)
+        return {
+          language: preference.language,
+          region: preference.region,
+          timezone: preference.timezone,
+          theme: preference.theme,
+        }.compact
+      end
+
+      association_prefix = preference.class.name.underscore
+
+      {
+        language: preference.public_send("#{association_prefix}_language")&.option&.name&.downcase,
+        region: preference.public_send("#{association_prefix}_region")&.option&.name&.downcase,
+        timezone: preference.public_send("#{association_prefix}_timezone")&.option&.name,
+        theme: preference_theme_short_code(preference.public_send("#{association_prefix}_colortheme")&.option&.name),
+      }.compact
+    end
+
+    def preference_theme_short_code(value)
+      case value.to_s.downcase
+      when "light", "li"
+        "li"
+      when "dark", "dr"
+        "dr"
+      when "system", "sy"
+        "sy"
       end
     end
 

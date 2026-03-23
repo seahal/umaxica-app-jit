@@ -99,5 +99,21 @@ module Current
     # Null Object -- returned when no preference is loaded (guests, bearer tokens).
     # All values are safe defaults; no DB access occurs.
     NULL = new(null: true).freeze
+
+    # Build Preference from JWT prf claim hash
+    # @param prf_claim [Hash] the prf claim from JWT payload with lx, ri, tz, ct keys
+    # @param cookie [Cookie] optional cookie consent data
+    # @return [Preference] the constructed preference, or NULL if claim is invalid
+    def self.from_jwt(prf_claim, cookie: NULL_COOKIE)
+      return NULL unless prf_claim.is_a?(Hash)
+
+      new(
+        language: prf_claim["lx"] || DEFAULTS[:language],
+        region: prf_claim["ri"] || DEFAULTS[:region],
+        timezone: prf_claim["tz"] || DEFAULTS[:timezone],
+        theme: prf_claim["ct"] || DEFAULTS[:theme],
+        cookie: cookie,
+      )
+    end
   end
 end

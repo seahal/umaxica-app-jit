@@ -11,8 +11,12 @@
 #  consented       :boolean          default(FALSE), not null
 #  consented_at    :datetime
 #  functional      :boolean          default(FALSE), not null
+#  language        :string           default("ja"), not null
 #  performant      :boolean          default(FALSE), not null
+#  region          :string           default("jp"), not null
 #  targetable      :boolean          default(FALSE), not null
+#  theme           :string           default("sy"), not null
+#  timezone        :string           default("Asia/Tokyo"), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  user_id         :bigint           not null

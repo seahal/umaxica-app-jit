@@ -145,3 +145,98 @@ Created: 2026-03-21
 - Performance check: no N+1 queries in preference loading
 - Verify preference changes reflect within 1 request (reissue_access_token!)
 - Verify guest/bearer token flows work with Null preference
+
+---
+
+## Test Performance Investigation Notes (2026-03-22)
+
+### Scope investigated
+
+- `test/policies/com_timeline_policy_test.rb`
+- `test/models/org_preference_status_test.rb`
+- `test/models/org_preference_activity_level_test.rb`
+- `test/models/app_preference_activity_event_test.rb`
+- `test/controllers/sign/org/verification_controller_test.rb`
+- `test/controllers/core/org/healths_controller_test.rb`
+
+### What the measurements suggest
+
+- The slowest results from the full `bin/rails test --verbose` run were a mix of:
+  - genuine expensive test paths
+  - tests that were mostly paying for shared full-suite overhead
+- Isolated reruns showed that several of the flagged tests were not intrinsically slow by
+  themselves, which strongly suggests contention / bootstrap cost during the full parallel run.
+
+### Confirmed causes
+
+#### Shared test harness overhead
+
+- `test/test_helper.rb` enables parallel workers and loads `fixtures :all` for
+  `ActiveSupport::TestCase`.
+- That means even tiny tests can look slow when they happen to pay worker/bootstrap/fixture cost in
+  the full suite.
+- This is the main explanation for `ComTimelinePolicyTest`, whose own logic is effectively trivial.
+
+#### Fixed-ID bootstrap contention
+
+- `OrgPreferenceStatus`, `OrgPreferenceActivityLevel`, and `AppPreferenceActivityEvent` all use the
+  same fixed-ID `ensure_defaults!` pattern.
+- Those tests either call `ensure_defaults!` directly or query tables that are also initialized by
+  bootstrap code and other tests.
+- During the full parallel suite, this likely becomes connection / table contention on shared
+  databases such as `preference` and `activity`.
+
+#### Multi-DB setup inside verification tests
+
+- `Sign::Org::VerificationControllerTest` creates a `StaffToken` and a `StaffPasskey` in setup.
+- That crosses at least the token DB and operator DB and also runs through authentication /
+  verification before-actions.
+- This makes it materially heavier than a simple request test and more sensitive to suite-wide DB
+  contention.
+
+#### Real dependency sweep in health tests
+
+- `Core::Org::HealthsControllerTest` exercises the `Health` concern.
+- That concern loops over many record classes and both `writing` / `reading` roles, issuing DB
+  connectivity checks repeatedly.
+- This path remained slower even in isolated runs, so this is a real hot spot, not only a harness
+  artifact.
+
+### Improvement priorities
+
+#### Priority 1 — Reduce unnecessary global fixture cost
+
+- Revisit `fixtures :all` usage in `test/test_helper.rb`.
+- Goal: stop tiny policy/model tests from paying for unrelated global fixture loading.
+- Expected impact: broad suite-wide speedup, especially for many otherwise-cheap tests.
+
+#### Priority 2 — Stabilize fixed-ID bootstrap behavior
+
+- Revisit how fixed-ID defaults are prepared for tests using `ensure_defaults!`.
+- Goal: reduce repeated read/write work and contention on shared `preference` / `activity`
+  databases.
+- Expected impact: targeted improvement for the preference/activity master-data style tests and
+  lower variance in parallel runs.
+
+#### Priority 3 — Slim down verification controller setup
+
+- Audit whether `Sign::Org::VerificationControllerTest` can rely more on lightweight helpers or
+  pre-created state instead of creating fresh token/passkey records in every setup.
+- Goal: cut repeated cross-database setup and reduce integration-test overhead.
+- Expected impact: medium, concentrated in auth / verification test areas.
+
+#### Priority 4 — Decide how much of health dependency probing belongs in request tests
+
+- Review whether `Core::Org::HealthsControllerTest` should always exercise the full database sweep
+  in controller/request coverage, or whether some of that logic should be covered separately with
+  more focused tests.
+- Goal: keep confidence in health behavior while reducing repeated expensive dependency checks.
+- Expected impact: meaningful for this file specifically; limited suite-wide compared with Priority
+  1 and 2.
+
+### Recommended order if we actually optimize
+
+1. Tackle global fixture scope first.
+2. Then fix repeated fixed-ID bootstrap / `ensure_defaults!` contention.
+3. Then simplify verification controller test setup.
+4. Finally, redesign health-check test coverage if needed.

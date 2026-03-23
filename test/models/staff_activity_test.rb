@@ -212,6 +212,6 @@ class StaffActivityTest < ActiveSupport::TestCase
       timestamp: timestamp,
     )
 
-    assert_equal Integer(timestamp.to_s, 10), Integer(audit.occurred_at.to_s, 10)
+    assert_equal timestamp.to_i, audit.occurred_at.to_i
   end
 end

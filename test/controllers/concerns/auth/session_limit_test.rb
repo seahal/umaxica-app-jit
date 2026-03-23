@@ -176,7 +176,7 @@ class AuthSessionLimitTest < ActiveSupport::TestCase
     freeze_time do
       result = @harness.send(:restricted_session_expires_at)
 
-      assert_equal Integer((15.minutes.from_now).to_s, 10), Integer(result.to_s, 10)
+      assert_equal 15.minutes.from_now.to_i, result.to_i
     end
   end
 

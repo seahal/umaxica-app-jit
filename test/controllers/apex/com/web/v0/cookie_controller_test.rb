@@ -64,7 +64,7 @@ class Apex::Com::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
+    assert_in_delta expires_at.to_i, expires.to_i, 1
   end
 
   test "PATCH update with consented true updates com preference cookie and issues access token" do

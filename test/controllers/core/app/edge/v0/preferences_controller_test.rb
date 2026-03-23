@@ -89,7 +89,7 @@ module Core
             end
 
             recent_audits = AppPreferenceActivity.order(created_at: :desc).limit(2)
-            event_ids = recent_audits.map { |a| Integer(a.app_preference_activity_event.id.to_s, 10) }
+            event_ids = recent_audits.map { |a| a.app_preference_activity_event.id.to_i }
 
             assert_includes event_ids, AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN
             assert_includes event_ids, AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED

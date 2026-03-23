@@ -59,8 +59,8 @@ class ComContact < GuestRecord
 
   after_initialize do
     if new_record?
-      self.category_id ||= ComContactCategory::SECURITY_ISSUE
-      self.status_id ||= ComContactStatus::NOTHING
+      self.category_id = ComContactCategory::SECURITY_ISSUE if category_id.blank? || category_id.to_i.zero?
+      self.status_id = ComContactStatus::NOTHING if status_id.blank? || status_id.to_i.zero?
     end
   end
 

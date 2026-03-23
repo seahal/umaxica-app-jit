@@ -6,6 +6,9 @@ require "openssl"
 module PreferenceJwtHelper
   PREFERENCE_JWT_KEY = OpenSSL::PKey::EC.generate("secp384r1")
 
+  # Preference::JwtConfiguration is defined alongside Preference::Base.
+  _ = Preference::Base
+
   # Encode a real preference JWT token for use in controller tests.
   # This uses actual Preference::Token.encode with stubbed keys, producing
   # a token that passes full JWT verification (signature, claims, host).

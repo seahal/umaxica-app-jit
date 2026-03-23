@@ -43,16 +43,17 @@ class Apex::Org::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "PATCH update returns 200 and sets preference_consented cookie with org domain" do
-    token = encode_preference_jwt(
-      preferences: { "consented" => true },
-      host: @host,
-      public_id: "pref-org-public-id",
-      preference_type: "OrgPreference",
-    )
-    cookies[Preference::CookieName.access] = token
     expires_at = Time.utc(2032, 3, 4, 5, 6, 7)
 
     travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      token = encode_preference_jwt(
+        preferences: { "consented" => true },
+        host: @host,
+        public_id: "pref-org-public-id",
+        preference_type: "OrgPreference",
+      )
+      cookies[Preference::CookieName.access] = token
+
       with_cookie_domain_credentials(COOKIE_DOMAIN_ORG: ".org.localhost") do
         with_preference_jwt_keys(host: @host) do
           patch apex_org_web_v0_cookie_path, as: :json
@@ -70,7 +71,7 @@ class Apex::Org::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
+    assert_in_delta expires_at.to_i, expires.to_i, 1
   end
 
   test "PATCH update with consented true updates org preference cookie and issues access token" do

@@ -13,6 +13,8 @@ module Apex
 
         def update
           set_colortheme_preferences_update
+          return render_preference_update_response if request.format.json?
+
           redirect_to(
             safe_return_to_path || edit_apex_com_preference_theme_url,
             notice: t("apex.com.preferences.update_success"),

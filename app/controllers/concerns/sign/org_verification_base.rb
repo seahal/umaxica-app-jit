@@ -41,7 +41,7 @@ module Sign
 
       define_method(:valid_reauth_session?) do |rs|
         rs.present? &&
-          Integer(rs["expires_at"].to_s, 10) > Time.current.to_i &&
+          rs["expires_at"].to_i > Time.current.to_i &&
           rs["user_id"] == current_staff.id &&
           rs["scope"].present?
       end
@@ -110,7 +110,7 @@ module Sign
 
     def valid_reauth_session?(rs)
       rs.present? &&
-        Integer(rs["expires_at"].to_s, 10) > Time.current.to_i &&
+        rs["expires_at"].to_i > Time.current.to_i &&
         rs["user_id"] == current_staff.id &&
         rs["scope"].present?
     end

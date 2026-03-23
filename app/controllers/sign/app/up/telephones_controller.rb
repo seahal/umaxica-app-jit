@@ -94,7 +94,7 @@ module Sign
                 public_id: @user_telephone.public_id,
                 confirm_policy: boolean_value(@user_telephone.confirm_policy),
                 confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
-                expires_at: Integer(expires_at.to_s, 10),
+                expires_at: expires_at.to_i,
               }
 
               # Send SMS with OTP
@@ -237,7 +237,7 @@ module Sign
 
         def otp_session_expired?(registration_session)
           @user_telephone.otp_expired? ||
-            Integer(registration_session["expires_at"].to_s, 10) <= Time.current.to_i
+            registration_session["expires_at"].to_i <= Time.current.to_i
         end
 
         def verify_submitted_telephone_code
@@ -334,7 +334,7 @@ module Sign
           last_sent_at = session[:user_telephone_otp_last_sent_at]
           return false if last_sent_at.blank?
 
-          Integer(last_sent_at.to_s, 10) > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
+          last_sent_at.to_i > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
         end
 
         def load_registration_telephone(registration_session)
@@ -396,7 +396,7 @@ module Sign
             public_id: @user_telephone.public_id,
             confirm_policy: boolean_value(@user_telephone.confirm_policy),
             confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
-            expires_at: Integer(@user_telephone.otp_expires_at.to_s, 10),
+            expires_at: @user_telephone.otp_expires_at.to_i,
             existing: true,
           }
 

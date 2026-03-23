@@ -161,6 +161,37 @@ module Preference::Core
     end
     issue_access_token_from(@preferences)
     sync_to_resource_preference!
+
+    # Also reissue auth JWT with updated prf claim (if auth module is available)
+    return unless respond_to?(:reissue_access_token!, true)
+
+    preference_data = build_preference_snapshot_from_preference(@preferences)
+    reissue_access_token!(preference_data)
+  end
+
+  # Build preference snapshot from preference record (for reissue_access_token!)
+  def build_preference_snapshot_from_preference(preference)
+    resolved_preference_snapshot(preference)
+  end
+
+  def render_preference_update_response
+    render json: { preference: preference_response_payload }, status: :ok
+  end
+
+  def preference_response_payload
+    snapshot = resolved_preference_snapshot(@preferences)
+    cookie = resolved_preference_cookie(@preferences)
+
+    {
+      lx: snapshot[:language] || Current::Preference::DEFAULTS[:language],
+      ct: snapshot[:theme] || Current::Preference::DEFAULTS[:theme],
+      ri: snapshot[:region] || Current::Preference::DEFAULTS[:region],
+      tz: snapshot[:timezone] || Current::Preference::DEFAULTS[:timezone],
+      consented: cookie[:consented],
+      functional: cookie[:functional],
+      performant: cookie[:performant],
+      targetable: cookie[:targetable],
+    }
   end
 
   # Dual-write: when logged in, sync current AppPreference/OrgPreference values
@@ -191,7 +222,12 @@ module Preference::Core
   end
 
   def preference_cookie_params
-    params.expect(preference_cookie: %i(functional performant targetable consented consented_at))
+    return params.expect(
+      preference_cookie: %i(functional performant targetable consented
+                            consented_at),
+    ) if params[:preference_cookie]
+
+    params.permit(:functional, :performant, :targetable, :consented, :consented_at)
   end
 
   def build_cookie_update_params(cookie, params)
@@ -224,7 +260,69 @@ module Preference::Core
   end
 
   def preference_colortheme_params
-    params.expect(preference_colortheme: [:option_id])
+    return params.expect(preference_colortheme: [:option_id]) if params[:preference_colortheme]
+
+    ActionController::Parameters.new(
+      option_id: params[:option_id] || params[:theme] || params[:ct],
+    ).permit(:option_id)
+  end
+
+  def resolved_preference_snapshot(preference)
+    return {} if preference.blank?
+
+    if preference.respond_to?(:language) &&
+        preference.respond_to?(:region) &&
+        preference.respond_to?(:timezone) &&
+        preference.respond_to?(:theme)
+      return {
+        language: preference.language,
+        region: preference.region,
+        timezone: preference.timezone,
+        theme: preference.theme,
+      }.compact
+    end
+
+    association_prefix = preference.class.name.underscore
+
+    {
+      language: preference.public_send("#{association_prefix}_language")&.option&.name&.downcase,
+      region: preference.public_send("#{association_prefix}_region")&.option&.name&.downcase,
+      timezone: preference.public_send("#{association_prefix}_timezone")&.option&.name,
+      theme: colortheme_short_code(preference.public_send("#{association_prefix}_colortheme")&.option&.name),
+    }.compact
+  end
+
+  def resolved_preference_cookie(preference)
+    return default_preference_cookie_state if preference.blank?
+
+    if preference.respond_to?(:consented)
+      return {
+        consented: !!preference.consented,
+        functional: !!preference.functional,
+        performant: !!preference.performant,
+        targetable: !!preference.targetable,
+      }
+    end
+
+    association_prefix = preference.class.name.underscore
+    cookie = preference.public_send("#{association_prefix}_cookie")
+    return default_preference_cookie_state if cookie.blank?
+
+    {
+      consented: !!cookie.consented,
+      functional: !!cookie.functional,
+      performant: !!cookie.performant,
+      targetable: !!cookie.targetable,
+    }
+  end
+
+  def default_preference_cookie_state
+    {
+      consented: false,
+      functional: false,
+      performant: false,
+      targetable: false,
+    }
   end
 
   def safe_return_to_path

@@ -61,7 +61,7 @@ class FixConsistencyContacts < ActiveRecord::Migration[8.2]
 
       add_column(:app_contact_telephones, :app_contact_id, :bigint, null: false, default: 0)
       add_foreign_key(:app_contact_telephones, :app_contacts)
-      add_index(:app_contact_telephones, :org_contact_id)
+      add_index(:app_contact_telephones, :app_contact_id)
       add_column(:app_contact_emails, :app_contact_id, :bigint, null: false, default: 0)
       add_foreign_key(:app_contact_emails, :app_contacts)
       add_index(:app_contact_emails, :app_contact_id)

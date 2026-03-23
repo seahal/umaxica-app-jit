@@ -47,14 +47,14 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   end
 
   test "POST refresh syncs preference_consented cookie on success" do
-    token_record = UserToken.create!(user: @user, device_id: @device_id)
-    refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
-
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 4, 5, 6, 7, 8)
 
     travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      token_record = UserToken.create!(user: @user, device_id: @device_id)
+      refresh_plain = token_record.rotate_refresh_token!
+      cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
       with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
         controller.any_instance.stub(
           :decode_and_verify_preference_jwt,
@@ -76,18 +76,18 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
+    assert_in_delta expires_at.to_i, expires.to_i, 1
   end
 
   test "POST refresh syncs preference_consented=0 when consent is false" do
-    token_record = UserToken.create!(user: @user, device_id: @device_id)
-    refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
-
     controller = Sign::App::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2034, 6, 7, 8, 9, 10)
 
     travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      token_record = UserToken.create!(user: @user, device_id: @device_id)
+      refresh_plain = token_record.rotate_refresh_token!
+      cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
       with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
         controller.any_instance.stub(
           :decode_and_verify_preference_jwt,
@@ -109,7 +109,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     expires = response_cookie_expiry("preference_consented")
 
     assert_not_nil expires
-    assert_in_delta Integer(expires_at.to_s, 10), Integer(expires.to_s, 10), 1
+    assert_in_delta expires_at.to_i, expires.to_i, 1
   end
 
   test "GET check with valid access token from refresh returns 200" do
@@ -303,7 +303,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
       # Should be approximately 1 hour from now (within a few seconds tolerance)
       expected_expiry = Auth::Base::ACCESS_TOKEN_TTL.from_now
 
-      assert_in_delta Integer(expected_expiry.to_s, 10), Integer(expiry.to_s, 10), 5,
+      assert_in_delta expected_expiry.to_i, expiry.to_i, 5,
                       "Access cookie expiry should be ~1 hour from now"
     end
   end

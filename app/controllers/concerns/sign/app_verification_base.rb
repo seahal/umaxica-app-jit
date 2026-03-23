@@ -52,7 +52,7 @@ module Sign
       data = session[EMAIL_OTP_SESSION_KEY]
       return false unless data
 
-      Time.current.to_i <= Integer(data["expires_at"].to_s, 10)
+      Time.current.to_i <= data["expires_at"].to_i
     end
 
     def ensure_email_nonce!
@@ -87,7 +87,7 @@ module Sign
 
     def valid_reauth_session?(rs)
       rs.present? &&
-        Integer(rs["expires_at"].to_s, 10) > Time.current.to_i &&
+        rs["expires_at"].to_i > Time.current.to_i &&
         rs["user_id"] == current_user.id &&
         rs["scope"].present? &&
         rs["return_to"].present?
@@ -233,7 +233,7 @@ module Sign
         return false
       end
 
-      if Time.current.to_i > Integer(data["expires_at"].to_s, 10)
+      if Time.current.to_i > data["expires_at"].to_i
         @verification_errors = ["確認コードの有効期限が切れました"]
         return false
       end

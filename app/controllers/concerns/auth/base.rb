@@ -48,7 +48,7 @@ module Auth
     DEVICE_COOKIE_KEY = Auth::CookieName.device(refresh_cookie_key: REFRESH_COOKIE_KEY)
 
     # Token TTLs
-    ACCESS_TOKEN_TTL = Integer(ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i), 10).seconds
+    ACCESS_TOKEN_TTL = Integer(ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i.to_s), 10).seconds
     REFRESH_TOKEN_TTL = 30.days
     DBSC_COOKIE_TTL = 10.minutes
     RESTRICTED_SESSION_TTL = 15.minutes
@@ -142,10 +142,10 @@ module Auth
       JWT_ALGORITHM = "ES384"
 
       class << self
-        def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil)
+        def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preference: nil)
           Auth::TokenService.encode(
             resource, host: host, session_public_id: session_public_id,
-                      resource_type: resource_type, expires_at: expires_at,
+                      resource_type: resource_type, expires_at: expires_at, preference: preference,
           )
         end
 
@@ -403,10 +403,10 @@ module Auth
       data = checkpoint_state
       return true if data.blank?
 
-      issued_at = Integer(data[:issued_at], 10)
+      issued_at = epoch_seconds(data[:issued_at])
       return true if issued_at <= 0
 
-      Time.current.to_i >= issued_at + Integer(CHECKPOINT_TIMEOUT, 10)
+      Time.current.to_i >= issued_at + CHECKPOINT_TIMEOUT.to_i
     end
 
     def refresh_checkpoint_dimension!(state: "updated")
@@ -496,7 +496,7 @@ module Auth
       return false if session_data.blank?
       return true unless session_data[expiry_key]
 
-      Integer(session_data[expiry_key], 10) > Time.now.to_i
+      epoch_seconds(session_data[expiry_key]) > Time.current.to_i
     end
 
     # Loads a record from session with additional validation
@@ -611,6 +611,8 @@ module Auth
         )
       end
 
+      adopt_preference_for!(resource) if respond_to?(:adopt_preference_for!, true)
+
       # Generate JWT access token with explicit resource_type
       now = Time.current
       access_expires_at = access_token_expires_at_for(token_record, now: now)
@@ -622,6 +624,7 @@ module Auth
         session_public_id: token_record.public_id,
         resource_type: resource_type,
         expires_at: access_expires_at,
+        preference: build_preference_snapshot(resource),
       )
 
       # Always set cookies (even for JSON responses - required for Edge/SPA)
@@ -665,8 +668,6 @@ module Auth
           flow: session_limit_gate_flow,
         )
       end
-
-      adopt_preference_for!(resource) if respond_to?(:adopt_preference_for!, true)
 
       result
     end
@@ -1206,6 +1207,7 @@ module Auth
         session_public_id: token_record.public_id,
         resource_type: resource_type,
         expires_at: access_expires_at,
+        preference: build_preference_snapshot(resource),
       )
 
       set_auth_cookies(
@@ -1477,7 +1479,10 @@ module Auth
     def load_current_resource
       if Rails.env.test?
         resource = load_from_test_header
-        return resource if resource
+        if resource
+          populate_current_attributes!(resource, nil)
+          return resource
+        end
       end
 
       resource = load_from_token
@@ -1524,7 +1529,93 @@ module Auth
 
       emit_actor_mismatch_event(result.payload) if result.failure_reason == :actor_mismatch
       @current_session_public_id = result.session_public_id if result.session_public_id.present?
+
+      populate_current_attributes!(result.resource, result.payload) if result.resource.present?
+
       result.resource
+    end
+
+    # Populate Current.* attributes from JWT payload after successful authentication
+    def populate_current_attributes!(resource, payload)
+      return if resource.blank?
+
+      Current.actor = resource
+      Current.actor_type = ((resource_type == "staff") ? :staff : :user).to_sym
+      Current.session = @current_session_public_id
+      Current.token = payload if payload.present?
+      Current.domain = Core::Surface.current(request) if respond_to?(:request, true) && request.present?
+
+      # Populate preference from JWT prf claim if available
+      return if payload.blank?
+
+      prf_claim = Auth::TokenClaims.preference(payload)
+      Current.preference = Current::Preference.from_jwt(prf_claim) if prf_claim.present?
+    end
+
+    # Reissue access token with updated preference data (called after preference changes)
+    def reissue_access_token!(preference_data = nil)
+      return unless @current_resource
+
+      token_record = current_token_record
+      return unless token_record
+
+      preference_snapshot = preference_data || build_preference_snapshot(@current_resource)
+      return unless preference_snapshot
+
+      access_expires_at = access_token_expires_at_for(token_record)
+
+      access_token = Token.encode(
+        @current_resource,
+        host: request.host,
+        session_public_id: token_record.public_id,
+        resource_type: resource_type,
+        expires_at: access_expires_at,
+        preference: preference_snapshot,
+      )
+
+      cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
+        value: access_token,
+        expires: access_expires_at,
+      )
+
+      # Update Current.preference immediately
+      if preference_snapshot
+        prf_for_current =
+          preference_snapshot.transform_keys do |k|
+            { language: "lx", region: "ri", timezone: "tz", theme: "ct" }[k] || k.to_s
+          end
+        Current.preference = Current::Preference.from_jwt(prf_for_current)
+      end
+
+      access_token
+    end
+
+    # Build preference snapshot from resource's UserPreference/StaffPreference
+    def build_preference_snapshot(resource)
+      return nil if resource.blank?
+
+      pref_record =
+        if resource_type == "staff"
+          resource.staff_preference
+        else
+          resource.user_preference
+        end
+
+      return nil if pref_record.blank?
+
+      {
+        language: pref_record.language,
+        region: pref_record.region,
+        timezone: pref_record.timezone,
+        theme: pref_record.theme,
+      }.compact
+    end
+
+    # Get current token record for reissue_access_token!
+    def current_token_record
+      return nil if @current_session_public_id.blank?
+
+      token_class.find_by(public_id: @current_session_public_id)
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -1844,11 +1935,11 @@ module Auth
       data = pending_mfa
       return false unless data
 
-      expires_at = Integer(data[:expires_at], 10)
+      expires_at = epoch_seconds(data[:expires_at])
       if expires_at.positive?
         return false if Time.current.to_i >= expires_at
       else
-        issued_at = Integer(data[:issued_at], 10)
+        issued_at = epoch_seconds(data[:issued_at])
         return false if issued_at <= 0
         return false if Time.zone.at(issued_at) < pending_mfa_ttl.ago
       end
@@ -2162,7 +2253,22 @@ module Auth
     end
 
     def expires_in_for(expires_at, now: Time.current)
-      [(Integer(expires_at.to_s, 10) - Integer(now.to_s, 10)), 0].max
+      [(epoch_seconds(expires_at) - epoch_seconds(now)), 0].max
+    end
+
+    def epoch_seconds(value)
+      case value
+      when Time, DateTime, ActiveSupport::TimeWithZone
+        value.to_i
+      when ActiveSupport::Duration
+        value.to_i
+      when Numeric
+        value.to_i
+      else
+        Integer(value.to_s, 10)
+      end
+    rescue ArgumentError, TypeError
+      0
     end
 
     def mfa_required_for?(resource)

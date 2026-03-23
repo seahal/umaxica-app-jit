@@ -183,10 +183,12 @@ WORKDIR ${HOME}/workspace
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bat \
+    bubblewrap \
     entr \
     fd-find \
     fontconfig \
     fzf \
+    git-secrets \
     htop \
     iproute2 \
     jq \
@@ -206,7 +208,6 @@ RUN apt-get update -qq \
     zip \
     socat \
     netcat-openbsd \
-    python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
@@ -230,11 +231,6 @@ RUN npm install -g pnpm@10.27.0 && \
 RUN curl -fsSL https://vite.plus | bash
 ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
 
-RUN install -d -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
-    "${HOME}/.cache" \
-    "${HOME}/.config" \
-    "${HOME}/.npm" \
-    "${HOME}/.local" \
-    "${HOME}/.bundle"
-
 USER ${DOCKER_USER}
+
+RUN sudo chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"

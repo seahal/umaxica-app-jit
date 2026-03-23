@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_19_125137) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_22_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -160,9 +160,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_19_125137) do
     t.datetime "consented_at"
     t.datetime "created_at", null: false
     t.boolean "functional", default: false, null: false
+    t.string "language", default: "ja", null: false
     t.boolean "performant", default: false, null: false
+    t.string "region", default: "jp", null: false
     t.bigint "staff_id", null: false
     t.boolean "targetable", default: false, null: false
+    t.string "theme", default: "sy", null: false
+    t.string "timezone", default: "Asia/Tokyo", null: false
     t.datetime "updated_at", null: false
     t.index ["staff_id"], name: "index_staff_preferences_on_staff_id", unique: true
   end
@@ -435,8 +439,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_19_125137) do
     t.datetime "consented_at"
     t.datetime "created_at", null: false
     t.boolean "functional", default: false, null: false
+    t.string "language", default: "ja", null: false
     t.boolean "performant", default: false, null: false
+    t.string "region", default: "jp", null: false
     t.boolean "targetable", default: false, null: false
+    t.string "theme", default: "sy", null: false
+    t.string "timezone", default: "Asia/Tokyo", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_user_preferences_on_user_id", unique: true

@@ -59,8 +59,8 @@ class OrgContact < GuestRecord
 
   after_initialize do
     if new_record?
-      self.category_id ||= OrgContactCategory::ORGANIZATION_INQUIRY
-      self.status_id ||= OrgContactStatus::NOTHING
+      self.category_id = OrgContactCategory::ORGANIZATION_INQUIRY if category_id.blank? || category_id.to_i.zero?
+      self.status_id = OrgContactStatus::NOTHING if status_id.blank? || status_id.to_i.zero?
     end
   end
 

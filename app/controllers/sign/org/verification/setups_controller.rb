@@ -4,7 +4,7 @@
 module Sign
   module Org
     module Verification
-      class SetupsController < ApplicationController
+      class SetupsController < Sign::Org::ApplicationController
         auth_required!
 
         before_action :authenticate_staff!

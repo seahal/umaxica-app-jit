@@ -198,7 +198,7 @@ module SocialCallbackGuard
       callback: params[:state].to_s.presence,
       expected: session[SOCIAL_STATE_SESSION_KEY].to_s.presence ||
         request.env.dig("omniauth.params", "state").to_s.presence,
-      started_at: Integer(session[SOCIAL_STATE_STARTED_AT_SESSION_KEY].to_s, 10),
+      started_at: session[SOCIAL_STATE_STARTED_AT_SESSION_KEY].to_i,
       used_at: session[SOCIAL_STATE_USED_AT_SESSION_KEY],
       stored_provider: session[SOCIAL_STATE_PROVIDER_SESSION_KEY].to_s.presence,
     }
@@ -246,7 +246,16 @@ module SocialCallbackGuard
     return false unless Rails.env.test?
     return false if request.headers["X-STRICT-SOCIAL-STATE"] == "1"
 
-    request.env["omniauth.auth"].present?
+    request.env["omniauth.auth"].present? || test_mode_mock_auth_present?
+  end
+
+  def test_mode_mock_auth_present?
+    return false unless defined?(OmniAuth) && OmniAuth.config.test_mode
+
+    provider = params[:provider].to_s
+    return false if provider.blank?
+
+    OmniAuth.config.mock_auth[provider.to_sym].present? || OmniAuth.config.mock_auth[provider].present?
   end
 
   def clear_social_state!

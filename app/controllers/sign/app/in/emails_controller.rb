@@ -44,7 +44,12 @@ module Sign
             return
           end
 
-          process_email_authentication(normalized_address)
+          result = process_email_authentication(normalized_address)
+
+          if result == :cooldown
+            render plain: t("sign.app.authentication.email.create.cooldown"), status: :too_many_requests
+            return
+          end
 
           return render_session_limit_hard_reject if @session_limit_hard_reject
 
@@ -171,7 +176,7 @@ module Sign
             session[:user_email_authentication_id] = existing_email.id
             session[:user_email_authentication_address] = nil
 
-            return if otp_request_rate_limited?(existing_email)
+            return :cooldown if otp_request_rate_limited?(existing_email)
 
             otp_code = generate_otp_for(existing_email)
 
@@ -186,6 +191,8 @@ module Sign
             session[:user_email_authentication_id] = nil
             session[:user_email_authentication_address] = normalized_address
           end
+
+          :ok
         end
 
         def verify_otp_and_login(user_email)
@@ -274,7 +281,7 @@ module Sign
           last_sent_at = session[:sign_in_email_cooldown_at]
           return false if last_sent_at.blank?
 
-          Integer(last_sent_at.to_s, 10) > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
+          last_sent_at.to_i > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
         end
 
         def record_sign_in_email_cooldown!(normalized_address)

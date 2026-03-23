@@ -85,9 +85,8 @@ jobs:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
           cache-version: 1
-      - name: Run Brakeman security scanner (SARIF)
-        run: bundle exec brakeman -f sarif -o brakeman.sarif --no-pager --quiet
-        continue-on-error: true
+      - name: Run Brakeman security scanner (SARIF + fail on issues)
+        run: bundle exec brakeman -f sarif -o brakeman.sarif --no-pager --quiet -z
       - name: Upload Brakeman SARIF to GitHub Security
         if: always()
         uses: github/codeql-action/upload-sarif@v4.31.10
@@ -95,8 +94,6 @@ jobs:
           sarif_file: brakeman.sarif
           category: brakeman
         continue-on-error: true
-      - name: Run Brakeman (fail on issues)
-        run: bundle exec brakeman -z -q --no-pager
       - name: Run bundle-audit
         run: bin/bundler-audit check --update
   gitleaks:
@@ -437,9 +434,7 @@ jobs:
   image-scan:
     name: Container Scan (Trivy + SBOM)
     runs-on: ubuntu-24.04
-    if:
-      github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref ==
-      'refs/heads/main')
+    if: github.event_name != 'schedule'
     timeout-minutes: 20
     permissions:
       contents: read
@@ -468,8 +463,8 @@ jobs:
           image-ref: umaxica-app:${{ github.sha }}
           format: sarif
           output: trivy-results.sarif
-          exit-code: "0"
-          severity: CRITICAL,HIGH,MEDIUM
+          exit-code: "1"
+          severity: CRITICAL,HIGH
           ignore-unfixed: true
           vuln-type: os,library
           scanners: vuln

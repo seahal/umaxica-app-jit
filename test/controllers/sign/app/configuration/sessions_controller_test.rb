@@ -223,7 +223,7 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert_response :see_other
     already_expired.reload
 
-    assert_equal Integer(original_expired_at.to_s, 10), Integer(already_expired.expired_at.to_s, 10)
+    assert_equal original_expired_at.to_i, already_expired.expired_at.to_i
   end
 
   # ===================================================================

@@ -14,6 +14,8 @@ module Apex
 
         def update
           set_cookie_preferences_update
+          return render_preference_update_response if request.format.json?
+
           redirect_params = {}
           ::Preference::Global::PARAM_CONTEXT_KEYS.each do |key|
             redirect_params[key] = params[key] if params[key].present?

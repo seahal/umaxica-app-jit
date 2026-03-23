@@ -208,8 +208,8 @@ class StaffTokenTest < ActiveSupport::TestCase
       replacement = result[:token]
 
       assert_equal :rotated, result[:status]
-      assert_equal Integer(token.revoked_at.to_s, 10), Integer(replacement.revoked_at.to_s, 10)
-      assert_equal Integer(token.deletable_at.to_s, 10), Integer(replacement.deletable_at.to_s, 10)
+      assert_equal token.revoked_at.to_i, replacement.revoked_at.to_i
+      assert_equal token.deletable_at.to_i, replacement.deletable_at.to_i
     end
   end
 

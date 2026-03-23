@@ -9,11 +9,11 @@ module Auth
     VALID_ACTOR_TYPES = %w(user staff).freeze
 
     class << self
-      def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil)
+      def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preference: nil)
         return nil unless valid_encode_params?(resource, host)
 
         type = resource_type || resource.class.name.downcase
-        payload = build_payload(resource, session_public_id, type, expires_at: expires_at)
+        payload = build_payload(resource, session_public_id, type, expires_at: expires_at, preference: preference)
         token_type = Auth::Base::JwtConfiguration.token_type(type)
         JWT.encode(
           payload,
@@ -141,7 +141,7 @@ module Auth
         true
       end
 
-      def build_payload(resource, session_public_id, type, expires_at: nil)
+      def build_payload(resource, session_public_id, type, expires_at: nil, preference: nil)
         Auth::TokenClaims.build(
           resource: resource,
           session_public_id: session_public_id,
@@ -149,6 +149,7 @@ module Auth
           issued_at: Time.current,
           access_token_ttl: Auth::Base::ACCESS_TOKEN_TTL,
           expires_at: expires_at,
+          preference: preference,
         )
       end
 

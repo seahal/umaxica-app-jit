@@ -16,4 +16,9 @@ Rails.application.config.permissions_policy do |policy|
   policy.fullscreen(:self)
   policy.payment(:self)
   policy.picture_in_picture(:self)
+
+  # WebAuthn/passkeys require these directives.
+  # Rails does not yet define them in DIRECTIVES, so set them directly.
+  policy.directives["publickey-credentials-get"]    = ["'self'"]
+  policy.directives["publickey-credentials-create"] = ["'self'"]
 end

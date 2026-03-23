@@ -6,58 +6,9 @@ require "test_helper"
 module Sign
   module Risk
     class EngineTest < ActiveSupport::TestCase
-      # Mock Redis client for testing
-      class MockRedis
-        def initialize
-          @data = {}
-        end
-
-        def zadd(key, score, member)
-          @data[key] ||= []
-          @data[key] << { score: score, member: member }
-        end
-
-        def zrangebyscore(key, min, _max)
-          return [] unless @data[key]
-
-          # Simplified range logic for test
-          # Assuming max is "+inf" and min is a float
-          min_val = Float(min)
-
-          @data[key]
-            .select { |item| item[:score] >= min_val }
-            .pluck(:member)
-        end
-
-        def expire(key, ttl)
-          # no-op
-        end
-
-        def set(key, val, ex:)
-          # no-op
-        end
-
-        def clear!
-          @data = {}
-        end
-      end
-
       setup do
-        @user_id = SecureRandom.uuid
-        @mock_redis = MockRedis.new
-        # Stub REDIS_CLIENT constant.
-        # Since we can't easily reassign constants in Ruby without warning/error,
-        # we'll assume the implementation uses REDIS_CLIENT if defined.
-        # Check if REDIS_CLIENT is defined in test env.
-        # If not, we might need to define it or stub the Emitter/Engine internals.
-        # But wait, Engine uses REDIS_CLIENT directly.
-        # We can stub the method that calls Redis or stub the constant.
-
-        # In this environment, let's assume we can stub `Sign::Risk::Engine` internals OR `REDIS_CLIENT`.
-        # However, `REDIS_CLIENT` is top-level.
-
-        # Better approach: If REDIS_CLIENT assumes real redis, we should use a mock.
-        # Or, we can redefine REDIS_CLIENT with silence_warnings.
+        UserOccurrenceStatus.find_or_create_by!(id: UserOccurrenceStatus::ACTIVE)
+        @user = User.create!(status_id: UserStatus::NOTHING, public_id: "risk_#{SecureRandom.hex(6)}")
       end
 
       test "refresh_reuse_detected returns 100" do
@@ -74,69 +25,38 @@ module Sign
         # Let's see if we can use Minitest::Mock on REDIS_CLIENT if it exists?
         # Or define it if missing.
 
-        mock_redis = @mock_redis
+        Emitter.send(:persist, Event.new("refresh_reuse_detected", payload: { user_id: @user.id }))
 
-        silence_warnings do
-          ::REDIS_CLIENT = mock_redis
-        end
-
-        # Emit an event manually
-        event = Event.new("refresh_reuse_detected", payload: { user_id: @user_id })
-        Emitter.persist(event) # This writes to our mock_redis
-
-        assert_equal 100, Engine.score(@user_id)
+        assert_equal 100, Engine.score(user_id: @user.id)
       end
 
       test "auth_failed 5 times returns 60" do
-        mock_redis = @mock_redis
-        silence_warnings do
-          ::REDIS_CLIENT = mock_redis
-        end
-
         5.times do
-          event = Event.new("auth_failed", payload: { user_id: @user_id })
-          Emitter.persist(event)
+          Emitter.send(:persist, Event.new("auth_failed", payload: { user_id: @user.id }))
         end
 
-        assert_equal 60, Engine.score(@user_id)
+        assert_equal 60, Engine.score(user_id: @user.id)
       end
 
       test "refresh_failed 5 times returns 40" do
-        mock_redis = @mock_redis
-        silence_warnings do
-          ::REDIS_CLIENT = mock_redis
-        end
-
         5.times do
-          event = Event.new("refresh_failed", payload: { user_id: @user_id })
-          Emitter.persist(event)
+          Emitter.send(:persist, Event.new("refresh_failed", payload: { user_id: @user.id }))
         end
 
-        assert_equal 40, Engine.score(@user_id)
+        assert_equal 40, Engine.score(user_id: @user.id)
       end
 
       test "mixed events return max score" do
-        mock_redis = @mock_redis
-        silence_warnings do
-          ::REDIS_CLIENT = mock_redis
-        end
+        Emitter.send(:persist, Event.new("refresh_reuse_detected", payload: { user_id: @user.id }))
+        5.times { Emitter.send(:persist, Event.new("auth_failed", payload: { user_id: @user.id })) }
 
-        # 100 takes precedence
-        Emitter.persist(Event.new("refresh_reuse_detected", payload: { user_id: @user_id }))
-        5.times { Emitter.persist(Event.new("auth_failed", payload: { user_id: @user_id })) }
-
-        assert_equal 100, Engine.score(@user_id)
+        assert_equal 100, Engine.score(user_id: @user.id)
       end
 
       test "returns 0 for safe events" do
-        mock_redis = @mock_redis
-        silence_warnings do
-          ::REDIS_CLIENT = mock_redis
-        end
+        Emitter.send(:persist, Event.new("session_issued", payload: { user_id: @user.id }))
 
-        Emitter.persist(Event.new("session_issued", payload: { user_id: @user_id }))
-
-        assert_equal 0, Engine.score(@user_id)
+        assert_equal 0, Engine.score(user_id: @user.id)
       end
     end
   end
