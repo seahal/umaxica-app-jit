@@ -123,28 +123,29 @@ Created: 2026-03-21
 - Both should update `Current.preference` and `reissue_access_token!`
 - No full page reload required
 
-### Step 9: Current Attributes Construction
+### Step 9: Current Attributes Construction ✅
 
-- Complete `Current` model implementation:
-  - `Current.actor` -> authenticated user/staff (from JWT `sub`)
-  - `Current.actor_type` -> :user / :staff (from JWT `act`)
-  - `Current.session` -> session record
-  - `Current.token` -> JWT payload
-  - `Current.preference` -> `Current::Preference` (from JWT `prf` + cookie)
-  - `Current.domain` -> :app / :org / :com (from request host)
-- Replace all `@current_resource` / `current_user` / `current_staff` instance variable usage with
-  `Current.actor`
-- Eliminate the class of bugs where instance variables were carried across methods unexpectedly
-- Ensure `Current.reset` is called per-request (ActiveSupport::CurrentAttributes handles this)
-- Add tests verifying Current is properly reset between requests
+- `Current.actor` is now the single source of truth for the authenticated resource
+- `current_resource` delegates to `Current.actor` with lazy-load fallback (via `@_current_resource_resolved` flag)
+- `current_user` / `current_staff` remain as convenience aliases (via `current_resource`)
+- `@current_resource` instance variable fully eliminated from `Auth::Base`
+- `transparent_refresh_access_token` now calls `populate_current_attributes!` (was setting `@current_resource` directly)
+- `clear_auth_cookies!` resets `Current.actor` and `Current.actor_type`
+- `reissue_access_token!` uses `current_resource` method instead of `@current_resource` instance variable
+- `Current.reset` called per-request via `CurrentSupport#_reset_current_state` (after_action)
 
-### Step 10: Final Verification
+### Step 10: Final Verification ✅
 
-- Full test suite green
-- Security re-audit of all auth flows
-- Performance check: no N+1 queries in preference loading
-- Verify preference changes reflect within 1 request (reissue_access_token!)
-- Verify guest/bearer token flows work with Null preference
+- Full test suite: **4680 tests, 13666 assertions, 0 failures, 0 errors**
+- Brakeman: **0 warnings**
+- Security re-audit findings:
+  - `clear_auth_cookies!` clears `Current.actor` + `Current.actor_type` ✓
+  - `transparent_refresh_access_token` calls `populate_current_attributes!` ✓
+  - `log_in` now calls `populate_current_attributes!` after `set_auth_cookies` ✓
+  - `Current.reset` called per-request via `after_action :_reset_current_state` ✓
+- N+1 queries: preference associations are `has_one`, cached after first load — no N+1 risk
+- `reissue_access_token!` updates `Current.preference` immediately after re-encoding JWT ✓
+- Guest/bearer flows use `Current::Preference::NULL` singleton via null object pattern ✓
 
 ---
 

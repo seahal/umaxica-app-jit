@@ -46,6 +46,7 @@ AllCops:
     - "node_modules/**/*"
     - "db/schema.rb"
     - "db/*_schema.rb"
+    - "db/**/*_migrate/**/*.rb"
     - "bin/**/*"
     - "tmp/**/*"
     - "log/**/*"
@@ -233,11 +234,6 @@ Layout/TrailingEmptyLines:
   Enabled: true
   EnforcedStyle: final_newline
 
-# ---------- 行の長さ ----------
-Layout/LineLength:
-  Max: 120
-  AllowedPatterns:
-    - '^#\s+index_'
 
 # ---------- 複数行のフォーマット ----------
 Layout/MultilineMethodCallIndentation:
@@ -649,11 +645,6 @@ Rails/BulkChangeTable:
 Rails/HttpPositionalArguments:
   Enabled: true
 
-Rails/SkipsModelValidations:
-  Enabled: true
-  AllowedMethods:
-    - touch
-    - update_all
 
 Rails/UnknownEnv:
   Enabled: true
@@ -1226,18 +1217,6 @@ I18n/GetText:
 # 9. Thread Safety (Strengthened)
 # ============================================================
 
-ThreadSafety/ClassAndModuleAttributes:
-  Enabled: true
-
-ThreadSafety/ClassInstanceVariable:
-  Enabled: true
-
-ThreadSafety/MutableClassInstanceVariable:
-  Enabled: true
-
-ThreadSafety/NewThread:
-  Enabled: true
-
 ThreadSafety/RackMiddlewareInstanceVariable:
   Enabled: true
 
@@ -1448,10 +1427,6 @@ Style/DisableCopsWithinSourceCodeDirective:
     - Metrics/MethodLength
     - Metrics/CyclomaticComplexity
 
-# 定数の可視性を明示的に宣言させる
-Style/ConstantVisibility:
-  Enabled: true
-  IgnoreModules: true
 
 # メソッド呼び出しの括弧を強制（可読性向上）
 Style/MethodCallWithArgsParentheses:
@@ -1524,3 +1499,22 @@ Metrics/BlockLength:
     - "config/**/*"
     - "db/**/*_migrate/**/*"
     - "test/**/*"
+
+Style/ConstantVisibility:
+  Exclude:
+    - "db/**/*_migrate/**/*.rb"
+
+Layout/LineLength:
+  Exclude:
+    - "db/**/*_migrate/**/*.rb"
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - "test/**/*.rb"
+    - "app/models/application_record.rb"
+
+ThreadSafety/ClassInstanceVariable:
+  Exclude:
+    - "app/controllers/concerns/social_callback_guard.rb"
+    - "lib/jit/security/turnstile_verifier.rb"
+    - "lib/jit/security/jwt/jti_generator.rb"

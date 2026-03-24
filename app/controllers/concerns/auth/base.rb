@@ -652,6 +652,10 @@ module Auth
       )
       issue_dbsc_registration_header_for(token_record)
 
+      # Populate Current.actor immediately so same-request code sees the authenticated resource
+      populate_current_attributes!(resource, nil)
+      @_current_resource_resolved = true
+
       Sign::Risk::Emitter.emit(
         "session_issued",
         **risk_actor_payload(resource.id),
