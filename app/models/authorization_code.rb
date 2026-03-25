@@ -20,19 +20,22 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  client_id             :string(64)       not null
-#  user_id               :bigint           not null
+#  staff_id              :bigint
+#  user_id               :bigint
 #
 # Indexes
 #
 #  index_authorization_codes_on_code        (code) UNIQUE
 #  index_authorization_codes_on_expires_at  (expires_at)
+#  index_authorization_codes_on_staff_id    (staff_id)
 #  index_authorization_codes_on_user_id     (user_id)
 #
 class AuthorizationCode < TokenRecord
   CODE_TTL = 10.seconds
   CODE_BYTES = 32
 
-  belongs_to :user
+  belongs_to :user, optional: true
+  belongs_to :staff, optional: true
 
   validates :code, presence: true, uniqueness: true
   validates :client_id, presence: true
@@ -40,19 +43,29 @@ class AuthorizationCode < TokenRecord
   validates :code_challenge, presence: true
   validates :code_challenge_method, inclusion: { in: %w(S256) }
   validates :expires_at, presence: true
+  validate :exactly_one_resource
 
   scope :valid, -> { where(consumed_at: nil, revoked_at: nil).where("expires_at > ?", Time.current) }
+
+  def resource
+    user || staff
+  end
+
+  def resource_type
+    user_id? ? "user" : "staff"
+  end
 
   class << self
     def generate_code
       SecureRandom.urlsafe_base64(CODE_BYTES)
     end
 
-    def issue!(user:, client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil,
-               nonce: nil)
+    def issue!(client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil,
+               nonce: nil, user: nil, staff: nil)
       create!(
         code: generate_code,
         user: user,
+        staff: staff,
         client_id: client_id,
         redirect_uri: redirect_uri,
         code_challenge: code_challenge,
@@ -101,5 +114,15 @@ class AuthorizationCode < TokenRecord
       padding: false,
     )
     ActiveSupport::SecurityUtils.secure_compare(code_challenge, expected)
+  end
+
+  private
+
+  def exactly_one_resource
+    if user_id.blank? && staff_id.blank?
+      errors.add(:base, "must belong to either a user or a staff")
+    elsif user_id.present? && staff_id.present?
+      errors.add(:base, "cannot belong to both a user and a staff")
+    end
   end
 end

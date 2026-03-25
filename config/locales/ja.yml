@@ -5,6 +5,32 @@ ja:
     totp_successfully_deleted: "TOTPを削除しました。"
     confirm_delete_totp: "本当にこのTOTPを削除しますか？"
     no_totp_found: "登録済みのTOTPはありません。"
+    totp_title_placeholder: "タイトル（任意）"
+  test:
+    unit:
+      security:
+        skip_forgery_protection_usage:
+          violation: |
+            skip_forgery_protection はレビューなしでコントローラに追加しないでください。
+            該当箇所:
+              %{violations}
+          missing_allowed: |
+            許可リストに、skip_forgery_protection を呼ばなくなったコントローラが含まれています。
+            ALLOWED_SKIP_FORGERY_PROTECTION_PATHS を更新してください:
+              %{missing_allowed}
+  tasks:
+    preference_migration:
+      migrating_user_app_preference: UserAppPreference を UserPreference に移行しています...
+      migrating_staff_org_preference: StaffOrgPreference を StaffPreference に移行しています...
+      warn_user: '  WARN: user_id=%{user_id} の移行に失敗しました: %{message}'
+      warn_staff: '  WARN: staff_id=%{staff_id} の移行に失敗しました: %{message}'
+      done_user: '  完了: %{migrated} 件を移行、%{skipped} 件をスキップしました'
+      done_staff: '  完了: %{migrated} 件を移行、%{skipped} 件をスキップしました'
+    totp_successfully_created: "TOTP の登録が完了しました。"
+    totp_successfully_updated: "TOTP の設定が更新されました。"
+    totp_successfully_deleted: "TOTPを削除しました。"
+    confirm_delete_totp: "本当にこのTOTPを削除しますか？"
+    no_totp_found: "登録済みのTOTPはありません。"
   actions:
     back: "戻る"
     connect: "連携する"
@@ -103,6 +129,10 @@ ja:
           session_expired: "MFA セッションの有効期限が切れました。もう一度サインインしてください。"
           verification_failed: "認証に失敗しました。"
           no_methods_available: "利用可能な認証方法がありません。サポートにお問い合わせください。"
+    org:
+      in:
+        mfa:
+          session_expired: "MFA セッションの有効期限が切れました。もう一度サインインしてください。"
           methods:
             totp: "認証アプリ（TOTP）で認証"
             passkey: "パスキーで認証"
@@ -113,6 +143,9 @@ ja:
             submit: "認証する"
             back: "認証方法の選択に戻る"
             success: "認証に成功しました。"
+      registration:
+        telephone:
+          already_logged_in: "すでにログインしています。"
           passkey:
             title: "パスキーによる確認"
             description: "登録済みのパスキーで認証してください。"

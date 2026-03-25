@@ -6,13 +6,12 @@ module Auth
     module_function
 
     def build(resource:, session_public_id:, resource_type:, issued_at:, access_token_ttl:, expires_at: nil,
-              preference: nil)
+              preferences: nil)
       issued_at_seconds = timestamp_value(issued_at)
       expires_at_seconds = timestamp_value(expires_at || (issued_at + access_token_ttl))
       token_type = Auth::Base::JwtConfiguration.token_type(resource_type)
       payload = {
         "iat" => issued_at_seconds,
-        "nbf" => issued_at_seconds,
         "exp" => expires_at_seconds,
         "jti" => Jit::Security::Jwt::JtiGenerator.generate,
         "sub" => resource.id,
@@ -22,14 +21,7 @@ module Auth
         "aud" => Auth::Base::JwtConfiguration.audiences(resource_type),
       }
       payload["sid"] = session_public_id if session_public_id.present?
-      if preference.present?
-        payload["prf"] = {
-          "lx" => preference[:language] || preference["lx"],
-          "ri" => preference[:region] || preference["ri"],
-          "tz" => preference[:timezone] || preference["tz"],
-          "ct" => preference[:theme] || preference["ct"],
-        }.compact
-      end
+      payload["prf"] = preferences if preferences.is_a?(Hash) && preferences.present?
       payload
     end
 
@@ -49,7 +41,7 @@ module Auth
       payload&.dig("jti")
     end
 
-    def preference(payload)
+    def preferences(payload)
       payload&.dig("prf")
     end
 

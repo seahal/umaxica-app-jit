@@ -123,6 +123,54 @@
 - Deferred: backfill or enrich JWT anomaly events with normalized actor/session/request linkage once
   the broader occurrence correlation strategy is finalized.
 
+### 5. Fix Apex OIDC flow and related tests
+
+- Status: deferred as of 2026-03-25
+- Scope:
+  - `app/controllers/concerns/oidc/sso_initiator.rb`
+  - `app/controllers/concerns/oidc/callback.rb`
+  - `app/controllers/apex/app/application_controller.rb`
+  - `app/controllers/apex/com/configurations_controller.rb`
+  - `app/controllers/apex/org/configurations_controller.rb`
+  - `app/config/oidc/client_registry.rb`
+  - `test/controllers/concerns/oidc/sso_initiator_test.rb`
+  - `test/controllers/concerns/oidc/callback_test.rb`
+- Observed issues from `bundle exec rails test`:
+  - Unauthenticated Apex configuration requests redirect to `.../configuration?ri=jp` before OIDC
+    starts, so expected `/authorize` redirects and session state storage do not happen.
+  - `Oidc::ClientRegistry.register` is referenced by tests but not implemented by the current
+    registry API.
+  - Callback tests expect redirects/cookies that do not match the current callback routing and
+    execution path.
+  - `ActionController::InvalidAuthenticityToken` usage now raises a Rails deprecation; migrate to
+    the non-deprecated cross-origin exception path.
+  - Logged-in test setup assumes `User#token_version`, which is not available on the current user
+    model interface.
+- Likely work:
+  - Decide whether Apex configuration pages must be auth-gated before region normalization.
+  - Reorder or conditionalize `set_region` / access policy enforcement so OIDC can initiate.
+  - Align callback behavior, registry API, and tests around the actual RP/client registration flow.
+  - Replace deprecated exception expectations in callback tests and/or implementation.
+
+### 6. Fix Sign Org passkey challenge flow and related tests
+
+- Status: deferred as of 2026-03-25
+- Scope:
+  - `app/controllers/sign/org/in/challenge/passkeys_controller.rb`
+  - related sign/org views, forms, and translations
+  - `test/controllers/sign/org/in/challenge/passkeys_controller_test.rb`
+- Observed issues from `bundle exec rails test`:
+  - Many passkey challenge requests return `422 Unprocessable Content` where tests expect
+    redirects or success.
+  - Translation key `ja.sign.org.in.mfa.session_expired` is missing.
+  - The current controller/test contract is not stable enough to resolve by test-only changes.
+- Likely work:
+  - Inspect why challenge routes are rejected with `422` before the expected flow executes
+    (CSRF, parameter shape, session prerequisites, or form contract).
+  - Add/fix the missing MFA session-expired translation.
+  - Reconcile controller responses with the intended UX for invalid challenge, challenge expiry,
+    turnstile failure, and successful MFA completion.
+
 ---
 
-Created: 2025-06-11 Updated: 2025-08-03
+Created: 2025-06-11 Updated: 2026-03-25

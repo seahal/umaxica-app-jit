@@ -86,18 +86,18 @@ module Telephone
 
   def increment_attempts!
     # Use atomic increment to prevent race condition with concurrent requests
-    self.class.increment_counter(:otp_attempts_count, id, touch: true)
+    record = self.class.find(id)
+    record.update!(otp_attempts_count: otp_attempts_count + 1, updated_at: Time.current)
     reload
     # Atomically set locked_at only when attempts reached threshold and not already locked
     # Check for both NULL and -infinity as sentinel values for "not locked"
-    affected = self.class.where(id: id)
+    records = self.class.where(id: id)
       .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
       .where(otp_attempts_count: 3..)
-      # Skip model validations intentionally: this is a guarded atomic DB update
-      # to avoid race conditions when multiple processes increment simultaneously.
-      .update_all(locked_at: Time.current)
+      .to_a
+    records.each { |r| r.update!(locked_at: Time.current) }
 
-    reload if affected.positive?
+    reload if records.any?
   end
 
   def raw_number

@@ -142,10 +142,11 @@ module Auth
       JWT_ALGORITHM = "ES384"
 
       class << self
-        def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preference: nil)
+        def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preferences: nil)
           Auth::TokenService.encode(
             resource, host: host, session_public_id: session_public_id,
-                      resource_type: resource_type, expires_at: expires_at, preference: preference,
+                      resource_type: resource_type, expires_at: expires_at,
+                      preferences: preferences,
           )
         end
 
@@ -638,7 +639,7 @@ module Auth
         session_public_id: token_record.public_id,
         resource_type: resource_type,
         expires_at: access_expires_at,
-        preference: build_preference_snapshot(resource),
+        preferences: build_auth_preference_snapshot(resource),
       )
 
       # Always set cookies (even for JSON responses - required for Edge/SPA)
@@ -1244,7 +1245,9 @@ module Auth
           now if expiry_column == :expired_at && token_record.class.column_names.include?("revoked_at")
         if family_id.present?
           token_record.class.where(:refresh_token_family_id => family_id, expiry_column => nil)
-            .update_all(expiry_attrs)
+            .find_each do |record|
+              record.update!(expiry_attrs)
+            end
         elsif token_record.public_send(expiry_column).nil?
           token_record.update!(expiry_attrs.except(:updated_at))
         end
@@ -1262,7 +1265,7 @@ module Auth
         session_public_id: token_record.public_id,
         resource_type: resource_type,
         expires_at: access_expires_at,
-        preference: build_preference_snapshot(resource),
+        preferences: build_auth_preference_snapshot(resource),
       )
 
       set_auth_cookies(
@@ -1599,78 +1602,6 @@ module Auth
       Current.session = @current_session_public_id
       Current.token = payload if payload.present?
       Current.domain = Core::Surface.current(request) if respond_to?(:request, true) && request.present?
-
-      # Populate preference from JWT prf claim if available
-      return if payload.blank?
-
-      prf_claim = Auth::TokenClaims.preference(payload)
-      Current.preference = Current::Preference.from_jwt(prf_claim) if prf_claim.present?
-    end
-
-    # Reissue access token with updated preference data (called after preference changes)
-    def reissue_access_token!(preference_data = nil)
-      return unless @current_resource
-
-      token_record = current_token_record
-      return unless token_record
-
-      preference_snapshot = preference_data || build_preference_snapshot(@current_resource)
-      return unless preference_snapshot
-
-      access_expires_at = access_token_expires_at_for(token_record)
-
-      access_token = Token.encode(
-        @current_resource,
-        host: request.host,
-        session_public_id: token_record.public_id,
-        resource_type: resource_type,
-        expires_at: access_expires_at,
-        preference: preference_snapshot,
-      )
-
-      cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
-        value: access_token,
-        expires: access_expires_at,
-      )
-
-      # Update Current.preference immediately
-      if preference_snapshot
-        prf_for_current =
-          preference_snapshot.transform_keys do |k|
-            { language: "lx", region: "ri", timezone: "tz", theme: "ct" }[k] || k.to_s
-          end
-        Current.preference = Current::Preference.from_jwt(prf_for_current)
-      end
-
-      access_token
-    end
-
-    # Build preference snapshot from resource's UserPreference/StaffPreference
-    def build_preference_snapshot(resource)
-      return nil if resource.blank?
-
-      pref_record =
-        if resource_type == "staff"
-          resource.staff_preference
-        else
-          resource.user_preference
-        end
-
-      return nil if pref_record.blank?
-
-      {
-        language: pref_record.language,
-        region: pref_record.region,
-        timezone: pref_record.timezone,
-        theme: pref_record.theme,
-      }.compact
-    end
-
-    # Get current token record for reissue_access_token!
-    def current_token_record
-      return nil if @current_session_public_id.blank?
-
-      token_class.find_by(public_id: @current_session_public_id)
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -2151,18 +2082,22 @@ module Auth
 
     # Count active (non-revoked, non-restricted) sessions for a resource
     def count_active_sessions(resource)
-      if resource.is_a?(::User)
-        ::UserToken.active_status.where(user_id: resource.id).count
-      elsif resource.is_a?(::Staff)
-        ::StaffToken.active_status.where(staff_id: resource.id).count
-      else
-        0
+      TokenRecord.connected_to(role: :writing) do
+        if resource.is_a?(::User)
+          ::UserToken.active_status.where(user_id: resource.id).count
+        elsif resource.is_a?(::Staff)
+          ::StaffToken.active_status.where(staff_id: resource.id).count
+        else
+          0
+        end
       end
     end
 
     def restricted_session_exists?(resource)
-      scope = find_restricted_sessions_scope(resource)
-      scope.present? && scope.exists?
+      TokenRecord.connected_to(role: :writing) do
+        scope = find_restricted_sessions_scope(resource)
+        scope.present? && scope.exists?
+      end
     end
 
     def find_restricted_sessions_scope(resource)
@@ -2220,6 +2155,49 @@ module Auth
     # Check if the current session is restricted
     def current_session_restricted?
       current_session&.restricted?
+    end
+
+    # Build a compact preference snapshot for inclusion in the auth JWT `prf` claim.
+    # Uses the same key format as Preference::Base#build_preferences_payload:
+    #   lx (language), ri (region), tz (timezone), ct (color theme)
+    def build_auth_preference_snapshot(resource)
+      pref = resolved_current_preference(resource) if respond_to?(:resolved_current_preference, true)
+      pref ||= Current.preference
+      return unless pref && !pref.null?
+
+      {
+        "lx" => pref.language,
+        "ri" => pref.region,
+        "tz" => pref.timezone,
+        "ct" => pref.theme,
+      }
+    end
+
+    # Re-issue the auth access token with current preference state.
+    # Call after a preference change (language, theme, etc.) to keep the JWT in sync.
+    def reissue_access_token!
+      resource = current_resource
+      return unless resource
+      return unless current_session
+
+      now = Time.current
+      access_expires_at = access_token_expires_at_for(current_session, now: now)
+
+      new_access_token = Token.encode(
+        resource,
+        host: request.host,
+        session_public_id: current_session.public_id,
+        resource_type: resource_type,
+        expires_at: access_expires_at,
+        preferences: build_auth_preference_snapshot(resource),
+      )
+      return unless new_access_token
+
+      cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
+        value: new_access_token,
+        expires: access_expires_at,
+      )
+      Current.preference = resolved_current_preference(resource) if respond_to?(:resolved_current_preference, true)
     end
 
     def dbsc_payload_for(token_record)

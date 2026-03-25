@@ -19,6 +19,10 @@ module Sign
 
       before_action :set_preferences_cookie
 
+      # Restricted session guard - explicitly enabled to block restricted sessions
+      # from accessing routes other than /in/session
+      before_action :enforce_restricted_session_guard!
+
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :resolve_param_context

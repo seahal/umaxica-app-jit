@@ -25,4 +25,7 @@
 require "test_helper"
 
 class MemberAvatarSuspensionTest < ActiveSupport::TestCase
+  test "class is defined" do
+    assert_equal "MemberAvatarSuspension", MemberAvatarSuspension.name
+  end
 end

@@ -25,4 +25,7 @@
 require "test_helper"
 
 class MemberAvatarDeletionTest < ActiveSupport::TestCase
+  test "class is defined" do
+    assert_equal "MemberAvatarDeletion", MemberAvatarDeletion.name
+  end
 end

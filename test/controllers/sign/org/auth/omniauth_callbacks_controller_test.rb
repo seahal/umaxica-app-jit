@@ -95,7 +95,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
 
   # --- Session limit ---
 
-  test "omniauth redirects with session_limit alert when sessions are exceeded" do
+  test "omniauth redirects to session management when sessions are exceeded" do
     Sign::Org::Auth::OmniauthCallbacksController.any_instance.stub(
       :log_in, { status: :session_limit_exceeded },
     ) do
@@ -103,8 +103,11 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
       get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
     end
 
-    assert_redirected_to new_sign_org_in_path(ri: "jp")
-    assert_equal I18n.t("sign.org.social.sessions.create.session_limit"), flash[:alert]
+    assert_redirected_to sign_org_in_session_path(ri: "jp")
+    assert_equal I18n.t(
+      "sign.org.in.session.restricted_notice",
+      default: "セッション数が上限に達しています。既存セッションを管理してください。",
+    ), flash[:notice]
   end
 
   test "omniauth redirects to session management when one logical staff session has many rotated ancestors" do

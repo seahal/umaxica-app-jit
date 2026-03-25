@@ -73,11 +73,12 @@ module CurrentSupport
   def resolved_current_preference(resource)
     cookie = resolved_current_cookie(resource)
 
-    prf_claim = Auth::TokenClaims.preference(resolved_current_token)
-    return Current::Preference.from_jwt(prf_claim, cookie: cookie) if prf_claim.present?
-
     preference_record = resolved_resource_preference(resource)
     return preference_from_record(preference_record, cookie: cookie) if preference_record.present?
+
+    # Fall back to auth JWT prf claim (preference snapshot embedded at login/refresh)
+    prf_claim = resolved_current_token&.dig("prf")
+    return Current::Preference.from_jwt(prf_claim, cookie: cookie) if prf_claim.is_a?(Hash)
 
     Current::Preference::NULL.with_cookie(cookie)
   end

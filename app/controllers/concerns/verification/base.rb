@@ -50,7 +50,7 @@ module Verification
       return false unless verification
 
       begin
-        verification.touch(:last_used_at)
+        verification.update!(last_used_at: Time.current)
       rescue ActiveRecord::ReadOnlyError
         nil
       end
@@ -60,6 +60,7 @@ module Verification
     def step_up_satisfied?(scope:)
       token = current_session_token
       return false unless token
+      return false unless token.currently_usable?
 
       return true if token.created_at >= STEP_UP_TTL.ago
 
@@ -69,6 +70,7 @@ module Verification
     end
 
     def require_step_up!(scope:)
+      return false if step_up_session_revoked?
       return if step_up_satisfied?(scope: scope)
 
       require_verification!(scope)
@@ -95,6 +97,21 @@ module Verification
     end
 
     private
+
+    # Check whether the underlying refresh token record has been revoked,
+    # expired, or compromised.  If so, force-logout the session so that a
+    # stale (but still JWT-valid) access token cannot pass step-up.
+    def step_up_session_revoked?
+      token = current_session_token
+      return true if token.nil? # no record at all → dead
+      return false if token.currently_usable? # alive
+
+      # Session is dead in DB — tear it down.
+      log_out if respond_to?(:log_out, true)
+
+      render plain: I18n.t("auth.session_expired"), status: :unauthorized
+      true
+    end
 
     def enforce_verification_if_required
       return true if respond_to?(:logged_in?) && !logged_in?

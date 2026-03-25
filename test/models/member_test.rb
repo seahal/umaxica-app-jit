@@ -31,4 +31,7 @@
 require "test_helper"
 
 class MemberTest < ActiveSupport::TestCase
+  test "class is defined" do
+    assert_equal "Member", Member.name
+  end
 end

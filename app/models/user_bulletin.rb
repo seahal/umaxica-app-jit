@@ -29,6 +29,8 @@ class UserBulletin < PrincipalRecord
 
   belongs_to :user, inverse_of: :user_bulletins
 
+  validates :title, presence: true
+
   scope :unread, -> { where(read_at: nil) }
   scope :oldest_first, -> { order(created_at: :asc) }
 

@@ -11,13 +11,19 @@ module Sign
       include ::Preference::Global
       include ::Preference::Adoption
       include Pundit::Authorization
-      include ::RestrictedSessionGuard # TODO: remove this.
+      # Note: RestrictedSessionGuard is still needed to enforce session expiration
+      # and block expired restricted sessions on the session management page itself.
+      include ::RestrictedSessionGuard
       include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern
 
       before_action :set_preferences_cookie
+
+      # Restricted session guard - explicitly enabled to handle expired sessions
+      # and prevent access to non-allowed routes for restricted sessions
+      before_action :enforce_restricted_session_guard!
 
       before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }

@@ -87,10 +87,16 @@ class VerificationPasskeyChecksTest < ActiveSupport::TestCase
     passkey_model =
       Class.new do
         class << self
-          attr_accessor :record
+          define_method(:record) do
+            @record
+          end
+
+          define_method(:record=) do |value|
+            @record = value
+          end
 
           define_method(:find_by) do |webauthn_id:|
-            record if record&.webauthn_id == webauthn_id
+            @record if @record&.webauthn_id == webauthn_id
           end
         end
       end

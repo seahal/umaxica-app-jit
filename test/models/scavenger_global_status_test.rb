@@ -11,7 +11,7 @@
 require "test_helper"
 
 class ScavengerGlobalStatusTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "ScavengerGlobalStatus", ScavengerGlobalStatus.name
+  end
 end

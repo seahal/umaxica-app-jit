@@ -99,18 +99,26 @@ class PreferenceTokenTest < ActiveSupport::TestCase
     assert_equal [], Preference::Token.send(:normalize_audiences, 123)
   end
 
-  test "header and payload validation require expected algorithm, type, host, and audience" do
+  test "valid_header requires expected algorithm and type" do
     assert Preference::Token.send(
       :valid_header?,
       { "alg" => Preference::Token::JWT_ALGORITHM, "kid" => "kid-1", "typ" => Preference::Token::TOKEN_TYPE },
     )
     assert_not Preference::Token.send(:valid_header?, {})
+  end
+
+  test "host_matches handles direct and nested hosts" do
     assert Preference::Token.send(:host_matches?, "app.localhost", "app.localhost")
     assert Preference::Token.send(:host_matches?, "app.localhost", "sign.app.localhost")
     assert_not Preference::Token.send(:host_matches?, "app.localhost", "evil.localhost")
+  end
+
+  test "audience_matches handles allowed and rejected audiences" do
     assert Preference::Token.send(:audience_matches?, ["app.localhost"], "sign.app.localhost")
     assert_not Preference::Token.send(:audience_matches?, ["app.localhost"], "evil.localhost")
+  end
 
+  test "validate_payload accepts matching payload" do
     payload = {
       "typ" => Preference::Token::TOKEN_TYPE,
       "host" => "app.localhost",
@@ -118,6 +126,15 @@ class PreferenceTokenTest < ActiveSupport::TestCase
     }
 
     assert_equal payload, Preference::Token.send(:validate_payload, payload, "sign.app.localhost")
+  end
+
+  test "validate_payload rejects invalid type host and audience" do
+    payload = {
+      "typ" => Preference::Token::TOKEN_TYPE,
+      "host" => "app.localhost",
+      "aud" => ["app.localhost"],
+    }
+
     assert_nil Preference::Token.send(:validate_payload, payload.merge("typ" => "wrong"), "sign.app.localhost")
     assert_nil Preference::Token.send(
       :validate_payload, payload.merge("host" => "evil.localhost"),

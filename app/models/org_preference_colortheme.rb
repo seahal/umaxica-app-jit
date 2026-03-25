@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_preference_colorthemes
-# Database name: preference
+# Database name: operator
 #
 #  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
@@ -23,7 +23,7 @@
 
 # frozen_string_literal: true
 
-class OrgPreferenceColortheme < PreferenceRecord
+class OrgPreferenceColortheme < OperatorRecord
   belongs_to :preference, class_name: "OrgPreference", inverse_of: :org_preference_colortheme
   belongs_to :option,
              class_name: "OrgPreferenceColorthemeOption",

@@ -21,7 +21,7 @@
 require "test_helper"
 
 class UserMessageTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "UserMessage", UserMessage.name
+  end
 end

@@ -25,4 +25,7 @@
 require "test_helper"
 
 class MemberAvatarVisibilityTest < ActiveSupport::TestCase
+  test "class is defined" do
+    assert_equal "MemberAvatarVisibility", MemberAvatarVisibility.name
+  end
 end

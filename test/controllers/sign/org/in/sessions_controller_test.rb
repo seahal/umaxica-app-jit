@@ -27,6 +27,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show with restricted session displays sessions" do
+    active_token = create_active_session(@staff)
     token = create_restricted_session(@staff)
     headers = as_staff_headers_with_token(@staff, token, host: @host)
 
@@ -34,6 +35,10 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_not response.redirect?
+    assert_select "input[type=radio][name=ref]"
+    assert_select "input[type=checkbox][name='revoke_session_ids[]']", false
+    assert_select "button", text: /キャンセルしてログアウト/
+    assert_select "input[type=radio][value=?]", active_token.id.to_s
   end
 
   test "show with active session returns forbidden" do

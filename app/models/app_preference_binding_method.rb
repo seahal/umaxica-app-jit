@@ -4,11 +4,11 @@
 # == Schema Information
 #
 # Table name: app_preference_binding_methods
-# Database name: preference
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
-class AppPreferenceBindingMethod < PreferenceRecord
+class AppPreferenceBindingMethod < PrincipalRecord
   NOTHING = 0
   DBSC = 1
   LEGACY = 2

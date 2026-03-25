@@ -43,6 +43,30 @@ module Preference
       audiences
     end
 
+    # Returns audiences scoped to the TLD of the given host.
+    # e.g., host "sign.umaxica.app" results in only audiences ending with ".app" or equal to an ".app" apex.
+    # In development, "localhost" is always included as an additional audience.
+    def self.audience_for(host)
+      return audiences if host.blank?
+
+      all = audiences
+      return all if all.empty?
+
+      # Extract the TLD from the host (e.g., "sign.umaxica.app" results in "app", "localhost" results in "localhost")
+      host_parts = host.split(".")
+      host_tld = host_parts.last
+
+      matched = all.select { |aud| aud.split(".").last == host_tld }
+
+      # In non-production, keep "localhost" if present in the configured audiences
+      unless Rails.env.production?
+        localhost_aud = all.find { |aud| aud == "localhost" || aud.end_with?(".localhost") }
+        matched << localhost_aud if localhost_aud && matched.exclude?(localhost_aud)
+      end
+
+      matched.presence || all
+    end
+
     def self.private_key_for_active
       private_key_for(active_kid)
     end
@@ -196,10 +220,8 @@ module Preference
           jti: jti,
           typ: TOKEN_TYPE,
           iss: JwtConfiguration.issuer,
-          aud: JwtConfiguration.audiences,
-          nonce: SecureRandom.uuid,
+          aud: JwtConfiguration.audience_for(host),
           iat: now,
-          nbf: now,
           exp: now + Integer(ACCESS_TOKEN_TTL.to_s, 10),
         }
       end
@@ -207,14 +229,13 @@ module Preference
       def decode_options
         {
           algorithms: [JWT_ALGORITHM],
-          required_claims: %w(iss aud typ exp nbf public_id jti preference_type),
+          required_claims: %w(iss aud typ exp public_id jti preference_type),
           leeway: JwtConfiguration.leeway_seconds,
           verify_iss: true,
           iss: JwtConfiguration.issuer,
           verify_aud: false,
           verify_iat: true,
           verify_exp: true,
-          verify_nbf: true,
         }
       end
 
@@ -693,7 +714,7 @@ module Preference
           level_id: preference_audit_level_class::INFO,
           occurred_at: Time.current,
           expires_at: expires_at_value,
-          ip_address: request.remote_ip || "0.0.0.0",
+          ip_address: request.remote_ip || default_audit_ip,
           context: context,
         )
       end
@@ -709,6 +730,10 @@ module Preference
       @preference_prefix_underscore ||= preference_class.name.underscore
     end
 
+    def default_audit_ip
+      IPAddr.new((127 << 24) + 1).to_s
+    end
+
     def preference_colortheme_association
       @preference_colortheme_association ||= "#{preference_prefix_underscore}_colortheme"
     end
@@ -721,7 +746,7 @@ module Preference
       # which we want to convert to Hash with indifferent access after ensuring it's permitted.
       p_hash = attributes.to_h.with_indifferent_access
 
-      PreferenceRecord.transaction do
+      preference_connection_owner.transaction do
         child.update!(p_hash)
         create_audit_log(
           event_id: audit_event,
@@ -834,6 +859,20 @@ module Preference
       end
     end
 
+    def preference_connection_owner
+      @preference_connection_owner ||=
+        preference_class.ancestors.find do |ancestor|
+          ancestor.is_a?(Class) && ancestor < ActiveRecord::Base && ancestor.abstract_class?
+        end
+    end
+
+    def with_preference_connection(role)
+      connection_owner = preference_connection_owner
+      return yield if connection_owner.blank?
+
+      connection_owner.connected_to(role: role) { yield }
+    end
+
     # ==========================================================================
     # 5) Refresh/access token lifecycle (Cookie/Header/Request I/O boundary)
     # ==========================================================================
@@ -872,7 +911,7 @@ module Preference
             else
               refresh_token_lookup_digest(token_value)
             end
-          PreferenceRecord.connected_to(role: :writing) do
+          with_preference_connection(:writing) do
             relation = preference_class.includes(preference_associations_to_preload)
             if digest
               @refresh_presented_digest = digest
@@ -919,8 +958,8 @@ module Preference
       expires_at = refresh_token_expiry
       generated_token = nil
 
-      PreferenceRecord.connected_to(role: :writing) do
-        PreferenceRecord.transaction do
+      with_preference_connection(:writing) do
+        preference_connection_owner.transaction do
           ensure_preference_reference_defaults!
           @preferences = preference_class.create!(
             expires_at: expires_at,
@@ -977,7 +1016,7 @@ module Preference
       return if @refresh_token_value.blank? || preference.blank? || @refresh_presented_digest.blank?
 
       rotated_preference =
-        PreferenceRecord.connected_to(role: :writing) do
+        with_preference_connection(:writing) do
           preference.class.rotate!(
             presented_digest: @refresh_presented_digest,
             device_id: preference.device_id,
@@ -1143,32 +1182,32 @@ module Preference
       region = preference.public_send("#{association_prefix}_region")&.option_id
       timezone = preference.public_send("#{association_prefix}_timezone")&.option_id
       colortheme = preference.public_send("#{association_prefix}_colortheme")&.option_id
-      consented = preference_cookie_consented(preference, association_prefix)
-      consent = preference_cookie_consent(preference, association_prefix)
+      consent_state = preference_cookie_consent_state(preference, association_prefix)
 
       {
         "lx" => option_id_to_language(language, option_prefix) || "ja",
         "ri" => option_id_to_region(region, option_prefix) || "jp",
         "tz" => option_id_to_timezone(timezone, option_prefix) || "Asia/Tokyo",
         "ct" => normalize_colortheme(option_id_to_colortheme(colortheme, option_prefix)) || "sy",
-        "consented" => consented,
-        "consent" => consent,
+        "consented" => consent_state[:consented],
+        "functional" => consent_state[:functional],
+        "performant" => consent_state[:performant],
+        "targetable" => consent_state[:targetable],
       }
     end
 
-    def preference_cookie_consented(preference, association_prefix)
-      preference.public_send("#{association_prefix}_cookie")&.consented
-    rescue NoMethodError
-      nil
-    end
-
-    def preference_cookie_consent(preference, association_prefix)
+    def preference_cookie_consent_state(preference, association_prefix)
       cookie = preference.public_send("#{association_prefix}_cookie")
-      return nil if cookie.blank? || cookie.consented_at.blank?
+      return { consented: false, functional: false, performant: false, targetable: false } if cookie.blank?
 
-      cookie.consented
+      {
+        consented: !!cookie.consented,
+        functional: !!cookie.functional,
+        performant: !!cookie.performant,
+        targetable: !!cookie.targetable,
+      }
     rescue NoMethodError
-      nil
+      { consented: false, functional: false, performant: false, targetable: false }
     end
 
     def option_id_to_language(option_id, prefix)
@@ -1344,7 +1383,7 @@ module Preference
     def handle_preference_refresh_replay!(preference)
       now = Time.current
 
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference.update!(compromised_at: now, revoked_at: now) if preference.compromised_at.nil?
       end
 
@@ -1361,7 +1400,7 @@ module Preference
     end
 
     def rotate_preference_jti!(preference)
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
       end
     end
@@ -1384,7 +1423,7 @@ module Preference
     end
 
     def access_token_cookie_name
-      Preference::CookieName.access
+      self.class.name.start_with?("Apex::App::Preference") ? Auth::Base::ACCESS_COOKIE_KEY : Preference::CookieName.access
     end
 
     def refresh_token_cookie_name

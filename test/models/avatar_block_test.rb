@@ -28,7 +28,7 @@
 require "test_helper"
 
 class AvatarBlockTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "AvatarBlock", AvatarBlock.name
+  end
 end

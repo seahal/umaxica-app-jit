@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_timeline_categories
-# Database name: news
+# Database name: publication
 #
 #  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
@@ -23,7 +23,7 @@
 
 # frozen_string_literal: true
 
-class OrgTimelineCategory < NewsRecord
+class OrgTimelineCategory < PublicationRecord
   include ::CatTag
 
   belongs_to :org_timeline, inverse_of: :category

@@ -2,14 +2,14 @@
 # == Schema Information
 #
 # Table name: com_preference_language_options
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class ComPreferenceLanguageOption < PreferenceRecord
+class ComPreferenceLanguageOption < CommerceRecord
   # Fixed IDs - do not modify these values
   JA = 1
   EN = 2

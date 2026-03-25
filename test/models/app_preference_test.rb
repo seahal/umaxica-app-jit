@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_preferences
-# Database name: preference
+# Database name: principal
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime

@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: com_timeline_statuses
-# Database name: news
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
@@ -16,8 +16,8 @@ class ComTimelineStatusTest < ActiveSupport::TestCase
     @model_class = ComTimelineStatus
   end
 
-  test "inherits from NewsRecord" do
-    assert_operator ComTimelineStatus, :<, NewsRecord
+  test "inherits from PublicationRecord" do
+    assert_operator ComTimelineStatus, :<, PublicationRecord
   end
 
   test "status constants are defined" do

@@ -4,11 +4,11 @@
 # == Schema Information
 #
 # Table name: app_preference_dbsc_statuses
-# Database name: preference
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
-class AppPreferenceDbscStatus < PreferenceRecord
+class AppPreferenceDbscStatus < PrincipalRecord
   NOTHING = 0
   PENDING = 1
   ACTIVE = 2

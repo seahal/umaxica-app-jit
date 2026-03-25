@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_preferences
-# Database name: preference
+# Database name: operator
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
@@ -48,7 +48,7 @@
 
 # frozen_string_literal: true
 
-class OrgPreference < PreferenceRecord
+class OrgPreference < OperatorRecord
   # TODO: Add `deletable_at` to OrgPreference for lifecycle-based cleanup.
   include ::PublicId
   include ::ConsumeOnceToken

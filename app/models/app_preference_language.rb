@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_preference_languages
-# Database name: preference
+# Database name: principal
 #
 #  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
@@ -23,7 +23,7 @@
 
 # frozen_string_literal: true
 
-class AppPreferenceLanguage < PreferenceRecord
+class AppPreferenceLanguage < PrincipalRecord
   belongs_to :preference, class_name: "AppPreference", inverse_of: :app_preference_language
   belongs_to :option,
              class_name: "AppPreferenceLanguageOption",

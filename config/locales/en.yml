@@ -5,6 +5,26 @@ en:
     connect: Connect
     delete: Delete
     submit: Submit
+  test:
+    unit:
+      security:
+        skip_forgery_protection_usage:
+          violation: |
+            skip_forgery_protection must not be added to controllers without review.
+            Remove it from:
+              %{violations}
+          missing_allowed: |
+            Allowed list contains controllers that no longer call skip_forgery_protection.
+            Please update ALLOWED_SKIP_FORGERY_PROTECTION_PATHS:
+              %{missing_allowed}
+  tasks:
+    preference_migration:
+      migrating_user_app_preference: Migrating UserAppPreference to UserPreference...
+      migrating_staff_org_preference: Migrating StaffOrgPreference to StaffPreference...
+      warn_user: '  WARN: Failed to migrate user_id=%{user_id}: %{message}'
+      warn_staff: '  WARN: Failed to migrate staff_id=%{staff_id}: %{message}'
+      done_user: '  Done: %{migrated} migrated, %{skipped} skipped'
+      done_staff: '  Done: %{migrated} migrated, %{skipped} skipped'
   otp:
     resend:
       button: Resend code

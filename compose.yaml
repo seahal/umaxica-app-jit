@@ -40,7 +40,10 @@ services:
         condition: service_healthy
       otel-collector:
         condition: service_started
-
+  kumo:
+    image: ghcr.io/sivchari/kumo:latest
+    ports:
+      - "4566:4566"
   primary:
     image: postgres:18.1-alpine
     command:

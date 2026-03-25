@@ -2,14 +2,14 @@
 # == Schema Information
 #
 # Table name: org_preference_region_options
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class OrgPreferenceRegionOption < PreferenceRecord
+class OrgPreferenceRegionOption < OperatorRecord
   # Fixed IDs - do not modify these values
   US = 1
   JP = 2

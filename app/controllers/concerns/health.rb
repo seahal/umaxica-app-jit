@@ -12,11 +12,11 @@ module Health
     DocumentRecord,
     GuestRecord,
     MessageRecord,
-    NewsRecord,
+    PublicationRecord,
     NotificationRecord,
     OccurrenceRecord,
     OperatorRecord,
-    PreferenceRecord,
+    CommerceRecord,
     PrincipalRecord,
     TokenRecord,
   ].freeze

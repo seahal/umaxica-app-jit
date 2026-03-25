@@ -36,7 +36,7 @@
 require "test_helper"
 
 class OrgDocumentRevisionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "OrgDocumentRevision", OrgDocumentRevision.name
+  end
 end

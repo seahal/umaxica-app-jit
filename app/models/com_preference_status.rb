@@ -2,14 +2,14 @@
 # == Schema Information
 #
 # Table name: com_preference_statuses
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class ComPreferenceStatus < PreferenceRecord
+class ComPreferenceStatus < CommerceRecord
   # Fixed IDs - do not modify these values
   DELETED = 1
   NOTHING = 2

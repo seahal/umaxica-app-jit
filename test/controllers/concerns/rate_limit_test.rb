@@ -73,6 +73,18 @@ class RateLimitTelephoneController < ApplicationController
   end
 end
 
+# Controller with rate limiting included but no rate limits configured
+# (tests that including RateLimit without configuration has no side effects)
+class RateLimitIncludedOnlyController < ApplicationController
+  include ::RateLimit
+
+  # No rate_limit declarations - should not affect requests
+
+  def index
+    render plain: "ok"
+  end
+end
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
@@ -207,8 +219,24 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "rate_limit_store class method returns the shared store" do
-    assert_equal RateLimit.store, RateLimitDummyController.rate_limit_store
+  test "including RateLimit without rate_limit declarations has no side effects" do
+    # This test verifies that simply including the RateLimit concern
+    # without configuring any rate limits does not affect controller behavior
+    with_routing do |set|
+      set.draw do
+        get "/test_included_only", to: "rate_limit_included_only#index"
+      end
+
+      # Multiple requests should all succeed since no rate limits are configured
+      5.times do
+        get "/test_included_only", headers: { "Host" => "example.com" }
+
+        assert_response :success
+      end
+    end
+
+    # Verify the store remains empty (no rate limit checks were performed)
+    assert_empty RateLimit.store.instance_variable_get(:@data).keys.select { |k| k.include?("rate_limit") }
   end
 
   private

@@ -30,12 +30,12 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
     assert_bigint_pk(EmailOccurrenceStatus)
   end
 
-  test "preference schema tables use bigint primary keys" do
+  test "commerce schema tables use bigint primary keys" do
     assert_bigint_pk(AppPreferenceStatus)
     assert_bigint_pk(ComPreferenceLanguageOption)
   end
 
-  test "news schema tables use bigint primary keys" do
+  test "publication schema tables use bigint primary keys" do
     assert_bigint_pk(AppTimelineStatus)
     assert_bigint_pk(ComTimelineCategoryMaster)
   end

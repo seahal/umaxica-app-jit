@@ -53,7 +53,9 @@ class StaffVerification < TokenRecord
 
     verification =
       transaction do
-        where(staff_token_id: token.id).active.update_all(revoked_at: now, updated_at: now)
+        where(staff_token_id: token.id).active.find_each do |verification_record|
+          verification_record.update!(revoked_at: now, updated_at: now)
+        end
 
         create!(
           staff_token: token,

@@ -23,6 +23,10 @@ require "test_helper"
 class AppDocumentCategoryMasterTest < ActiveSupport::TestCase
   include TreeableSharedTests
 
+  test "treeable class is defined" do
+    assert_equal AppDocumentCategoryMaster, treeable_class
+  end
+
   private
 
   def treeable_class

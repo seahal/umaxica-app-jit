@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: org_timeline_versions
-# Database name: news
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text
@@ -33,7 +33,7 @@
 #  fk_rails_...  (org_timeline_id => org_timelines.id) ON DELETE => cascade
 #
 
-class OrgTimelineVersion < NewsRecord
+class OrgTimelineVersion < PublicationRecord
   include Version
   include ::PublicId
 

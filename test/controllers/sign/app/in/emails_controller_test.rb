@@ -278,7 +278,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_in_challenge_path(ri: "jp")
   end
 
-  test "otp resend enforces cooldown" do
+  def test_setup_cooldown_test_email
     user = users(:one)
     test_email = user.user_emails.create!(
       address: "cooldown_test_#{SecureRandom.hex(4)}@example.com",
@@ -286,21 +286,32 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
       perform_enqueued_jobs do
-        post sign_app_in_email_url(ri: "jp"),
-             params: {
-               :user_email => { address: test_email.address },
-               "cf-turnstile-response" => "test_token",
-             },
-             headers: { "Host" => @host }
+        post(
+          sign_app_in_email_url(ri: "jp"),
+          params: {
+            :user_email => { address: test_email.address },
+            "cf-turnstile-response" => "test_token",
+          },
+          headers: { "Host" => @host },
+        )
       end
     end
 
     assert_response :found
-    initial_sent_at = test_email.reload.otp_last_sent_at
+    test_email.reload
+    test_email
+  end
 
-    assert_not_nil initial_sent_at
+  test "otp initial request sends email" do
+    test_email = test_setup_cooldown_test_email
 
-    # Second attempt immediately -- rejected with 429
+    assert_not_nil test_email.otp_last_sent_at
+  end
+
+  test "otp immediate resend is rejected with cooldown" do
+    test_email = test_setup_cooldown_test_email
+    initial_sent_at = test_email.otp_last_sent_at
+
     assert_no_difference -> { ActionMailer::Base.deliveries.count } do
       post sign_app_in_email_url(ri: "jp"),
            params: {
@@ -313,8 +324,11 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :too_many_requests
     assert_includes @response.body, I18n.t("sign.app.authentication.email.create.cooldown")
     assert_equal initial_sent_at, test_email.reload.otp_last_sent_at
+  end
 
-    # At 29 seconds -- still in cooldown
+  test "otp resend still rejected after 29 seconds" do
+    test_email = test_setup_cooldown_test_email
+
     travel 29.seconds do
       assert_no_difference -> { ActionMailer::Base.deliveries.count } do
         post sign_app_in_email_url(ri: "jp"),
@@ -327,8 +341,12 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :too_many_requests
     end
+  end
 
-    # At 31 seconds -- cooldown expired, OTP sent again
+  test "otp resend succeeds after cooldown expires" do
+    test_email = test_setup_cooldown_test_email
+    initial_sent_at = test_email.otp_last_sent_at
+
     travel 31.seconds do
       assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
         perform_enqueued_jobs do

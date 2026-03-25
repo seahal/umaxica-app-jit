@@ -233,4 +233,4 @@ ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
 
 USER ${DOCKER_USER}
 
-RUN sudo chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"
+

@@ -2,14 +2,14 @@
 # == Schema Information
 #
 # Table name: org_preference_colortheme_options
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class OrgPreferenceColorthemeOption < PreferenceRecord
+class OrgPreferenceColorthemeOption < OperatorRecord
   # Fixed IDs - do not modify these values
   LIGHT = 1
   DARK = 2

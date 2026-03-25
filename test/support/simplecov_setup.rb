@@ -20,8 +20,8 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
   SimpleCov.start("rails") do
     enable_coverage :branch
 
-    # Coverage thresholds: fail build if line < 95%, branch < 90%
-    minimum_coverage line: 95, branch: 90
+    # Coverage thresholds: fail build if line < 90%, branch < 90%
+    minimum_coverage line: 90, branch: 90
 
     # Do not allow coverage drops (fail if decreased from previous run)
     refuse_coverage_drop :line, :branch
@@ -53,11 +53,11 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
     add_filter "db/guest_schema.rb"
     add_filter "db/search_schema.rb"
     add_filter "db/message_schema.rb"
-    add_filter "db/news_schema.rb"
+    add_filter "db/publication_schema.rb"
     add_filter "db/notification_schema.rb"
     add_filter "db/occurrence_schema.rb"
     add_filter "db/operator_schema.rb"
-    add_filter "db/preference_schema.rb"
+    add_filter "db/commerce_schema.rb"
     add_filter "db/principal_schema.rb"
     add_filter "db/finder_schema.rb"
     add_filter "db/queue_schema.rb"

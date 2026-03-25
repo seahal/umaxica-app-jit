@@ -9,11 +9,11 @@ module Auth
     VALID_ACTOR_TYPES = %w(user staff).freeze
 
     class << self
-      def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preference: nil)
+      def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preferences: nil)
         return nil unless valid_encode_params?(resource, host)
 
         type = resource_type || resource.class.name.downcase
-        payload = build_payload(resource, session_public_id, type, expires_at: expires_at, preference: preference)
+        payload = build_payload(resource, session_public_id, type, expires_at: expires_at, preferences: preferences)
         token_type = Auth::Base::JwtConfiguration.token_type(type)
         JWT.encode(
           payload,
@@ -141,7 +141,7 @@ module Auth
         true
       end
 
-      def build_payload(resource, session_public_id, type, expires_at: nil, preference: nil)
+      def build_payload(resource, session_public_id, type, expires_at: nil, preferences: nil)
         Auth::TokenClaims.build(
           resource: resource,
           session_public_id: session_public_id,
@@ -149,18 +149,17 @@ module Auth
           issued_at: Time.current,
           access_token_ttl: Auth::Base::ACCESS_TOKEN_TTL,
           expires_at: expires_at,
-          preference: preference,
+          preferences: preferences,
         )
       end
 
       def decode_options(resource_type, issuer, audiences)
         {
           algorithms: [JWT_ALGORITHM],
-          required_claims: %w(iss aud typ exp nbf sub sid act jti),
+          required_claims: %w(iss aud typ exp sub sid act jti),
           leeway: Auth::Base::JwtConfiguration.leeway_seconds,
           verify_iat: true,
           verify_exp: true,
-          verify_nbf: true,
           verify_iss: true,
           iss: issuer || Auth::Base::JwtConfiguration.issuer(resource_type),
           verify_aud: true,

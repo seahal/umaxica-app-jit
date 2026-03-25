@@ -140,7 +140,6 @@ module Sign
           end
         end
 
-        # rubocop:disable Metrics/MethodLength
         def handle_successful_auth(user, intent, provider_name, _identity, existing_account: nil)
           Rails.event.debug(
             "sign.social.omniauth.handle_successful_auth",
@@ -150,107 +149,127 @@ module Sign
 
           case intent
           when "link"
-            Rails.event.debug("sign.social.omniauth.link_intent", message: "Redirecting to configuration")
-            default_notice = I18n.t(
-              "sign.app.social.sessions.link.default",
-              provider: provider_name,
-              default: "%{provider} linked",
-            )
-            redirect_to(
-              sign_app_configuration_path,
-              notice: I18n.t(
-                "sign.app.social.sessions.link.success",
-                provider: provider_name,
-                default: default_notice,
-              ),
-            )
+            handle_link_intent(provider_name)
           when "reauth"
-            Rails.event.debug("sign.social.omniauth.reauth_intent", message: "Signing in with reauth")
-            return redirect_to(
-              new_sign_app_in_path,
-              alert: I18n.t("sign.app.social.sessions.create.failure"),
-            ) unless user&.login_allowed?
-
-            login_result = sign_in_with_reauth(user)
-
-            if login_result.is_a?(Hash) && login_result[:status] != :success
-              return handle_login_failure(login_result, provider_name, user)
-            end
-
-            if login_result.is_a?(Hash) && login_result[:restricted]
-              return redirect_to(
-                sign_app_in_session_path,
-                notice: I18n.t("sign.app.in.session.restricted_notice"),
-              )
-            end
-
-            redirect_to(
-              social_auth_success_redirect_path,
-              notice: I18n.t("sign.app.social.sessions.reauth.success", provider: provider_name),
-            )
+            handle_reauth_intent(user, provider_name)
           else
-            Rails.event.debug("sign.social.omniauth.login_intent", message: "Signing in user")
-            return redirect_to(
-              new_sign_app_in_path,
-              alert: I18n.t("sign.app.social.sessions.create.failure"),
-            ) unless user&.login_allowed?
-
-            login_result = sign_in(user)
-
-            # Check if login failed
-            if login_result.is_a?(Hash) && login_result[:status] != :success
-              Rails.event.warn(
-                "sign.social.omniauth.login_failed",
-                status: login_result[:status],
-                user_id: user.id,
-              )
-              return handle_login_failure(login_result, provider_name, user)
-            end
-
-            # Check if session is restricted (session limit exceeded)
-            if login_result.is_a?(Hash) && login_result[:restricted]
-              return redirect_to(
-                sign_app_in_session_path,
-                notice: I18n.t("sign.app.in.session.restricted_notice"),
-              )
-            end
-
-            Rails.event.debug("sign.social.omniauth.login_successful", message: "Redirecting after login")
-            if existing_account
-              if issue_bulletin!
-                redirect_to(
-                  sign_app_in_bulletin_path(ri: params[:ri]),
-                  notice: I18n.t(
-                    "sign.app.social.sessions.create.already_registered",
-                    provider: provider_name,
-                  ),
-                )
-              else
-                redirect_to(
-                  sign_app_configuration_path(ri: params[:ri]),
-                  notice: I18n.t(
-                    "sign.app.social.sessions.create.already_registered",
-                    provider: provider_name,
-                  ),
-                )
-              end
-            else
-              if issue_bulletin!
-                redirect_to(
-                  sign_app_in_bulletin_path(ri: params[:ri]),
-                  notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name),
-                )
-              else
-                redirect_to(
-                  sign_app_configuration_path(ri: params[:ri]),
-                  notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name),
-                )
-              end
-            end
+            handle_login_intent(user, provider_name, existing_account)
           end
         end
 
-        # rubocop:enable Metrics/MethodLength
+        def handle_link_intent(provider_name)
+          Rails.event.debug("sign.social.omniauth.link_intent", message: "Redirecting to configuration")
+          default_notice = I18n.t(
+            "sign.app.social.sessions.link.default",
+            provider: provider_name,
+            default: "%{provider} linked",
+          )
+          redirect_to(
+            sign_app_configuration_path,
+            notice: I18n.t(
+              "sign.app.social.sessions.link.success",
+              provider: provider_name,
+              default: default_notice,
+            ),
+          )
+        end
+
+        def handle_reauth_intent(user, provider_name)
+          Rails.event.debug("sign.social.omniauth.reauth_intent", message: "Signing in with reauth")
+          return redirect_to(
+            new_sign_app_in_path,
+            alert: I18n.t("sign.app.social.sessions.create.failure"),
+          ) unless user&.login_allowed?
+
+          login_result = sign_in_with_reauth(user)
+
+          if login_result.is_a?(Hash) && login_result[:status] != :success
+            return handle_login_failure(login_result, provider_name, user)
+          end
+
+          if login_result.is_a?(Hash) && login_result[:restricted]
+            return redirect_to(
+              sign_app_in_session_path,
+              notice: I18n.t("sign.app.in.session.restricted_notice"),
+            )
+          end
+
+          redirect_to(
+            social_auth_success_redirect_path,
+            notice: I18n.t("sign.app.social.sessions.reauth.success", provider: provider_name),
+          )
+        end
+
+        def handle_login_intent(user, provider_name, existing_account)
+          Rails.event.debug("sign.social.omniauth.login_intent", message: "Signing in user")
+          return redirect_to(
+            new_sign_app_in_path,
+            alert: I18n.t("sign.app.social.sessions.create.failure"),
+          ) unless user&.login_allowed?
+
+          login_result = sign_in(user)
+
+          if login_result.is_a?(Hash) && login_result[:status] != :success
+            Rails.event.warn(
+              "sign.social.omniauth.login_failed",
+              status: login_result[:status],
+              user_id: user.id,
+            )
+            return handle_login_failure(login_result, provider_name, user)
+          end
+
+          if login_result.is_a?(Hash) && login_result[:restricted]
+            return redirect_to(
+              sign_app_in_session_path,
+              notice: I18n.t("sign.app.in.session.restricted_notice"),
+            )
+          end
+
+          Rails.event.debug("sign.social.omniauth.login_successful", message: "Redirecting after login")
+          redirect_after_login(provider_name, existing_account)
+        end
+
+        def redirect_after_login(provider_name, existing_account)
+          if existing_account
+            redirect_for_existing_account(provider_name)
+          else
+            redirect_for_new_account(provider_name)
+          end
+        end
+
+        def redirect_for_existing_account(provider_name)
+          if issue_bulletin!
+            redirect_to(
+              sign_app_in_bulletin_path(ri: params[:ri]),
+              notice: I18n.t(
+                "sign.app.social.sessions.create.already_registered",
+                provider: provider_name,
+              ),
+            )
+          else
+            redirect_to(
+              sign_app_configuration_path(ri: params[:ri]),
+              notice: I18n.t(
+                "sign.app.social.sessions.create.already_registered",
+                provider: provider_name,
+              ),
+            )
+          end
+        end
+
+        def redirect_for_new_account(provider_name)
+          if issue_bulletin!
+            redirect_to(
+              sign_app_in_bulletin_path(ri: params[:ri]),
+              notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name),
+            )
+          else
+            redirect_to(
+              sign_app_configuration_path(ri: params[:ri]),
+              notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name),
+            )
+          end
+        end
 
         def handle_unexpected_error(error, auth)
           Rails.event.error(
@@ -302,8 +321,8 @@ module Sign
           when :session_limit_exceeded
             Rails.event.debug("sign.social.omniauth.session_limit_exceeded")
             redirect_to(
-              new_sign_app_in_path,
-              alert: I18n.t("sign.app.social.sessions.create.session_limit"),
+              sign_app_in_session_path,
+              notice: I18n.t("sign.app.in.session.restricted_notice"),
             )
           when :mfa_required
             Rails.event.debug("sign.social.omniauth.mfa_required")

@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: app_timelines
-# Database name: news
+# Database name: publication
 #
 #  id                 :bigint           not null, primary key
 #  expires_at         :datetime         default(Infinity), not null
@@ -35,7 +35,7 @@
 #  fk_rails_...                   (latest_version_id => app_timeline_versions.id) ON DELETE => nullify
 #
 
-class AppTimeline < NewsRecord
+class AppTimeline < PublicationRecord
   include ::SlugId
   include Timeline
 

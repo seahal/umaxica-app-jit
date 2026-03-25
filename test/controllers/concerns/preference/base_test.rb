@@ -187,6 +187,52 @@ module Preference
       end
     end
 
+    test "audience_for filters to matching TLD only" do
+      with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com,localhost") do
+        result = Preference::JwtConfiguration.audience_for("sign.umaxica.app")
+
+        assert_includes result, "umaxica.app"
+        assert_includes result, "localhost", "localhost is included in non-production"
+        assert_not_includes result, "umaxica.com"
+      end
+    end
+
+    test "audience_for returns only matching TLD for com host" do
+      with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com,localhost") do
+        result = Preference::JwtConfiguration.audience_for("www.umaxica.com")
+
+        assert_includes result, "umaxica.com"
+        assert_includes result, "localhost"
+        assert_not_includes result, "umaxica.app"
+      end
+    end
+
+    test "audience_for includes localhost for localhost host" do
+      with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com,localhost") do
+        result = Preference::JwtConfiguration.audience_for("sign.app.localhost")
+
+        assert_includes result, "localhost"
+        assert_not_includes result, "umaxica.app"
+        assert_not_includes result, "umaxica.com"
+      end
+    end
+
+    test "audience_for returns all audiences when host is blank" do
+      with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com") do
+        result = Preference::JwtConfiguration.audience_for("")
+
+        assert_equal %w(umaxica.app umaxica.com), result
+      end
+    end
+
+    test "audience_for falls back to all audiences when no TLD matches" do
+      with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com") do
+        result = Preference::JwtConfiguration.audience_for("example.org")
+
+        assert_equal %w(umaxica.app umaxica.com), result
+      end
+    end
+
     test "parse_header decodes token header" do
       token = JWT.encode({ foo: "bar" }, nil, "none", { kid: "test_kid" })
       header = Preference::JwtConfiguration.parse_header(token)
@@ -324,6 +370,58 @@ module Preference
       assert Preference::Token.send(:audience_matches?, ["a.com", "b.com"], "a.com")
       assert Preference::Token.send(:audience_matches?, ["a.com", "b.com"], "sub.b.com")
       assert_not Preference::Token.send(:audience_matches?, ["a.com", "b.com"], "c.com")
+    end
+  end
+
+  class BuildPreferencesPayloadTest < ActiveSupport::TestCase
+    FakeCookie = Struct.new(:consented, :functional, :performant, :targetable, keyword_init: true)
+    FakePreference =
+      Struct.new(
+        :app_preference_language, :app_preference_region, :app_preference_timezone,
+        :app_preference_colortheme, :app_preference_cookie, keyword_init: true,
+      ) do
+        def class
+          AppPreference
+        end
+      end
+
+    setup do
+      @controller = PreferenceSanitizeTestController.new
+    end
+
+    test "build_preferences_payload includes consent categories from cookie record" do
+      cookie = FakeCookie.new(consented: true, functional: true, performant: false, targetable: false)
+      preference = FakePreference.new(app_preference_cookie: cookie)
+
+      payload = @controller.send(:build_preferences_payload, preference)
+
+      assert payload["consented"]
+      assert payload["functional"]
+      assert_not payload["performant"]
+      assert_not payload["targetable"]
+      assert_equal "ja", payload["lx"]
+      assert_equal "jp", payload["ri"]
+      assert_equal "Asia/Tokyo", payload["tz"]
+      assert_equal "sy", payload["ct"]
+    end
+
+    test "build_preferences_payload defaults consent to false when cookie is nil" do
+      preference = FakePreference.new(app_preference_cookie: nil)
+
+      payload = @controller.send(:build_preferences_payload, preference)
+
+      assert_not payload["consented"]
+      assert_not payload["functional"]
+      assert_not payload["performant"]
+      assert_not payload["targetable"]
+    end
+
+    test "build_preferences_payload does not include legacy consent key" do
+      preference = FakePreference.new(app_preference_cookie: nil)
+
+      payload = @controller.send(:build_preferences_payload, preference)
+
+      assert_not payload.key?("consent"), "legacy 'consent' key should no longer be present"
     end
   end
 end

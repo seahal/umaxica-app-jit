@@ -97,7 +97,7 @@ module Preference
     def find_preference_by_public_id(public_id)
       return nil if public_id.blank?
 
-      PreferenceRecord.connected_to(role: :reading) do
+      with_preference_connection(:reading) do
         preference_class.find_by(public_id: public_id)
       end
     end
@@ -126,7 +126,7 @@ module Preference
       public_id = decoded_preference_payload&.dig("public_id")
       return if public_id.blank?
 
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference_class.transaction do
           preference = preference_class.lock.find_by(public_id: public_id)
           return if preference.blank?

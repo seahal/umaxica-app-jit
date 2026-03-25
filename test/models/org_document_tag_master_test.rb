@@ -23,6 +23,10 @@ require "test_helper"
 class OrgDocumentTagMasterTest < ActiveSupport::TestCase
   include TreeableSharedTests
 
+  test "treeable class is defined" do
+    assert_equal OrgDocumentTagMaster, treeable_class
+  end
+
   private
 
   def treeable_class

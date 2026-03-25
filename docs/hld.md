@@ -255,14 +255,14 @@ Sensitive columns leverage Active Record encryption.
 
 ## 8. External Interfaces
 
-| Interface      | Type                      | Description                                                                                                                                 |
-| -------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| HTTP           | REST                      | Host-scoped routes for top/sign/help/docs/news/api/bff, including `/health`, `/v1/health`, `/sign/...`, `/help/...`, `/api/v1/inquiry/...`. |
-| Mail           | SMTP / API                | `Email::App/Com/Org::*Mailer` deliver OTPs, contact confirmations, receipts (SES/Twilio SendGrid as configured).                            |
-| SMS            | HTTPS                     | `AwsSmsService` sends OTP codes.                                                                                                            |
-| Redis/Valkey   | RESP                      | Sessions, rate limiting, Memorize store.                                                                                                    |
-| OTLP           | HTTP/gRPC                 | OpenTelemetry exporter pushes spans to Tempo (`http://tempo:4318/v1/traces`).                                                               |
-| Object storage | S3-compatible             | MinIO (dev) / Google Cloud Storage (prod) for uploads.                                                                                      |
+| Interface      | Type          | Description                                                                                                                                 |
+| -------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| HTTP           | REST          | Host-scoped routes for top/sign/help/docs/news/api/bff, including `/health`, `/v1/health`, `/sign/...`, `/help/...`, `/api/v1/inquiry/...`. |
+| Mail           | SMTP / API    | `Email::App/Com/Org::*Mailer` deliver OTPs, contact confirmations, receipts (SES/Twilio SendGrid as configured).                            |
+| SMS            | HTTPS         | `AwsSmsService` sends OTP codes.                                                                                                            |
+| Redis/Valkey   | RESP          | Sessions, rate limiting, Memorize store.                                                                                                    |
+| OTLP           | HTTP/gRPC     | OpenTelemetry exporter pushes spans to Tempo (`http://tempo:4318/v1/traces`).                                                               |
+| Object storage | S3-compatible | MinIO (dev) / Google Cloud Storage (prod) for uploads.                                                                                      |
 
 ---
 

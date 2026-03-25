@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_23_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_25_143000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -200,6 +200,33 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_23_000001) do
     t.index ["token_expires_at"], name: "index_com_contacts_on_token_expires_at"
   end
 
+  create_table "customer_statuses", force: :cascade do |t|
+  end
+
+  create_table "customer_visibilities", force: :cascade do |t|
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "deactivated_at"
+    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.boolean "multi_factor_enabled", default: false, null: false
+    t.string "public_id", default: "", null: false
+    t.datetime "shreddable_at", default: ::Float::INFINITY, null: false
+    t.bigint "status_id", default: 2, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "visibility_id", default: 1, null: false
+    t.datetime "withdrawn_at", default: ::Float::INFINITY
+    t.index ["deactivated_at"], name: "index_customers_on_deactivated_at", where: "(deactivated_at IS NOT NULL)"
+    t.index ["deletable_at"], name: "index_customers_on_deletable_at"
+    t.index ["public_id"], name: "index_customers_on_public_id", unique: true
+    t.index ["shreddable_at"], name: "index_customers_on_shreddable_at"
+    t.index ["status_id"], name: "index_customers_on_status_id"
+    t.index ["visibility_id"], name: "index_customers_on_visibility_id"
+    t.index ["withdrawn_at"], name: "index_customers_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
+  end
+
   create_table "org_contact_categories", force: :cascade do |t|
   end
 
@@ -299,6 +326,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_23_000001) do
   add_foreign_key "com_contact_topics", "com_contacts", validate: false
   add_foreign_key "com_contacts", "com_contact_categories", column: "category_id"
   add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id", on_delete: :restrict
+  add_foreign_key "customers", "customer_statuses", column: "status_id", validate: false
+  add_foreign_key "customers", "customer_visibilities", column: "visibility_id", validate: false
   add_foreign_key "org_contact_emails", "org_contacts"
   add_foreign_key "org_contact_histories", "org_contacts", validate: false
   add_foreign_key "org_contact_telephones", "org_contacts"

@@ -57,7 +57,9 @@ module UserSecrets
     def revoke_existing_recovery_secrets!
       @user.user_secrets.where(user_secret_kind_id: UserSecretKind::RECOVERY)
         .where(user_identity_secret_status_id: UserSecretStatus::ACTIVE)
-        .update_all(user_identity_secret_status_id: UserSecretStatus::REVOKED)
+        .find_each do |secret|
+        secret.update!(user_identity_secret_status_id: UserSecretStatus::REVOKED)
+      end
     end
 
     def ensure_audit_dependencies!

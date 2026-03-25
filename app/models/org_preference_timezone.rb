@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_preference_timezones
-# Database name: preference
+# Database name: operator
 #
 #  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
@@ -23,7 +23,7 @@
 
 # frozen_string_literal: true
 
-class OrgPreferenceTimezone < PreferenceRecord
+class OrgPreferenceTimezone < OperatorRecord
   belongs_to :preference, class_name: "OrgPreference", inverse_of: :org_preference_timezone
   belongs_to :option,
              class_name: "OrgPreferenceTimezoneOption",

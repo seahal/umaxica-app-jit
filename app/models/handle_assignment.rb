@@ -32,14 +32,24 @@
 #  fk_rails_...  (handle_id => handles.id)
 #
 
+# frozen_string_literal: true
+
+require "forwardable"
+
 class HandleAssignment < AvatarRecord
-  belongs_to :avatar
-  belongs_to :handle
+  scope :current, -> { where(valid_to: Float::INFINITY) }
+
+  def self.current_attributes
+    [:handle_id, :avatar_id]
+  end
+
+  belongs_to :handle, inverse_of: :handle_assignments
+  belongs_to :avatar, inverse_of: :handle_assignments
+  belongs_to :assigned_by_actor, class_name: "Avatar", inverse_of: :assignments_created, optional: true
   belongs_to :handle_assignment_status, optional: true
 
-  validates :avatar_id,
-            uniqueness: { conditions: -> { where("valid_to = 'infinity'::timestamp with time zone") } }
-  validates :handle_id,
-            uniqueness: { conditions: -> { where("valid_to = 'infinity'::timestamp with time zone") } }
-  validates :valid_from, presence: true
+  validates :handle_id, uniqueness: { conditions: -> { current } }
+  validates :avatar_id, uniqueness: { conditions: -> { current } }
+
+  delegate :name, to: :handle
 end

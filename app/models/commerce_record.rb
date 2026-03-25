@@ -3,10 +3,10 @@
 
 # Deployment scope: Global
 # Shared worldwide. A single database instance serves all regions (jp, us, etc.).
-class PreferenceRecord < ApplicationRecord
+class CommerceRecord < ApplicationRecord
   self.abstract_class = true
 
-  connects_to database: { writing: :preference, reading: :preference_replica }
+  connects_to database: { writing: :commerce, reading: :commerce_replica }
 
   before_validation :set_next_position, if: -> { self.class.column_names.include?("position") }
 

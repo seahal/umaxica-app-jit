@@ -64,24 +64,15 @@ end
 module ActiveSupport
   class TestCase
     coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
-    max_parallel_workers = 32
 
-    # Use a single worker for coverage runs to keep SimpleCov results deterministic.
-    # Respect PARALLEL_WORKERS when provided, otherwise use max available CPU workers.
-    # Cap workers below 20 to avoid over-parallelizing test runs.
+    # Keep coverage runs serial for deterministic SimpleCov results.
+    # Otherwise prefer an explicit PARALLEL_WORKERS override, then a physical-core estimate.
+    # If detection fails, TestSupport::CpuWorkers falls back to a safe integer >= 1.
     # NOTE: Multi-process parallelism (the default) forks the process. Each worker gets
     # its own database connection pool and transaction, so fixture isolation is maintained.
     # If you observe flaky tests with shared state (e.g. Rails.cache, ENV), consider
     # running with PARALLEL_WORKERS=1 to isolate the issue.
-    requested_workers = Integer(ENV["PARALLEL_WORKERS"], exception: false)
-    workers =
-      if coverage_enabled
-        0
-      elsif requested_workers&.positive?
-        [requested_workers, max_parallel_workers].min
-      else
-        [Etc.nprocessors - 1, max_parallel_workers].min
-      end
+    workers = coverage_enabled ? 1 : TestSupport::CpuWorkers.detect
 
     unless coverage_enabled
       parallelize(workers: workers)

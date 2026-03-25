@@ -181,9 +181,9 @@ class EmailTest < ActiveSupport::TestCase
   test "increment_attempts! is thread-safe under concurrent access" do
     email = create_email(address: "concurrent@example.com", confirm_policy: true)
 
-    threads =
+    futures =
       10.times.map do
-        Thread.new do
+        Concurrent::Promises.future do
           10.times do
             ActiveRecord::Base.connection_pool.with_connection do
               # Use a fresh instance to better simulate concurrent requests
@@ -193,7 +193,7 @@ class EmailTest < ActiveSupport::TestCase
         end
       end
 
-    threads.each(&:join)
+    Concurrent::Promises.zip(*futures).value!
 
     assert_equal 100, email.reload.otp_attempts_count
   end

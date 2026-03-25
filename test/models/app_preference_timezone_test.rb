@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_preference_timezones
-# Database name: preference
+# Database name: principal
 #
 #  id            :bigint           not null, primary key
 #  created_at    :datetime         not null

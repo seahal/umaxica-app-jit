@@ -19,6 +19,7 @@
       <tr>
         <th>Session</th>
         <th>Kind</th>
+        <th>Binding</th>
         <th>Last activity</th>
         <th>Created</th>
         <th>Refresh expires</th>
@@ -41,6 +42,7 @@
             <p><%= session.staff_token_status_id %></p>
           </td>
           <td><%= session.staff_token_kind_id %></td>
+          <td><%= session.dbsc_enabled? ? "DBSC" : "NORMAL" %></td>
           <td><%= l(session.last_used_at || session.created_at, format: :short) %></td>
           <td><%= l(session.created_at, format: :short) %></td>
           <td><%= l(session.refresh_expires_at, format: :short) %></td>

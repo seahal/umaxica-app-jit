@@ -8,10 +8,10 @@ module Oidc
         def success? = success
       end
 
-    def initialize(params:, user:)
+    def initialize(params:, resource:)
       super()
       @params = params
-      @user = user
+      @resource = resource
     end
 
     def call
@@ -28,7 +28,7 @@ module Oidc
 
     private
 
-    attr_reader :params, :user
+    attr_reader :params, :resource
 
     def validate!
       raise ArgumentError, "response_type must be 'code'" unless params[:response_type] == "code"
@@ -47,16 +47,18 @@ module Oidc
     end
 
     def issue_authorization_code!
+      resource_key = (@client.resource_type == "staff") ? :staff : :user
+
       TokenRecord.connected_to(role: :writing) do
         AuthorizationCode.issue!(
-          user: user,
-          client_id: params[:client_id],
-          redirect_uri: params[:redirect_uri],
-          code_challenge: params[:code_challenge],
-          code_challenge_method: params[:code_challenge_method],
-          scope: params[:scope],
-          state: params[:state],
-          nonce: params[:nonce],
+          resource_key => resource,
+          :client_id => params[:client_id],
+          :redirect_uri => params[:redirect_uri],
+          :code_challenge => params[:code_challenge],
+          :code_challenge_method => params[:code_challenge_method],
+          :scope => params[:scope],
+          :state => params[:state],
+          :nonce => params[:nonce],
         )
       end
     end

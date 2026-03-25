@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_preferences
-# Database name: preference
+# Database name: commerce
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime

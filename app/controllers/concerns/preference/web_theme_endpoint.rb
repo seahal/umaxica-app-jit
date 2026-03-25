@@ -58,13 +58,13 @@ module Preference
     end
 
     def find_preference_for_theme_update(public_id)
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference_class.lock.find_by(public_id: public_id)
       end
     end
 
     def update_preference_colortheme!(preference, short_code)
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference_class.transaction do
           colortheme = load_or_create_colortheme_child(preference)
           canonical = canonical_colortheme_option_id(

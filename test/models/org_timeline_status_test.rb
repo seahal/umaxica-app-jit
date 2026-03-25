@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: org_timeline_statuses
-# Database name: news
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
@@ -16,8 +16,8 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
     @model_class = OrgTimelineStatus
   end
 
-  test "inherits from NewsRecord" do
-    assert_operator OrgTimelineStatus, :<, NewsRecord
+  test "inherits from PublicationRecord" do
+    assert_operator OrgTimelineStatus, :<, PublicationRecord
   end
 
   test "status constants are defined" do

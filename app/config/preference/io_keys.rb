@@ -27,10 +27,10 @@ module Preference
 
     module Headers
       DEVICE_ID = "X-Device-Id"
-      DBSC_REGISTRATION = "Secure-Session-Registration"
-      DBSC_CHALLENGE = "Secure-Session-Challenge"
-      DBSC_SESSION_ID = "Sec-Secure-Session-Id"
-      DBSC_RESPONSE = "Secure-Session-Response"
+      DBSC_REGISTRATION = "Sec-Session-Registration"
+      DBSC_CHALLENGE = "Sec-Session-Challenge"
+      DBSC_SESSION_ID = "Sec-Session-Id"
+      DBSC_RESPONSE = "Sec-Session-Response"
 
       public_constant :DEVICE_ID
       public_constant :DBSC_REGISTRATION

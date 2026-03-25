@@ -7,7 +7,7 @@ module Auth
   class TokenClaimsTest < ActiveSupport::TestCase
     DummyResource = Struct.new(:id)
 
-    test "build includes mandatory claims and optional sid" do
+    def setup_token_claims_payload
       issued_at = Time.zone.parse("2026-02-22 12:00:00")
       payload = Auth::TokenClaims.build(
         resource: DummyResource.new(42),
@@ -16,15 +16,51 @@ module Auth
         issued_at: issued_at,
         access_token_ttl: 10.minutes,
       )
+      [payload, issued_at]
+    end
+
+    test "build includes subject and actor claims" do
+      payload, _issued_at = setup_token_claims_payload
 
       assert_equal 42, payload["sub"]
       assert_equal "user", payload["act"]
+    end
+
+    test "build includes session id claim" do
+      payload, _issued_at = setup_token_claims_payload
+
       assert_equal "sess_abc", payload["sid"]
+    end
+
+    test "build includes timestamp claims" do
+      payload, issued_at = setup_token_claims_payload
+
       assert_equal unix_timestamp(issued_at), payload["iat"]
-      assert_equal unix_timestamp(issued_at), payload["nbf"]
       assert_equal unix_timestamp(issued_at + 10.minutes), payload["exp"]
+    end
+
+    test "build excludes nbf claim" do
+      payload, _issued_at = setup_token_claims_payload
+
+      assert_nil payload["nbf"], "nbf should not be included"
+    end
+
+    test "build excludes prf claim when preferences not provided" do
+      payload, _issued_at = setup_token_claims_payload
+
+      assert_nil payload["prf"], "prf should not be included when no preferences given"
+    end
+
+    test "build includes type and issuer claims" do
+      payload, _issued_at = setup_token_claims_payload
+
       assert_equal "auth-access-token;user", payload["typ"]
       assert_equal Auth::Base::JwtConfiguration.issuer("user"), payload["iss"]
+    end
+
+    test "build includes audience and jti claims" do
+      payload, _issued_at = setup_token_claims_payload
+
       assert_equal Auth::Base::JwtConfiguration.audiences("user"), payload["aud"]
       assert_predicate payload["jti"], :present?
     end
@@ -51,40 +87,7 @@ module Auth
       assert_nil Auth::TokenClaims.jti(nil)
     end
 
-    test "build includes prf claim when preference is provided" do
-      issued_at = Time.zone.parse("2026-02-22 12:00:00")
-      preference = { language: "en", region: "us", timezone: "America/New_York", theme: "dr" }
-      payload = Auth::TokenClaims.build(
-        resource: DummyResource.new(42),
-        session_public_id: "sess_abc",
-        resource_type: "user",
-        issued_at: issued_at,
-        access_token_ttl: 10.minutes,
-        preference: preference,
-      )
-
-      assert_kind_of Hash, payload["prf"]
-      assert_equal "en", payload["prf"]["lx"]
-      assert_equal "us", payload["prf"]["ri"]
-      assert_equal "America/New_York", payload["prf"]["tz"]
-      assert_equal "dr", payload["prf"]["ct"]
-    end
-
-    test "build omits prf claim when preference is nil" do
-      issued_at = Time.zone.parse("2026-02-22 12:00:00")
-      payload = Auth::TokenClaims.build(
-        resource: DummyResource.new(42),
-        session_public_id: "sess_abc",
-        resource_type: "user",
-        issued_at: issued_at,
-        access_token_ttl: 10.minutes,
-        preference: nil,
-      )
-
-      assert_nil payload["prf"]
-    end
-
-    test "build omits prf claim when preference is not provided" do
+    test "build does not include prf claim when preferences is nil" do
       issued_at = Time.zone.parse("2026-02-22 12:00:00")
       payload = Auth::TokenClaims.build(
         resource: DummyResource.new(42),
@@ -94,50 +97,83 @@ module Auth
         access_token_ttl: 10.minutes,
       )
 
-      assert_nil payload["prf"]
+      assert_nil payload["prf"], "auth JWT should not contain preference data when nil"
     end
 
-    test "preference extracts prf claim from payload" do
-      payload = { "prf" => { "lx" => "ja", "ri" => "jp", "tz" => "Asia/Tokyo", "ct" => "sy" } }
-      prf = Auth::TokenClaims.preference(payload)
-
-      assert_equal "ja", prf["lx"]
-      assert_equal "jp", prf["ri"]
-      assert_equal "Asia/Tokyo", prf["tz"]
-      assert_equal "sy", prf["ct"]
-    end
-
-    test "preference returns nil when prf claim is absent" do
-      payload = { "sub" => 42, "act" => "user" }
-
-      assert_nil Auth::TokenClaims.preference(payload)
-    end
-
-    test "preference returns nil when payload is nil" do
-      assert_nil Auth::TokenClaims.preference(nil)
-    end
-
-    test "roundtrip: build prf claim can be extracted and used with Current::Preference.from_jwt" do
+    test "build includes prf claim when preferences hash provided" do
       issued_at = Time.zone.parse("2026-02-22 12:00:00")
-      preference = { language: "en", region: "us", timezone: "America/New_York", theme: "dr" }
+      prefs = { "lx" => "en", "ri" => "us", "tz" => "America/New_York", "ct" => "dr" }
       payload = Auth::TokenClaims.build(
         resource: DummyResource.new(42),
         session_public_id: "sess_abc",
         resource_type: "user",
         issued_at: issued_at,
         access_token_ttl: 10.minutes,
-        preference: preference,
+        preferences: prefs,
       )
 
-      prf_claim = Auth::TokenClaims.preference(payload)
-      pref = Current::Preference.from_jwt(prf_claim)
+      assert_equal prefs, payload["prf"]
+    end
 
-      assert_not pref.null?
+    test "build excludes prf claim when preferences is empty hash" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      payload = Auth::TokenClaims.build(
+        resource: DummyResource.new(42),
+        session_public_id: "sess_abc",
+        resource_type: "user",
+        issued_at: issued_at,
+        access_token_ttl: 10.minutes,
+        preferences: {},
+      )
+
+      assert_nil payload["prf"], "prf should not be included for empty preferences"
+    end
+
+    test "build excludes prf claim when preferences is not a hash" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      payload = Auth::TokenClaims.build(
+        resource: DummyResource.new(42),
+        session_public_id: "sess_abc",
+        resource_type: "user",
+        issued_at: issued_at,
+        access_token_ttl: 10.minutes,
+        preferences: "invalid",
+      )
+
+      assert_nil payload["prf"], "prf should not be included for non-hash preferences"
+    end
+
+    test "preferences extractor reads prf claim" do
+      payload = { "prf" => { "lx" => "ja", "ri" => "jp" } }
+
+      assert_equal({ "lx" => "ja", "ri" => "jp" }, Auth::TokenClaims.preferences(payload))
+    end
+
+    test "preferences extractor returns nil when prf absent" do
+      assert_nil Auth::TokenClaims.preferences({})
+      assert_nil Auth::TokenClaims.preferences(nil)
+    end
+
+    test "prf claim roundtrips through Current::Preference.from_jwt" do
+      prefs = { "lx" => "en", "ri" => "us", "tz" => "America/New_York", "ct" => "dr" }
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      payload = Auth::TokenClaims.build(
+        resource: DummyResource.new(42),
+        session_public_id: "sess_abc",
+        resource_type: "user",
+        issued_at: issued_at,
+        access_token_ttl: 10.minutes,
+        preferences: prefs,
+      )
+
+      pref = Current::Preference.from_jwt(payload["prf"])
+
       assert_equal "en", pref.language
       assert_equal "us", pref.region
       assert_equal "America/New_York", pref.timezone
       assert_equal "dr", pref.theme
       assert_predicate pref, :dark_mode?
+      assert_not_predicate pref, :null?
     end
 
     private

@@ -53,7 +53,9 @@ class UserVerification < TokenRecord
 
     verification =
       transaction do
-        where(user_token_id: token.id).active.update_all(revoked_at: now, updated_at: now)
+        where(user_token_id: token.id).active.find_each do |verification_record|
+          verification_record.update!(revoked_at: now, updated_at: now)
+        end
 
         create!(
           user_token: token,

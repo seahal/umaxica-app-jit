@@ -44,14 +44,16 @@ module RefreshTokenable
           relation = relation.where(arel_table[:revoked_at].eq(nil).or(arel_table[:revoked_at].gt(now)))
         end
 
-        updated = relation.update_all(rotated_at: now, last_used_at: now, updated_at: now)
+        updated = relation.first
 
-        if updated != 1
+        if updated.blank?
           current_token.reload
           return { status: :replay, token: current_token } if current_token.rotated_at.present?
 
           return { status: :invalid, token: current_token }
         end
+
+        updated.update!(rotated_at: now, last_used_at: now, updated_at: now)
 
         current_token.reload
         replacement, raw_refresh_token = create_rotated_token_record!(current_token)

@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: app_timeline_statuses
-# Database name: news
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
@@ -18,8 +18,8 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
     @model_class = AppTimelineStatus
   end
 
-  test "inherits from NewsRecord" do
-    assert_operator AppTimelineStatus, :<, NewsRecord
+  test "inherits from PublicationRecord" do
+    assert_operator AppTimelineStatus, :<, PublicationRecord
   end
 
   test "accepts integer ids" do

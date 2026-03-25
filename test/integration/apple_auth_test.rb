@@ -44,7 +44,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
   end
 
   test "callback initializes preference timezone options when missing" do
-    PreferenceRecord.connected_to(role: :writing) do
+    CommerceRecord.connected_to(role: :writing) do
       AppPreferenceTimezone.delete_all
       AppPreferenceRegion.delete_all
       AppPreferenceLanguage.delete_all
@@ -74,7 +74,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to sign_app_configuration_url(ri: "jp")
 
-    PreferenceRecord.connected_to(role: :writing) do
+    CommerceRecord.connected_to(role: :writing) do
       assert AppPreferenceTimezoneOption.exists?(id: AppPreferenceTimezoneOption::ASIA_TOKYO)
       assert_predicate AppPreferenceTimezone, :exists?
     end

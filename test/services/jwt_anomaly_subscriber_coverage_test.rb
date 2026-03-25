@@ -64,4 +64,25 @@ class JwtAnomalySubscriberCoverageTest < ActiveSupport::TestCase
 
     assert_includes logged_message, "JwtAnomalySubscriber failed"
   end
+
+  test "build_metadata includes extra fields" do
+    subscriber = JwtAnomalySubscriber.new
+    payload = {
+      code: "TEST_CODE",
+      request_host: "host",
+      kid: "kid",
+      alg: "alg",
+      typ: "typ",
+      iss: "iss",
+      jti: "jti",
+      error_class: "Error",
+      error_message: "msg",
+      extra_field1: "extra1",
+      extra_field2: "extra2",
+    }
+
+    metadata = subscriber.send(:build_metadata, payload)
+
+    assert_equal({ extra_field1: "extra1", extra_field2: "extra2" }, metadata)
+  end
 end

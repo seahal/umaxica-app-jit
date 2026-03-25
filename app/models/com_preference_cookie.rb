@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_preference_cookies
-# Database name: preference
+# Database name: commerce
 #
 #  id              :bigint           not null, primary key
 #  consent_version :uuid
@@ -26,7 +26,7 @@
 
 # frozen_string_literal: true
 
-class ComPreferenceCookie < PreferenceRecord
+class ComPreferenceCookie < CommerceRecord
   belongs_to :preference, class_name: "ComPreference", inverse_of: :com_preference_cookie
 
   after_initialize :set_defaults

@@ -89,18 +89,30 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
-  test "renders expected layout structure" do
+  test "renders expected head structure" do
     get news_org_root_url
 
     assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: /#{brand_name} \(org\) Newsroom/
     end
+  end
+
+  test "renders expected body structure" do
+    get news_org_root_url
+
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
         assert_select "h1", text: /#{brand_name}.*\(org\)/
       end
       assert_select "main", count: 1
+    end
+  end
+
+  test "renders expected footer structure" do
+    get news_org_root_url
+
+    assert_select "body" do
       assert_select "footer", count: 1 do
         assert_select "nav", count: 1 do
           assert_select "span", count: 0

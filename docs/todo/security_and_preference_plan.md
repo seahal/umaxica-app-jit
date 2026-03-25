@@ -90,15 +90,24 @@ Created: 2026-03-21
 - Implement Null Object pattern for `Current.preference` (DEFAULT for guests/bearer)
 - Add tests for preference JWT roundtrip
 
-### Step 5: Preference Model Consolidation (User/Staff merge)
+## Database Placement Decision
 
-- Merge `AppPreference`/`OrgPreference`/`ComPreference` into `UserPreference`/`StaffPreference`
-  (principal DB, 1:1)
-- Implement login-time sync logic for preference data
-- Consolidate `*_preference_language`, `*_preference_timezone`, etc. associations
-- Remove redundant preference child-record models from preference DB
-- Clean up `PreferenceRecord` base class if no longer needed
-- Update all controllers referencing old preference models
+- `app` preference data is planned to move to `principal`.
+- `org` preference data is planned to move to `operator`.
+- `com` preference data stays in `preference` for now.
+- Do not execute the move yet; this section only records the agreed target layout.
+
+## Step 5: Preference Model Consolidation (User/Staff merge)
+
+- Move `AppPreference` and `app_*` preference tables into `principal`.
+- Move `OrgPreference` and `org_*` preference tables into `operator`.
+- Keep `ComPreference` and `com_*` preference tables in `preference` for now.
+- Implement login-time sync logic for preference data.
+- Consolidate `*_preference_language`, `*_preference_timezone`, etc. associations.
+- Remove redundant preference child-record models from their old database once the move is complete.
+- Clean up `PreferenceRecord` base class if no longer needed.
+- Update all controllers referencing old preference models.
+
 
 ### Step 6: Preference API Consolidation
 
@@ -126,12 +135,15 @@ Created: 2026-03-21
 ### Step 9: Current Attributes Construction ✅
 
 - `Current.actor` is now the single source of truth for the authenticated resource
-- `current_resource` delegates to `Current.actor` with lazy-load fallback (via `@_current_resource_resolved` flag)
+- `current_resource` delegates to `Current.actor` with lazy-load fallback (via
+  `@_current_resource_resolved` flag)
 - `current_user` / `current_staff` remain as convenience aliases (via `current_resource`)
 - `@current_resource` instance variable fully eliminated from `Auth::Base`
-- `transparent_refresh_access_token` now calls `populate_current_attributes!` (was setting `@current_resource` directly)
+- `transparent_refresh_access_token` now calls `populate_current_attributes!` (was setting
+  `@current_resource` directly)
 - `clear_auth_cookies!` resets `Current.actor` and `Current.actor_type`
-- `reissue_access_token!` uses `current_resource` method instead of `@current_resource` instance variable
+- `reissue_access_token!` uses `current_resource` method instead of `@current_resource` instance
+  variable
 - `Current.reset` called per-request via `CurrentSupport#_reset_current_state` (after_action)
 
 ### Step 10: Final Verification ✅

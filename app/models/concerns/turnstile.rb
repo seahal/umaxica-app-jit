@@ -9,7 +9,15 @@ module Turnstile
 
   # Test helper for mocking Turnstile responses in tests
 
-  mattr_accessor :test_response
+  class << self
+    def test_response
+      Thread.current[:turnstile_test_response]
+    end
+
+    def test_response=(value)
+      Thread.current[:turnstile_test_response] = value
+    end
+  end
 
   included do
     attr_accessor :turnstile_response, :turnstile_remote_ip

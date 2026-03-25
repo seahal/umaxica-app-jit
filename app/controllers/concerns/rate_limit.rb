@@ -37,21 +37,15 @@ module RateLimit
 
   DEFAULT_RETRY_AFTER = 60
 
-  included do
-    rate_limit to: 300, within: 1.minute,
-               by: -> { request.remote_ip },
-               with: -> { handle_rate_limit_exceeded!("default_web", DEFAULT_RETRY_AFTER) },
-               store: RateLimit.store,
-               name: "default_web",
-               if: -> { !request.format.json? && !Rails.env.test? }
-
-    rate_limit to: 600, within: 1.minute,
-               by: -> { request.remote_ip },
-               with: -> { handle_rate_limit_exceeded!("default_api", DEFAULT_RETRY_AFTER) },
-               store: RateLimit.store,
-               name: "default_api",
-               if: -> { request.format.json? && !Rails.env.test? }
-  end
+  # Note: This concern no longer applies default rate limits automatically.
+  # Default limits have been removed to avoid surprising side effects.
+  # Controllers must explicitly declare rate limits using the rate_limit DSL.
+  #
+  # Example:
+  #   class MyController < ApplicationController
+  #     include RateLimit
+  #     rate_limit to: 300, within: 1.minute, store: RateLimit.store, name: "my_limit"
+  #   end
 
   class_methods do
     def rate_limit_store

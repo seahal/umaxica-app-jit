@@ -9,7 +9,9 @@ module Oidc
           now = Time.current
           UserToken.where(user_id: user.id)
             .where(revoked_at: nil)
-            .update_all(revoked_at: now, status: "revoked", updated_at: now)
+            .find_each do |token|
+            token.update!(revoked_at: now, status: "revoked", updated_at: now)
+          end
         end
       end
 
@@ -18,7 +20,9 @@ module Oidc
           now = Time.current
           StaffToken.where(staff_id: staff.id)
             .where(revoked_at: nil)
-            .update_all(revoked_at: now, status: "revoked", updated_at: now)
+            .find_each do |token|
+            token.update!(revoked_at: now, status: "revoked", updated_at: now)
+          end
         end
       end
     end

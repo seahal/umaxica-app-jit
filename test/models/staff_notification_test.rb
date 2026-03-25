@@ -21,7 +21,7 @@
 require "test_helper"
 
 class StaffNotificationTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "StaffNotification", StaffNotification.name
+  end
 end

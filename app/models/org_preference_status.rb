@@ -2,14 +2,14 @@
 # == Schema Information
 #
 # Table name: org_preference_statuses
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class OrgPreferenceStatus < PreferenceRecord
+class OrgPreferenceStatus < OperatorRecord
   # Fixed IDs - do not modify these values
   DELETED = 1
   NOTHING = 2

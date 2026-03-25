@@ -29,6 +29,8 @@ class StaffBulletin < OperatorRecord
 
   belongs_to :staff, inverse_of: :staff_bulletins
 
+  validates :title, presence: true
+
   scope :unread, -> { where(read_at: nil) }
   scope :oldest_first, -> { order(created_at: :asc) }
 

@@ -244,9 +244,9 @@ module Preference
     def touch_target!(target)
       connection_class = target.class.ancestors.find { |a| a.is_a?(Class) && a < ActiveRecord::Base && a.abstract_class? }
       if connection_class
-        connection_class.connected_to(role: :writing) { target.touch }
+        connection_class.connected_to(role: :writing) { target.update!(updated_at: Time.current) }
       else
-        target.touch
+        target.update!(updated_at: Time.current)
       end
     end
 

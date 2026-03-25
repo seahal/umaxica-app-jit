@@ -26,7 +26,7 @@
 require "test_helper"
 
 class EmailIpOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "EmailIpOccurrence", EmailIpOccurrence.name
+  end
 end

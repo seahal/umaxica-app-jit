@@ -358,7 +358,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
 
@@ -463,7 +462,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
 
@@ -556,7 +554,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
 
@@ -598,7 +595,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     end
 
     # Extract email ID from redirect location
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
@@ -704,7 +700,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
     otp_data = user_email.get_otp
@@ -782,7 +777,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     end
 
     # Extract email ID from redirect location
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)

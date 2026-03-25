@@ -4,11 +4,11 @@
 # == Schema Information
 #
 # Table name: com_preference_binding_methods
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
-class ComPreferenceBindingMethod < PreferenceRecord
+class ComPreferenceBindingMethod < CommerceRecord
   NOTHING = 0
   DBSC = 1
   LEGACY = 2

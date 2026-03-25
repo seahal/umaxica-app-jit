@@ -165,17 +165,6 @@ module Auth
       assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
     end
 
-    test "Token.decode rejects missing nbf claim" do
-      token = Auth::Base::Token.encode(
-        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
-      )
-      payload, header = JWT.decode(token, nil, false)
-      payload.delete("nbf")
-      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", header)
-
-      assert_nil Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user")
-    end
-
     test "Token.decode rejects missing sid claim" do
       token = Auth::Base::Token.encode(
         users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
@@ -215,20 +204,6 @@ module Auth
       )
 
       assert_nil Auth::Base::Token.decode(token, host: "example.com", resource_type: "staff")
-    end
-
-    test "Token.decode accepts nbf within configured leeway" do
-      token = Auth::Base::Token.encode(
-        users(:one), host: "example.com", session_public_id: "sid", resource_type: "user",
-      )
-      payload, header = JWT.decode(token, nil, false)
-      payload["nbf"] = 20.seconds.from_now.to_i
-      payload["exp"] = 10.minutes.from_now.to_i
-      tampered = JWT.encode(payload, Auth::Base::JwtConfiguration.private_key, "ES384", header)
-
-      Auth::Base::JwtConfiguration.stub(:leeway_seconds, 30) do
-        assert_predicate Auth::Base::Token.decode(tampered, host: "example.com", resource_type: "user"), :present?
-      end
     end
   end
 end

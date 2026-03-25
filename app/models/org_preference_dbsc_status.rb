@@ -4,11 +4,11 @@
 # == Schema Information
 #
 # Table name: org_preference_dbsc_statuses
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
-class OrgPreferenceDbscStatus < PreferenceRecord
+class OrgPreferenceDbscStatus < OperatorRecord
   NOTHING = 0
   PENDING = 1
   ACTIVE = 2

@@ -24,33 +24,16 @@ module Preference::Edge
   private
 
   def resolved_preference_data
-    # For authenticated users: use Current.preference from JWT prf claim (no DB query)
-    unless Current.preference.null?
-      return {
-        preferences: current_preference_to_api_format,
-        public_id: @preferences&.public_id || Current.session,
-      }
-    end
-
-    # Fallback: try JWT preference payload
+    # Try preference JWT payload (SSOT for preferences)
     preferences = preference_payload_preferences
     public_id = preference_payload_public_id
     return { preferences:, public_id: } if preferences.present?
 
-    # Final fallback: DB query for guests without preference JWT
+    # Fallback: DB query for guests without preference JWT
     fallback_data = load_preferences_from_record
     {
       preferences: fallback_data[:preferences],
       public_id: public_id || fallback_data[:public_id],
-    }
-  end
-
-  def current_preference_to_api_format
-    {
-      "lx" => Current.preference.language,
-      "ct" => Current.preference.theme,
-      "ri" => Current.preference.region,
-      "tz" => Current.preference.timezone,
     }
   end
 

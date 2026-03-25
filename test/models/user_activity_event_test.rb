@@ -24,35 +24,37 @@ class UserActivityEventTest < ActiveSupport::TestCase
     assert_predicate record, :valid?
   end
 
-  test "all constants are defined with correct values" do
-    assert_equal 1, UserActivityEvent::ACCOUNT_RECOVERED
-    assert_equal 2, UserActivityEvent::ACCOUNT_WITHDRAWN
-    assert_equal 3, UserActivityEvent::AUTHORIZATION_FAILED
-    assert_equal 4, UserActivityEvent::LOGGED_IN
-    assert_equal 5, UserActivityEvent::LOGGED_OUT
-    assert_equal 6, UserActivityEvent::LOGIN_FAILED
-    assert_equal 7, UserActivityEvent::LOGIN_SUCCESS
-    assert_equal 8, UserActivityEvent::LOGOUT
-    assert_equal 9, UserActivityEvent::NOTHING
-    assert_equal 10, UserActivityEvent::NON_EXISTENT_EVENT
-    assert_equal 11, UserActivityEvent::PASSKEY_REGISTERED
-    assert_equal 12, UserActivityEvent::PASSKEY_REMOVED
-    assert_equal 13, UserActivityEvent::RECOVERY_CODES_GENERATED
-    assert_equal 14, UserActivityEvent::RECOVERY_CODE_USED
-    assert_equal 15, UserActivityEvent::SIGNED_UP_WITH_APPLE
-    assert_equal 16, UserActivityEvent::SIGNED_UP_WITH_EMAIL
-    assert_equal 17, UserActivityEvent::SIGNED_UP_WITH_GOOGLE
-    assert_equal 18, UserActivityEvent::SIGNED_UP_WITH_TELEPHONE
-    assert_equal 19, UserActivityEvent::TOKEN_REFRESHED
-    assert_equal 20, UserActivityEvent::TOTP_DISABLED
-    assert_equal 21, UserActivityEvent::TOTP_ENABLED
-    assert_equal 22, UserActivityEvent::USER_SECRET_CREATED
-    assert_equal 23, UserActivityEvent::USER_SECRET_REMOVED
-    assert_equal 24, UserActivityEvent::USER_SECRET_UPDATED
-    assert_equal 25, UserActivityEvent::EMAIL_REMOVED
-    assert_equal 26, UserActivityEvent::TELEPHONE_REMOVED
-    assert_equal 27, UserActivityEvent::SOCIAL_UNLINKED
-    assert_equal 28, UserActivityEvent::STEP_UP_VERIFIED
+  test "constants are grouped and defined" do
+    assert_equal [
+      UserActivityEvent::ACCOUNT_RECOVERED,
+      UserActivityEvent::ACCOUNT_WITHDRAWN,
+      UserActivityEvent::AUTHORIZATION_FAILED,
+      UserActivityEvent::LOGGED_IN,
+      UserActivityEvent::LOGGED_OUT,
+      UserActivityEvent::LOGIN_FAILED,
+      UserActivityEvent::LOGIN_SUCCESS,
+      UserActivityEvent::LOGOUT,
+      UserActivityEvent::NOTHING,
+      UserActivityEvent::NON_EXISTENT_EVENT,
+      UserActivityEvent::PASSKEY_REGISTERED,
+      UserActivityEvent::PASSKEY_REMOVED,
+      UserActivityEvent::RECOVERY_CODES_GENERATED,
+      UserActivityEvent::RECOVERY_CODE_USED,
+      UserActivityEvent::SIGNED_UP_WITH_APPLE,
+      UserActivityEvent::SIGNED_UP_WITH_EMAIL,
+      UserActivityEvent::SIGNED_UP_WITH_GOOGLE,
+      UserActivityEvent::SIGNED_UP_WITH_TELEPHONE,
+      UserActivityEvent::TOKEN_REFRESHED,
+      UserActivityEvent::TOTP_DISABLED,
+      UserActivityEvent::TOTP_ENABLED,
+      UserActivityEvent::USER_SECRET_CREATED,
+      UserActivityEvent::USER_SECRET_REMOVED,
+      UserActivityEvent::USER_SECRET_UPDATED,
+      UserActivityEvent::EMAIL_REMOVED,
+      UserActivityEvent::TELEPHONE_REMOVED,
+      UserActivityEvent::SOCIAL_UNLINKED,
+      UserActivityEvent::STEP_UP_VERIFIED,
+    ], UserActivityEvent::DEFAULTS.sort
   end
 
   test "record_timestamps is disabled" do

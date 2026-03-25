@@ -17,7 +17,9 @@ ja:
       last_used: 最終使用
       no_sessions: アクティブなセッションがありません。
       submit: 選択したセッションを無効化してログイン
-      cancel: キャンセル
+      back: 戻る
+      cancel_logout: キャンセルしてログアウト
+      cancel_logout_confirm: キャンセルしますか？ログアウトされます。
   languages:
     japanese: 日本語
     english: 英語
@@ -137,8 +139,8 @@ ja:
           last_used_at: 最終使用
           revoke: 無効化
           revoke_selected: 選択したセッションを無効化して続行
-          cancel: キャンセルしてログアウト
-          cancel_confirm: キャンセルしますか？ログアウトされます。
+          cancel_logout: キャンセルしてログアウト
+          cancel_logout_confirm: キャンセルしますか？ログアウトされます。
           no_sessions_selected: 少なくとも1つのセッションを選択してください。
           sessions_revoked: 選択したセッションを無効化しました。
           session_revoked: セッションを無効化しました。

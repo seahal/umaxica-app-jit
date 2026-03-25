@@ -62,7 +62,7 @@ class JwtAnomalySubscriberTest < ActiveSupport::TestCase
     end
   end
 
-  test "emit creates anomaly event when occurrence exists" do
+  def setup_anomaly_event_test
     occurred_at = Time.current.change(usec: 0)
     mock_event = MockEvent.new(
       name: "jwt.anomaly.detected",
@@ -87,19 +87,43 @@ class JwtAnomalySubscriberTest < ActiveSupport::TestCase
       subscriber.emit(mock_event)
     end
 
-    event = JwtAnomalyEvent.order(:id).last
+    [JwtAnomalyEvent.order(:id).last, occurred_at]
+  end
+
+  test "emit creates anomaly event linked to occurrence" do
+    event, _occurred_at = setup_anomaly_event_test
 
     assert_equal jwt_occurrences(:auth_user_malformed_token), event.jwt_occurrence
     assert_equal "AUTH_USER_MALFORMED_TOKEN", event.code
-    assert_equal "sign.app.localhost", event.request_host
+  end
+
+  test "emit stores jwt header fields correctly" do
+    event, _occurred_at = setup_anomaly_event_test
+
     assert_equal "kid-1", event.kid
     assert_equal "ES384", event.alg
     assert_equal "JWT", event.typ
+  end
+
+  test "emit stores jwt claim fields correctly" do
+    event, _occurred_at = setup_anomaly_event_test
+
     assert_equal "jit", event.issuer
     assert_equal "jti-123", event.jti
+  end
+
+  test "emit stores error information correctly" do
+    event, _occurred_at = setup_anomaly_event_test
+
     assert_equal "JWT::DecodeError", event.error_class
     assert_equal "invalid token", event.error_message
     assert_equal({ "extra" => "kept" }, event.metadata)
+  end
+
+  test "emit stores request host and timestamp correctly" do
+    event, occurred_at = setup_anomaly_event_test
+
+    assert_equal "sign.app.localhost", event.request_host
     assert_equal occurred_at, event.occurred_at
   end
 

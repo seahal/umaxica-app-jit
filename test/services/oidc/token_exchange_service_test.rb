@@ -224,6 +224,68 @@ class Oidc::TokenExchangeServiceTest < ActiveSupport::TestCase
     end
   end
 
+  # --- Staff OIDC token exchange tests ---
+
+  test "exchanges valid staff code for tokens with StaffToken" do
+    staff = staffs(:one)
+    org_client = Oidc::ClientRegistry.find("core_org")
+    org_redirect_uri = org_client.redirect_uris.first
+    staff_secret = "test_secret_for_core_org"
+
+    code_record = AuthorizationCode.issue!(
+      staff: staff,
+      client_id: "core_org",
+      redirect_uri: org_redirect_uri,
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+    )
+
+    result =
+      with_authenticated_org_client(staff_secret) do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: org_redirect_uri,
+          client_id: "core_org",
+          client_secret: staff_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+
+    assert_predicate result, :success?
+    assert_predicate result.token_response[:access_token], :present?
+    assert_predicate result.token_response[:refresh_token], :present?
+    assert_equal "Bearer", result.token_response[:token_type]
+  end
+
+  test "creates staff token record for org client" do
+    staff = staffs(:one)
+    org_client = Oidc::ClientRegistry.find("core_org")
+    org_redirect_uri = org_client.redirect_uris.first
+    staff_secret = "test_secret_for_core_org"
+
+    code_record = AuthorizationCode.issue!(
+      staff: staff,
+      client_id: "core_org",
+      redirect_uri: org_redirect_uri,
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+    )
+
+    assert_difference "StaffToken.count", 1 do
+      with_authenticated_org_client(staff_secret) do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: org_redirect_uri,
+          client_id: "core_org",
+          client_secret: staff_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+    end
+  end
+
   private
 
   def issue_code!
@@ -241,6 +303,16 @@ class Oidc::TokenExchangeServiceTest < ActiveSupport::TestCase
     Oidc::ClientRegistry.stub(
       :authenticate, ->(cid, sec) {
                        cid == "core_app" && sec == @client_secret
+                     },
+    ) do
+      block.call
+    end
+  end
+
+  def with_authenticated_org_client(secret, &block)
+    Oidc::ClientRegistry.stub(
+      :authenticate, ->(cid, sec) {
+                       cid == "core_org" && sec == secret
                      },
     ) do
       block.call

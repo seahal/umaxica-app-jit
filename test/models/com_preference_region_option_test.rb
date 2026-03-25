@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_preference_region_options
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #

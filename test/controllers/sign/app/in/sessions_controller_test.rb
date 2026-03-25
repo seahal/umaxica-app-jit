@@ -25,6 +25,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show with restricted session displays sessions" do
+    create_active_session(@user)
     token = create_restricted_session(@user)
     headers = as_user_headers_with_token(@user, token, host: @host)
 
@@ -32,6 +33,9 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_not response.redirect?
+    assert_select "input[type=radio][name=ref]"
+    assert_select "input[type=checkbox][name='revoke_refs[]']", false
+    assert_select "button", text: /キャンセルしてログアウト/
   end
 
   test "show counts only usable active sessions" do

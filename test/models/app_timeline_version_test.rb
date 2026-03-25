@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_timeline_versions
-# Database name: news
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text

@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_timeline_tags
-# Database name: news
+# Database name: publication
 #
 #  id                         :bigint           not null, primary key
 #  created_at                 :datetime         not null
@@ -23,7 +23,7 @@
 
 # frozen_string_literal: true
 
-class AppTimelineTag < NewsRecord
+class AppTimelineTag < PublicationRecord
   belongs_to :app_timeline, inverse_of: :app_timeline_tags
   belongs_to :app_timeline_tag_master,
              primary_key: :id,

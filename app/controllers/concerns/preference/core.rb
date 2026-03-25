@@ -12,13 +12,13 @@ module Preference::Core
   COOKIE_EXPIRY = 400.days
 
   def set_region_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_region = load_or_refresh_preference_child("Region", option_id: nil)
     end
   end
 
   def set_region_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_region = load_or_refresh_preference_child("Region", option_id: nil)
 
       update_preference_child_with_audit(
@@ -31,13 +31,13 @@ module Preference::Core
   end
 
   def set_language_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_language = load_or_refresh_preference_child("Language", option_id: nil)
     end
   end
 
   def set_language_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_language = load_or_refresh_preference_child("Language", option_id: nil)
 
       update_preference_child_with_audit(
@@ -55,7 +55,7 @@ module Preference::Core
   end
 
   def set_timezone_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_timezone = load_or_refresh_preference_child("Timezone", option_id: nil)
     end
   end
@@ -63,7 +63,7 @@ module Preference::Core
   def set_timezone_preferences_update
     raise PreferenceOperationError if @preferences.blank?
 
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_timezone = load_or_refresh_preference_child("Timezone", option_id: nil)
 
       begin
@@ -85,13 +85,13 @@ module Preference::Core
   end
 
   def set_colortheme_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_colortheme = load_or_refresh_preference_child("Colortheme", option_id: nil)
     end
   end
 
   def set_colortheme_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_colortheme = load_or_refresh_preference_child("Colortheme", option_id: nil)
 
       update_preference_child_with_audit(
@@ -110,7 +110,7 @@ module Preference::Core
   end
 
   def set_cookie_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_cookie = load_or_refresh_preference_child(
         "Cookie",
         targetable: false, performant: false, functional: false, consented: false,
@@ -119,7 +119,7 @@ module Preference::Core
   end
 
   def set_cookie_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       @preference_cookie = load_or_refresh_preference_child(
         "Cookie",
         targetable: false, performant: false, functional: false, consented: false,
@@ -161,17 +161,6 @@ module Preference::Core
     end
     issue_access_token_from(@preferences)
     sync_to_resource_preference!
-
-    # Also reissue auth JWT with updated prf claim (if auth module is available)
-    return unless respond_to?(:reissue_access_token!, true)
-
-    preference_data = build_preference_snapshot_from_preference(@preferences)
-    reissue_access_token!(preference_data)
-  end
-
-  # Build preference snapshot from preference record (for reissue_access_token!)
-  def build_preference_snapshot_from_preference(preference)
-    resolved_preference_snapshot(preference)
   end
 
   def render_preference_update_response
@@ -374,7 +363,7 @@ module Preference::Core
     token_digest = refresh_token_lookup_digest(token_value)
     return nil unless token_digest
 
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       preference_class.find_by(token_digest: token_digest)
     end
   end
@@ -393,7 +382,7 @@ module Preference::Core
     association_prefix = preference.class.name.underscore
     prefix = preference_prefix
 
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       Preference::Adoption::CHILD_RECORD_TYPES.each do |type|
         child = preference.public_send("#{association_prefix}_#{type}")
         next unless child

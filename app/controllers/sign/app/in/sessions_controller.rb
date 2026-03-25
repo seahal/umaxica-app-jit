@@ -101,15 +101,19 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
       return
     end
 
-    # If logged in with an active (non-restricted) session, deny access.
-    # This page is only for users in the restricted session state (3rd login).
-    if logged_in?
-      head :forbidden
+    # If has a valid gate + pending user, allow access.
+    # This covers both:
+    #   - Not-yet-logged-in users with a gate (e.g., gate issued before JWT set)
+    #   - Logged-in users whose restricted status hasn't replicated to the
+    #     read replica yet (the gate proves they are in session-limit flow)
+    if session_limit_gate_valid? && session[:pending_login_user_id].present?
       return
     end
 
-    # If not logged in but has a valid gate, try to load pending user
-    if session_limit_gate_valid? && session[:pending_login_user_id].present?
+    # If logged in with an active (non-restricted) session and no gate, deny access.
+    # This page is only for users in the restricted session state (3rd login).
+    if logged_in?
+      head :forbidden
       return
     end
 

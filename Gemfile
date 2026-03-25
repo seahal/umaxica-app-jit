@@ -18,7 +18,9 @@ gem "rack"
 gem "rails", github: "rails/rails", branch: "main"
 # Web server
 gem "puma"
+# Push Notification
 gem "action_push_native"
+gem "web-push"
 # JSON APIs
 # gem "jbuilder" # unused: no .jbuilder templates found
 # Use OpenStruct

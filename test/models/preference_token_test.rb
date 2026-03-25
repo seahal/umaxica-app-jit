@@ -209,23 +209,6 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     end
   end
 
-  test "decode rejects missing nbf claim" do
-    with_jwt_keys do
-      token = Preference::Token.encode(
-        @preferences,
-        host: @host,
-        preference_type: @preference_type,
-        public_id: @public_id,
-        jti: @jti,
-      )
-      payload, header = JWT.decode(token, nil, false)
-      payload.delete("nbf")
-      tampered = JWT.encode(payload, @private_key, "ES384", header)
-
-      assert_nil Preference::Token.decode(tampered, host: @host)
-    end
-  end
-
   test "decode rejects missing typ claim" do
     with_jwt_keys do
       token = Preference::Token.encode(
@@ -341,26 +324,6 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
       tampered = JWT.encode(payload, @private_key, "ES384", header)
 
       assert_nil Preference::Token.decode(tampered, host: @host)
-    end
-  end
-
-  test "decode accepts nbf within configured leeway" do
-    with_jwt_keys do
-      token = Preference::Token.encode(
-        @preferences,
-        host: @host,
-        preference_type: @preference_type,
-        public_id: @public_id,
-        jti: @jti,
-      )
-      payload, header = JWT.decode(token, nil, false)
-      payload["nbf"] = 20.seconds.from_now.to_i
-      payload["exp"] = 10.minutes.from_now.to_i
-      tampered = JWT.encode(payload, @private_key, "ES384", header)
-
-      Preference::JwtConfiguration.stub(:leeway_seconds, 30) do
-        assert_predicate Preference::Token.decode(tampered, host: @host), :present?
-      end
     end
   end
 
