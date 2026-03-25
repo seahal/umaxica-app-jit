@@ -258,7 +258,7 @@ GEM
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
       rake
-    flay (2.14.2)
+    flay (2.14.3)
       erubi (~> 1.10)
       path_expander (~> 2.0)
       prism (~> 1.7)
@@ -1093,7 +1093,7 @@ CHECKSUMS
   fastly (16.0.0) sha256=9a8b8d8d409bd2702f775e4f35863047164ce34f66f46de678a2587a431bf7f1
   ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
   ffi-compiler (1.3.2) sha256=a94f3d81d12caf5c5d4ecf13980a70d0aeaa72268f3b9cc13358bcc6509184a0
-  flay (2.14.2) sha256=d153a8928a0b6f74d4aab7a97577b12440d02df928ffbafb6ebe4bb6730a53f8
+  flay (2.14.3) sha256=7f96a495f4bde880460e77e7345464e752bd44f09f5cd30c80af02afe0ed3f29
   flog (4.9.4) sha256=12cc054fab7a2cbd2a906514397c4d7788954d530564782d6f14939dc2dfbcbb
   foreman (0.90.0) sha256=ff675e2d47b607ac58714a6d4ac3e1ee8f06f41d8db084531c31961e2c3f117c
   formatador (1.2.3) sha256=19fa898133c2c26cdbb5d09f6998c1e137ad9427a046663e55adfe18b950d894
