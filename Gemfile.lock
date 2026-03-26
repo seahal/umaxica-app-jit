@@ -839,13 +839,13 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13043)
-      sorbet-static (= 0.6.13043)
-    sorbet-runtime (0.6.13043)
-    sorbet-static (0.6.13043-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13043)
-      sorbet (= 0.6.13043)
-      sorbet-runtime (= 0.6.13043)
+    sorbet (0.6.13059)
+      sorbet-static (= 0.6.13059)
+    sorbet-runtime (0.6.13059)
+    sorbet-static (0.6.13059-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13059)
+      sorbet (= 0.6.13059)
+      sorbet-runtime (= 0.6.13059)
     spoom (1.7.11)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -1302,10 +1302,10 @@ CHECKSUMS
   snaky_hash (2.0.3) sha256=25a3d299566e8153fb02fa23fd9a9358845950f7a523ddbbe1fa1e0d79a6d456
   solid_cable (3.0.12) sha256=a168a54731a455d5627af48d8441ea3b554b8c1f6e6cd6074109de493e6b0460
   solid_queue (1.3.2) sha256=44a53047be4255f616ff13fa5d35980e7b3eee6e31d957eadb88fbe8e0db4509
-  sorbet (0.6.13043) sha256=deb6f78339eddf30a3bd4a5c148bc757a5c2bc2cd17a6d17e042dd46b81e14cc
-  sorbet-runtime (0.6.13043) sha256=593a8e2a22425b4b2b0a5e74af5ed44f66946cb9480bd3e2b12508da6a4d008d
-  sorbet-static (0.6.13043-x86_64-linux) sha256=e70fa9f04bd3337d27b964fd27934753efd1a041f9adbc7d53ec35806046ac04
-  sorbet-static-and-runtime (0.6.13043) sha256=7f4ba5a5bd430a26121c0e2d714487b571668d8704f36b6f9f29f0826f2320f9
+  sorbet (0.6.13059) sha256=beb35bc121b0caa9f79b011630bdc915aae65be1659bd7cf4d437773969ab14e
+  sorbet-runtime (0.6.13059) sha256=da7bb8daab144261e042b28e0e33f48af8229e1cb39b98c7836e5555f253cd3e
+  sorbet-static (0.6.13059-x86_64-linux) sha256=f32befddbd1125d492408ff0de9139d557f239003258062f45bc8c326695ea59
+  sorbet-static-and-runtime (0.6.13059) sha256=3971b49b6ffb62d70276efbda158d047d352510aa2cffac687c1fd0b6ef67846
   spoom (1.7.11) sha256=4e27384af6d3fde5aadc0287c51e6f76c0802259cbb3b6a67603bf718352f4cf
   stimulus-rails (1.3.4) sha256=765676ffa1f33af64ce026d26b48e8ffb2e0b94e0f50e9119e11d6107d67cb06
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
