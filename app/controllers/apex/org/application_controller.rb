@@ -5,31 +5,21 @@ module Apex
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
-
       include ::Preference::Global
-
       include ::Preference::Adoption
-
       include ::Authentication::Staff
-
       include ::Authorization::Staff
-
       include ::Verification::Staff
-
       include Pundit::Authorization
-
       include ::Oidc::SsoInitiator
-
       include ::CurrentSupport
-
       include ::Finisher
-
-      before_action :check_default_rate_limit
 
       allow_browser versions: :modern
 
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
+      before_action :check_default_rate_limit
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region

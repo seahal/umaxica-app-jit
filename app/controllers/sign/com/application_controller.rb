@@ -8,6 +8,7 @@ module Sign
     class ApplicationController < Sign::App::ApplicationController
       include Sign::Com::RouteAliasHelper
       include ::Finisher
+
       helper Sign::Com::ApplicationHelper
 
       protect_from_forgery using: :header_or_legacy_token,

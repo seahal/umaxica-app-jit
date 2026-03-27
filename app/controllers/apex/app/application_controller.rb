@@ -6,13 +6,13 @@ module Apex
     class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::Preference::Global
-      include ::Preference::Adoption
+      include ::Preference::Adoption # FIXME: delete this!
       include ::Authentication::User
       include ::Authorization::User
       include ::Verification::User
       include Pundit::Authorization
-      include ::Oidc::SsoInitiator
-      include ::CurrentSupport
+      include ::Oidc::SsoInitiator # FIXME: delete this!
+      include ::CurrentSupport # FIXME: delete this!
       include ::Finisher
 
       allow_browser versions: :modern
