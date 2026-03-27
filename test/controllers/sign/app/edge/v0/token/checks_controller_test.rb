@@ -25,7 +25,7 @@ class Sign::App::Edge::V0::Token::ChecksControllerTest < ActionDispatch::Integra
       resource_type: "user",
     )
 
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = access_token
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = access_token
 
     get "/edge/v0/token/check",
         headers: { "Host" => @host, "Accept" => "application/json" },
@@ -53,7 +53,7 @@ class Sign::App::Edge::V0::Token::ChecksControllerTest < ActionDispatch::Integra
   end
 
   test "GET check with invalid JWT returns 401" do
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = "invalid.jwt.token"
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = "invalid.jwt.token"
 
     get "/edge/v0/token/check",
         headers: { "Host" => @host, "Accept" => "application/json" },
@@ -83,7 +83,7 @@ class Sign::App::Edge::V0::Token::ChecksControllerTest < ActionDispatch::Integra
       )
     end
 
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = expired_token
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = expired_token
 
     get "/edge/v0/token/check",
         headers: { "Host" => @host, "Accept" => "application/json" },
@@ -109,7 +109,7 @@ class Sign::App::Edge::V0::Token::ChecksControllerTest < ActionDispatch::Integra
       resource_type: "staff", # wrong type for user endpoint
     )
 
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = access_token
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = access_token
 
     get "/edge/v0/token/check",
         headers: { "Host" => @host, "Accept" => "application/json" },
@@ -144,7 +144,7 @@ class Sign::App::Edge::V0::Token::ChecksControllerTest < ActionDispatch::Integra
     )
 
     # Set invalid cookie but valid Bearer header
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = "invalid.cookie.token"
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = "invalid.cookie.token"
 
     get "/edge/v0/token/check",
         headers: {
@@ -193,8 +193,8 @@ class Sign::App::Edge::V0::Token::ChecksControllerTest < ActionDispatch::Integra
       resource_type: "user",
     )
 
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = access_token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = access_token
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     # Verify token exists before logout
     assert_not_nil UserToken.find_by(public_id: token_record.public_id)

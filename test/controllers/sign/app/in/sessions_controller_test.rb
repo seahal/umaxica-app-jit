@@ -533,11 +533,11 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def as_user_headers_with_token(user, token, host:)
-    access_token = Auth::Base::Token.encode(user, host: host, session_public_id: token.public_id)
+    access_token = Authentication::Base::Token.encode(user, host: host, session_public_id: token.public_id)
     browser_headers.merge(
       "Host" => host,
       "Authorization" => "Bearer #{access_token}",
-      "Cookie" => "#{Auth::Base::ACCESS_COOKIE_KEY}=#{access_token}",
+      "Cookie" => "#{Authentication::Base::ACCESS_COOKIE_KEY}=#{access_token}",
     )
   end
 end

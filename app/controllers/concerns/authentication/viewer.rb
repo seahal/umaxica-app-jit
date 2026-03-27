@@ -70,6 +70,7 @@ module Authentication
       :viewer_id
     end
 
+    # FIXME: what is this method?
     def test_header_key
       "X-TEST-CURRENT-VIEWER"
     end

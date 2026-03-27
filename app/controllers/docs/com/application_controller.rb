@@ -5,14 +5,24 @@ module Docs
   module Com
     class ApplicationController < ActionController::Base
       include ::RateLimit
+
       include ::Preference::Regional
+
       include ::Authentication::Viewer
+
       include ::Authorization::Viewer
+
       include ::Verification::Viewer
+
       include Pundit::Authorization
+
       include ::Oidc::SsoInitiator
+
       include ::CurrentSupport
+
       include ::Finisher
+
+      before_action :check_default_rate_limit
 
       allow_browser versions: :modern
 

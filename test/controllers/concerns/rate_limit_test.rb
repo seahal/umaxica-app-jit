@@ -10,6 +10,8 @@ require "test_helper"
 class RateLimitDummyController < ApplicationController
   include ::RateLimit
 
+  has_custom_rate_limit!
+
   rate_limit to: 1, within: 1.minute,
              by: -> { request.remote_ip },
              with: -> { handle_rate_limit_exceeded!("dummy_ip", 60) },
@@ -28,6 +30,8 @@ end
 
 class RateLimitExceptController < ApplicationController
   include ::RateLimit
+
+  has_custom_rate_limit!
 
   rate_limit to: 1, within: 1.minute,
              by: -> { request.remote_ip },
@@ -48,6 +52,8 @@ end
 class RateLimitEmailController < ApplicationController
   include ::RateLimit
 
+  has_custom_rate_limit!
+
   rate_limit to: 1, within: 1.minute,
              by: -> { params[:email].to_s.strip.downcase.presence || request.remote_ip },
              with: -> { handle_rate_limit_exceeded!("email_rule", 60) },
@@ -62,6 +68,8 @@ end
 class RateLimitTelephoneController < ApplicationController
   include ::RateLimit
 
+  has_custom_rate_limit!
+
   rate_limit to: 1, within: 1.minute,
              by: -> { params[:telephone].to_s.gsub(/\D/, "").presence || request.remote_ip },
              with: -> { handle_rate_limit_exceeded!("telephone_rule", 60) },
@@ -73,12 +81,29 @@ class RateLimitTelephoneController < ApplicationController
   end
 end
 
-# Controller with rate limiting included but no rate limits configured
-# (tests that including RateLimit without configuration has no side effects)
-class RateLimitIncludedOnlyController < ApplicationController
+# Controller that includes RateLimit but has no explicit declaration (tests default)
+class RateLimitDefaultOnlyController < ApplicationController
   include ::RateLimit
 
-  # No rate_limit declarations - should not affect requests
+  before_action :check_default_rate_limit, unless: :skip_default_rate_limit?
+
+  def index
+    render plain: "ok"
+  end
+end
+
+# Controller that opts out of default rate limiting
+class RateLimitOptOutController < ApplicationController
+  include ::RateLimit
+
+  has_custom_rate_limit!
+
+  # Override default with a high limit to effectively opt out
+  rate_limit to: 10_000, within: 1.minute,
+             by: -> { request.remote_ip },
+             with: -> { handle_rate_limit_exceeded!("opt_out", 60) },
+             store: RateLimit.store,
+             name: "opt_out"
 
   def index
     render plain: "ok"
@@ -219,24 +244,39 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "including RateLimit without rate_limit declarations has no side effects" do
-    # This test verifies that simply including the RateLimit concern
-    # without configuring any rate limits does not affect controller behavior
+  test "default rate limit is applied when including RateLimit concern" do
+    RateLimit.define_singleton_method(:default_rate_limit) { 1 }
+
     with_routing do |set|
       set.draw do
-        get "/test_included_only", to: "rate_limit_included_only#index"
+        get("/test_default", to: "rate_limit_default_only#index")
       end
 
-      # Multiple requests should all succeed since no rate limits are configured
-      5.times do
-        get "/test_included_only", headers: { "Host" => "example.com" }
+      get("/test_default", headers: { "Host" => "example.com" })
+
+      assert_response :success
+
+      get("/test_default", headers: { "Host" => "example.com" })
+
+      assert_response :too_many_requests
+      assert_equal "default_ip", response.headers["X-RateLimit-Rule"]
+    end
+  ensure
+    RateLimit.define_singleton_method(:default_rate_limit) { 300 }
+  end
+
+  test "controller can override default rate limit" do
+    with_routing do |set|
+      set.draw do
+        get "/test_opt_out", to: "rate_limit_opt_out#index"
+      end
+
+      2.times do
+        get "/test_opt_out", headers: { "Host" => "example.com" }
 
         assert_response :success
       end
     end
-
-    # Verify the store remains empty (no rate limit checks were performed)
-    assert_empty RateLimit.store.instance_variable_get(:@data).keys.select { |k| k.include?("rate_limit") }
   end
 
   private

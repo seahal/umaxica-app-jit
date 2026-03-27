@@ -27,24 +27,6 @@ scope module: :apex, as: :apex do
           resource :dbsc_registration, only: :create
         end
       end
-      # preferences
-      resource :preference, only: [:show]
-      namespace :preference do
-        # for region settings.
-        resource :region, only: [:edit, :update]
-        namespace :region do
-          # for lx and tz settings.
-          resource :timezone, only: [:edit, :update]
-          resource :language, only: [:edit, :update]
-        end
-        # for dark/light mode
-        resource :theme, only: [:edit, :update]
-        # endpoint of reset preferences.
-        resource :reset, only: [:edit, :destroy]
-        # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
-      end
-      resource :configuration, only: [:show]
     end
   end
 
@@ -78,23 +60,6 @@ scope module: :apex, as: :apex do
           resource :cookie, only: %i(show update)
           resource :dbsc_registration, only: :create
         end
-      end
-      # preferences
-      resource :preference, only: [:show]
-      namespace :preference do
-        # for region settings.
-        resource :region, only: [:edit, :update]
-        namespace :region do
-          # for lx and tz settings.
-          resource :timezone, only: [:edit, :update]
-          resource :language, only: [:edit, :update]
-        end
-        # for dark/light mode
-        resource :theme, only: [:edit, :update]
-        # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
-        # endpoint of reset preferences.
-        resource :reset, only: [:edit, :destroy]
       end
       resource :configuration, only: [:show]
       namespace :configuration do
@@ -151,23 +116,7 @@ scope module: :apex, as: :apex do
           resource :cache, only: %i(show update destroy)
         end
       end
-      # preferences
-      resource :preference, only: [:show]
-      namespace :preference do
-        # for region settings.
-        resource :region, only: [:edit, :update]
-        namespace :region do
-          # for lx and tz settings.
-          resource :timezone, only: [:edit, :update]
-          resource :language, only: [:edit, :update]
-        end
-        # for dark/light mode
-        resource :theme, only: [:edit, :update]
-        # endpoint of reset preferences.
-        resource :reset, only: [:edit, :destroy]
-        # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
-      end
+
       resource :configuration, only: [:show]
       namespace :configuration do
         # logged in user's email settings.

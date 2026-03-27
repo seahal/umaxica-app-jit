@@ -50,8 +50,8 @@ module Oidc
 
     def set_auth_cookies_from_token_response(token_response)
       now = Time.current
-      access_expires_at = now + Auth::Base::ACCESS_TOKEN_TTL
-      refresh_expires_at = now + Auth::Base::REFRESH_TOKEN_TTL
+      access_expires_at = now + Authentication::Base::ACCESS_TOKEN_TTL
+      refresh_expires_at = now + Authentication::Base::REFRESH_TOKEN_TTL
 
       set_auth_cookies(
         access_token: token_response[:access_token],

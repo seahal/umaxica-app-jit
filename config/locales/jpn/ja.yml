@@ -1402,6 +1402,7 @@ ja:
         language_settings: 言語設定
         timezone_settings: タイムゾーン設定
         theme_settings: テーマ設定
+        email_settings: メール設定
         reset_settings: 設定のリセット
         update_settings: 設定を更新
         submitting: 送信中...

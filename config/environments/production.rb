@@ -112,6 +112,7 @@ Rails.application.configure do
   # Collect all host ENV vars used in route constraints.
   config.hosts = ENV.values_at(
     "SIGN_SERVICE_URL",
+    "SIGN_CORPORATE_URL",
     "SIGN_STAFF_URL",
     "APEX_SERVICE_URL", "APEX_STAFF_URL", "APEX_CORPORATE_URL",
     "CORE_SERVICE_URL", "CORE_STAFF_URL", "CORE_CORPORATE_URL",

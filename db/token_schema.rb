@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_25_015121) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_26_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -37,6 +37,22 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_25_015121) do
     t.index ["staff_id"], name: "index_authorization_codes_on_staff_id"
     t.index ["user_id"], name: "index_authorization_codes_on_user_id"
     t.check_constraint "user_id IS NOT NULL AND staff_id IS NULL OR user_id IS NULL AND staff_id IS NOT NULL", name: "chk_authorization_codes_resource"
+  end
+
+  create_table "organization_invitations", force: :cascade do |t|
+    t.string "code", limit: 32, null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "invited_by_id", null: false
+    t.bigint "organization_id", null: false
+    t.bigint "role_id", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_organization_invitations_on_code", unique: true
+    t.index ["email"], name: "index_organization_invitations_on_email"
+    t.index ["invited_by_id"], name: "index_organization_invitations_on_invited_by_id"
+    t.index ["organization_id"], name: "index_organization_invitations_on_organization_id"
   end
 
   create_table "reauth_sessions", force: :cascade do |t|

@@ -25,7 +25,7 @@ class Sign::Org::Edge::V0::Token::DbscRegistrationsController < Sign::Org::Appli
   end
 
   def token_from_refresh_cookie
-    refresh_plain = cookies[Auth::Base::REFRESH_COOKIE_KEY].to_s
+    refresh_plain = cookies[Authentication::Base::REFRESH_COOKIE_KEY].to_s
     refresh_public_id, = token_class.parse_refresh_token(refresh_plain)
     find_refresh_token_record(refresh_public_id)
   rescue StandardError
@@ -52,7 +52,7 @@ class Sign::Org::Edge::V0::Token::DbscRegistrationsController < Sign::Org::Appli
         credentials: [
           {
             type: "cookie",
-            name: Auth::Base::DBSC_COOKIE_KEY,
+            name: Authentication::Base::DBSC_COOKIE_KEY,
             attributes: dbsc_cookie_attributes_string,
           },
         ],

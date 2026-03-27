@@ -45,7 +45,7 @@
       <% if edge_host.present? %>
         <li><a href="http://<%= edge_host %>/"><%= t("docs.com.preferences.footer.home") %></a></li>
       <% end %>
-      <li><%= link_to t("docs.com.preferences.footer.preference"), apex_com_preference_url %></li>
+      <li><%= link_to t("docs.com.preferences.footer.preference"), sign_com_preference_url %></li>
     </ul>
   </nav>
   <%= render "layouts/shared/footer_cookie_controls", scope: :com %>

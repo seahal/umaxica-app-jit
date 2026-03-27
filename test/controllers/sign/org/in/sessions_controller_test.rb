@@ -502,14 +502,14 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def as_staff_headers_with_token(staff, token, host:)
-    access_token = Auth::Base::Token.encode(
+    access_token = Authentication::Base::Token.encode(
       staff, host: host, session_public_id: token.public_id,
              resource_type: "staff",
     )
     browser_headers.merge(
       "Host" => host,
       "Authorization" => "Bearer #{access_token}",
-      "Cookie" => "#{Auth::Base::ACCESS_COOKIE_KEY}=#{access_token}",
+      "Cookie" => "#{Authentication::Base::ACCESS_COOKIE_KEY}=#{access_token}",
     )
   end
 end

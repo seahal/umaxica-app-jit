@@ -5,7 +5,7 @@ require "test_helper"
 
 class AuthCookieHelpersTest < ActiveSupport::TestCase
   class CookieHarness
-    include Auth::Base
+    include Authentication::Base
 
     attr_accessor :cookies, :request_obj
 
@@ -95,26 +95,26 @@ class AuthCookieHelpersTest < ActiveSupport::TestCase
   end
 
   test "ACCESS_COOKIE_KEY constant is defined" do
-    assert_equal "auth_access", Auth::Base::ACCESS_COOKIE_KEY
+    assert_equal "auth_access", Authentication::Base::ACCESS_COOKIE_KEY
   end
 
   test "REFRESH_COOKIE_KEY constant is defined" do
-    assert_equal "auth_refresh", Auth::Base::REFRESH_COOKIE_KEY
+    assert_equal "auth_refresh", Authentication::Base::REFRESH_COOKIE_KEY
   end
 
   test "DEVICE_COOKIE_KEY constant is defined" do
-    assert_equal "auth_device_id", Auth::Base::DEVICE_COOKIE_KEY
+    assert_equal "auth_device_id", Authentication::Base::DEVICE_COOKIE_KEY
   end
 
   test "ACCESS_TOKEN_TTL defaults to 1 hour" do
-    assert_equal 1.hour.to_i, Auth::Base::ACCESS_TOKEN_TTL.to_i
+    assert_equal 1.hour.to_i, Authentication::Base::ACCESS_TOKEN_TTL.to_i
   end
 
   test "REFRESH_TOKEN_TTL is 30 days" do
-    assert_equal 30.days, Auth::Base::REFRESH_TOKEN_TTL
+    assert_equal 30.days, Authentication::Base::REFRESH_TOKEN_TTL
   end
 
   test "RESTRICTED_SESSION_TTL is 15 minutes" do
-    assert_equal 15.minutes, Auth::Base::RESTRICTED_SESSION_TTL
+    assert_equal 15.minutes, Authentication::Base::RESTRICTED_SESSION_TTL
   end
 end

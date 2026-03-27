@@ -11,7 +11,7 @@ module Verification
 
     REAUTH_REQUIRED_MESSAGE = "Re-authentication required"
     STEP_UP_TTL = 15.minutes
-    STEP_UP_REQUIRED_MESSAGE = "再認証が必要です\n操作は保存されていません"
+    STEP_UP_REQUIRED_MESSAGE = "Re-authentication required\nYour changes have not been saved"
 
     def verification_requirement
       @required_verification
@@ -103,10 +103,10 @@ module Verification
     # stale (but still JWT-valid) access token cannot pass step-up.
     def step_up_session_revoked?
       token = current_session_token
-      return true if token.nil? # no record at all → dead
+      return true if token.nil? # no record at all - dead
       return false if token.currently_usable? # alive
 
-      # Session is dead in DB — tear it down.
+      # Session is dead in DB - tear it down.
       log_out if respond_to?(:log_out, true)
 
       render plain: I18n.t("auth.session_expired"), status: :unauthorized

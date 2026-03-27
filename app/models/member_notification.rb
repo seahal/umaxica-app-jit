@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 # == Schema Information
 #
 # Table name: member_notifications
@@ -27,3 +29,4 @@ class MemberNotification < NotificationRecord
 
   belongs_to :user_notification, optional: false, inverse_of: :member_notifications
 end
+# rubocop:enable Layout/LineLength

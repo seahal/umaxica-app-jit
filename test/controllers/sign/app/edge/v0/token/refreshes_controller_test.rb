@@ -18,7 +18,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -27,15 +27,15 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :ok
 
     # Verify Set-Cookie headers contain both access and refresh cookies
-    assert response_has_cookie?(Auth::Base::ACCESS_COOKIE_KEY),
-           "Response should set access cookie (#{Auth::Base::ACCESS_COOKIE_KEY})"
-    assert response_has_cookie?(Auth::Base::REFRESH_COOKIE_KEY),
-           "Response should set refresh cookie (#{Auth::Base::REFRESH_COOKIE_KEY})"
+    assert response_has_cookie?(Authentication::Base::ACCESS_COOKIE_KEY),
+           "Response should set access cookie (#{Authentication::Base::ACCESS_COOKIE_KEY})"
+    assert response_has_cookie?(Authentication::Base::REFRESH_COOKIE_KEY),
+           "Response should set refresh cookie (#{Authentication::Base::REFRESH_COOKIE_KEY})"
 
     raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
     cookie_lines = raw_header.is_a?(Array) ? raw_header : raw_header.to_s.split("\n")
-    access_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::ACCESS_COOKIE_KEY}=") }.to_s
-    refresh_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::REFRESH_COOKIE_KEY}=") }.to_s
+    access_cookie = cookie_lines.find { |line| line.start_with?("#{Authentication::Base::ACCESS_COOKIE_KEY}=") }.to_s
+    refresh_cookie = cookie_lines.find { |line| line.start_with?("#{Authentication::Base::REFRESH_COOKIE_KEY}=") }.to_s
 
     assert_match(/samesite=lax/i, access_cookie)
     assert_match(/samesite=lax/i, refresh_cookie)
@@ -53,7 +53,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
       token_record = UserToken.create!(user: @user, device_id: @device_id)
       refresh_plain = token_record.rotate_refresh_token!
-      cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+      cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
       with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
         controller.any_instance.stub(
@@ -86,7 +86,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
       token_record = UserToken.create!(user: @user, device_id: @device_id)
       refresh_plain = token_record.rotate_refresh_token!
-      cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+      cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
       with_cookie_domain_credentials(COOKIE_DOMAIN_APP: ".app.localhost") do
         controller.any_instance.stub(
@@ -117,7 +117,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     # First, refresh to get new tokens
     post "/edge/v0/token/refresh",
@@ -130,7 +130,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     response_cookies = extract_cookies_from_response
 
     # Set the new access cookie for the next request
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = response_cookies[Auth::Base::ACCESS_COOKIE_KEY]
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = response_cookies[Authentication::Base::ACCESS_COOKIE_KEY]
 
     # Now check should succeed
     get "/edge/v0/token/check",
@@ -149,7 +149,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     old_refresh_plain = token_record.rotate_refresh_token!
 
     # Rotate once via endpoint
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
          as: :json
@@ -157,7 +157,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :ok
 
     # Try to use the old refresh token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -172,7 +172,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
   test "GET check with invalid access token returns 401" do
     # Set an invalid access token
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = "invalid.jwt.token"
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = "invalid.jwt.token"
 
     get "/edge/v0/token/check",
         headers: { "Host" => @host, "Accept" => "application/json" },
@@ -211,7 +211,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!(expires_at: 1.day.ago)
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -226,7 +226,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     refresh_plain = token_record.rotate_refresh_token!
     token_record.revoke!
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -241,7 +241,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     before_generation = token_record.refresh_token_generation
     before_digest = token_record.refresh_token_digest
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -262,7 +262,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -271,7 +271,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :ok
 
     # The cookie value should be a valid refresh token (public_id.verifier format)
-    new_value = cookies[Auth::Base::REFRESH_COOKIE_KEY]
+    new_value = cookies[Authentication::Base::REFRESH_COOKIE_KEY]
 
     assert_predicate new_value, :present?, "Refresh cookie should be present after rotation"
 
@@ -286,7 +286,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     freeze_time do
       post "/edge/v0/token/refresh",
@@ -296,12 +296,12 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
       assert_response :ok
 
       # Check the expires attribute of the access cookie
-      expiry = response_cookie_expiry(Auth::Base::ACCESS_COOKIE_KEY)
+      expiry = response_cookie_expiry(Authentication::Base::ACCESS_COOKIE_KEY)
 
       assert_not_nil expiry, "Access cookie should have expires attribute"
 
       # Should be approximately 1 hour from now (within a few seconds tolerance)
-      expected_expiry = Auth::Base::ACCESS_TOKEN_TTL.from_now
+      expected_expiry = Authentication::Base::ACCESS_TOKEN_TTL.from_now
 
       assert_in_delta expected_expiry.to_i, expiry.to_i, 5,
                       "Access cookie expiry should be ~1 hour from now"
@@ -311,7 +311,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   test "POST refresh without CSRF token succeeds (currently skipped for Edge)" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: false, device_id: @device_id),
@@ -331,7 +331,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -347,7 +347,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   test "POST refresh denies when device_id missing and writes occurrence" do
     token_record = UserToken.create!(user: @user, device_id: SecureRandom.uuid)
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true).merge("X-STRICT-DEVICE-CHECK" => "1"),
@@ -366,7 +366,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   test "POST refresh denies when header and cookie device_id mismatch" do
     token_record = UserToken.create!(user: @user, device_id: "cookie-device-id")
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: "cookie-device-id"),
@@ -389,7 +389,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   test "POST refresh denies when device_id mismatches token family device_id" do
     token_record = UserToken.create!(user: @user, device_id: "server-device-id")
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: "different-device-id"),
@@ -405,7 +405,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   test "device_id cookie is encrypted, HttpOnly, and not raw UUID" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -415,7 +415,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
     cookie_lines = raw_header.is_a?(Array) ? raw_header : raw_header.to_s.split("\n")
-    device_line = cookie_lines.find { |line| line.start_with?("#{Auth::Base::DEVICE_COOKIE_KEY}=") }
+    device_line = cookie_lines.find { |line| line.start_with?("#{Authentication::Base::DEVICE_COOKIE_KEY}=") }
 
     assert_not_nil device_line, "Response should set device_id cookie"
     assert_match(/httponly/i, device_line)
@@ -428,7 +428,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   test "device_id cookie is set on token refresh" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: json_headers(with_csrf: true, device_id: @device_id),
@@ -438,7 +438,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
     cookie_lines = raw_header.is_a?(Array) ? raw_header : raw_header.to_s.split("\n")
-    device_cookie_key = Auth::Base::DEVICE_COOKIE_KEY
+    device_cookie_key = Authentication::Base::DEVICE_COOKIE_KEY
     device_line = cookie_lines.find { |line| line.start_with?("#{device_cookie_key}=") }
 
     assert_not_nil device_line, "Response should set device_id cookie (#{device_cookie_key})"
@@ -449,7 +449,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   test "device_id encrypted cookie roundtrips through cookies.encrypted" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     # First call sets the cookie and rotates the refresh token
     post "/edge/v0/token/refresh",
@@ -464,8 +464,8 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     # Use a fresh session for the second request
     s = open_session
     s.host!(@host)
-    s.cookies[Auth::Base::REFRESH_COOKIE_KEY] = cookies_hash[Auth::Base::REFRESH_COOKIE_KEY]
-    s.cookies[Auth::Base::DEVICE_COOKIE_KEY] = cookies_hash[Auth::Base::DEVICE_COOKIE_KEY]
+    s.cookies[Authentication::Base::REFRESH_COOKIE_KEY] = cookies_hash[Authentication::Base::REFRESH_COOKIE_KEY]
+    s.cookies[Authentication::Base::DEVICE_COOKIE_KEY] = cookies_hash[Authentication::Base::DEVICE_COOKIE_KEY]
 
     # Clear the header, rely on cookie
     s.post(
@@ -484,7 +484,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     headers["X-CSRF-Token"] = csrf_token if with_csrf
     if device_id.present?
       headers["X-Device-Id"] = device_id
-      set_encrypted_cookie(Auth::Base::DEVICE_COOKIE_KEY, device_id)
+      set_encrypted_cookie(Authentication::Base::DEVICE_COOKIE_KEY, device_id)
     end
     headers
   end

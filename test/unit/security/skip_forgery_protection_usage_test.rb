@@ -24,14 +24,14 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
     missing_allowed = ALLOWED_SKIP_FORGERY_PROTECTION_PATHS - found_paths
 
     assert_empty violations,
-                 <<~MSG
+                 <<~MSG.squish
                    skip_forgery_protection must not be added to controllers without review.
                    Remove it from:
                      #{violations.join("\n  ")}
                  MSG
 
     assert_empty missing_allowed,
-                 <<~MSG
+                 <<~MSG.squish
                    Allowed list contains controllers that no longer call skip_forgery_protection.
                    Please update ALLOWED_SKIP_FORGERY_PROTECTION_PATHS:
                      #{missing_allowed.join("\n  ")}

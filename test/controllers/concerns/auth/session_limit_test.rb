@@ -5,7 +5,7 @@ require "test_helper"
 
 class AuthSessionLimitTest < ActiveSupport::TestCase
   class SessionLimitHarness
-    include Auth::Base
+    include Authentication::Base
 
     attr_accessor :session_data
 

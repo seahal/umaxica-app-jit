@@ -56,9 +56,10 @@ module Auth
     test "returns resource and session id when token is valid" do
       payload = { "sub" => 123, "sid" => "sess_1", "act" => "user" }
 
-      Auth::Base::Token.stub(:decode, payload) do
-        Auth::Base::Token.stub(:validate_actor_claim!, true) do
-          TokenRecord.stub(:connected_to, ->(*, **, &block) { block.call }) do
+      Authentication::Base::Token.stub(:decode, payload) do
+        Authentication::Base::Token.stub(:validate_actor_claim!, true) do
+          connection_calls = []
+          TokenRecord.stub(:connected_to, ->(**options, &block) { connection_calls << options; block.call }) do
             result = Auth::CurrentResourceResolver.new(
               access_token: "token",
               request_host: "app.localhost",
@@ -71,6 +72,7 @@ module Auth
             assert_nil result.failure_reason
             assert_equal "sess_1", result.session_public_id
             assert_equal 123, result.resource.id
+            assert connection_calls.any? { |opts| opts[:role] == :writing }
           end
         end
       end
@@ -79,8 +81,8 @@ module Auth
     test "returns actor_mismatch failure when actor claim differs" do
       payload = { "sub" => 123, "sid" => "sess_1", "act" => "staff" }
 
-      Auth::Base::Token.stub(:decode, payload) do
-        Auth::Base::Token.stub(:validate_actor_claim!, false) do
+      Authentication::Base::Token.stub(:decode, payload) do
+        Authentication::Base::Token.stub(:validate_actor_claim!, false) do
           result = Auth::CurrentResourceResolver.new(
             access_token: "token",
             request_host: "app.localhost",

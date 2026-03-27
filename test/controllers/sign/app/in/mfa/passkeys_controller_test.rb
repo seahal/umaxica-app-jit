@@ -108,7 +108,7 @@ module Sign::App::In
       assert_redirected_to sign_app_configuration_path(ri: "jp")
       assert_nil session[:pending_mfa]
       assert_nil session[:mfa_user_id]
-      assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
+      assert_not_nil cookies[Authentication::Base::ACCESS_COOKIE_KEY]
       assert_equal 11, @passkey.reload.sign_count
     end
 

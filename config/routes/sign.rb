@@ -34,11 +34,31 @@ scope module: :sign, as: :sign do
           resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
+            # TODO: nusty code!, use resource :dbsc
             resource :dbsc_registration, only: :create
             resource :refresh, only: :create
           end
         end
       end
+
+      # preferences
+      resource :preference, only: [:show]
+      namespace :preference do
+        # for region settings.
+        resource :region, only: [:edit, :update]
+        namespace :region do
+          # for lx and tz settings.
+          resource :timezone, only: [:edit, :update]
+          resource :language, only: [:edit, :update]
+        end
+        # for dark/light mode
+        resource :theme, only: [:edit, :update]
+        # endpoint of reset preferences.
+        resource :reset, only: [:edit, :destroy]
+        # for ePrivacy settings.
+        resource :cookie, only: [:edit, :update]
+      end
+      resource :configuration, only: [:show]
 
       resource :up, only: :new
       namespace :up do
@@ -133,7 +153,7 @@ scope module: :sign, as: :sign do
         resource :google, only: %i(show update destroy)
         # TODO: refactor to standard CRUD
         resources :secrets, only: %i(index show new edit create destroy) do
-          post :regenerate, on: :member
+          post :regenerate, on: :member # TODO: what is this?
         end
         resources :sessions, only: %i(index destroy) do
           collection do
@@ -141,6 +161,118 @@ scope module: :sign, as: :sign do
           end
         end
         # TODO: chose one of two line.
+        resources :activities, only: :index
+        resource :out, only: %i(edit destroy)
+        resource :withdrawal, only: %i(new update create edit destroy)
+      end
+
+      resource :preference, only: :show
+      namespace :preference do
+        resources :email, only: %i(index show create edit update), controller: :emails
+      end
+    end
+  end
+
+  constraints host: SignHostEnv.corporate_url do
+    scope module: :com, as: :com do
+      root to: "roots#index"
+
+      resource :health, only: :show, defaults: { format: :html }
+      resource :sitemap, only: :show, defaults: { format: :xml }
+
+      namespace :web do
+        namespace :v0 do
+          namespace :in do
+            namespace :email do
+              resource :otp, only: :create, controller: :otps
+            end
+            namespace :telephone do
+              resource :otp, only: :create, controller: :otps
+            end
+          end
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
+
+      # preferences
+      resource :preference, only: [:show]
+      namespace :preference do
+        # for region settings.
+        resource :region, only: [:edit, :update]
+        namespace :region do
+          # for lx and tz settings.
+          resource :timezone, only: [:edit, :update]
+          resource :language, only: [:edit, :update]
+        end
+        # for dark/light mode
+        resource :theme, only: [:edit, :update]
+        # for ePrivacy settings.
+        resource :cookie, only: [:edit, :update]
+        # endpoint of reset preferences.
+        resource :reset, only: [:edit, :destroy]
+      end
+
+      resource :up, only: :new
+      namespace :up do
+        resources :emails, only: %i(new create edit update)
+      end
+
+      resource :in, only: %i(new)
+      namespace :in do
+        resource :email, only: %i(new create edit update)
+        resources :passkeys, only: [:new] do
+          collection do
+            post :options
+            post :verification
+          end
+        end
+        resource :secret, only: %i(new create)
+        resource :session, only: %i(show update destroy)
+        resource :bulletin, only: %i(show update destroy)
+        resource :challenge, only: %i(show)
+        namespace :challenge do
+          resource :totp, only: %i(new create)
+          resource :passkey, only: %i(new create)
+        end
+      end
+
+      resource :verification, only: %i(show), controller: :verification
+      namespace :verification do
+        resource :setup, only: %i(new)
+        resource :passkey, only: %i(new create)
+        resource :totp, only: %i(new create)
+        resources :emails, only: %i(new create edit update)
+      end
+
+      resource :authorize, only: %i(show)
+      resource :token, only: %i(create), defaults: { format: :json }
+      resource :jwks, only: %i(show), defaults: { format: :json }
+
+      resource :configuration, only: %i(show edit)
+      namespace :configuration do
+        resources :totps, only: %i(index new create edit update destroy)
+        resources :passkeys do
+          collection do
+            post :options
+            post :verification
+          end
+        end
+        resource :challenge, only: %i(show update)
+        resources :emails, only: %i(index edit destroy)
+        namespace :emails do
+          resource :registration, only: %i(new create edit update), controller: :registrations
+        end
+        resources :telephones, only: %i(index new edit create destroy)
+        namespace :telephones do
+          resource :registration, only: %i(new create edit update), controller: :registrations
+        end
+        resources :secrets, only: %i(index show new edit create destroy)
+        resources :sessions, only: %i(index destroy) do
+          collection do
+            delete :others
+          end
+        end
         resources :activities, only: :index
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
@@ -179,8 +311,33 @@ scope module: :sign, as: :sign do
           end
         end
       end
+      # preferences
+      resource :preference, only: [:show]
+      namespace :preference do
+        # for region settings.
+        resource :region, only: [:edit, :update]
+        namespace :region do
+          # for lx and tz settings.
+          resource :timezone, only: [:edit, :update]
+          resource :language, only: [:edit, :update]
+        end
+        # for dark/light mode
+        resource :theme, only: [:edit, :update]
+        # endpoint of reset preferences.
+        resource :reset, only: [:edit, :destroy]
+        # for ePrivacy settings.
+        resource :cookie, only: [:edit, :update]
+      end
 
       resource :up, only: :new
+      namespace :up do
+        resources :emails, only: %i(new create)
+        resources :invitations, only: %i(new create) do
+          collection do
+            resources :emails, only: %i(new create edit update), controller: "invitations/emails"
+          end
+        end
+      end
 
       # Social auth: Google sign-in for staff (login only, no sign-up)
       namespace :social do

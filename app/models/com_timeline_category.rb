@@ -23,6 +23,8 @@
 
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 class ComTimelineCategory < PublicationRecord
   belongs_to :com_timeline, inverse_of: :category
   belongs_to :com_timeline_category_master,
@@ -31,3 +33,4 @@ class ComTimelineCategory < PublicationRecord
 
   validates :com_timeline_id, uniqueness: true
 end
+# rubocop:enable Layout/LineLength

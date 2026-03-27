@@ -59,4 +59,12 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
 
     assert_predicate options[:domain], :present? if options[:domain]
   end
+
+  test "for omits domain when disabled" do
+    request = MockRequest.new("www.example.com")
+
+    options = Core::CookieOptions.for(surface: :app, request: request, domain: false)
+
+    assert_not options.key?(:domain)
+  end
 end

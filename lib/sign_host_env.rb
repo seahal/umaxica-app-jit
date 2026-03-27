@@ -10,6 +10,10 @@ module SignHostEnv
     ENV["SIGN_SERVICE_URL"].presence
   end
 
+  def corporate_url
+    ENV["SIGN_CORPORATE_URL"].presence
+  end
+
   def staff_url
     ENV["SIGN_STAFF_URL"].presence
   end
@@ -17,6 +21,7 @@ module SignHostEnv
   def validate!
     missing = []
     missing << "SIGN_SERVICE_URL" if service_url.blank?
+    missing << "SIGN_CORPORATE_URL" if corporate_url.blank?
     missing << "SIGN_STAFF_URL" if staff_url.blank?
     return if missing.empty?
 

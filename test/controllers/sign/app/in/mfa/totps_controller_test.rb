@@ -82,7 +82,7 @@ module Sign::App::In
       assert_response :found
       assert_redirected_to sign_app_configuration_path(ri: "jp")
       assert_nil session[:pending_mfa]
-      assert_not_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
+      assert_not_nil cookies[Authentication::Base::ACCESS_COOKIE_KEY]
     end
 
     test "create with invalid TOTP code renders form with error" do
@@ -93,7 +93,7 @@ module Sign::App::In
       }
 
       assert_response :unprocessable_content
-      assert_nil cookies[Auth::Base::ACCESS_COOKIE_KEY]
+      assert_nil cookies[Authentication::Base::ACCESS_COOKIE_KEY]
     end
 
     test "create without pending_mfa redirects to sign in" do

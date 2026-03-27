@@ -1,5 +1,6 @@
 # typed: false
 # frozen_string_literal: true
+# rubocop:disable Layout/LineLength
 
 # == Schema Information
 #
@@ -53,3 +54,4 @@ class HandleAssignment < AvatarRecord
 
   delegate :name, to: :handle
 end
+# rubocop:enable Layout/LineLength

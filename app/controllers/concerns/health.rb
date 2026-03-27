@@ -102,9 +102,9 @@ module Health
     @status, @body, @errors = get_status
     timestamp = Time.now.utc.iso8601
     if @errors.present?
-      render html: "#{@body}: #{@errors.join(", ")} (#{timestamp})", status: @status
+      render plain: "#{@body}: #{@errors.join(", ")} (#{timestamp})", status: @status
     else
-      render html: "#{@body} (#{timestamp})", status: @status
+      render plain: "#{@body} (#{timestamp})", status: @status
     end
   end
 

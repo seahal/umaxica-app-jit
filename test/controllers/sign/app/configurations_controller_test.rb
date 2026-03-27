@@ -67,7 +67,7 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     refresh_plain = token.rotate_refresh_token!
 
     # Set only refresh cookie (no access token)
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     get sign_app_configuration_url(ri: "jp")
 
@@ -82,7 +82,7 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     refresh_plain = token.rotate_refresh_token!
 
     # Set only refresh cookie
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     # Should not raise any ReadOnlyError
     assert_nothing_raised do
@@ -98,7 +98,7 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     refresh_plain = token.rotate_refresh_token!
 
     # Set only refresh cookie
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     # Simulate audit failure by overriding record_audit to raise an error
     @controller.define_singleton_method(:record_audit) do |*_args|

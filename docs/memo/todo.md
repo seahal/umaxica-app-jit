@@ -160,13 +160,13 @@
   - related sign/org views, forms, and translations
   - `test/controllers/sign/org/in/challenge/passkeys_controller_test.rb`
 - Observed issues from `bundle exec rails test`:
-  - Many passkey challenge requests return `422 Unprocessable Content` where tests expect
-    redirects or success.
+  - Many passkey challenge requests return `422 Unprocessable Content` where tests expect redirects
+    or success.
   - Translation key `ja.sign.org.in.mfa.session_expired` is missing.
   - The current controller/test contract is not stable enough to resolve by test-only changes.
 - Likely work:
-  - Inspect why challenge routes are rejected with `422` before the expected flow executes
-    (CSRF, parameter shape, session prerequisites, or form contract).
+  - Inspect why challenge routes are rejected with `422` before the expected flow executes (CSRF,
+    parameter shape, session prerequisites, or form contract).
   - Add/fix the missing MFA session-expired translation.
   - Reconcile controller responses with the intended UX for invalid challenge, challenge expiry,
     turnstile failure, and successful MFA completion.

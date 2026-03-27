@@ -39,7 +39,7 @@
   <nav>
     <ul>
       <li><a href="<%= "#{request.protocol}#{ENV.fetch('APEX_CORPORATE_URL', 'com.localhost')}#{request.port_string}/" %>"><%= t('apex.com.preferences.footer.home') %></a></li>
-      <li><%= link_to t('apex.com.preferences.footer.preference'), apex_com_preference_url %></li>
+      <li><%= link_to t('apex.com.preferences.footer.preference'), sign_com_preference_url %></li>
     </ul>
   </nav>
   <%= render "layouts/shared/footer_cookie_controls", scope: :com %>

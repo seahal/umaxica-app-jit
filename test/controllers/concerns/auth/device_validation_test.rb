@@ -5,7 +5,7 @@ require "test_helper"
 
 class AuthDeviceValidationTest < ActiveSupport::TestCase
   class DeviceHarness
-    include Auth::Base
+    include Authentication::Base
 
     attr_accessor :request_obj, :cookies_hash, :refresh_device_reason
 

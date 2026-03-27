@@ -22,7 +22,7 @@ module Auth
         end
       end
 
-      include Auth::Base
+      include Authentication::Base
 
       attr_accessor :actor_type
       attr_writer :logged_in
@@ -133,29 +133,29 @@ module Auth
     end
 
     test "VALID_POLICIES constant is defined" do
-      assert_equal %i(public_strict auth_required guest_only), Auth::Base::VALID_POLICIES
+      assert_equal %i(public_strict auth_required guest_only), Authentication::Base::VALID_POLICIES
     end
 
     test "AUDIT_EVENTS constant is defined" do
-      assert Auth::Base::AUDIT_EVENTS.key?(:logged_in)
-      assert Auth::Base::AUDIT_EVENTS.key?(:logged_out)
-      assert Auth::Base::AUDIT_EVENTS.key?(:login_failed)
-      assert Auth::Base::AUDIT_EVENTS.key?(:token_refreshed)
+      assert Authentication::Base::AUDIT_EVENTS.key?(:logged_in)
+      assert Authentication::Base::AUDIT_EVENTS.key?(:logged_out)
+      assert Authentication::Base::AUDIT_EVENTS.key?(:login_failed)
+      assert Authentication::Base::AUDIT_EVENTS.key?(:token_refreshed)
     end
 
     test "ACCESS_COOKIE_KEY is defined" do
-      assert_kind_of String, Auth::Base::ACCESS_COOKIE_KEY
-      assert_equal "auth_access", Auth::Base::ACCESS_COOKIE_KEY
+      assert_kind_of String, Authentication::Base::ACCESS_COOKIE_KEY
+      assert_equal "auth_access", Authentication::Base::ACCESS_COOKIE_KEY
     end
 
     test "REFRESH_COOKIE_KEY is defined" do
-      assert_kind_of String, Auth::Base::REFRESH_COOKIE_KEY
-      assert_equal "auth_refresh", Auth::Base::REFRESH_COOKIE_KEY
+      assert_kind_of String, Authentication::Base::REFRESH_COOKIE_KEY
+      assert_equal "auth_refresh", Authentication::Base::REFRESH_COOKIE_KEY
     end
 
     test "DEVICE_COOKIE_KEY is defined" do
-      assert_kind_of String, Auth::Base::DEVICE_COOKIE_KEY
-      assert_equal "auth_device_id", Auth::Base::DEVICE_COOKIE_KEY
+      assert_kind_of String, Authentication::Base::DEVICE_COOKIE_KEY
+      assert_equal "auth_device_id", Authentication::Base::DEVICE_COOKIE_KEY
     end
 
     test "test_header_key resolves actor specific keys" do
@@ -179,76 +179,76 @@ module Auth
     end
 
     test "device cookie helper methods are defined" do
-      assert Auth::Base.private_method_defined?(:set_device_id_cookie!),
-             "Auth::Base should define set_device_id_cookie!"
-      assert Auth::Base.private_method_defined?(:clear_device_id_cookie!),
-             "Auth::Base should define clear_device_id_cookie!"
-      assert Auth::Base.private_method_defined?(:read_device_id_cookie),
-             "Auth::Base should define read_device_id_cookie"
+      assert Authentication::Base.private_method_defined?(:set_device_id_cookie!),
+             "Authentication::Base should define set_device_id_cookie!"
+      assert Authentication::Base.private_method_defined?(:clear_device_id_cookie!),
+             "Authentication::Base should define clear_device_id_cookie!"
+      assert Authentication::Base.private_method_defined?(:read_device_id_cookie),
+             "Authentication::Base should define read_device_id_cookie"
     end
 
     test "ACCESS_TOKEN_TTL is defined" do
-      assert_kind_of ActiveSupport::Duration, Auth::Base::ACCESS_TOKEN_TTL
+      assert_kind_of ActiveSupport::Duration, Authentication::Base::ACCESS_TOKEN_TTL
     end
 
     test "REFRESH_TOKEN_TTL is defined" do
-      assert_kind_of ActiveSupport::Duration, Auth::Base::REFRESH_TOKEN_TTL
+      assert_kind_of ActiveSupport::Duration, Authentication::Base::REFRESH_TOKEN_TTL
     end
 
     test "Token class has JWT_ALGORITHM constant" do
-      assert_equal "ES384", Auth::Base::Token::JWT_ALGORITHM
+      assert_equal "ES384", Authentication::Base::Token::JWT_ALGORITHM
     end
 
     test "Token.extract_subject returns nil for nil payload" do
-      assert_nil Auth::Base::Token.extract_subject(nil)
+      assert_nil Authentication::Base::Token.extract_subject(nil)
     end
 
     test "VALID_ACTOR_TYPES constant is defined" do
-      assert_equal %w(user staff), Auth::Base::VALID_ACTOR_TYPES
+      assert_equal %w(user staff), Authentication::Base::VALID_ACTOR_TYPES
     end
 
     test "Token.extract_act returns nil for nil payload" do
-      assert_nil Auth::Base::Token.extract_act(nil)
+      assert_nil Authentication::Base::Token.extract_act(nil)
     end
 
     test "Token.extract_type returns nil for nil payload" do
-      assert_nil Auth::Base::Token.extract_type(nil)
+      assert_nil Authentication::Base::Token.extract_type(nil)
     end
 
     test "Token.extract_session_id returns nil for nil payload" do
-      assert_nil Auth::Base::Token.extract_session_id(nil)
+      assert_nil Authentication::Base::Token.extract_session_id(nil)
     end
 
     test "Token.extract_jti returns nil for nil payload" do
-      assert_nil Auth::Base::Token.extract_jti(nil)
+      assert_nil Authentication::Base::Token.extract_jti(nil)
     end
 
     test "JwtConfiguration.issuer returns string" do
-      issuer = Auth::Base::JwtConfiguration.issuer
+      issuer = Authentication::Base::JwtConfiguration.issuer
 
       assert_kind_of String, issuer
     end
 
     test "JwtConfiguration.audiences returns array" do
-      audiences = Auth::Base::JwtConfiguration.audiences
+      audiences = Authentication::Base::JwtConfiguration.audiences
 
       assert_kind_of Array, audiences
     end
 
     test "JwtConfiguration.leeway_seconds returns integer" do
-      assert_kind_of Integer, Auth::Base::JwtConfiguration.leeway_seconds
+      assert_kind_of Integer, Authentication::Base::JwtConfiguration.leeway_seconds
     end
 
     test "MissingPolicyError is a StandardError" do
-      assert_operator Auth::Base::MissingPolicyError, :<, StandardError
+      assert_operator Authentication::Base::MissingPolicyError, :<, StandardError
     end
 
     test "InvalidPolicyError is a StandardError" do
-      assert_operator Auth::Base::InvalidPolicyError, :<, StandardError
+      assert_operator Authentication::Base::InvalidPolicyError, :<, StandardError
     end
 
     test "SkipNotAllowedError is a StandardError" do
-      assert_operator Auth::Base::SkipNotAllowedError, :<, StandardError
+      assert_operator Authentication::Base::SkipNotAllowedError, :<, StandardError
     end
 
     test "request guard helpers render or redirect when already logged in" do
@@ -294,17 +294,17 @@ module Auth
       harness.params = { rd: "/target" }
 
       assert_equal "/target", harness.preserve_redirect_parameter
-      assert_equal "/target", harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+      assert_equal "/target", harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY]
       assert_equal "/target", harness.peek_redirect_parameter
       assert_equal({ notice: "ok", rd: "/target" }, harness.build_notice_params("ok"))
       assert_equal({ alert: "ng", rd: "/target" }, harness.build_alert_params("ng"))
       assert_equal "/target", harness.retrieve_redirect_parameter
-      assert_nil harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+      assert_nil harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY]
     end
 
     test "redirect_with_rd_handling uses rd jump when present and fallback redirect otherwise" do
       harness = HeaderKeyHarness.new
-      harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY] = "/encoded"
+      harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY] = "/encoded"
 
       harness.redirect_with_rd_handling("/default", :notice, "done")
 
@@ -325,9 +325,9 @@ module Auth
       Core::CookieOptions.stub(:for, {}) do
         harness.send(:set_device_id_cookie!, "dev-123", expires_at: expires_at)
 
-        assert_equal "dev-123", HeaderKeyHarness.encrypted_cookies[Auth::Base::DEVICE_COOKIE_KEY][:value]
+        assert_equal "dev-123", HeaderKeyHarness.encrypted_cookies[Authentication::Base::DEVICE_COOKIE_KEY][:value]
 
-        HeaderKeyHarness.encrypted_cookies[Auth::Base::DEVICE_COOKIE_KEY] = "dev-123"
+        HeaderKeyHarness.encrypted_cookies[Authentication::Base::DEVICE_COOKIE_KEY] = "dev-123"
 
         assert_equal "dev-123", harness.send(:read_device_id_cookie)
       end
@@ -336,34 +336,34 @@ module Auth
     test "clear_auth_cookies! deletes all auth-related cookies" do
       harness = HeaderKeyHarness.new
       HeaderKeyHarness.reset_encrypted_cookies!
-      harness.cookies[Auth::Base::ACCESS_COOKIE_KEY] = "access"
-      harness.cookies.encrypted[Auth::Base::REFRESH_COOKIE_KEY] = "refresh"
+      harness.cookies[Authentication::Base::ACCESS_COOKIE_KEY] = "access"
+      harness.cookies.encrypted[Authentication::Base::REFRESH_COOKIE_KEY] = "refresh"
 
       Core::CookieOptions.stub(:for, {}) do
         harness.send(:clear_auth_cookies!)
 
-        assert_nil harness.cookies[Auth::Base::ACCESS_COOKIE_KEY]
-        assert_nil harness.cookies[Auth::Base::REFRESH_COOKIE_KEY]
+        assert_nil harness.cookies[Authentication::Base::ACCESS_COOKIE_KEY]
+        assert_nil harness.cookies[Authentication::Base::REFRESH_COOKIE_KEY]
       end
     end
 
     test "JwtConfiguration.issuer respects resource_type" do
-      assert_equal "umaxica-auth:user", Auth::Base::JwtConfiguration.issuer("user")
-      assert_equal "umaxica-auth:staff", Auth::Base::JwtConfiguration.issuer("staff")
-      assert_equal "umaxica-auth", Auth::Base::JwtConfiguration.issuer("invalid")
+      assert_equal "umaxica-auth:user", Authentication::Base::JwtConfiguration.issuer("user")
+      assert_equal "umaxica-auth:staff", Authentication::Base::JwtConfiguration.issuer("staff")
+      assert_equal "umaxica-auth", Authentication::Base::JwtConfiguration.issuer("invalid")
     end
 
     test "JwtConfiguration.audiences respects resource_type specific env" do
       with_env("AUTH_JWT_USER_AUDIENCES" => "u1,u2", "AUTH_JWT_AUDIENCES" => "default") do
-        assert_equal %w(u1 u2), Auth::Base::JwtConfiguration.audiences("user")
-        assert_equal %w(default), Auth::Base::JwtConfiguration.audiences("staff")
+        assert_equal %w(u1 u2), Authentication::Base::JwtConfiguration.audiences("user")
+        assert_equal %w(default), Authentication::Base::JwtConfiguration.audiences("staff")
       end
     end
 
     test "JwtConfiguration.token_type returns correct format" do
-      assert_equal "auth-access-token;user", Auth::Base::JwtConfiguration.token_type("user")
-      assert_equal "auth-access-token;staff", Auth::Base::JwtConfiguration.token_type("staff")
-      assert_raises(ArgumentError) { Auth::Base::JwtConfiguration.token_type("invalid") }
+      assert_equal "auth-access-token;user", Authentication::Base::JwtConfiguration.token_type("user")
+      assert_equal "auth-access-token;staff", Authentication::Base::JwtConfiguration.token_type("staff")
+      assert_raises(ArgumentError) { Authentication::Base::JwtConfiguration.token_type("invalid") }
     end
 
     private

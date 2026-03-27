@@ -45,7 +45,7 @@
       <% if edge_host.present? %>
         <li><a href="http://<%= edge_host %>/"><%= t("help.app.preferences.footer.home") %></a></li>
       <% end %>
-      <li><%= link_to t("help.app.preferences.footer.preference"), apex_app_preference_url %></li>
+      <li><%= link_to t("help.app.preferences.footer.preference"), sign_app_preference_url %></li>
       <li><%= link_to t("help.app.preferences.footer.newsroom"), news_app_root_url %></li>
       <li><%= link_to t("help.app.preferences.footer.document"), docs_app_root_url %></li>
       <li><%= link_to t("help.app.preferences.footer.help_center"), help_app_root_url %></li>

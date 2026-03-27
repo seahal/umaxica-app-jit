@@ -60,7 +60,12 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     host! "app.localhost"
     get help_app_root_path
 
+    # First redirect: canonicalize_regional_params adds ri=jp
     assert_redirected_to help_app_root_url(ri: "jp", host: "app.localhost")
+    follow_redirect!
+
+    # After redirect, set_preferences_cookie should have run
+    assert_response :success
     assert_not_nil cookies["preference_access"]
   end
 

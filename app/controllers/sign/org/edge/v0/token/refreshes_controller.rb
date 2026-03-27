@@ -13,7 +13,7 @@ class Sign::Org::Edge::V0::Token::RefreshesController < Sign::Org::ApplicationCo
     response.set_header("Cache-Control", "no-store")
 
     # Read refresh token from params or cookie
-    refresh_plain = params[:refresh_token].presence || cookies[Auth::Base::REFRESH_COOKIE_KEY]
+    refresh_plain = params[:refresh_token].presence || cookies[Authentication::Base::REFRESH_COOKIE_KEY]
 
     if refresh_plain.blank?
       render json: {

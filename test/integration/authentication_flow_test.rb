@@ -44,7 +44,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Access /in/new with refresh cookie but no access cookie
     # This simulates an expired access token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    # Use cookies setting with proper format (string value, not hash)
+    cookies[:auth_refresh] = refresh_plain
 
     get new_sign_app_in_path, headers: { "Host" => @host }
 
@@ -61,9 +62,6 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     new_refresh = response.cookies["auth_refresh"] || cookies["auth_refresh"]
 
     assert_not_nil new_refresh
-    # Note: refresh_plain string matching might be complex if cookies are encoded/encrypted differently in response
-    # but at least one should exist.
-
     assert_not_nil response.cookies["auth_access"] || cookies["auth_access"]
   end
 

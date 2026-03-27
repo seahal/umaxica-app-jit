@@ -81,7 +81,7 @@ module Oidc
         token_record = create_token_record!(client, resource)
         refresh_plain = token_record.rotate_refresh_token!
         now = Time.current
-        access_expires_at = now + Auth::Base::ACCESS_TOKEN_TTL
+        access_expires_at = now + Authentication::Base::ACCESS_TOKEN_TTL
 
         sign_host =
           if client.resource_type == "staff"
@@ -103,7 +103,7 @@ module Oidc
           token_response: {
             access_token: access_token,
             token_type: "Bearer",
-            expires_in: Integer(Auth::Base::ACCESS_TOKEN_TTL.to_s, 10),
+            expires_in: Integer(Authentication::Base::ACCESS_TOKEN_TTL.to_s, 10),
             refresh_token: refresh_plain,
           },
           error: nil,
@@ -117,14 +117,14 @@ module Oidc
         StaffToken.create!(
           staff: resource,
           public_id: SecureRandom.alphanumeric(21),
-          refresh_expires_at: Auth::Base::REFRESH_TOKEN_TTL.from_now,
+          refresh_expires_at: Authentication::Base::REFRESH_TOKEN_TTL.from_now,
           status: "active",
         )
       else
         UserToken.create!(
           user: resource,
           public_id: SecureRandom.alphanumeric(21),
-          refresh_expires_at: Auth::Base::REFRESH_TOKEN_TTL.from_now,
+          refresh_expires_at: Authentication::Base::REFRESH_TOKEN_TTL.from_now,
           status: "active",
         )
       end

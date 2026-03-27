@@ -3,7 +3,7 @@
 
 module Auth
   module IoKeys
-    SECURE_COOKIE_PREFIX = "__Secure-"
+    HOST_COOKIE_PREFIX = "__Host-"
 
     module Cookies
       ACCESS_BASENAME = "auth_access"
@@ -71,6 +71,6 @@ module Auth
       public_constant :AUTH_REFRESHED_FLAG
     end
 
-    public_constant :SECURE_COOKIE_PREFIX
+    public_constant :HOST_COOKIE_PREFIX
   end
 end

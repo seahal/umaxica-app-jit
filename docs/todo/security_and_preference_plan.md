@@ -108,7 +108,6 @@ Created: 2026-03-21
 - Clean up `PreferenceRecord` base class if no longer needed.
 - Update all controllers referencing old preference models.
 
-
 ### Step 6: Preference API Consolidation
 
 - Keep preference endpoints only in `apex/com`, `apex/org`, `apex/app`

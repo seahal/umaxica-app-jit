@@ -297,6 +297,44 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.registration.email.update.sign_in_required"), flash[:notice]
   end
 
+  test "update for existing registered email with OTP required" do
+    skip "TODO: Implement test for OTP required flow with existing email"
+    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+    existing_email = UserEmail.create!(
+      user: user,
+      address: "existing_otp_required@example.com",
+      confirm_policy: "1",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    # Manually set session to simulate EXISTING_EMAIL_SESSION_KEY but with skip_otp = false
+    # To do this, we need to trigger dispatch_existing_email_verification! but somehow change skip_otp
+    # Actually, the controller uses existing_signup_skip_otp? which checks session
+    # Let's mock the session or find a way to set it.
+    # Integration tests can use post/patch to set session via controller actions.
+
+    # 1. Start flow
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: existing_email.address,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    # By default, dispatch_existing_email_verification! sets skip_otp: true
+    # Let's modify the session in the test if possible, or trigger a path where it is false.
+    # Currently, dispatch_existing_email_verification! ALWAYS sets it to true.
+    #   session[EXISTING_EMAIL_SKIP_OTP_SESSION_KEY] = true
+
+    # If I want to test the `else` branch of `if existing_signup_skip_otp?`,
+    # I need skip_otp to be false or nil while existing_signup_email_flow? is true.
+
+    assert false, "Test needs implementation"
+  end
+
   test "create with validation failure enqueues no emails and returns 422" do
     email = "invalid_email"
 
@@ -578,7 +616,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   # Transaction Tests for User Creation
 
-  test "successful OTP verification creates user, audit log, and saves email in transaction" do
+  test "successful OTP verification creates user and saves email in transaction" do
     email = "transaction_success@example.com"
 
     # Create registration record
@@ -603,7 +641,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
 
     initial_user_count = User.count
-    initial_audit_count = UserActivity.count
 
     # Submit correct OTP
     patch sign_app_up_email_url(user_email, ri: "jp"),
@@ -631,10 +668,51 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     user = user_email.user
 
     assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, user.status_id
+  end
+
+  test "successful OTP verification creates audit log in transaction" do
+    email = "audit_log_test@example.com"
+
+    # Create registration record
+    perform_enqueued_jobs do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
+    email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    user_email = UserEmail.find_by(public_id: email_id)
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    initial_audit_count = UserActivity.count
+
+    # Submit correct OTP
+    patch sign_app_up_email_url(user_email, ri: "jp"),
+          params: {
+            id: user_email.id,
+            user_email: {
+              pass_code: correct_code,
+            },
+          },
+          headers: default_headers
+
+    # Verify success response
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
 
     # Verify UserActivity was created
     assert_equal initial_audit_count + 1, UserActivity.count
     audit = UserActivity.last
+    user = user_email.reload.user
 
     assert_equal user.id.to_s, audit.user_id
     assert_equal user.id, audit.actor_id
@@ -717,7 +795,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     # Verify JWT access token cookie was set
-    assert_not_nil cookies[::Auth::User::ACCESS_COOKIE_KEY],
+    assert_not_nil cookies[::Authentication::User::ACCESS_COOKIE_KEY],
                    "Access token cookie should be set after successful registration"
 
     # Verify user and token were created

@@ -350,6 +350,11 @@ ja:
           invalid: 登録ステップを順番に進めてください。
           invalid_step: 前のステップを完了してください。
     org:
+      registration:
+        email:
+          already_logged_in: すでにログインしています。
+          invitation_required: 招待コードが必要です。
+          turnstile_failed: 検証に失敗しました。
       in:
         bulletins:
           show:
@@ -363,6 +368,7 @@ ja:
             body: スタッフアカウントの作成が完了しました。ご利用ありがとうございます。
           forbidden: アクセス権限がありません
           timeout: timeout しました
+    registration_extra:
       reauth:
         index:
           title: 再認証セッション

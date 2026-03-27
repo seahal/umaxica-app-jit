@@ -184,8 +184,8 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert_nil current_session.expired_at
     assert_not_nil token_one.expired_at
     assert_not_nil token_two.expired_at
-    assert_not response_has_cookie?(::Auth::Base::ACCESS_COOKIE_KEY)
-    assert_not response_has_cookie?(::Auth::Base::REFRESH_COOKIE_KEY)
+    assert_not response_has_cookie?(::Authentication::Base::ACCESS_COOKIE_KEY)
+    assert_not response_has_cookie?(::Authentication::Base::REFRESH_COOKIE_KEY)
   end
 
   test "others with no other sessions still succeeds (boundary: 0 other sessions)" do

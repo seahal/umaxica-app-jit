@@ -39,7 +39,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_challenge_issued_at: Time.current,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     proof = generate_dbsc_proof(
       challenge: token.dbsc_challenge,
@@ -80,7 +80,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_challenge_issued_at: Time.current,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     post sign_app_edge_v0_token_dbsc_registration_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof" }
@@ -105,7 +105,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       deletable_at: 1.day.from_now,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     proof = generate_dbsc_proof(
       challenge: "any-challenge",
@@ -136,7 +136,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_public_key: @jwk.export,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     post sign_app_edge_v0_token_dbsc_registration_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
@@ -165,7 +165,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_public_key: @jwk.export,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     post sign_app_edge_v0_token_dbsc_registration_path,
          headers: {
@@ -195,7 +195,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_challenge_issued_at: Time.current,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     # For verification, do NOT include JWK in header (security requirement)
     proof = JWT.encode(
@@ -214,7 +214,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
          }
 
     assert_response :no_content
-    assert_predicate response.cookies[Auth::Base::DBSC_COOKIE_KEY], :present?
+    assert_predicate response.cookies[Authentication::Base::DBSC_COOKIE_KEY], :present?
 
     token.reload
 
@@ -235,7 +235,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       deletable_at: 1.day.from_now,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     # Execute with session ID but record not bound to DBSC (no dbsc_session_id)
     # This triggers 403 Forbidden because proof is blank (challenge issuance)
@@ -270,7 +270,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_challenge_issued_at: Time.current,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     proof = generate_dbsc_proof(
       challenge: token.dbsc_challenge,
@@ -311,7 +311,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_challenge_issued_at: Time.current,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     post sign_org_edge_v0_token_dbsc_registration_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof" }
@@ -336,7 +336,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       deletable_at: 1.day.from_now,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     proof = generate_dbsc_proof(
       challenge: "any-challenge",
@@ -367,7 +367,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_public_key: @jwk.export,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     post sign_org_edge_v0_token_dbsc_registration_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
@@ -396,7 +396,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_public_key: @jwk.export,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     post sign_org_edge_v0_token_dbsc_registration_path,
          headers: {
@@ -426,7 +426,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       dbsc_challenge_issued_at: Time.current,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     # For verification, do NOT include JWK in header (security requirement)
     proof = JWT.encode(
@@ -445,7 +445,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
          }
 
     assert_response :no_content
-    assert_predicate response.cookies[Auth::Base::DBSC_COOKIE_KEY], :present?
+    assert_predicate response.cookies[Authentication::Base::DBSC_COOKIE_KEY], :present?
 
     token.reload
 
@@ -466,7 +466,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       deletable_at: 1.day.from_now,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
     # Execute with session ID but record not bound to DBSC (no dbsc_session_id)
     # This triggers 403 Forbidden because proof is blank (challenge issuance)
@@ -490,7 +490,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
       deletable_at: 1.day.from_now,
     )
 
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = "invalid-token-format"
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = "invalid-token-format"
 
     post sign_app_edge_v0_token_dbsc_registration_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "some-proof" }

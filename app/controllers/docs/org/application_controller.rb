@@ -16,6 +16,7 @@ module Docs
 
       allow_browser versions: :modern
 
+      before_action :check_default_rate_limit
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current

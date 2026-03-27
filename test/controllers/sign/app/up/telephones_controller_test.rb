@@ -219,7 +219,7 @@ module Sign::App::Up
       end
 
       assert_redirected_to sign_app_configuration_url(ri: "jp")
-      assert_predicate cookies[Auth::Base::ACCESS_COOKIE_KEY], :present?
+      assert_predicate cookies[Authentication::Base::ACCESS_COOKIE_KEY], :present?
     end
 
     test "should create audit record on sms login with existing passkey" do

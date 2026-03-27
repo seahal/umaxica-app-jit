@@ -23,6 +23,12 @@ class Core::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     get core_app_configuration_url(ri: "jp")
 
     assert_response :redirect
+    # First redirect: canonicalize_regional_params removes ri param
+    # Second redirect: auth_required redirects to login page
+    # Follow the redirect chain
+    follow_redirect!
+
+    assert_response :redirect
     target_path = new_sign_app_in_path
 
     assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
@@ -48,6 +54,11 @@ class Core::Com::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     get core_com_configuration_url(ri: "jp")
 
     assert_response :redirect
+    # First redirect: canonicalize_regional_params removes ri param
+    # Second redirect: auth_required redirects to login page
+    follow_redirect!
+
+    assert_response :redirect
     target_path = new_sign_app_in_path
 
     assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
@@ -71,6 +82,11 @@ class Core::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should redirect show when not logged in" do
     get core_org_configuration_url(ri: "jp")
+
+    assert_response :redirect
+    # First redirect: canonicalize_regional_params removes ri param
+    # Second redirect: auth_required redirects to login page
+    follow_redirect!
 
     assert_response :redirect
     target_path = new_sign_org_in_path

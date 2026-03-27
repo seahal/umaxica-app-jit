@@ -5,7 +5,7 @@ module Core
   module CookieOptions
     module_function
 
-    def for(surface:, request:, same_site: nil, expires: nil, httponly: true, secure: nil, path: nil)
+    def for(surface:, request:, same_site: nil, expires: nil, httponly: true, secure: nil, path: nil, domain: true)
       options = {
         httponly: httponly,
         secure: secure.nil? ? resolve_secure(request) : secure,
@@ -14,8 +14,10 @@ module Core
       options[:expires] = expires if expires
       options[:path] = path if path
 
-      domain = Core::CookieDomain.for(surface: surface, request_host: request.host)
-      options[:domain] = domain if domain.present?
+      if domain
+        cookie_domain = Core::CookieDomain.for(surface: surface, request_host: request.host)
+        options[:domain] = cookie_domain if cookie_domain.present?
+      end
       options
     end
 

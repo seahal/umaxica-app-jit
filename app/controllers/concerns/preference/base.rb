@@ -1423,7 +1423,7 @@ module Preference
     end
 
     def access_token_cookie_name
-      self.class.name.start_with?("Apex::App::Preference") ? Auth::Base::ACCESS_COOKIE_KEY : Preference::CookieName.access
+      self.class.name.start_with?("Apex::App::Preference") ? Authentication::Base::ACCESS_COOKIE_KEY : Preference::CookieName.access
     end
 
     def refresh_token_cookie_name

@@ -102,6 +102,7 @@ Rails.application.configure do
   config.hosts << "com.localhost"
   config.hosts << "org.localhost"
   config.hosts << "sign.app.localhost"
+  config.hosts << "sign.com.localhost"
   config.hosts << "sign.org.localhost"
   config.hosts << "www.app.localhost"
   config.hosts << "www.com.localhost"
@@ -118,6 +119,7 @@ Rails.application.configure do
   # Production hostnames allowed in development for Cloudflare Tunnel testing.
   # Remove once local-only development is sufficient.
   config.hosts << "sign.umaxica.app"
+  config.hosts << "sign.umaxica.com"
   config.hosts << "sign.umaxica.org"
 
   ## file watcher

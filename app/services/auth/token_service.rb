@@ -14,7 +14,7 @@ module Auth
 
         type = resource_type || resource.class.name.downcase
         payload = build_payload(resource, session_public_id, type, expires_at: expires_at, preferences: preferences)
-        token_type = Auth::Base::JwtConfiguration.token_type(type)
+        token_type = Authentication::Base::JwtConfiguration.token_type(type)
         JWT.encode(
           payload,
           Jit::Security::Jwt::Keyring.private_key_for_active,
@@ -131,6 +131,15 @@ module Auth
         act == expected_act
       end
 
+      def extract_scopes(payload)
+        Auth::TokenClaims.scopes(payload)
+      end
+
+      def has_scope?(payload, scope)
+        scopes = extract_scopes(payload)
+        scopes.include?(scope.to_s)
+      end
+
       private
 
       def valid_encode_params?(resource, host)
@@ -147,7 +156,7 @@ module Auth
           session_public_id: session_public_id,
           resource_type: type,
           issued_at: Time.current,
-          access_token_ttl: Auth::Base::ACCESS_TOKEN_TTL,
+          access_token_ttl: Authentication::Base::ACCESS_TOKEN_TTL,
           expires_at: expires_at,
           preferences: preferences,
         )
@@ -157,13 +166,13 @@ module Auth
         {
           algorithms: [JWT_ALGORITHM],
           required_claims: %w(iss aud typ exp sub sid act jti),
-          leeway: Auth::Base::JwtConfiguration.leeway_seconds,
+          leeway: Authentication::Base::JwtConfiguration.leeway_seconds,
           verify_iat: true,
           verify_exp: true,
           verify_iss: true,
-          iss: issuer || Auth::Base::JwtConfiguration.issuer(resource_type),
+          iss: issuer || Authentication::Base::JwtConfiguration.issuer(resource_type),
           verify_aud: true,
-          aud: audiences || Auth::Base::JwtConfiguration.audiences(resource_type),
+          aud: audiences || Authentication::Base::JwtConfiguration.audiences(resource_type),
         }
       end
 
@@ -180,7 +189,7 @@ module Auth
       end
 
       def expected_token_type(resource_type)
-        Auth::Base::JwtConfiguration.token_type(resource_type)
+        Authentication::Base::JwtConfiguration.token_type(resource_type)
       end
 
       def report_invalid_header(resource_type:, host:, header:)

@@ -17,13 +17,15 @@ module Apex
 
       allow_browser versions: :modern
 
-      before_action :set_preferences_cookie
-
-      before_action :resolve_param_context
-      before_action :set_region
-      before_action :set_locale
-      before_action :set_timezone
-      before_action :set_color_theme
+      # NOTE: Order matters (dependencies rely on this sequence)
+      # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
+      before_action :check_default_rate_limit
+      prepend_before_action :set_preferences_cookie
+      prepend_before_action :resolve_param_context
+      prepend_before_action :set_region
+      prepend_before_action :set_locale
+      prepend_before_action :set_timezone
+      prepend_before_action :set_color_theme
       before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!

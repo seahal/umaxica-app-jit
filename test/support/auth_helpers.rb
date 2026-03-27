@@ -1,9 +1,9 @@
 # typed: false
 # frozen_string_literal: true
 
-require_relative "../../app/controllers/concerns/auth/base"
-require_relative "../../app/controllers/concerns/auth/user"
-require_relative "../../app/controllers/concerns/auth/staff"
+require_relative "../../app/controllers/concerns/authentication/base"
+require_relative "../../app/controllers/concerns/authentication/user"
+require_relative "../../app/controllers/concerns/authentication/staff"
 
 # Helpers for authentication-related test setup.
 #
@@ -59,11 +59,11 @@ module AuthHelpers
     host_headers(host).merge(headers).merge("Authorization" => "Bearer #{token}")
   end
 
-  # Generates a JWT access token via Auth::Base::Token.
+  # Generates a JWT access token via Authentication::Base::Token.
   # Returns nil if JWT credentials are not configured.
   def jwt_access_token_for(resource, host: nil, session_public_id: nil, resource_type: nil)
     host_value = host || (respond_to?(:request, true) ? request&.host : nil) || "unknown"
-    ::Auth::Base::Token.encode(
+    ::Authentication::Base::Token.encode(
       resource,
       host: host_value,
       session_public_id: session_public_id,
@@ -73,13 +73,13 @@ module AuthHelpers
 
   # Convenience for Cookie-based auth simulations (Edge API).
   # Use together with existing controllers expecting cookies.
-  # Cookie keys are now centralized in Auth::Base
+  # Cookie keys are now centralized in Authentication::Base
   def set_access_cookie(token)
-    cookies[::Auth::Base::ACCESS_COOKIE_KEY] = token
+    cookies[::Authentication::Base::ACCESS_COOKIE_KEY] = token
   end
 
   def set_refresh_cookie(token)
-    cookies[::Auth::Base::REFRESH_COOKIE_KEY] = token
+    cookies[::Authentication::Base::REFRESH_COOKIE_KEY] = token
   end
 
   def satisfy_user_verification(user_token)

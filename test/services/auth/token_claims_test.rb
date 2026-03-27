@@ -55,13 +55,13 @@ module Auth
       payload, _issued_at = setup_token_claims_payload
 
       assert_equal "auth-access-token;user", payload["typ"]
-      assert_equal Auth::Base::JwtConfiguration.issuer("user"), payload["iss"]
+      assert_equal Authentication::Base::JwtConfiguration.issuer("user"), payload["iss"]
     end
 
     test "build includes audience and jti claims" do
       payload, _issued_at = setup_token_claims_payload
 
-      assert_equal Auth::Base::JwtConfiguration.audiences("user"), payload["aud"]
+      assert_equal Authentication::Base::JwtConfiguration.audiences("user"), payload["aud"]
       assert_predicate payload["jti"], :present?
     end
 

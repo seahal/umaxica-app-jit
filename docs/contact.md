@@ -1,7 +1,7 @@
 # Contact / Auth Integration TODO
 
-This document captures the priority order for rebuilding the contact flow around the existing
-auth system.
+This document captures the priority order for rebuilding the contact flow around the existing auth
+system.
 
 ## 1. Define the shared auth contract
 

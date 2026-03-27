@@ -33,11 +33,13 @@ ja:
     no_totp_found: "登録済みのTOTPはありません。"
   actions:
     back: "戻る"
+    cancel: "キャンセル"
     connect: "連携する"
-    up: "上へ"
     delete: "削除"
+    save: "保存"
     submit: "送信"
     update: "更新"
+    up: "上へ"
   otp:
     resend:
       button: "コードを再送する"
@@ -129,6 +131,179 @@ ja:
           session_expired: "MFA セッションの有効期限が切れました。もう一度サインインしてください。"
           verification_failed: "認証に失敗しました。"
           no_methods_available: "利用可能な認証方法がありません。サポートにお問い合わせください。"
+          methods:
+            totp: "認証アプリ（TOTP）で認証"
+            passkey: "パスキーで認証"
+          totp:
+            title: "認証アプリによる確認"
+            description: "認証アプリに表示されている6桁のコードを入力してください。"
+            token_label: "認証コード"
+            submit: "認証する"
+            back: "認証方法の選択に戻る"
+          passkey:
+            title: "パスキーによる確認"
+            description: "登録済みのパスキーで認証してください。"
+            authenticate: "パスキーで認証"
+            back: "認証方法の選択に戻る"
+      registration:
+        new:
+          links:
+            sign_in: "ログイン"
+        email:
+          flow:
+            invalid: "セッションの有効期限が切れました。"
+          edit:
+            not_found: "メールアドレスが見つかりません。"
+        telephone:
+          already_logged_in: "すでにログインしています。"
+      authentication:
+        new:
+          page_title: "サインイン"
+          description: "サインイン方法を選択してください"
+          back: "戻る"
+          links:
+            email: "メール"
+            passkey: "パスキー"
+            secret: "シークレット"
+            google: "Google"
+            apple: "Apple"
+            registration: "新規登録"
+        email:
+          create:
+            invalid_format: "無効なメールアドレス形式です。"
+          edit:
+            session_expired: "セッションの有効期限が切れました。"
+        secret:
+          new:
+            page_title: "シークレットでサインイン"
+            pii_label: "メールアドレスまたは電話番号"
+            pii_placeholder: "user@example.com または +81 90 1234 5678"
+            secret_label: "シークレット"
+            hints: "利用可能なシークレット"
+          create:
+            success: "ログインしました。"
+            invalid: "認証に失敗しました。入力内容をご確認ください。"
+        passkey:
+          new:
+            page_title: "パスキーでサインイン"
+            description: "登録済みのパスキーでサインイン"
+            pii_label: "メールアドレスまたは電話番号"
+            pii_placeholder: "user@example.com または +81 90 1234 5678"
+            submit: "パスキーでサインイン"
+      outs:
+        destroy:
+          success: "ログアウトしました。"
+      social:
+        sessions:
+          destroy:
+            success: "連携を解除しました。"
+      configuration:
+        totps:
+          invalid_code: "認証コードが正しくありません。"
+        totp:
+          index:
+            new_link: "TOTPを追加"
+          new:
+            page_title: "TOTPの作成"
+            description: "認証アプリ（Google Authenticator等）を設定します。"
+            title_hint: "例: 会社のスマホ"
+          edit:
+            title: "TOTPの編集"
+            description: "TOTP設定を更新します。"
+        telephone:
+          new:
+            title: "電話番号の追加"
+        secrets:
+          index:
+            new: "新規作成"
+          show:
+            title: "シークレットの詳細"
+            description: "シークレット情報の詳細を確認します。"
+          edit:
+            title: "シークレットの編集"
+            description: "シークレット情報を更新します。"
+          new:
+            title: "シークレットの作成"
+            description: "新しいシークレットを作成します。"
+        edit:
+          page_title: "アカウントの状態"
+          deactivated_notice: "退会手続き中です。設定の変更はできません。"
+          scheduled_purge_notice: "%{date} に削除が予定されています。"
+          withdrawal_link: "退会手続きを確認する"
+          not_deactivated: "アカウントは利用可能です。"
+        withdrawal:
+          new:
+            page_title: "退会"
+            already_deactivated: "すでに退会手続きが完了しています。"
+          recovery:
+            link: "アカウントを復旧する"
+            page_title: "退会の復旧"
+            deadline: "復旧期限: %{date}"
+            available: "アカウントはまだ復旧できます。"
+            submit: "アカウントを復旧する"
+            confirm: "このアカウントを復旧しますか？"
+            unavailable: "復旧可能期間が終了しました。"
+          schedule:
+            title: "削除予約の確認"
+            ack_label: "31日後に削除（削除予約）されることを理解しました"
+            submit: "続行"
+          deactivate:
+            title: "本日中の利用停止"
+            ack_label: "本日中に利用停止（論理削除）されることを理解しました"
+            submit: "退会する"
+            confirm: "本日中に利用停止します。よろしいですか？"
+        passkey:
+          index:
+            title: "パスキー管理"
+            description: "登録済みのパスキーを管理します"
+        passkeys:
+          new:
+            page_title: "パスキーの登録"
+            description: "パスワードなしでサインインするためのパスキーを登録します"
+            description_label: "パスキー名"
+            description_placeholder: "例: MacBook Pro"
+            submit: "パスキーを登録"
+          index:
+            title: "パスキー管理"
+            description: "登録済みのパスキーを管理します"
+            add: "新しいパスキーを登録"
+            empty: "パスキーが登録されていません"
+            back: "設定に戻る"
+          show:
+            title: "パスキー詳細"
+            back: "一覧に戻る"
+          edit:
+            title: "パスキーの編集"
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションが見つかりません"
+          table:
+            scope: "スコープ"
+            method: "方法"
+            status: "ステータス"
+        show:
+          back: "一覧に戻る"
+      verification:
+        errors:
+          no_passkey: "パスキーが登録されていません。"
+        setup:
+          title: "認証方法の登録"
+          description: "続行する前に、パスキー、メール、電話番号、または認証アプリを登録してください。"
+          methods:
+            passkey: "パスキーを登録"
+            email: "メールを登録"
+            telephone: "電話番号を登録"
+            totp: "認証アプリ（TOTP）を登録"
+      setting:
+        totp:
+          edit:
+            title: "TOTPの編集"
+            description: "TOTP設定を更新します。"
+            title_hint: "例: 会社のスマホ"
+          index:
+            new_link: "新規追加"
     org:
       in:
         mfa:
@@ -146,7 +321,9 @@ ja:
       registration:
         telephone:
           already_logged_in: "すでにログインしています。"
-          passkey:
+        email:
+          already_logged_in: "すでにログインしています。"
+        passkey:
             title: "パスキーによる確認"
             description: "登録済みのパスキーで認証してください。"
             authenticate: "パスキーで認証"
@@ -171,18 +348,6 @@ ja:
       layout:
         nav:
           log_out: "ログアウト"
-      registration:
-        email:
-          flow:
-            invalid: "無効なフローです。"
-          edit:
-            not_found: "メールアドレスが見つかりません。"
-            session_expired: "セッションの有効期限が切れました。"
-        new:
-          links:
-            sign_in: "ログイン"
-        telephone:
-          already_logged_in: "既にログインしています。"
       social:
         sessions:
           destroy:
@@ -197,18 +362,21 @@ ja:
             page_title: "TOTPの作成"
             description: "認証アプリ（Google Authenticator等）を設定します。"
             title_hint: "例: 会社のスマホ"
+          edit:
+            title: "TOTPの編集"
+            description: "TOTP設定を更新します。"
         telephone:
           new:
             title: "電話番号の追加"
         secrets:
-          edit:
-            title: "シークレットの編集"
-            description: "シークレット情報を更新します。"
+          index:
+            new: "新規作成"
           show:
             title: "シークレットの詳細"
             description: "シークレット情報の詳細を確認します。"
-          index:
-            new: "新規作成"
+          edit:
+            title: "シークレットの編集"
+            description: "シークレット情報を更新します。"
           new:
             title: "シークレットの作成"
             description: "新しいシークレットを作成します。"
@@ -264,6 +432,7 @@ ja:
         session:
           restricted_notice: "セッション数が上限に達しています。既存セッションを管理してください。"
         mfa:
+          session_expired: "MFA セッションの有効期限が切れました。もう一度サインインしてください。"
           title: "多要素認証"
           description: "続行するには追加の認証が必要です"
           verification_failed: "認証に失敗しました。"

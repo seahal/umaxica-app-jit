@@ -5,7 +5,7 @@ require "test_helper"
 
 class AuthRedirectBulletinTest < ActiveSupport::TestCase
   class RedirectHarness
-    include Auth::Base
+    include Authentication::Base
 
     attr_accessor :session_data, :params_data, :request_obj, :performed
 
@@ -112,15 +112,15 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
   end
 
   test "DEFAULT_RD_SESSION_KEY is defined" do
-    assert_includes Auth::Base::DEFAULT_RD_SESSION_KEY.to_s, "rd"
+    assert_includes Authentication::Base::DEFAULT_RD_SESSION_KEY.to_s, "rd"
   end
 
   test "BULLETIN_SESSION_KEY is defined" do
-    assert_equal :in_bulletin, Auth::Base::BULLETIN_SESSION_KEY
+    assert_equal :in_bulletin, Authentication::Base::BULLETIN_SESSION_KEY
   end
 
   test "BULLETIN_TIMEOUT is 2 hours" do
-    assert_equal 2.hours, Auth::Base::BULLETIN_TIMEOUT
+    assert_equal 2.hours, Authentication::Base::BULLETIN_TIMEOUT
   end
 
   test "preserve_redirect_parameter stores rd in session" do
@@ -128,22 +128,22 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
     result = @harness.preserve_redirect_parameter
 
     assert_equal "/dashboard", result
-    assert_equal "/dashboard", @harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+    assert_equal "/dashboard", @harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY]
   end
 
   test "preserve_redirect_parameter returns nil when no rd param" do
     result = @harness.preserve_redirect_parameter
 
     assert_nil result
-    assert_nil @harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+    assert_nil @harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY]
   end
 
   test "retrieve_redirect_parameter returns and clears session value" do
-    @harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY] = "/dashboard"
+    @harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY] = "/dashboard"
     result = @harness.retrieve_redirect_parameter
 
     assert_equal "/dashboard", result
-    assert_nil @harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+    assert_nil @harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY]
   end
 
   test "retrieve_redirect_parameter falls back to params" do
@@ -154,15 +154,15 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
   end
 
   test "peek_redirect_parameter returns without clearing" do
-    @harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY] = "/dashboard"
+    @harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY] = "/dashboard"
     result = @harness.peek_redirect_parameter
 
     assert_equal "/dashboard", result
-    assert_equal "/dashboard", @harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY]
+    assert_equal "/dashboard", @harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY]
   end
 
   test "build_redirect_params includes rd when present" do
-    @harness.session[Auth::Base::DEFAULT_RD_SESSION_KEY] = "/dashboard"
+    @harness.session[Authentication::Base::DEFAULT_RD_SESSION_KEY] = "/dashboard"
     result = @harness.build_redirect_params(:notice, "Success")
 
     assert_equal "Success", result[:notice]
@@ -190,7 +190,7 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
         result = @harness.issue_bulletin!(kind: "mfa", state: "pending")
 
         assert result
-        bulletin = @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
+        bulletin = @harness.session[Authentication::Base::BULLETIN_SESSION_KEY]
 
         assert_equal "mfa", bulletin["kind"]
         assert_equal "pending", bulletin["state"]
@@ -205,7 +205,7 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
       result = @harness.issue_bulletin!(kind: "mfa", state: "pending")
 
       assert_not result
-      assert_nil @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
+      assert_nil @harness.session[Authentication::Base::BULLETIN_SESSION_KEY]
     end
   end
 
@@ -214,7 +214,7 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
   end
 
   test "bulletin_state returns hash with indifferent access" do
-    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = { "kind" => "mfa", "state" => "pending" }
+    @harness.session[Authentication::Base::BULLETIN_SESSION_KEY] = { "kind" => "mfa", "state" => "pending" }
     result = @harness.bulletin_state
 
     assert_equal "mfa", result[:kind]
@@ -227,7 +227,7 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
 
   test "bulletin_expired? returns true for old bulletin" do
     old_time = 3.hours.ago.to_i
-    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = {
+    @harness.session[Authentication::Base::BULLETIN_SESSION_KEY] = {
       "issued_at" => old_time,
       "kind" => "mfa",
       "state" => "pending",
@@ -237,15 +237,15 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
   end
 
   test "consume_bulletin! removes bulletin from session" do
-    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = { "kind" => "mfa" }
+    @harness.session[Authentication::Base::BULLETIN_SESSION_KEY] = { "kind" => "mfa" }
     @harness.consume_bulletin!
 
-    assert_nil @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
+    assert_nil @harness.session[Authentication::Base::BULLETIN_SESSION_KEY]
   end
 
   test "refresh_bulletin_dimension! updates issued_at and state" do
     old_time = 1.hour.ago.to_i
-    @harness.session[Auth::Base::BULLETIN_SESSION_KEY] = {
+    @harness.session[Authentication::Base::BULLETIN_SESSION_KEY] = {
       "issued_at" => old_time,
       "kind" => "mfa",
       "state" => "pending",
@@ -253,7 +253,7 @@ class AuthRedirectBulletinTest < ActiveSupport::TestCase
 
     travel_to(1.second.from_now)
     @harness.refresh_bulletin_dimension!(state: "updated")
-    bulletin = @harness.session[Auth::Base::BULLETIN_SESSION_KEY]
+    bulletin = @harness.session[Authentication::Base::BULLETIN_SESSION_KEY]
 
     assert_operator bulletin["issued_at"], :>, old_time
     assert_equal "updated", bulletin["state"]

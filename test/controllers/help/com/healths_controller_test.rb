@@ -20,6 +20,7 @@ class Help::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
     get help_com_health_url()
 
     assert_response :success
+    assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
     assert_includes response.body, "OK"
     assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
   end
@@ -28,6 +29,7 @@ class Help::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
     get help_com_health_url(format: :html)
 
     assert_response :success
+    assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
     assert_includes response.body, "OK"
     assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
   end

@@ -11,6 +11,7 @@ module Core
           get core_org_health_url
 
           assert_response :success
+          assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
           assert_includes response.body, "OK"
           assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
         end
@@ -21,6 +22,7 @@ module Core
           get core_org_health_url(format: :html)
 
           assert_response :service_unavailable
+          assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
           assert_includes response.body, "UNHEALTHY"
           assert_includes response.body, "Database ActivityRecord(writing) unavailable"
         end

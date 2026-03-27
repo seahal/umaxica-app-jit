@@ -8,6 +8,7 @@ require_relative "support/simplecov_setup" if coverage_enabled
 
 ENV["RAILS_ENV"] = "test"
 ENV["SIGN_SERVICE_URL"] = "sign.app.localhost"
+ENV["SIGN_CORPORATE_URL"] = "sign.com.localhost"
 ENV["SIGN_STAFF_URL"] = "sign.org.localhost"
 ENV["CORE_SERVICE_URL"] = "www.app.localhost"
 ENV["CORE_STAFF_URL"] = "www.org.localhost"
@@ -25,7 +26,7 @@ ENV["HELP_SERVICE_URL"] = "help.app.localhost"
 ENV["HELP_STAFF_URL"] = "help.org.localhost"
 ENV["HELP_CORPORATE_URL"] = "help.com.localhost"
 ENV["REGION_CODE"] = "all"
-ENV["TRUSTED_ORIGINS"] = "http://sign.app.localhost:3001,http://sign.org.localhost:3001"
+ENV["TRUSTED_ORIGINS"] = "http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001"
 ENV["PREFERENCE_JWT_AUDIENCES"] = "app.localhost,org.localhost,com.localhost"
 
 require_relative "../config/environment"

@@ -61,6 +61,7 @@ module Auth
         same_site: :lax,
         path: "/",
         expires: expires,
+        domain: false,
       )
     end
 
@@ -70,6 +71,7 @@ module Auth
         request: request,
         same_site: :lax,
         path: "/",
+        domain: false,
       ).except(:expires, :httponly, :secure, :same_site)
     end
 

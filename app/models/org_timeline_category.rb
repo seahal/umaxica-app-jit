@@ -23,6 +23,8 @@
 
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 class OrgTimelineCategory < PublicationRecord
   include ::CatTag
 
@@ -33,3 +35,4 @@ class OrgTimelineCategory < PublicationRecord
 
   validates :org_timeline_id, uniqueness: true
 end
+# rubocop:enable Layout/LineLength
