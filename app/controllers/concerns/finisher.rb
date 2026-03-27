@@ -6,6 +6,7 @@ module Finisher
 
   # TODO: purge current params.
   def purge_current
+    Current.reset
   end
 
   private

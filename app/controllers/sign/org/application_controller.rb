@@ -5,21 +5,13 @@ module Sign
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
-
       include ::Preference::Global
-
       include ::Authentication::Staff
-
       include ::Authorization::Staff
-
       include ::Verification::Staff # TODO: i want to remove this.
-
       include Pundit::Authorization # TODO: i want to remove this.
-
       include ::RestrictedSessionGuard # TODO: i want to remove this.
-
       include ::CurrentSupport
-
       include ::Finisher
 
       before_action :check_default_rate_limit
@@ -40,7 +32,7 @@ module Sign
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
-      append_after_action :finish_request
+      after_action :purge_current
 
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(

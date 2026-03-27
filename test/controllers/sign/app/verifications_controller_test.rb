@@ -4,7 +4,7 @@
 require "test_helper"
 require "base64"
 
-class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
+class Sign::App::VerificationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :users
 
   setup do

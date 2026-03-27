@@ -472,7 +472,7 @@ module Concerns
 
         if config[:parent]
           assert_equal "#{config[:parent]}::ApplicationController".safe_constantize, controller_class.superclass,
-            "#{domain} should inherit from #{config[:parent]}"
+                       "#{domain} should inherit from #{config[:parent]}"
         else
           expected = config[:includes] || []
 

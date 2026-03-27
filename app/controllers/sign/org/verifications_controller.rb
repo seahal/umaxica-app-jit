@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-class Sign::Org::VerificationController < Sign::Org::Verification::BaseController
+class Sign::Org::VerificationsController < Sign::Org::Verification::BaseController
   include Sign::OrgVerificationBase
   include Sign::VerificationEntry
 

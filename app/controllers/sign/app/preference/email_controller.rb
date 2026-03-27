@@ -4,7 +4,7 @@
 module Sign
   module App
     module Preference
-      class EmailsController < ApplicationController
+      class EmailController < ApplicationController
         auth_required! only: %i(show update)
         before_action :authenticate_user!, only: %i(show update)
         before_action :set_email_context, only: %i(show edit update)

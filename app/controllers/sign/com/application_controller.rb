@@ -1,13 +1,14 @@
 # typed: false
 # frozen_string_literal: true
 
+# FIXME: REWRITE!!!
+
 module Sign
   module Com
     class ApplicationController < Sign::App::ApplicationController
       include Sign::Com::RouteAliasHelper
-
+      include ::Finisher
       helper Sign::Com::ApplicationHelper
-      layout "sign/com/application"
 
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(
@@ -18,6 +19,7 @@ module Sign
                            with: :exception
 
       before_action :enforce_required_telephone_registration!
+      after_action :purge_current
 
       class << self
         def local_prefixes

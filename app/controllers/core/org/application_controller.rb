@@ -27,7 +27,7 @@ module Core
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
-      append_after_action :finish_request
+      after_action :purge_current
 
       public_strict!
 

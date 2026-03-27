@@ -89,6 +89,7 @@ DEV_URL=dev.localhost
 APEX_CORPORATE_URL=com.localhost
 APEX_SERVICE_URL=app.localhost
 APEX_STAFF_URL=org.localhost
+SIGN_CORPORATE_URL=sign.umaxica.com
 SIGN_SERVICE_URL=sign.umaxica.app
 SIGN_STAFF_URL=sign.umaxica.org
 CORE_CORPORATE_URL=www.com.localhost

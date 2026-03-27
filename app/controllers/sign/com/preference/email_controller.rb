@@ -4,7 +4,7 @@
 module Sign
   module Com
     module Preference
-      class EmailsController < Sign::App::Preference::EmailsController
+      class EmailController < Sign::App::Preference::EmailController
         include Sign::Com::ControllerBehavior
       end
     end

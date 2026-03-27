@@ -41,7 +41,7 @@ module News
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
-      append_after_action :finish_request
+      after_action :purge_current
 
       # FIXME: Resolve the URL issues before deploying.
       protect_from_forgery using: :header_or_legacy_token,

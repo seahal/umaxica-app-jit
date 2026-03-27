@@ -110,7 +110,7 @@ scope module: :sign, as: :sign do
       end
 
       # step up verification
-      resource :verification, only: %i(show), controller: :verification
+      resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
@@ -159,7 +159,7 @@ scope module: :sign, as: :sign do
 
       resource :preference, only: :show
       namespace :preference do
-        resources :email, only: %i(index show create edit update), controller: :emails
+        resources :email, only: %i(index show create edit update)
       end
     end
   end
@@ -175,10 +175,10 @@ scope module: :sign, as: :sign do
         namespace :v0 do
           namespace :in do
             namespace :email do
-              resource :otp, only: :create, controller: :otps
+              resource :otp, only: :create
             end
             namespace :telephone do
-              resource :otp, only: :create, controller: :otps
+              resource :otp, only: :create
             end
           end
           resource :cookie, only: %i(show update)
@@ -271,7 +271,7 @@ scope module: :sign, as: :sign do
 
       resource :preference, only: :show
       namespace :preference do
-        resources :email, only: %i(index show create edit update), controller: :emails
+        resources :email, only: %i(index show create edit update)
       end
     end
   end
@@ -325,7 +325,7 @@ scope module: :sign, as: :sign do
         resources :emails, only: %i(new create)
         resources :invitations, only: %i(new create) do
           collection do
-            resources :emails, only: %i(new create edit update), controller: "invitations/emails"
+            resources :emails, only: %i(new create edit update)
           end
         end
       end
@@ -346,7 +346,6 @@ scope module: :sign, as: :sign do
 
       resource :in, only: [:new]
       namespace :in do
-        # TODO: refactor to standard CRUD
         resources :passkeys, only: [:new] do
           collection do
             post :options
@@ -362,7 +361,7 @@ scope module: :sign, as: :sign do
         end
       end
 
-      resource :verification, only: %i(show), controller: :verification
+      resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)

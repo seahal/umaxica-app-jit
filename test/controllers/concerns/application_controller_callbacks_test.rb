@@ -67,8 +67,8 @@ module Concerns
         assert_includes before_actions, :set_current,
                         "#{domain} should have set_current callback"
 
-        assert_includes after_actions, :finish_request,
-                        "#{domain} should have finish_request callback"
+        assert_includes after_actions, :purge_current,
+                        "#{domain} should have purge_current callback"
       end
 
       rate_limit_method = "test_#{domain.underscore.gsub("/", "_")}_rate_limit_callback"

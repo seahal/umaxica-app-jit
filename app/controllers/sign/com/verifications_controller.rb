@@ -3,7 +3,7 @@
 
 module Sign
   module Com
-    class VerificationController < Sign::App::VerificationController
+    class VerificationsController < Sign::App::VerificationsController
       include Sign::Com::ControllerBehavior
     end
   end

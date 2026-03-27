@@ -3,7 +3,7 @@
 
 require "test_helper"
 
-class Sign::Org::VerificationControllerTest < ActionDispatch::IntegrationTest
+class Sign::Org::VerificationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :staffs, :staff_tokens, :staff_passkeys
 
   setup do

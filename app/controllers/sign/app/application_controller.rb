@@ -5,24 +5,16 @@ module Sign
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
-
       include ::Preference::Global
-
       include ::Authentication::User
-
       include ::Authorization::User
-
       include ::Verification::User
-
       include Pundit::Authorization
-
       # Note: RestrictedSessionGuard is still needed to enforce session expiration
       # and block expired restricted sessions on the session management page itself.
       include ::RestrictedSessionGuard
-
       # FIXME: in the future Current Support should be purge.
       include ::CurrentSupport
-
       include ::Finisher
 
       before_action :check_default_rate_limit
@@ -32,6 +24,7 @@ module Sign
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
 
+      before_action :check_default_rate_limit
       prepend_before_action :set_preferences_cookie
       # Restricted session guard - explicitly enabled to handle expired sessions
       # and prevent access to non-allowed routes for restricted sessions
@@ -46,7 +39,7 @@ module Sign
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
-      append_after_action :finish_request
+      after_action :purge_current
 
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(
