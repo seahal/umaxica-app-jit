@@ -15,12 +15,10 @@ scope module: :sign, as: :sign do
         namespace :v0 do
           namespace :in do
             namespace :email do
-              # TODO: nusty code!, delete controller of this line
-              resource :otp, only: :create, controller: :otps
+              resource :otp, only: :create
             end
             namespace :telephone do
-              # TODO: nusty code!, delete controller of this line
-              resource :otp, only: :create, controller: :otps
+              resource :otp, only: :create
             end
           end
           resource :cookie, only: %i(show update)
@@ -67,17 +65,15 @@ scope module: :sign, as: :sign do
           collection do
             post :resend
           end
-          # TODO: nusty code!
-          resource :passkey_registration, only: %i(show create)
-          # TODO: nusty code!
-          post "passkey_registration/begin", to: "passkey_registrations#begin"
+          resource :passkey_registration, only: %i(show create) do
+            post :begin, on: :member
+          end
         end
       end
 
       resource :in, only: %i(new)
       namespace :in do
         resource :email, only: %i(new create edit update)
-        # TODO: refactor to standard CRUD
         resources :passkeys, only: [:new] do
           collection do
             post :options
@@ -130,7 +126,6 @@ scope module: :sign, as: :sign do
       resource :configuration, only: %i(show edit)
       namespace :configuration do
         resources :totps, only: %i(index new create edit update destroy)
-        # TODO: refactor to standard CRUD
         resources :passkeys do
           collection do
             post :options
@@ -139,28 +134,24 @@ scope module: :sign, as: :sign do
         end
         resource :challenge, only: %i(show update)
         namespace :emails do
-          # TODO: nusty code!, delete controller of this line
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :emails, only: %i(index edit destroy)
         namespace :telephones do
-          # TODO: nusty code!, delete controller of this line
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :telephones, only: %i(index new edit create destroy)
         resource :apple, only: [:show, :destroy]
         # TODO: by the way, what is update mehtods for google here?
         resource :google, only: %i(show update destroy)
-        # TODO: refactor to standard CRUD
         resources :secrets, only: %i(index show new edit create destroy) do
-          post :regenerate, on: :member # TODO: what is this?
+          post :regenerate, on: :member
         end
         resources :sessions, only: %i(index destroy) do
           collection do
             delete :others
           end
         end
-        # TODO: chose one of two line.
         resources :activities, only: :index
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
@@ -237,7 +228,7 @@ scope module: :sign, as: :sign do
         end
       end
 
-      resource :verification, only: %i(show), controller: :verification
+      resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
@@ -261,11 +252,11 @@ scope module: :sign, as: :sign do
         resource :challenge, only: %i(show update)
         resources :emails, only: %i(index edit destroy)
         namespace :emails do
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :telephones, only: %i(index new edit create destroy)
         namespace :telephones do
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :secrets, only: %i(index show new edit create destroy)
         resources :sessions, only: %i(index destroy) do
@@ -385,7 +376,6 @@ scope module: :sign, as: :sign do
       # config
       resource :configuration, only: :show
       namespace :configuration do
-        # TODO: refactor to standard CRUD
         resources :passkeys do
           collection do
             post :options
@@ -400,13 +390,11 @@ scope module: :sign, as: :sign do
           end
         end
         namespace :emails do
-          # TODO: nusty code!, delete controller of this line
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :emails, only: %i(index edit destroy)
         namespace :telephones do
-          # TODO: nusty code!, delete controller of this line
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :telephones, only: %i(index new edit create destroy)
         resource :google, only: %i(show update destroy)

@@ -55,7 +55,7 @@ module Sign::App::Up
 
       assert_response :success
       assert_select "[data-controller='passkey-registration']"
-      begin_path = sign_app_up_telephone_passkey_registration_begin_path(telephone, ri: "jp")
+      begin_path = begin_sign_app_up_telephone_passkey_registration_path(telephone, ri: "jp")
 
       assert_select "[data-passkey-registration-begin-url-value='#{begin_path}']"
       finish_path = sign_app_up_telephone_passkey_registration_path(telephone, ri: "jp")
@@ -69,7 +69,7 @@ module Sign::App::Up
     test "POST begin returns challenge and options" do
       telephone = verify_telephone_via_otp!
 
-      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      post begin_sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp")
 
       assert_response :ok
       json = response.parsed_body
@@ -88,7 +88,7 @@ module Sign::App::Up
     test "POST create saves passkey and returns completion redirect on success" do
       telephone = verify_telephone_via_otp!
 
-      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      post begin_sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp")
       challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = Object.new
@@ -120,7 +120,7 @@ module Sign::App::Up
     test "POST create establishes login session for configuration access" do
       telephone = verify_telephone_via_otp!
 
-      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      post begin_sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp")
       challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = Object.new
@@ -150,7 +150,7 @@ module Sign::App::Up
     test "POST create respects rt parameter for redirect" do
       telephone = verify_telephone_via_otp!
 
-      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      post begin_sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp")
       challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = Object.new
@@ -181,7 +181,7 @@ module Sign::App::Up
     test "POST create creates audit record on success" do
       telephone = verify_telephone_via_otp!
 
-      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      post begin_sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp")
       challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = Object.new
@@ -212,7 +212,7 @@ module Sign::App::Up
     test "POST create returns unprocessable on verifier error" do
       telephone = verify_telephone_via_otp!
 
-      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      post begin_sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp")
       challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = Object.new
