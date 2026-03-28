@@ -5,8 +5,6 @@ module Sign
   module Com
     module Preference
       class RegionsController < ApplicationController
-        include ::Preference::Core
-
         def edit
           set_region_preferences_edit
         end

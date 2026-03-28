@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Verification
-      class SetupsController < Sign::App::Verification::SetupsController
-        include Sign::Com::ControllerBehavior
+      class SetupsController < ApplicationController
       end
     end
   end

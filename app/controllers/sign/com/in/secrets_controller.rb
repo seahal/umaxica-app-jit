@@ -4,8 +4,7 @@
 module Sign
   module Com
     module In
-      class SecretsController < Sign::App::In::SecretsController
-        include Sign::Com::ControllerBehavior
+      class SecretsController < ApplicationController
       end
     end
   end

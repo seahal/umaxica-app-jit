@@ -1,4 +1,5 @@
 # typed: false
+# rubocop:disable Layout/LineLength
 # == Schema Information
 #
 # Table name: app_timeline_categories
@@ -22,8 +23,6 @@
 #
 
 # frozen_string_literal: true
-
-# rubocop:disable Layout/LineLength
 
 class AppTimelineCategory < PublicationRecord
   belongs_to :app_timeline, inverse_of: :category

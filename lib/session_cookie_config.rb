@@ -12,7 +12,7 @@ module SessionCookieConfig
       sign_service_host.present? &&
       sign_service_host.exclude?("localhost") &&
       !sign_service_host.start_with?("127.") &&
-      !sign_service_host.start_with?("0.0.0.0") # non-routable bind address
+      !sign_service_host.start_with?("0.") # non-routable bind address
 
     (rails_env.production? ||
       ENV["FORCE_SECURE_COOKIES"] == "1" ||

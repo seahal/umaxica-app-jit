@@ -3,8 +3,7 @@
 
 module Sign
   module Com
-    class SitemapsController < Sign::App::SitemapsController
-      include Sign::Com::ControllerBehavior
+    class SitemapsController < ApplicationController
     end
   end
 end

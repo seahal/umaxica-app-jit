@@ -5,8 +5,7 @@ module Sign
   module Com
     module In
       module Challenge
-        class PasskeysController < Sign::App::In::Challenge::PasskeysController
-          include Sign::Com::ControllerBehavior
+        class PasskeysController < ApplicationController
         end
       end
     end

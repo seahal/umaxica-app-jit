@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Configuration
-      class OutsController < Sign::App::Configuration::OutsController
-        include Sign::Com::ControllerBehavior
+      class OutsController < ApplicationController
       end
     end
   end

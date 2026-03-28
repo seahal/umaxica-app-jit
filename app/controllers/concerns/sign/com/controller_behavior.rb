@@ -32,7 +32,9 @@ module Sign
       private
 
       def after_login_path
-        return new_sign_com_configuration_telephones_registration_path(ri: params[:ri]) if current_user&.respond_to?(:verified_telephone?) && !current_user.verified_telephone?
+        if current_user&.respond_to?(:verified_telephone?) && !current_user.verified_telephone?
+          return new_sign_com_configuration_telephones_registration_path(ri: params[:ri])
+        end
 
         sign_com_configuration_path
       rescue StandardError

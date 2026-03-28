@@ -4,8 +4,7 @@
 module Sign
   module Com
     module In
-      class SessionsController < Sign::App::In::SessionsController
-        include Sign::Com::ControllerBehavior
+      class SessionsController < ApplicationController
       end
     end
   end

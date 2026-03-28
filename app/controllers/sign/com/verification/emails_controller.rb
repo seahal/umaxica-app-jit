@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Verification
-      class EmailsController < Sign::App::Verification::EmailsController
-        include Sign::Com::ControllerBehavior
+      class EmailsController < ApplicationController
       end
     end
   end

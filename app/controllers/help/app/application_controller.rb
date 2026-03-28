@@ -19,7 +19,7 @@ module Help
       allow_browser versions: :modern
 
       # NOTE: Order matters (dependencies rely on this sequence)
-      # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
+      # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       prepend_before_action :set_preferences_cookie
       prepend_before_action :canonicalize_regional_params
       prepend_before_action :set_locale

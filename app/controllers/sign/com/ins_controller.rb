@@ -3,8 +3,7 @@
 
 module Sign
   module Com
-    class InsController < Sign::App::InsController
-      include Sign::Com::ControllerBehavior
+    class InsController < ApplicationController
     end
   end
 end

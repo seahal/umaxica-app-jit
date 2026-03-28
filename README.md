@@ -3,23 +3,21 @@
 
 # Umaxica App (JIT)
 
-Multi-domain Rails application for three audience surfaces:
+## Routing
+- `app`: for end user
+- `org`: controller panel
+- `com`: brand page
 
-- `app`: end users
-- `org`: staff
-- `com`: corporate/public
-
-Routing is host-constrained, so domain and subdomain matter in both development and production.
+Multi-domain Rails application for three audience surfaces. Routing is host-constrained, so domain and subdomain matter in both development and production.
 
 ## Stack
 
 - Ruby `4.0.1`
-- Rails `main` branch (tracking Rails 8 development)
 - PostgreSQL
+  - Solid Queue
 - Valkey/Redis
-- Solid Queue
 - Importmap + Stimulus + Turbo
-- Tailwind CSS via `tailwindcss-rails`
+  - Tailwind CSS via `tailwindcss-rails`
 - Propshaft
 - `pnpm` only for JavaScript linting/formatting tooling
 
@@ -182,8 +180,7 @@ These checks cover formatting, linting, security audits, database consistency, a
 | `bin/dev` stops during boot              | Check `TRUSTED_ORIGINS` and database availability                                     |
 | Credentials cannot be decrypted          | Use the shared Rails credentials key for this environment                             |
 
-## Notes
-
+## Acknowledgement
 - Secrets must stay in Rails credentials; do not commit plaintext secrets.
 - WebAuthn origins are controlled by `TRUSTED_ORIGINS`.
 - Public availability of this repository is not guaranteed permanently.

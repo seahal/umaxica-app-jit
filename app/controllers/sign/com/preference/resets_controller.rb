@@ -5,8 +5,6 @@ module Sign
   module Com
     module Preference
       class ResetsController < ApplicationController
-        include ::Preference::Core
-
         def edit
           @preference = @preferences
         end

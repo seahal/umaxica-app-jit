@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Configuration
-      class ChallengesController < Sign::App::Configuration::ChallengesController
-        include Sign::Com::ControllerBehavior
+      class ChallengesController < ApplicationController
       end
     end
   end

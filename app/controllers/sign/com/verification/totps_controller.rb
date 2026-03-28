@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Verification
-      class TotpsController < Sign::App::Verification::TotpsController
-        include Sign::Com::ControllerBehavior
+      class TotpsController < ApplicationController
       end
     end
   end

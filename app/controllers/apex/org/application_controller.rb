@@ -18,7 +18,7 @@ module Apex
       allow_browser versions: :modern
 
       # NOTE: Order matters (dependencies rely on this sequence)
-      # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
+      # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
       prepend_before_action :set_preferences_cookie # TODO: delete this line
       prepend_before_action :resolve_param_context # TODO: delete this line

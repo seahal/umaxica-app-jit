@@ -3,8 +3,7 @@
 
 module Sign
   module Com
-    class AuthorizesController < Sign::App::AuthorizesController
-      include Sign::Com::ControllerBehavior
+    class AuthorizesController < ApplicationController
     end
   end
 end

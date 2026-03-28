@@ -297,6 +297,7 @@ scope module: :sign, as: :sign do
           resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
+            # TODO: RENAME :dbsc, only: :create
             resource :dbsc_registration, only: :create
             resource :refresh, only: :create
           end

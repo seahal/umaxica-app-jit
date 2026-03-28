@@ -3,8 +3,7 @@
 
 module Sign
   module Com
-    class JwksController < Sign::App::JwksController
-      include Sign::Com::ControllerBehavior
+    class JwksController < ApplicationController
     end
   end
 end

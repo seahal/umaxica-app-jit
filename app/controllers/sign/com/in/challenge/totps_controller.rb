@@ -5,8 +5,7 @@ module Sign
   module Com
     module In
       module Challenge
-        class TotpsController < Sign::App::In::Challenge::TotpsController
-          include Sign::Com::ControllerBehavior
+        class TotpsController < ApplicationController
         end
       end
     end

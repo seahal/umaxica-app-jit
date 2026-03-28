@@ -5,8 +5,7 @@ module Sign
   module Com
     module Configuration
       module Emails
-        class RegistrationsController < Sign::App::Configuration::Emails::RegistrationsController
-          include Sign::Com::ControllerBehavior
+        class RegistrationsController < ApplicationController
         end
       end
     end

@@ -4,8 +4,7 @@
 module Sign
   module Com
     module In
-      class BulletinsController < Sign::App::In::BulletinsController
-        include Sign::Com::ControllerBehavior
+      class BulletinsController < ApplicationController
       end
     end
   end

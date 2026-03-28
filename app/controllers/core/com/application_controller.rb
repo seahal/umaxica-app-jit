@@ -22,7 +22,7 @@ module Core
                            with: :exception
 
       # NOTE: Order matters (dependencies rely on this sequence)
-      #       Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
+      #       Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!

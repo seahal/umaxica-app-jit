@@ -4,8 +4,7 @@
 module Sign
   module Com
     module In
-      class EmailsController < Sign::App::In::EmailsController
-        include Sign::Com::ControllerBehavior
+      class EmailsController < ApplicationController
       end
     end
   end

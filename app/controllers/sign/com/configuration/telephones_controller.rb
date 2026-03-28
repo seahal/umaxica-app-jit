@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Configuration
-      class TelephonesController < Sign::App::Configuration::TelephonesController
-        include Sign::Com::ControllerBehavior
+      class TelephonesController < ApplicationController
       end
     end
   end

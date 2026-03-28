@@ -3,8 +3,7 @@
 
 module Sign
   module Com
-    class TokensController < Sign::App::TokensController
-      include Sign::Com::ControllerBehavior
+    class TokensController < ApplicationController
     end
   end
 end

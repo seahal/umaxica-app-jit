@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Configuration
-      class WithdrawalsController < Sign::App::Configuration::WithdrawalsController
-        include Sign::Com::ControllerBehavior
+      class WithdrawalsController < ApplicationController
       end
     end
   end

@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Configuration
-      class ActivitiesController < Sign::App::Configuration::ActivitiesController
-        include Sign::Com::ControllerBehavior
+      class ActivitiesController < ApplicationController
       end
     end
   end

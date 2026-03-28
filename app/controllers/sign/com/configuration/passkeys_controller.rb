@@ -4,8 +4,7 @@
 module Sign
   module Com
     module Configuration
-      class PasskeysController < Sign::App::Configuration::PasskeysController
-        include Sign::Com::ControllerBehavior
+      class PasskeysController < ApplicationController
       end
     end
   end

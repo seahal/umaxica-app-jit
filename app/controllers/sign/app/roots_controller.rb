@@ -4,7 +4,7 @@
 module Sign
   module App
     class RootsController < ApplicationController
-      guest_only! status: :unauthorized, message: "権限がありません"
+      guest_only! status: :unauthorized
 
       def index
       end

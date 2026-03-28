@@ -6,8 +6,6 @@ module Sign
     module Preference
       module Region
         class LanguagesController < ApplicationController
-          include ::Preference::Core
-
           def edit
             set_language_preferences_edit
           end

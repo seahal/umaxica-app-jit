@@ -22,7 +22,7 @@ module Sign
       # Restricted session guard - explicitly enabled to block restricted sessions
       # from accessing routes other than /in/session
       # NOTE: Order matters (dependencies rely on this sequence)
-      # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
+      # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region

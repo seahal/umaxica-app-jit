@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 36bf938103be3d7037b21ce2af0a6863b2341762
+  revision: ca86130159d7ba8ea83b38318dd560e8552ea17e
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -861,13 +861,13 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13066)
-      sorbet-static (= 0.6.13066)
-    sorbet-runtime (0.6.13066)
-    sorbet-static (0.6.13066-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13066)
-      sorbet (= 0.6.13066)
-      sorbet-runtime (= 0.6.13066)
+    sorbet (0.6.13067)
+      sorbet-static (= 0.6.13067)
+    sorbet-runtime (0.6.13067)
+    sorbet-static (0.6.13067-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13067)
+      sorbet (= 0.6.13067)
+      sorbet-runtime (= 0.6.13067)
     spoom (1.7.11)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -1336,10 +1336,10 @@ CHECKSUMS
   snaky_hash (2.0.3) sha256=25a3d299566e8153fb02fa23fd9a9358845950f7a523ddbbe1fa1e0d79a6d456
   solid_cache (1.0.10) sha256=bc05a2fb3ac78a6f43cbb5946679cf9db67dd30d22939ededc385cb93e120d41
   solid_queue (1.4.0) sha256=e6a18d196f0b27cb6e3c77c5b31258b05fb634f8ed64fb1866ed164047216c2a
-  sorbet (0.6.13066) sha256=01ce6141490dfc1363e49db1aeb376c5290e9324047cb321df6a1f0fc7fe0752
-  sorbet-runtime (0.6.13066) sha256=f11fd181b013ea00e7faa071be61e6ec472a4413267e6aca1e10b90651a808a9
-  sorbet-static (0.6.13066-x86_64-linux) sha256=f1153a44c03fce427e1ffdf017e88500fdc14599dec8cbcaa82c6c996eb2d3af
-  sorbet-static-and-runtime (0.6.13066) sha256=e1f25047efc3eb002207d74c1843851e3f7ad6732e9123a2ddf672d16933efac
+  sorbet (0.6.13067) sha256=0b7be339a0ef10a7296badf0c70dfcebfcbed179c7aac469019fbfad4fe01e26
+  sorbet-runtime (0.6.13067) sha256=23a46f9abd3e18a91aba1a2a545cf71c9e1dd1fcc94d4e6f52b99b346e6b37fd
+  sorbet-static (0.6.13067-x86_64-linux) sha256=0a20402e292cd672046ccd9385fb9c65e3a17fa1ed5597b96ac908adc272a395
+  sorbet-static-and-runtime (0.6.13067) sha256=a6442a39d664e9e03573577d3087ef5a7d0525dc7670724a44ffdb01c28c20e4
   spoom (1.7.11) sha256=4e27384af6d3fde5aadc0287c51e6f76c0802259cbb3b6a67603bf718352f4cf
   stimulus-rails (1.3.4) sha256=765676ffa1f33af64ce026d26b48e8ffb2e0b94e0f50e9119e11d6107d67cb06
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
