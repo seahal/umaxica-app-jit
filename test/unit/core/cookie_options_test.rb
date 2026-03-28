@@ -18,7 +18,7 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
   end
 
   test "for returns httponly and secure options" do
-    request = MockRequest.new("www.example.com")
+    request = MockRequest.new("ww.example.com")
     surface = :app
 
     options = Core::CookieOptions.for(surface: surface, request: request, secure: true)
@@ -28,7 +28,7 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
   end
 
   test "for includes same_site when provided" do
-    request = MockRequest.new("www.example.com")
+    request = MockRequest.new("ww.example.com")
 
     options = Core::CookieOptions.for(surface: :app, request: request, same_site: :lax)
 
@@ -36,7 +36,7 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
   end
 
   test "for includes expires when provided" do
-    request = MockRequest.new("www.example.com")
+    request = MockRequest.new("ww.example.com")
     expires = 1.year.from_now
 
     options = Core::CookieOptions.for(surface: :app, request: request, expires: expires)
@@ -45,7 +45,7 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
   end
 
   test "for includes path when provided" do
-    request = MockRequest.new("www.example.com")
+    request = MockRequest.new("ww.example.com")
 
     options = Core::CookieOptions.for(surface: :app, request: request, path: "/accounts")
 
@@ -53,7 +53,7 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
   end
 
   test "for includes domain when surface has domain" do
-    request = MockRequest.new("www.example.com")
+    request = MockRequest.new("ww.example.com")
 
     options = Core::CookieOptions.for(surface: :app, request: request)
 
@@ -61,7 +61,7 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
   end
 
   test "for omits domain when disabled" do
-    request = MockRequest.new("www.example.com")
+    request = MockRequest.new("ww.example.com")
 
     options = Core::CookieOptions.for(surface: :app, request: request, domain: false)
 

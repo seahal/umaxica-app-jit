@@ -177,9 +177,9 @@ Test environment automatically sets these (see `test/test_helper.rb`):
 ```ruby
 ENV["SIGN_SERVICE_URL"] = "sign.app.localhost"
 ENV["SIGN_STAFF_URL"] = "sign.org.localhost"
-ENV["CORE_SERVICE_URL"] = "www.app.localhost"
-ENV["CORE_STAFF_URL"] = "www.org.localhost"
-ENV["CORE_CORPORATE_URL"] = "www.com.localhost"
+ENV["CORE_SERVICE_URL"] = "ww.app.localhost"
+ENV["CORE_STAFF_URL"] = "ww.org.localhost"
+ENV["CORE_CORPORATE_URL"] = "ww.com.localhost"
 ENV["APEX_SERVICE_URL"] = "app.localhost"
 ENV["APEX_STAFF_URL"] = "org.localhost"
 ENV["APEX_CORPORATE_URL"] = "com.localhost"

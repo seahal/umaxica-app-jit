@@ -1,8 +1,0 @@
-en:
-  errors:
-    invalid_authenticity_token: "Your session has expired. Please reload the page."
-    rate_limit:
-      exceeded: "Too many requests. Please try again later."
-    preference:
-      cookie:
-        invalid_access_token: "Preference access token is invalid or missing."

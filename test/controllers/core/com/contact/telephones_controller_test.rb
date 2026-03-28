@@ -16,7 +16,7 @@ module Core
             telephone_number: "+15555555555",
             expires_at: 1.day.from_now,
           )
-          @host = "www.com.localhost".freeze
+          @host = "ww.com.localhost".freeze
         end
 
         test "should get new" do

@@ -5,7 +5,7 @@ require "test_helper"
 
 class Core::Com::Auth::CallbacksControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @host = ENV.fetch("CORE_CORPORATE_URL", "www.com.localhost")
+    @host = ENV.fetch("CORE_CORPORATE_URL", "ww.com.localhost")
   end
 
   test "returns client_id as core_com" do

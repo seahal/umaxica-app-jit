@@ -8,7 +8,7 @@ class Core::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses
 
   setup do
-    host! ENV.fetch("CORE_SERVICE_URL", "www.app.localhost")
+    host! ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
     @user = users(:one)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
@@ -39,7 +39,7 @@ class Core::Com::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses
 
   setup do
-    host! ENV.fetch("CORE_CORPORATE_URL", "www.com.localhost")
+    host! ENV.fetch("CORE_CORPORATE_URL", "ww.com.localhost")
     @user = users(:one)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
@@ -69,7 +69,7 @@ class Core::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :staffs, :staff_statuses
 
   setup do
-    host! ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
+    host! ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
     @staff = staffs(:one)
     @headers = { "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
   end

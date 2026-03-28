@@ -16,7 +16,7 @@ require_relative "../app/middleware/core/surface_middleware" if File.exist?(surf
 module Jit
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults(8.1)
+    config.load_defaults(8.2)
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -67,9 +67,9 @@ module Jit
     config.sms_provider = ENV.fetch("SMS_PROVIDER", "aws_sns")
     config.aws_region = ENV.fetch("AWS_REGION", "ap-northeast-1")
 
-    # Load translations from nested locale directories (e.g., config/locales/jp/**/*.yml)
+    # Load translations from nested locale directories.
     config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
-    # Prioritize root ja.yml to ensure our fixes are applied
+    config.i18n.load_path.push(Rails.root.join("config/locales/en.yml").to_s)
     config.i18n.load_path.push(Rails.root.join("config/locales/ja.yml").to_s)
     config.i18n.default_locale = :ja
 

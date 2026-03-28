@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 
 class Current < ActiveSupport::CurrentAttributes
-  attribute :actor, :actor_type, :session, :token, :domain, :preference
+  attribute :actor, :actor_type, :session, :token, :domain, :preference,
+            :trace_id, :span_id
 
   resets { self.preference = Current::Preference::NULL }
 

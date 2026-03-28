@@ -12,13 +12,13 @@ module Apex
       include ::Verification::User
       include Pundit::Authorization
       include ::Oidc::SsoInitiator # FIXME: delete this!
-      include ::CurrentSupport # FIXME: delete this!
+      include ::CurrentSupport
       include ::Finisher
 
       allow_browser versions: :modern
 
       # NOTE: Order matters (dependencies rely on this sequence)
-      # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport
+      # Layer order: RateLimit → Preference → AuthN(including AuthZ) → Verification → CurrentSupport → O11y
       before_action :check_default_rate_limit
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
@@ -31,6 +31,7 @@ module Apex
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
+      before_action :set_current_observability
       after_action :purge_current
 
       # FIXME: Resolve the URL issues before deploying.

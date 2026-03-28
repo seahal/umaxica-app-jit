@@ -28,7 +28,7 @@ module Core
             expires_at: 1.day.from_now,
           )
 
-          @host = "www.com.localhost".freeze
+          @host = "ww.com.localhost".freeze
         end
 
         test "should get new" do

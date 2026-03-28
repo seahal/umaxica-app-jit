@@ -226,9 +226,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
   # =============================================================================
 
   REGIONAL_DOMAINS = [
-    { name: "core_app", host: "www.app.localhost", root_url_method: :core_app_root_url },
-    { name: "core_org", host: "www.org.localhost", root_url_method: :core_org_root_url },
-    { name: "core_com", host: "www.com.localhost", root_url_method: :core_com_root_url },
+    { name: "core_app", host: "ww.app.localhost", root_url_method: :core_app_root_url },
+    { name: "core_org", host: "ww.org.localhost", root_url_method: :core_org_root_url },
+    { name: "core_com", host: "ww.com.localhost", root_url_method: :core_com_root_url },
   ].freeze
 
   REGIONAL_DOMAINS.each do |domain|

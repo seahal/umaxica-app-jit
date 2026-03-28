@@ -199,7 +199,7 @@ module Preference
 
     test "audience_for returns only matching TLD for com host" do
       with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com,localhost") do
-        result = Preference::JwtConfiguration.audience_for("www.umaxica.com")
+        result = Preference::JwtConfiguration.audience_for("ww.umaxica.com")
 
         assert_includes result, "umaxica.com"
         assert_includes result, "localhost"

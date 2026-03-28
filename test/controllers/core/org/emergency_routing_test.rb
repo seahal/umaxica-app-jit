@@ -4,7 +4,7 @@
 require "test_helper"
 
 class Core::Org::EmergencyRoutingTest < ActionDispatch::IntegrationTest
-  CORE_STAFF_HOST = ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
+  CORE_STAFF_HOST = ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
 
   test "routes emergency app outage" do
     assert_routed("/emergency/app/outage", :get, "core/org/emergency/app/outages", "show")

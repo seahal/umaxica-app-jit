@@ -7,7 +7,7 @@ module News
       include ::Health
 
       def show
-        show_html
+        show_plain_text
       end
     end
   end

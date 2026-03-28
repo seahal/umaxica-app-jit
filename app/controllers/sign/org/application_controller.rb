@@ -6,6 +6,7 @@ module Sign
     class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::Preference::Global
+      include ::Preference::Adoption
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Verification::Staff # TODO: i want to remove this.

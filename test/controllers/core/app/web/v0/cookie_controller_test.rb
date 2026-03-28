@@ -7,7 +7,7 @@ class Core::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
   include PreferenceJwtHelper
 
   setup do
-    @host = ENV.fetch("CORE_SERVICE_URL", "www.app.localhost")
+    @host = ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
     host! @host
   end
 

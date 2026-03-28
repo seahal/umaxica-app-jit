@@ -111,8 +111,6 @@ module CurrentSupport
     end
 
     Current::Preference::NULL_COOKIE
-  rescue StandardError
-    Current::Preference::NULL_COOKIE
   end
 
   def resolved_resource_preference(resource)
@@ -123,8 +121,6 @@ module CurrentSupport
     else
       resource.try(:user_preference)
     end
-  rescue StandardError
-    nil
   end
 
   def preference_from_record(preference_record, cookie:)
@@ -135,5 +131,17 @@ module CurrentSupport
       theme: preference_record.theme.presence || Current::Preference::DEFAULTS[:theme],
       cookie: cookie,
     )
+  end
+
+  def set_current_observability
+    return unless defined?(OpenTelemetry::Trace)
+    return unless Current.preference.cookie.performant?
+
+    span = OpenTelemetry::Trace.current_span
+    context = span.context
+    return unless context.valid?
+
+    Current.trace_id = context.hex_trace_id
+    Current.span_id = context.hex_span_id
   end
 end

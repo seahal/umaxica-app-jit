@@ -5,9 +5,9 @@ require "test_helper"
 
 class CoreContactsFlowTest < ActionDispatch::IntegrationTest
   setup do
-    @app_host = ENV.fetch("CORE_SERVICE_URL", "www.app.localhost")
-    @org_host = ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
-    @com_host = ENV.fetch("CORE_CORPORATE_URL", "www.com.localhost")
+    @app_host = ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
+    @org_host = ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
+    @com_host = ENV.fetch("CORE_CORPORATE_URL", "ww.com.localhost")
 
     @user = users(:one)
     @staff = staffs(:one)

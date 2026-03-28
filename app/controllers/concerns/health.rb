@@ -79,7 +79,6 @@ module Health
         end
       end
     end
-
     errors
   ensure
     Prosopite.resume if defined?(Prosopite)
@@ -98,7 +97,7 @@ module Health
     errors
   end
 
-  def show_html
+  def show_plain_text
     @status, @body, @errors = get_status
     timestamp = Time.now.utc.iso8601
     if @errors.present?

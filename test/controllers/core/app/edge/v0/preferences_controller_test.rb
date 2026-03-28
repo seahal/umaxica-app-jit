@@ -26,7 +26,7 @@ module Core
 
           setup do
             @preference = app_preferences(:one)
-            @host = "www.app.localhost"
+            @host = "ww.app.localhost"
           end
 
           test "should get show with existing preference" do

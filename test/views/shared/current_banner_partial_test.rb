@@ -84,7 +84,7 @@ class CurrentBannerPartialTest < ActionView::TestCase
     assert_raises ActionView::Template::Error do
       render partial: "layouts/shared/current_banner", locals: { tld: :org, region: :jp, domain: :sign }
     end
-    # www is no longer allowed (changed to ww)
+    # ww is no longer allowed (changed to ww)
     assert_raises ActionView::Template::Error do
       render partial: "layouts/shared/current_banner", locals: { tld: :org, region: :www, domain: :sign }
     end

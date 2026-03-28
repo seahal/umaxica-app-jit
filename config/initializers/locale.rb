@@ -10,9 +10,9 @@ I18n::Backend::Simple.include I18n::Backend::Fallbacks
 region_code = ENV.fetch("REGION_CODE") # REGION_CODE is required, no default value
 locale_root = Rails.root.join("config/locales")
 
-# "all" is a virtual region that combines www + jpn (www takes priority over jpn).
+# "all" is a virtual region that combines jp + us (us takes priority over jp).
 # Other region codes map directly to a directory under config/locales/.
-REGION_COMPOSE = { "all" => %w(jpn www) }.freeze
+REGION_COMPOSE = { "all" => %w(jp us) }.freeze
 region_dirs =
   if REGION_COMPOSE.key?(region_code)
     REGION_COMPOSE[region_code].map { |code| locale_root.join(code) }

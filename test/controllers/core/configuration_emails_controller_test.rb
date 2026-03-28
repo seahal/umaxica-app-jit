@@ -8,7 +8,7 @@ class Core::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
   fixtures :users, :user_statuses
 
   setup do
-    host! ENV.fetch("CORE_SERVICE_URL", "www.app.localhost")
+    host! ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
     @user = users(:one)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
@@ -52,7 +52,7 @@ class Core::Org::Configuration::EmailsControllerTest < ActionDispatch::Integrati
   fixtures :staffs, :staff_statuses
 
   setup do
-    @host = ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
+    @host = ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
     @sign_host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     host! @host
     @staff = staffs(:one)

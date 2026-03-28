@@ -10,8 +10,8 @@ module Apex
         controller = ApplicationController.new
 
         assert_includes controller.class, RateLimit
-        assert_includes controller.class, Preference::Global
-        assert_includes controller.class, Preference::Adoption
+        assert_includes controller.class, ::Preference::Global
+        assert_includes controller.class, ::Preference::Adoption
         assert_includes controller.class, ::Authentication::Staff
         assert_includes controller.class, ::Authorization::Staff
         assert_includes controller.class, ::Verification::Staff
