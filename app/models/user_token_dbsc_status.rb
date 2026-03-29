@@ -10,7 +10,7 @@
 #
 class UserTokenDbscStatus < TokenRecord
   NOTHING = 0
-  PENDING = 1  # FIXME: set 2 as PENDING.
+  PENDING = 1 # FIXME: set 2 as PENDING.
   ACTIVE = 2 # FIXME: set 1 as DEFAULT.
   FAILED = 3
   REVOKE = 4

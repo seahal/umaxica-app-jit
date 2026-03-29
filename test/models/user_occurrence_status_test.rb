@@ -19,6 +19,13 @@ class UserOccurrenceStatusTest < ActiveSupport::TestCase
   #     assert_expires_at_default(record)
   #   end
 
+  test "can load nothing status from db" do
+    nothing = UserOccurrenceStatus.find(UserOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
   test "accepts integer ids" do
     record = UserOccurrenceStatus.new(id: 9)
 
@@ -26,7 +33,7 @@ class UserOccurrenceStatusTest < ActiveSupport::TestCase
   end
 
   test "constants are defined" do
-    assert_equal 1, UserOccurrenceStatus::NOTHING
+    assert_equal 0, UserOccurrenceStatus::NOTHING
     assert_equal 2, UserOccurrenceStatus::ACTIVE
     assert_equal 3, UserOccurrenceStatus::INACTIVE
     assert_equal 4, UserOccurrenceStatus::DELETED

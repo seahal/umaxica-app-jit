@@ -11,14 +11,20 @@
 
 class DomainOccurrenceStatus < OccurrenceRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   ACTIVE = 1
   DELETED = 2
   INACTIVE = 3
-  NOTHING = 4
+  LEGACY_NOTHING = 4
   PENDING = 5
+  DEFAULTS = [NOTHING, ACTIVE, DELETED, INACTIVE, LEGACY_NOTHING, PENDING].freeze
 
   include OccurrenceStatus
 
   has_many :domain_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                                 inverse_of: :domain_occurrence_status
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
+  end
 end

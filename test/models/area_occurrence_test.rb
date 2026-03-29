@@ -14,7 +14,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(21)       default(""), not null
-#  status_id    :bigint           default(2), not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #
@@ -33,6 +33,12 @@ require "test_helper"
 
 class AreaOccurrenceTest < ActiveSupport::TestCase
   fixtures :area_occurrences, :area_occurrence_statuses
+
+  test "defaults status_id to nothing" do
+    record = AreaOccurrence.new(body: "JP/Aomori/Aomori", public_id: "X" * 21)
+
+    assert_equal AreaOccurrenceStatus::NOTHING, record.status_id
+  end
 
   test "public_id length" do
     record = build_occurrence(AreaOccurrence, body: "JP/Tokyo/Shinjuku", public_id: "A" * 20)

@@ -12,6 +12,13 @@
 require "test_helper"
 
 class AreaOccurrenceStatusTest < ActiveSupport::TestCase
+  test "can load nothing status from db" do
+    nothing = AreaOccurrenceStatus.find(AreaOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
   test "accepts integer ids" do
     record = AreaOccurrenceStatus.new(id: 9)
 
@@ -20,7 +27,7 @@ class AreaOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, AreaOccurrenceStatus::ACTIVE
-    assert_equal 2, AreaOccurrenceStatus::NOTHING
+    assert_equal 0, AreaOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

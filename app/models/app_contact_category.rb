@@ -9,7 +9,7 @@
 #  id :bigint           not null, primary key
 #
 class AppContactCategory < GuestRecord
-  NOTHING = 1  # FIXME: set 0 as null value
+  NOTHING = 1 # FIXME: set 0 as null value
   APPLICATION_INQUIRY = 2
 
   has_many :app_contacts,

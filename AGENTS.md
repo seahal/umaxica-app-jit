@@ -29,6 +29,14 @@ Before submitting any change, you MUST:
 3. Ensure authentication and authorization pipeline is respected
 4. Ensure tests are included and meaningful
 
+## Excluded Directories
+
+The following directories contain third-party libraries and MUST be excluded from all operations
+(reading, searching, editing, and analysis):
+
+- `vendor/`
+- `node_modules/`
+
 ## Forbidden Actions
 
 You MUST NOT:
@@ -38,6 +46,7 @@ You MUST NOT:
 - Introduce unsafe migrations
 - Add meaningless or weak tests
 - Bypass safety constraints
+- Read, modify, or search within `vendor/` or `node_modules/`
 
 ## Error Handling
 

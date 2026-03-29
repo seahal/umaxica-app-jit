@@ -48,6 +48,7 @@ class Sign::Preference::EmailTokenTest < ActiveSupport::TestCase
 
     travel 3.hours do
       result = Sign::Preference::EmailToken.parse(token, audience: "app")
+
       assert_nil result
     end
   end

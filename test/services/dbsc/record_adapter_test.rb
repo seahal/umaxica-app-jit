@@ -4,6 +4,20 @@
 require "test_helper"
 
 class Dbsc::RecordAdapterTest < ActiveSupport::TestCase
+  test "binding_method_attribute delegates to model metadata" do
+    assert_equal :binding_method_id, Dbsc::RecordAdapter.binding_method_attribute(AppPreference.new)
+    assert_equal :user_token_binding_method_id, Dbsc::RecordAdapter.binding_method_attribute(UserToken.new)
+    assert_equal :staff_token_binding_method_id, Dbsc::RecordAdapter.binding_method_attribute(StaffToken.new)
+    assert_equal :customer_token_binding_method_id, Dbsc::RecordAdapter.binding_method_attribute(CustomerToken.new)
+  end
+
+  test "dbsc_status_attribute delegates to model metadata" do
+    assert_equal :dbsc_status_id, Dbsc::RecordAdapter.dbsc_status_attribute(AppPreference.new)
+    assert_equal :user_token_dbsc_status_id, Dbsc::RecordAdapter.dbsc_status_attribute(UserToken.new)
+    assert_equal :staff_token_dbsc_status_id, Dbsc::RecordAdapter.dbsc_status_attribute(StaffToken.new)
+    assert_equal :customer_token_dbsc_status_id, Dbsc::RecordAdapter.dbsc_status_attribute(CustomerToken.new)
+  end
+
   test "binding_method_class returns AppPreferenceBindingMethod" do
     record = AppPreference.new
 
@@ -56,6 +70,18 @@ class Dbsc::RecordAdapterTest < ActiveSupport::TestCase
     record = Struct.new(:id).new(1)
 
     assert_raises(ArgumentError) { Dbsc::RecordAdapter.binding_method_class(record) }
+  end
+
+  test "binding_method_attribute raises for unsupported record" do
+    record = Struct.new(:id).new(1)
+
+    assert_raises(ArgumentError) { Dbsc::RecordAdapter.binding_method_attribute(record) }
+  end
+
+  test "dbsc_status_attribute raises for unsupported record" do
+    record = Struct.new(:id).new(1)
+
+    assert_raises(ArgumentError) { Dbsc::RecordAdapter.dbsc_status_attribute(record) }
   end
 
   test "normalize_public_key returns nil for blank key" do

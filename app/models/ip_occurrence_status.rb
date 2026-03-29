@@ -11,9 +11,15 @@
 
 class IpOccurrenceStatus < OccurrenceRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   ACTIVE = 1
-  NOTHING = 2
+  LEGACY_NOTHING = 2
+  DEFAULTS = [NOTHING, ACTIVE, LEGACY_NOTHING].freeze
   include OccurrenceStatus
 
   has_many :ip_occurrences, foreign_key: :status_id, dependent: :restrict_with_error, inverse_of: :ip_occurrence_status
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
+  end
 end

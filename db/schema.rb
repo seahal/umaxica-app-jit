@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_29_084527) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_29_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -381,17 +381,21 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_084527) do
     t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
     t.string "public_id", default: "", null: false
+    t.datetime "scheduled_purge_at"
     t.datetime "shreddable_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 2, null: false
     t.datetime "updated_at", null: false
     t.bigint "visibility_id", default: 1, null: false
+    t.datetime "withdrawal_started_at"
     t.datetime "withdrawn_at", default: ::Float::INFINITY
     t.index ["deactivated_at"], name: "index_customers_on_deactivated_at", where: "(deactivated_at IS NOT NULL)"
     t.index ["deletable_at"], name: "index_customers_on_deletable_at"
     t.index ["public_id"], name: "index_customers_on_public_id", unique: true
+    t.index ["scheduled_purge_at"], name: "index_customers_on_scheduled_purge_at", where: "(scheduled_purge_at IS NOT NULL)"
     t.index ["shreddable_at"], name: "index_customers_on_shreddable_at"
     t.index ["status_id"], name: "index_customers_on_status_id"
     t.index ["visibility_id"], name: "index_customers_on_visibility_id"
+    t.index ["withdrawal_started_at"], name: "index_customers_on_withdrawal_started_at", where: "(withdrawal_started_at IS NOT NULL)"
     t.index ["withdrawn_at"], name: "index_customers_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
   end
 

@@ -42,4 +42,11 @@ class ComDocumentStatusTest < ActiveSupport::TestCase
     assert_not_nil archived
     assert_equal ComDocumentStatus::ARCHIVED, archived.id
   end
+
+  test "can load nothing status from db" do
+    nothing = ComDocumentStatus.find(ComDocumentStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
 end

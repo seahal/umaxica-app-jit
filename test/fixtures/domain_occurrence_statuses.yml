@@ -6,6 +6,8 @@
 #  id :bigint           not null, primary key
 #
 nothing:
+  id: 0
+legacy_nothing:
   id: 4
 active:
   id: 1

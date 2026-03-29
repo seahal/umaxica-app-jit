@@ -14,7 +14,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(21)       default(""), not null
-#  status_id    :bigint           default(2), not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #
@@ -34,6 +34,13 @@ require "test_helper"
 
 class EmailOccurrenceTest < ActiveSupport::TestCase
   fixtures :email_occurrences, :email_occurrence_statuses
+
+  test "defaults status_id to nothing" do
+    record = EmailOccurrence.new(body: "fresh@example.com", public_id: "X" * 21)
+
+    assert_equal EmailOccurrenceStatus::NOTHING, record.status_id
+  end
+
   test "public_id length" do
     record = build_occurrence(EmailOccurrence, body: "user@example.com", public_id: "A" * 20)
 

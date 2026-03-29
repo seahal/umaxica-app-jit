@@ -12,6 +12,13 @@
 require "test_helper"
 
 class EmailOccurrenceStatusTest < ActiveSupport::TestCase
+  test "can load nothing status from db" do
+    nothing = EmailOccurrenceStatus.find(EmailOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
   test "accepts integer ids" do
     record = EmailOccurrenceStatus.new(id: 9)
 
@@ -20,7 +27,7 @@ class EmailOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, EmailOccurrenceStatus::ACTIVE
-    assert_equal 2, EmailOccurrenceStatus::NOTHING
+    assert_equal 0, EmailOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

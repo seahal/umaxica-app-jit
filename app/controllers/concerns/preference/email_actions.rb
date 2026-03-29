@@ -105,7 +105,7 @@ module Preference
     end
 
     def email_preference_params
-      params.require(:preference_email).permit(:promotional, :notifiable, :subscribable)
+      params.expect(preference_email: %i(promotional notifiable subscribable))
     end
 
     # Override in each domain controller

@@ -30,10 +30,7 @@ scope module: :apex, as: :apex do
     end
   end
 
-  # FIXME: what is this?
-  constraints lambda { |request|
-                request.host == ENV["APEX_SERVICE_URL"] && Core::Surface.matches?(request, :app)
-              } do
+  constraints host: ENV["APEX_SERVICE_URL"] do
     scope module: :app, as: :app do
       root to: "roots#index"
 
@@ -75,10 +72,7 @@ scope module: :apex, as: :apex do
     end
   end
 
-  # FIXME: what is this?
-  constraints lambda { |request|
-                request.host == ENV["APEX_STAFF_URL"] && Core::Surface.matches?(request, :org)
-              } do
+  constraints host: ENV["APEX_STAFF_URL"] do
     scope module: :org, as: :org do
       root to: "roots#index"
       # OIDC callback

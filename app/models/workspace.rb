@@ -31,5 +31,5 @@
 
 # Workspace mirrors Organization for historical compatibility.
 class Workspace < Organization
-  self.table_name = Organization.table_name # TODO: find out why this code was implemented.
+  self.table_name = Organization.table_name
 end

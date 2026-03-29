@@ -4,6 +4,38 @@
 module DbscBindable
   extend ActiveSupport::Concern
 
+  class_methods do
+    def dbsc_binding_method_attribute_name
+      return :binding_method_id if attribute_names.include?("binding_method_id")
+      return :user_token_binding_method_id if attribute_names.include?("user_token_binding_method_id")
+      return :staff_token_binding_method_id if attribute_names.include?("staff_token_binding_method_id")
+      return :customer_token_binding_method_id if attribute_names.include?("customer_token_binding_method_id")
+
+      raise NoMethodError, "No DBSC binding method attribute for #{name}"
+    end
+
+    def dbsc_status_attribute_name
+      return :dbsc_status_id if attribute_names.include?("dbsc_status_id")
+      return :user_token_dbsc_status_id if attribute_names.include?("user_token_dbsc_status_id")
+      return :staff_token_dbsc_status_id if attribute_names.include?("staff_token_dbsc_status_id")
+      return :customer_token_dbsc_status_id if attribute_names.include?("customer_token_dbsc_status_id")
+
+      raise NoMethodError, "No DBSC status attribute for #{name}"
+    end
+
+    def dbsc_binding_method_class
+      const_get(:DBSC_BINDING_METHOD_CLASS)
+    rescue NameError
+      raise NoMethodError, "No DBSC binding method class for #{name}"
+    end
+
+    def dbsc_status_class
+      const_get(:DBSC_STATUS_CLASS)
+    rescue NameError
+      raise NoMethodError, "No DBSC status class for #{name}"
+    end
+  end
+
   def binding_method_nothing?
     binding_method_value == 0
   end
@@ -51,20 +83,10 @@ module DbscBindable
   end
 
   def dbsc_binding_method_attribute
-    return :binding_method_id if has_attribute?(:binding_method_id)
-    return :user_token_binding_method_id if has_attribute?(:user_token_binding_method_id)
-    return :staff_token_binding_method_id if has_attribute?(:staff_token_binding_method_id)
-    return :customer_token_binding_method_id if has_attribute?(:customer_token_binding_method_id)
-
-    raise NoMethodError, "No DBSC binding method attribute for #{self.class.name}"
+    self.class.dbsc_binding_method_attribute_name
   end
 
   def dbsc_status_attribute
-    return :dbsc_status_id if has_attribute?(:dbsc_status_id)
-    return :user_token_dbsc_status_id if has_attribute?(:user_token_dbsc_status_id)
-    return :staff_token_dbsc_status_id if has_attribute?(:staff_token_dbsc_status_id)
-    return :customer_token_dbsc_status_id if has_attribute?(:customer_token_dbsc_status_id)
-
-    raise NoMethodError, "No DBSC status attribute for #{self.class.name}"
+    self.class.dbsc_status_attribute_name
   end
 end

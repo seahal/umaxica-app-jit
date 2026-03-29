@@ -12,6 +12,13 @@
 require "test_helper"
 
 class IpOccurrenceStatusTest < ActiveSupport::TestCase
+  test "can load nothing status from db" do
+    nothing = IpOccurrenceStatus.find(IpOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
   test "accepts integer ids" do
     record = IpOccurrenceStatus.new(id: 9)
 
@@ -20,7 +27,7 @@ class IpOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, IpOccurrenceStatus::ACTIVE
-    assert_equal 2, IpOccurrenceStatus::NOTHING
+    assert_equal 0, IpOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do
