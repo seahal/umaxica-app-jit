@@ -143,7 +143,7 @@ scope module: :sign, as: :sign do
         end
         resources :telephones, only: %i(index new edit create destroy)
         resource :apple, only: [:show, :destroy]
-        resource :google, only: %i(show destroy)
+        resource :google, only: :show
         resources :secrets, only: %i(index show new edit create destroy) do
           post :regenerate, on: :member
         end
