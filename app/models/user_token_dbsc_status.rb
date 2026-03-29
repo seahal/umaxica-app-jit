@@ -10,14 +10,15 @@
 #
 class UserTokenDbscStatus < TokenRecord
   NOTHING = 0
-  PENDING = 1
-  ACTIVE = 2
+  PENDING = 1  # FIXME: set 2 as PENDING.
+  ACTIVE = 2 # FIXME: set 1 as DEFAULT.
   FAILED = 3
   REVOKE = 4
   DEFAULTS = [NOTHING, PENDING, ACTIVE, FAILED, REVOKE].freeze
 
   has_many :user_tokens, dependent: :restrict_with_error
 
+  # FIXME: remove this method!
   def self.ensure_defaults!
     return if DEFAULTS.blank?
 

@@ -41,6 +41,7 @@ class CustomerTelephone < GuestRecord
 
   self.filter_attributes += %w(number)
 
+  # FIXME: set telephone max is 2
   MAX_TELEPHONES_PER_CUSTOMER = 4
 
   attribute :customer_telephone_status_id, default: CustomerTelephoneStatus::UNVERIFIED

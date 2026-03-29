@@ -12,7 +12,7 @@ module Sign
       private
 
       def set_email_path
-        @preference_email_path = sign_app_preference_email_index_path
+        @preference_email_path = new_sign_app_preference_email_path
       end
     end
   end

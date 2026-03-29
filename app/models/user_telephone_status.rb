@@ -9,11 +9,11 @@
 #  id :bigint           not null, primary key
 #
 class UserTelephoneStatus < PrincipalRecord
-  UNVERIFIED = 1
-  VERIFIED = 2
+  UNVERIFIED = 1 # FIXME: set 2 as UNDEFINED.
+  VERIFIED = 2 # FIXME: set 1 as VERIFIED.
   SUSPENDED = 3
   DELETED = 4
-  NOTHING = 5
+  NOTHING = 5 # FIXME: set 0 as null.
   UNVERIFIED_WITH_SIGN_UP = 6
   VERIFIED_WITH_SIGN_UP = 7
 

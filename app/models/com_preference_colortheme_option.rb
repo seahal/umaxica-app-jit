@@ -31,6 +31,7 @@ class ComPreferenceColorthemeOption < CommerceRecord
 
   DEFAULTS = [LIGHT, DARK, SYSTEM].freeze
 
+  # FIXME: DELETE THIS METHOD!
   def self.ensure_defaults!
     return if DEFAULTS.blank?
 

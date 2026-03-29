@@ -9,7 +9,7 @@
 #  id :bigint           not null, primary key
 #
 class UserVisibility < PrincipalRecord
-  NOBODY = 0
+  NOBODY = 0 # FIXME: NOTHING is better than this.
   USER = 1
   STAFF = 2
   BOTH = 3

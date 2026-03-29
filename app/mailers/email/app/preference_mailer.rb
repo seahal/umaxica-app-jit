@@ -9,7 +9,7 @@ module Email
         @edit_url = params.fetch(:edit_url)
 
         mail(
-          to: @preference_request.email_address,
+          to: @preference_request.address,
           subject: t("email.app.preference_mailer.update_request.subject"),
         )
       end

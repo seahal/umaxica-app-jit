@@ -11,7 +11,7 @@
 class AppContactBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
 
-  NOTHING = 1
+  NOTHING = 1 # FIXME: set 0 as null value
   CREATED = 2
   UPDATED = 3
   DELETED = 4

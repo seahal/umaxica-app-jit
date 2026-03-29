@@ -12,7 +12,7 @@
 class AppTimelineBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NOTHING = 1
+  NOTHING = 1 # FIXME: set 0 as null value
   CREATED = 2
   UPDATED = 3
   DELETED = 4

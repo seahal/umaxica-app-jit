@@ -22,7 +22,8 @@ class AppTimelineCategoryMaster < PublicationRecord
   include Treeable
 
   # Fixed IDs - do not modify these values
-  NOTHING = 1
+  NOTHING = 1 # FIXME: set 0 as null value
+  
   belongs_to :parent,
              class_name: "AppTimelineCategoryMaster",
              inverse_of: :children,

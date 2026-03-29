@@ -12,7 +12,7 @@
 class ZipOccurrenceStatus < OccurrenceRecord
   # Fixed IDs - do not modify these values
   ACTIVE = 1
-  NOTHING = 2
+  NOTHING = 2 # FIXME: set 0 as null.
   include OccurrenceStatus
 
   has_many :zip_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,

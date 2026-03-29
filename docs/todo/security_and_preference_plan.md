@@ -80,56 +80,10 @@ Created: 2026-03-21
 - **No issues found**: httponly, SameSite:Lax, `__Secure-` prefix, DBSC binding, device_id
   encryption all correct
 
-### Step 4: Preference JWT/Token Implementation
+### Remaining preference-system work
 
-- Add `prf` claim to `Auth::TokenClaims.build` with preference snapshot
-- Create `Current::Preference` value object (cookie consent + JWT preference data)
-- Implement `Current::Preference.from_jwt(prf_claim)` and `.with_cookie(...)`
-- Implement `reissue_access_token!` in `Auth::Base` for preference changes
-- Wire `Current.preference` into request lifecycle via `before_action`
-- Implement Null Object pattern for `Current.preference` (DEFAULT for guests/bearer)
-- Add tests for preference JWT roundtrip
-
-## Database Placement Decision
-
-- `app` preference data is planned to move to `principal`.
-- `org` preference data is planned to move to `operator`.
-- `com` preference data stays in `preference` for now.
-- Do not execute the move yet; this section only records the agreed target layout.
-
-## Step 5: Preference Model Consolidation (User/Staff merge)
-
-- Move `AppPreference` and `app_*` preference tables into `principal`.
-- Move `OrgPreference` and `org_*` preference tables into `operator`.
-- Keep `ComPreference` and `com_*` preference tables in `preference` for now.
-- Implement login-time sync logic for preference data.
-- Consolidate `*_preference_language`, `*_preference_timezone`, etc. associations.
-- Remove redundant preference child-record models from their old database once the move is complete.
-- Clean up `PreferenceRecord` base class if no longer needed.
-- Update all controllers referencing old preference models.
-
-### Step 6: Preference API Consolidation
-
-- Keep preference endpoints only in `apex/com`, `apex/org`, `apex/app`
-- Remove preference-related endpoints from other route files (core, sign, etc.)
-- Ensure all preference reads go through `Current.preference` (not DB queries)
-- Ensure all preference writes go through apex controllers + `reissue_access_token!`
-
-### Step 7: Model & Relation Cleanup
-
-- Delete orphaned preference models (app*preference_cookie, com_preference*_, org*preference*_,
-  etc.)
-- Delete unused migrations and schema references
-- Remove backward-compatibility shims (PreferenceConstants, etc.)
-- Run `rake uuid:pk:report` to verify no broken references
-- Database consistency check
-
-### Step 8: Dark Mode Switch & Cookie Consent (AJAX)
-
-- Implement dark mode toggle via Stimulus controller + AJAX endpoint
-- Implement cookie consent banner via Stimulus controller + AJAX endpoint
-- Both should update `Current.preference` and `reissue_access_token!`
-- No full page reload required
+Preference JWT snapshots, `Current::Preference`, database placement changes, API consolidation,
+cleanup, and AJAX UI follow-ups are now tracked in GitHub issue #578.
 
 ### Step 9: Current Attributes Construction ✅
 

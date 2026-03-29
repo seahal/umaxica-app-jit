@@ -11,7 +11,7 @@
 class AppContactBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
 
-  NOTHING = 1
+  NOTHING = 1  # FIXME: set 0 as null value
   DEBUG = 2
   INFO = 3
   WARN = 4

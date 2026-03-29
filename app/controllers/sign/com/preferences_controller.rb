@@ -13,7 +13,7 @@ module Sign
       private
 
       def set_email_path
-        @preference_email_path = sign_com_preference_email_index_path(ri: params[:ri])
+        @preference_email_path = new_sign_com_preference_email_path(ri: params[:ri])
       end
     end
   end

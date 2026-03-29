@@ -9,11 +9,14 @@
 #  id                             :bigint           not null, primary key
 #  address                        :string           not null
 #  locked_at                      :datetime
+#  notifiable                     :boolean          default(TRUE), not null
 #  otp_attempts_count             :integer          default(0), not null
 #  otp_counter                    :text             not null
 #  otp_expires_at                 :datetime
 #  otp_last_sent_at               :datetime
 #  otp_private_key                :string           not null
+#  promotional                    :boolean          default(TRUE), not null
+#  subscribable                   :boolean          default(TRUE), not null
 #  undeletable                    :boolean          default(FALSE), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null

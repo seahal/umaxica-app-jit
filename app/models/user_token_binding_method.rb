@@ -16,6 +16,7 @@ class UserTokenBindingMethod < TokenRecord
 
   has_many :user_tokens, dependent: :restrict_with_error
 
+  # FIXME: remove this method!
   def self.ensure_defaults!
     return if DEFAULTS.blank?
 

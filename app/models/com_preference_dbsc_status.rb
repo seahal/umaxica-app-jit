@@ -10,8 +10,8 @@
 #
 class ComPreferenceDbscStatus < CommerceRecord
   NOTHING = 0
-  PENDING = 1
-  ACTIVE = 2
+  PENDING = 1 # FIXME: move 2
+  ACTIVE = 2 # FIXME: move 1
   FAILED = 3
   REVOKE = 4
   DEFAULTS = [NOTHING, PENDING, ACTIVE, FAILED, REVOKE].freeze

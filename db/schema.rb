@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_29_021000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_29_084527) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -211,12 +211,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_021000) do
     t.bigint "customer_email_status_id", default: 1, null: false
     t.bigint "customer_id", null: false
     t.datetime "locked_at", default: ::Float::INFINITY, null: false
+    t.boolean "notifiable", default: true, null: false
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter", default: "", null: false
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
     t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
+    t.boolean "promotional", default: true, null: false
     t.string "public_id", limit: 21, null: false
+    t.boolean "subscribable", default: true, null: false
     t.boolean "undeletable", default: false, null: false
     t.datetime "updated_at", null: false
     t.binary "verification_token_digest"

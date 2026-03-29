@@ -10,8 +10,8 @@
 #
 class AppPreferenceDbscStatus < PrincipalRecord
   NOTHING = 0
-  PENDING = 1
-  ACTIVE = 2
+  PENDING = 1 # FIXME: set 2 ad PENDING
+  ACTIVE = 2 # FIXME: set 1 as ACTIVE
   FAILED = 3
   REVOKE = 4
   DEFAULTS = [NOTHING, PENDING, ACTIVE, FAILED, REVOKE].freeze

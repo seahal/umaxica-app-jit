@@ -11,6 +11,7 @@
 
 class AppPreferenceTimezoneOption < PrincipalRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   ETC_UTC = 1
   ASIA_TOKYO = 2
 

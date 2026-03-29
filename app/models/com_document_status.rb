@@ -16,7 +16,7 @@ class ComDocumentStatus < DocumentRecord
   DELETED = 3
   DRAFT = 4
   INACTIVE = 5
-  NOTHING = 6
+  NOTHING = 6 # FIXME: set 0 as null value
   PENDING = 7
 
   has_many :com_documents,

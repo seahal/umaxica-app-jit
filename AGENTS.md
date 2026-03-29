@@ -1,5 +1,72 @@
 # Repository Guidelines
 
+## Agent Instruction Priority
+
+You MUST follow instructions in this order:
+
+1. This file (`AGENTS.md`)
+2. `.ai/policies/*`
+3. `.ai/context/*`
+4. `.ai/tasks/*`
+
+If there is any conflict, follow the higher priority.
+
+## Mandatory Behavior
+
+You MUST:
+
+- Read relevant files in `.ai/` before making changes
+- Follow all rules in `.ai/policies/`
+- Follow architecture defined in `.ai/context/`
+- Follow task procedures in `.ai/tasks/`
+
+## Execution Rules
+
+Before submitting any change, you MUST:
+
+1. Ensure no forbidden patterns are used
+2. Ensure code follows routing and architecture rules
+3. Ensure authentication and authorization pipeline is respected
+4. Ensure tests are included and meaningful
+
+## Forbidden Actions
+
+You MUST NOT:
+
+- Ignore `.ai/policies/*`
+- Skip authentication or authorization
+- Introduce unsafe migrations
+- Add meaningless or weak tests
+- Bypass safety constraints
+
+## Error Handling
+
+If a rule cannot be satisfied:
+
+- Stop
+- Explain the issue
+- Propose a safe alternative
+
+Do not proceed with unsafe implementation.
+
+## Quality Standard
+
+Your output MUST be:
+
+- Safe
+- Deterministic
+- Aligned with project architecture
+- Fully test-covered
+
+## Agent Summary
+
+You are not allowed to improvise outside defined rules.
+
+When in doubt:
+
+- Follow `.ai/policies/`
+- Prefer safety over speed
+
 ## Project Structure & Module Organization
 
 This is a Rails 8 app with domain-separated surfaces (`app`, `com`, `org`) implemented across
@@ -35,6 +102,8 @@ controllers, views, and routes.
 ## Testing Guidelines
 
 - Framework: Minitest (`test/test_helper.rb`) with fixtures.
+- Respect t_wada-style testing practices when designing and writing tests.
+- Prefer tests that avoid mocks and stubs whenever reasonably possible.
 - Name tests with `_test.rb` and mirror source structure (example: `app/services/auth/foo.rb` ->
   `test/services/auth/foo_test.rb`).
 - Run migrations before tests when schema changes are involved:
@@ -178,3 +247,8 @@ For GitHub Actions, consider using
 - [ ] Run `vp install` after pulling remote changes and before getting started.
 - [ ] Run `vp check` and `vp test` to validate changes.
 <!--VITE PLUS END-->
+
+## Git Commit Policy
+
+Never run `git commit` automatically. Always complete the requested changes, report what was done,
+and stop — without committing. Let the user decide when to commit.

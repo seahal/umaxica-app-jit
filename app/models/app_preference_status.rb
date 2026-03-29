@@ -12,7 +12,7 @@
 class AppPreferenceStatus < PrincipalRecord
   # Fixed IDs - do not modify these values
   DELETED = 1
-  NOTHING = 2
+  NOTHING = 2 # FIXME: set 0 as null value
   has_many :app_preferences,
            class_name: "AppPreference",
            foreign_key: "status_id",

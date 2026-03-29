@@ -65,12 +65,12 @@ detailed cases, and acceptance criteria derived from the SRS and HLD.
 - **Unit tests (Ruby)**: `bin/rails test` covers models (e.g., `ServiceSiteContact`,
   `UserIdentityEmail`, `TimeBasedOneTimePassword`), controllers, concerns, services, consumers.
   Fixtures stored under `test/fixtures`; multi-database fixtures split by context.
-- **Unit tests (JS/TS)**: `pnpm test` (when added) targets helpers (`views/passkey_helpers.js`,
-  React utility modules) and ensures bundles remain deterministic.
+- **Unit tests (JS/TS)**: `pnpm test` targets helpers (`views/passkey_helpers.js`, React utility
+  modules) and ensures bundles remain deterministic.
 - **Integration/system tests**: Rails system tests or Playwright scripts simulate flows (preference
   edits, registration, help contact).
-- **API/contract tests**: Rswag (planned) or request specs verify `/api/v1/inquiry/*`, `/bff/*`
-  payloads and headers.
+- **API/contract tests**: Rswag or request specs verify `/api/v1/inquiry/*`, `/bff/*` payloads and
+  headers.
 - **Security tests**: RSpec/Minitest cases for rate limiting, JWT signature validation, redirect
   sanitization, Turnstile failure handling, PII encryption.
 - **Performance tests**: k6 or wrk for `/sign` and `/help` flows; Lighthouse (or WebPageTest) for
@@ -210,8 +210,8 @@ must be synthetic. Contact forms require Turnstile test keys or bypass for autom
 
 ## 9. Tooling, Data, and Automation
 
-- **Tools**: Minitest, Rswag (future), pnpm-run JS tests/tooling, Playwright or Capybara, k6, curl
-  scripts, Postman, Brakeman, Bundler Audit.
+- **Tools**: Minitest, Rswag, pnpm-run JS tests/tooling, Playwright or Capybara, k6, curl scripts,
+  Postman, Brakeman, Bundler Audit.
 - **Fixtures**: Stored per DB context; use `ActiveRecord::FixtureSet.create_fixtures` per database
   connection. Sensitive examples anonymized.
 - **Data cleanup**: Multi-DB tests must wrap in transactions (Rails 8 multi-db test helpers) or rely

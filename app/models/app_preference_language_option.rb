@@ -11,7 +11,7 @@
 
 class AppPreferenceLanguageOption < PrincipalRecord
   # Fixed IDs - do not modify these values
-  NOTHING = 0 # I want to set this value.
+  NOTHING = 0 # FIXME: I want to set this value.
   JA = 1
   EN = 2
 

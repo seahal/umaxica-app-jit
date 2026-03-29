@@ -93,6 +93,8 @@ class UserToken < TokenRecord
 
   validate :enforce_concurrent_session_limit, on: :create
 
+
+  # FIXME: remove this method!
   # This is a model-level validation to provide a friendly error message to the user.
   # The primary enforcement of the session limit is done by a database trigger,
   # which is more reliable and avoids race conditions.
