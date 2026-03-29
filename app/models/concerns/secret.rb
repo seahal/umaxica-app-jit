@@ -58,6 +58,15 @@ module Secret
           "REVOKED" => StaffSecretStatus::REVOKED,
           "USED" => StaffSecretStatus::USED,
         }.fetch(status_key)
+      when "CustomerSecretStatus"
+        {
+          "ACTIVE" => CustomerSecretStatus::ACTIVE,
+          "EXPIRED" => CustomerSecretStatus::EXPIRED,
+          "REVOKED" => CustomerSecretStatus::REVOKED,
+          "USED" => CustomerSecretStatus::USED,
+          "DELETED" => CustomerSecretStatus::DELETED,
+          "NOTHING" => CustomerSecretStatus::NOTHING,
+        }.fetch(status_key)
       else
         raise KeyError, "Unknown identity secret status class: #{identity_secret_status_class.name}"
       end

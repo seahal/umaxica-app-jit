@@ -1,6 +1,34 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: customer_preferences
+# Database name: guest
+#
+#  id              :bigint           not null, primary key
+#  consent_version :uuid
+#  consented       :boolean          default(FALSE), not null
+#  consented_at    :datetime
+#  functional      :boolean          default(FALSE), not null
+#  language        :string           default("ja"), not null
+#  performant      :boolean          default(FALSE), not null
+#  region          :string           default("jp"), not null
+#  targetable      :boolean          default(FALSE), not null
+#  theme           :string           default("sy"), not null
+#  timezone        :string           default("Asia/Tokyo"), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  customer_id     :bigint           not null
+#
+# Indexes
+#
+#  index_customer_preferences_on_customer_id  (customer_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (customer_id => customers.id)
+#
 require "test_helper"
 
 class CustomerPreferenceTest < ActiveSupport::TestCase

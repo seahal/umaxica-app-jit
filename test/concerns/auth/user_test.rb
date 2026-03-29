@@ -39,12 +39,12 @@ class Authentication::UserTest < ActiveSupport::TestCase
       "auth/users"
     end
 
-    def sign_org_edge_v0_token_dbsc_registration_path
-      "/edge/v0/token/dbsc_registration"
+    def sign_org_edge_v0_token_dbsc_path
+      "/edge/v0/token/dbsc"
     end
 
-    def sign_app_edge_v0_token_dbsc_registration_path
-      "/edge/v0/token/dbsc_registration"
+    def sign_app_edge_v0_token_dbsc_path
+      "/edge/v0/token/dbsc"
     end
   end
 

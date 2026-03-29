@@ -46,36 +46,63 @@ module Authentication
     private
 
     def resource_class
-      ::User
+      ::Customer
     end
 
     def token_class
-      UserToken
+      CustomerToken
     end
 
     def audit_class
       ::UserActivity
     end
 
-    # Compatibility shim: sign/com still authenticates against user-backed
-    # sessions until dedicated customer token/session models land.
     def resource_type
-      "user"
+      "customer"
     end
 
     def resource_foreign_key
-      :user_id
+      :customer_id
     end
 
     def max_sessions_for_resource(resource)
-      return 1 if resource.is_a?(::User)
+      return CustomerToken::MAX_SESSIONS_PER_CUSTOMER if resource.is_a?(::Customer)
 
       super
     end
 
-    # FIXME: what is this method?
     def test_header_key
-      "X-TEST-CURRENT-USER"
+      Auth::IoKeys::Headers::TEST_CURRENT_RESOURCE
+    end
+
+    def record_audit(event_id, resource:, actor: resource)
+      return unless resource && event_id
+
+      normalized_event_id =
+        case event_id.to_s
+        when "LOGGED_IN" then UserActivityEvent::LOGGED_IN
+        when "LOGGED_OUT" then UserActivityEvent::LOGGED_OUT
+        when "LOGIN_FAILED" then UserActivityEvent::LOGIN_FAILED
+        when "TOKEN_REFRESHED" then UserActivityEvent::TOKEN_REFRESHED
+        else event_id
+        end
+
+      ActivityRecord.connected_to(role: :writing) do
+        UserActivity.create!(
+          actor_id: actor&.id || 0,
+          actor_type: actor&.class&.name || "Customer",
+          subject_id: resource.id.to_s,
+          subject_type: "Customer",
+          event_id: normalized_event_id,
+          level_id: UserActivityLevel::NOTHING,
+          ip_address: request_ip_address,
+          occurred_at: Time.current,
+          context: {},
+        )
+      end
+    rescue StandardError => e
+      Rails.logger.error("[Authentication::Customer] audit write failed: #{e.class}: #{e.message}")
+      false
     end
 
     def sign_in_url_with_return(return_to)

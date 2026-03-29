@@ -56,19 +56,19 @@ module Sign
             return render_failed_login(reason: :turnstile_failed, identifier: @secret_form.identifier)
           end
 
-          user = find_user_by_identifier(@secret_form.identifier)
-          return render_session_limit_hard_reject if session_limit_hard_reject_for?(user)
+          customer = find_user_by_identifier(@secret_form.identifier)
+          return render_session_limit_hard_reject if session_limit_hard_reject_for?(customer)
 
-          verification = verify_secret_for_sign_in(user: user, raw_secret: @secret_form.secret_value)
+          verification = verify_secret_for_sign_in(customer: customer, raw_secret: @secret_form.secret_value)
 
-          if user && verification.secret
-            process_standard_login(user)
+          if customer && verification.secret
+            process_standard_login(customer)
           else
             failure_reason = verification.reason || :identifier_not_found
             render_failed_login(
               reason: failure_reason,
               identifier: @secret_form.identifier,
-              user: user,
+              customer: customer,
               details: verification.details,
             )
           end
@@ -89,27 +89,61 @@ module Sign
 
         private
 
-        def verify_secret_for_sign_in(user:, raw_secret:)
-          return SecretVerificationResult.new(reason: :identifier_not_found, details: {}) unless user
-          return SecretVerificationResult.new(reason: :verified_pii_missing, details: {}) unless user.has_verified_pii?
-
-          latest_secret = user.user_secrets.order(created_at: :desc).first
-          return SecretVerificationResult.new(reason: :secret_not_found, details: {}) unless latest_secret
-
-          secret = user.user_secrets.allowed_for_secret_sign_in.order(created_at: :desc).first
-          return SecretVerificationResult.new(reason: :secret_expired, details: {}) unless secret
-          return SecretVerificationResult.new(reason: :secret_expired, details: {}) unless secret.usable_for_secret_sign_in?
-
-          unless secret.verify_for_secret_sign_in!(raw_secret.to_s)
-            return SecretVerificationResult.new(reason: :secret_mismatch, details: { secret_id: secret.id })
-          end
-
-          SecretVerificationResult.new(secret: secret, reason: :success, details: { secret_id: secret.id })
+        def identity_email_model
+          CustomerEmail
         end
 
-        def process_standard_login(user)
+        def identity_telephone_model
+          CustomerTelephone
+        end
+
+        def identity_from_email_record(record)
+          record&.customer
+        end
+
+        def identity_from_telephone_record(record)
+          record&.customer
+        end
+
+        def verify_secret_for_sign_in(customer:, raw_secret:)
+          return SecretVerificationResult.new(
+            reason: :identifier_not_found,
+            details: {},
+          ) unless customer
+          return SecretVerificationResult.new(
+            reason: :verified_pii_missing,
+            details: {},
+          ) unless customer.has_verified_pii?
+
+          latest_secret = customer.customer_secrets.order(created_at: :desc).first
+          return SecretVerificationResult.new(
+            reason: :secret_not_found,
+            details: {},
+          ) unless latest_secret
+
+          secret = customer.customer_secrets.allowed_for_secret_sign_in.order(created_at: :desc).first
+          return SecretVerificationResult.new(reason: :secret_expired, details: {}) unless secret
+          return SecretVerificationResult.new(
+            reason: :secret_expired,
+            details: {},
+          ) unless secret.usable_for_secret_sign_in?
+
+          unless secret.verify_for_secret_sign_in!(raw_secret.to_s)
+            return SecretVerificationResult.new(
+              reason: :secret_mismatch,
+              details: { secret_id: secret.id },
+            )
+          end
+
+          SecretVerificationResult.new(
+            secret: secret, reason: :success,
+            details: { secret_id: secret.id },
+          )
+        end
+
+        def process_standard_login(customer)
           result = complete_sign_in_or_start_mfa!(
-            user, rt: nil, ri: params[:ri], auth_method: "secret",
+            customer, rt: nil, ri: params[:ri], auth_method: "secret",
           )
 
           if result[:status] == :mfa_required
@@ -138,7 +172,7 @@ module Sign
           t("sign.app.authentication.secret.create.invalid")
         end
 
-        def render_failed_login(reason:, identifier: nil, user: nil, details: {})
+        def render_failed_login(reason:, identifier: nil, customer: nil, details: {})
           @secret_form ||= SecretLoginForm.new
           @secret_form.errors.add(:base, invalid_secret_message)
 
@@ -147,13 +181,13 @@ module Sign
             reason: reason,
             identifier_type: detect_identifier_type(identifier.to_s),
             identifier_present: identifier.present?,
-            user_id: user&.id,
+            customer_id: customer&.id,
             ip: request.remote_ip,
             errors: @secret_form.errors.full_messages,
             details: details,
           )
 
-          Sign::Risk::Emitter.emit("auth_failed", user_id: user&.id) if user
+          Sign::Risk::Emitter.emit("auth_failed", customer_id: customer&.id) if customer
 
           render :new, status: :unprocessable_content, formats: :html
         end

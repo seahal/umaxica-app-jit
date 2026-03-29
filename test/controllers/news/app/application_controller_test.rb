@@ -52,14 +52,14 @@ module News::App
       callbacks = ApplicationController._process_action_callbacks
       after_filters = callbacks.select { |c| c.kind == :after }.map(&:filter)
 
-      assert_includes after_filters, :finish_request
+      assert_includes after_filters, :purge_current
     end
 
     test "has oidc_client_id method" do
       controller = ApplicationController.new
 
       assert_respond_to controller, :oidc_client_id
-      assert_equal "news_app", controller.oidc_client_id
+      assert_equal "news_app", controller.send(:oidc_client_id)
     end
   end
 end

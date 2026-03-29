@@ -13,14 +13,11 @@ module Sign
 
         def show
           @user = current_customer
-          @passkeys = current_customer.user_passkeys.active.order(created_at: :desc)
-          @totps =
-            current_customer.user_one_time_passwords
-              .where(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
-              .order(created_at: :desc)
+          @passkeys = current_customer.customer_passkeys.active.order(created_at: :desc)
+          @totps = []
           @secrets =
-            current_customer.user_secrets
-              .where(user_identity_secret_status_id: UserSecretStatus::ACTIVE)
+            current_customer.customer_secrets
+              .where(customer_secret_status_id: CustomerSecretStatus::ACTIVE)
               .order(created_at: :desc)
         end
 

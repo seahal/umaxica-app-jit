@@ -50,16 +50,16 @@ class Sign::Com::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create with existing email still redirects and does not create a new record" do
-    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
-    existing_email = UserEmail.create!(
-      user: user,
+    customer = Customer.create!(status_id: CustomerStatus::ACTIVE, visibility_id: CustomerVisibility::CUSTOMER)
+    existing_email = CustomerEmail.create!(
+      customer: customer,
       address: "com-existing-signup@example.com",
       confirm_policy: "1",
-      user_email_status_id: UserEmailStatus::VERIFIED,
+      customer_email_status_id: CustomerEmailStatus::VERIFIED,
     )
 
-    assert_no_difference("User.count") do
-      assert_no_difference("UserEmail.count") do
+    assert_no_difference("Customer.count") do
+      assert_no_difference("CustomerEmail.count") do
         assert_enqueued_emails 0 do
           post sign_com_up_emails_url(ri: "jp"),
                params: {

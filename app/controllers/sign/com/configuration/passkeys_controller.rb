@@ -14,14 +14,14 @@ module Sign
         before_action :set_passkey, only: %i(show edit update destroy)
 
         def index
-          @passkeys = current_customer.user_passkeys.order(created_at: :desc)
+          @passkeys = current_customer.customer_passkeys.order(created_at: :desc)
         end
 
         def show
         end
 
         def new
-          @passkey = current_customer.user_passkeys.new
+          @passkey = current_customer.customer_passkeys.new
         end
 
         def edit
@@ -42,7 +42,7 @@ module Sign
         end
 
         def options
-          existing_credentials = current_customer.user_passkeys.map { |passkey| { id: passkey.webauthn_id } }
+          existing_credentials = current_customer.customer_passkeys.map { |passkey| { id: passkey.webauthn_id } }
           challenge_id, creation_options = create_registration_challenge(
             resource: current_customer,
             exclude_credentials: existing_credentials,
@@ -75,7 +75,7 @@ module Sign
               credential.verify(challenge)
             end
 
-            passkey = current_customer.user_passkeys.new(
+            passkey = current_customer.customer_passkeys.new(
               webauthn_id: credential.id,
               public_key: credential.public_key,
               sign_count: credential.sign_count,
@@ -147,7 +147,7 @@ module Sign
         private
 
         def set_passkey
-          @passkey = current_customer.user_passkeys.find(params[:id])
+          @passkey = current_customer.customer_passkeys.find(params[:id])
         end
 
         def credential_params
@@ -165,7 +165,7 @@ module Sign
         end
 
         def update_params
-          key = params.key?(:user_passkey) ? :user_passkey : :passkey
+          key = params.key?(:customer_passkey) ? :customer_passkey : :passkey
           params.expect(key => [:description])
         end
 

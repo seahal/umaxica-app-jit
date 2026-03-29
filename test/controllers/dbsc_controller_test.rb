@@ -3,7 +3,7 @@
 
 require "test_helper"
 
-class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
+class DbscControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses, :user_tokens, :user_token_kinds, :user_token_statuses,
            :user_token_binding_methods, :user_token_dbsc_statuses,
            :staffs, :staff_statuses, :staff_tokens, :staff_token_kinds, :staff_token_statuses,
@@ -17,7 +17,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "Sign::App: returns unauthorized when no token record exists" do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("fake-session-id") }
 
     assert_response :unauthorized
@@ -43,11 +43,11 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     proof = generate_dbsc_proof(
       challenge: token.dbsc_challenge,
-      audience: sign_app_edge_v0_token_dbsc_registration_url,
+      audience: sign_app_edge_v0_token_dbsc_url,
       jwk: @jwk.export,
     )
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
 
     assert_response :created
@@ -82,7 +82,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof" }
 
     assert_response :unprocessable_content
@@ -109,11 +109,11 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     proof = generate_dbsc_proof(
       challenge: "any-challenge",
-      audience: sign_app_edge_v0_token_dbsc_registration_url,
+      audience: sign_app_edge_v0_token_dbsc_url,
       jwk: @jwk.export,
     )
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
 
     assert_response :unprocessable_content
@@ -138,7 +138,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
 
     assert_response :forbidden
@@ -167,7 +167,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: {
            Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
            Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof",
@@ -200,14 +200,14 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
     # For verification, do NOT include JWK in header (security requirement)
     proof = JWT.encode(
       { "jti" => token.dbsc_challenge,
-        "aud" => sign_app_edge_v0_token_dbsc_registration_url,
+        "aud" => sign_app_edge_v0_token_dbsc_url,
         "iat" => Time.current.to_i, },
       @ec_key,
       "ES256",
       { "typ" => "dbsc+jwt" }, # No jwk header
     )
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: {
            Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
            Auth::IoKeys::Headers::DBSC_RESPONSE => proof,
@@ -239,7 +239,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     # Execute with session ID but record not bound to DBSC (no dbsc_session_id)
     # This triggers 403 Forbidden because proof is blank (challenge issuance)
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
 
     assert_response :forbidden
@@ -248,7 +248,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "Sign::Org: returns unauthorized when no token record exists" do
     host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
 
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("fake-session-id") }
 
     assert_response :unauthorized
@@ -274,11 +274,11 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     proof = generate_dbsc_proof(
       challenge: token.dbsc_challenge,
-      audience: sign_org_edge_v0_token_dbsc_registration_url,
+      audience: sign_org_edge_v0_token_dbsc_url,
       jwk: @jwk.export,
     )
 
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
 
     assert_response :created
@@ -313,7 +313,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof" }
 
     assert_response :unprocessable_content
@@ -340,11 +340,11 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     proof = generate_dbsc_proof(
       challenge: "any-challenge",
-      audience: sign_org_edge_v0_token_dbsc_registration_url,
+      audience: sign_org_edge_v0_token_dbsc_url,
       jwk: @jwk.export,
     )
 
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => proof }
 
     assert_response :unprocessable_content
@@ -369,7 +369,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
 
     assert_response :forbidden
@@ -398,7 +398,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = token.rotate_refresh_token!
 
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: {
            Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
            Auth::IoKeys::Headers::DBSC_RESPONSE => "invalid-proof",
@@ -431,14 +431,14 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
     # For verification, do NOT include JWK in header (security requirement)
     proof = JWT.encode(
       { "jti" => token.dbsc_challenge,
-        "aud" => sign_org_edge_v0_token_dbsc_registration_url,
+        "aud" => sign_org_edge_v0_token_dbsc_url,
         "iat" => Time.current.to_i, },
       @ec_key,
       "ES256",
       { "typ" => "dbsc+jwt" }, # No jwk header
     )
 
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: {
            Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc"),
            Auth::IoKeys::Headers::DBSC_RESPONSE => proof,
@@ -470,7 +470,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     # Execute with session ID but record not bound to DBSC (no dbsc_session_id)
     # This triggers 403 Forbidden because proof is blank (challenge issuance)
-    post sign_org_edge_v0_token_dbsc_registration_path,
+    post sign_org_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_SESSION_ID => %("session-abc") }
 
     assert_response :forbidden
@@ -492,7 +492,7 @@ class DbscRegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = "invalid-token-format"
 
-    post sign_app_edge_v0_token_dbsc_registration_path,
+    post sign_app_edge_v0_token_dbsc_path,
          headers: { Auth::IoKeys::Headers::DBSC_RESPONSE => "some-proof" }
 
     assert_response :unprocessable_content

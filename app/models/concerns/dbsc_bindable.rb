@@ -54,6 +54,7 @@ module DbscBindable
     return :binding_method_id if has_attribute?(:binding_method_id)
     return :user_token_binding_method_id if has_attribute?(:user_token_binding_method_id)
     return :staff_token_binding_method_id if has_attribute?(:staff_token_binding_method_id)
+    return :customer_token_binding_method_id if has_attribute?(:customer_token_binding_method_id)
 
     raise NoMethodError, "No DBSC binding method attribute for #{self.class.name}"
   end
@@ -62,6 +63,7 @@ module DbscBindable
     return :dbsc_status_id if has_attribute?(:dbsc_status_id)
     return :user_token_dbsc_status_id if has_attribute?(:user_token_dbsc_status_id)
     return :staff_token_dbsc_status_id if has_attribute?(:staff_token_dbsc_status_id)
+    return :customer_token_dbsc_status_id if has_attribute?(:customer_token_dbsc_status_id)
 
     raise NoMethodError, "No DBSC status attribute for #{self.class.name}"
   end

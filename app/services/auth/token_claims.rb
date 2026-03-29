@@ -80,6 +80,8 @@ module Auth
         base_scopes + ["read:self", "write:self"]
       when "staff"
         base_scopes + ["read:org", "write:org"]
+      when "customer"
+        base_scopes + ["read:self", "write:self"]
       else
         base_scopes
       end

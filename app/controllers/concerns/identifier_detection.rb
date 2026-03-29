@@ -1,16 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# IdentifierDetection
-#
-# Detects whether a user-provided identifier is an email address or telephone number,
-# and looks up the user accordingly.
-#
-# Detection rules:
-#   - Contains "@" -> email
-#   - Contains "+" -> telephone (E.164 international format required)
-#   - Neither -> unknown (rejected)
-#
 module IdentifierDetection
   extend ActiveSupport::Concern
 
@@ -25,6 +15,22 @@ module IdentifierDetection
     :unknown
   end
 
+  def identity_email_model
+    UserEmail
+  end
+
+  def identity_telephone_model
+    UserTelephone
+  end
+
+  def identity_from_email_record(record)
+    record&.respond_to?(:user) ? record.user : nil
+  end
+
+  def identity_from_telephone_record(record)
+    record&.respond_to?(:user) ? record.user : nil
+  end
+
   def find_user_by_identifier(identifier)
     case detect_identifier_type(identifier.to_s.strip)
     when :email
@@ -34,8 +40,8 @@ module IdentifierDetection
       bidx = IdentifierBlindIndex.bidx_for_email(normalized)
       return nil if bidx.blank?
 
-      user = UserEmail.find_by(address_bidx: bidx)&.user
-      user if user&.login_allowed?
+      resource = identity_from_email_record(identity_email_model.find_by(address_bidx: bidx))
+      resource if resource&.login_allowed?
     when :telephone
       normalized = TelephoneNormalization.normalize_to_e164(identifier.strip)
       return nil if normalized.blank?
@@ -43,8 +49,8 @@ module IdentifierDetection
       bidx = IdentifierBlindIndex.bidx_for_telephone(normalized)
       return nil if bidx.blank?
 
-      user = UserTelephone.find_by(number_bidx: bidx)&.user
-      user if user&.login_allowed?
+      resource = identity_from_telephone_record(identity_telephone_model.find_by(number_bidx: bidx))
+      resource if resource&.login_allowed?
     end
   end
 end

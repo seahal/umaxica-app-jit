@@ -17,6 +17,7 @@ module StepUp
 
     def configured_email?(subject)
       return subject.user_emails.exists? if subject.respond_to?(:user_emails)
+      return subject.customer_emails.exists? if subject.respond_to?(:customer_emails)
       return subject.staff_emails.exists? if subject.respond_to?(:staff_emails)
 
       false
@@ -24,6 +25,7 @@ module StepUp
 
     def configured_passkey?(subject)
       return subject.user_passkeys.exists? if subject.respond_to?(:user_passkeys)
+      return subject.customer_passkeys.exists? if subject.respond_to?(:customer_passkeys)
       return subject.staff_passkeys.exists? if subject.respond_to?(:staff_passkeys)
 
       false

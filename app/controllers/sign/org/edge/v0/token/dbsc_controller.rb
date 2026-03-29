@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-class Sign::Org::Edge::V0::Token::DbscRegistrationsController < Sign::Org::ApplicationController
+class Sign::Org::Edge::V0::Token::DbscController < Sign::Org::ApplicationController
   include Sign::EdgeV0JsonApi
   include Sign::DbscRegistrationEndpoint
 
@@ -11,7 +11,7 @@ class Sign::Org::Edge::V0::Token::DbscRegistrationsController < Sign::Org::Appli
 
   private
 
-  def dbsc_registration_url
-    sign_org_edge_v0_token_dbsc_registration_url
+  def dbsc_url
+    sign_org_edge_v0_token_dbsc_url
   end
 end

@@ -14,16 +14,16 @@ module Sign
         before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
 
         def index
-          @secrets = current_customer.user_secrets.order(created_at: :desc)
+          @secrets = current_customer.customer_secrets.order(created_at: :desc)
         end
 
         def show
         end
 
         def new
-          @secret = current_customer.user_secrets.new
-          @raw_secret = UserSecret.generate_raw_secret
-          session[:user_secret_raw] = @raw_secret
+          @secret = current_customer.customer_secrets.new
+          @raw_secret = CustomerSecret.generate_raw_secret
+          session[:customer_secret_raw] = @raw_secret
           @secret.name = @raw_secret.first(4)
         end
 
@@ -31,18 +31,18 @@ module Sign
         end
 
         def create
-          raw_secret = session.delete(:user_secret_raw)
-          UserSecrets::Create.call(
-            actor: current_customer,
-            user: current_customer,
-            params: secret_params,
-            raw_secret: raw_secret,
-          )
+          raw_secret = session.delete(:customer_secret_raw)
+          @secret = current_customer.customer_secrets.new(secret_params)
+          @secret.raw_secret = raw_secret
+          @secret.password = raw_secret
+          @secret.save!
 
           flash[:notice] = t(".created")
           redirect_to(sign_com_configuration_secrets_path(ri: params[:ri]))
         rescue ActiveRecord::RecordInvalid => e
-          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_content
+          @secret ||= e.record
+          @raw_secret ||= raw_secret
+          render :new, status: :unprocessable_content
         end
 
         def destroy
@@ -51,7 +51,7 @@ module Sign
             return redirect_to(sign_com_configuration_secrets_path(ri: params[:ri]))
           end
 
-          UserSecrets::Destroy.call(actor: current_customer, secret: @secret)
+          @secret.update!(customer_secret_status_id: CustomerSecretStatus::DELETED)
           flash[:notice] = t(".destroyed")
           redirect_to(sign_com_configuration_secrets_path(ri: params[:ri]), status: :see_other)
         end
@@ -67,17 +67,17 @@ module Sign
         private
 
         def set_secret
-          @secret = current_customer.user_secrets.find_by!(public_id: params[:id])
+          @secret = current_customer.customer_secrets.find_by!(public_id: params[:id])
         end
 
         def secret_params
-          params.fetch(:user_secret, {}).permit(:name, :enabled)
+          params.fetch(:customer_secret, params.fetch(:user_secret, {})).permit(:name)
         end
 
         def ensure_verified_recovery_identity_for_registration!
           return if current_customer.has_verified_recovery_identity?
 
-          render plain: User::RECOVERY_IDENTITY_REQUIRED_MESSAGE, status: :forbidden
+          render plain: Customer::RECOVERY_IDENTITY_REQUIRED_MESSAGE, status: :forbidden
         end
 
         def verification_required_action?

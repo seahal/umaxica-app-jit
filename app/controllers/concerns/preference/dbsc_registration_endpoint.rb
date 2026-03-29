@@ -26,7 +26,7 @@ module Preference
       result = Dbsc::RegistrationService.call(
         record: current_preference_record,
         proof: request.headers[Preference::IoKeys::Headers::DBSC_RESPONSE],
-        expected_audience: dbsc_registration_url,
+        expected_audience: dbsc_url,
       )
 
       if result[:ok]
@@ -37,7 +37,7 @@ module Preference
         )
         render json: {
           session_identifier: result[:session_id],
-          refresh_url: dbsc_registration_url,
+          refresh_url: dbsc_url,
           scope: {
             origin: request.base_url,
             include_site: false,
@@ -75,7 +75,7 @@ module Preference
 
       result = Dbsc::VerificationService.call(
         record: preference, session_id: session_id, proof: proof,
-        expected_audience: dbsc_registration_url,
+        expected_audience: dbsc_url,
       )
       return render json: { error: "DBSC verification failed", error_code: result[:error_code] },
                     status: :unprocessable_content unless result[:ok]
@@ -99,6 +99,6 @@ module Preference
     end
 
     # Subclasses must implement:
-    #   def dbsc_registration_url = <route helper returning full URL>
+    #   def dbsc_url = <route helper returning full URL>
   end
 end

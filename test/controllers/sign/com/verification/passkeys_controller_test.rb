@@ -12,7 +12,7 @@ class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::Integrat
     host! @host
     @user = create_verified_user_with_email(email_address: "com-passkey-stepup-#{SecureRandom.hex(4)}@example.com")
     @user.user_telephones.create!(
-      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, '0')}",
+      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
       user_telephone_status_id: UserTelephoneStatus::VERIFIED,
     )
     @headers = as_user_headers(@user, host: @host)

@@ -12,15 +12,15 @@ module Sign
         before_action :authenticate_customer!
 
         def index
-          @user_emails = current_customer.user_emails
+          @user_emails = current_customer.customer_emails
         end
 
         def edit
-          @user_email = current_customer.user_emails.find_by!(public_id: params[:id])
+          @user_email = current_customer.customer_emails.find_by!(public_id: params[:id])
         end
 
         def destroy
-          @user_email = current_customer.user_emails.find_by!(public_id: params[:id])
+          @user_email = current_customer.customer_emails.find_by!(public_id: params[:id])
 
           if @user_email.undeletable?
             redirect_to(
@@ -57,7 +57,7 @@ module Sign
           end
 
           UserActivity.create!(
-            actor_type: "User",
+            actor_type: "Customer",
             actor_id: current_customer.id,
             event_id: event_id,
             subject_id: subject.id.to_s,

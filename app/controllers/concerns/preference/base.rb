@@ -1116,8 +1116,8 @@ module Preference
         binding_method: dbsc_binding_method_name(preference),
         status: dbsc_status_name(preference),
         session_id: preference.dbsc_session_id,
-        registration_url: preference_dbsc_registration_path,
-        verification_url: preference_dbsc_registration_path,
+        registration_url: preference_dbsc_path,
+        verification_url: preference_dbsc_path,
       }
     end
 
@@ -1136,7 +1136,7 @@ module Preference
 
       response.set_header(
         Preference::IoKeys::Headers::DBSC_REGISTRATION,
-        %((ES256 RS256);path="#{preference_dbsc_registration_path}";challenge="#{challenge}"),
+        %((ES256 RS256);path="#{preference_dbsc_path}";challenge="#{challenge}"),
       )
     end
 
@@ -1148,14 +1148,14 @@ module Preference
       nil
     end
 
-    def preference_dbsc_registration_path
+    def preference_dbsc_path
       case preference_class.name
       when "AppPreference"
-        apex_app_edge_v0_dbsc_registration_path
+        apex_app_edge_v0_dbsc_path
       when "OrgPreference"
-        apex_org_edge_v0_dbsc_registration_path
+        apex_org_edge_v0_dbsc_path
       when "ComPreference"
-        apex_com_edge_v0_dbsc_registration_path
+        apex_com_edge_v0_dbsc_path
       end
     end
 

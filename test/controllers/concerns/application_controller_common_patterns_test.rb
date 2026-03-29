@@ -53,15 +53,17 @@ module Concerns
       end
     end
 
-    test "all application controllers have finish_request append_after_action" do
+    test "all application controllers have cleanup after_action" do
       ALL_CONTROLLER_FILES.each do |file|
         content = File.read(file)
         controller_name = file.gsub(Rails.root.join("app/controllers/").to_s, "")
           .gsub("/application_controller.rb", "")
           .gsub("/", "::")
 
-        assert_includes content, "append_after_action :finish_request",
-                        "#{controller_name} should have append_after_action :finish_request"
+        assert_match(
+          /(after_action|append_after_action) :(purge_current|finish_request)/, content,
+          "#{controller_name} should have :purge_current or :finish_request after_action",
+        )
       end
     end
 

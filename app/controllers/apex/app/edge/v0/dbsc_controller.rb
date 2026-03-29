@@ -5,7 +5,7 @@ module Apex
   module App
     module Edge
       module V0
-        class DbscRegistrationsController < ApplicationController
+        class DbscController < ApplicationController
           include ::Preference::WebCookieEndpoint
           include ::Preference::DbscRegistrationEndpoint
 
@@ -20,8 +20,8 @@ module Apex
 
           private
 
-          def dbsc_registration_url
-            apex_app_edge_v0_dbsc_registration_url
+          def dbsc_url
+            apex_app_edge_v0_dbsc_url
           end
         end
       end

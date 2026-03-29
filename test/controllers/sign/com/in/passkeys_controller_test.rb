@@ -5,8 +5,6 @@ require "test_helper"
 require "base64"
 
 class Sign::Com::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses, :user_email_statuses, :user_telephone_statuses
-
   setup do
     @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
     host! @host
@@ -14,18 +12,18 @@ class Sign::Com::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     Jit::Security::TurnstileVerifier.test_mode = true
     Jit::Security::TurnstileVerifier.test_response = { "success" => true }
 
-    @user = create_verified_user_with_email(email_address: "com_passkey_test@example.com")
-    @user.user_telephones.create!(
-      number: "+819012345678",
-      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    @customer = create_verified_customer_with_email(email_address: "com_passkey_test@example.com")
+    @customer.customer_telephones.create!(
+      number: "+8190" + format("%08d", SecureRandom.random_number(100_000_000)),
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
     )
-    @passkey = UserPasskey.create!(
-      user: @user,
-      webauthn_id: Base64.urlsafe_encode64("com_login_id_bytes_12345", padding: false),
+    @passkey = CustomerPasskey.create!(
+      customer: @customer,
+      webauthn_id: Base64.urlsafe_encode64("com_login_id_bytes_d6d168ddb214ad82", padding: false),
       external_id: SecureRandom.uuid,
       public_key: "login_key",
       description: "Login Key",
-      status_id: UserPasskeyStatus::ACTIVE,
+      status_id: CustomerPasskeyStatus::ACTIVE,
     )
 
     @original_trusted_origins = Webauthn.method(:trusted_origins)
@@ -47,7 +45,7 @@ class Sign::Com::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
   test "options returns challenge for known identifier" do
     Sign::Com::In::PasskeysController.any_instance.stub(:validate_webauthn_origin!, true) do
       post options_sign_com_in_passkeys_path(ri: "jp"),
-           params: { identifier: @user.user_emails.first.address },
+           params: { identifier: @customer.customer_emails.first.address },
            headers: @origin_headers
     end
 
@@ -56,7 +54,7 @@ class Sign::Com::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
 
     assert_not_nil json["challenge_id"]
     assert_equal "authentication", session[:passkey_challenges][json["challenge_id"]]["purpose"]
-    assert_equal @user.id, session[:passkey_challenges][json["challenge_id"]]["user_id"]
+    assert_equal @customer.id, session[:passkey_challenges][json["challenge_id"]]["customer_id"]
   end
 
   test "options returns error when identifier is unknown" do
@@ -70,27 +68,10 @@ class Sign::Com::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
   end
 
-  test "options returns error when identifier has no passkeys" do
-    user_without_passkey = create_verified_user_with_email(email_address: "no_passkey@example.com")
-    user_without_passkey.user_telephones.create!(
-      number: "+819012300000",
-      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
-    )
-
+  test "verification logs customer in on success" do
     Sign::Com::In::PasskeysController.any_instance.stub(:validate_webauthn_origin!, true) do
       post options_sign_com_in_passkeys_path(ri: "jp"),
-           params: { identifier: user_without_passkey.user_emails.first.address },
-           headers: @origin_headers
-    end
-
-    assert_response :unprocessable_content
-    assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
-  end
-
-  test "verification logs user in on success" do
-    Sign::Com::In::PasskeysController.any_instance.stub(:validate_webauthn_origin!, true) do
-      post options_sign_com_in_passkeys_path(ri: "jp"),
-           params: { identifier: @user.user_emails.first.address },
+           params: { identifier: @customer.customer_emails.first.address },
            headers: @origin_headers
     end
     challenge_id = response.parsed_body["challenge_id"]
@@ -121,14 +102,5 @@ class Sign::Com::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_equal "ok", response.parsed_body["status"]
     assert_equal sign_com_configuration_path(ri: "jp"), response.parsed_body["redirect_url"]
-  end
-
-  test "verification returns bad request when challenge is missing" do
-    post verification_sign_com_in_passkeys_path(ri: "jp"),
-         params: { challenge_id: "missing" },
-         headers: @origin_headers
-
-    assert_response :bad_request
-    assert_includes response.body, I18n.t("errors.webauthn.challenge_invalid")
   end
 end

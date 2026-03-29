@@ -32,8 +32,7 @@ scope module: :sign, as: :sign do
           resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
-            # TODO: nusty code!, use resource :dbsc
-            resource :dbsc_registration, only: :create
+            resource :dbsc, only: :create, controller: :dbsc
             resource :refresh, only: :create
           end
         end
@@ -55,7 +54,12 @@ scope module: :sign, as: :sign do
         resource :reset, only: [:edit, :destroy]
         # for ePrivacy settings.
         resource :cookie, only: [:edit, :update]
+        resource :email, only: %i(new create edit update) do
+          post :unsubscribe, on: :member
+        end
       end
+
+      # TODO: what is this?
       resource :configuration, only: [:show]
 
       resource :up, only: :new
@@ -156,11 +160,6 @@ scope module: :sign, as: :sign do
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
       end
-
-      resource :preference, only: :show
-      namespace :preference do
-        resources :email, only: %i(index show create edit update)
-      end
     end
   end
 
@@ -198,10 +197,13 @@ scope module: :sign, as: :sign do
         end
         # for dark/light mode
         resource :theme, only: [:edit, :update]
-        # for ePrivacy settings.
+        # FIXME: i think destroy method is better choice
         resource :cookie, only: [:edit, :update]
         # endpoint of reset preferences.
         resource :reset, only: [:edit, :destroy]
+        resource :email, only: %i(new create edit update) do
+          post :unsubscribe, on: :member
+        end
       end
 
       resource :up, only: :new
@@ -268,11 +270,6 @@ scope module: :sign, as: :sign do
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
       end
-
-      resource :preference, only: :show
-      namespace :preference do
-        resources :email, only: %i(index show create edit update)
-      end
     end
   end
 
@@ -297,8 +294,7 @@ scope module: :sign, as: :sign do
           resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
-            # TODO: RENAME :dbsc, only: :create
-            resource :dbsc_registration, only: :create
+            resource :dbsc, only: :create, controller: :dbsc
             resource :refresh, only: :create
           end
         end
@@ -306,7 +302,6 @@ scope module: :sign, as: :sign do
       # preferences
       resource :preference, only: [:show]
       namespace :preference do
-        resources :email, only: %i(index show create edit update)
         # for region settings.
         resource :region, only: [:edit, :update]
         namespace :region do
@@ -320,6 +315,10 @@ scope module: :sign, as: :sign do
         resource :reset, only: [:edit, :destroy]
         # for ePrivacy settings.
         resource :cookie, only: [:edit, :update]
+        # email reset
+        resource :email, only: %i(new create edit update) do
+          post :unsubscribe, on: :member
+        end
       end
 
       resource :up, only: :new

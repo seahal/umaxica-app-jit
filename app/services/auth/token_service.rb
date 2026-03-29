@@ -6,7 +6,7 @@ require "jwt"
 module Auth
   class TokenService
     JWT_ALGORITHM = "ES384"
-    VALID_ACTOR_TYPES = %w(user staff).freeze
+    VALID_ACTOR_TYPES = %w(user staff customer).freeze
 
     class << self
       def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preferences: nil)

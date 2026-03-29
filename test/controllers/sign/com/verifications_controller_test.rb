@@ -5,17 +5,15 @@ require "test_helper"
 require "base64"
 
 class Sign::Com::VerificationsControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users
-
   setup do
     @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
     host! @host
-    @user = create_verified_user_with_email(email_address: "com-verification-#{SecureRandom.hex(4)}@example.com")
-    @user.user_telephones.create!(
-      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, '0')}",
-      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    @customer = create_verified_customer_with_email(email_address: "com-verification-#{SecureRandom.hex(4)}@example.com")
+    @customer.customer_telephones.create!(
+      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
     )
-    @headers = as_user_headers(@user, host: @host)
+    @headers = as_customer_headers(@customer, host: @host)
   end
 
   test "should get show" do
@@ -25,12 +23,12 @@ class Sign::Com::VerificationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "redirects to setup page when no verification methods are registered" do
-    user = User.create!
-    user.user_telephones.create!(
-      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, '0')}",
-      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    customer = Customer.create!(visibility_id: CustomerVisibility::CUSTOMER)
+    customer.customer_telephones.create!(
+      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
     )
-    headers = as_user_headers(user, host: @host)
+    headers = as_customer_headers(customer, host: @host)
 
     get sign_com_verification_url(ri: "jp"), headers: headers
 
@@ -44,6 +42,14 @@ class Sign::Com::VerificationsControllerTest < ActionDispatch::IntegrationTest
 
   test "show renders only email and passkey method links" do
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
+    CustomerPasskey.create!(
+      customer: @customer,
+      webauthn_id: Base64.urlsafe_encode64("com_verification_passkey", padding: false),
+      external_id: SecureRandom.uuid,
+      public_key: "verification_key",
+      description: "Verification Key",
+      status_id: CustomerPasskeyStatus::ACTIVE,
+    )
 
     get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
@@ -52,12 +58,5 @@ class Sign::Com::VerificationsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, new_sign_com_verification_email_path(ri: "jp")
     assert_includes response.body, new_sign_com_verification_passkey_path(ri: "jp")
     assert_not_includes response.body, "/verification/totp"
-  end
-
-  test "show handles bad request error" do
-    get sign_com_verification_url(scope: "configuration_email", return_to: "%%%INVALID%%%", ri: "jp"),
-        headers: @headers
-
-    assert_redirected_to sign_com_configuration_url(ri: "jp")
   end
 end

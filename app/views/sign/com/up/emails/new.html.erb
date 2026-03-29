@@ -27,7 +27,7 @@
       <% end %>
 
       <div>
-        <%= form.label :raw_address, UserEmail.human_attribute_name(:address) %>
+        <%= form.label :raw_address, CustomerEmail.human_attribute_name(:address) %>
         <div>
           <%= form.email_field :raw_address, autocomplete: "email", required: true %>
         </div>

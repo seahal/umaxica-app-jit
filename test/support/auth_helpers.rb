@@ -5,21 +5,10 @@ require_relative "../../app/controllers/concerns/authentication/base"
 require_relative "../../app/controllers/concerns/authentication/user"
 require_relative "../../app/controllers/concerns/authentication/staff"
 
-# Helpers for authentication-related test setup.
-#
-# This app supports multiple "surfaces":
-# - Edge API: Cookie-based auth (browser/SPA) + JSON 401 (no redirect)
-# - Member API: Bearer auth (native/external) + JSON 401
-#
-# In tests, controllers can bypass auth via special headers:
-# - "X-TEST-CURRENT-USER"
-# - "X-TEST-CURRENT-STAFF"
-#
-# Prefer those headers for controller/integration tests to avoid coupling to
-# token issuance and refresh flows.
 module AuthHelpers
   TEST_USER_HEADER = "X-TEST-CURRENT-USER"
   TEST_STAFF_HEADER = "X-TEST-CURRENT-STAFF"
+  TEST_RESOURCE_HEADER = "X-TEST-CURRENT-RESOURCE"
   MODERN_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " \
                       "AppleWebKit/537.36 (KHTML, like Gecko) " \
                       "Chrome/120.0.0.0 Safari/537.36"
@@ -55,12 +44,23 @@ module AuthHelpers
     host_headers(host).merge(headers).merge(TEST_STAFF_HEADER => staff.id.to_s)
   end
 
+  def as_customer_headers(customer, host: nil, headers: {})
+    ensure_customer_token_reference_records! if respond_to?(:ensure_customer_token_reference_records!, true)
+    base = host_headers(host).merge(headers).merge(TEST_RESOURCE_HEADER => customer.id.to_s)
+
+    if customer.respond_to?(:persisted?) && customer.persisted? && customer.class.name == "Customer"
+      token = CustomerToken.where(customer_id: customer.id, expired_at: nil).order(created_at: :desc).first
+      token ||= CustomerToken.create!(customer_id: customer.id, customer_token_kind_id: CustomerTokenKind::BROWSER_WEB)
+      base["X-TEST-SESSION-PUBLIC-ID"] = token.public_id
+    end
+
+    base
+  end
+
   def bearer_headers(token, host: nil, headers: {})
     host_headers(host).merge(headers).merge("Authorization" => "Bearer #{token}")
   end
 
-  # Generates a JWT access token via Authentication::Base::Token.
-  # Returns nil if JWT credentials are not configured.
   def jwt_access_token_for(resource, host: nil, session_public_id: nil, resource_type: nil)
     host_value = host || (respond_to?(:request, true) ? request&.host : nil) || "unknown"
     ::Authentication::Base::Token.encode(
@@ -71,9 +71,6 @@ module AuthHelpers
     )
   end
 
-  # Convenience for Cookie-based auth simulations (Edge API).
-  # Use together with existing controllers expecting cookies.
-  # Cookie keys are now centralized in Authentication::Base
   def set_access_cookie(token)
     cookies[::Authentication::Base::ACCESS_COOKIE_KEY] = token
   end
@@ -94,12 +91,15 @@ module AuthHelpers
     verification
   end
 
-  # Legacy aliases for backward compatibility
+  def satisfy_customer_verification(customer_token)
+    verification, raw_token = CustomerVerification.issue_for_token!(token: customer_token)
+    cookies[CustomerVerification.cookie_name] = raw_token
+    verification
+  end
+
   alias_method :set_user_access_cookie, :set_access_cookie
   alias_method :set_staff_access_cookie, :set_access_cookie
 
-  # Parse Set-Cookie header and extract cookies for follow-up requests
-  # Returns a hash of cookie names to values
   def extract_cookies_from_response
     raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
     lines =
@@ -124,7 +124,6 @@ module AuthHelpers
     parsed
   end
 
-  # Check if response has Set-Cookie for a specific cookie name
   def response_has_cookie?(name)
     raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
     lines =

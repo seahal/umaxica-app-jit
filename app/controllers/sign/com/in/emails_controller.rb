@@ -17,7 +17,7 @@ module Sign
         before_action :load_user_email, only: %i(edit update)
 
         def new
-          @user_email = UserEmail.new
+          @user_email = CustomerEmail.new
         end
 
         def edit
@@ -28,13 +28,13 @@ module Sign
           address = address_params[:address]
 
           unless cloudflare_turnstile_validation["success"] && address.present?
-            @user_email = UserEmail.new(address: address)
+            @user_email = CustomerEmail.new(address: address)
             return render :new, status: :unprocessable_content
           end
 
           normalized_address = validate_and_normalize_email(address)
           unless normalized_address
-            @user_email = UserEmail.new(address: address)
+            @user_email = CustomerEmail.new(address: address)
             @user_email.errors.add(:address, t("sign.app.authentication.email.create.invalid_format"))
             return render :new, status: :unprocessable_content
           end
@@ -131,7 +131,7 @@ module Sign
           if session[:user_email_authentication_id].present?
             @user_email = load_session_record(
               :user_email_authentication_id,
-              UserEmail,
+              CustomerEmail,
               check_otp_expiry: false,
               custom: ->(email) { email.present? && !email.otp_expired? },
             )
@@ -143,7 +143,7 @@ module Sign
             end
             @otp_resend_state = Sign::In::OtpResendState.issue(kind: :email, target: @user_email.address)
           elsif session[:user_email_authentication_address].present?
-            @user_email = UserEmail.new(address: session[:user_email_authentication_address])
+            @user_email = CustomerEmail.new(address: session[:user_email_authentication_address])
             @otp_resend_state = Sign::In::OtpResendState.issue(
               kind: :email,
               target: session[:user_email_authentication_address],
@@ -157,9 +157,9 @@ module Sign
         def process_email_authentication(normalized_address)
           existing_email = find_email_with_timing_protection(normalized_address)
 
-          if existing_email&.user&.login_allowed?
-            user = existing_email.user
-            if session_limit_hard_reject_for?(user)
+          if existing_email&.customer&.login_allowed?
+            customer = existing_email.customer
+            if session_limit_hard_reject_for?(customer)
               @session_limit_hard_reject = true
               return
             end
@@ -197,15 +197,15 @@ module Sign
           result = verify_otp_code(user_email, user_email.pass_code)
 
           if result[:success]
-            user = user_from_user_email(user_email)
-            unless user&.login_allowed?
+            customer = customer_from_customer_email(user_email)
+            unless customer&.login_allowed?
               return { success: false, error: t("sign.app.authentication.email.update.invalid_code") }
             end
 
             clear_otp(user_email)
             session[:user_email_authentication_id] = nil
             rd = peek_redirect_parameter
-            result = complete_sign_in_or_start_mfa!(user, rt: rd, ri: params[:ri], auth_method: "email")
+            result = complete_sign_in_or_start_mfa!(customer, rt: rd, ri: params[:ri], auth_method: "email")
 
             if result[:status] == :mfa_required
               { success: true, redirect_path: result[:redirect_path] }
@@ -219,9 +219,9 @@ module Sign
               { success: false, error: t("sign.app.authentication.email.update.invalid_code") }
             end
           else
-            user = user_from_user_email(user_email)
             increment_otp_attempts!(user_email)
-            handle_failed_otp_attempt(user_email, user)
+            customer = customer_from_customer_email(user_email)
+            handle_failed_otp_attempt(user_email, customer)
           end
         end
 
@@ -230,16 +230,44 @@ module Sign
           { success: false, error: t("sign.app.authentication.email.update.invalid_code") }
         end
 
-        def handle_failed_otp_attempt(user_email, user = nil)
-          user ||= user_from_user_email(user_email)
-          audit_customer_login_failed(user) if user
-          Sign::Risk::Emitter.emit("auth_failed", user_id: user&.id) if user
+        def handle_failed_otp_attempt(user_email, customer = nil)
+          customer ||= customer_from_customer_email(user_email)
+          audit_customer_login_failed(customer) if customer
+          Sign::Risk::Emitter.emit("auth_failed", customer_id: customer&.id) if customer
 
           if user_email.locked?
             { success: false, error: t("sign.app.authentication.email.locked") }
           else
             { success: false, error: t("sign.app.authentication.email.update.invalid_code") }
           end
+        end
+
+        def customer_from_customer_email(customer_email)
+          customer_email&.customer
+        end
+
+        def update_pass_code_params
+          params.expect(user_email: [:pass_code])
+        rescue ActionController::ParameterMissing
+          {}
+        end
+
+        def otp_request_rate_limited?(user_email)
+          user_email.otp_cooldown_active?
+        end
+
+        def sign_in_email_cooldown_active?(normalized_address)
+          return false if session[:sign_in_email_cooldown_address] != normalized_address
+
+          last_sent_at = session[:sign_in_email_cooldown_at]
+          return false if last_sent_at.blank?
+
+          last_sent_at.to_i > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
+        end
+
+        def record_sign_in_email_cooldown!(normalized_address)
+          session[:sign_in_email_cooldown_address] = normalized_address
+          session[:sign_in_email_cooldown_at] = Time.current.to_i
         end
       end
     end

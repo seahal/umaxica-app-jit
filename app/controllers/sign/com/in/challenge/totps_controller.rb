@@ -6,113 +6,21 @@ module Sign
     module In
       module Challenge
         class TotpsController < ApplicationController
-          include SessionLimitGate
-          include ::CloudflareTurnstile
+          before_action :redirect_unavailable!
 
-          class TotpChallengeForm
-            include ActiveModel::Model
+          def new; end
 
-            attr_accessor :token
-
-            validates :token, presence: true, length: { is: 6 }
-
-            def self.model_name
-              ActiveModel::Name.new(self, nil, "totp_challenge_form")
-            end
-          end
-
-          before_action :reject_logged_in_session
-          before_action :ensure_pending_mfa!
-
-          def new
-            @totp_form = TotpChallengeForm.new
-          end
-
-          def create
-            @totp_form = TotpChallengeForm.new(totp_params)
-            unless @totp_form.valid?
-              return render :new, status: :unprocessable_content
-            end
-
-            unless cloudflare_turnstile_stealth_validation["success"]
-              @totp_form.errors.add(
-                :base,
-                t(
-                  "sign.app.in.mfa.turnstile_failed",
-                  default: "検証に失敗しました。もう一度お試しください。",
-                ),
-              )
-              return render :new, status: :unprocessable_content
-            end
-
-            user = pending_mfa_user
-            last_otp_at, totp_record = verify_totp_for(user, @totp_form.token)
-
-            if last_otp_at
-              handle_totp_success(user, totp_record, last_otp_at)
-            else
-              Sign::Risk::Emitter.emit("auth_failed", user_id: user&.id, ip: request.remote_ip, reason: "totp_mismatch")
-              @totp_form.errors.add(:token, t("sign.app.in.mfa.verification_failed"))
-              render :new, status: :unprocessable_content
-            end
-          end
+          def create; end
 
           private
 
-          def ensure_pending_mfa!
-            return unless !pending_mfa_valid? || pending_mfa_user.nil?
-
-            clear_pending_mfa!
+          def redirect_unavailable!
+            clear_pending_mfa! if respond_to?(:clear_pending_mfa!, true)
             redirect_to(
               new_sign_com_in_path(ri: params[:ri]),
-              alert: I18n.t("sign.app.in.mfa.session_expired"),
+              alert: I18n.t("sign.app.verification.unavailable", default: "この認証手段は利用できません。"),
               status: :see_other,
             )
-          end
-
-          def verify_totp_for(user, token)
-            user.user_one_time_passwords
-              .where(user_identity_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
-              .order(created_at: :desc)
-              .each do |totp|
-              last_otp_at = ROTP::TOTP.new(totp.private_key).verify(token.to_s)
-              return [last_otp_at, totp] if last_otp_at
-            end
-            [nil, nil]
-          end
-
-          def handle_totp_success(user, totp_record, last_otp_at)
-            totp_record&.update!(last_otp_at: Time.zone.at(last_otp_at))
-
-            result = finalize_mfa_login!(user)
-            case result[:status]
-            when :session_limit_hard_reject
-              render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
-            when :restricted
-              redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
-            when :success
-              if issue_bulletin!
-                redirect_to(
-                  sign_com_in_bulletin_path(rd: result[:redirect_path], ri: params[:ri]),
-                  notice: I18n.t("sign.app.in.mfa.totp.success"),
-                )
-              else
-                safe_redirect_to_rd_or_default!(
-                  result[:redirect_path],
-                  default_path: sign_com_configuration_path(ri: params[:ri]),
-                )
-              end
-            else
-              redirect_to(
-                new_sign_com_in_path(ri: params[:ri]),
-                alert: I18n.t("sign.app.in.mfa.verification_failed"),
-                status: :see_other,
-              )
-            end
-          end
-
-          def totp_params
-            params.fetch(:totp_challenge_form, {}).permit(:token)
           end
         end
       end

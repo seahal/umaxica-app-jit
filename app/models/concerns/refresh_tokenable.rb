@@ -95,10 +95,14 @@ module RefreshTokenable
         previous_token.user_token_binding_method_id if previous_token.has_attribute?(:user_token_binding_method_id)
       attrs[:staff_token_binding_method_id] =
         previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
+      attrs[:customer_token_binding_method_id] =
+        previous_token.customer_token_binding_method_id if previous_token.has_attribute?(:customer_token_binding_method_id)
       attrs[:user_token_dbsc_status_id] =
         previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
       attrs[:staff_token_dbsc_status_id] =
         previous_token.staff_token_dbsc_status_id if previous_token.has_attribute?(:staff_token_dbsc_status_id)
+      attrs[:customer_token_dbsc_status_id] =
+        previous_token.customer_token_dbsc_status_id if previous_token.has_attribute?(:customer_token_dbsc_status_id)
 
       replacement = create!(attrs)
       raw_refresh_token, verifier = generate_refresh_token(public_id: replacement.public_id)
@@ -109,6 +113,7 @@ module RefreshTokenable
     def actor_foreign_key_from(token)
       return :user_id if token.has_attribute?(:user_id)
       return :staff_id if token.has_attribute?(:staff_id)
+      return :customer_id if token.has_attribute?(:customer_id)
 
       nil
     end
@@ -116,6 +121,7 @@ module RefreshTokenable
     def token_status_key_from(token)
       return :user_token_status_id if token.has_attribute?(:user_token_status_id)
       return :staff_token_status_id if token.has_attribute?(:staff_token_status_id)
+      return :customer_token_status_id if token.has_attribute?(:customer_token_status_id)
 
       nil
     end
@@ -123,6 +129,7 @@ module RefreshTokenable
     def token_kind_key_from(token)
       return :user_token_kind_id if token.has_attribute?(:user_token_kind_id)
       return :staff_token_kind_id if token.has_attribute?(:staff_token_kind_id)
+      return :customer_token_kind_id if token.has_attribute?(:customer_token_kind_id)
 
       nil
     end

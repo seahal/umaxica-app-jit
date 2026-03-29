@@ -36,7 +36,7 @@ module Sign
         private
 
         def visible_sessions
-          current_customer.user_tokens.session_inventory
+          current_customer.customer_tokens.session_inventory
         end
 
         def render_revoke_success

@@ -24,7 +24,7 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc_registration, only: :create
+          resource :dbsc, only: :create, controller: :dbsc
         end
       end
     end
@@ -58,7 +58,7 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc_registration, only: :create
+          resource :dbsc, only: :create, controller: :dbsc
         end
       end
       resource :configuration, only: [:show]
@@ -99,7 +99,7 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc_registration, only: :create
+          resource :dbsc, only: :create, controller: :dbsc
         end
       end
       # for emergency

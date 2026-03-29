@@ -48,7 +48,7 @@ module Sign
             )
           end
 
-          User.transaction do
+          Customer.transaction do
             current_customer.update!(
               withdrawal_started_at: nil,
               deactivated_at: nil,
@@ -58,8 +58,8 @@ module Sign
             )
 
             Rails.event.notify(
-              "user.withdrawal.recovered",
-              user_id: current_customer.id,
+              "customer.withdrawal.recovered",
+              customer_id: current_customer.id,
               ip_address: request.remote_ip,
             )
           end
@@ -126,7 +126,7 @@ module Sign
         def deactivate_user!
           now = Time.current
 
-          User.transaction do
+          Customer.transaction do
             assign_withdrawal_schedule!(now)
             current_customer.save!
             notify_deactivation!
@@ -142,8 +142,8 @@ module Sign
 
         def notify_deactivation!
           Rails.event.notify(
-            "user.withdrawal.deactivated",
-            user_id: current_customer.id,
+            "customer.withdrawal.deactivated",
+            customer_id: current_customer.id,
             deactivated_at: current_customer.deactivated_at,
             deletable_at: current_customer.deletable_at,
             scheduled_purge_at: current_customer.scheduled_purge_at,
@@ -153,8 +153,8 @@ module Sign
 
         def handle_deactivation_failure
           Rails.event.notify(
-            "user.withdrawal.deactivation_failed",
-            user_id: current_customer.id,
+            "customer.withdrawal.deactivation_failed",
+            customer_id: current_customer.id,
             errors: current_customer.errors.full_messages,
             ip_address: request.remote_ip,
           )

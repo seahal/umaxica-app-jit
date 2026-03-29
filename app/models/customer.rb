@@ -40,6 +40,15 @@ class Customer < GuestRecord
   include ::Identity
 
   LOGIN_BLOCKED_STATUS_IDS = [CustomerStatus::RESERVED].freeze
+  VERIFIED_RECOVERY_EMAIL_STATUS_IDS = [
+    CustomerEmailStatus::VERIFIED,
+    CustomerEmailStatus::VERIFIED_WITH_SIGN_UP,
+  ].freeze
+  VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS = [
+    CustomerTelephoneStatus::VERIFIED,
+    CustomerTelephoneStatus::VERIFIED_WITH_SIGN_UP,
+  ].freeze
+  RECOVERY_IDENTITY_REQUIRED_MESSAGE = "パスキー/シークレットを登録するには、先にメールアドレスまたは電話番号を1つ以上登録（確認）してください。"
 
   attribute :status_id, default: CustomerStatus::NOTHING
 
@@ -53,6 +62,21 @@ class Customer < GuestRecord
   has_one :customer_preference,
           dependent: :destroy,
           inverse_of: :customer
+  has_many :customer_emails,
+           dependent: :destroy,
+           inverse_of: :customer
+  has_many :customer_telephones,
+           dependent: :destroy,
+           inverse_of: :customer
+  has_many :customer_secrets,
+           dependent: :destroy,
+           inverse_of: :customer
+  has_many :customer_passkeys,
+           dependent: :destroy,
+           inverse_of: :customer
+  has_many :customer_tokens,
+           dependent: :delete_all,
+           inverse_of: :customer
 
   def staff?
     false
@@ -64,5 +88,27 @@ class Customer < GuestRecord
 
   def customer?
     true
+  end
+
+  def has_verified_recovery_identity?
+    has_verified_pii?
+  end
+
+  def has_verified_pii?
+    verified_email? || verified_telephone?
+  end
+
+  def verified_email?
+    customer_emails.exists?(customer_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS)
+  end
+
+  def verified_telephone?
+    customer_telephones.exists?(customer_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+  end
+
+  def passkey_login_available?
+    return false unless customer_passkeys.active.exists?
+
+    verified_telephone?
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_29_010000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_29_021000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -200,6 +200,56 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_010000) do
     t.index ["token_expires_at"], name: "index_com_contacts_on_token_expires_at"
   end
 
+  create_table "customer_email_statuses", force: :cascade do |t|
+  end
+
+  create_table "customer_emails", force: :cascade do |t|
+    t.string "address", default: "", null: false
+    t.string "address_bidx"
+    t.string "address_digest"
+    t.datetime "created_at", null: false
+    t.bigint "customer_email_status_id", default: 1, null: false
+    t.bigint "customer_id", null: false
+    t.datetime "locked_at", default: ::Float::INFINITY, null: false
+    t.integer "otp_attempts_count", default: 0, null: false
+    t.text "otp_counter", default: "", null: false
+    t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
+    t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
+    t.string "otp_private_key", default: "", null: false
+    t.string "public_id", limit: 21, null: false
+    t.boolean "undeletable", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.binary "verification_token_digest"
+    t.index "lower((address)::text)", name: "index_customer_emails_on_lower_address", unique: true
+    t.index ["address_bidx"], name: "index_customer_emails_on_address_bidx", unique: true, where: "(address_bidx IS NOT NULL)"
+    t.index ["address_digest"], name: "index_customer_emails_on_address_digest", unique: true, where: "(address_digest IS NOT NULL)"
+    t.index ["customer_email_status_id"], name: "index_customer_emails_on_customer_email_status_id"
+    t.index ["customer_id"], name: "index_customer_emails_on_customer_id"
+    t.index ["otp_last_sent_at"], name: "index_customer_emails_on_otp_last_sent_at"
+    t.index ["public_id"], name: "index_customer_emails_on_public_id", unique: true
+  end
+
+  create_table "customer_passkey_statuses", force: :cascade do |t|
+  end
+
+  create_table "customer_passkeys", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.string "description", default: "", null: false
+    t.uuid "external_id", null: false
+    t.datetime "last_used_at"
+    t.string "public_id", limit: 21, null: false
+    t.text "public_key", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.bigint "status_id", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.string "webauthn_id", default: "", null: false
+    t.index ["customer_id"], name: "index_customer_passkeys_on_customer_id"
+    t.index ["public_id"], name: "index_customer_passkeys_on_public_id", unique: true
+    t.index ["status_id"], name: "index_customer_passkeys_on_status_id"
+    t.index ["webauthn_id"], name: "index_customer_passkeys_on_webauthn_id", unique: true
+  end
+
   create_table "customer_preference_colortheme_options", force: :cascade do |t|
   end
 
@@ -265,7 +315,57 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_010000) do
     t.index ["customer_id"], name: "index_customer_preferences_on_customer_id", unique: true
   end
 
+  create_table "customer_secret_kinds", force: :cascade do |t|
+  end
+
+  create_table "customer_secret_statuses", force: :cascade do |t|
+  end
+
+  create_table "customer_secrets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.bigint "customer_secret_kind_id", default: 1, null: false
+    t.bigint "customer_secret_status_id", default: 1, null: false
+    t.datetime "expires_at", default: ::Float::INFINITY, null: false
+    t.datetime "last_used_at"
+    t.string "name", default: "", null: false
+    t.string "password_digest", default: "", null: false
+    t.string "public_id", limit: 21, null: false
+    t.datetime "updated_at", null: false
+    t.integer "uses_remaining", default: 1, null: false
+    t.index ["customer_id"], name: "index_customer_secrets_on_customer_id"
+    t.index ["customer_secret_kind_id"], name: "index_customer_secrets_on_customer_secret_kind_id"
+    t.index ["customer_secret_status_id"], name: "index_customer_secrets_on_customer_secret_status_id"
+    t.index ["expires_at"], name: "index_customer_secrets_on_expires_at"
+    t.index ["public_id"], name: "index_customer_secrets_on_public_id", unique: true
+  end
+
   create_table "customer_statuses", force: :cascade do |t|
+  end
+
+  create_table "customer_telephone_statuses", force: :cascade do |t|
+  end
+
+  create_table "customer_telephones", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.bigint "customer_telephone_status_id", default: 1, null: false
+    t.datetime "locked_at", default: -::Float::INFINITY, null: false
+    t.string "number", default: "", null: false
+    t.string "number_bidx"
+    t.string "number_digest"
+    t.integer "otp_attempts_count", default: 0, null: false
+    t.text "otp_counter", default: "", null: false
+    t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
+    t.string "otp_private_key", default: "", null: false
+    t.string "public_id", limit: 21, null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((number)::text)", name: "index_customer_telephones_on_lower_number", unique: true
+    t.index ["customer_id"], name: "index_customer_telephones_on_customer_id"
+    t.index ["customer_telephone_status_id"], name: "index_customer_telephones_on_customer_telephone_status_id"
+    t.index ["number_bidx"], name: "index_customer_telephones_on_number_bidx", unique: true, where: "(number_bidx IS NOT NULL)"
+    t.index ["number_digest"], name: "index_customer_telephones_on_number_digest", unique: true, where: "(number_digest IS NOT NULL)"
+    t.index ["public_id"], name: "index_customer_telephones_on_public_id", unique: true
   end
 
   create_table "customer_visibilities", force: :cascade do |t|
@@ -391,6 +491,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_010000) do
   add_foreign_key "com_contact_topics", "com_contacts", validate: false
   add_foreign_key "com_contacts", "com_contact_categories", column: "category_id"
   add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id", on_delete: :restrict
+  add_foreign_key "customer_emails", "customer_email_statuses"
+  add_foreign_key "customer_emails", "customers"
+  add_foreign_key "customer_passkeys", "customer_passkey_statuses", column: "status_id"
+  add_foreign_key "customer_passkeys", "customers"
   add_foreign_key "customer_preference_colorthemes", "customer_preference_colortheme_options", column: "option_id"
   add_foreign_key "customer_preference_colorthemes", "customer_preferences", column: "preference_id"
   add_foreign_key "customer_preference_languages", "customer_preference_language_options", column: "option_id"
@@ -400,6 +504,11 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_010000) do
   add_foreign_key "customer_preference_timezones", "customer_preference_timezone_options", column: "option_id"
   add_foreign_key "customer_preference_timezones", "customer_preferences", column: "preference_id"
   add_foreign_key "customer_preferences", "customers"
+  add_foreign_key "customer_secrets", "customer_secret_kinds"
+  add_foreign_key "customer_secrets", "customer_secret_statuses"
+  add_foreign_key "customer_secrets", "customers"
+  add_foreign_key "customer_telephones", "customer_telephone_statuses"
+  add_foreign_key "customer_telephones", "customers"
   add_foreign_key "customers", "customer_statuses", column: "status_id", validate: false
   add_foreign_key "customers", "customer_visibilities", column: "visibility_id", validate: false
   add_foreign_key "org_contact_emails", "org_contacts"

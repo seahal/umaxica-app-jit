@@ -1,13 +1,12 @@
 # typed: false
 # frozen_string_literal: true
 
-# FIXME: REWRITE!!!
-
 module Sign
   module Com
     class ApplicationController < ActionController::Base
       include ::Preference::Adoption
       include ::Authentication::Customer
+      include ::Verification::User
       include Sign::Com::RouteAliasHelper
       include ::Finisher
 
@@ -23,6 +22,7 @@ module Sign
                            with: :exception
 
       before_action :enforce_required_telephone_registration!
+      before_action :enforce_verification_if_required
       after_action :purge_current
 
       class << self
@@ -41,6 +41,38 @@ module Sign
 
       def authenticate_user!
         authenticate_customer!
+      end
+
+      def actor_staff?
+        false
+      end
+
+      def current_actor
+        current_customer
+      end
+
+      def verification_model
+        CustomerVerification
+      end
+
+      def verification_token_foreign_key
+        :customer_token_id
+      end
+
+      def identity_email_model
+        CustomerEmail
+      end
+
+      def identity_telephone_model
+        CustomerTelephone
+      end
+
+      def identity_from_email_record(record)
+        record&.customer
+      end
+
+      def identity_from_telephone_record(record)
+        record&.customer
       end
 
       def actor_verification_path(attrs)
@@ -90,3 +122,5 @@ module Sign
     end
   end
 end
+
+Sign::Com::ApplicationController.send(:public, :current_user)

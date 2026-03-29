@@ -20,6 +20,10 @@ module StepUp
         return subject.user_emails.exists?(user_email_status_id: AuthMethodGuard::VERIFIED_EMAIL_STATUSES)
       end
 
+      if subject.respond_to?(:customer_emails)
+        return subject.customer_emails.exists?(customer_email_status_id: AuthMethodGuard::CUSTOMER_VERIFIED_EMAIL_STATUSES)
+      end
+
       if subject.respond_to?(:staff_emails)
         return subject.staff_emails.exists?(
           staff_identity_email_status_id: [
@@ -34,6 +38,7 @@ module StepUp
 
     def usable_passkey?(subject)
       return subject.user_passkeys.active.exists? if subject.respond_to?(:user_passkeys)
+      return subject.customer_passkeys.active.exists? if subject.respond_to?(:customer_passkeys)
       return subject.staff_passkeys.active.exists? if subject.respond_to?(:staff_passkeys)
 
       false

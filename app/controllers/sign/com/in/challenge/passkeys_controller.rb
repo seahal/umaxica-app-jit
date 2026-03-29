@@ -90,8 +90,8 @@ module Sign
             )
           end
 
-          def active_passkeys_for(user)
-            user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE)
+          def active_passkeys_for(customer)
+            customer.customer_passkeys.where(status_id: CustomerPasskeyStatus::ACTIVE)
           end
 
           def passkey_params
@@ -101,13 +101,13 @@ module Sign
           def verify_passkey!(challenge)
             credential_payload = JSON.parse(passkey_params[:credential_json].to_s)
             credential = WebAuthn::Credential.from_get(credential_payload)
-            passkey = UserPasskey.find_by(webauthn_id: credential.id)
+            passkey = CustomerPasskey.find_by(webauthn_id: credential.id)
 
-            user = pending_mfa_user
-            unless passkey && user && passkey.user_id == user.id
+            customer = pending_mfa_user
+            unless passkey && customer && passkey.customer_id == customer.id
               Sign::Risk::Emitter.emit(
                 "auth_failed",
-                user_id: user&.id,
+                customer_id: customer&.id,
                 ip: request.remote_ip,
                 reason: "mfa_passkey_mismatch",
               )
@@ -124,7 +124,7 @@ module Sign
             end
             passkey.update!(sign_count: credential.sign_count, last_used_at: Time.current)
 
-            complete_mfa_login!(user)
+            complete_mfa_login!(customer)
           rescue JSON::ParserError
             redirect_to(
               sign_com_in_challenge_path(ri: params[:ri]),
@@ -133,8 +133,8 @@ module Sign
             )
           end
 
-          def complete_mfa_login!(user)
-            result = finalize_mfa_login!(user)
+          def complete_mfa_login!(customer)
+            result = finalize_mfa_login!(customer)
             case result[:status]
             when :session_limit_hard_reject
               render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])

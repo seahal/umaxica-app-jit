@@ -25,9 +25,25 @@ module Sign
 
         private
 
+        def identity_email_model
+          CustomerEmail
+        end
+
+        def identity_telephone_model
+          CustomerTelephone
+        end
+
+        def identity_from_email_record(record)
+          record&.customer
+        end
+
+        def identity_from_telephone_record(record)
+          record&.customer
+        end
+
         def find_active_passkey_actor(identifier)
-          user = find_user_by_identifier(identifier)
-          user if user&.active?
+          customer = find_user_by_identifier(identifier)
+          customer if customer&.active?
         end
 
         def passkey_identifier_required_error_key
@@ -38,8 +54,8 @@ module Sign
           verify_turnstile_stealth!
         end
 
-        def allow_passkey_options_for_actor?(user)
-          if session_limit_hard_reject_for?(user)
+        def allow_passkey_options_for_actor?(customer)
+          if session_limit_hard_reject_for?(customer)
             render_session_limit_hard_reject
             return false
           end
@@ -47,33 +63,33 @@ module Sign
           true
         end
 
-        def active_passkeys_for_actor(user)
-          user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE)
+        def active_passkeys_for_actor(customer)
+          customer.customer_passkeys.where(status_id: CustomerPasskeyStatus::ACTIVE)
         end
 
         def passkey_challenge_actor_id_key
-          "user_id"
+          "customer_id"
         end
 
         def passkey_sign_in_model
-          UserPasskey
+          CustomerPasskey
         end
 
         def passkey_belongs_to_challenge_actor?(passkey, actor_id)
-          passkey.user_id == actor_id
+          passkey.customer_id == actor_id
         end
 
         def passkey_owner_mismatch_log_message
-          "WebAuthn: Credential not found or user mismatch"
+          "WebAuthn: Credential not found or customer mismatch"
         end
 
         def allow_passkey_sign_in?(passkey)
-          return true if passkey.user.has_verified_pii?
+          return true if passkey.customer.has_verified_pii?
 
           Rails.event.notify(
             "authentication.passkey.failed",
             reason: "verified_pii_missing",
-            user_id: passkey.user_id,
+            customer_id: passkey.customer_id,
             ip_address: request.remote_ip,
           )
           render_error("errors.webauthn.credential_not_found", :unauthorized)
@@ -83,7 +99,7 @@ module Sign
         def perform_passkey_sign_in(passkey)
           rd = retrieve_redirect_parameter_for_bulletin
           complete_sign_in_or_start_mfa!(
-            passkey.user, rt: rd, ri: params[:ri], auth_method: "passkey",
+            passkey.customer, rt: rd, ri: params[:ri], auth_method: "passkey",
           )
         end
 

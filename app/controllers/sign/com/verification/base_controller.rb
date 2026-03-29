@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# FIXME: BaseController is bad practive, and you should remove this.
 module Sign
   module Com
     module Verification
@@ -16,10 +15,31 @@ module Sign
           current_customer.id
         end
 
+        def start_reauth_session!(scope:, return_to_param:)
+          decoded = Base64.urlsafe_decode64(return_to_param.to_s)
+          safe_path = safe_internal_path(decoded)
+          raise ActionController::BadRequest, "invalid return_to" if safe_path.blank?
+
+          scope_str = scope.to_s
+          raise ActionController::BadRequest, "invalid scope" unless self.class::ALLOWED_SCOPES.key?(scope_str)
+
+          pattern = self.class::ALLOWED_SCOPES[scope_str]
+          raise ActionController::BadRequest, "scope mismatch" unless safe_path.match?(pattern)
+
+          session[self.class::REAUTH_SESSION_KEY] = {
+            "customer_id" => reauth_actor_id,
+            "scope" => scope_str,
+            "return_to" => safe_path,
+            "expires_at" => self.class::REAUTH_TTL.from_now.to_i,
+          }
+        rescue ArgumentError
+          raise ActionController::BadRequest, "invalid return_to encoding"
+        end
+
         def valid_reauth_session?(rs)
           rs.present? &&
             rs["expires_at"].to_i > Time.current.to_i &&
-            rs["user_id"] == current_customer.id &&
+            rs["customer_id"] == current_customer.id &&
             rs["scope"].present? &&
             rs["return_to"].present?
         end
@@ -48,7 +68,7 @@ module Sign
         end
 
         def verification_model
-          UserVerification
+          CustomerVerification
         end
 
         def verification_success_event_id
@@ -73,18 +93,22 @@ module Sign
 
         def current_verification_actor = current_customer
 
-        def verification_actor_type = "User"
+        def verification_actor_type = "Customer"
+
+        def verification_token_foreign_key
+          :customer_token_id
+        end
 
         def verification_passkeys_scope
-          current_customer.user_passkeys
+          current_customer.customer_passkeys
         end
 
         def verification_passkey_model
-          UserPasskey
+          CustomerPasskey
         end
 
         def passkey_actor_matches?(passkey)
-          passkey.user_id == current_customer.id
+          passkey.customer_id == current_customer.id
         end
 
         def verification_no_passkey_i18n_key
@@ -92,7 +116,7 @@ module Sign
         end
 
         def active_totp_credentials
-          UserOneTimePassword.none
+          []
         end
 
         def step_up_supported_methods
@@ -100,11 +124,11 @@ module Sign
         end
 
         def send_email_otp!
-          user_email =
-            current_customer.user_emails.where(
-              user_email_status_id: UserEmailStatus::VERIFIED,
+          customer_email =
+            current_customer.customer_emails.where(
+              customer_email_status_id: CustomerEmailStatus::VERIFIED,
             ).order(created_at: :desc).first
-          unless user_email
+          unless customer_email
             @verification_errors = ["メールアドレスが未確認です"]
             return false
           end
@@ -119,7 +143,7 @@ module Sign
 
           Email::App::RegistrationMailer.with(
             hotp_token: pass_code,
-            email_address: user_email.address,
+            email_address: customer_email.address,
             public_id: current_customer.public_id,
             verification_token: nil,
           ).create.deliver_later

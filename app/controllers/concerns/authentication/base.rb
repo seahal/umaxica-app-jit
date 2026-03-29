@@ -1600,12 +1600,12 @@ module Authentication
       return if resource.blank?
 
       Current.actor = resource
-Current.actor_type =
-  case resource_type
-  when "staff" then :staff
-  when "customer" then :customer
-  else :user
-  end
+      Current.actor_type =
+        case resource_type
+        when "staff" then :staff
+        when "customer" then :customer
+        else :user
+        end
       Current.session = @current_session_public_id
       Current.token = payload if payload.present?
       Current.domain = Core::Surface.current(request) if respond_to?(:request, true) && request.present?
@@ -1638,8 +1638,11 @@ Current.actor_type =
     # Returns { user_id: id } or { staff_id: id } based on resource_type.
     # Used by Risk::Emitter to route events to the correct occurrence table.
     def risk_actor_payload(id)
-      if resource_type == "staff"
+      case resource_type
+      when "staff"
         { staff_id: id }
+      when "customer"
+        { customer_id: id }
       else
         { user_id: id }
       end
@@ -1857,6 +1860,9 @@ Current.actor_type =
         when ["user", "BROWSER_WEB"] then UserTokenKind::BROWSER_WEB
         when ["user", "CLIENT_IOS"] then UserTokenKind::CLIENT_IOS
         when ["user", "CLIENT_ANDROID"] then UserTokenKind::CLIENT_ANDROID
+        when ["customer", "BROWSER_WEB"] then CustomerTokenKind::BROWSER_WEB
+        when ["customer", "CLIENT_IOS"] then CustomerTokenKind::CLIENT_IOS
+        when ["customer", "CLIENT_ANDROID"] then CustomerTokenKind::CLIENT_ANDROID
         end
 
       return resolved if resolved
@@ -2052,14 +2058,14 @@ Current.actor_type =
     def check_login_cooldown!(resource)
       return unless Authentication::Base.login_cooldown_enabled
 
-fk =
-  if resource.is_a?(::User)
-    :user_id
-  elsif resource.is_a?(::Customer)
-    :customer_id
-  else
-    :staff_id
-  end
+      fk =
+        if resource.is_a?(::User)
+          :user_id
+        elsif resource.is_a?(::Customer)
+          :customer_id
+        else
+          :staff_id
+        end
       latest_at =
         if Rails.env.test?
           TokenRecord.connected_to(role: :writing) {
@@ -2140,10 +2146,10 @@ fk =
     end
 
     def scheduled_login_token_attributes(now: Time.current)
-return {} unless %w(staff customer).include?(resource_type)
+      return {} unless %w(staff customer).include?(resource_type)
 
-ttl_class = resource_type == "customer" ? CustomerToken : StaffToken
-revoked_at = now + ttl_class::LOGIN_SESSION_TTL
+      ttl_class = (resource_type == "customer") ? CustomerToken : StaffToken
+      revoked_at = now + ttl_class::LOGIN_SESSION_TTL
       {
         revoked_at: revoked_at,
         deletable_at: revoked_at + ttl_class::DELETION_GRACE_PERIOD,
@@ -2236,8 +2242,8 @@ revoked_at = now + ttl_class::LOGIN_SESSION_TTL
         binding_method: dbsc_binding_method_name(token_record),
         status: dbsc_status_name(token_record),
         session_id: token_record.dbsc_session_id,
-        registration_url: token_dbsc_registration_path,
-        verification_url: token_dbsc_registration_path,
+        registration_url: token_dbsc_path,
+        verification_url: token_dbsc_path,
       }
     end
 
@@ -2262,7 +2268,7 @@ revoked_at = now + ttl_class::LOGIN_SESSION_TTL
 
       response.set_header(
         Auth::IoKeys::Headers::DBSC_REGISTRATION,
-        %((ES256 RS256);path="#{token_dbsc_registration_path}";challenge="#{challenge}"),
+        %((ES256 RS256);path="#{token_dbsc_path}";challenge="#{challenge}"),
       )
     end
 
@@ -2274,12 +2280,12 @@ revoked_at = now + ttl_class::LOGIN_SESSION_TTL
       nil
     end
 
-    def token_dbsc_registration_path
+    def token_dbsc_path
       case resource_type
       when "user"
-        sign_app_edge_v0_token_dbsc_registration_path
+        sign_app_edge_v0_token_dbsc_path
       when "staff"
-        sign_org_edge_v0_token_dbsc_registration_path
+        sign_org_edge_v0_token_dbsc_path
       end
     end
 
@@ -2328,7 +2334,7 @@ revoked_at = now + ttl_class::LOGIN_SESSION_TTL
     end
 
     def mfa_required_for?(resource)
-      return false unless resource.is_a?(::User) || resource.is_a?(::Staff)
+      return false unless resource.is_a?(::User) || resource.is_a?(::Staff) || resource.is_a?(::Customer)
       return false unless resource.respond_to?(:multi_factor_enabled?)
 
       resource.multi_factor_enabled?
