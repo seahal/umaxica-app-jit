@@ -1,0 +1,12 @@
+<div>
+  <h1>New Preference Email</h1>
+  <%= form_with url: sign_org_preference_email_path, scope: :preference_email, method: :post do |f| %>
+<% content_for :page_title, 'Sign::Org::Preference::Emails#new' %>
+<div>
+      <%= f.label :email, "Email" %>
+      <%= f.email_field :email, value: @current_email %>
+    </div>
+    <%= f.submit "Create" %>
+  <% end %>
+  <p><%= link_to "Back", sign_org_preference_email_path %></p>
+</div>

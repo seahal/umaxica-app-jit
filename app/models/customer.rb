@@ -50,6 +50,9 @@ class Customer < GuestRecord
   belongs_to :visibility,
              class_name: "CustomerVisibility",
              inverse_of: :customers
+  has_one :customer_preference,
+          dependent: :destroy,
+          inverse_of: :customer
 
   def staff?
     false

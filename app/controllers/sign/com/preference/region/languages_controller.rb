@@ -6,6 +6,9 @@ module Sign
     module Preference
       module Region
         class LanguagesController < ApplicationController
+          public_strict!
+          include ::Preference::Core
+
           def edit
             set_language_preferences_edit
           end
@@ -23,7 +26,10 @@ module Sign
               redirect_params[:lx] =
                 option_id_to_language(@preference_language.option_id, preference_prefix)
             end
-            redirect_to(edit_sign_com_preference_region_language_url(redirect_params))
+            redirect_to(
+              edit_sign_com_preference_region_language_url(redirect_params),
+              notice: t("apex.com.preferences.update_success"),
+            )
           end
         end
       end

@@ -6,10 +6,13 @@
 module Sign
   module Com
     class ApplicationController < ActionController::Base
+      include ::Preference::Adoption
+      include ::Authentication::Customer
       include Sign::Com::RouteAliasHelper
       include ::Finisher
 
       helper Sign::Com::ApplicationHelper
+      helper_method :current_user if respond_to?(:helper_method)
 
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(
@@ -32,8 +35,31 @@ module Sign
 
       private
 
+      def current_user
+        current_customer
+      end
+
+      def authenticate_user!
+        authenticate_customer!
+      end
+
+      def actor_verification_path(attrs)
+        sign_com_verification_path(attrs)
+      end
+
+      def verification_redirect_path(rd:, scope_override: nil)
+        attrs = { ri: params[:ri], rd: rd }
+        scope = scope_override.to_s.presence || verification_scope.to_s.presence
+        attrs[:scope] = scope if scope
+        sign_com_verification_path(attrs)
+      end
+
+      def verification_setup_redirect_path
+        new_sign_com_verification_setup_path(ri: params[:ri], rd: encoded_step_up_rd)
+      end
+
       def after_login_path
-        if current_user&.respond_to?(:verified_telephone?) && !current_user.verified_telephone?
+        if current_customer&.respond_to?(:verified_telephone?) && !current_customer.verified_telephone?
           return new_sign_com_configuration_telephones_registration_path(ri: params[:ri])
         end
 
@@ -44,8 +70,8 @@ module Sign
 
       def enforce_required_telephone_registration!
         return unless request.format.html?
-        return unless current_user&.respond_to?(:verified_telephone?)
-        return if current_user.verified_telephone?
+        return unless current_customer&.respond_to?(:verified_telephone?)
+        return if current_customer.verified_telephone?
         return if telephone_registration_allowed_path?
 
         redirect_to(

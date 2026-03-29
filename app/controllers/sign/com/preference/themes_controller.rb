@@ -5,6 +5,9 @@ module Sign
   module Com
     module Preference
       class ThemesController < ApplicationController
+        public_strict!
+        include ::Preference::Core
+
         def edit
           set_colortheme_preferences_edit
         end

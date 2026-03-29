@@ -5,6 +5,9 @@ module Sign
   module Com
     module Preference
       class CookiesController < ApplicationController
+        public_strict!
+        include ::Preference::Core
+
         def edit
           set_cookie_preferences_edit
         end

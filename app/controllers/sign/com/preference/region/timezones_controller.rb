@@ -6,6 +6,7 @@ module Sign
     module Preference
       module Region
         class TimezonesController < ApplicationController
+          public_strict!
           include ::Preference::Core
 
           def edit
@@ -15,7 +16,10 @@ module Sign
           def update
             set_timezone_preferences_update
             session[:timezone] = option_id_to_timezone(@preference_timezone.option_id, preference_prefix)
-            redirect_to(edit_sign_com_preference_region_timezone_url)
+            redirect_to(
+              edit_sign_com_preference_region_timezone_url,
+              notice: t("apex.com.preferences.update_success"),
+            )
           rescue PreferenceOperationError
             redirect_to(
               edit_sign_com_preference_region_timezone_url,

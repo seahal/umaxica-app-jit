@@ -17,7 +17,6 @@ module Sign
         include MinimumResponseBudget
         include SessionLimitGate
         include CloudflareTurnstile
-        include Sign::Com::ControllerBehavior
 
         before_action :reject_logged_in_session
 

@@ -6,7 +6,7 @@ require "test_helper"
 module Concerns
   class ApplicationControllerCallbacksTest < ActiveSupport::TestCase
     test "dummy test to satisfy Minitest/NoTestCases" do
-      assert true
+      assert_kind_of Array, DOMAINS
     end
     def get_callbacks_for(controller_class)
       controller_class._process_action_callbacks
@@ -45,9 +45,29 @@ module Concerns
       Help::Org
     ).freeze
 
+    CONTROLLER_CLASSES = {
+      "Sign::App" => Sign::App::ApplicationController,
+      "Sign::Com" => Sign::Com::ApplicationController,
+      "Sign::Org" => Sign::Org::ApplicationController,
+      "Core::App" => Core::App::ApplicationController,
+      "Core::Com" => Core::Com::ApplicationController,
+      "Core::Org" => Core::Org::ApplicationController,
+      "Apex::App" => Apex::App::ApplicationController,
+      "Apex::Com" => Apex::Com::ApplicationController,
+      "Apex::Org" => Apex::Org::ApplicationController,
+      "Docs::App" => Docs::App::ApplicationController,
+      "Docs::Com" => Docs::Com::ApplicationController,
+      "Docs::Org" => Docs::Org::ApplicationController,
+      "News::App" => News::App::ApplicationController,
+      "News::Com" => News::Com::ApplicationController,
+      "News::Org" => News::Org::ApplicationController,
+      "Help::App" => Help::App::ApplicationController,
+      "Help::Com" => Help::Com::ApplicationController,
+      "Help::Org" => Help::Org::ApplicationController,
+    }.freeze
+
     DOMAINS.each do |domain|
-      controller_class_name = "#{domain}::ApplicationController"
-      controller_class = controller_class_name.safe_constantize
+      controller_class = CONTROLLER_CLASSES[domain]
 
       next unless controller_class
 

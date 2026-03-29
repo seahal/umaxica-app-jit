@@ -6,8 +6,44 @@ require "test_helper"
 module Concerns
   class ApplicationControllerConcernsTest < ActiveSupport::TestCase
     test "dummy test to satisfy Minitest/NoTestCases" do
-      assert true
+      assert_kind_of Hash, CONCERNS_BY_DOMAIN
     end
+    CONTROLLER_CLASSES = {
+      "Sign::App" => Sign::App::ApplicationController,
+      "Sign::Com" => Sign::Com::ApplicationController,
+      "Sign::Org" => Sign::Org::ApplicationController,
+      "Core::App" => Core::App::ApplicationController,
+      "Core::Com" => Core::Com::ApplicationController,
+      "Core::Org" => Core::Org::ApplicationController,
+      "Apex::App" => Apex::App::ApplicationController,
+      "Apex::Com" => Apex::Com::ApplicationController,
+      "Apex::Org" => Apex::Org::ApplicationController,
+      "Docs::App" => Docs::App::ApplicationController,
+      "Docs::Com" => Docs::Com::ApplicationController,
+      "Docs::Org" => Docs::Org::ApplicationController,
+      "News::App" => News::App::ApplicationController,
+      "News::Com" => News::Com::ApplicationController,
+      "News::Org" => News::Org::ApplicationController,
+      "Help::App" => Help::App::ApplicationController,
+      "Help::Com" => Help::Com::ApplicationController,
+      "Help::Org" => Help::Org::ApplicationController,
+    }.freeze
+
+    PARENT_CLASSES = {
+      "Sign::Com" => Sign::App::ApplicationController,
+      "Sign::Org" => Sign::App::ApplicationController,
+      "Core::Com" => Core::App::ApplicationController,
+      "Core::Org" => Core::App::ApplicationController,
+      "Apex::Com" => Apex::App::ApplicationController,
+      "Apex::Org" => Apex::App::ApplicationController,
+      "Docs::Com" => Docs::App::ApplicationController,
+      "Docs::Org" => Docs::App::ApplicationController,
+      "News::Com" => News::App::ApplicationController,
+      "News::Org" => News::App::ApplicationController,
+      "Help::Com" => Help::App::ApplicationController,
+      "Help::Org" => Help::App::ApplicationController,
+    }.freeze
+
     CONCERNS_BY_DOMAIN = {
       "Sign::App" => {
         includes: [
@@ -464,7 +500,7 @@ module Concerns
     }.freeze
 
     CONCERNS_BY_DOMAIN.each do |domain, config|
-      controller_class = "#{domain}::ApplicationController".safe_constantize
+      controller_class = CONTROLLER_CLASSES[domain]
 
       next unless controller_class
 
@@ -474,7 +510,7 @@ module Concerns
         controller = controller_class.new
 
         if config[:parent]
-          assert_equal "#{config[:parent]}::ApplicationController".safe_constantize, controller_class.superclass,
+          assert_equal PARENT_CLASSES[domain], controller_class.superclass,
                        "#{domain} should inherit from #{config[:parent]}"
         else
           expected = config[:includes] || []
@@ -486,7 +522,7 @@ module Concerns
       end
 
       if config[:parent]
-        parent_class = "#{config[:parent]}::ApplicationController".safe_constantize
+        parent_class = PARENT_CLASSES[domain]
         if parent_class
           parent_test = "test_#{domain.underscore.gsub("/", "_")}_inherits_from_parent"
 

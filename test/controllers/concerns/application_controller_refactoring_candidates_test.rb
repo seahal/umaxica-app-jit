@@ -29,20 +29,45 @@ module Concerns
       ),
     }.freeze
 
+    CONTROLLER_CLASSES = {
+      "Sign::App" => Sign::App::ApplicationController,
+      "Core::App" => Core::App::ApplicationController,
+      "Apex::App" => Apex::App::ApplicationController,
+    }.freeze
+
+    CONTROLLER_BY_TLD = {
+      "Sign" => { "App" => Sign::App::ApplicationController,
+                  "Com" => Sign::Com::ApplicationController,
+                  "Org" => Sign::Org::ApplicationController, },
+      "Core" => { "App" => Core::App::ApplicationController,
+                  "Com" => Core::Com::ApplicationController,
+                  "Org" => Core::Org::ApplicationController, },
+      "Apex" => { "App" => Apex::App::ApplicationController,
+                  "Com" => Apex::Com::ApplicationController,
+                  "Org" => Apex::Org::ApplicationController, },
+      "Docs" => { "App" => Docs::App::ApplicationController,
+                  "Com" => Docs::Com::ApplicationController,
+                  "Org" => Docs::Org::ApplicationController, },
+      "News" => { "App" => News::App::ApplicationController,
+                  "Com" => News::Com::ApplicationController,
+                  "Org" => News::Org::ApplicationController, },
+      "Help" => { "App" => Help::App::ApplicationController,
+                  "Com" => Help::Com::ApplicationController,
+                  "Org" => Help::Org::ApplicationController, },
+    }.freeze
+
     test "duplicate preference concerns show consolidation opportunities" do
       global_count = DUPLICATE_PATTERNS["Preference::Global"].length
       regional_count = DUPLICATE_PATTERNS["Preference::Regional"].length
 
-      assert_operator global_count, :<, regional_count,
-                      "Global preference is used by #{global_count} controllers, Regional by #{regional_count} - potential for consolidation"
+      msg = "Global preference is used by #{global_count} controllers, "
+      msg += "Regional by #{regional_count} - potential for consolidation"
+
+      assert_operator global_count, :<, regional_count, msg
     end
 
     test "callback order follows documented layer pattern" do
-      controller_classes = [
-        "Sign::App::ApplicationController",
-        "Core::App::ApplicationController",
-        "Apex::App::ApplicationController",
-      ].map(&:safe_constantize).compact
+      controller_classes = CONTROLLER_CLASSES.values
 
       controller_classes.each do |controller_class|
         callbacks = controller_class._process_action_callbacks
@@ -86,11 +111,12 @@ module Concerns
         domain_tlds.each do |domain, tlds|
           tlds.each do |tld|
             controller_name = "#{domain}::#{tld}::ApplicationController"
-            controller_class = controller_name.safe_constantize
+            controller_class = CONTROLLER_BY_TLD[domain]&.[](tld)
 
             next unless controller_class
 
-            content = Rails.root.join("app/controllers/#{domain.underscore}/#{tld.underscore}/application_controller.rb").read
+            controller_path = "app/controllers/#{domain.underscore}/#{tld.underscore}/application_controller.rb"
+            content = Rails.root.join(controller_path).read
 
             if auth_type == "User"
               assert_includes content, "Authentication::User",
@@ -106,11 +132,11 @@ module Concerns
         end
       end
 
-      sign_app_controller = "Sign::App::ApplicationController".safe_constantize
+      sign_app_controller = Sign::App::ApplicationController
 
       assert_includes sign_app_controller.ancestors, ::Authentication::User
 
-      sign_org_controller = "Sign::Org::ApplicationController".safe_constantize
+      sign_org_controller = Sign::Org::ApplicationController
 
       assert_includes sign_org_controller.ancestors, ::Authentication::Staff
     end

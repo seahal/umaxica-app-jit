@@ -25,6 +25,47 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
     News::Com::ApplicationController
   ).freeze
 
+  CONTROLLER_CLASSES = {
+    "Sign::App::ApplicationController" => Sign::App::ApplicationController,
+    "Sign::Org::ApplicationController" => Sign::Org::ApplicationController,
+    "Core::App::ApplicationController" => Core::App::ApplicationController,
+    "Core::Org::ApplicationController" => Core::Org::ApplicationController,
+    "Core::Com::ApplicationController" => Core::Com::ApplicationController,
+    "Apex::App::ApplicationController" => Apex::App::ApplicationController,
+    "Apex::Org::ApplicationController" => Apex::Org::ApplicationController,
+    "Apex::Com::ApplicationController" => Apex::Com::ApplicationController,
+    "Help::App::ApplicationController" => Help::App::ApplicationController,
+    "Help::Org::ApplicationController" => Help::Org::ApplicationController,
+    "Help::Com::ApplicationController" => Help::Com::ApplicationController,
+    "Docs::App::ApplicationController" => Docs::App::ApplicationController,
+    "Docs::Org::ApplicationController" => Docs::Org::ApplicationController,
+    "Docs::Com::ApplicationController" => Docs::Com::ApplicationController,
+    "News::App::ApplicationController" => News::App::ApplicationController,
+    "News::Org::ApplicationController" => News::Org::ApplicationController,
+    "News::Com::ApplicationController" => News::Com::ApplicationController,
+  }.freeze
+
+  DOMAIN_CONTROLLERS = {
+    "Sign" => { "App" => Sign::App::ApplicationController,
+                "Org" => Sign::Org::ApplicationController,
+                "Com" => Sign::Com::ApplicationController, },
+    "Core" => { "App" => Core::App::ApplicationController,
+                "Org" => Core::Org::ApplicationController,
+                "Com" => Core::Com::ApplicationController, },
+    "Apex" => { "App" => Apex::App::ApplicationController,
+                "Org" => Apex::Org::ApplicationController,
+                "Com" => Apex::Com::ApplicationController, },
+    "Help" => { "App" => Help::App::ApplicationController,
+                "Org" => Help::Org::ApplicationController,
+                "Com" => Help::Com::ApplicationController, },
+    "Docs" => { "App" => Docs::App::ApplicationController,
+                "Org" => Docs::Org::ApplicationController,
+                "Com" => Docs::Com::ApplicationController, },
+    "News" => { "App" => News::App::ApplicationController,
+                "Org" => News::Org::ApplicationController,
+                "Com" => News::Com::ApplicationController, },
+  }.freeze
+
   # expected include order (layer order)
   EXPECTED_INCLUDES = %w(
     RateLimit
@@ -68,13 +109,13 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
 
   CONTROLLERS.each do |controller_class|
     test "#{controller_class} exists and inherits correctly" do
-      klass = controller_class.constantize
+      klass = CONTROLLER_CLASSES[controller_class]
 
       assert_operator klass, :<, ActionController::Base
     end
 
     test "#{controller_class} has before callbacks in correct order" do
-      klass = controller_class.constantize
+      klass = CONTROLLER_CLASSES[controller_class]
       callbacks = klass._process_action_callbacks
       before_filters = callbacks.select { |callback| callback.kind == :before }.map(&:filter)
 
@@ -96,7 +137,7 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
 
   test "all controllers have required includes" do
     CONTROLLERS.each do |controller_class|
-      klass = controller_class.constantize
+      klass = CONTROLLER_CLASSES[controller_class]
 
       ancestor_names = klass.ancestors.map(&:to_s)
 
@@ -112,12 +153,10 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
   end
 
   test "callback order is consistent across all app/org/com controllers" do
-    domains = %w(Sign Core Apex Help Docs News)
-
-    domains.each do |domain|
-      app_controller = "#{domain}::App::ApplicationController".safe_constantize
-      org_controller = "#{domain}::Org::ApplicationController".safe_constantize
-      com_controller = "#{domain}::Com::ApplicationController".safe_constantize
+    DOMAIN_CONTROLLERS.each do |domain, controllers|
+      app_controller = controllers["App"]
+      org_controller = controllers["Org"]
+      com_controller = controllers["Com"]
 
       next unless app_controller && org_controller
 

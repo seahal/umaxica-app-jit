@@ -5,8 +5,8 @@ module Sign
   module Com
     module Web
       module V0
-        class ThemesController < Sign::App::Web::V0::ThemesController
-          include Sign::Com::ControllerBehavior
+        class ThemesController < ApplicationController
+          include ::Preference::WebThemeActions
         end
       end
     end

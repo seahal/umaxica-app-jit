@@ -5,8 +5,8 @@ module Sign
   module Com
     module Web
       module V0
-        class CookiesController < Sign::App::Web::V0::CookiesController
-          include Sign::Com::ControllerBehavior
+        class CookiesController < ApplicationController
+          include ::Preference::WebCookieActions
         end
       end
     end

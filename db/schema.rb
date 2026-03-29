@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_25_143000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_29_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -200,6 +200,71 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_25_143000) do
     t.index ["token_expires_at"], name: "index_com_contacts_on_token_expires_at"
   end
 
+  create_table "customer_preference_colortheme_options", force: :cascade do |t|
+  end
+
+  create_table "customer_preference_colorthemes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_customer_preference_colorthemes_on_option_id"
+    t.index ["preference_id"], name: "index_customer_preference_colorthemes_on_preference_id", unique: true
+  end
+
+  create_table "customer_preference_language_options", force: :cascade do |t|
+  end
+
+  create_table "customer_preference_languages", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_customer_preference_languages_on_option_id"
+    t.index ["preference_id"], name: "index_customer_preference_languages_on_preference_id", unique: true
+  end
+
+  create_table "customer_preference_region_options", force: :cascade do |t|
+  end
+
+  create_table "customer_preference_regions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_customer_preference_regions_on_option_id"
+    t.index ["preference_id"], name: "index_customer_preference_regions_on_preference_id", unique: true
+  end
+
+  create_table "customer_preference_timezone_options", force: :cascade do |t|
+  end
+
+  create_table "customer_preference_timezones", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "option_id", null: false
+    t.bigint "preference_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option_id"], name: "index_customer_preference_timezones_on_option_id"
+    t.index ["preference_id"], name: "index_customer_preference_timezones_on_preference_id", unique: true
+  end
+
+  create_table "customer_preferences", force: :cascade do |t|
+    t.uuid "consent_version"
+    t.boolean "consented", default: false, null: false
+    t.datetime "consented_at"
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.boolean "functional", default: false, null: false
+    t.string "language", default: "ja", null: false
+    t.boolean "performant", default: false, null: false
+    t.string "region", default: "jp", null: false
+    t.boolean "targetable", default: false, null: false
+    t.string "theme", default: "sy", null: false
+    t.string "timezone", default: "Asia/Tokyo", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_customer_preferences_on_customer_id", unique: true
+  end
+
   create_table "customer_statuses", force: :cascade do |t|
   end
 
@@ -326,6 +391,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_25_143000) do
   add_foreign_key "com_contact_topics", "com_contacts", validate: false
   add_foreign_key "com_contacts", "com_contact_categories", column: "category_id"
   add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id", on_delete: :restrict
+  add_foreign_key "customer_preference_colorthemes", "customer_preference_colortheme_options", column: "option_id"
+  add_foreign_key "customer_preference_colorthemes", "customer_preferences", column: "preference_id"
+  add_foreign_key "customer_preference_languages", "customer_preference_language_options", column: "option_id"
+  add_foreign_key "customer_preference_languages", "customer_preferences", column: "preference_id"
+  add_foreign_key "customer_preference_regions", "customer_preference_region_options", column: "option_id"
+  add_foreign_key "customer_preference_regions", "customer_preferences", column: "preference_id"
+  add_foreign_key "customer_preference_timezones", "customer_preference_timezone_options", column: "option_id"
+  add_foreign_key "customer_preference_timezones", "customer_preferences", column: "preference_id"
+  add_foreign_key "customer_preferences", "customers"
   add_foreign_key "customers", "customer_statuses", column: "status_id", validate: false
   add_foreign_key "customers", "customer_visibilities", column: "visibility_id", validate: false
   add_foreign_key "org_contact_emails", "org_contacts"

@@ -3,7 +3,18 @@
 
 module Sign
   module Com
-    class VerificationsController < ApplicationController
+    class VerificationsController < Verification::BaseController
+      include Sign::VerificationEntry
+
+      private
+
+      def verification_success_notice_key
+        "sign.app.verification.success.complete"
+      end
+
+      def verification_invalid_request_redirect_path(ri:)
+        sign_com_configuration_path(ri: ri)
+      end
     end
   end
 end

@@ -306,6 +306,7 @@ scope module: :sign, as: :sign do
       # preferences
       resource :preference, only: [:show]
       namespace :preference do
+        resources :email, only: %i(index show create edit update)
         # for region settings.
         resource :region, only: [:edit, :update]
         namespace :region do

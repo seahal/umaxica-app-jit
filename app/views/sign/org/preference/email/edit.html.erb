@@ -1,0 +1,12 @@
+<div>
+  <h1>Edit Preference Email</h1>
+  <%= form_with url: sign_org_preference_email_path(id: params[:id]), scope: :preference_email, method: :patch do |f| %>
+<% content_for :page_title, 'Sign::Org::Preference::Emails#edit' %>
+<div>
+      <%= f.label :email, "Email" %>
+      <%= f.email_field :email, value: @current_email %>
+    </div>
+    <%= f.submit "Update" %>
+  <% end %>
+  <p><%= link_to "Back", sign_org_preference_email_path(id: params[:id]) %></p>
+</div>

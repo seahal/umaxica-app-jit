@@ -12,7 +12,9 @@ module Sign::App
       # NOTE: Since using prepend_before_action,
       # Preference-related callbacks execute before AuthN.
       # Note that prepend_before_action executes in reverse definition order.
-      # Actual execution order: set_color_theme -> set_timezone -> set_locale -> set_region -> resolve_param_context -> set_preferences_cookie
+      # Actual execution order:
+      #   set_color_theme -> set_timezone -> set_locale -> set_region ->
+      #   resolve_param_context -> set_preferences_cookie
       expected_before_filters = %i(
         set_color_theme
         set_timezone

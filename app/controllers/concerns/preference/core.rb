@@ -397,6 +397,15 @@ module Preference::Core
           end
         child.update!(option_id: default_id) if child.option_id != default_id
       end
+
+      cookie = preference.public_send("#{association_prefix}_cookie")
+      cookie&.update!(
+        consented: false,
+        functional: false,
+        performant: false,
+        targetable: false,
+        consented_at: nil,
+      )
     end
   end
 

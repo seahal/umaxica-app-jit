@@ -16,6 +16,13 @@
     </div>
 
     <div>
+      <!-- Email -->
+      <%= link_to @preference_email_path do %>
+        <div>
+          <span><%= t("apex.com.preferences.email_settings", default: "Email settings") %></span>
+        </div>
+      <% end %>
+
       <!-- Region -->
       <%= link_to edit_sign_com_preference_region_path do %>
         <div>

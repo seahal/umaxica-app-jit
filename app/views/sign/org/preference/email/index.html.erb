@@ -1,0 +1,16 @@
+<div>
+  <h1>Preference Email</h1>
+  <p>Current email: <%= @current_email.presence || "(not set)" %></p>
+
+  <%= form_with url: sign_org_preference_email_index_path, scope: :preference_email, method: :post do |f| %>
+<% content_for :page_title, 'Sign::Org::Preference::Emails#index' %>
+      <%= f.label :email, "Email" %>
+      <%= f.email_field :email, value: @current_email %>
+    </div>
+    <%= f.submit "Create" %>
+  <% end %>
+
+  <p><%= link_to "Show", sign_org_preference_email_path(id: "primary") %></p>
+  <p><%= link_to "Edit", edit_sign_org_preference_email_path(id: "primary") %></p>
+  <p><%= link_to "Back to preference", sign_org_preference_path %></p>
+</div>
