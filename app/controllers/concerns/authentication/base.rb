@@ -81,10 +81,10 @@ module Authentication
       token_refreshed: "TOKEN_REFRESHED",
     }.freeze
 
-    VALID_ACTOR_TYPES = %w(user staff).freeze
+    VALID_ACTOR_TYPES = %w(user staff customer).freeze
 
     module JwtConfiguration
-      VALID_RESOURCE_TYPES = %w(user staff).freeze
+      VALID_RESOURCE_TYPES = %w(user staff customer).freeze
 
       def self.leeway_seconds
         Integer(ENV.fetch("AUTH_JWT_LEEWAY_SECONDS", "30"), 10)
@@ -1600,7 +1600,12 @@ module Authentication
       return if resource.blank?
 
       Current.actor = resource
-      Current.actor_type = ((resource_type == "staff") ? :staff : :user).to_sym
+Current.actor_type =
+  case resource_type
+  when "staff" then :staff
+  when "customer" then :customer
+  else :user
+  end
       Current.session = @current_session_public_id
       Current.token = payload if payload.present?
       Current.domain = Core::Surface.current(request) if respond_to?(:request, true) && request.present?
@@ -1812,6 +1817,11 @@ module Authentication
           staff_token_binding_method_id: StaffTokenBindingMethod::LEGACY,
           staff_token_dbsc_status_id: StaffTokenDbscStatus::NOTHING,
         }
+      when "customer"
+        {
+          customer_token_binding_method_id: CustomerTokenBindingMethod::LEGACY,
+          customer_token_dbsc_status_id: CustomerTokenDbscStatus::NOTHING,
+        }
       else
         {}
       end
@@ -1874,6 +1884,7 @@ module Authentication
       case resource_type
       when "user" then UserTokenKind
       when "staff" then StaffTokenKind
+      when "customer" then CustomerTokenKind
       else
         raise ActiveRecord::RecordNotFound, "Missing token kind model for resource_type=#{resource_type}"
       end
@@ -2041,7 +2052,14 @@ module Authentication
     def check_login_cooldown!(resource)
       return unless Authentication::Base.login_cooldown_enabled
 
-      fk = resource.is_a?(::User) ? :user_id : :staff_id
+fk =
+  if resource.is_a?(::User)
+    :user_id
+  elsif resource.is_a?(::Customer)
+    :customer_id
+  else
+    :staff_id
+  end
       latest_at =
         if Rails.env.test?
           TokenRecord.connected_to(role: :writing) {
@@ -2077,6 +2095,8 @@ module Authentication
         ::UserToken::MAX_SESSIONS_PER_USER
       elsif resource.is_a?(::Staff)
         ::StaffToken::MAX_SESSIONS_PER_STAFF
+      elsif resource.is_a?(::Customer)
+        ::CustomerToken::MAX_SESSIONS_PER_CUSTOMER
       else
         2 # Default fallback
       end
@@ -2089,6 +2109,8 @@ module Authentication
           ::UserToken.active_status.where(user_id: resource.id).count
         elsif resource.is_a?(::Staff)
           ::StaffToken.active_status.where(staff_id: resource.id).count
+        elsif resource.is_a?(::Customer)
+          ::CustomerToken.active_status.where(customer_id: resource.id).count
         else
           0
         end
@@ -2107,6 +2129,8 @@ module Authentication
         ::UserToken.restricted_status.where(user_id: resource.id)
       elsif resource.is_a?(::Staff)
         ::StaffToken.restricted_status.where(staff_id: resource.id)
+      elsif resource.is_a?(::Customer)
+        ::CustomerToken.restricted_status.where(customer_id: resource.id)
       end
     end
 
@@ -2116,12 +2140,13 @@ module Authentication
     end
 
     def scheduled_login_token_attributes(now: Time.current)
-      return {} unless resource_type == "staff"
+return {} unless %w(staff customer).include?(resource_type)
 
-      revoked_at = now + StaffToken::LOGIN_SESSION_TTL
+ttl_class = resource_type == "customer" ? CustomerToken : StaffToken
+revoked_at = now + ttl_class::LOGIN_SESSION_TTL
       {
         revoked_at: revoked_at,
-        deletable_at: revoked_at + StaffToken::DELETION_GRACE_PERIOD,
+        deletable_at: revoked_at + ttl_class::DELETION_GRACE_PERIOD,
       }
     end
 
@@ -2131,6 +2156,8 @@ module Authentication
         session[:pending_login_user_id] = resource.id
       elsif resource.is_a?(::Staff)
         session[:pending_login_staff_id] = resource.id
+      elsif resource.is_a?(::Customer)
+        session[:pending_login_customer_id] = resource.id
       end
     end
 
@@ -2217,7 +2244,7 @@ module Authentication
     def dbsc_cookie_value_for(token_record)
       return unless token_record&.binding_method_dbsc?
 
-      token_record.dbsc_session_id.presence || token_record.public_id
+      token_record.dbsc_session_id.presence
     end
 
     def dbsc_cookie_expires_at_for(token_record, now: Time.current)
@@ -2235,7 +2262,7 @@ module Authentication
 
       response.set_header(
         Auth::IoKeys::Headers::DBSC_REGISTRATION,
-        %(("ES256" "RS256");path="#{token_dbsc_registration_path}";challenge="#{challenge}"),
+        %((ES256 RS256);path="#{token_dbsc_registration_path}";challenge="#{challenge}"),
       )
     end
 

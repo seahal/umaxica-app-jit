@@ -55,6 +55,9 @@ class AppPreference < PrincipalRecord
   include ::Preference::Resettable
   include ::DbscBindable
 
+  DBSC_BINDING_METHOD_CLASS = AppPreferenceBindingMethod
+  DBSC_STATUS_CLASS = AppPreferenceDbscStatus
+
   attribute :status_id, default: AppPreferenceStatus::NOTHING
 
   belongs_to :app_preference_status,

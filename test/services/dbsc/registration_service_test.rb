@@ -7,7 +7,7 @@ class Dbsc::RegistrationServiceTest < ActiveSupport::TestCase
   fixtures :users, :user_token_binding_methods, :user_token_dbsc_statuses, :user_tokens,
            :app_preference_binding_methods, :app_preference_dbsc_statuses, :app_preferences
 
-  test "sets user token to pending dbsc state" do
+  test "sets user token to active dbsc state" do
     token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
     token.update!(dbsc_challenge: "challenge-1", dbsc_challenge_issued_at: Time.current)
     private_key = OpenSSL::PKey::EC.generate("prime256v1")
@@ -31,7 +31,7 @@ class Dbsc::RegistrationServiceTest < ActiveSupport::TestCase
     assert_nil token.dbsc_challenge
   end
 
-  test "sets app preference to pending dbsc state" do
+  test "sets app preference to active dbsc state" do
     preference = app_preferences(:one)
     preference.update!(dbsc_challenge: "challenge-2", dbsc_challenge_issued_at: Time.current)
     private_key = OpenSSL::PKey::EC.generate("prime256v1")
@@ -53,5 +53,39 @@ class Dbsc::RegistrationServiceTest < ActiveSupport::TestCase
     assert_equal "dbsc-pref-1", preference.dbsc_session_id
     assert_equal public_jwk.stringify_keys, preference.dbsc_public_key
     assert_nil preference.dbsc_challenge
+  end
+
+  test "returns challenge_expired when dbsc_challenge_issued_at is too old" do
+    token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
+    token.update!(dbsc_challenge: "old-challenge", dbsc_challenge_issued_at: 10.minutes.ago)
+    private_key = OpenSSL::PKey::EC.generate("prime256v1")
+    public_jwk = JWT::JWK.new(private_key).export
+
+    proof = JWT.encode(
+      { "jti" => "old-challenge", "aud" => "https://test.host/registration", "iat" => Time.current.to_i },
+      private_key, "ES256", { typ: "dbsc+jwt", jwk: public_jwk },
+    )
+
+    result = Dbsc::RegistrationService.call(record: token, proof: proof, session_id: "dbsc-session-x")
+
+    assert_not result[:ok]
+    assert_equal "challenge_expired", result[:error_code]
+  end
+
+  test "returns challenge_expired when dbsc_challenge_issued_at is blank" do
+    token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
+    token.update!(dbsc_challenge: "stale-challenge", dbsc_challenge_issued_at: nil)
+    private_key = OpenSSL::PKey::EC.generate("prime256v1")
+    public_jwk = JWT::JWK.new(private_key).export
+
+    proof = JWT.encode(
+      { "jti" => "stale-challenge", "aud" => "https://test.host/registration", "iat" => Time.current.to_i },
+      private_key, "ES256", { typ: "dbsc+jwt", jwk: public_jwk },
+    )
+
+    result = Dbsc::RegistrationService.call(record: token, proof: proof, session_id: "dbsc-session-y")
+
+    assert_not result[:ok]
+    assert_equal "challenge_expired", result[:error_code]
   end
 end

@@ -71,6 +71,9 @@ class StaffToken < TokenRecord
   include ::TokenStatusManagement
   include ::DbscBindable
 
+  DBSC_BINDING_METHOD_CLASS = StaffTokenBindingMethod
+  DBSC_STATUS_CLASS = StaffTokenDbscStatus
+
   LOGIN_SESSION_TTL = 12.hours
   DELETION_GRACE_PERIOD = 1.day
   MAX_SESSIONS_PER_STAFF = 1

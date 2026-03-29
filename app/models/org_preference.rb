@@ -55,6 +55,9 @@ class OrgPreference < OperatorRecord
   include ::Preference::Resettable
   include ::DbscBindable
 
+  DBSC_BINDING_METHOD_CLASS = OrgPreferenceBindingMethod
+  DBSC_STATUS_CLASS = OrgPreferenceDbscStatus
+
   attribute :status_id, default: OrgPreferenceStatus::NOTHING
   attribute :binding_method_id, default: OrgPreferenceBindingMethod::NOTHING
   attribute :dbsc_status_id, default: OrgPreferenceDbscStatus::NOTHING

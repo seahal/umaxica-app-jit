@@ -11,6 +11,7 @@ module Dbsc
       return :binding_method_id if record.has_attribute?(:binding_method_id)
       return :user_token_binding_method_id if record.has_attribute?(:user_token_binding_method_id)
       return :staff_token_binding_method_id if record.has_attribute?(:staff_token_binding_method_id)
+      return :customer_token_binding_method_id if record.has_attribute?(:customer_token_binding_method_id)
 
       raise ArgumentError, "Unsupported DBSC binding method attribute for #{record.class.name}"
     end
@@ -19,27 +20,20 @@ module Dbsc
       return :dbsc_status_id if record.has_attribute?(:dbsc_status_id)
       return :user_token_dbsc_status_id if record.has_attribute?(:user_token_dbsc_status_id)
       return :staff_token_dbsc_status_id if record.has_attribute?(:staff_token_dbsc_status_id)
+      return :customer_token_dbsc_status_id if record.has_attribute?(:customer_token_dbsc_status_id)
 
       raise ArgumentError, "Unsupported DBSC status attribute for #{record.class.name}"
     end
 
     def binding_method_class(record)
-      return AppPreferenceBindingMethod if record.is_a?(AppPreference)
-      return OrgPreferenceBindingMethod if record.is_a?(OrgPreference)
-      return ComPreferenceBindingMethod if record.is_a?(ComPreference)
-      return UserTokenBindingMethod if record.is_a?(UserToken)
-      return StaffTokenBindingMethod if record.is_a?(StaffToken)
-
+      record.class::DBSC_BINDING_METHOD_CLASS
+    rescue NameError
       raise ArgumentError, "Unsupported DBSC binding method class for #{record.class.name}"
     end
 
     def dbsc_status_class(record)
-      return AppPreferenceDbscStatus if record.is_a?(AppPreference)
-      return OrgPreferenceDbscStatus if record.is_a?(OrgPreference)
-      return ComPreferenceDbscStatus if record.is_a?(ComPreference)
-      return UserTokenDbscStatus if record.is_a?(UserToken)
-      return StaffTokenDbscStatus if record.is_a?(StaffToken)
-
+      record.class::DBSC_STATUS_CLASS
+    rescue NameError
       raise ArgumentError, "Unsupported DBSC status class for #{record.class.name}"
     end
 

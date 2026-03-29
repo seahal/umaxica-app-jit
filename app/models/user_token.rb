@@ -71,6 +71,9 @@ class UserToken < TokenRecord
   include ::TokenStatusManagement
   include ::DbscBindable
 
+  DBSC_BINDING_METHOD_CLASS = UserTokenBindingMethod
+  DBSC_STATUS_CLASS = UserTokenDbscStatus
+
   MAX_SESSIONS_PER_USER = 2
   MAX_TOTAL_SESSIONS_PER_USER = 3
 

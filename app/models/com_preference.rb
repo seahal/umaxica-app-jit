@@ -55,6 +55,9 @@ class ComPreference < CommerceRecord
   include ::Preference::Resettable
   include ::DbscBindable
 
+  DBSC_BINDING_METHOD_CLASS = ComPreferenceBindingMethod
+  DBSC_STATUS_CLASS = ComPreferenceDbscStatus
+
   attribute :status_id, default: ComPreferenceStatus::NOTHING
 
   belongs_to :com_preference_status,

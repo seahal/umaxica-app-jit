@@ -1136,7 +1136,7 @@ module Preference
 
       response.set_header(
         Preference::IoKeys::Headers::DBSC_REGISTRATION,
-        %(("ES256" "RS256");path="#{preference_dbsc_registration_path}";challenge="#{challenge}"),
+        %((ES256 RS256);path="#{preference_dbsc_registration_path}";challenge="#{challenge}"),
       )
     end
 
