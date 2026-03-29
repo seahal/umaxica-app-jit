@@ -13,6 +13,7 @@ scope module: :sign, as: :sign do
 
       namespace :web do
         namespace :v0 do
+          resource :health, only: :show
           namespace :in do
             namespace :email do
               resource :otp, only: :create
@@ -29,10 +30,9 @@ scope module: :sign, as: :sign do
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
-          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
-            resource :dbsc, only: :create, controller: :dbsc
+            resource :dbsc, only: :create
             resource :refresh, only: :create
           end
         end
@@ -287,10 +287,9 @@ scope module: :sign, as: :sign do
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
-          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
-            resource :dbsc, only: :create, controller: :dbsc
+            resource :dbsc, only: :create
             resource :refresh, only: :create
           end
         end

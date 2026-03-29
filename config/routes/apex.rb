@@ -20,7 +20,7 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc, only: :create, controller: :dbsc
+          resource :dbsc, only: :create
         end
       end
       # OIDC callback
@@ -58,7 +58,7 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc, only: :create, controller: :dbsc
+          resource :dbsc, only: :create
         end
       end
       resource :configuration, only: [:show]
@@ -99,7 +99,7 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc, only: :create, controller: :dbsc
+          resource :dbsc, only: :create
         end
       end
       # for emergency

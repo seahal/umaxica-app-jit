@@ -3,10 +3,10 @@
 
 module Sign
   module App
-    module Edge
+    module Web
       module V0
-        class SitemapsController < ApplicationController
-          include ::Sitemap
+        class HealthsController < ApplicationController
+          include ::Health
 
           def show
             show_json

@@ -8,9 +8,11 @@ module Sign
         class TotpsController < ApplicationController
           before_action :redirect_unavailable!
 
-          def new; end
+          def new
+          end
 
-          def create; end
+          def create
+          end
 
           private
 

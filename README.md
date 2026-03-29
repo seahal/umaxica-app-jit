@@ -4,11 +4,13 @@
 # Umaxica App (JIT)
 
 ## Routing
+
 - `app`: for end user
 - `org`: controller panel
 - `com`: brand page
 
-Multi-domain Rails application for three audience surfaces. Routing is host-constrained, so domain and subdomain matter in both development and production.
+Multi-domain Rails application for three audience surfaces. Routing is host-constrained, so domain
+and subdomain matter in both development and production.
 
 ## Stack
 
@@ -181,6 +183,7 @@ These checks cover formatting, linting, security audits, database consistency, a
 | Credentials cannot be decrypted          | Use the shared Rails credentials key for this environment                             |
 
 ## Acknowledgement
+
 - Secrets must stay in Rails credentials; do not commit plaintext secrets.
 - WebAuthn origins are controlled by `TRUSTED_ORIGINS`.
 - Public availability of this repository is not guaranteed permanently.

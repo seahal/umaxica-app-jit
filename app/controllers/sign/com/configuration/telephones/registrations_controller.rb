@@ -11,10 +11,9 @@ module Sign
           include Common::Otp
           include ::Verification::User
 
-          before_action :authenticate_customer!
-
           TELEPHONE_VERIFICATION_RATE_LIMIT = 5
           TELEPHONE_VERIFICATION_RATE_WINDOW = 60
+          before_action :authenticate_customer!
 
           def new
             @user_telephone = CustomerTelephone.new

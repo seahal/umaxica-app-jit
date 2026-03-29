@@ -35,6 +35,7 @@ class Sign::Com::Configuration::Telephones::RegistrationsControllerTest < Action
     assert_redirected_to edit_sign_com_configuration_telephones_registration_url(ri: "jp")
 
     customer_telephone = CustomerTelephone.order(created_at: :desc).first
+
     assert_equal @customer.id, customer_telephone.customer_id
     assert_equal CustomerTelephoneStatus::UNVERIFIED, customer_telephone.customer_telephone_status_id
   end
