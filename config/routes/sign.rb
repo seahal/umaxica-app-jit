@@ -4,13 +4,16 @@
 require Rails.root.join("lib/sign_host_env").to_s
 
 scope module: :sign, as: :sign do
+  # User auth service (sign.app domain)
   constraints host: SignHostEnv.service_url do
     scope module: :app, as: :app do
       root to: "roots#index"
 
+      # Health check and sitemap
       resource :health, only: :show, defaults: { format: :html }
       resource :sitemap, only: :show, defaults: { format: :xml }
 
+      # Public web API: OTP delivery, cookie consent, theme
       namespace :web do
         namespace :v0 do
           resource :health, only: :show
@@ -27,6 +30,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Edge API: token lifecycle management (check, DBSC binding, refresh)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
@@ -59,6 +63,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Sign-up: account registration via email or telephone
       resource :up, only: :new
       namespace :up do
         resources :emails, only: %i(new create edit update)
@@ -72,6 +77,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Sign-in: credential entry and session establishment
       resource :in, only: %i(new)
       namespace :in do
         resource :email, only: %i(new create edit update)
@@ -110,7 +116,7 @@ scope module: :sign, as: :sign do
             to: "omniauth_callbacks#failure"
       end
 
-      # step up verification
+      # Step-up verification
       resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
@@ -124,6 +130,7 @@ scope module: :sign, as: :sign do
       resource :token, only: %i(create), defaults: { format: :json }
       resource :jwks, only: %i(show), defaults: { format: :json }
 
+      # Account settings and linked identity management
       resource :configuration, only: %i(show edit)
       namespace :configuration do
         resources :totps, only: %i(index new create edit update destroy)
@@ -159,13 +166,16 @@ scope module: :sign, as: :sign do
     end
   end
 
+  # Corporate sign service (sign.com domain)
   constraints host: SignHostEnv.corporate_url do
     scope module: :com, as: :com do
       root to: "roots#index"
 
+      # Health check and sitemap
       resource :health, only: :show, defaults: { format: :html }
       resource :sitemap, only: :show, defaults: { format: :xml }
 
+      # Public web API: OTP delivery, cookie consent, theme
       namespace :web do
         namespace :v0 do
           namespace :in do
@@ -193,7 +203,6 @@ scope module: :sign, as: :sign do
         end
         # for dark/light mode
         resource :theme, only: [:edit, :update]
-        # FIXME: i think destroy method is better choice
         resource :cookie, only: [:edit, :update]
         # endpoint of reset preferences.
         resource :reset, only: [:edit, :destroy]
@@ -202,11 +211,13 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Sign-up: email registration
       resource :up, only: :new
       namespace :up do
         resources :emails, only: %i(new create edit update)
       end
 
+      # Sign-in: credential entry and session establishment
       resource :in, only: %i(new)
       namespace :in do
         resource :email, only: %i(new create edit update)
@@ -226,6 +237,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Step-up verification
       resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
@@ -238,6 +250,7 @@ scope module: :sign, as: :sign do
       resource :token, only: %i(create), defaults: { format: :json }
       resource :jwks, only: %i(show), defaults: { format: :json }
 
+      # Account settings and linked identity management
       resource :configuration, only: %i(show edit)
       namespace :configuration do
         resources :totps, only: %i(index new create edit update destroy)
@@ -274,9 +287,11 @@ scope module: :sign, as: :sign do
     scope module: :org, as: :org do
       root to: "roots#index"
 
+      # Health check and sitemap
       resource :health, only: :show, defaults: { format: :html }
       resource :sitemap, only: :show, defaults: { format: :xml }
 
+      # Public web API: cookie consent, theme
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
@@ -284,6 +299,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Edge API: token lifecycle management (check, DBSC binding, refresh)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
@@ -316,6 +332,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Sign-up: email registration and staff invitation flows
       resource :up, only: :new
       namespace :up do
         resources :emails, only: %i(new create)
@@ -340,6 +357,7 @@ scope module: :sign, as: :sign do
             to: "omniauth_callbacks#failure"
       end
 
+      # Sign-in: credential entry and session establishment
       resource :in, only: [:new]
       namespace :in do
         resources :passkeys, only: [:new] do
@@ -357,6 +375,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # Step-up verification
       resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
@@ -368,7 +387,7 @@ scope module: :sign, as: :sign do
       resource :token, only: %i(create), defaults: { format: :json }
       resource :jwks, only: %i(show), defaults: { format: :json }
 
-      # config
+      # Account settings and identity management
       resource :configuration, only: :show
       namespace :configuration do
         resources :passkeys do
