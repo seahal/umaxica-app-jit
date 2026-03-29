@@ -16,14 +16,5 @@
 <div>
   <%= button_to t("actions.connect"),
                 sign_org_configuration_google_path,
-                method: :patch %>
+                method: :post %>
 </div>
-
-<div>
-  <%= button_to t("sign.org.configuration.google.show.disable"),
-                sign_org_configuration_google_path,
-                method: :delete,
-                data: { turbo_confirm: t("sign.org.configuration.google.show.delete_confirm") } %>
-</div>
-
-<p><%= t("sign.org.configuration.google.show.email_hint") %></p>

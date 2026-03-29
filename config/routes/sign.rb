@@ -59,9 +59,6 @@ scope module: :sign, as: :sign do
         end
       end
 
-      # TODO: what is this?
-      resource :configuration, only: [:show]
-
       resource :up, only: :new
       namespace :up do
         resources :emails, only: %i(new create edit update)
@@ -146,8 +143,7 @@ scope module: :sign, as: :sign do
         end
         resources :telephones, only: %i(index new edit create destroy)
         resource :apple, only: [:show, :destroy]
-        # TODO: by the way, what is update mehtods for google here?
-        resource :google, only: %i(show update destroy)
+        resource :google, only: %i(show destroy)
         resources :secrets, only: %i(index show new edit create destroy) do
           post :regenerate, on: :member
         end
@@ -397,7 +393,7 @@ scope module: :sign, as: :sign do
           resource :registration, only: %i(new create edit update)
         end
         resources :telephones, only: %i(index new edit create destroy)
-        resource :google, only: %i(show update destroy)
+        resource :google, only: %i(show create)
         resources :activities, only: :index
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(show)

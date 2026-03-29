@@ -20,16 +20,10 @@ class Sign::Org::Configuration::GooglesControllerTest < ActionDispatch::Integrat
     assert_response :success
   end
 
-  test "update redirects to google social session" do
-    patch sign_org_configuration_google_url(ri: "jp"), headers: @headers
+  test "create redirects to google social session" do
+    post sign_org_configuration_google_url(ri: "jp"), headers: @headers
 
     assert_redirected_to new_sign_org_social_session_url(provider: "google_org", ri: "jp")
-  end
-
-  test "destroy redirects to emails settings" do
-    delete sign_org_configuration_google_url(ri: "jp"), headers: @headers
-
-    assert_redirected_to sign_org_configuration_emails_url(ri: "jp")
   end
 
   test "should redirect show when not logged in" do

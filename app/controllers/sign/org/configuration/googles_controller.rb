@@ -15,15 +15,8 @@ module Sign
           )
         end
 
-        def update
+        def create
           redirect_to(new_sign_org_social_session_path(provider: "google_org", ri: params[:ri]))
-        end
-
-        def destroy
-          redirect_to(
-            sign_org_configuration_emails_path(ri: params[:ri]),
-            alert: t("sign.org.configuration.google.destroy.via_email"),
-          )
         end
       end
     end
