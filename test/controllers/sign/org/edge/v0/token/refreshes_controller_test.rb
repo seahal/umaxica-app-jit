@@ -179,6 +179,31 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_predicate occurrence.context["ip_hash"], :present?
   end
 
+  test "POST refresh with restricted token returns localized error message" do
+    token_record = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_RESTRICTED, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+
+    csrf_token = "test_csrf_token"
+    cookies["csrf_token"] = csrf_token
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = @device_id
+
+    post "/edge/v0/token/refresh",
+         headers: {
+           "Host" => @host,
+           "Accept" => "application/json",
+           "X-CSRF-Token" => csrf_token,
+         },
+         as: :json
+
+    assert_response :forbidden
+
+    json = response.parsed_body
+
+    assert_equal I18n.t("sign.token_refresh.errors.restricted_session"), json["error"]
+    assert_equal "restricted_session", json["error_code"]
+  end
+
   private
 
   def with_cookie_domain_credentials(overrides)

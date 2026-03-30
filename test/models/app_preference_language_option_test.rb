@@ -16,6 +16,16 @@ class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
     AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
   end
 
+  test "has correct constants" do
+    assert_equal 0, AppPreferenceLanguageOption::NOTHING
+    assert_equal 1, AppPreferenceLanguageOption::JA
+    assert_equal 2, AppPreferenceLanguageOption::EN
+  end
+
+  test "defaults includes NOTHING" do
+    assert_includes AppPreferenceLanguageOption::DEFAULTS, AppPreferenceLanguageOption::NOTHING
+  end
+
   test "can be created" do
     option = AppPreferenceLanguageOption.create!(id: 99)
 

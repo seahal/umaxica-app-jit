@@ -29,7 +29,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
   test "guest can access login page" do
     get new_sign_app_in_path, headers: { "Host" => @host }
-    follow_redirect! if response.redirect? && response.location.include?("ri=jp")
+    follow_redirect! while response.redirect? && response.location.include?("ri=jp")
 
     assert_response :ok
   end
@@ -50,9 +50,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     get new_sign_app_in_path, headers: { "Host" => @host }
 
     # Handle possible locale redirect
-    if response.redirect? && response.location.include?("in/new")
-      follow_redirect!
-    end
+    follow_redirect! while response.redirect? && response.location.include?("in/new")
 
     # We expect redirect to configuration
     assert_response :redirect
@@ -82,9 +80,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     cookies_header = "auth_refresh=#{refresh_plain}"
     get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
 
-    if response.redirect? && response.location.include?("in/new")
-      follow_redirect!
-    end
+    follow_redirect! while response.redirect? && response.location.include?("in/new")
 
     assert_response :redirect
 
@@ -123,9 +119,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
       get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
 
-      if response.redirect? && response.location.include?("in/new")
-        follow_redirect!
-      end
+      follow_redirect! while response.redirect? && response.location.include?("in/new")
 
       # S1: Authentication should succeed despite audit failure
       assert_response :redirect
@@ -156,12 +150,12 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Stub AuditWriter.write to simulate audit failure
     Auth::AuditWriter.stub(:write, false) do
-      cookies_header = "auth_refresh=#{refresh_plain}"
-      get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
+    cookies_header = "auth_refresh=#{refresh_plain}"
+    get new_sign_app_in_path, headers: { "Cookie" => cookies_header, "Host" => @host }
 
-      if response.redirect? && response.location.include?("in/new")
-        follow_redirect!
-      end
+    follow_redirect! while response.redirect? && response.location.include?("in/new")
+
+      follow_redirect! while response.redirect? && response.location.include?("in/new")
 
       # Should redirect away from login page (guest_only enforcement)
       # This proves that transparent refresh + @current_resource assignment worked

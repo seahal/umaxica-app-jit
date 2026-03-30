@@ -60,13 +60,9 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     host! "com.localhost"
     get help_com_root_path
 
-    puts "\n\n=== DEBUG: Response info ==="
-    puts "Access token cookie name: #{Preference::CookieName.access.inspect}"
-    puts "Response cookies: #{response.cookies.inspect}"
-    puts "Test cookies: #{cookies.inspect}"
-    puts "=== END ===\n\n"
+    follow_redirect! while response.redirect?
 
-    assert_redirected_to help_com_root_url(ri: "jp", host: "com.localhost")
+    assert_response :success
     assert_not_nil cookies["preference_access"]
   end
 

@@ -32,6 +32,9 @@ services:
           - sign.com.localhost
           - sign.org.localhost
       observability: {}
+      outer:
+        aliases:
+          - jit
     depends_on:
       primary:
         condition: service_healthy
@@ -297,6 +300,8 @@ networks:
   backend: {}
   frontend: {}
   observability: {}
+  outer:
+    external: true
 
 volumes:
   valkey-volume: {}

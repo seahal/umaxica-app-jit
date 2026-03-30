@@ -39,7 +39,7 @@ module Apex
 
       auth_required!
 
-      private
+      public
 
       def oidc_client_id
         "apex_org"
@@ -48,6 +48,8 @@ module Apex
       def oidc_sign_host
         ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
       end
+
+      private
     end
   end
 end

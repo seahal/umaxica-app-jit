@@ -20,7 +20,7 @@ module Preference
 
       email = validate_and_normalize_email(email_param)
       unless email
-        flash.now[:alert] = t("base.#{audience_name}.preference.emails.new.failure")
+        flash.now[:alert] = t(preference_email_failure_key(:new))
         return render(:new, status: :unprocessable_content)
       end
 
@@ -37,7 +37,7 @@ module Preference
         ).update_request.deliver_later
       end
 
-      flash[:notice] = t("base.#{audience_name}.preference.emails.new.success")
+      flash[:notice] = t(preference_email_success_key(:new))
       redirect_to(preference_email_new_path)
     end
 
@@ -48,7 +48,7 @@ module Preference
         return redirect_to(preference_email_new_path)
       end
 
-      @email_record = payload[:email_record_type].constantize.find_by(id: payload[:email_record_id])
+      @email_record = find_email_record_by_type(payload)
       unless @email_record
         flash[:alert] = t("base.shared.preference_emails.token_invalid")
         return redirect_to(preference_email_new_path)
@@ -64,14 +64,14 @@ module Preference
         return redirect_to(preference_email_new_path)
       end
 
-      @email_record = payload[:email_record_type].constantize.find_by(id: payload[:email_record_id])
+      @email_record = find_email_record_by_type(payload)
       unless @email_record
         flash[:alert] = t("base.shared.preference_emails.token_invalid")
         return redirect_to(preference_email_new_path)
       end
 
       if @email_record.update(email_preference_params)
-        flash[:notice] = t("base.#{audience_name}.preference.emails.edit.submit")
+        flash[:notice] = t(preference_email_success_key(:edit))
         redirect_to(preference_email_new_path)
       else
         flash.now[:alert] = t("base.shared.preference_emails.update_failure")
@@ -87,14 +87,14 @@ module Preference
         return redirect_to(preference_email_new_path)
       end
 
-      email_record = payload[:email_record_type].constantize.find_by(id: payload[:email_record_id])
+      email_record = find_email_record_by_type(payload)
       unless email_record
         flash[:alert] = t("base.shared.preference_emails.token_invalid")
         return redirect_to(preference_email_new_path)
       end
 
       email_record.update!(promotional: false, subscribable: false)
-      flash[:notice] = t("base.#{audience_name}.preference.emails.edit.submit")
+      flash[:notice] = t(preference_email_success_key(:edit))
       redirect_to(preference_email_new_path)
     end
 
@@ -119,6 +119,42 @@ module Preference
 
     def find_email_record_by_address(_email)
       raise NotImplementedError
+    end
+
+    def find_email_record_by_type(payload)
+      email_record_class(payload[:email_record_type]).find_by(id: payload[:email_record_id])
+    end
+
+    def email_record_class(type)
+      {
+        "UserEmail" => UserEmail,
+        "CustomerEmail" => CustomerEmail,
+      }.fetch(type) { raise ArgumentError, "Unknown email record type: #{type}" }
+    end
+
+    def preference_email_failure_key(_action)
+      {
+        app: "base.app.preference.emails.new.failure",
+        com: "base.com.preference.emails.new.failure",
+        org: "base.org.preference.emails.new.failure",
+      }.fetch(audience_name.to_sym) { "base.shared.preference_emails.failure" }
+    end
+
+    def preference_email_success_key(action)
+      {
+        app: {
+          new: "base.app.preference.emails.new.success",
+          edit: "base.app.preference.emails.edit.submit",
+        },
+        com: {
+          new: "base.com.preference.emails.new.success",
+          edit: "base.com.preference.emails.edit.submit",
+        },
+        org: {
+          new: "base.org.preference.emails.new.success",
+          edit: "base.org.preference.emails.edit.submit",
+        },
+      }.dig(audience_name.to_sym, action) || "base.shared.preference_emails.success"
     end
 
     def preference_email_new_path

@@ -24,21 +24,23 @@ module Core
       # NOTE: Order matters (dependencies rely on this sequence)
       #       Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
+      before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
-      before_action :enforce_withdrawal_gate!
       after_action :purge_current
 
       # NOTE: Authentication is intentionally disabled in this domain.
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "core_com"
       end
+
+      private
     end
   end
 end

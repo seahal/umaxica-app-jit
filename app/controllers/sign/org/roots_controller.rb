@@ -4,7 +4,7 @@
 module Sign
   module Org
     class RootsController < ApplicationController
-      before_action :reject_logged_in_session
+      guest_only! status: :unauthorized
 
       def index
       end

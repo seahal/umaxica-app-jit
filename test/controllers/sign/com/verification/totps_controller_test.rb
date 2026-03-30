@@ -9,12 +9,17 @@ class Sign::Com::Verification::TotpsControllerTest < ActionDispatch::Integration
   setup do
     @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
     host! @host
-    @user = create_verified_user_with_email(email_address: "com-totp-stepup-#{SecureRandom.hex(4)}@example.com")
-    @user.user_telephones.create!(
-      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
-      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    ensure_customer_reference_records!
+    ensure_customer_token_reference_records!
+    @customer = Customer.create!(
+      status_id: CustomerStatus::ACTIVE,
+      visibility_id: CustomerVisibility::CUSTOMER,
     )
-    @headers = as_user_headers(@user, host: @host)
+    @customer.customer_telephones.create!(
+      number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
+    )
+    @headers = as_customer_headers(@customer, host: @host)
   end
 
   test "new redirects because totp step up is unavailable" do

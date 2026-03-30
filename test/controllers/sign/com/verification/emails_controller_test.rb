@@ -20,8 +20,8 @@ class Sign::Com::Verification::EmailsControllerTest < ActionDispatch::Integratio
   test "new sends otp and redirects to edit" do
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
 
-    Sign::Com::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
-      Sign::Com::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
+    Sign::Com::Verification::EmailsController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
+      Sign::Com::Verification::EmailsController.any_instance.stub(:send_email_otp!, true) do
         get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers
 
@@ -44,7 +44,7 @@ class Sign::Com::Verification::EmailsControllerTest < ActionDispatch::Integratio
         get new_sign_com_verification_email_url(ri: "jp"), headers: @headers
         nonce = response.location[%r{/verification/emails/([^/]+)/edit}, 1]
 
-        Sign::Com::Verification::BaseController.any_instance.stub(:verify_email_otp!, true) do
+        Sign::Com::Verification::EmailsController.any_instance.stub(:verify_email_otp!, true) do
           patch sign_com_verification_email_url(nonce, ri: "jp"),
                 params: { verification: { code: "123456" } },
                 headers: @headers

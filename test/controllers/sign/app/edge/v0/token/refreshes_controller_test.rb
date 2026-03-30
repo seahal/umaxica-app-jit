@@ -258,6 +258,23 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_equal before_digest, token_record.refresh_token_digest
   end
 
+  test "POST refresh with restricted token returns localized error message" do
+    token_record = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED, device_id: @device_id)
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] =
+      token_record.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :forbidden
+
+    json = response.parsed_body
+
+    assert_equal I18n.t("sign.token_refresh.errors.restricted_session"), json["error"]
+    assert_equal "restricted_session", json["error_code"]
+  end
+
   test "refresh cookie contains a valid rotated token" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!

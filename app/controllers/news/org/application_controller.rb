@@ -40,7 +40,7 @@ module News
 
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "news_org"
@@ -49,6 +49,8 @@ module News
       def oidc_sign_host
         ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
       end
+
+      private
     end
   end
 end

@@ -22,7 +22,8 @@ class AppTimelineCategoryMaster < PublicationRecord
   include Treeable
 
   # Fixed IDs - do not modify these values
-  NOTHING = 1 # FIXME: set 0 as null value
+  NOTHING = 0
+  LEGACY_NOTHING = 1
 
   belongs_to :parent,
              class_name: "AppTimelineCategoryMaster",

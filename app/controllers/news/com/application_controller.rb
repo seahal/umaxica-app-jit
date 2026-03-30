@@ -40,11 +40,13 @@ module News
 
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "news_com"
       end
+
+      private
     end
   end
 end

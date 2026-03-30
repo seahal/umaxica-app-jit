@@ -76,12 +76,10 @@ module Auth
       base_scopes = ["authenticated", "domain:#{resource_type}"]
 
       case resource_type.to_s
-      when "user"
+      when "user", "customer"
         base_scopes + ["read:self", "write:self"]
       when "staff"
         base_scopes + ["read:org", "write:org"]
-      when "customer"
-        base_scopes + ["read:self", "write:self"]
       else
         base_scopes
       end

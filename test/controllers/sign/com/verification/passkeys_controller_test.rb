@@ -5,24 +5,22 @@ require "test_helper"
 require "base64"
 
 class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users
-
   setup do
     @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
     host! @host
-    @user = create_verified_user_with_email(email_address: "com-passkey-stepup-#{SecureRandom.hex(4)}@example.com")
-    @user.user_telephones.create!(
+    @customer = create_verified_customer_with_email(email_address: "com-passkey-stepup-#{SecureRandom.hex(4)}@example.com")
+    @customer.customer_telephones.create!(
       number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
-      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
     )
-    @headers = as_user_headers(@user, host: @host)
-    @token = UserToken.find_by!(public_id: @headers["X-TEST-SESSION-PUBLIC-ID"])
+    @headers = as_customer_headers(@customer, host: @host)
+    @token = CustomerToken.find_by!(public_id: @headers["X-TEST-SESSION-PUBLIC-ID"])
   end
 
   test "creates verification on success" do
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
 
-    Sign::Com::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
+    Sign::Com::Verification::PasskeysController.any_instance.stub(:available_step_up_methods, [:passkey]) do
       Sign::Com::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
         Sign::Com::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
           get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
@@ -44,7 +42,7 @@ class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   test "new keeps scope and return_to in form hidden fields" do
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
 
-    Sign::Com::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
+    Sign::Com::Verification::PasskeysController.any_instance.stub(:available_step_up_methods, [:passkey]) do
       Sign::Com::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
         get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers

@@ -9,13 +9,19 @@
 #  id :bigint           not null, primary key
 #
 class UserVisibility < PrincipalRecord
-  NOBODY = 0 # FIXME: NOTHING is better than this.
+  # Fixed IDs - do not modify these values
+  NOTHING = 0
   USER = 1
   STAFF = 2
   BOTH = 3
+  DEFAULTS = [NOTHING, USER, STAFF, BOTH].freeze
 
   has_many :users,
            foreign_key: :visibility_id,
            dependent: :restrict_with_error,
            inverse_of: :visibility
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
+  end
 end

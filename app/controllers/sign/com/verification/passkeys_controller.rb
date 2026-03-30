@@ -4,8 +4,8 @@
 module Sign
   module Com
     module Verification
-      # FIXME: BaseController is bad practive, and you should remove this.
-      class PasskeysController < BaseController
+      class PasskeysController < Sign::Com::ApplicationController
+        include Sign::ComVerificationBase
         include Sign::VerificationPasskeyActions
       end
     end

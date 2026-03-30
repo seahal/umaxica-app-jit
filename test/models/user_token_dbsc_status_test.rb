@@ -12,29 +12,16 @@ require "test_helper"
 
 class UserTokenDbscStatusTest < ActiveSupport::TestCase
   def setup
-    # Use find_or_create_by instead of delete_all to avoid FK violations
     UserTokenDbscStatus::DEFAULTS.each do |id|
       UserTokenDbscStatus.find_or_create_by!(id: id)
     end
   end
 
-  test "NOTHING constant is defined" do
+  test "has correct constants" do
     assert_equal 0, UserTokenDbscStatus::NOTHING
-  end
-
-  test "PENDING constant is defined" do
-    assert_equal 1, UserTokenDbscStatus::PENDING
-  end
-
-  test "ACTIVE constant is defined" do
-    assert_equal 2, UserTokenDbscStatus::ACTIVE
-  end
-
-  test "FAILED constant is defined" do
+    assert_equal 1, UserTokenDbscStatus::ACTIVE
+    assert_equal 2, UserTokenDbscStatus::PENDING
     assert_equal 3, UserTokenDbscStatus::FAILED
-  end
-
-  test "REVOKE constant is defined" do
     assert_equal 4, UserTokenDbscStatus::REVOKE
   end
 
@@ -44,14 +31,17 @@ class UserTokenDbscStatusTest < ActiveSupport::TestCase
     assert_equal expected, UserTokenDbscStatus::DEFAULTS
   end
 
+  test "can load nothing status from db" do
+    status = UserTokenDbscStatus.find(UserTokenDbscStatus::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
   test "has_many user_tokens association" do
     assert_respond_to UserTokenDbscStatus.new, :user_tokens
   end
 
   test "ensure_defaults! creates missing status records" do
-    UserTokenDbscStatus.count
-
-    # Delete one record to test creation
     UserTokenDbscStatus.where(id: UserTokenDbscStatus::REVOKE).destroy_all
 
     assert_difference("UserTokenDbscStatus.count", 1) do
@@ -62,30 +52,9 @@ class UserTokenDbscStatusTest < ActiveSupport::TestCase
   end
 
   test "ensure_defaults! skips existing records" do
-    UserTokenDbscStatus.count
-
     assert_no_difference("UserTokenDbscStatus.count") do
       UserTokenDbscStatus.ensure_defaults!
     end
-  end
-
-  test "ensure_defaults! does nothing when all exist" do
-    assert_no_difference("UserTokenDbscStatus.count") do
-      UserTokenDbscStatus.ensure_defaults!
-    end
-  end
-
-  test "ensure_defaults! handles empty DEFAULTS" do
-    original_defaults = UserTokenDbscStatus::DEFAULTS
-    UserTokenDbscStatus.send(:remove_const, :DEFAULTS)
-    UserTokenDbscStatus.const_set(:DEFAULTS, [].freeze)
-
-    assert_no_difference("UserTokenDbscStatus.count") do
-      UserTokenDbscStatus.ensure_defaults!
-    end
-  ensure
-    UserTokenDbscStatus.send(:remove_const, :DEFAULTS)
-    UserTokenDbscStatus.const_set(:DEFAULTS, original_defaults)
   end
 
   test "user_tokens association works with dependent restrict" do

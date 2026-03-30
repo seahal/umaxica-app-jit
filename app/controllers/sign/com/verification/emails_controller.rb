@@ -4,8 +4,9 @@
 module Sign
   module Com
     module Verification
-      class EmailsController < BaseController
-        # FIXME: BaseController is bad practive, and you should remove this.
+      class EmailsController < Sign::Com::ApplicationController
+        include Sign::ComVerificationBase
+
         def new
           return unless require_reauth_session!
           return if redirect_if_recent_verification_for_get!

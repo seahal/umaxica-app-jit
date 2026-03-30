@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_18_050104) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -497,34 +497,34 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_18_050104) do
   create_table "user_activity_levels", force: :cascade do |t|
   end
 
-  add_foreign_key "app_contact_histories", "app_contact_audit_events", column: "event_id", validate: false
-  add_foreign_key "app_contact_histories", "app_contact_audit_levels", column: "level_id", validate: false
-  add_foreign_key "app_document_audits", "app_document_audit_events", column: "event_id", validate: false
-  add_foreign_key "app_document_audits", "app_document_audit_levels", column: "level_id", validate: false
-  add_foreign_key "app_preference_activities", "app_preference_activity_events", column: "event_id", validate: false
-  add_foreign_key "app_preference_activities", "app_preference_activity_levels", column: "level_id", validate: false
-  add_foreign_key "app_timeline_audits", "app_timeline_audit_events", column: "event_id", validate: false
-  add_foreign_key "app_timeline_audits", "app_timeline_audit_levels", column: "level_id", validate: false
-  add_foreign_key "com_contact_audits", "com_contact_audit_events", column: "event_id", validate: false
-  add_foreign_key "com_contact_audits", "com_contact_audit_levels", column: "level_id", validate: false
-  add_foreign_key "com_document_audits", "com_document_audit_events", column: "event_id", validate: false
-  add_foreign_key "com_document_audits", "com_document_audit_levels", column: "level_id", validate: false
-  add_foreign_key "com_preference_activities", "com_preference_activity_events", column: "event_id", validate: false
-  add_foreign_key "com_preference_activities", "com_preference_activity_levels", column: "level_id", validate: false
-  add_foreign_key "com_timeline_audits", "com_timeline_audit_events", column: "event_id", validate: false
-  add_foreign_key "com_timeline_audits", "com_timeline_audit_levels", column: "level_id", validate: false
-  add_foreign_key "org_contact_histories", "org_contact_audit_events", column: "event_id", validate: false
-  add_foreign_key "org_contact_histories", "org_contact_audit_levels", column: "level_id", validate: false
-  add_foreign_key "org_document_audits", "org_document_audit_events", column: "event_id", validate: false
-  add_foreign_key "org_document_audits", "org_document_audit_levels", column: "level_id", validate: false
-  add_foreign_key "org_preference_activities", "org_preference_activity_events", column: "event_id", validate: false
-  add_foreign_key "org_preference_activities", "org_preference_activity_levels", column: "level_id", validate: false
-  add_foreign_key "org_timeline_audits", "org_timeline_audit_events", column: "event_id", validate: false
-  add_foreign_key "org_timeline_audits", "org_timeline_audit_levels", column: "level_id", validate: false
+  add_foreign_key "app_contact_histories", "app_contact_audit_events", column: "event_id"
+  add_foreign_key "app_contact_histories", "app_contact_audit_levels", column: "level_id"
+  add_foreign_key "app_document_audits", "app_document_audit_events", column: "event_id"
+  add_foreign_key "app_document_audits", "app_document_audit_levels", column: "level_id"
+  add_foreign_key "app_preference_activities", "app_preference_activity_events", column: "event_id"
+  add_foreign_key "app_preference_activities", "app_preference_activity_levels", column: "level_id"
+  add_foreign_key "app_timeline_audits", "app_timeline_audit_events", column: "event_id"
+  add_foreign_key "app_timeline_audits", "app_timeline_audit_levels", column: "level_id"
+  add_foreign_key "com_contact_audits", "com_contact_audit_events", column: "event_id"
+  add_foreign_key "com_contact_audits", "com_contact_audit_levels", column: "level_id"
+  add_foreign_key "com_document_audits", "com_document_audit_events", column: "event_id"
+  add_foreign_key "com_document_audits", "com_document_audit_levels", column: "level_id"
+  add_foreign_key "com_preference_activities", "com_preference_activity_events", column: "event_id"
+  add_foreign_key "com_preference_activities", "com_preference_activity_levels", column: "level_id"
+  add_foreign_key "com_timeline_audits", "com_timeline_audit_events", column: "event_id"
+  add_foreign_key "com_timeline_audits", "com_timeline_audit_levels", column: "level_id"
+  add_foreign_key "org_contact_histories", "org_contact_audit_events", column: "event_id"
+  add_foreign_key "org_contact_histories", "org_contact_audit_levels", column: "level_id"
+  add_foreign_key "org_document_audits", "org_document_audit_events", column: "event_id"
+  add_foreign_key "org_document_audits", "org_document_audit_levels", column: "level_id"
+  add_foreign_key "org_preference_activities", "org_preference_activity_events", column: "event_id"
+  add_foreign_key "org_preference_activities", "org_preference_activity_levels", column: "level_id"
+  add_foreign_key "org_timeline_audits", "org_timeline_audit_events", column: "event_id"
+  add_foreign_key "org_timeline_audits", "org_timeline_audit_levels", column: "level_id"
   add_foreign_key "scavenger_globals", "scavenger_global_events", column: "event_id"
   add_foreign_key "scavenger_globals", "scavenger_global_statuses", column: "status_id"
-  add_foreign_key "staff_activities", "staff_activity_events", column: "event_id", validate: false
-  add_foreign_key "staff_activities", "staff_activity_levels", column: "level_id", validate: false
-  add_foreign_key "user_activities", "user_activity_events", column: "event_id", validate: false
-  add_foreign_key "user_activities", "user_activity_levels", column: "level_id", validate: false
+  add_foreign_key "staff_activities", "staff_activity_events", column: "event_id"
+  add_foreign_key "staff_activities", "staff_activity_levels", column: "level_id"
+  add_foreign_key "user_activities", "user_activity_events", column: "event_id"
+  add_foreign_key "user_activities", "user_activity_levels", column: "level_id"
 end

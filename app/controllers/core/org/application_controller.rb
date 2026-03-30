@@ -31,7 +31,7 @@ module Core
 
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "core_org"
@@ -40,6 +40,8 @@ module Core
       def oidc_sign_host
         ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
       end
+
+      private
     end
   end
 end

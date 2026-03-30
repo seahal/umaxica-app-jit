@@ -24,15 +24,33 @@ module DbscBindable
     end
 
     def dbsc_binding_method_class
-      const_get(:DBSC_BINDING_METHOD_CLASS)
-    rescue NameError
-      raise NoMethodError, "No DBSC binding method class for #{name}"
+      dbsc_binding_method_classes[name]
     end
 
     def dbsc_status_class
-      const_get(:DBSC_STATUS_CLASS)
-    rescue NameError
-      raise NoMethodError, "No DBSC status class for #{name}"
+      dbsc_status_classes[name]
+    end
+
+    def dbsc_binding_method_classes
+      {
+        "AppPreference" => AppPreferenceBindingMethod,
+        "ComPreference" => ComPreferenceBindingMethod,
+        "OrgPreference" => OrgPreferenceBindingMethod,
+        "UserToken" => UserTokenBindingMethod,
+        "StaffToken" => StaffTokenBindingMethod,
+        "CustomerToken" => CustomerTokenBindingMethod,
+      }
+    end
+
+    def dbsc_status_classes
+      {
+        "AppPreference" => AppPreferenceDbscStatus,
+        "ComPreference" => ComPreferenceDbscStatus,
+        "OrgPreference" => OrgPreferenceDbscStatus,
+        "UserToken" => UserTokenDbscStatus,
+        "StaffToken" => StaffTokenDbscStatus,
+        "CustomerToken" => CustomerTokenDbscStatus,
+      }
     end
   end
 

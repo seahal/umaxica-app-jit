@@ -20,7 +20,8 @@
 
 class ComDocumentTagMaster < DocumentRecord
   # Fixed IDs - do not modify these values
-  NOTHING = 1 # FIXME: set 0 as null value
+  NOTHING = 0
+  LEGACY_NOTHING = 1
   include Treeable
 
   belongs_to :parent,

@@ -34,11 +34,13 @@ module Core
       # NOTE: Authentication is intentionally disabled in this domain.
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "core_app"
       end
+
+      private
     end
   end
 end

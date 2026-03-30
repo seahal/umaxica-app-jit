@@ -96,7 +96,9 @@ module RefreshTokenable
       attrs[:staff_token_binding_method_id] =
         previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
       attrs[:customer_token_binding_method_id] =
-        previous_token.customer_token_binding_method_id if previous_token.has_attribute?(:customer_token_binding_method_id)
+        previous_token.customer_token_binding_method_id if previous_token.has_attribute?(
+          :customer_token_binding_method_id,
+        )
       attrs[:user_token_dbsc_status_id] =
         previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
       attrs[:staff_token_dbsc_status_id] =

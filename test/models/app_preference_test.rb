@@ -22,7 +22,7 @@
 #  device_id                :string
 #  public_id                :string           not null
 #  replaced_by_id           :bigint
-#  status_id                :bigint           default(2), not null
+#  status_id                :bigint           default(0), not null
 #
 # Indexes
 #

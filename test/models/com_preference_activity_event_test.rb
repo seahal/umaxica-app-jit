@@ -13,6 +13,16 @@ require "test_helper"
 class ComPreferenceActivityEventTest < ActiveSupport::TestCase
   fixtures :com_preference_activity_events
 
+  test "has correct NOTHING constant" do
+    assert_equal 0, ComPreferenceActivityEvent::NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = ComPreferenceActivityEvent.find(ComPreferenceActivityEvent::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
   test "accepts integer ids" do
     record = ComPreferenceActivityEvent.new(id: 9)
 

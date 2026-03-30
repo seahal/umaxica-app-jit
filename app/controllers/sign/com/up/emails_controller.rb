@@ -79,7 +79,9 @@ module Sign
           return render_code_required if params.dig("user_email", "pass_code").blank?
 
           submitted_code = params.dig("user_email", "pass_code")
-          result = existing_signup_email_flow? ? handle_existing_email_verification(submitted_code) : complete_customer_email_verification!(submitted_code)
+          result =
+            existing_signup_email_flow? ? handle_existing_email_verification(submitted_code) :
+                                           complete_customer_email_verification!(submitted_code)
           return if result == :redirected
           return handle_locked_result if result == :locked
           return render :edit, status: :unprocessable_content unless result
@@ -180,10 +182,14 @@ module Sign
           @user_email.customer_email_status_id = CustomerEmailStatus::UNVERIFIED_WITH_SIGN_UP
           @user_email.validate
 
-          existing_email = @user_email.address_digest.present? ? CustomerEmail.find_by(address_digest: @user_email.address_digest) : nil
+          existing_email =
+            @user_email.address_digest.present? ?
+              CustomerEmail.find_by(address_digest: @user_email.address_digest) : nil
           uniqueness_only = customer_email_uniqueness_only_error?(@user_email)
 
-          if existing_email && existing_email.customer_email_status_id != CustomerEmailStatus::UNVERIFIED_WITH_SIGN_UP && (uniqueness_only || @user_email.errors.empty?)
+          if existing_email &&
+              existing_email.customer_email_status_id != CustomerEmailStatus::UNVERIFIED_WITH_SIGN_UP &&
+              (uniqueness_only || @user_email.errors.empty?)
             @user_email = existing_email
             session[EXISTING_EMAIL_SESSION_KEY] = @user_email.id
             session[EXISTING_EMAIL_SKIP_OTP_SESSION_KEY] = true
@@ -191,7 +197,8 @@ module Sign
           end
 
           return false if @user_email.errors.details.except(:customer, :customer_id).any?
-          return :cooldown if existing_email&.customer_email_status_id == CustomerEmailStatus::UNVERIFIED_WITH_SIGN_UP && existing_email.otp_cooldown_active?
+          return :cooldown if existing_email&.customer_email_status_id ==
+            CustomerEmailStatus::UNVERIFIED_WITH_SIGN_UP && existing_email.otp_cooldown_active?
 
           CustomerEmail.transaction do
             cleanup_pending_customer_signup!

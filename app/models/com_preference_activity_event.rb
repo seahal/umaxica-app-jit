@@ -11,7 +11,7 @@
 class ComPreferenceActivityEvent < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  # FIXME: set 0 as null value
+  NOTHING = 0
   CREATE_NEW_PREFERENCE_TOKEN = 1
   REFRESH_TOKEN_ROTATED = 2
   UPDATE_PREFERENCE_COOKIE = 3
@@ -30,6 +30,7 @@ class ComPreferenceActivityEvent < ActivityRecord
            dependent: :restrict_with_error
 
   DEFAULTS = [
+    NOTHING,
     CREATE_NEW_PREFERENCE_TOKEN,
     REFRESH_TOKEN_ROTATED,
     UPDATE_PREFERENCE_COOKIE,

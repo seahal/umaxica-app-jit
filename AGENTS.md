@@ -5,9 +5,9 @@
 You MUST follow instructions in this order:
 
 1. This file (`AGENTS.md`)
-2. `.ai/policies/*`
-3. `.ai/context/*`
-4. `.ai/tasks/*`
+2. `.harnes/policies/*`
+3. `.harnes/context/*`
+4. `.harnes/tasks/*`
 
 If there is any conflict, follow the higher priority.
 
@@ -15,10 +15,10 @@ If there is any conflict, follow the higher priority.
 
 You MUST:
 
-- Read relevant files in `.ai/` before making changes
-- Follow all rules in `.ai/policies/`
-- Follow architecture defined in `.ai/context/`
-- Follow task procedures in `.ai/tasks/`
+- Read relevant files in `.harnes/` before making changes
+- Follow all rules in `.harnes/policies/`
+- Follow architecture defined in `.harnes/context/`
+- Follow task procedures in `.harnes/tasks/`
 
 ## Execution Rules
 
@@ -41,7 +41,7 @@ The following directories contain third-party libraries and MUST be excluded fro
 
 You MUST NOT:
 
-- Ignore `.ai/policies/*`
+- Ignore `.harnes/policies/*`
 - Skip authentication or authorization
 - Introduce unsafe migrations
 - Add meaningless or weak tests
@@ -73,7 +73,7 @@ You are not allowed to improvise outside defined rules.
 
 When in doubt:
 
-- Follow `.ai/policies/`
+- Follow `.harnes/policies/`
 - Prefer safety over speed
 
 ## Project Structure & Module Organization

@@ -41,11 +41,13 @@ module Apex
 
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "apex_com"
       end
+
+      private
     end
   end
 end

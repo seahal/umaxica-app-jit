@@ -30,7 +30,6 @@ module Concerns
     }.freeze
 
     PARENT_CLASSES = {
-      "Sign::Com" => Sign::App::ApplicationController,
       "Sign::Org" => Sign::App::ApplicationController,
       "Core::Com" => Core::App::ApplicationController,
       "Core::Org" => Core::App::ApplicationController,

@@ -81,7 +81,7 @@ module Authentication
       token_refreshed: "TOKEN_REFRESHED",
     }.freeze
 
-    VALID_ACTOR_TYPES = %w(user staff customer).freeze
+    VALID_ACTOR_TYPES = %w(user staff).freeze
 
     module JwtConfiguration
       VALID_RESOURCE_TYPES = %w(user staff customer).freeze

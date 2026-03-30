@@ -5,6 +5,11 @@
       "resolved": "ghcr.io/anthropics/devcontainer-features/claude-code@sha256:cfc2e7d3e9fd3b9b01f8d5cb158508a884c8c0ede2e23ed10f32dea5d4ffe69a",
       "integrity": "sha256:cfc2e7d3e9fd3b9b01f8d5cb158508a884c8c0ede2e23ed10f32dea5d4ffe69a"
     },
+    "ghcr.io/audacioustux/devcontainers/bun:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/audacioustux/devcontainers/bun@sha256:dfa5bc9e0d2c50be91e229e88b576af05f857e67482eff6fcd3a318fd7f4a896",
+      "integrity": "sha256:dfa5bc9e0d2c50be91e229e88b576af05f857e67482eff6fcd3a318fd7f4a896"
+    },
     "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {
       "version": "1.0.3",
       "resolved": "ghcr.io/devcontainers-extra/features/lefthook-asdf@sha256:7eeba1f61b4eda2004fdced224c39a775c00e248790f35407353252b48f3cc43",
@@ -44,7 +49,9 @@
       "version": "0.1.4",
       "resolved": "ghcr.io/stu-bell/devcontainer-features/gemini-cli@sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
       "integrity": "sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
-      "dependsOn": ["ghcr.io/stu-bell/devcontainer-features/node"]
+      "dependsOn": [
+        "ghcr.io/stu-bell/devcontainer-features/node"
+      ]
     },
     "ghcr.io/stu-bell/devcontainer-features/node": {
       "version": "0.5.0",

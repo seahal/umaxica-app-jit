@@ -21,6 +21,9 @@ module Sign
                              .split(",").map(&:strip),
                            with: :exception
 
+      guest_only!
+
+      before_action :enforce_access_policy!
       before_action :enforce_required_telephone_registration!
       before_action :enforce_verification_if_required
       after_action :purge_current

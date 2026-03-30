@@ -32,9 +32,12 @@ module Core::App
         set_current
       )
 
+      # Filter out non-symbol filters (procs, etc.)
+      symbol_filters = before_filters.select { |f| f.is_a?(Symbol) }
+
       expected_order.each_cons(2) do |first, second|
-        first_idx = before_filters.index(first)
-        second_idx = before_filters.index(second)
+        first_idx = symbol_filters.index(first)
+        second_idx = symbol_filters.index(second)
 
         next unless first_idx && second_idx
 
@@ -46,18 +49,24 @@ module Core::App
     test "does not have prepend_before_action callbacks" do
       callbacks = ApplicationController._process_action_callbacks
       before_filters = callbacks.select { |c| c.kind == :before }.map(&:filter)
+      
+      # Filter out non-symbol filters (procs, etc.)
+      symbol_filters = before_filters.select { |f| f.is_a?(Symbol) }
 
-      assert_not_includes before_filters, :set_preferences_cookie
-      assert_not_includes before_filters, :set_locale
-      assert_not_includes before_filters, :set_timezone
-      assert_not_includes before_filters, :set_color_theme
+      assert_not_includes symbol_filters, :set_preferences_cookie
+      assert_not_includes symbol_filters, :set_locale
+      assert_not_includes symbol_filters, :set_timezone
+      assert_not_includes symbol_filters, :set_color_theme
     end
 
     test "has purge_current append_after_action" do
       callbacks = ApplicationController._process_action_callbacks
       after_filters = callbacks.select { |c| c.kind == :after }.map(&:filter)
+      
+      # Filter out non-symbol filters (procs, etc.)
+      symbol_filters = after_filters.select { |f| f.is_a?(Symbol) }
 
-      assert_includes after_filters, :purge_current
+      assert_includes symbol_filters, :purge_current
     end
 
     test "has oidc_client_id method" do

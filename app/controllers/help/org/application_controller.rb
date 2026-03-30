@@ -41,7 +41,7 @@ module Help
 
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "help_org"
@@ -50,6 +50,8 @@ module Help
       def oidc_sign_host
         ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
       end
+
+      private
     end
   end
 end

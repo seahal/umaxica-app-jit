@@ -120,7 +120,7 @@ module Concerns
         verification_index = before_actions.index(:enforce_verification_if_required)
         current_index = before_actions.index(:set_current)
 
-        return unless verification_index && current_index
+        skip "Callbacks not found" unless verification_index && current_index
 
         assert_operator verification_index, :<, current_index,
                         "#{domain}: enforce_verification_if_required should come before set_current"

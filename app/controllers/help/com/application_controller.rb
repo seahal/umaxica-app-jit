@@ -40,11 +40,13 @@ module Help
 
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "help_com"
       end
+
+      private
     end
   end
 end

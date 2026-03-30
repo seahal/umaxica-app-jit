@@ -7,9 +7,9 @@
 #
 nothing:
   id: 0
-pending:
-  id: 1
 active:
+  id: 1
+pending:
   id: 2
 failed:
   id: 3

@@ -12,17 +12,25 @@ require "test_helper"
 
 class AppPreferenceStatusTest < ActiveSupport::TestCase
   test "has correct constants" do
+    assert_equal 0, AppPreferenceStatus::NOTHING
     assert_equal 1, AppPreferenceStatus::DELETED
-    assert_equal 2, AppPreferenceStatus::NOTHING
+    assert_equal 2, AppPreferenceStatus::LEGACY_NOTHING
   end
 
-  test "defaults includes DELETED and NOTHING" do
-    assert_includes AppPreferenceStatus::DEFAULTS, AppPreferenceStatus::DELETED
+  test "defaults includes all fixed ids" do
     assert_includes AppPreferenceStatus::DEFAULTS, AppPreferenceStatus::NOTHING
+    assert_includes AppPreferenceStatus::DEFAULTS, AppPreferenceStatus::DELETED
+    assert_includes AppPreferenceStatus::DEFAULTS, AppPreferenceStatus::LEGACY_NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = AppPreferenceStatus.find(AppPreferenceStatus::NOTHING)
+
+    assert_equal 0, status.id
   end
 
   test "ensure_defaults! creates missing default records" do
-    AppPreferenceStatus.where(id: AppPreferenceStatus::DEFAULTS).destroy_all
+    AppPreferenceStatus.where(id: AppPreferenceStatus::NOTHING).destroy_all
 
     assert_difference("AppPreferenceStatus.count") do
       AppPreferenceStatus.ensure_defaults!

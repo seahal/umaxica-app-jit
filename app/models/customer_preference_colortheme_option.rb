@@ -9,11 +9,12 @@
 #  id :bigint           not null, primary key
 #
 class CustomerPreferenceColorthemeOption < GuestRecord
-  # FIXME: i want to delete nothing, and move system params from 3 to 0
-  NOTHING = 0
+  # Fixed IDs - do not modify these values
+  SYSTEM = 0
   LIGHT = 1
   DARK = 2
-  SYSTEM = 3
+  LEGACY_SYSTEM = 3
+  DEFAULTS = [SYSTEM, LIGHT, DARK, LEGACY_SYSTEM].freeze
 
   has_many :customer_preference_colorthemes,
            class_name: "CustomerPreferenceColortheme",
@@ -21,25 +22,17 @@ class CustomerPreferenceColorthemeOption < GuestRecord
            inverse_of: :option,
            dependent: :restrict_with_error
 
+  self.primary_key = :id
+
   def name
     case id
+    when SYSTEM, LEGACY_SYSTEM then "system"
     when LIGHT then "light"
     when DARK then "dark"
-    when SYSTEM then "system"
     end
   end
 
-  DEFAULTS = [NOTHING, LIGHT, DARK, SYSTEM].freeze
-
   def self.ensure_defaults!
-    return if DEFAULTS.blank?
-
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    missing_ids = DEFAULTS - existing_ids
-    return if missing_ids.empty?
-
-    missing_ids.each { |id| create!(id: id) }
+    insert_missing_fixed_ids!(DEFAULTS)
   end
-
-  self.primary_key = :id
 end

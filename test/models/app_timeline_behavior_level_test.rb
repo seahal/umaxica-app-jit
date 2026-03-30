@@ -12,6 +12,27 @@
 require "test_helper"
 
 class AppTimelineBehaviorLevelTest < ActiveSupport::TestCase
+  test "has correct constants" do
+    assert_equal 0, AppTimelineBehaviorLevel::NOTHING
+    assert_equal 1, AppTimelineBehaviorLevel::LEGACY_NOTHING
+    assert_equal 2, AppTimelineBehaviorLevel::DEBUG
+    assert_equal 3, AppTimelineBehaviorLevel::INFO
+    assert_equal 4, AppTimelineBehaviorLevel::WARN
+    assert_equal 5, AppTimelineBehaviorLevel::ERROR
+  end
+
+  test "can load nothing status from db" do
+    status = AppTimelineBehaviorLevel.find(AppTimelineBehaviorLevel::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
+  test "ensure_defaults! does nothing when defaults exist" do
+    assert_no_difference "AppTimelineBehaviorLevel.count" do
+      AppTimelineBehaviorLevel.ensure_defaults!
+    end
+  end
+
   test "restrict_with_error on destroy when audits exist" do
     level = AppTimelineBehaviorLevel.find_or_create_by!(id: AppTimelineBehaviorLevel::NOTHING)
     AppTimelineBehaviorEvent.find_or_create_by!(id: AppTimelineBehaviorEvent::CREATED)

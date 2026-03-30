@@ -33,9 +33,19 @@ class Sign::App::Edge::V0::Token::RefreshesController < Sign::App::ApplicationCo
       status = refresh_failure_status
       code = refresh_failure_code
       render json: {
-        error: (code == "restricted_session") ? "きんそくじこうです" : I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
+        error: I18n.t(token_refresh_error_key(code)),
         error_code: code,
       }, status: status
     end
+  end
+
+  private
+
+  def token_refresh_error_key(code)
+    {
+      "invalid_refresh_token" => "sign.token_refresh.errors.invalid_refresh_token",
+      "withdrawal_required" => "sign.token_refresh.errors.withdrawal_required",
+      "restricted_session" => "sign.token_refresh.errors.restricted_session",
+    }.fetch(code) { "sign.token_refresh.errors.invalid_refresh_token" }
   end
 end

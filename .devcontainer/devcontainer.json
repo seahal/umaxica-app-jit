@@ -30,7 +30,6 @@
         "-GitHub.copilot-chat"
       ],
       "settings": {
-        "claude.allowDangerouslySkipPermissions": true,
         "extensions.verifySignature": false,
         "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.profiles.linux": {
@@ -105,7 +104,8 @@
     "ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
     "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
     "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
-    "ghcr.io/jasonthedeveloper/features/trivy:1": {}
+    "ghcr.io/jasonthedeveloper/features/trivy:1": {},
+    "ghcr.io/audacioustux/devcontainers/bun:1": {}
   },
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",

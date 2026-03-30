@@ -14,11 +14,8 @@ module Sign
       # Note: RestrictedSessionGuard is still needed to enforce session expiration
       # and block expired restricted sessions on the session management page itself.
       include ::RestrictedSessionGuard
-      # FIXME: in the future Current Support should be purge.
       include ::CurrentSupport
       include ::Finisher
-
-      before_action :check_default_rate_limit
 
       allow_browser versions: :modern
 

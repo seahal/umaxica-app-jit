@@ -79,48 +79,60 @@ module Sign
           ensure_min_elapsed(start_time)
 
           if result[:success]
-            respond_to do |format|
-              format.html do
-                if result[:restricted]
-                  redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
-                elsif result[:redirect_path]
-                  redirect_to(result[:redirect_path], notice: t("sign.app.in.mfa.required"))
-                else
-                  rd_param = retrieve_redirect_parameter
-                  if issue_bulletin!
-                    redirect_to(
-                      sign_com_in_bulletin_path(rd: rd_param, ri: params[:ri]),
-                      notice: t("sign.app.authentication.email.update.success"),
-                    )
-                  else
-                    safe_redirect_to_rd_or_default!(
-                      rd_param,
-                      default_path: sign_com_configuration_path(ri: params[:ri]),
-                    )
-                  end
-                end
-              end
-              format.json do
-                if result[:restricted]
-                  render json: {
-                    status: "session_restricted",
-                    redirect_url: result[:redirect_path],
-                    message: I18n.t("sign.app.in.session.restricted_notice"),
-                  }, status: :ok
-                else
-                  render json: result[:tokens], status: :ok
-                end
-              end
-            end
+            handle_update_success(result)
           else
-            if result[:hard_reject]
-              render_session_limit_hard_reject(message: result[:error], http_status: result[:http_status])
+            handle_update_failure(result)
+          end
+        end
+
+        def handle_update_success(result)
+          respond_to do |format|
+            format.html { handle_html_success(result) }
+            format.json { handle_json_success(result) }
+          end
+        end
+
+        def handle_html_success(result)
+          if result[:restricted]
+            redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
+          elsif result[:redirect_path]
+            redirect_to(result[:redirect_path], notice: t("sign.app.in.mfa.required"))
+          else
+            rd_param = retrieve_redirect_parameter
+            if issue_bulletin!
+              redirect_to(
+                sign_com_in_bulletin_path(rd: rd_param, ri: params[:ri]),
+                notice: t("sign.app.authentication.email.update.success"),
+              )
             else
-              @user_email.errors.add(:pass_code, result[:error])
-              respond_to do |format|
-                format.html { render :edit, status: :unprocessable_content }
-                format.json { render json: { error: result[:error] }, status: :unprocessable_content }
-              end
+              safe_redirect_to_rd_or_default!(
+                rd_param,
+                default_path: sign_com_configuration_path(ri: params[:ri]),
+              )
+            end
+          end
+        end
+
+        def handle_json_success(result)
+          if result[:restricted]
+            render json: {
+              status: "session_restricted",
+              redirect_url: result[:redirect_path],
+              message: I18n.t("sign.app.in.session.restricted_notice"),
+            }, status: :ok
+          else
+            render json: result[:tokens], status: :ok
+          end
+        end
+
+        def handle_update_failure(result)
+          if result[:hard_reject]
+            render_session_limit_hard_reject(message: result[:error], http_status: result[:http_status])
+          else
+            @user_email.errors.add(:pass_code, result[:error])
+            respond_to do |format|
+              format.html { render :edit, status: :unprocessable_content }
+              format.json { render json: { error: result[:error] }, status: :unprocessable_content }
             end
           end
         end

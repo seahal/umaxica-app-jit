@@ -11,8 +11,11 @@
 
 class AppPreferenceStatus < PrincipalRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   DELETED = 1
-  NOTHING = 2 # FIXME: set 0 as null value
+  LEGACY_NOTHING = 2
+  DEFAULTS = [NOTHING, DELETED, LEGACY_NOTHING].freeze
+
   has_many :app_preferences,
            class_name: "AppPreference",
            foreign_key: "status_id",
@@ -20,19 +23,7 @@ class AppPreferenceStatus < PrincipalRecord
            inverse_of: :app_preference_status,
            dependent: :restrict_with_error
 
-  DEFAULTS = [DELETED, NOTHING].freeze
-
   def self.ensure_defaults!
-    return if DEFAULTS.blank?
-
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    missing_ids = DEFAULTS - existing_ids
-    return if missing_ids.empty?
-
-    if defined?(Prosopite)
-      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
-    else
-      missing_ids.each { |id| create!(id: id) }
-    end
+    insert_missing_fixed_ids!(DEFAULTS)
   end
 end

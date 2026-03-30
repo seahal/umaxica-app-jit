@@ -4,8 +4,6 @@
 require "test_helper"
 
 class AuthTokenServiceTest < ActiveSupport::TestCase
-  private
-
   def ensure_customer_reference_records!
     CustomerStatus.find_or_create_by!(id: CustomerStatus::ACTIVE)
     CustomerStatus.find_or_create_by!(id: CustomerStatus::NOTHING)

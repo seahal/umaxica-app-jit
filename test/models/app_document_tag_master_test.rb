@@ -22,6 +22,17 @@ require "test_helper"
 require "securerandom"
 
 class AppDocumentTagMasterTest < ActiveSupport::TestCase
+  test "has correct constants" do
+    assert_equal 0, AppDocumentTagMaster::NOTHING
+    assert_equal 1, AppDocumentTagMaster::LEGACY_NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = AppDocumentTagMaster.find(AppDocumentTagMaster::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
   ROOT_SENTINEL = 0
 
   # NOTE:

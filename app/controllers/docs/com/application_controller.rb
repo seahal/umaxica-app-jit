@@ -30,11 +30,13 @@ module Docs
 
       public_strict!
 
-      private
+      public
 
       def oidc_client_id
         "docs_com"
       end
+
+      private
     end
   end
 end

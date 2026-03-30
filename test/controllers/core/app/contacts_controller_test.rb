@@ -13,10 +13,10 @@ module Core
         @user = users(:one)
       end
 
-      test "routes are configured" do
-        assert_raise(StandardError) do
-          get new_core_app_contact_url
-        end
+      test "new redirects when not logged in" do
+        get new_core_app_contact_url
+
+        assert_response :redirect
       end
     end
   end
