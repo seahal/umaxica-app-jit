@@ -173,7 +173,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "active-google-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      status_id: UserSocialGoogleStatus::ACTIVE,
     )
 
     inactive = UserSocialGoogle.create!(
@@ -181,7 +181,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "inactive-google-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_google_status_id: UserSocialGoogleStatus::REVOKED,
+      status_id: UserSocialGoogleStatus::REVOKED,
     )
 
     assert_includes UserSocialGoogle.active, active
@@ -196,12 +196,12 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     assert_equal "google", identity.normalized_provider
   end
 
-  test "status_id aliases legacy status attributes" do
+  test "status_id uses the canonical status column" do
     identity = UserSocialGoogle.new(status_id: UserSocialGoogleStatus::ACTIVE)
 
     assert_equal UserSocialGoogleStatus::ACTIVE, identity.status_id
-    assert_equal UserSocialGoogleStatus::ACTIVE, identity.user_social_google_status_id
-    assert_equal UserSocialGoogleStatus::ACTIVE, identity.user_identity_social_google_status_id
+    assert_equal UserSocialGoogleStatus::ACTIVE, identity.status_id
+    assert_equal UserSocialGoogleStatus::ACTIVE, identity.status_id
   end
 
   test "token_expires_at aliases expires_at" do

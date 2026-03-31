@@ -163,7 +163,11 @@ class User < PrincipalRecord
   scope :deletable, ->(now = Time.current) { where(deletable_at: ..now) }
 
   def totp_enabled?
-    user_one_time_passwords.exists?(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
+    if user_one_time_passwords.loaded?
+      user_one_time_passwords.any? { |otp| otp.user_one_time_password_status_id == UserOneTimePasswordStatus::ACTIVE }
+    else
+      user_one_time_passwords.exists?(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
+    end
   end
 
   def staff?
@@ -209,20 +213,28 @@ class User < PrincipalRecord
     normalized = SocialIdentifiable.normalize_provider(provider)
     case normalized
     when "google"
-      user_social_google&.user_identity_social_google_status_id == UserSocialGoogleStatus::ACTIVE
+      user_social_google&.status_id == UserSocialGoogleStatus::ACTIVE
     when "apple"
-      user_social_apple&.user_identity_social_apple_status_id == UserSocialAppleStatus::ACTIVE
+      user_social_apple&.status_id == UserSocialAppleStatus::ACTIVE
     else
       false
     end
   end
 
   def verified_email?
-    user_emails.exists?(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS)
+    if user_emails.loaded?
+      user_emails.any? { |e| VERIFIED_RECOVERY_EMAIL_STATUS_IDS.include?(e.user_email_status_id) }
+    else
+      user_emails.exists?(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS)
+    end
   end
 
   def verified_telephone?
-    user_telephones.exists?(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+    if user_telephones.loaded?
+      user_telephones.any? { |t| VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS.include?(t.user_identity_telephone_status_id) }
+    else
+      user_telephones.exists?(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+    end
   end
 
   def passkey_login_available?

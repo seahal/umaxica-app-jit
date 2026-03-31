@@ -47,7 +47,7 @@ class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
     revoked = UserSocialApple.find_by(uid: "apple_uid_link")
 
     assert revoked
-    assert_equal UserSocialAppleStatus::REVOKED, revoked.user_identity_social_apple_status_id
+    assert_equal UserSocialAppleStatus::REVOKED, revoked.status_id
   end
 
   test "should prevent unlinking last identity" do

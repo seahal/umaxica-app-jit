@@ -171,7 +171,7 @@ class CurrentSupportTest < ActiveSupport::TestCase
   # Temporarily define a top-level constant for the duration of the block.
   def stub_const(name, value)
     existed = Object.const_defined?(name)
-    old_value = Object.const_get(name) if existed
+    old_value = existed ? resolve_const(name) : nil
     Object.const_set(name, value)
     yield
   ensure
@@ -180,6 +180,12 @@ class CurrentSupportTest < ActiveSupport::TestCase
       Object.const_set(name, old_value)
     else
       Object.send(:remove_const, name)
+    end
+  end
+
+  def resolve_const(name)
+    case name
+    when :OpenTelemetry then OpenTelemetry
     end
   end
 end

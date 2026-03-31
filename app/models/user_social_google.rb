@@ -35,8 +35,6 @@ class UserSocialGoogle < PrincipalRecord
   include SocialIdentifiable
 
   alias_attribute :expires_at, :token_expires_at
-  alias_attribute :user_identity_social_google_status_id, :status_id
-  alias_attribute :user_social_google_status_id, :status_id
   attribute :status_id, default: UserSocialGoogleStatus::ACTIVE
 
   belongs_to :user, inverse_of: :user_social_google

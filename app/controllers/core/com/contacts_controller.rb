@@ -6,7 +6,6 @@ module Core
     class ContactsController < Core::Com::ApplicationController
       include ::RateLimit
       include CloudflareTurnstile
-      include Common::Otp
 
       before_action :set_contact, only: :show
 
@@ -51,17 +50,11 @@ module Core
         end
 
         if @contact.save
-          @contact.update!(status_id: ComContactStatus::SET_UP)
-          token = @email.generate_hotp!
-
-          Email::Com::ContactMailer.with(
-            email_address: @email.email_address,
-            pass_code: token,
-          ).create.deliver_later
+          @contact.update!(status_id: ComContactStatus::COMPLETED_CONTACT_ACTION)
 
           redirect_to(
-            new_core_com_contact_email_url(
-              contact_id: @contact.public_id,
+            core_com_contact_url(
+              @contact,
               **core_corporate_redirect_options,
             ), notice: I18n.t("help.com.contacts.create.success"),
           )

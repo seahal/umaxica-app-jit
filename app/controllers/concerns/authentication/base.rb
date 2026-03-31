@@ -1041,7 +1041,7 @@ module Authentication
         httponly: true,
         same_site: :lax,
         path: "/",
-        domain: false,
+        domain: true,
       )
     end
 
@@ -1051,7 +1051,7 @@ module Authentication
         request: request,
         same_site: :lax,
         path: "/",
-        domain: false,
+        domain: true,
       ).except(:expires, :httponly, :secure, :same_site)
     end
 

@@ -308,6 +308,8 @@ en:
         success:
           complete: Re-authentication completed.
       verification:
+        errors:
+          email_not_verified: Email address is not verified.
         index:
           title: Verification Sessions
           new: New
@@ -504,6 +506,7 @@ en:
           back: Back
       verification:
         errors:
+          email_not_verified: Email address is not verified.
           no_passkey: No passkey is registered.
         index:
           title: Verification Sessions

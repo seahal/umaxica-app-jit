@@ -20,15 +20,15 @@ module Apex
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
-      prepend_before_action :set_preferences_cookie # TODO: delete this line
-      prepend_before_action :resolve_param_context # TODO: delete this line
-      prepend_before_action :set_region # TODO: delete this line
-      prepend_before_action :set_locale # TODO: delete this line
-      prepend_before_action :set_timezone # TODO: delete this line
-      prepend_before_action :set_color_theme # TODO: delete this line
-      before_action :enforce_access_policy!  # TODO: delete this line
-      before_action :enforce_verification_if_required # TODO: delete this line
-      before_action :set_current # TODO: delete this line
+      prepend_before_action :set_preferences_cookie
+      prepend_before_action :resolve_param_context
+      prepend_before_action :set_region
+      prepend_before_action :set_locale
+      prepend_before_action :set_timezone
+      prepend_before_action :set_color_theme
+      before_action :enforce_access_policy!
+      before_action :enforce_verification_if_required
+      before_action :set_current
       before_action :set_current_observability
       after_action :purge_current
 

@@ -131,7 +131,7 @@ module Treeable
       where_anchor_sql = include_self ? "#{q_pk} = ?" : "#{q_parent} = ?"
       depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
-      sql = sanitize_sql_array([<<~SQL.squish, root_id, root_vals])
+      sql_template = <<~SQL.squish
         WITH RECURSIVE tree AS (
           SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
           FROM #{q_table}
@@ -146,6 +146,7 @@ module Treeable
         )
         SELECT id FROM tree;
       SQL
+      sql = sanitize_sql_array([sql_template, root_id, root_vals])
 
       connection.exec_query(sql, "subtree_ids").rows.flatten
 
@@ -167,7 +168,7 @@ module Treeable
 
       depth_guard = max_depth ? " AND tree.depth < #{Integer(max_depth)}" : ""
 
-      sql = sanitize_sql_array([<<~SQL.squish, node_id, root_vals, root_vals])
+      sql_template = <<~SQL.squish
         WITH RECURSIVE tree AS (
           SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
           FROM #{q_table}
@@ -183,6 +184,7 @@ module Treeable
         SELECT id FROM tree
         ORDER BY depth DESC;
       SQL
+      sql = sanitize_sql_array([sql_template, node_id, root_vals, root_vals])
 
       connection.exec_query(sql, "ancestor_ids").rows.flatten
 
@@ -223,7 +225,7 @@ module Treeable
           "tree.path || ARRAY[ROW(t.#{pk_sort_expr})]::record[]"
         end
 
-      sql = sanitize_sql_array([<<~SQL.squish, root_id, root_vals])
+      sql_template = <<~SQL.squish
         WITH RECURSIVE tree AS (
           SELECT
             #{q_table}.*,
@@ -246,6 +248,7 @@ module Treeable
         FROM tree
         ORDER BY path;
       SQL
+      sql = sanitize_sql_array([sql_template, root_id, root_vals])
 
       ids = connection.exec_query(sql, "subtree_in_tree_order_ids").rows.flatten
 

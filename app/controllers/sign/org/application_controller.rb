@@ -9,9 +9,9 @@ module Sign
       include ::Preference::Adoption
       include ::Authentication::Staff
       include ::Authorization::Staff
-      include ::Verification::Staff # TODO: i want to remove this.
-      include Pundit::Authorization # TODO: i want to remove this.
-      include ::RestrictedSessionGuard # TODO: i want to remove this.
+      include ::Verification::Staff
+      include Pundit::Authorization
+      include ::RestrictedSessionGuard
       include ::CurrentSupport
       include ::Finisher
 

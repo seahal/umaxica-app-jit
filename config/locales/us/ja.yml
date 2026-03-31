@@ -142,6 +142,10 @@ ja:
       done: 連絡先ステータスとカテゴリの更新が完了しました。
     token_refresh:
       errors:
+        withdrawal_required: 退会処理が完了していません。
+        missing_refresh_token: リフレッシュトークンが必要です。
+        invalid_refresh_token: リフレッシュトークンが無効です。
+        restricted_session: きんそくじこうです
   help:
     org:
       contacts:

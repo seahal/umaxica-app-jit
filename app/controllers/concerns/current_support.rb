@@ -14,7 +14,7 @@ module CurrentSupport
     Current.domain = resolved_current_domain
 
     resource = safe_current_resource
-    Current.actor = resource if resource.present?
+    Current.actor = resource.presence || Unauthenticated.instance
     Current.actor_type = resolved_current_actor_type(resource)
     Current.session ||= resolved_current_session
     Current.token ||= resolved_current_token
@@ -33,7 +33,10 @@ module CurrentSupport
   end
 
   def safe_current_resource
-    return Current.actor if Current.actor.present?
+    current_actor = Current.actor
+    if current_actor.present?
+      return current_actor unless current_actor.is_a?(Unauthenticated)
+    end
     return unless respond_to?(:current_resource, true)
 
     current_resource
@@ -43,10 +46,12 @@ module CurrentSupport
 
   def resolved_current_actor_type(resource)
     return Current.actor_type if Current.actor_type.present?
-    return if resource.blank?
+    return :unauthenticated if resource.blank?
 
     if resource.respond_to?(:staff?) && resource.staff?
       :staff
+    elsif resource.respond_to?(:customer?) && resource.customer?
+      :customer
     else
       :user
     end
@@ -76,7 +81,6 @@ module CurrentSupport
     preference_record = resolved_resource_preference(resource)
     return preference_from_record(preference_record, cookie: cookie) if preference_record.present?
 
-    # Fall back to auth JWT prf claim (preference snapshot embedded at login/refresh)
     prf_claim = resolved_current_token&.dig("prf")
     return Current::Preference.from_jwt(prf_claim, cookie: cookie) if prf_claim.is_a?(Hash)
 
@@ -118,6 +122,8 @@ module CurrentSupport
 
     if resource.respond_to?(:staff?) && resource.staff?
       resource.try(:staff_preference)
+    elsif resource.respond_to?(:customer?) && resource.customer?
+      resource.try(:customer_preference)
     else
       resource.try(:user_preference)
     end

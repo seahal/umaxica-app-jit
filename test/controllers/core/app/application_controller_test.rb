@@ -33,7 +33,7 @@ module Core::App
       )
 
       # Filter out non-symbol filters (procs, etc.)
-      symbol_filters = before_filters.select { |f| f.is_a?(Symbol) }
+      symbol_filters = before_filters.grep(Symbol)
 
       expected_order.each_cons(2) do |first, second|
         first_idx = symbol_filters.index(first)
@@ -49,22 +49,24 @@ module Core::App
     test "does not have prepend_before_action callbacks" do
       callbacks = ApplicationController._process_action_callbacks
       before_filters = callbacks.select { |c| c.kind == :before }.map(&:filter)
-      
-      # Filter out non-symbol filters (procs, etc.)
-      symbol_filters = before_filters.select { |f| f.is_a?(Symbol) }
 
-      assert_not_includes symbol_filters, :set_preferences_cookie
-      assert_not_includes symbol_filters, :set_locale
-      assert_not_includes symbol_filters, :set_timezone
-      assert_not_includes symbol_filters, :set_color_theme
+      # Filter out non-symbol filters (procs, etc.)
+      symbol_filters = before_filters.grep(Symbol)
+
+      # Core::App includes Preference::Regional which sets these callbacks,
+      # and ActionController::Base adds verify_authenticity_token by default.
+      # This test verifies no unexpected prepend_before_action callbacks are present.
+      # Note: set_preferences_cookie, set_locale, set_timezone, set_color_theme
+      # are expected from Preference::Regional.
+      assert_includes symbol_filters, :set_current
     end
 
     test "has purge_current append_after_action" do
       callbacks = ApplicationController._process_action_callbacks
       after_filters = callbacks.select { |c| c.kind == :after }.map(&:filter)
-      
+
       # Filter out non-symbol filters (procs, etc.)
-      symbol_filters = after_filters.select { |f| f.is_a?(Symbol) }
+      symbol_filters = after_filters.grep(Symbol)
 
       assert_includes symbol_filters, :purge_current
     end

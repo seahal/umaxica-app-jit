@@ -24,7 +24,7 @@ class AuthMethodGuard
 
     if actor.respond_to?(:user_social_google)
       google = actor.user_social_google
-      if google&.user_identity_social_google_status_id == UserSocialGoogleStatus::ACTIVE
+      if google&.status_id == UserSocialGoogleStatus::ACTIVE
         count += 1
         count -= 1 if excluding.is_a?(UserSocialGoogle) && excluding.id == google.id
       end
@@ -32,7 +32,7 @@ class AuthMethodGuard
 
     if actor.respond_to?(:user_social_apple)
       apple = actor.user_social_apple
-      if apple&.user_identity_social_apple_status_id == UserSocialAppleStatus::ACTIVE
+      if apple&.status_id == UserSocialAppleStatus::ACTIVE
         count += 1
         count -= 1 if excluding.is_a?(UserSocialApple) && excluding.id == apple.id
       end
@@ -124,11 +124,11 @@ class AuthMethodGuard
   def self.active_social_count(actor)
     count = 0
     if actor.respond_to?(:user_social_google) &&
-        actor.user_social_google&.user_identity_social_google_status_id == UserSocialGoogleStatus::ACTIVE
+        actor.user_social_google&.status_id == UserSocialGoogleStatus::ACTIVE
       count += 1
     end
     if actor.respond_to?(:user_social_apple) &&
-        actor.user_social_apple&.user_identity_social_apple_status_id == UserSocialAppleStatus::ACTIVE
+        actor.user_social_apple&.status_id == UserSocialAppleStatus::ACTIVE
       count += 1
     end
     count

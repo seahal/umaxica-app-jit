@@ -236,12 +236,6 @@ ja:
       method_unavailable: 選択した認証方法は利用できません。
       register_methods_required: 利用可能なステップアップ認証がありません。パスキー・メール・TOTPを登録してください。
       verification_required: 認証が必要です。
-  sign:
-    token_refresh:
-      errors:
-        restricted_session: きんそくじこうです
-        invalid_refresh_token: リフレッシュトークンが無効です。
-        missing_refresh_token: リフレッシュトークンが必要です。
   core:
     app:
       layout:
@@ -332,6 +326,12 @@ ja:
             promotional_messages_description: プロモーションやイベント情報を受け取ります。
             submit: スタッフ設定を保存
   sign:
+    token_refresh:
+      errors:
+        restricted_session: きんそくじこうです
+        invalid_refresh_token: リフレッシュトークンが無効です。
+        missing_refresh_token: リフレッシュトークンが必要です。
+        withdrawal_required: 退会処理が完了していません。
     withdrawal:
       test: テスト
     app:
@@ -785,6 +785,7 @@ ja:
           complete: 再認証が完了しました
       verification:
         errors:
+          email_not_verified: メールアドレスが未確認です。
           no_passkey: パスキーが登録されていません。
         setup:
           title: 認証方法の登録
@@ -1357,11 +1358,6 @@ ja:
         title: ログアウトしますか？
         button: ログアウトします
         success: ログアウトします
-    token_refresh:
-      errors:
-        missing_refresh_token: リフレッシュトークンが必要です
-        invalid_refresh_token: 無効または期限切れのリフレッシュトークンです
-        restricted_session: きんそくじこうです
   org_timeline_tags:
     "%{id}": org_timeline_tag_%{id}
     technology: 技術

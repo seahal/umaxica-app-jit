@@ -8,7 +8,9 @@ class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   setup do
     @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
     host! @host
-    @customer = create_verified_customer_with_email(email_address: "com-passkey-stepup-#{SecureRandom.hex(4)}@example.com")
+    @customer = create_verified_customer_with_email(
+      email_address: "com-passkey-stepup-#{SecureRandom.hex(4)}@example.com",
+    )
     @customer.customer_telephones.create!(
       number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
       customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,

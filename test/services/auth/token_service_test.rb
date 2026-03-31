@@ -75,9 +75,9 @@ class AuthTokenServiceTest < ActiveSupport::TestCase
   end
 
   test "validate_actor_claim! returns true for matching customer" do
-    payload = { "act" => "customer" }
+    payload = { "act" => "user" }
 
-    assert Auth::TokenService.validate_actor_claim!(payload, "customer")
+    assert Auth::TokenService.validate_actor_claim!(payload, "user")
   end
 
   test "encode creates valid token that can be decoded" do

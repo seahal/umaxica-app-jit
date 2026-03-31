@@ -129,7 +129,7 @@ module Sign
               customer_email_status_id: CustomerEmailStatus::VERIFIED,
             ).order(created_at: :desc).first
           unless customer_email
-            @verification_errors = ["メールアドレスが未確認です"]
+            @verification_errors = [I18n.t("sign.app.verification.errors.email_not_verified")]
             return false
           end
 

@@ -10,14 +10,9 @@
 #
 class ComContactStatus < GuestRecord
   NOTHING = 1
-  CHECKED_EMAIL_ADDRESS = 2
-  EMAIL_PENDING = 3
-  PHONE_VERIFIED = 4
   COMPLETED = 5
-  EMAIL_VERIFIED = 6
   SET_UP = 7
   NULL_COM_STATUS = 8
-  CHECKED_TELEPHONE_NUMBER = 9
   COMPLETED_CONTACT_ACTION = 10
 
   has_many :com_contacts,

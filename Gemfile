@@ -19,15 +19,14 @@ gem "rails", github: "rails/rails", branch: "main"
 # Web server
 gem "puma"
 # Push Notification
-gem "action_push_native"
 gem "web-push"
+gem "action_push_native"
 # JSON APIs
-# gem "jbuilder" # unused: no .jbuilder templates found
+gem "jbuilder"
 # Use OpenStruct
 gem "ostruct"
 # Database
 gem "pg"
-# gem "neighbor" # unused: no neighbor scopes/modules found
 gem "strong_migrations"
 # Redis
 gem "redis"
@@ -69,7 +68,7 @@ gem "solid_cache"
 gem "solid_queue"
 gem "mission_control-jobs"
 # Pagination
-# gem "pagy" # unused: no Pagy usage found
+gem "pagy"
 # WebAuthn (FIDO2)
 gem "webauthn"
 # Social login
@@ -107,7 +106,6 @@ group :development, :test do
   # Slow test profiling
   gem "test-prof"
   # N+1 query detector
-  # gem "bullet"
   gem "prosopite"
   gem "pg_query"
   # Database consistency checks
@@ -139,10 +137,7 @@ group :development do
   # Performance profiling
   gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps
-  # gem "spring"
   gem "brakeman", require: false
-  # web-console 4.2.1 is incompatible with Rails main (ActionDispatch::RemoteIp API change)
-  # gem "web-console"
   # RuboCop
   gem "rubocop", require: false
   gem "rubocop-ast", require: false

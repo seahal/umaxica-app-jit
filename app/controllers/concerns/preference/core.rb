@@ -183,8 +183,8 @@ module Preference::Core
     }
   end
 
-  # Dual-write: when logged in, sync current AppPreference/OrgPreference values
-  # to the corresponding UserPreference/StaffPreference.
+  # Dual-write: when logged in, sync current AppPreference/ComPreference/OrgPreference values
+  # to the corresponding UserPreference/CustomerPreference/StaffPreference.
   def sync_to_resource_preference!
     return unless respond_to?(:current_resource, true)
 
@@ -194,6 +194,7 @@ module Preference::Core
     resource_pref =
       case preference_class.name
       when "AppPreference" then resource.user_preference
+      when "ComPreference" then ensure_customer_resource_preference_for_sync(resource)
       when "OrgPreference" then resource.staff_preference
       end
     return if resource_pref.blank?
@@ -206,8 +207,24 @@ module Preference::Core
   def resource_pref_prefix_for_sync
     case preference_class.name
     when "AppPreference" then "User"
+    when "ComPreference" then "Customer"
     when "OrgPreference" then "Staff"
     end
+  end
+
+  def ensure_customer_resource_preference_for_sync(resource)
+    return unless resource.respond_to?(:customer_preference)
+
+    resource.customer_preference || build_customer_resource_preference_for_sync(resource)
+  end
+
+  def build_customer_resource_preference_for_sync(resource)
+    preference = resource.create_customer_preference
+    CustomerPreferenceLanguage.create(preference: preference)
+    CustomerPreferenceTimezone.create(preference: preference)
+    CustomerPreferenceRegion.create(preference: preference)
+    CustomerPreferenceColortheme.create(preference: preference)
+    preference.reload
   end
 
   def preference_cookie_params

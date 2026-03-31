@@ -41,5 +41,4 @@ class ComContactTopic < GuestRecord
 
   validates :title, presence: true, length: { maximum: 80 }
   validates :description, length: { maximum: 8000 }, allow_blank: true
-  validates :otp_digest, length: { maximum: 255 }
 end

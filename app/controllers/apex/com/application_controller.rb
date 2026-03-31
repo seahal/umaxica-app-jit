@@ -10,9 +10,9 @@ module Apex
       include ::Authorization::User
       include ::Verification::User
       include Pundit::Authorization
-      include ::Oidc::SsoInitiator # FIXME: delete this!
-      include ::CurrentSupport # FIXME: delete this!
-      include ::Finisher # FIXME: delete this!
+      include ::Oidc::SsoInitiator
+      include ::CurrentSupport
+      include ::Finisher
 
       allow_browser versions: :modern
 

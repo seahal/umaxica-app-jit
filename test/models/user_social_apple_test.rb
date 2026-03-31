@@ -177,7 +177,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "active-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: UserSocialAppleStatus::ACTIVE,
+      status_id: UserSocialAppleStatus::ACTIVE,
     )
 
     inactive = UserSocialApple.create!(
@@ -185,7 +185,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "inactive-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: UserSocialAppleStatus::REVOKED,
+      status_id: UserSocialAppleStatus::REVOKED,
     )
 
     assert_includes UserSocialApple.active, active
@@ -200,12 +200,12 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     assert_equal "apple", identity.normalized_provider
   end
 
-  test "status_id aliases legacy status attributes" do
+  test "status_id uses the canonical status column" do
     identity = UserSocialApple.new(status_id: UserSocialAppleStatus::ACTIVE)
 
     assert_equal UserSocialAppleStatus::ACTIVE, identity.status_id
-    assert_equal UserSocialAppleStatus::ACTIVE, identity.user_social_apple_status_id
-    assert_equal UserSocialAppleStatus::ACTIVE, identity.user_identity_social_apple_status_id
+    assert_equal UserSocialAppleStatus::ACTIVE, identity.status_id
+    assert_equal UserSocialAppleStatus::ACTIVE, identity.status_id
   end
 
   test "token_expires_at aliases expires_at" do

@@ -265,7 +265,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     # Identity should be reactivated (status changed to ACTIVE)
     revoked_identity.reload
 
-    assert_equal UserSocialGoogleStatus::ACTIVE, revoked_identity.user_identity_social_google_status_id,
+    assert_equal UserSocialGoogleStatus::ACTIVE, revoked_identity.status_id,
                  "Identity should be ACTIVE"
   end
 
@@ -296,7 +296,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     revoked_identity.reload
 
-    assert_equal UserSocialAppleStatus::ACTIVE, revoked_identity.user_identity_social_apple_status_id,
+    assert_equal UserSocialAppleStatus::ACTIVE, revoked_identity.status_id,
                  "Apple identity should be ACTIVE"
   end
 

@@ -24,19 +24,14 @@ scope module: :core, as: :core do
         namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
-
           resource :preference, only: %i(show create)
+          resources :messages, only: %i(index show create update destroy)
         end
       end
       # configuration
       resource :configuration, only: [:show]
       # contact page
-      resources :contacts, only: %i(new create show) do
-        scope module: :contact do
-          resource :email, only: [:new, :create]
-          resource :telephone, only: [:new, :create]
-        end
-      end
+      resources :contacts, only: %i(new create show)
     end
   end
 
@@ -63,6 +58,7 @@ scope module: :core, as: :core do
           resource :health, only: :show
           resource :sitemap, only: :show
           resource :preference, only: :show
+          resources :messages, only: %i(index show create update destroy)
         end
       end
       # configuration
@@ -72,12 +68,7 @@ scope module: :core, as: :core do
         end
       end
       # contact page
-      resources :contacts, only: %i(new create show) do
-        scope module: :contact do
-          resource :email, only: [:new, :create]
-          resource :telephone, only: [:new, :create]
-        end
-      end
+      resources :contacts, only: %i(new create show)
     end
   end
 
@@ -104,8 +95,8 @@ scope module: :core, as: :core do
         namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
-
           resource :preference, only: :show
+          resources :messages, only: %i(index show create update destroy)
         end
       end
       # configuration
@@ -115,12 +106,7 @@ scope module: :core, as: :core do
         end
       end
       # contact page
-      resources :contacts, only: %i(new create show) do
-        scope module: :contact do
-          resource :email, only: [:new, :create]
-          resource :telephone, only: [:new, :create]
-        end
-      end
+      resources :contacts, only: %i(new create show)
       # for emergency
       namespace :emergency do
         namespace :app do

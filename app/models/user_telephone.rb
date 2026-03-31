@@ -91,14 +91,12 @@ class UserTelephone < PrincipalRecord
     return unless self.class.where(number_digest: number_digest).where.not(id: id).exists?
 
     errors.add(:number, :taken)
-
   end
 
   def enforce_user_telephone_limit
     return unless user_id
 
-    count = self.class.where(user_id: user_id).count
-    return if count < MAX_TELEPHONES_PER_USER
+    return if self.class.where(user_id: user_id).count < MAX_TELEPHONES_PER_USER
 
     errors.add(:base, :too_many, message: "exceeds maximum telephones per user (#{MAX_TELEPHONES_PER_USER})")
   end

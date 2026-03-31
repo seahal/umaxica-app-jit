@@ -81,14 +81,33 @@ module Concerns
         ),
       },
       "Sign::Com" => {
-        parent: "Sign::App",
-        includes: [],
-        extra_includes: [
+        includes: [
+          ::RateLimit,
+          ::Preference::Global,
+          ::Preference::Adoption,
+          ::Authentication::Customer,
+          ::Authorization::Customer,
+          ::Verification::Customer,
+          Pundit::Authorization,
+          ::CurrentSupport,
           Sign::Com::RouteAliasHelper,
+          ::Finisher,
         ],
-        extra_before_actions: [
-          :enforce_required_telephone_registration!,
-        ],
+        before_actions: %i(
+          check_default_rate_limit
+          enforce_required_telephone_registration!
+          enforce_verification_if_required
+          enforce_access_policy!
+          set_current
+        ),
+        prepend_before_actions: %i(
+          set_preferences_cookie
+          resolve_param_context
+          set_region
+          set_locale
+          set_timezone
+          set_color_theme
+        ),
       },
       "Sign::Org" => {
         includes: [

@@ -209,7 +209,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "com contacts keeps public verification flow" do
+  test "com contacts completes contact on submit without verification" do
     host! @com_host
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
@@ -231,9 +231,13 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
       }
     end
 
+    contact = ComContact.order(created_at: :desc).first
+
+    assert_equal ComContactStatus::COMPLETED_CONTACT_ACTION, contact.status_id
+
     assert_response :redirect
-    assert_includes @response.redirect_url, "/contacts/"
-    assert_includes @response.redirect_url, "/email/new"
+    assert_includes @response.redirect_url, "/contacts/#{contact.public_id}"
+    assert_not_includes @response.redirect_url, "/email"
   end
 
   private
@@ -245,6 +249,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     AppContactStatus.find_or_create_by!(id: AppContactStatus::SET_UP)
     OrgContactStatus.find_or_create_by!(id: OrgContactStatus::SET_UP)
     ComContactStatus.find_or_create_by!(id: ComContactStatus::SET_UP)
+    ComContactStatus.find_or_create_by!(id: ComContactStatus::COMPLETED_CONTACT_ACTION)
   end
 
   def base_contact_params

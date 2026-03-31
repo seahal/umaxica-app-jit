@@ -13,7 +13,7 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
         id.user = @user
         id.token = "token123"
         id.expires_at = 1.hour.from_now.to_i
-        id.user_social_google_status_id = @status.id
+        id.status_id = @status.id
       end
 
     # Add a verified email to have 2 login methods (Google + Email)
@@ -67,6 +67,6 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
 
     assert result[:success]
     assert_equal "google", result[:provider]
-    assert_equal UserSocialGoogleStatus::REVOKED, @identity.reload.user_identity_social_google_status_id
+    assert_equal UserSocialGoogleStatus::REVOKED, @identity.reload.status_id
   end
 end

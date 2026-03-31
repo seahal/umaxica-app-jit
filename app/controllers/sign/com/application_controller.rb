@@ -4,10 +4,15 @@
 module Sign
   module Com
     class ApplicationController < ActionController::Base
+      include ::RateLimit
+      include ::Preference::Global
       include ::Preference::Adoption
       include ::Authentication::Customer
-      include ::Verification::User
+      include ::Authorization::Customer
+      include ::Verification::Customer
+      include Pundit::Authorization
       include Sign::Com::RouteAliasHelper
+      include ::CurrentSupport
       include ::Finisher
 
       helper Sign::Com::ApplicationHelper
@@ -21,11 +26,20 @@ module Sign
                              .split(",").map(&:strip),
                            with: :exception
 
+      prepend_before_action :set_preferences_cookie
+      prepend_before_action :resolve_param_context
+      prepend_before_action :set_region
+      prepend_before_action :set_locale
+      prepend_before_action :set_timezone
+      prepend_before_action :set_color_theme
+
       guest_only!
 
-      before_action :enforce_access_policy!
+      before_action :check_default_rate_limit
       before_action :enforce_required_telephone_registration!
       before_action :enforce_verification_if_required
+      before_action :enforce_access_policy!
+      before_action :set_current
       after_action :purge_current
 
       class << self

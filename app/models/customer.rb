@@ -103,11 +103,19 @@ class Customer < GuestRecord
   end
 
   def verified_email?
-    customer_emails.exists?(customer_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS)
+    if customer_emails.loaded?
+      customer_emails.any? { |e| VERIFIED_RECOVERY_EMAIL_STATUS_IDS.include?(e.customer_email_status_id) }
+    else
+      customer_emails.exists?(customer_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS)
+    end
   end
 
   def verified_telephone?
-    customer_telephones.exists?(customer_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+    if customer_telephones.loaded?
+      customer_telephones.any? { |t| VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS.include?(t.customer_telephone_status_id) }
+    else
+      customer_telephones.exists?(customer_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+    end
   end
 
   def passkey_login_available?

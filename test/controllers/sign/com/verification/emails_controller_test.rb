@@ -55,4 +55,22 @@ class Sign::Com::Verification::EmailsControllerTest < ActionDispatch::Integratio
       end
     end
   end
+
+  test "new renders translated error when no verified email is available" do
+    return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
+
+    get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+        headers: @headers
+
+    @customer.customer_emails.find_each do |email|
+      assert email.update(customer_email_status_id: CustomerEmailStatus::UNVERIFIED)
+    end
+
+    Sign::Com::Verification::EmailsController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
+      get new_sign_com_verification_email_url(ri: "jp"), headers: @headers
+
+      assert_response :unprocessable_content
+      assert_includes response.body, I18n.t("sign.app.verification.errors.email_not_verified").delete("。")
+    end
+  end
 end
