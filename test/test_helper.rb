@@ -1,6 +1,15 @@
 ENV["RAILS_ENV"] ||= "test"
+
+require "active_model"
+coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+require_relative "support/simplecov_setup" if coverage_enabled
+
 require_relative "../config/environment"
 require "rails/test_help"
+
+Dir[Rails.root.join("test/support/**/*.rb")].sort.each do |file|
+  require file
+end
 
 module ActiveSupport
   class TestCase

@@ -5,6 +5,7 @@ module Core
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Regional
       include ::Authentication::Staff
       include ::Authorization::Staff
@@ -24,6 +25,7 @@ module Core
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
+      before_action :reset_flash
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current

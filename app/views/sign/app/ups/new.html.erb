@@ -4,14 +4,5 @@
 
 <ul>
   <li><%= link_to t("sign.app.registration.new.methods.email.cta"), new_sign_app_up_email_path %></li>
-  <li><%= link_to t("sign.app.registration.new.methods.telephone.cta"), new_sign_app_up_telephone_path %></li>
-
-  <li><%= button_to "/auth/google_app", method: :post, data: { turbo: false } do %>
-      <%= t("sign.app.authentication.new.links.google") %>
-    <% end %></li>
-  <li><%= button_to "/auth/apple", method: :post, data: { turbo: false } do %>
-      <%= t("sign.app.authentication.new.links.apple") %>
-    <% end %></li>
-
 </ul>
 <%= link_to t("sign.app.registration.new.links.sign_in"), new_sign_app_in_path %>

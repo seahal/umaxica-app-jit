@@ -5,6 +5,7 @@ module Apex
   module Com
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Global
       include ::Authentication::User
       include ::Authorization::User
@@ -19,6 +20,7 @@ module Apex
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
+      before_action :reset_flash
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region

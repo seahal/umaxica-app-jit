@@ -28,6 +28,22 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid=?]", "registration-method", count: 0
   end
 
+  test "does not show telephone registration link" do
+    get new_sign_app_up_url(format: :html, ri: "jp"), headers: { "Host" => host }
+
+    assert_response :success
+    assert_select "a[href=?]", "/up/telephones/new", count: 0
+    assert_select "a[href=?]", "/up/telephones/new?ri=jp", count: 0
+  end
+
+  test "does not show social login buttons" do
+    get new_sign_app_up_url(format: :html, ri: "jp"), headers: { "Host" => host }
+
+    assert_response :success
+    assert_select "form[action=?]", "/auth/google_app", count: 0
+    assert_select "form[action=?]", "/auth/apple", count: 0
+  end
+
   test "renders registration layout structure" do
     get new_sign_app_up_url(format: :html, ri: "jp")
 

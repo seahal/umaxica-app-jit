@@ -14,6 +14,7 @@ class ComPreferenceColorthemeOption < CommerceRecord
   LIGHT = 1
   DARK = 2
   SYSTEM = 3
+  DEFAULTS = [LIGHT, DARK, SYSTEM].freeze
 
   has_many :com_preference_colorthemes,
            class_name: "ComPreferenceColortheme",
@@ -27,5 +28,9 @@ class ComPreferenceColorthemeOption < CommerceRecord
     when DARK then "dark"
     when SYSTEM then "system"
     end
+  end
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
   end
 end

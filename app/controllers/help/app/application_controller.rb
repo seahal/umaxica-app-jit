@@ -5,6 +5,7 @@ module Help
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Regional
       include ::Authentication::User
       include ::Authorization::User
@@ -15,6 +16,8 @@ module Help
       include ::Finisher
 
       before_action :check_default_rate_limit
+
+      before_action :reset_flash
 
       allow_browser versions: :modern
 

@@ -5,6 +5,7 @@ module Docs
   module Com
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Regional
       include ::Authentication::Viewer
       include ::Authorization::Viewer
@@ -15,6 +16,8 @@ module Docs
       include ::Finisher
 
       before_action :check_default_rate_limit
+
+      before_action :reset_flash
 
       allow_browser versions: :modern
 

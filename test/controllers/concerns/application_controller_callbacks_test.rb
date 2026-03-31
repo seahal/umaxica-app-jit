@@ -77,9 +77,18 @@ module Concerns
         callbacks = get_callbacks_for(controller_class)
         before_actions = extract_before_actions(callbacks)
         after_actions = extract_after_actions(callbacks)
+        rate_limit_index = before_actions.index(:check_default_rate_limit)
 
         assert_includes before_actions, :check_default_rate_limit,
                         "#{domain} should have check_default_rate_limit callback"
+
+        reset_flash_index = before_actions.index(:reset_flash)
+
+        assert reset_flash_index,
+               "#{domain} should have reset_flash callback"
+
+        assert_operator rate_limit_index, :<, reset_flash_index,
+                        "#{domain}: check_default_rate_limit should come before reset_flash"
 
         assert_includes before_actions, :enforce_access_policy!,
                         "#{domain} should have enforce_access_policy! callback"
@@ -104,12 +113,19 @@ module Concerns
         assert rate_limit_index,
                "#{domain} should have check_default_rate_limit callback"
 
+        reset_flash_index = before_actions.index(:reset_flash)
+
+        assert reset_flash_index,
+               "#{domain} should have reset_flash callback"
+
         access_policy_index = before_actions.index(:enforce_access_policy!)
 
         return unless access_policy_index
 
-        assert_operator rate_limit_index, :<, access_policy_index,
-                        "#{domain}: check_default_rate_limit should come before enforce_access_policy!"
+        assert_operator rate_limit_index, :<, reset_flash_index,
+                        "#{domain}: check_default_rate_limit should come before reset_flash"
+        assert_operator reset_flash_index, :<, access_policy_index,
+                        "#{domain}: reset_flash should come before enforce_access_policy!"
       end
 
       auth_method = "test_#{domain.underscore.gsub("/", "_")}_auth_callback_order"

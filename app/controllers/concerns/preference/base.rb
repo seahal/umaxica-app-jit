@@ -918,10 +918,15 @@ module Preference
               @refresh_public_id = refresh_public_id
               pref =
                 if refresh_public_id.present?
-                  relation.find_by(public_id: refresh_public_id, token_digest: digest)
+                  relation.find_by(public_id: refresh_public_id)
                 else
                   relation.find_by(token_digest: digest)
                 end
+
+              if pref.present? && pref.token_digest.present? && !secure_compare?(pref.token_digest, digest)
+                handle_preference_refresh_failed(pref, refresh_public_id)
+                return [nil, false]
+              end
 
               if pref.present? && !preference_refresh_binding_allowed?(pref)
                 handle_preference_refresh_device_denied(pref, refresh_public_id)

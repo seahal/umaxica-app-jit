@@ -5,6 +5,7 @@ module Docs
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Regional
       include ::Authentication::Staff
       include ::Authorization::Staff
@@ -17,6 +18,8 @@ module Docs
       allow_browser versions: :modern
 
       before_action :check_default_rate_limit
+
+      before_action :reset_flash
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current

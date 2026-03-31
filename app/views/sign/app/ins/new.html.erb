@@ -14,10 +14,6 @@
   <%= t("sign.app.authentication.new.links.google") %>
 <% end %>
 
-<%= button_to "/auth/apple", method: :post, data: { turbo: false } do %>
-  <%= t("sign.app.authentication.new.links.apple") %>
-<% end %>
-
 <%= link_to new_sign_app_up_path(ri: params[:ri], rt: params[:rt]) do %>
   <%= t("sign.app.authentication.new.links.registration") %>
 <% end %>

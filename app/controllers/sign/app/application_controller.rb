@@ -5,6 +5,7 @@ module Sign
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Global
       include ::Preference::Adoption
       include ::Authentication::User
@@ -22,6 +23,7 @@ module Sign
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
+      before_action :reset_flash
       prepend_before_action :set_preferences_cookie
       # Restricted session guard - explicitly enabled to handle expired sessions
       # and prevent access to non-allowed routes for restricted sessions

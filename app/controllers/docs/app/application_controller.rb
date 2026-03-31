@@ -5,6 +5,7 @@ module Docs
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Regional
       include ::Authentication::User
       include ::Authorization::User
@@ -17,6 +18,8 @@ module Docs
       allow_browser versions: :modern
 
       before_action :check_default_rate_limit
+
+      before_action :reset_flash
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required

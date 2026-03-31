@@ -47,6 +47,7 @@ module Concerns
       "Sign::App" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Global,
           ::Authentication::User,
           ::Authorization::User,
@@ -83,6 +84,7 @@ module Concerns
       "Sign::Com" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Global,
           ::Preference::Adoption,
           ::Authentication::Customer,
@@ -112,6 +114,7 @@ module Concerns
       "Sign::Org" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Global,
           ::Authentication::Staff,
           ::Authorization::Staff,
@@ -145,6 +148,7 @@ module Concerns
       "Core::App" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::User,
           ::Authorization::User,
@@ -167,6 +171,7 @@ module Concerns
       "Core::Com" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::User,
           ::Authorization::User,
@@ -189,6 +194,7 @@ module Concerns
       "Core::Org" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::Staff,
           ::Authorization::Staff,
@@ -209,6 +215,7 @@ module Concerns
       "Apex::App" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Global,
           ::Preference::Adoption,
           ::Authentication::User,
@@ -239,6 +246,7 @@ module Concerns
       "Apex::Com" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Global,
           ::Authentication::User,
           ::Authorization::User,
@@ -268,6 +276,7 @@ module Concerns
       "Apex::Org" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Global,
           ::Preference::Adoption,
           ::Authentication::Staff,
@@ -296,6 +305,7 @@ module Concerns
       "Docs::App" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::User,
           ::Authorization::User,
@@ -318,6 +328,7 @@ module Concerns
       "Docs::Com" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::Viewer,
           ::Authorization::Viewer,
@@ -338,6 +349,7 @@ module Concerns
       "Docs::Org" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::Staff,
           ::Authorization::Staff,
@@ -358,6 +370,7 @@ module Concerns
       "News::App" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::User,
           ::Authorization::User,
@@ -386,6 +399,7 @@ module Concerns
       "News::Com" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::Viewer,
           ::Authorization::Viewer,
@@ -412,6 +426,7 @@ module Concerns
       "News::Org" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::Staff,
           ::Authorization::Staff,
@@ -438,6 +453,7 @@ module Concerns
       "Help::App" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::User,
           ::Authorization::User,
@@ -466,6 +482,7 @@ module Concerns
       "Help::Com" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::Viewer,
           ::Authorization::Viewer,
@@ -492,6 +509,7 @@ module Concerns
       "Help::Org" => {
         includes: [
           ::RateLimit,
+          ::Session,
           ::Preference::Regional,
           ::Authentication::Staff,
           ::Authorization::Staff,

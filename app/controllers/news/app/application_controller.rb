@@ -5,6 +5,7 @@ module News
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
       include ::Preference::Regional
       include ::Authentication::User
       include ::Authorization::User
@@ -18,6 +19,7 @@ module News
 
       # NOTE: Order matters - Preference callbacks run before auth
       before_action :check_default_rate_limit
+      before_action :reset_flash
       skip_before_action :set_preferences_cookie, raise: false
       skip_before_action :canonicalize_regional_params, raise: false
       skip_before_action :set_locale, raise: false

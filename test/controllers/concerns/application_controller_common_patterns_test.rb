@@ -39,6 +39,20 @@ module Concerns
       end
     end
 
+    test "all application controllers include Session" do
+      ALL_CONTROLLER_FILES.each do |file|
+        content = File.read(file)
+        controller_name = file.gsub(Rails.root.join("app/controllers/").to_s, "")
+          .gsub("/application_controller.rb", "")
+          .gsub("/", "::")
+          .gsub("_", " ")
+          .split.map(&:capitalize).join("::")
+
+        assert_includes content, "Session",
+                        "#{controller_name} should include Session"
+      end
+    end
+
     test "all application controllers include Finisher" do
       ALL_CONTROLLER_FILES.each do |file|
         content = File.read(file)
@@ -76,6 +90,21 @@ module Concerns
 
         assert_includes content, "before_action :check_default_rate_limit",
                         "#{controller_name} should have before_action :check_default_rate_limit"
+      end
+    end
+
+    test "all application controllers have reset_flash immediately after check_default_rate_limit" do
+      ALL_CONTROLLER_FILES.each do |file|
+        content = File.read(file)
+        controller_name = file.gsub(Rails.root.join("app/controllers/").to_s, "")
+          .gsub("/application_controller.rb", "")
+          .gsub("/", "::")
+
+        assert_match(
+          /before_action :check_default_rate_limit\s+before_action :reset_flash/,
+          content,
+          "#{controller_name} should have before_action :reset_flash immediately after check_default_rate_limit",
+        )
       end
     end
 
