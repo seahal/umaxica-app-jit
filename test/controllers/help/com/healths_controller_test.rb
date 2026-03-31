@@ -40,5 +40,6 @@ class Help::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "OK"
     assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
+    assert_match(/\)\s+\S+\z/, response.body)
   end
 end

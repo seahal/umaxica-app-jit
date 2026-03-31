@@ -45,6 +45,8 @@ class CustomerTest < ActiveSupport::TestCase
   def setup
     [1, 2, 3].each { |id| CustomerStatus.find_or_create_by!(id: id) }
     [0, 1, 2, 3].each { |id| CustomerVisibility.find_or_create_by!(id: id) }
+    [1, 2, 3, 4].each { |id| CustomerTelephoneStatus.find_or_create_by!(id: id) }
+    [1, 2, 3, 4].each { |id| CustomerEmailStatus.find_or_create_by!(id: id) }
   end
 
   test "should be valid" do
@@ -94,5 +96,104 @@ class CustomerTest < ActiveSupport::TestCase
     customer = Customer.create!(status_id: CustomerStatus::RESERVED)
 
     assert_not customer.login_allowed?
+  end
+
+  test "verified_email? returns true when customer has verified email" do
+    customer = Customer.create!
+    CustomerEmail.create!(
+      customer: customer,
+      address: "verified@example.com",
+      confirm_policy: "1",
+      customer_email_status_id: CustomerEmailStatus::VERIFIED,
+    )
+
+    assert_predicate customer, :verified_email?
+  end
+
+  test "verified_email? returns true when customer has verified_with_sign_up email" do
+    customer = Customer.create!
+    CustomerEmail.create!(
+      customer: customer,
+      address: "signup@example.com",
+      confirm_policy: "1",
+      customer_email_status_id: CustomerEmailStatus::VERIFIED_WITH_SIGN_UP,
+    )
+
+    assert_predicate customer, :verified_email?
+  end
+
+  test "verified_email? returns false when customer has no verified email" do
+    customer = Customer.create!
+    CustomerEmail.create!(
+      customer: customer,
+      address: "unverified@example.com",
+      confirm_policy: "1",
+      customer_email_status_id: CustomerEmailStatus::UNVERIFIED,
+    )
+
+    assert_not customer.verified_email?
+  end
+
+  test "verified_telephone? returns true when customer has verified telephone" do
+    customer = Customer.create!
+    CustomerTelephone.create!(
+      customer: customer,
+      number: "+15551234567",
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
+    )
+
+    assert_predicate customer, :verified_telephone?
+  end
+
+  test "verified_telephone? returns false when customer has no verified telephone" do
+    customer = Customer.create!
+    CustomerTelephone.create!(
+      customer: customer,
+      number: "+15551234567",
+      customer_telephone_status_id: CustomerTelephoneStatus::UNVERIFIED,
+    )
+
+    assert_not customer.verified_telephone?
+  end
+
+  test "has_verified_pii? returns true when has verified email" do
+    customer = Customer.create!
+    CustomerEmail.create!(
+      customer: customer,
+      address: "verified@example.com",
+      confirm_policy: "1",
+      customer_email_status_id: CustomerEmailStatus::VERIFIED,
+    )
+
+    assert_predicate customer, :has_verified_pii?
+  end
+
+  test "has_verified_pii? returns true when has verified telephone" do
+    customer = Customer.create!
+    CustomerTelephone.create!(
+      customer: customer,
+      number: "+15551234567",
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
+    )
+
+    assert_predicate customer, :has_verified_pii?
+  end
+
+  test "has_verified_pii? returns false when no verified identity" do
+    customer = Customer.create!
+
+    assert_not customer.has_verified_pii?
+  end
+
+  test "has_verified_recovery_identity? delegates to has_verified_pii?" do
+    customer = Customer.create!
+
+    assert_equal customer.has_verified_pii?, customer.has_verified_recovery_identity?
+  end
+
+  test "passkey_login_available? returns false when no passkeys" do
+    customer = Customer.create!
+
+    assert_not customer.passkey_login_available?
   end
 end

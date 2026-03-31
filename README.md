@@ -127,9 +127,7 @@ COVERAGE=true bundle exec rails test
 Run JavaScript tests with Vitest:
 
 ```bash
-vp test                                    # Run all tests
-vp test test/javascript/controllers        # Run controller tests
-vp test theme_controller.test.js           # Run specific test file
+vp test
 vp test --watch                            # Watch mode
 ```
 

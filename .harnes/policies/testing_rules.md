@@ -33,6 +33,9 @@ Tests MUST:
 - Be deterministic
 - Be meaningful
 - Validate behavior, not implementation
+- For model-layer Minitest:
+  - Test cases MUST include boundary value analysis and equivalence partitioning
+  - Applies when validations, ranges, limits, formats, or categorizable inputs are involved
 
 ---
 

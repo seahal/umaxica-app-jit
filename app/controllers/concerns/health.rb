@@ -25,8 +25,8 @@ module Health
 
   included do
     # Skip query canonicalization for health checks if the callback exists
-    skip_before_action :canonicalize_query_params, raise: false
-    public_strict! if respond_to?(:public_strict!)
+    skip_before_action :canonicalize_query_params, raise: false # FIXME: i want to remove this line
+    public_strict! if respond_to?(:public_strict!) # TODO: what is this?
   end
 
   private
@@ -37,9 +37,9 @@ module Health
     errors = check_dependencies
 
     if errors.empty?
-      [200, "OK"]
+      [200, "OK", nil, Rails.app.revision.to_s]
     else
-      [503, "UNHEALTHY", errors]
+      [503, "UNHEALTHY", errors, Rails.app.revision.to_s]
     end
   rescue StandardError => e
     # Debug print for tests
@@ -98,18 +98,18 @@ module Health
   end
 
   def show_plain_text
-    @status, @body, @errors = get_status
+    @status, @body, @errors, @revision = get_status
     timestamp = Time.now.utc.iso8601
     if @errors.present?
-      render plain: "#{@body}: #{@errors.join(", ")} (#{timestamp})", status: @status
+      render plain: "#{@body}: #{@errors.join(", ")} (#{timestamp}) #{@revision}", status: @status
     else
-      render plain: "#{@body} (#{timestamp})", status: @status
+      render plain: "#{@body} (#{timestamp})  #{@revision}", status: @status
     end
   end
 
   def show_json
     @status, @body, @errors = get_status
-    response_body = { status: @body, timestamp: Time.now.utc.iso8601 }
+    response_body = { status: @body, timestamp: Time.now.utc.iso8601, revision: @revision }
     response_body[:errors] = @errors if @errors.present?
     render json: response_body, status: @status
   end

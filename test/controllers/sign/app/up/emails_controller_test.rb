@@ -298,7 +298,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update for existing registered email with OTP required" do
-    skip "TODO: Implement test for OTP required flow with existing email"
     user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
     existing_email = UserEmail.create!(
       user: user,
@@ -307,13 +306,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       user_email_status_id: UserEmailStatus::VERIFIED,
     )
 
-    # Manually set session to simulate EXISTING_EMAIL_SESSION_KEY but with skip_otp = false
-    # To do this, we need to trigger dispatch_existing_email_verification! but somehow change skip_otp
-    # Actually, the controller uses existing_signup_skip_otp? which checks session
-    # Let's mock the session or find a way to set it.
-    # Integration tests can use post/patch to set session via controller actions.
-
-    # 1. Start flow
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
@@ -324,15 +316,21 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
          },
          headers: default_headers
 
-    # By default, dispatch_existing_email_verification! sets skip_otp: true
-    # Let's modify the session in the test if possible, or trigger a path where it is false.
-    # Currently, dispatch_existing_email_verification! ALWAYS sets it to true.
-    #   session[EXISTING_EMAIL_SKIP_OTP_SESSION_KEY] = true
+    assert_response :redirect
+    assert_match(%r{/up/emails/[^/]+/edit}, response.location)
 
-    # If I want to test the `else` branch of `if existing_signup_skip_otp?`,
-    # I need skip_otp to be false or nil while existing_signup_email_flow? is true.
+    patch sign_app_up_email_url(existing_email, ri: "jp"),
+          params: {
+            id: existing_email.id,
+            user_email: {
+              pass_code: "123456",
+            },
+          },
+          headers: default_headers
 
-    assert false, "Test needs implementation"
+    assert_response :redirect
+    assert_redirected_to new_sign_app_in_path(ri: "jp")
+    assert_equal I18n.t("sign.app.registration.email.update.sign_in_required"), flash[:notice]
   end
 
   test "create with validation failure enqueues no emails and returns 422" do

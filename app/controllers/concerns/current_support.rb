@@ -35,7 +35,7 @@ module CurrentSupport
   def safe_current_resource
     current_actor = Current.actor
     if current_actor.present?
-      return current_actor unless current_actor.is_a?(Unauthenticated)
+      return current_actor unless current_actor.equal?(Unauthenticated.instance)
     end
     return unless respond_to?(:current_resource, true)
 

@@ -7,7 +7,7 @@ class ApplicationRecord < ActiveRecord::Base
   connects_to database: { writing: :default, reading: :default }
 
   def self.insert_missing_fixed_ids!(ids)
-    return if ids.blank?
+    raise if ids.blank?
 
     rows = ids.uniq
     rows.map! { |id| { primary_key => id } }
@@ -23,10 +23,9 @@ class ApplicationRecord < ActiveRecord::Base
         )
       end
 
-    if defined?(Prosopite)
-      Prosopite.pause(&operation)
-    else
-      operation.call
-    end
+    raise unless defined?(Prosopite)
+
+    Prosopite.pause(&operation)
+
   end
 end

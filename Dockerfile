@@ -169,13 +169,11 @@ RUN apt-get update -qq \
 # ============================================================================
 FROM development-base AS development
 SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
-ARG COMMIT_HASH
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
 ARG GITHUB_ACTIONS
-ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/${DOCKER_USER}
 WORKDIR ${HOME}/workspace
 
@@ -209,9 +207,7 @@ RUN apt-get update -qq \
     socat \
     netcat-openbsd \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
-
-COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json pnpm-lock.yaml ./
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/* /home/jit/
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
@@ -232,5 +228,19 @@ RUN curl -fsSL https://vite.plus | bash
 ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
 
 USER ${DOCKER_USER}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

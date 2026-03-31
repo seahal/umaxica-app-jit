@@ -166,6 +166,36 @@ class CurrentSupportTest < ActiveSupport::TestCase
     assert_not called, "set_current_observability must not be called during preference resolution"
   end
 
+  test "safe_current_resource resolves controller resource when current actor is unauthenticated singleton" do
+    host_class =
+      Class.new(Host) do
+        define_method(:current_resource) do
+          :resolved_resource
+        end
+
+        public :safe_current_resource
+      end
+
+    Current.actor = Unauthenticated.instance
+
+    assert_equal :resolved_resource, host_class.new.safe_current_resource
+  end
+
+  test "safe_current_resource keeps existing authenticated actor" do
+    host_class =
+      Class.new(Host) do
+        define_method(:current_resource) do
+          :resolved_resource
+        end
+
+        public :safe_current_resource
+      end
+
+    Current.actor = :existing_actor
+
+    assert_equal :existing_actor, host_class.new.safe_current_resource
+  end
+
   private
 
   # Temporarily define a top-level constant for the duration of the block.

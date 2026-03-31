@@ -35,4 +35,18 @@ class PreferenceOptionsPkTest < ActiveSupport::TestCase
     assert AppPreferenceTimezoneOption.find(AppPreferenceTimezoneOption::ETC_UTC)
     assert AppPreferenceColorthemeOption.find(AppPreferenceColorthemeOption::LIGHT)
   end
+
+  test "fixed colortheme option ids are available across preference surfaces" do
+    assert AppPreferenceColorthemeOption.find(AppPreferenceColorthemeOption::LIGHT)
+    assert AppPreferenceColorthemeOption.find(AppPreferenceColorthemeOption::DARK)
+    assert AppPreferenceColorthemeOption.find(AppPreferenceColorthemeOption::SYSTEM)
+
+    assert ComPreferenceColorthemeOption.find(ComPreferenceColorthemeOption::LIGHT)
+    assert ComPreferenceColorthemeOption.find(ComPreferenceColorthemeOption::DARK)
+    assert ComPreferenceColorthemeOption.find(ComPreferenceColorthemeOption::SYSTEM)
+
+    assert OrgPreferenceColorthemeOption.find(OrgPreferenceColorthemeOption::LIGHT)
+    assert OrgPreferenceColorthemeOption.find(OrgPreferenceColorthemeOption::DARK)
+    assert OrgPreferenceColorthemeOption.find(OrgPreferenceColorthemeOption::SYSTEM)
+  end
 end

@@ -17,8 +17,8 @@ class CurrentAttributesTest < ActiveSupport::TestCase
 
     Current.reset
 
-    assert_nil Current.actor
-    assert_nil Current.actor_type
+    assert_same Unauthenticated.instance, Current.actor
+    assert_equal :unauthenticated, Current.actor_type
     assert_nil Current.session
     assert_nil Current.token
     assert_nil Current.domain

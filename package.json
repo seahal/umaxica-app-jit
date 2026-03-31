@@ -11,6 +11,7 @@
   },
   "packageManager": "pnpm@10.27.0",
   "pnpm": {
+    "strictDepBuilds": true,
     "overrides": {
       "vite": "npm:@voidzero-dev/vite-plus-core@latest",
       "vitest": "npm:@voidzero-dev/vite-plus-test@latest"

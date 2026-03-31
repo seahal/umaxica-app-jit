@@ -10,6 +10,8 @@ class Sign::Com::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     host! ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
+    [1, 2, 3].each { |id| CustomerStatus.find_or_create_by!(id: id) }
+    [0, 1, 2, 3].each { |id| CustomerVisibility.find_or_create_by!(id: id) }
   end
 
   teardown do

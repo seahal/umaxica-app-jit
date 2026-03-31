@@ -50,24 +50,19 @@ class Sign::Com::In::ChallengesControllerTest < ActionDispatch::IntegrationTest
   test "show renders for pending_mfa user" do
     skip "CSRF token extraction issue with header_or_legacy_token strategy"
 
-    # First visit a page to establish session and get CSRF token
     get new_sign_com_in_secret_path(ri: "jp")
 
     assert_response :success
 
-    # Extract CSRF token from the response
-    csrf_token = response.body.match(/name="authenticity_token" value="([^"]+)"/)&.[](1)
-
-    assert_not_nil csrf_token, "CSRF token should be present in the response"
-
-    post sign_com_in_secret_path(ri: "jp"), params: {
-      authenticity_token: csrf_token,
-      secret_login_form: {
-        identifier: @user.user_emails.first.address,
-        secret_value: @raw_secret,
-      },
-      "cf-turnstile-response": "test_token",
-    }
+    post sign_com_in_secret_path(ri: "jp"),
+         headers: { "X-CSRF-Token" => "valid_csrf_token" },
+         params: {
+           secret_login_form: {
+             identifier: @user.user_emails.first.address,
+             secret_value: @raw_secret,
+           },
+           "cf-turnstile-response": "test_token",
+         }
 
     assert_redirected_to sign_com_in_challenge_path(ri: "jp")
 
@@ -82,24 +77,19 @@ class Sign::Com::In::ChallengesControllerTest < ActionDispatch::IntegrationTest
 
     @user.user_one_time_passwords.destroy_all
 
-    # First visit a page to establish session and get CSRF token
     get new_sign_com_in_secret_path(ri: "jp")
 
     assert_response :success
 
-    # Extract CSRF token from the response
-    csrf_token = response.body.match(/name="authenticity_token" value="([^"]+)"/)&.[](1)
-
-    assert_not_nil csrf_token, "CSRF token should be present in the response"
-
-    post sign_com_in_secret_path(ri: "jp"), params: {
-      authenticity_token: csrf_token,
-      secret_login_form: {
-        identifier: @user.user_emails.first.address,
-        secret_value: @raw_secret,
-      },
-      "cf-turnstile-response": "test_token",
-    }
+    post sign_com_in_secret_path(ri: "jp"),
+         headers: { "X-CSRF-Token" => "valid_csrf_token" },
+         params: {
+           secret_login_form: {
+             identifier: @user.user_emails.first.address,
+             secret_value: @raw_secret,
+           },
+           "cf-turnstile-response": "test_token",
+         }
 
     follow_redirect!
 

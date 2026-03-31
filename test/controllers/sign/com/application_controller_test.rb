@@ -15,12 +15,12 @@ module Sign::Com
       assert_includes controller.class, ::CurrentSupport
     end
 
-    test "has verification before authorization" do
+    test "has access_policy before verification" do
       callbacks = ApplicationController._process_action_callbacks
       before_filters = callbacks.select { |c| c.kind == :before }.map { |c| c.filter.to_s }
 
-      assert_operator before_filters.index("enforce_verification_if_required"), :<,
-                      before_filters.index("enforce_access_policy!")
+      assert_operator before_filters.index("enforce_access_policy!"), :<,
+                      before_filters.index("enforce_verification_if_required")
     end
   end
 end

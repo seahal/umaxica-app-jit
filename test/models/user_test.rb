@@ -223,6 +223,227 @@ class UserTest < ActiveSupport::TestCase
     assert_includes User.shreddable(Time.current), user
   end
 
+  test "totp_enabled? returns false when no totp" do
+    assert_not @user.totp_enabled?
+  end
+
+  test "totp_enabled? returns true when active totp exists" do
+    UserOneTimePassword.create!(
+      user: @user,
+      user_identity_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+    )
+
+    assert_predicate @user, :totp_enabled?
+  end
+
+  test "totp_enabled? returns false when totp is not active" do
+    UserOneTimePassword.create!(
+      user: @user,
+      user_identity_one_time_password_status_id: UserOneTimePasswordStatus::INACTIVE,
+    )
+
+    assert_not @user.totp_enabled?
+  end
+
+  test "user_social_googles returns array with google when present" do
+    google = UserSocialGoogle.create!(
+      user: @user,
+      status_id: UserSocialGoogleStatus::ACTIVE,
+      token: "test_token",
+      uid: "test_uid",
+      token_expires_at: 1.day.from_now,
+    )
+
+    assert_equal [google], @user.user_social_googles
+  end
+
+  test "user_social_googles returns empty array when no google" do
+    assert_equal [], @user.user_social_googles
+  end
+
+  test "withdrawal_started? returns false when not started" do
+    assert_not @user.withdrawal_started?
+  end
+
+  test "withdrawal_started? returns true when started" do
+    @user.update!(withdrawal_started_at: Time.current)
+
+    assert_predicate @user, :withdrawal_started?
+  end
+
+  test "deactivated? returns false when not deactivated" do
+    assert_not @user.deactivated?
+  end
+
+  test "deactivated? returns true when deactivated" do
+    @user.update!(deactivated_at: Time.current)
+
+    assert_predicate @user, :deactivated?
+  end
+
+  test "login_methods_remaining? returns false when no methods" do
+    assert_not @user.login_methods_remaining?
+  end
+
+  test "login_methods_remaining? returns true when email verified" do
+    UserEmail.create!(
+      user: @user,
+      address: "verified@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+      confirm_policy: "1",
+    )
+
+    assert_predicate @user, :login_methods_remaining?
+  end
+
+  test "remaining_login_methods returns email when verified" do
+    UserEmail.create!(
+      user: @user,
+      address: "verified@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+      confirm_policy: "1",
+    )
+
+    methods = @user.remaining_login_methods
+
+    assert_includes methods, :email
+  end
+
+  test "verified_email? returns true with verified email" do
+    UserEmail.create!(
+      user: @user,
+      address: "verified@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+      confirm_policy: "1",
+    )
+
+    assert_predicate @user, :verified_email?
+  end
+
+  test "verified_email? returns false with unverified email" do
+    UserEmail.create!(
+      user: @user,
+      address: "unverified@example.com",
+      user_email_status_id: UserEmailStatus::UNVERIFIED,
+      confirm_policy: "1",
+    )
+
+    assert_not @user.verified_email?
+  end
+
+  test "verified_telephone? returns true with verified telephone" do
+    UserTelephone.create!(
+      user: @user,
+      number: "+15551234567",
+      user_identity_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+
+    assert_predicate @user, :verified_telephone?
+  end
+
+  test "verified_telephone? returns false with unverified telephone" do
+    UserTelephone.create!(
+      user: @user,
+      number: "+15551234567",
+      user_identity_telephone_status_id: UserTelephoneStatus::UNVERIFIED,
+    )
+
+    assert_not @user.verified_telephone?
+  end
+
+  test "passkey_login_available? returns false when no passkeys" do
+    assert_not @user.passkey_login_available?
+  end
+
+  test "has_verified_pii? returns true with verified email" do
+    UserEmail.create!(
+      user: @user,
+      address: "verified@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+      confirm_policy: "1",
+    )
+
+    assert_predicate @user, :has_verified_pii?
+  end
+
+  test "has_verified_pii? returns true with verified telephone" do
+    UserTelephone.create!(
+      user: @user,
+      number: "+15551234567",
+      user_identity_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+
+    assert_predicate @user, :has_verified_pii?
+  end
+
+  test "has_verified_pii? returns false with no verified identity" do
+    assert_not @user.has_verified_pii?
+  end
+
+  test "has_verified_recovery_identity? delegates to has_verified_pii?" do
+    assert_equal @user.has_verified_pii?, @user.has_verified_recovery_identity?
+  end
+
+  test "active_social_provider? returns false when no social provider" do
+    assert_not @user.active_social_provider?("google")
+    assert_not @user.active_social_provider?("apple")
+  end
+
+  test "active_social_provider? returns true for active google" do
+    UserSocialGoogle.create!(
+      user: @user,
+      status_id: UserSocialGoogleStatus::ACTIVE,
+      token: "test_token",
+      uid: "test_uid",
+      token_expires_at: 1.day.from_now,
+    )
+
+    assert @user.active_social_provider?("google")
+  end
+
+  test "active_social_provider? returns true for active apple" do
+    UserSocialApple.create!(
+      user: @user,
+      status_id: UserSocialAppleStatus::ACTIVE,
+      token: "test_token",
+      uid: "test_uid",
+      token_expires_at: 1.day.from_now,
+    )
+
+    assert @user.active_social_provider?("apple")
+  end
+
+  test "remaining_login_methods excludes provider when specified" do
+    UserSocialGoogle.create!(
+      user: @user,
+      status_id: UserSocialGoogleStatus::ACTIVE,
+      token: "test_token",
+      uid: "test_uid",
+      token_expires_at: 1.day.from_now,
+    )
+    UserEmail.create!(
+      user: @user,
+      address: "verified@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+      confirm_policy: "1",
+    )
+
+    methods = @user.remaining_login_methods(excluding_provider: "google")
+
+    assert_not_includes methods, :google
+    assert_includes methods, :email
+  end
+
+  test "withdrawal_in_progress? returns false when not started" do
+    assert_not @user.withdrawal_in_progress?
+  end
+
+  test "withdrawal_in_progress? returns true when withdrawal started" do
+    @user.update!(withdrawal_started_at: Time.current)
+
+    assert_predicate @user, :withdrawal_in_progress?
+  end
+
   private
 
   def root_workspace

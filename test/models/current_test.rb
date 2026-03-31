@@ -7,7 +7,7 @@ class CurrentTest < ActiveSupport::TestCase
   test "defaults actor to unauthenticated" do
     Current.reset
 
-    assert_instance_of Unauthenticated, Current.actor
+    assert_same Unauthenticated.instance, Current.actor
     assert_predicate Current, :unauthenticated?
     assert_not_predicate Current, :authenticated?
     assert_equal :unauthenticated, Current.actor_type

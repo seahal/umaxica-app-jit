@@ -1,10 +1,12 @@
 # typed: false
 # frozen_string_literal: true
 
-require "singleton"
+module Unauthenticated
+  module_function
 
-class Unauthenticated
-  include Singleton
+  def instance
+    self
+  end
 
   def id
     nil
