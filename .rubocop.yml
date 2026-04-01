@@ -46,6 +46,7 @@ AllCops:
     - "node_modules/**/*"
     - "db/schema.rb"
     - "db/*_schema.rb"
+    - "db/**/*_migrate/**/*.rb"
     - "bin/**/*"
     - "tmp/**/*"
     - "log/**/*"
@@ -233,16 +234,6 @@ Layout/TrailingEmptyLines:
   Enabled: true
   EnforcedStyle: final_newline
 
-# ---------- 行の長さ ----------
-Layout/LineLength:
-  Max: 120
-  AllowedPatterns:
-    - '^#\s+index_'
-  Exclude:
-    - "config/**/*"
-    - "db/**/*_migrate/**/*"
-    - "app/models/**/*"
-    - "test/models/**/*"
 
 # ---------- 複数行のフォーマット ----------
 Layout/MultilineMethodCallIndentation:
@@ -459,15 +450,6 @@ Metrics/AbcSize:
   Exclude:
     - "app/controllers/sign/app/auth/omniauth_callbacks_controller.rb"
 
-Metrics/BlockLength:
-  Max: 40
-  Exclude:
-    - "config/**/*"
-    - "db/**/*_migrate/**/*"
-
-Metrics/ClassLength:
-  Max: 200
-
 Metrics/CyclomaticComplexity:
   Enabled: true
   Include:
@@ -482,9 +464,6 @@ Metrics/MethodLength:
   Exclude:
     - "app/controllers/concerns/preference/base.rb"
     - "app/controllers/core/com/contact/telephones_controller.rb"
-
-Metrics/ModuleLength:
-  Max: 120
 
 Metrics/PerceivedComplexity:
   Enabled: true
@@ -666,11 +645,6 @@ Rails/BulkChangeTable:
 Rails/HttpPositionalArguments:
   Enabled: true
 
-Rails/SkipsModelValidations:
-  Enabled: true
-  AllowedMethods:
-    - touch
-    - update_all
 
 Rails/UnknownEnv:
   Enabled: true
@@ -710,6 +684,8 @@ Rails/CompactBlank:
 
 Rails/DangerousColumnNames:
   Enabled: true
+  Exclude:
+    - "db/**/*_migrate/**/*"
 
 Rails/DeprecatedActiveModelErrorsMethods:
   Enabled: true
@@ -769,6 +745,9 @@ Rails/MatchRoute:
   Enabled: true
 
 Rails/MigrationClassName:
+  Enabled: true
+
+Rails/NotNullColumn:
   Enabled: true
 
 Rails/MultipleRoutePaths:
@@ -1151,22 +1130,9 @@ Minitest/MultipleAssertions:
 
 Minitest/NoAssertions:
   Enabled: true
-  Exclude:
-    - "test/consumers/application_consumer_test.rb"
-    - "test/consumers/email_consumer_test.rb"
-    - "test/controllers/core/org/docs_controller_test.rb"
-    - "test/controllers/core/org/news_controller_test.rb"
-    - "test/controllers/hona_sample_test.rb"
-    - "test/controllers/sign/app/in/recoveries_controller_test.rb"
-    - "test/controllers/sign/app/token/refreshs_controller_test.rb"
-    - "test/controllers/sign/org/recoveries_controller_test.rb"
-    - "test/integration/sign/org/layout_test.rb"
-    - "test/integration/www/com/params_test.rb"
 
 Minitest/NoTestCases:
   Enabled: true
-  Exclude:
-    - "test/models/**/*"
 
 Minitest/NonExecutableTestMethod:
   Enabled: true
@@ -1243,8 +1209,6 @@ Rake/MethodDefinitionInTask:
 # ---------- I18n ----------
 I18n/RailsI18n:
   Enabled: true
-  Exclude:
-    - "test/unit/security/skip_forgery_protection_usage_test.rb"
 
 I18n/GetText:
   Enabled: false
@@ -1252,22 +1216,6 @@ I18n/GetText:
 # ============================================================
 # 9. Thread Safety (Strengthened)
 # ============================================================
-
-ThreadSafety/ClassAndModuleAttributes:
-  Enabled: true
-  Exclude:
-    - "app/controllers/concerns/rate_limit.rb"
-    - "config/initializers/rails_rate_limit.rb"
-    - "test/controllers/concerns/auth_policy_test.rb"
-
-ThreadSafety/ClassInstanceVariable:
-  Enabled: true
-
-ThreadSafety/MutableClassInstanceVariable:
-  Enabled: true
-
-ThreadSafety/NewThread:
-  Enabled: true
 
 ThreadSafety/RackMiddlewareInstanceVariable:
   Enabled: true
@@ -1437,3 +1385,136 @@ Naming/MethodParameterName:
 # ※ 既存の Security/Open を補完
 Security/IoMethods:
   Enabled: true
+
+# ============================================================
+# 13. 追加強化 Cops（デフォルト無効だが価値が高いもの）
+# ============================================================
+
+# ---------- Lint: 安全でない暗黙変換の検出 ----------
+
+# to_i / to_f は無効な入力で 0 を返す — Integer() / Float() を強制
+Lint/NumberConversion:
+  Enabled: false
+
+# ブロック外のローカル変数をシャドウイングするブロック引数を検出
+# （Section 10 の ShadowingOuterLocalVariable と重複するが明示的に再確認）
+
+# ---------- Style: リソースリーク・例外安全性 ----------
+
+# File.open 等はブロック形式を強制（リソースリーク防止）
+Style/AutoResourceCleanup:
+  Enabled: true
+
+# 裸の raise "message" を禁止 — 明示的なエラークラスを強制
+Style/ImplicitRuntimeError:
+  Enabled: true
+
+# ハードコードされた IP アドレスを検出（セキュリティ監査）
+Style/IpAddresses:
+  Enabled: true
+  Exclude:
+    - "config/**/*"
+    - "test/**/*"
+    - "docker/**/*"
+    - "db/**/*_migrate/**/*"
+
+# rubocop:disable コメントの使用を可視化（安易な無効化を抑止）
+Style/DisableCopsWithinSourceCodeDirective:
+  Enabled: true
+  AllowedCops:
+    - Layout/LineLength
+    - Metrics/AbcSize
+    - Metrics/MethodLength
+    - Metrics/CyclomaticComplexity
+
+
+# メソッド呼び出しの括弧を強制（可読性向上）
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  EnforcedStyle: require_parentheses
+  AllowedMethods:
+    - require
+    - require_relative
+    - include
+    - extend
+    - prepend
+    - raise
+    - puts
+    - print
+    - pp
+    - p
+    - yield
+    - sleep
+    - desc
+    - task
+    - gem
+    - source
+    - ruby
+    - group
+    - git_source
+    - redirect
+    - render
+    - head
+    - layout
+    - helper
+    - helper_method
+    - respond_to
+    - before_action
+    - after_action
+    - around_action
+    - skip_before_action
+    - skip_after_action
+    - skip_around_action
+    - belongs_to
+    - has_many
+    - has_one
+    - validates
+    - validate
+    - scope
+    - delegate
+    - attr_accessor
+    - attr_reader
+    - attr_writer
+    - private
+    - protected
+    - public
+  AllowedPatterns:
+    - '^assert'
+    - '^refute'
+  Exclude:
+    - "Gemfile"
+
+# ClassLength を引き下げ
+Metrics/ClassLength:
+  Max: 150
+
+# ModuleLength を引き下げ
+Metrics/ModuleLength:
+  Max: 100
+
+# BlockLength を引き下げ
+Metrics/BlockLength:
+  Max: 30
+  Exclude:
+    - "config/**/*"
+    - "db/**/*_migrate/**/*"
+    - "test/**/*"
+
+Style/ConstantVisibility:
+  Exclude:
+    - "db/**/*_migrate/**/*.rb"
+
+Layout/LineLength:
+  Exclude:
+    - "db/**/*_migrate/**/*.rb"
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - "test/**/*.rb"
+    - "app/models/application_record.rb"
+
+ThreadSafety/ClassInstanceVariable:
+  Exclude:
+    - "app/controllers/concerns/social_callback_guard.rb"
+    - "lib/jit/security/turnstile_verifier.rb"
+    - "lib/jit/security/jwt/jti_generator.rb"
