@@ -19,6 +19,7 @@
 # end
 
 ActiveSupport::Inflector.inflections(:en) do |inflect|
-  inflect.uncountable "csrf"
-  inflect.irregular "cookie", "cookies"
+  inflect.uncountable("csrf")
+  inflect.uncountable("dbsc")
+  inflect.irregular("cookie", "cookies")
 end

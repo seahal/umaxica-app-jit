@@ -53,9 +53,10 @@ class StaffVerification < TokenRecord
 
     verification =
       transaction do
-        # rubocop:disable Rails/SkipsModelValidations
-        where(staff_token_id: token.id).active.update_all(revoked_at: now, updated_at: now)
-        # rubocop:enable Rails/SkipsModelValidations
+        where(staff_token_id: token.id).active.find_each do |verification_record|
+          verification_record.update!(revoked_at: now, updated_at: now)
+        end
+
         create!(
           staff_token: token,
           token_digest: digest,

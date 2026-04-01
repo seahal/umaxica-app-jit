@@ -5,15 +5,59 @@ export default class extends Controller {
   static targets = ["checkbox", "status"];
 
   connect() {
-    // console.log("Cookie toggle controller connected!");
-    // console.log("Status target exists:", this.hasStatusTarget);
-    // console.log("Checkbox targets count:", this.checkboxTargets.length);
     this.updateStatus();
+    this.setupFormListener();
   }
 
   toggle(_event) {
-    // console.log("Toggle called", event.target.checked);
     this.updateStatus();
+  }
+
+  setupFormListener() {
+    const form = this.element.querySelector("form");
+    if (form) {
+      form.addEventListener("turbo:submit-end", (event) => {
+        void this.onFormSubmitEnd(event);
+      });
+    }
+  }
+
+  async onFormSubmitEnd(event) {
+    if (event.detail.success) {
+      try {
+        const consentState = await this.fetchCookieConsent();
+        if (consentState) {
+          this.syncCheckboxesFromAPI(consentState);
+          this.updateStatus();
+        }
+      } catch {
+        this.updateStatus();
+      }
+    }
+  }
+
+  async fetchCookieConsent() {
+    const response = await fetch("/web/v0/cookie");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  syncCheckboxesFromAPI(consentState) {
+    const fieldMap = {
+      functional: "functional",
+      performant: "performant",
+      targetable: "targetable",
+      consented: "consented",
+    };
+
+    Object.entries(fieldMap).forEach(([apiKey, fieldName]) => {
+      const checkbox = this.element.querySelector(`input[name="preference_cookie[${fieldName}]"]`);
+      if (checkbox && apiKey in consentState) {
+        checkbox.checked = consentState[apiKey];
+      }
+    });
   }
 
   updateStatus() {
@@ -21,8 +65,6 @@ export default class extends Controller {
       const checkedCount = this.checkboxTargets.filter((cb) => cb.checked).length;
       const totalCount = this.checkboxTargets.length;
       this.statusTarget.textContent = `${checkedCount} / ${totalCount} cookies enabled`;
-    } else {
-      // Status target not found, silently ignore
     }
   }
 }

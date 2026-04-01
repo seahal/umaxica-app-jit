@@ -25,4 +25,7 @@
 require "test_helper"
 
 class MemberAvatarImpersonationTest < ActiveSupport::TestCase
+  test "class is defined" do
+    assert_equal "MemberAvatarImpersonation", MemberAvatarImpersonation.name
+  end
 end

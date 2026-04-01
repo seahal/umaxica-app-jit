@@ -4,6 +4,10 @@
 module Finisher
   extend ActiveSupport::Concern
 
+  def purge_current
+    Current.reset
+  end
+
   private
 
   def finish_request

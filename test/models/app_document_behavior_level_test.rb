@@ -14,6 +14,23 @@ require "test_helper"
 class AppDocumentBehaviorLevelTest < ActiveSupport::TestCase
   fixtures :app_document_behavior_levels, :app_document_behavior_events, :app_document_statuses
 
+  test "has correct constants" do
+    assert_equal 0, AppDocumentBehaviorLevel::NOTHING
+    assert_equal 1, AppDocumentBehaviorLevel::LEGACY_NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = AppDocumentBehaviorLevel.find(AppDocumentBehaviorLevel::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
+  test "ensure_defaults! does nothing when defaults exist" do
+    assert_no_difference "AppDocumentBehaviorLevel.count" do
+      AppDocumentBehaviorLevel.ensure_defaults!
+    end
+  end
+
   test "restrict_with_error on destroy when audits exist" do
     level = AppDocumentBehaviorLevel.find(AppDocumentBehaviorLevel::NOTHING)
     doc = AppDocument.create!(

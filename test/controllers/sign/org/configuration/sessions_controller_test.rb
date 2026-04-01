@@ -10,6 +10,7 @@ class Sign::Org::Configuration::SessionsControllerTest < ActionDispatch::Integra
     host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     @staff = staffs(:one)
     @host = ENV["SIGN_STAFF_URL"] || "sign.org.localhost"
+    StaffToken.where(staff_id: @staff.id).delete_all
     # Create a token for the current session
     @current_token = StaffToken.create!(
       staff_id: @staff.id,
@@ -59,6 +60,29 @@ class Sign::Org::Configuration::SessionsControllerTest < ActionDispatch::Integra
     public_ids = body["sessions"].pluck("public_id")
 
     assert_not_includes public_ids, expired_token.public_id
+  end
+
+  test "index excludes rotated and refresh-expired sessions from JSON response" do
+    StaffToken.where(staff_id: @staff.id).where.not(id: @current_token.id).delete_all
+
+    refresh_expired = StaffToken.create!(
+      staff_id: @staff.id,
+      refresh_expires_at: 1.minute.ago,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+    )
+
+    rotated_token = StaffToken.create!(staff_id: @staff.id, staff_token_kind_id: StaffTokenKind::BROWSER_WEB)
+    rotated_refresh = rotated_token.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: rotated_refresh)
+
+    get sign_org_configuration_sessions_url(ri: "jp", format: :json),
+        headers: @headers.merge("Accept" => "application/json")
+
+    assert_response :success
+    public_ids = response.parsed_body["sessions"].pluck("public_id")
+
+    assert_not_includes public_ids, rotated_token.reload.public_id
+    assert_not_includes public_ids, refresh_expired.public_id
   end
 
   test "index returns HTML by default" do
@@ -196,7 +220,40 @@ class Sign::Org::Configuration::SessionsControllerTest < ActionDispatch::Integra
 
     assert_response :see_other
     already_expired.reload
-    # expired_at should not change (already filtered out by where(expired_at: nil))
+    # expired_at should not change (already filtered out by visible session scope)
     assert_equal original_expired_at.to_i, already_expired.expired_at.to_i
+  end
+
+  # ===================================================================
+  # HTML UI elements
+  # ===================================================================
+
+  test "index shows revoke all other sessions button" do
+    StaffToken.create!(
+      staff_id: @staff.id,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.day.from_now,
+    )
+
+    get sign_org_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "form[action^='#{others_sign_org_configuration_sessions_path}']"
+    assert_select "button", text: "他のセッションをすべて削除"
+  end
+
+  test "index shows back link on index page" do
+    get sign_org_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_org_configuration_path(ri: "jp")
+  end
+
+  test "index marks the current session" do
+    get sign_org_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_includes response.body, "current"
+    assert_includes response.body, @current_token.public_id
   end
 end

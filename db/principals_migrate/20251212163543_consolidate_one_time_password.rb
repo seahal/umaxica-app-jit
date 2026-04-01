@@ -7,9 +7,9 @@ class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
 
   def change
     # Add columns from HmacBasedOneTimePassword to UserIdentityOneTimePassword
-    change_table :user_identity_one_time_passwords, bulk: true do |t|
-      t.string :private_key, limit: 1024, null: true
-      t.datetime :last_otp_at, null: true
+    change_table(:user_identity_one_time_passwords, bulk: true) do |t|
+      t.string(:private_key, limit: 1024, null: true)
+      t.datetime(:last_otp_at, null: true)
     end
 
     # Remove foreign key reference
@@ -25,25 +25,28 @@ class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
           ).first
 
           if hmac
-            # rubocop:disable Rails/SkipsModelValidations
+
             record.update_columns(
               private_key: hmac["private_key"],
               last_otp_at: hmac["last_otp_at"],
             )
-            # rubocop:enable Rails/SkipsModelValidations
+
           end
         end
 
-        change_column_null :user_identity_one_time_passwords, :private_key, false
-        change_column_null :user_identity_one_time_passwords, :last_otp_at, false
+        change_column_null(:user_identity_one_time_passwords, :private_key, false)
+        change_column_null(:user_identity_one_time_passwords, :last_otp_at, false)
 
-        remove_column :user_identity_one_time_passwords, :hmac_based_one_time_password_id, :binary
+        remove_column(:user_identity_one_time_passwords, :hmac_based_one_time_password_id, :binary)
       end
       dir.down do
-        add_column :user_identity_one_time_passwords, :hmac_based_one_time_password_id, :binary, null: false, default: "\x00"
+        add_column(
+          :user_identity_one_time_passwords, :hmac_based_one_time_password_id, :binary, null: false,
+                                                                                        default: "\x00",
+        )
 
-        change_column_null :user_identity_one_time_passwords, :private_key, true
-        change_column_null :user_identity_one_time_passwords, :last_otp_at, true
+        change_column_null(:user_identity_one_time_passwords, :private_key, true)
+        change_column_null(:user_identity_one_time_passwords, :last_otp_at, true)
       end
     end
   end

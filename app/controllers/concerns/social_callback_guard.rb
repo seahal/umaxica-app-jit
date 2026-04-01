@@ -19,7 +19,7 @@ module SocialCallbackGuard
   }.freeze
 
   CALLBACK_ALLOWED_METHODS_BY_PROVIDER = {
-    "apple" => %w(POST).freeze,
+    "apple" => %w(POST GET).freeze,
     "google_app" => %w(GET).freeze,
     "google_org" => %w(GET).freeze,
   }.freeze
@@ -27,9 +27,7 @@ module SocialCallbackGuard
   REQUEST_PHASE_PATH = %r{\A/auth/(?<provider>google_app|google_org|apple)\z}.freeze
 
   included do
-    # rubocop:disable Rails/LexicallyScopedActionFilter
-    before_action :verify_social_callback_request!, only: :omniauth
-    # rubocop:enable Rails/LexicallyScopedActionFilter
+    before_action :verify_social_callback_request!, only: [:omniauth], raise: false
   end
 
   module_function
@@ -100,7 +98,7 @@ module SocialCallbackGuard
   end
 
   def allowed_hosts
-    @allowed_hosts ||= # rubocop:disable ThreadSafety/ClassInstanceVariable
+    @allowed_hosts ||=
       begin
         hosts =
           [ENV["SIGN_SERVICE_URL"], ENV["SIGN_STAFF_URL"]].compact.filter_map { |v|
@@ -111,7 +109,7 @@ module SocialCallbackGuard
   end
 
   def allowed_request_origins
-    @allowed_request_origins ||= # rubocop:disable ThreadSafety/ClassInstanceVariable
+    @allowed_request_origins ||=
       begin
         origins = []
         schemes = %w(https)
@@ -196,7 +194,6 @@ module SocialCallbackGuard
   end
 
   def load_callback_state_data(_provider)
-    # rubocop:disable Lint/UnusedMethodArgument
     {
       callback: params[:state].to_s.presence,
       expected: session[SOCIAL_STATE_SESSION_KEY].to_s.presence ||
@@ -249,7 +246,16 @@ module SocialCallbackGuard
     return false unless Rails.env.test?
     return false if request.headers["X-STRICT-SOCIAL-STATE"] == "1"
 
-    request.env["omniauth.auth"].present?
+    request.env["omniauth.auth"].present? || test_mode_mock_auth_present?
+  end
+
+  def test_mode_mock_auth_present?
+    return false unless defined?(OmniAuth) && OmniAuth.config.test_mode
+
+    provider = params[:provider].to_s
+    return false if provider.blank?
+
+    OmniAuth.config.mock_auth[provider.to_sym].present? || OmniAuth.config.mock_auth[provider].present?
   end
 
   def clear_social_state!
@@ -330,9 +336,11 @@ module SocialCallbackGuard
       "[SocialCallbackGuard] phase=callback provider=#{provider.inspect} reason=#{reason} details=#{details.inspect}",
     )
 
-    redirect_to new_sign_app_in_path,
-                alert: I18n.t("sign.app.social.sessions.create.failure"),
-                status: :forbidden
+    redirect_to(
+      new_sign_app_in_path,
+      alert: I18n.t("sign.app.social.sessions.create.failure"),
+      status: :forbidden,
+    )
   end
 
   def self.normalized_request_source(request)

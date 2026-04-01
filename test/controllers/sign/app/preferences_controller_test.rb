@@ -12,6 +12,6 @@ class Sign::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get sign_app_preference_url(ri: "jp")
 
     assert_response :success
-    assert_select "a[href=?]", sign_app_preference_email_index_path(ri: "jp")
+    assert_select "a[href=?]", new_sign_app_preference_email_path(ri: "jp")
   end
 end

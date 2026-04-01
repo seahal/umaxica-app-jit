@@ -34,13 +34,13 @@ class EnsureSeedReferenceDataInActivity < ActiveRecord::Migration[8.2]
 
     mapping.each do |id, code|
       if has_code
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id, code)
           VALUES (#{connection.quote(id)}, #{connection.quote(code)})
           ON CONFLICT (id) DO UPDATE SET code = EXCLUDED.code
         SQL
       else
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id)
           VALUES (#{connection.quote(id)})
           ON CONFLICT (id) DO NOTHING
@@ -55,6 +55,6 @@ class EnsureSeedReferenceDataInActivity < ActiveRecord::Migration[8.2]
     sequence_name = select_value("SELECT pg_get_serial_sequence(#{connection.quote(table_name.to_s)}, 'id')")
     return if sequence_name.blank?
 
-    execute "SELECT setval(#{connection.quote(sequence_name)}, #{Integer(max_id)}, true)"
+    execute("SELECT setval(#{connection.quote(sequence_name)}, #{Integer(max_id)}, true)")
   end
 end

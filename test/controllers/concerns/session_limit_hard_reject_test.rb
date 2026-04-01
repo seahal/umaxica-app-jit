@@ -7,7 +7,7 @@ class SessionLimitHardRejectTest < ActionDispatch::IntegrationTest
   fixtures :users
 
   class TestController < ApplicationController
-    include Auth::User
+    include Authentication::User
 
     public_strict!
 
@@ -54,7 +54,7 @@ class SessionLimitHardRejectTest < ActionDispatch::IntegrationTest
     post "/test/hard_reject_login", params: { user_id: @user.id }
 
     assert_response :conflict
-    assert_equal Auth::Base::SESSION_LIMIT_HARD_REJECT_MESSAGE, response.body
+    assert_equal Authentication::Base::SESSION_LIMIT_HARD_REJECT_MESSAGE, response.body
     assert_equal before_count, UserToken.where(user_id: @user.id).count
   end
 

@@ -3,14 +3,13 @@
 
 return if Rails.env.test?
 
+# Rack::Timeout reads these ENV variables during middleware initialization.
+# Set them before the Railtie inserts the middleware.
+ENV["RACK_TIMEOUT_SERVICE_TIMEOUT"] ||= "30"
+
 require "rack-timeout" unless defined?(Rack::Timeout)
 
 if defined?(Rack::Timeout)
-  # Rack::Timeout is automatically included by its Railtie for Rails apps.
-  # By default it sets service_timeout to 15s, and wait_timeout to 30s.
-  # To change these defaults, use ENV variables (e.g. RACK_TIMEOUT_SERVICE_TIMEOUT)
-  # or require "rack/timeout/base" in Gemfile and configure middleware manually.
-
   # Elevate Rack::Timeout's own log level to WARN to prevent spamming
   # standard info logs with verbose timeout tracking.
   Rack::Timeout::Logger.level = Logger::WARN

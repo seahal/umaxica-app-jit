@@ -7,26 +7,26 @@ class AddDeletableAtToTokens < ActiveRecord::Migration[8.2]
 
   def up
     TABLES.each do |table|
-      add_column table, :deletable_at, :datetime
+      add_column(table, :deletable_at, :datetime)
 
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           UPDATE #{table}
           SET deletable_at = refresh_expires_at
         SQL
       end
 
       safety_assured do
-        change_column_null table, :deletable_at, false
+        change_column_null(table, :deletable_at, false)
       end
-      add_index table, :deletable_at, algorithm: :concurrently
+      add_index(table, :deletable_at, algorithm: :concurrently)
     end
   end
 
   def down
     TABLES.each do |table|
-      remove_index table, :deletable_at, algorithm: :concurrently
-      remove_column table, :deletable_at
+      remove_index(table, :deletable_at, algorithm: :concurrently)
+      remove_column(table, :deletable_at)
     end
   end
 end

@@ -14,7 +14,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(21)       default(""), not null
-#  status_id    :bigint           default(2), not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #
@@ -34,6 +34,13 @@ require "test_helper"
 
 class IpOccurrenceTest < ActiveSupport::TestCase
   fixtures :ip_occurrences
+
+  test "defaults status_id to nothing" do
+    record = IpOccurrence.new(body: "203.0.113.77", public_id: "X" * 21)
+
+    assert_equal IpOccurrenceStatus::NOTHING, record.status_id
+  end
+
   test "public_id length" do
     record = build_occurrence(IpOccurrence, body: "203.0.113.42", public_id: "A" * 20)
 

@@ -21,7 +21,7 @@ module Sign
         end
 
         def edit
-          @user_telephone = UserTelephone.find_by(id: params[:id])
+          @user_telephone = current_user.user_telephones.find_by!(public_id: params[:id])
         end
 
         def create
@@ -31,7 +31,7 @@ module Sign
           tel_params = params.expect(user_telephone: [:raw_number, :number])
           number = tel_params[:raw_number] || tel_params[:number]
           if initiate_telephone_verification(user, number, auto_accept_confirmations: true)
-            redirect_to edit_sign_app_configuration_telephone_path(@user_telephone.id)
+            redirect_to(edit_sign_app_configuration_telephone_path(@user_telephone.id))
           else
             render :new, status: :unprocessable_content
           end
@@ -41,17 +41,21 @@ module Sign
           telephone = current_user.user_telephones.find_by!(public_id: params[:id])
 
           unless AuthMethodGuard.can_remove_telephone?(current_user, telephone)
-            redirect_to sign_app_configuration_telephones_path,
-                        alert: t("sign.app.configuration.telephone.destroy.last_method")
+            redirect_to(
+              sign_app_configuration_telephones_path,
+              alert: t("sign.app.configuration.telephone.destroy.last_method"),
+            )
             return
           end
 
           telephone.destroy!
           create_audit_event!(UserActivityEvent::TELEPHONE_REMOVED, subject: telephone)
 
-          redirect_to sign_app_configuration_telephones_path,
-                      notice: t("sign.app.configuration.telephone.destroy.success"),
-                      status: :see_other
+          redirect_to(
+            sign_app_configuration_telephones_path,
+            notice: t("sign.app.configuration.telephone.destroy.success"),
+            status: :see_other,
+          )
         end
 
         private

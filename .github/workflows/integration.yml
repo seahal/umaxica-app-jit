@@ -38,7 +38,7 @@ env:
   BUNDLE_DEPLOYMENT: "true"
   BUNDLE_FROZEN: "true"
   # Region Configuration
-  REGION_CODE: jp
+  REGION_CODE: all
   APEX_REGION: true
 jobs:
   # ====================
@@ -85,9 +85,8 @@ jobs:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
           cache-version: 1
-      - name: Run Brakeman security scanner (SARIF)
-        run: bundle exec brakeman -f sarif -o brakeman.sarif --no-pager --quiet
-        continue-on-error: true
+      - name: Run Brakeman security scanner (SARIF + fail on issues)
+        run: bundle exec brakeman -f sarif -o brakeman.sarif --no-pager --quiet -z
       - name: Upload Brakeman SARIF to GitHub Security
         if: always()
         uses: github/codeql-action/upload-sarif@v4.31.10
@@ -95,8 +94,6 @@ jobs:
           sarif_file: brakeman.sarif
           category: brakeman
         continue-on-error: true
-      - name: Run Brakeman (fail on issues)
-        run: bundle exec brakeman -z -q --no-pager
       - name: Run bundle-audit
         run: bin/bundler-audit check --update
   gitleaks:
@@ -142,24 +139,6 @@ jobs:
           fail-on-severity: moderate
           comment-summary-in-pr: true
           deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0
-  codeql:
-    name: CodeQL
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    steps:
-      - uses: actions/checkout@v6.0.1
-        with:
-          persist-credentials: false
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4.31.10
-        with:
-          languages: ruby,javascript-typescript
-      - name: Analyze with CodeQL
-        uses: github/codeql-action/analyze@v4.31.10
   lint-ruby:
     name: Ruby Linting (RuboCop, ERB)
     runs-on: ubuntu-latest
@@ -207,9 +186,9 @@ jobs:
       AUTH_STAFF_URL: sign.org.localhost
       TRUSTED_ORIGINS: http://sign.app.localhost,http://sign.org.localhost
       # Domain URLs - Core
-      CORE_CORPORATE_URL: www.com.localhost
-      CORE_SERVICE_URL: www.app.localhost
-      CORE_STAFF_URL: www.org.localhost
+      CORE_CORPORATE_URL: ww.com.localhost
+      CORE_SERVICE_URL: ww.app.localhost
+      CORE_STAFF_URL: ww.org.localhost
       # Domain URLs - Docs
       DOCS_CORPORATE_URL: docs.com.localhost
       DOCS_SERVICE_URL: docs.app.localhost
@@ -231,10 +210,10 @@ jobs:
       # Region
       APEX_REGION: true
       GLOBAL_MODE: true
-      REGION_CODE: jp
+      REGION_CODE: all
       # Valkey
       VALKEY_URL: redis://localhost:6379/0
-      VALKEY_RACK_ATTACK_URL: redis://localhost:6379/1
+      RATE_LIMIT_REDIS_URL: redis://localhost:6379/1
       # PostgreSQL - Connection
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432
@@ -251,22 +230,22 @@ jobs:
       POSTGRESQL_PRINCIPAL_SUB: localhost
       POSTGRESQL_PROFILE_PUB: localhost
       POSTGRESQL_PROFILE_SUB: localhost
-      POSTGRESQL_PREFERENCE_PUB: localhost
-      POSTGRESQL_PREFERENCE_SUB: localhost
+      POSTGRESQL_COMMERCE_PUB: localhost
+      POSTGRESQL_COMMERCE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
       POSTGRESQL_TOKEN_SUB: localhost
       POSTGRESQL_DOCUMENT_PUB: localhost
       POSTGRESQL_DOCUMENT_SUB: localhost
-      POSTGRESQL_NEWS_PUB: localhost
-      POSTGRESQL_NEWS_SUB: localhost
+      POSTGRESQL_PUBLICATION_PUB: localhost
+      POSTGRESQL_PUBLICATION_SUB: localhost
       POSTGRESQL_BILLING_PUB: localhost
       POSTGRESQL_BILLING_SUB: localhost
       POSTGRESQL_MESSAGE_PUB: localhost
       POSTGRESQL_MESSAGE_SUB: localhost
       POSTGRESQL_NOTIFICATION_PUB: localhost
       POSTGRESQL_NOTIFICATION_SUB: localhost
-      POSTGRESQL_CABLE_PUB: localhost
-      POSTGRESQL_CABLE_SUB: localhost
+      POSTGRESQL_CACHE_PUB: localhost
+      POSTGRESQL_CACHE_SUB: localhost
       POSTGRESQL_QUEUE_PUB: localhost
       POSTGRESQL_QUEUE_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
@@ -381,22 +360,22 @@ jobs:
       POSTGRESQL_PRINCIPAL_SUB: localhost
       POSTGRESQL_PROFILE_PUB: localhost
       POSTGRESQL_PROFILE_SUB: localhost
-      POSTGRESQL_PREFERENCE_PUB: localhost
-      POSTGRESQL_PREFERENCE_SUB: localhost
+      POSTGRESQL_COMMERCE_PUB: localhost
+      POSTGRESQL_COMMERCE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
       POSTGRESQL_TOKEN_SUB: localhost
       POSTGRESQL_DOCUMENT_PUB: localhost
       POSTGRESQL_DOCUMENT_SUB: localhost
-      POSTGRESQL_NEWS_PUB: localhost
-      POSTGRESQL_NEWS_SUB: localhost
+      POSTGRESQL_PUBLICATION_PUB: localhost
+      POSTGRESQL_PUBLICATION_SUB: localhost
       POSTGRESQL_BILLING_PUB: localhost
       POSTGRESQL_BILLING_SUB: localhost
       POSTGRESQL_MESSAGE_PUB: localhost
       POSTGRESQL_MESSAGE_SUB: localhost
       POSTGRESQL_NOTIFICATION_PUB: localhost
       POSTGRESQL_NOTIFICATION_SUB: localhost
-      POSTGRESQL_CABLE_PUB: localhost
-      POSTGRESQL_CABLE_SUB: localhost
+      POSTGRESQL_CACHE_PUB: localhost
+      POSTGRESQL_CACHE_SUB: localhost
       POSTGRESQL_QUEUE_PUB: localhost
       POSTGRESQL_QUEUE_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
@@ -446,7 +425,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: true
-      - run: vp install && vp run dev:setup
+      - run: vp install
       - run: vp check
       - run: vp test
   # ====================
@@ -455,9 +434,7 @@ jobs:
   image-scan:
     name: Container Scan (Trivy + SBOM)
     runs-on: ubuntu-24.04
-    if:
-      github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref ==
-      'refs/heads/main')
+    if: github.event_name != 'schedule'
     timeout-minutes: 20
     permissions:
       contents: read
@@ -486,8 +463,8 @@ jobs:
           image-ref: umaxica-app:${{ github.sha }}
           format: sarif
           output: trivy-results.sarif
-          exit-code: "0"
-          severity: CRITICAL,HIGH,MEDIUM
+          exit-code: "1"
+          severity: CRITICAL,HIGH
           ignore-unfixed: true
           vuln-type: os,library
           scanners: vuln

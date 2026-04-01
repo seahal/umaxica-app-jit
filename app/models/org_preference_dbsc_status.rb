@@ -4,11 +4,11 @@
 # == Schema Information
 #
 # Table name: org_preference_dbsc_statuses
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
-class OrgPreferenceDbscStatus < PreferenceRecord
+class OrgPreferenceDbscStatus < OperatorRecord
   NOTHING = 0
   PENDING = 1
   ACTIVE = 2
@@ -22,6 +22,8 @@ class OrgPreferenceDbscStatus < PreferenceRecord
            dependent: :restrict_with_error
 
   def self.ensure_defaults!
+    return if DEFAULTS.blank?
+
     existing_ids = where(id: DEFAULTS).pluck(:id)
     missing_ids = DEFAULTS - existing_ids
     return if missing_ids.empty?

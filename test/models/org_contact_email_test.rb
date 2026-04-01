@@ -17,7 +17,7 @@
 #  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  org_contact_id         :bigint           not null
+#  org_contact_id         :bigint           default(0), not null
 #
 # Indexes
 #
@@ -68,7 +68,6 @@ class OrgContactEmailTest < ActiveSupport::TestCase
     end
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "generate_verifier! should create a code and set expiration" do
     freeze_time do
       raw_code = @email.generate_verifier!
@@ -79,7 +78,6 @@ class OrgContactEmailTest < ActiveSupport::TestCase
       assert_equal 3, @email.verifier_attempts_left
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "verify_code should return true for correct code" do
     raw_code = @email.generate_verifier!

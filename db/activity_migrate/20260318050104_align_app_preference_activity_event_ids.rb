@@ -40,24 +40,24 @@ class AlignAppPreferenceActivityEventIds < ActiveRecord::Migration[8.1]
     safety_assured do
       # Ensure new event IDs exist in the events table
       (1..8).each do |id|
-        execute "INSERT INTO app_preference_activity_events (id) VALUES (#{id}) ON CONFLICT DO NOTHING"
+        execute("INSERT INTO app_preference_activity_events (id) VALUES (#{id}) ON CONFLICT DO NOTHING")
       end
 
       # Phase 1: Move old IDs to temporary IDs to avoid collisions
       OLD_TO_NEW.each do |old_id, temp_id|
-        execute "INSERT INTO app_preference_activity_events (id) VALUES (#{temp_id}) ON CONFLICT DO NOTHING"
-        execute "UPDATE app_preference_activities SET event_id = #{temp_id} WHERE event_id = #{old_id}"
+        execute("INSERT INTO app_preference_activity_events (id) VALUES (#{temp_id}) ON CONFLICT DO NOTHING")
+        execute("UPDATE app_preference_activities SET event_id = #{temp_id} WHERE event_id = #{old_id}")
       end
 
       # Phase 2: Move temporary IDs to final IDs
       TEMP_TO_FINAL.each do |temp_id, final_id|
-        execute "UPDATE app_preference_activities SET event_id = #{final_id} WHERE event_id = #{temp_id}"
-        execute "DELETE FROM app_preference_activity_events WHERE id = #{temp_id}"
+        execute("UPDATE app_preference_activities SET event_id = #{final_id} WHERE event_id = #{temp_id}")
+        execute("DELETE FROM app_preference_activity_events WHERE id = #{temp_id}")
       end
 
       # Add NOTHING=0 to Org/Com activity levels
-      execute "INSERT INTO org_preference_activity_levels (id) VALUES (0) ON CONFLICT DO NOTHING"
-      execute "INSERT INTO com_preference_activity_levels (id) VALUES (0) ON CONFLICT DO NOTHING"
+      execute("INSERT INTO org_preference_activity_levels (id) VALUES (0) ON CONFLICT DO NOTHING")
+      execute("INSERT INTO com_preference_activity_levels (id) VALUES (0) ON CONFLICT DO NOTHING")
     end
   end
 

@@ -12,7 +12,6 @@ module Jit
           "aud" => "MISSING_AUD",
           "typ" => "MISSING_TYP",
           "exp" => "MISSING_EXP",
-          "nbf" => "MISSING_NBF",
           "sub" => "MISSING_SUB",
           "sid" => "MISSING_SID",
           "act" => "MISSING_ACT",

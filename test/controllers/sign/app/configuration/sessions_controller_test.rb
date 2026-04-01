@@ -46,6 +46,27 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert_not_includes public_ids, expired_token.public_id
   end
 
+  test "index excludes rotated and refresh-expired sessions from JSON response" do
+    rotated_token = UserToken.create!(user_id: @user.id, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    rotated_refresh = rotated_token.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: rotated_refresh)
+
+    refresh_expired = UserToken.create!(
+      user_id: @user.id,
+      refresh_expires_at: 1.minute.ago,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+
+    headers = as_user_headers(@user, host: @host, headers: { "Accept" => "application/json" })
+    get sign_app_configuration_sessions_url(ri: "jp", format: :json), headers: headers
+
+    assert_response :success
+    public_ids = response.parsed_body["sessions"].pluck("public_id")
+
+    assert_not_includes public_ids, rotated_token.reload.public_id
+    assert_not_includes public_ids, refresh_expired.public_id
+  end
+
   test "index returns HTML by default" do
     get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
 
@@ -163,8 +184,8 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     assert_nil current_session.expired_at
     assert_not_nil token_one.expired_at
     assert_not_nil token_two.expired_at
-    assert_not response_has_cookie?(::Auth::Base::ACCESS_COOKIE_KEY)
-    assert_not response_has_cookie?(::Auth::Base::REFRESH_COOKIE_KEY)
+    assert_not response_has_cookie?(::Authentication::Base::ACCESS_COOKIE_KEY)
+    assert_not response_has_cookie?(::Authentication::Base::REFRESH_COOKIE_KEY)
   end
 
   test "others with no other sessions still succeeds (boundary: 0 other sessions)" do

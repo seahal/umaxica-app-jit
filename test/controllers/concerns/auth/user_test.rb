@@ -4,7 +4,7 @@
 require "test_helper"
 
 class TestAuthUserController < ApplicationController
-  include Auth::User
+  include Authentication::User
 end
 
 module Auth
@@ -13,14 +13,14 @@ module Auth
       @controller = TestAuthUserController.new
     end
 
-    test "User concern includes Auth::Base" do
-      assert_includes TestAuthUserController.ancestors, Auth::Base
+    test "User concern includes Authentication::Base" do
+      assert_includes TestAuthUserController.ancestors, Authentication::Base
     end
 
-    test "constants are inherited from Auth::Base" do
-      assert_equal Auth::Base::ACCESS_COOKIE_KEY, Auth::User::ACCESS_COOKIE_KEY
-      assert_equal Auth::Base::REFRESH_COOKIE_KEY, Auth::User::REFRESH_COOKIE_KEY
-      assert_equal Auth::Base::AUDIT_EVENTS, Auth::User::AUDIT_EVENTS
+    test "constants are inherited from Authentication::Base" do
+      assert_equal Authentication::Base::ACCESS_COOKIE_KEY, Authentication::User::ACCESS_COOKIE_KEY
+      assert_equal Authentication::Base::REFRESH_COOKIE_KEY, Authentication::User::REFRESH_COOKIE_KEY
+      assert_equal Authentication::Base::AUDIT_EVENTS, Authentication::User::AUDIT_EVENTS
     end
 
     test "resource_class returns User" do

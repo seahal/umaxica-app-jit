@@ -12,6 +12,7 @@
 #  dbsc_challenge_issued_at     :datetime
 #  dbsc_public_key              :jsonb
 #  deletable_at                 :datetime         default(Infinity), not null
+#  device_id_digest             :string
 #  expired_at                   :datetime
 #  last_step_up_at              :datetime
 #  last_step_up_scope           :string
@@ -40,6 +41,7 @@
 #  index_user_tokens_on_dbsc_session_id               (dbsc_session_id) UNIQUE
 #  index_user_tokens_on_deletable_at                  (deletable_at)
 #  index_user_tokens_on_device_id                     (device_id)
+#  index_user_tokens_on_device_id_digest              (device_id_digest)
 #  index_user_tokens_on_expired_at                    (expired_at)
 #  index_user_tokens_on_public_id                     (public_id) UNIQUE
 #  index_user_tokens_on_refresh_expires_at            (refresh_expires_at)
@@ -71,6 +73,9 @@ class UserToken < TokenRecord
   include ::TokenStatusManagement
   include ::DbscBindable
 
+  DBSC_BINDING_METHOD_CLASS = UserTokenBindingMethod
+  DBSC_STATUS_CLASS = UserTokenDbscStatus
+
   MAX_SESSIONS_PER_USER = 2
   MAX_TOTAL_SESSIONS_PER_USER = 3
 
@@ -90,7 +95,8 @@ class UserToken < TokenRecord
 
   validate :enforce_concurrent_session_limit, on: :create
 
-  # This is a model-level validation to provide a friendly error message to the user.
+  # This model-level validation provides an early, user-facing error message before
+  # the database trigger rejects excess concurrent sessions.
   # The primary enforcement of the session limit is done by a database trigger,
   # which is more reliable and avoids race conditions.
   #

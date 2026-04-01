@@ -40,7 +40,7 @@ module Docs
 
           def list_documents
             @query = params[:q]
-            @page = (params[:page] || 1).to_i
+            @page = Integer((params[:page] || 1).to_s, 10)
             @per_page = 20
 
             # Search documents by permalink or title
@@ -48,10 +48,14 @@ module Docs
 
             if @query.present? && @query != "all"
               # Search by permalink or title in latest version
+              # Sanitize the query to prevent SQL injection via LIKE special characters
+              sanitized_query = ActiveRecord::Base.sanitize_sql_like(@query)
+              like_pattern = "%#{sanitized_query}%"
+
               @documents = documents_scope
                 .joins(:com_document_versions)
                 .where("com_documents.permalink LIKE ? OR com_document_versions.title LIKE ?",
-                       "%#{@query}%", "%#{@query}%",)
+                       like_pattern, like_pattern,)
                 .distinct
                 .order("com_documents.created_at DESC")
                 .offset((@page - 1) * @per_page)
@@ -60,7 +64,7 @@ module Docs
               @total_count = documents_scope
                 .joins(:com_document_versions)
                 .where("com_documents.permalink LIKE ? OR com_document_versions.title LIKE ?",
-                       "%#{@query}%", "%#{@query}%",)
+                       like_pattern, like_pattern,)
                 .distinct
                 .count
             else
@@ -73,7 +77,7 @@ module Docs
               @total_count = documents_scope.count
             end
 
-            @total_pages = (@total_count.to_f / @per_page).ceil
+            @total_pages = (Float(@total_count) / @per_page).ceil
 
             Rails.event.notify(
               "docs.posts.listed",

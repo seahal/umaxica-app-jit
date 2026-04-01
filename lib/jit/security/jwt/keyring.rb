@@ -19,20 +19,18 @@ module Jit
           private_key_for(active_kid)
         end
 
-        def private_key_for(kid)
-          keyset = parse_keyset(ENV["AUTH_JWT_PRIVATE_KEYSET"])
-          return decode_key(keyset[kid]) if keyset.key?(kid)
-          return Auth::Base::JwtConfiguration.private_key if kid == active_kid
+        def public_key_for_active
+          public_key_for(active_kid)
+        end
 
-          nil
+        def private_key_for(kid)
+          keyset = parse_keyset(Rails.app.creds.option(:AUTH_JWT_PRIVATE_KEYSET))
+          decode_key(keyset[kid])
         end
 
         def public_key_for(kid)
-          keyset = parse_keyset(ENV["AUTH_JWT_PUBLIC_KEYSET"])
-          return decode_key(keyset[kid]) if keyset.key?(kid)
-          return Auth::Base::JwtConfiguration.public_key if kid == active_kid
-
-          nil
+          keyset = parse_keyset(Rails.app.creds.option(:AUTH_JWT_PUBLIC_KEYSET))
+          decode_key(keyset[kid])
         end
 
         def parse_header(token)

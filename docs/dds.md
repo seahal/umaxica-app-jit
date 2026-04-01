@@ -44,7 +44,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
     ├─ PostgreSQL (identity, guest, universal, token, etc.)
     ├─ Valkey (sessions, rate limit, Memorize)
     ├─ ActionMailer + SMTP
-    ├─ AwsSmsService → AWS SNS / Infobip
+    ├─ AwsSmsService
     └─ OpenTelemetry exporter → Tempo / Logs → Loki / Dashboards → Grafana
 ```
 
@@ -175,9 +175,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 
 ### 3.10 Services & Integrations
 
-- `AwsSmsService` delegates to provider classes under `app/services/sms_providers` (AWS SNS,
-  Infobip, Test). Providers validate parameters and call respective APIs with credentials loaded
-  from Rails credentials.
+- `AwsSmsService` handles SMS dispatch for OTP-related flows.
 - Other service placeholders (`AccountService`, `CoreService`, `EntityService`) mark future
   boundaries (business/customer mgmt, tokens).
 - `RedisMemorize` (inside `Memorize`) encrypts values using `ActiveSupport::MessageEncryptor`
@@ -283,7 +281,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | HTTP/Turbo           | `/`, `/health`, `/v1/health`, `/preference/*`, `/sign/*`, `/help/contacts`, `/api/v1/inquiry/*`, `/bff/*` | Host-specific responses; `allow_browser` enforces modern clients.                     |
 | Cloudflare Turnstile | `https://challenges.cloudflare.com/turnstile/v0/siteverify`                                               | Called server-side with secret key, form response, and client IP.                     |
 | ActionMailer         | `Email::App::RegistrationMailer`, `Email::App::ContactMailer`, etc.                                       | Default sender from credentials `SMTP_FROM_ADDRESS`; uses `mailer/app/mailer` layout. |
-| Sms providers        | AWS SNS / Infobip / test driver                                                                           | Called via `AwsSmsService.send_message` with provider-specific client objects.        |
+| SMS                  | `AwsSmsService`                                                                                           | Called via `AwsSmsService.send_message` for OTP-related flows.                        |
 | OpenTelemetry        | OTLP exporter                                                                                             | Default endpoint `http://tempo:4318/v1/traces` (configurable).                        |
 | Storage              | MinIO / Google Cloud Storage                                                                              | `google-cloud-storage` + `shrine` used for file storage (future).                     |
 
@@ -294,7 +292,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`,
   `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`, including the
   `POSTGRESQL_ACTIVITY_PUB/SUB` pair and `POSTGRESQL_BEHAVIOR_PUB`), Redis URLs
-  (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip
+  (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile keys, JWT keys, AWS
   credentials, OTLP endpoint.
 - `compose.yml` launches all infra dependencies with sensible defaults; volumes store data per
   service.

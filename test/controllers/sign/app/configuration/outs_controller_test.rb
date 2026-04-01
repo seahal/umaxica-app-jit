@@ -39,7 +39,7 @@ class Sign::App::Configuration::OutsControllerTest < ActionDispatch::Integration
   test "should destroy with user session even without step-up verification" do
     token = UserToken.create!(user: @user)
     refresh_plain = token.rotate_refresh_token!
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     delete sign_app_configuration_out_url(ri: "jp"),
            headers: { "Host" => @host,
@@ -49,5 +49,26 @@ class Sign::App::Configuration::OutsControllerTest < ActionDispatch::Integration
     assert_redirected_to sign_app_root_path(ri: "jp")
     assert_equal I18n.t("sign.shared.sign_out.success"), flash[:notice]
     assert_not UserToken.exists?(id: token.id)
+  end
+
+  test "logout clears all auth cookies" do
+    token = UserToken.create!(user: @user)
+    refresh_plain = token.rotate_refresh_token!
+
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = "test_access_token"
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DBSC_COOKIE_KEY] = "test_dbsc_value"
+
+    delete sign_app_configuration_out_url(ri: "jp"),
+           headers: { "Host" => @host,
+                      "X-TEST-CURRENT-USER" => @user.id,
+                      "X-TEST-SESSION-PUBLIC-ID" => token.public_id, }
+
+    assert_redirected_to sign_app_root_path(ri: "jp")
+
+    # All auth cookies must be cleared after logout
+    assert_empty cookies[Authentication::Base::ACCESS_COOKIE_KEY].to_s
+    assert_empty cookies[Authentication::Base::REFRESH_COOKIE_KEY].to_s
+    assert_empty cookies[Authentication::Base::DBSC_COOKIE_KEY].to_s
   end
 end

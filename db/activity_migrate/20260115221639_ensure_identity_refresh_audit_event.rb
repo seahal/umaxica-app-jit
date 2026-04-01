@@ -19,7 +19,7 @@ class EnsureIdentityRefreshAuditEvent < ActiveRecord::Migration[8.2]
 
     if column_exists?(table_name, :created_at)
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id, created_at, updated_at)
           VALUES ('#{EVENT_ID}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO NOTHING
@@ -27,7 +27,7 @@ class EnsureIdentityRefreshAuditEvent < ActiveRecord::Migration[8.2]
       end
     else
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id)
           VALUES ('#{EVENT_ID}')
           ON CONFLICT (id) DO NOTHING

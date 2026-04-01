@@ -12,6 +12,7 @@
 #  dbsc_challenge_issued_at      :datetime
 #  dbsc_public_key               :jsonb
 #  deletable_at                  :datetime         default(Infinity), not null
+#  device_id_digest              :string
 #  expired_at                    :datetime
 #  last_step_up_at               :datetime
 #  last_step_up_scope            :string
@@ -40,6 +41,7 @@
 #  index_staff_tokens_on_dbsc_session_id                (dbsc_session_id) UNIQUE
 #  index_staff_tokens_on_deletable_at                   (deletable_at)
 #  index_staff_tokens_on_device_id                      (device_id)
+#  index_staff_tokens_on_device_id_digest               (device_id_digest)
 #  index_staff_tokens_on_expired_at                     (expired_at)
 #  index_staff_tokens_on_public_id                      (public_id) UNIQUE
 #  index_staff_tokens_on_refresh_expires_at             (refresh_expires_at)
@@ -60,15 +62,13 @@
 #  fk_staff_tokens_on_staff_token_kind_id            (staff_token_kind_id => staff_token_kinds.id)
 #  fk_staff_tokens_on_staff_token_status_id          (staff_token_status_id => staff_token_statuses.id)
 #
-
 require "test_helper"
 
-# Covers refresh token behavior and session constraints for staff.
 class StaffTokenTest < ActiveSupport::TestCase
   include ActiveSupport::Testing::TimeHelpers
 
   def setup
-    @staff = Staff.find_by!(public_id: "BCDE2345FGHJ67KM")
+    @staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
 
     @token = StaffToken.create!(staff: @staff, staff_token_status_id: StaffTokenStatus::ACTIVE)
   end
@@ -140,7 +140,7 @@ class StaffTokenTest < ActiveSupport::TestCase
 
   test "enforces maximum concurrent sessions per staff" do
     staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
-    # Create tokens up to the total max (active + restricted)
+
     StaffToken::MAX_TOTAL_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
     end
@@ -311,10 +311,22 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh! rejects revoked compromised and expired tokens" do
-    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
-    revoked = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd1")
-    compromised = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd2")
-    expired = StaffToken.create!(staff: staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB, device_id: "sd3")
+    revoked_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    compromised_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    expired_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    revoked = StaffToken.create!(
+      staff: revoked_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "sd1",
+    )
+    compromised = StaffToken.create!(
+      staff: compromised_staff,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "sd2",
+    )
+    expired = StaffToken.create!(
+      staff: expired_staff, staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
+      device_id: "sd3",
+    )
     revoked_raw = revoked.rotate_refresh_token!
     compromised_raw = compromised.rotate_refresh_token!
     expired_raw = expired.rotate_refresh_token!

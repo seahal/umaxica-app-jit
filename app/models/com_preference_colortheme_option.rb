@@ -2,18 +2,19 @@
 # == Schema Information
 #
 # Table name: com_preference_colortheme_options
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class ComPreferenceColorthemeOption < PreferenceRecord
+class ComPreferenceColorthemeOption < CommerceRecord
   # Fixed IDs - do not modify these values
   LIGHT = 1
   DARK = 2
   SYSTEM = 3
+  DEFAULTS = [LIGHT, DARK, SYSTEM].freeze
 
   has_many :com_preference_colorthemes,
            class_name: "ComPreferenceColortheme",
@@ -29,19 +30,7 @@ class ComPreferenceColorthemeOption < PreferenceRecord
     end
   end
 
-  DEFAULTS = [LIGHT, DARK, SYSTEM].freeze
-
   def self.ensure_defaults!
-    return if DEFAULTS.blank?
-
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    missing_ids = DEFAULTS - existing_ids
-    return if missing_ids.empty?
-
-    if defined?(Prosopite)
-      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
-    else
-      missing_ids.each { |id| create!(id: id) }
-    end
+    insert_missing_fixed_ids!(DEFAULTS)
   end
 end

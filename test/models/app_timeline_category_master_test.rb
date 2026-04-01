@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_timeline_category_masters
-# Database name: news
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -21,7 +21,22 @@
 require "test_helper"
 
 class AppTimelineCategoryMasterTest < ActiveSupport::TestCase
-  include TimelineIntegerTreeTests
+  include TreeableSharedTests
+
+  test "has correct constants" do
+    assert_equal 0, AppTimelineCategoryMaster::NOTHING
+    assert_equal 1, AppTimelineCategoryMaster::LEGACY_NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = AppTimelineCategoryMaster.find(AppTimelineCategoryMaster::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
+  test "treeable class is defined" do
+    assert_equal AppTimelineCategoryMaster, treeable_class
+  end
 
   private
 

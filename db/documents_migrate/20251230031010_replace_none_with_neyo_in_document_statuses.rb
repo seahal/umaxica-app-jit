@@ -25,7 +25,7 @@ class ReplaceNoneWithNeyoInDocumentStatuses < ActiveRecord::Migration[7.1]
     return unless table_exists?(table) && column_exists?(table, :status_id)
 
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         UPDATE #{table}
         SET status_id = '#{to}'
         WHERE status_id = '#{from}'
@@ -36,6 +36,6 @@ class ReplaceNoneWithNeyoInDocumentStatuses < ActiveRecord::Migration[7.1]
   def change_status_default(table, from:, to:)
     return unless table_exists?(table) && column_exists?(table, :status_id)
 
-    change_column_default table, :status_id, from: from, to: to
+    change_column_default(table, :status_id, from: from, to: to)
   end
 end

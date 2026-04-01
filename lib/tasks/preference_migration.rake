@@ -9,9 +9,8 @@ namespace :preference do
   end
 
   define_method(:migrate_user_preferences!) do
-    # rubocop:disable I18n/RailsI18n/DecorateString
-    puts "Migrating UserAppPreference to UserPreference..."
-    # rubocop:enable I18n/RailsI18n/DecorateString
+    puts I18n.t("tasks.preference_migration.migrating_user_app_preference")
+
     migrated = 0
     skipped = 0
 
@@ -31,20 +30,19 @@ namespace :preference do
         migrated += 1
       end
     rescue StandardError => e
-      puts _("  WARN: Failed to migrate user_id=%{user_id}: %{message}") % {
+      puts I18n.t("tasks.preference_migration.warn_user") % {
         user_id: join_record.user_id,
         message: e.message,
       }
       skipped += 1
     end
 
-    puts _("  Done: %{migrated} migrated, %{skipped} skipped") % { migrated: migrated, skipped: skipped }
+    puts I18n.t("tasks.preference_migration.done_user") % { migrated: migrated, skipped: skipped }
   end
 
   define_method(:migrate_staff_preferences!) do
-    # rubocop:disable I18n/RailsI18n/DecorateString
-    puts "Migrating StaffOrgPreference to StaffPreference..."
-    # rubocop:enable I18n/RailsI18n/DecorateString
+    puts I18n.t("tasks.preference_migration.migrating_staff_org_preference")
+
     migrated = 0
     skipped = 0
 
@@ -63,14 +61,14 @@ namespace :preference do
         migrated += 1
       end
     rescue StandardError => e
-      puts _("  WARN: Failed to migrate staff_id=%{staff_id}: %{message}") % {
+      puts I18n.t("tasks.preference_migration.warn_staff") % {
         staff_id: join_record.staff_id,
         message: e.message,
       }
       skipped += 1
     end
 
-    puts _("  Done: %{migrated} migrated, %{skipped} skipped") % { migrated: migrated, skipped: skipped }
+    puts I18n.t("tasks.preference_migration.done_user") % { migrated: migrated, skipped: skipped }
   end
 
   define_method(:copy_preference_options!) do |source_pref, target_pref, _source_prefix, target_prefix|

@@ -11,6 +11,7 @@ module Sign
       setup do
         @user = users(:one) # Assuming fixtures or factory
         @user_id = @user.id
+        UserOccurrenceStatus.find_or_create_by!(id: UserOccurrenceStatus::ACTIVE)
 
         # Enable feature flag for tests
         @original_env = ENV["RISK_ENFORCEMENT_ENABLED"]
@@ -24,8 +25,8 @@ module Sign
       test "does nothing if feature flag is off" do
         ENV["RISK_ENFORCEMENT_ENABLED"] = "false"
 
-        Engine.stub :score, 100 do
-          Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
+        Engine.stub(:score, 100) do
+          Enforcer.stub(:revoke!, ->(_) { raise RuntimeError, "Should not be called" }) do
             result = Enforcer.call(@user)
 
             assert_nil result
@@ -34,10 +35,10 @@ module Sign
       end
 
       test "revokes if score is 100" do
-        Engine.stub :score, 100 do
+        Engine.stub(:score, 100) do
           # Enforcer.revoke! should be called
           called = false
-          Enforcer.stub :revoke!, ->(u) { called = true; assert_equal @user, u } do
+          Enforcer.stub(:revoke!, ->(u) { called = true; assert_equal @user, u }) do
             Enforcer.call(@user)
           end
 
@@ -46,9 +47,9 @@ module Sign
       end
 
       test "requires step up if score is 60" do
-        Engine.stub :score, 60 do
+        Engine.stub(:score, 60) do
           called = false
-          Enforcer.stub :require_step_up!, ->(u) { called = true; assert_equal @user, u } do
+          Enforcer.stub(:require_step_up!, ->(u) { called = true; assert_equal @user, u }) do
             Enforcer.call(@user)
           end
 
@@ -57,9 +58,9 @@ module Sign
       end
 
       test "does nothing if score is 0" do
-        Engine.stub :score, 0 do
-          Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
-            Enforcer.stub :require_step_up!, ->(_) { raise "Should not be called" } do
+        Engine.stub(:score, 0) do
+          Enforcer.stub(:revoke!, ->(_) { raise RuntimeError, "Should not be called" }) do
+            Enforcer.stub(:require_step_up!, ->(_) { raise RuntimeError, "Should not be called" }) do
               result = Enforcer.call(@user)
 
               assert_nil result
@@ -68,36 +69,7 @@ module Sign
         end
       end
 
-      # Mock Redis for flow test
-      class MockRedis
-        def initialize
-          @data = {}
-        end
-
-        def zadd(key, score, member)
-          @data[key] ||= []
-          @data[key] << { score: score, member: member }
-        end
-
-        def zrangebyscore(key, min, _max)
-          return [] unless @data[key]
-
-          min_val = min.to_f
-          @data[key].select { |item| item[:score] >= min_val }.pluck(:member)
-        end
-
-        def expire(key, ttl)
-        end
-
-        def set(key, val, ex:)
-        end
-      end
-
       test "end-to-end risk flow" do
-        # Setup Mock Redis for this test only
-        mock_redis = MockRedis.new
-        silence_warnings { ::REDIS_CLIENT = mock_redis }
-
         @user.user_tokens.destroy_all # Ensure we don't hit session limit
 
         # Create token with valid public_id and expiry
@@ -109,11 +81,10 @@ module Sign
           # If FK check fails, we might need to assume fixtures loaded statuses.
         )
 
-        # 1. Emit Risk Event (writes to Redis)
+        # 1. Emit risk event (writes to occurrences)
         Sign::Risk::Emitter.emit("refresh_reuse_detected", user_id: @user.id)
 
-        # 2. Call Enforcer (reads from Redis via Engine, then Revokes)
-        # Note: We are NOT stubbing Engine.score here! We want real Engine logic using our MockRedis.
+        # 2. Call Enforcer (reads occurrences via Engine, then revokes)
         Sign::Risk::Enforcer.call(@user)
 
         # 3. Check revocation

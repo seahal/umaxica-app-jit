@@ -14,7 +14,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(21)       default(""), not null
-#  status_id    :bigint           default(2), not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #
@@ -34,6 +34,12 @@ require "test_helper"
 
 class TelephoneOccurrenceTest < ActiveSupport::TestCase
   fixtures :telephone_occurrences, :telephone_occurrence_statuses
+
+  test "defaults status_id to nothing" do
+    record = TelephoneOccurrence.new(body: "+819011234567", public_id: "X" * 21)
+
+    assert_equal TelephoneOccurrenceStatus::NOTHING, record.status_id
+  end
 
   test "public_id length" do
     record = build_occurrence(TelephoneOccurrence, body: "+819012345678", public_id: "A" * 20)

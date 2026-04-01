@@ -36,7 +36,7 @@ class EnsurePreferenceAuditEventsAndLevels < ActiveRecord::Migration[8.2]
 
     safety_assured do
       ids.each do |id|
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id, created_at, updated_at)
           VALUES ('#{id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO NOTHING

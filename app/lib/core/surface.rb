@@ -31,9 +31,7 @@ module Core
     end
 
     def normalized_host(value)
-      return nil if value.blank?
-
-      value.to_s.downcase.delete_suffix(".").split(":").first
+      Core::HostNormalization.normalize(value)
     end
     private_class_method :normalized_host
 

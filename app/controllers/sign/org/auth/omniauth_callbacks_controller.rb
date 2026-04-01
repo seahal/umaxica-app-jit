@@ -33,37 +33,17 @@ module Sign
           )
 
           unless auth
-            Rails.event.error("sign.social.org.omniauth.missing_auth_hash")
-            return redirect_to new_sign_org_in_path,
-                               alert: I18n.t("sign.org.social.sessions.create.failure")
+            return handle_missing_auth
           end
 
           validate_social_auth_state!
-
-          email = extract_email_from_auth(auth)
-          staff = find_active_staff_by_google_email(email)
-
-          unless staff
-            Rails.event.notify(
-              "sign.social.org.omniauth.staff_not_found",
-              provider: auth.provider,
-              email_present: email.present?,
-            )
-            clear_social_auth_intent!
-            return redirect_to new_sign_org_in_path,
-                               alert: I18n.t("sign.org.social.sessions.create.not_found")
-          end
-
-          Rails.event.debug(
-            "sign.social.org.omniauth.staff_found",
-            staff_id: staff.id,
-          )
+          staff = find_staff_from_auth(auth)
+          return redirect_staff_not_found(auth) unless staff
 
           clear_social_auth_intent!
-          login_result = log_in(staff, record_login_audit: true)
+          return redirect_login_not_allowed(staff) unless staff.login_allowed?
 
-          provider_name = SocialIdentifiable.normalize_provider(auth.provider).humanize
-          handle_login_result(login_result, provider_name)
+          login_and_redirect(staff, auth)
         rescue SocialAuth::BaseError => e
           handle_social_auth_error(e)
         rescue StandardError => e
@@ -75,8 +55,10 @@ module Sign
           message = params[:message] || "unknown_error"
           clear_social_auth_intent!
           Rails.event.record("sign.social.org.omniauth_failure", message: message)
-          redirect_to new_sign_org_in_path,
-                      alert: I18n.t("sign.org.social.sessions.create.failure")
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+          )
         end
 
         private
@@ -98,6 +80,52 @@ module Sign
           end
         end
 
+        def handle_missing_auth
+          Rails.event.error("sign.social.org.omniauth.missing_auth_hash")
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+          )
+        end
+
+        def find_staff_from_auth(auth)
+          email = extract_email_from_auth(auth)
+          staff = find_active_staff_by_google_email(email)
+          Rails.event.debug("sign.social.org.omniauth.staff_found", staff_id: staff&.id) if staff
+          staff
+        end
+
+        def redirect_staff_not_found(auth)
+          email = extract_email_from_auth(auth)
+          Rails.event.notify(
+            "sign.social.org.omniauth.staff_not_found",
+            provider: auth.provider,
+            email_present: email.present?,
+          )
+          clear_social_auth_intent!
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.not_found"),
+          )
+        end
+
+        def redirect_login_not_allowed(staff)
+          Sign::Risk::Emitter.emit(
+            "auth_failed", staff_id: staff.id, ip: request.remote_ip,
+                           reason: "social_login_not_allowed",
+          )
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+          )
+        end
+
+        def login_and_redirect(staff, auth)
+          login_result = log_in(staff, record_login_audit: true)
+          provider_name = SocialIdentifiable.normalize_provider(auth.provider).humanize
+          handle_login_result(login_result, provider_name)
+        end
+
         def extract_email_from_auth(auth)
           email = auth.dig("info", "email") || auth.dig(:info, :email)
           email&.strip&.downcase
@@ -106,7 +134,14 @@ module Sign
         def find_active_staff_by_google_email(email)
           return nil if email.blank?
 
-          staff_email = StaffEmail.find_by(address: email)
+          staff_email = nil
+          OperatorRecord.connected_to(role: :writing) do
+            staff_email = StaffEmail.find_by(address: email)
+            if staff_email && !staff_email.undeletable?
+              staff_email.update!(undeletable: true)
+            end
+          end
+
           staff = staff_email&.staff
           staff if staff&.status_id == StaffStatus::ACTIVE
         end
@@ -121,22 +156,39 @@ module Sign
                 http_status: result[:http_status],
               )
             when :session_limit_exceeded
-              redirect_to new_sign_org_in_path,
-                          alert: I18n.t("sign.org.social.sessions.create.session_limit")
+              redirect_to(
+                sign_org_in_session_path,
+                notice: I18n.t(
+                  "sign.org.in.session.restricted_notice",
+                  default: "セッション数が上限に達しています。既存セッションを管理してください。",
+                ),
+              )
             else
-              redirect_to new_sign_org_in_path,
-                          alert: I18n.t("sign.org.social.sessions.create.failure")
+              redirect_to(
+                new_sign_org_in_path,
+                alert: I18n.t("sign.org.social.sessions.create.failure"),
+              )
             end
           elsif result.is_a?(Hash) && result[:restricted]
-            redirect_to sign_org_in_session_path,
-                        notice: I18n.t(
-                          "sign.org.in.session.restricted_notice",
-                          default: "セッション数が上限に達しています。既存セッションを管理してください。",
-                        )
+            redirect_to(
+              sign_org_in_session_path,
+              notice: I18n.t(
+                "sign.org.in.session.restricted_notice",
+                default: "セッション数が上限に達しています。既存セッションを管理してください。",
+              ),
+            )
           else
-            issue_checkpoint!
-            redirect_to sign_org_in_checkpoint_path(ri: params[:ri]),
-                        notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name)
+            if issue_bulletin!
+              redirect_to(
+                sign_org_in_bulletin_path(ri: params[:ri]),
+                notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name),
+              )
+            else
+              redirect_to(
+                sign_org_root_path(ri: params[:ri]),
+                notice: I18n.t("sign.org.social.sessions.create.success", provider: provider_name),
+              )
+            end
           end
         end
 
@@ -151,8 +203,10 @@ module Sign
             exception: error,
           )
           clear_social_auth_intent!
-          redirect_to new_sign_org_in_path,
-                      alert: I18n.t("sign.org.social.sessions.create.failure")
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+          )
         end
 
         def mock_auth_from_test_mode
@@ -179,9 +233,11 @@ module Sign
             "[SocialCallbackGuard] org phase=callback provider=#{provider.inspect} " \
             "reason=#{reason} details=#{details.inspect}",
           )
-          redirect_to new_sign_org_in_path,
-                      alert: I18n.t("sign.org.social.sessions.create.failure"),
-                      status: :forbidden
+          redirect_to(
+            new_sign_org_in_path,
+            alert: I18n.t("sign.org.social.sessions.create.failure"),
+            status: :forbidden,
+          )
         end
       end
     end

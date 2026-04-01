@@ -17,16 +17,16 @@ OPEN_TELEMETRY=false
 NODE_ENV=development
 # Region
 # GLOBAL_MODE=true
-REGION_CODE=jp
+REGION_CODE=all
 # Database Configuration
 ## Redis (use local Redis service inside Compose)
 VALKEY_URL=redis://valkey:6379/0
-VALKEY_RACK_ATTACK_URL=redis://valkey:6379/1
+RATE_LIMIT_REDIS_URL=redis://valkey:6379/1
 REDIS_NORMAL_URL=redis://valkey:6379/7
 ## PostgreSQL (use local PostgreSQL services inside Compose)
+# POSTGRESQL_PASSWORD is managed via Rails credentials (DATABASE.PASSWORD)
 POSTGRESQL_USER=root
 POSTGRESQL_PORT=5432
-POSTGRESQL_PASSWORD=password
 POSTGRESQL_DEFAULT_PUB=primary
 POSTGRESQL_OCCURRENCE_PUB=primary
 POSTGRESQL_OCCURRENCE_SUB=replica
@@ -42,20 +42,20 @@ POSTGRESQL_PRINCIPAL_PUB=primary
 POSTGRESQL_PRINCIPAL_SUB=replica
 POSTGRESQL_PROFILE_PUB=primary
 POSTGRESQL_PROFILE_SUB=replica
-POSTGRESQL_PREFERENCE_PUB=primary
-POSTGRESQL_PREFERENCE_SUB=replica
+POSTGRESQL_COMMERCE_PUB=primary
+POSTGRESQL_COMMERCE_SUB=replica
 POSTGRESQL_TOKEN_PUB=primary
 POSTGRESQL_TOKEN_SUB=replica
 POSTGRESQL_DOCUMENT_PUB=primary
 POSTGRESQL_DOCUMENT_SUB=replica
-POSTGRESQL_NEWS_PUB=primary
-POSTGRESQL_NEWS_SUB=replica
+POSTGRESQL_PUBLICATION_PUB=primary
+POSTGRESQL_PUBLICATION_SUB=replica
 POSTGRESQL_MESSAGE_PUB=primary
 POSTGRESQL_MESSAGE_SUB=replica
 POSTGRESQL_NOTIFICATION_PUB=primary
 POSTGRESQL_NOTIFICATION_SUB=replica
-POSTGRESQL_CABLE_PUB=primary
-POSTGRESQL_CABLE_SUB=replica
+POSTGRESQL_CACHE_PUB=primary
+POSTGRESQL_CACHE_SUB=replica
 POSTGRESQL_STORAGE_PUB=primary
 POSTGRESQL_STORAGE_SUB=replica
 POSTGRESQL_QUEUE_PUB=primary
@@ -74,7 +74,7 @@ POSTGRESQL_BILLING_SUB=replica
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
 # OpenTelemetry Configuration
-OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
 # Error Monitoring Configuration
 # SENTRY_DSN_CONFIG=null
 # PaaS Configuration
@@ -89,8 +89,9 @@ DEV_URL=dev.localhost
 APEX_CORPORATE_URL=com.localhost
 APEX_SERVICE_URL=app.localhost
 APEX_STAFF_URL=org.localhost
-SIGN_SERVICE_URL=sign.umaxica.app
-SIGN_STAFF_URL=sign.umaxica.org
+SIGN_CORPORATE_URL=sign.com.localhost
+SIGN_SERVICE_URL=sign.app.localhost
+SIGN_STAFF_URL=sign.org.localhost
 CORE_CORPORATE_URL=www.com.localhost
 CORE_SERVICE_URL=www.app.localhost
 CORE_STAFF_URL=www.org.localhost
@@ -113,5 +114,5 @@ PREFERENCE_JWT_AUDIENCES=umaxica.app,umaxica.com,localhost
 # JWT keys (CORPORATE, SERVICE, ORGANIZATION) are resolved from encrypted credentials via Rails.app.creds.
 # Cloudflare Turnstile keys are resolved from encrypted credentials via Rails.app.creds.
 # WebAuthn
-TRUSTED_ORIGINS=https://sign.umaxica.app,https://sign.umaxica.org
+TRUSTED_ORIGINS=http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001
 # HMAC Secret is resolved from encrypted credentials via Rails.app.creds.

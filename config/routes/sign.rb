@@ -4,40 +4,66 @@
 require Rails.root.join("lib/sign_host_env").to_s
 
 scope module: :sign, as: :sign do
+  # User auth service (sign.app domain)
   constraints host: SignHostEnv.service_url do
     scope module: :app, as: :app do
       root to: "roots#index"
 
+      # Health check and sitemap
       resource :health, only: :show, defaults: { format: :html }
       resource :sitemap, only: :show, defaults: { format: :xml }
 
+      # Public web API: OTP delivery, cookie consent, theme
+      namespace :web do
+        namespace :v0 do
+          resource :health, only: :show
+          namespace :in do
+            namespace :email do
+              resource :otp, only: :create
+            end
+            namespace :telephone do
+              resource :otp, only: :create
+            end
+          end
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
+
+      # Edge API: token lifecycle management (check, DBSC binding, refresh)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
-          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
-            resource :dbsc_registration, only: :create
+            resource :dbsc, only: :create
             resource :refresh, only: :create
           end
         end
       end
 
-      namespace :web do
-        namespace :v0 do
-          namespace :in do
-            namespace :email do
-              # TODO: nusty code!, delete controller of this line
-              resource :otp, only: :create, controller: :otps
-            end
-            namespace :telephone do
-              # TODO: nusty code!, delete controller of this line
-              resource :otp, only: :create, controller: :otps
-            end
-          end
+      # preferences
+      resource :preference, only: [:show]
+      namespace :preference do
+        # for region settings.
+        resource :region, only: [:edit, :update]
+        namespace :region do
+          # for lx and tz settings.
+          resource :timezone, only: [:edit, :update]
+          resource :language, only: [:edit, :update]
+        end
+        # for dark/light mode
+        resource :theme, only: [:edit, :update]
+        # endpoint of reset preferences.
+        resource :reset, only: [:edit, :destroy]
+        # for ePrivacy settings.
+        resource :cookie, only: [:edit, :update]
+        resource :email, only: %i(new create edit update) do
+          post :unsubscribe, on: :member
         end
       end
 
+      # Sign-up: account registration via email or telephone
       resource :up, only: :new
       namespace :up do
         resources :emails, only: %i(new create edit update)
@@ -45,17 +71,16 @@ scope module: :sign, as: :sign do
           collection do
             post :resend
           end
-          # TODO: nusty code!
-          resource :passkey_registration, only: %i(show create)
-          # TODO: nusty code!
-          post "passkey_registration/begin", to: "passkey_registrations#begin"
+          resource :passkey_registration, only: %i(show create) do
+            post :begin, on: :member
+          end
         end
       end
 
+      # Sign-in: credential entry and session establishment
       resource :in, only: %i(new)
       namespace :in do
         resource :email, only: %i(new create edit update)
-        # TODO: refactor to standard CRUD
         resources :passkeys, only: [:new] do
           collection do
             post :options
@@ -64,7 +89,7 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
-        resource :checkpoint, only: %i(show update destroy)
+        resource :bulletin, only: %i(show update destroy)
         resource :challenge, only: %i(show)
         namespace :challenge do
           resource :totp, only: %i(new create)
@@ -91,8 +116,8 @@ scope module: :sign, as: :sign do
             to: "omniauth_callbacks#failure"
       end
 
-      # step up verification
-      resource :verification, only: %i(show), controller: :verification
+      # Step-up verification
+      resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
@@ -105,10 +130,10 @@ scope module: :sign, as: :sign do
       resource :token, only: %i(create), defaults: { format: :json }
       resource :jwks, only: %i(show), defaults: { format: :json }
 
+      # Account settings and linked identity management
       resource :configuration, only: %i(show edit)
       namespace :configuration do
         resources :totps, only: %i(index new create edit update destroy)
-        # TODO: refactor to standard CRUD
         resources :passkeys do
           collection do
             post :options
@@ -117,19 +142,15 @@ scope module: :sign, as: :sign do
         end
         resource :challenge, only: %i(show update)
         namespace :emails do
-          # TODO: nusty code!, delete controller of this line
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :emails, only: %i(index edit destroy)
         namespace :telephones do
-          # TODO: nusty code!, delete controller of this line
-          resource :registration, only: %i(new create edit update), controller: :registrations
+          resource :registration, only: %i(new create edit update)
         end
         resources :telephones, only: %i(index new edit create destroy)
         resource :apple, only: [:show, :destroy]
-        # TODO: by the way, what is update mehtods for google here?
-        resource :google, only: %i(show update destroy)
-        # TODO: refactor to standard CRUD
+        resource :google, only: :show
         resources :secrets, only: %i(index show new edit create destroy) do
           post :regenerate, on: :member
         end
@@ -139,14 +160,124 @@ scope module: :sign, as: :sign do
           end
         end
         resources :activities, only: :index
-        resource :activity, only: :show, controller: :activities
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
       end
+    end
+  end
 
-      resource :preference, only: :show
+  # Corporate sign service (sign.com domain)
+  constraints host: SignHostEnv.corporate_url do
+    scope module: :com, as: :com do
+      root to: "roots#index"
+
+      # Health check and sitemap
+      resource :health, only: :show, defaults: { format: :html }
+      resource :sitemap, only: :show, defaults: { format: :xml }
+
+      # Public web API: OTP delivery, cookie consent, theme
+      namespace :web do
+        namespace :v0 do
+          namespace :in do
+            namespace :email do
+              resource :otp, only: :create
+            end
+            namespace :telephone do
+              resource :otp, only: :create
+            end
+          end
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
+
+      # preferences
+      resource :preference, only: [:show]
       namespace :preference do
-        resources :email, only: %i(index show create edit update), controller: :emails
+        # for region settings.
+        resource :region, only: [:edit, :update]
+        namespace :region do
+          # for lx and tz settings.
+          resource :timezone, only: [:edit, :update]
+          resource :language, only: [:edit, :update]
+        end
+        # for dark/light mode
+        resource :theme, only: [:edit, :update]
+        resource :cookie, only: [:edit, :update]
+        # endpoint of reset preferences.
+        resource :reset, only: [:edit, :destroy]
+        resource :email, only: %i(new create edit update) do
+          post :unsubscribe, on: :member
+        end
+      end
+
+      # Sign-up: email registration
+      resource :up, only: :new
+      namespace :up do
+        resources :emails, only: %i(new create edit update)
+      end
+
+      # Sign-in: credential entry and session establishment
+      resource :in, only: %i(new)
+      namespace :in do
+        resource :email, only: %i(new create edit update)
+        resources :passkeys, only: [:new] do
+          collection do
+            post :options
+            post :verification
+          end
+        end
+        resource :secret, only: %i(new create)
+        resource :session, only: %i(show update destroy)
+        resource :bulletin, only: %i(show update destroy)
+        resource :challenge, only: %i(show)
+        namespace :challenge do
+          resource :totp, only: %i(new create)
+          resource :passkey, only: %i(new create)
+        end
+      end
+
+      # Step-up verification
+      resource :verification, only: %i(show)
+      namespace :verification do
+        resource :setup, only: %i(new)
+        resource :passkey, only: %i(new create)
+        resource :totp, only: %i(new create)
+        resources :emails, only: %i(new create edit update)
+      end
+
+      resource :authorize, only: %i(show)
+      resource :token, only: %i(create), defaults: { format: :json }
+      resource :jwks, only: %i(show), defaults: { format: :json }
+
+      # Account settings and linked identity management
+      resource :configuration, only: %i(show edit)
+      namespace :configuration do
+        resources :totps, only: %i(index new create edit update destroy)
+        resources :passkeys do
+          collection do
+            post :options
+            post :verification
+          end
+        end
+        resource :challenge, only: %i(show update)
+        resources :emails, only: %i(index edit destroy)
+        namespace :emails do
+          resource :registration, only: %i(new create edit update)
+        end
+        resources :telephones, only: %i(index new edit create destroy)
+        namespace :telephones do
+          resource :registration, only: %i(new create edit update)
+        end
+        resources :secrets, only: %i(index show new edit create destroy)
+        resources :sessions, only: %i(index destroy) do
+          collection do
+            delete :others
+          end
+        end
+        resources :activities, only: :index
+        resource :out, only: %i(edit destroy)
+        resource :withdrawal, only: %i(new update create edit destroy)
       end
     end
   end
@@ -156,22 +287,61 @@ scope module: :sign, as: :sign do
     scope module: :org, as: :org do
       root to: "roots#index"
 
+      # Health check and sitemap
       resource :health, only: :show, defaults: { format: :html }
       resource :sitemap, only: :show, defaults: { format: :xml }
 
+      # Public web API: cookie consent, theme
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
+
+      # Edge API: token lifecycle management (check, DBSC binding, refresh)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
-          resource :sitemap, only: :show
           namespace :token do
             resource :check, only: :show
-            resource :dbsc_registration, only: :create
+            resource :dbsc, only: :create
             resource :refresh, only: :create
           end
         end
       end
+      # preferences
+      resource :preference, only: [:show]
+      namespace :preference do
+        # for region settings.
+        resource :region, only: [:edit, :update]
+        namespace :region do
+          # for lx and tz settings.
+          resource :timezone, only: [:edit, :update]
+          resource :language, only: [:edit, :update]
+        end
+        # for dark/light mode
+        resource :theme, only: [:edit, :update]
+        # endpoint of reset preferences.
+        resource :reset, only: [:edit, :destroy]
+        # for ePrivacy settings.
+        resource :cookie, only: [:edit, :update]
+        # email reset
+        resource :email, only: %i(new create edit update) do
+          post :unsubscribe, on: :member
+        end
+      end
 
+      # Sign-up: email registration and staff invitation flows
       resource :up, only: :new
+      namespace :up do
+        resources :emails, only: %i(new create)
+        resources :invitations, only: %i(new create) do
+          collection do
+            resources :emails, only: %i(new create edit update)
+          end
+        end
+      end
 
       # Social auth: Google sign-in for staff (login only, no sign-up)
       namespace :social do
@@ -187,9 +357,9 @@ scope module: :sign, as: :sign do
             to: "omniauth_callbacks#failure"
       end
 
+      # Sign-in: credential entry and session establishment
       resource :in, only: [:new]
       namespace :in do
-        # TODO: refactor to standard CRUD
         resources :passkeys, only: [:new] do
           collection do
             post :options
@@ -198,11 +368,15 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
-        resource :checkpoint, only: %i(show update destroy)
-        resource :challenge, only: %i(show create)
+        resource :bulletin, only: %i(show update destroy)
+        resource :challenge, only: %i(show)
+        namespace :challenge do
+          resource :passkey, only: %i(new create)
+        end
       end
 
-      resource :verification, only: %i(show), controller: :verification
+      # Step-up verification
+      resource :verification, only: %i(show)
       namespace :verification do
         resource :setup, only: %i(new)
         resource :passkey, only: %i(new create)
@@ -213,9 +387,9 @@ scope module: :sign, as: :sign do
       resource :token, only: %i(create), defaults: { format: :json }
       resource :jwks, only: %i(show), defaults: { format: :json }
 
+      # Account settings and identity management
       resource :configuration, only: :show
       namespace :configuration do
-        # TODO: refactor to standard CRUD
         resources :passkeys do
           collection do
             post :options
@@ -229,6 +403,16 @@ scope module: :sign, as: :sign do
             delete :others
           end
         end
+        namespace :emails do
+          resource :registration, only: %i(new create edit update)
+        end
+        resources :emails, only: %i(index edit destroy)
+        namespace :telephones do
+          resource :registration, only: %i(new create edit update)
+        end
+        resources :telephones, only: %i(index new edit create destroy)
+        resource :google, only: %i(show create)
+        resources :activities, only: :index
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(show)
       end

@@ -16,7 +16,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(21)       default(""), not null
-#  status_id    :bigint           default(1), not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #
@@ -35,6 +35,12 @@
 require "test_helper"
 
 class UserOccurrenceTest < ActiveSupport::TestCase
+  test "defaults status_id to nothing" do
+    record = build_occurrence(UserOccurrence, body: "user-occur-2", public_id: "X" * 21)
+
+    assert_equal UserOccurrenceStatus::NOTHING, record.status_id
+  end
+
   test "lifecycle timestamps default" do
     record = build_occurrence(UserOccurrence, body: "user-occur-1", public_id: "Y" * 21)
 

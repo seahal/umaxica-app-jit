@@ -20,7 +20,7 @@ module Sign
       )
     end
 
-    def retrieve_redirect_parameter_for_checkpoint
+    def retrieve_redirect_parameter_for_bulletin
       params[:rd].presence
     end
 

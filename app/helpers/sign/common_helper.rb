@@ -35,7 +35,7 @@ module Sign::CommonHelper
   def localized_session_timestamp(time)
     return nil if time.nil?
 
-    short_format = I18n.t("time.formats.short", default: nil)
+    short_format = I18n.t("time.formats.short")
     format_string = short_format.presence || "%Y/%m/%d %H:%M"
     time.strftime(format_string)
   end

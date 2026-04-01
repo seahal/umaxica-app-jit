@@ -22,7 +22,7 @@ module Sign
       return if valid_registration_email_session?
 
       reset_email_registration_flow!
-      redirect_to new_registration_path_with_notice
+      redirect_to(new_registration_path_with_notice)
     end
 
     def create
@@ -43,7 +43,7 @@ module Sign
       redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
       flash[:notice] = redirect_params.delete(:notice)
       sanitize_redirect_params!(redirect_params)
-      redirect_to after_email_registration_started_path(redirect_params)
+      redirect_to(after_email_registration_started_path(redirect_params))
     end
 
     def update
@@ -51,7 +51,7 @@ module Sign
 
       unless valid_registration_email_session?
         reset_email_registration_flow!
-        redirect_to new_registration_path_with_notice
+        redirect_to(new_registration_path_with_notice)
         return
       end
 
@@ -73,7 +73,7 @@ module Sign
       if result == :locked
         reset_email_registration_flow!
         flash[:alert] = t("sign.app.registration.email.update.attempts_exceeded")
-        redirect_to new_email_registration_path
+        redirect_to(new_email_registration_path)
         return
       elsif !result
         render :edit, status: :unprocessable_content
@@ -81,8 +81,10 @@ module Sign
       end
 
       session.delete(registration_email_session_key)
-      redirect_to after_email_registration_verified_path,
-                  notice: t("sign.app.registration.email.update.success")
+      redirect_to(
+        after_email_registration_verified_path,
+        notice: t("sign.app.registration.email.update.success"),
+      )
     end
 
     private

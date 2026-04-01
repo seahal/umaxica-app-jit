@@ -24,15 +24,12 @@ module Preference
   # 1) JWT configuration & token primitives
   # ==========================================================================
   module JwtConfiguration
-    EPHEMERAL_PRIVATE_KEY_MUTEX = Mutex.new
-    EPHEMERAL_PRIVATE_KEY_CACHE = Concurrent::AtomicReference.new(nil)
-
     def self.active_kid
       ENV.fetch("PREFERENCE_JWT_ACTIVE_KID", "default")
     end
 
     def self.leeway_seconds
-      ENV.fetch("PREFERENCE_JWT_LEEWAY_SECONDS", "30").to_i
+      Integer(ENV.fetch("PREFERENCE_JWT_LEEWAY_SECONDS", "30").to_s, 10)
     end
 
     def self.issuer
@@ -46,58 +43,50 @@ module Preference
       audiences
     end
 
+    # Returns audiences scoped to the TLD of the given host.
+    # e.g., host "sign.umaxica.app" results in only audiences ending with ".app" or equal to an ".app" apex.
+    # In development, "localhost" is always included as an additional audience.
+    def self.audience_for(host)
+      return audiences if host.blank?
+
+      all = audiences
+      return all if all.empty?
+
+      # Extract the TLD from the host (e.g., "sign.umaxica.app" results in "app", "localhost" results in "localhost")
+      host_parts = host.split(".")
+      host_tld = host_parts.last
+
+      matched = all.select { |aud| aud.split(".").last == host_tld }
+
+      # In non-production, keep "localhost" if present in the configured audiences
+      unless Rails.env.production?
+        localhost_aud = all.find { |aud| aud == "localhost" || aud.end_with?(".localhost") }
+        matched << localhost_aud if localhost_aud && matched.exclude?(localhost_aud)
+      end
+
+      matched.presence || all
+    end
+
     def self.private_key_for_active
       private_key_for(active_kid)
     end
 
     def self.private_key_for(kid)
-      keyset = parse_keyset(ENV["PREFERENCE_JWT_PRIVATE_KEYSET"])
-      return decode_key(keyset[kid]) if keyset.key?(kid)
-      return private_key if kid == active_kid
-
-      nil
+      keyset = parse_keyset(Rails.app.creds.option(:PREFERENCE_JWT_PRIVATE_KEYSET))
+      decode_key(keyset[kid])
     end
 
     def self.public_key_for(kid)
-      keyset = parse_keyset(ENV["PREFERENCE_JWT_PUBLIC_KEYSET"])
-      return decode_key(keyset[kid]) if keyset.key?(kid)
-      return public_key if kid == active_kid
-
-      nil
+      keyset = parse_keyset(Rails.app.creds.option(:PREFERENCE_JWT_PUBLIC_KEYSET))
+      decode_key(keyset[kid])
     end
 
     def self.private_key
-      private_key_base64 = Rails.app.creds.option(:JWT_PREFERENCE_PRIVATE_KEY)
-      if private_key_base64.blank?
-        return ephemeral_private_key unless Rails.env.production?
-
-        raise "Preference JWT private key not configured in credentials"
-      end
-
-      private_key_der = Base64.decode64(private_key_base64)
-      OpenSSL::PKey::EC.new(private_key_der)
+      private_key_for(active_kid)
     end
 
     def self.public_key
-      public_key_base64 = Rails.app.creds.option(:JWT_PREFERENCE_PUBLIC_KEY)
-      if public_key_base64.blank?
-        return ephemeral_private_key.public_key unless Rails.env.production?
-
-        raise "Preference JWT public key not configured in credentials"
-      end
-
-      public_key_der = Base64.decode64(public_key_base64)
-      OpenSSL::PKey::EC.new(public_key_der)
-    end
-
-    def self.ephemeral_private_key
-      cached_key = EPHEMERAL_PRIVATE_KEY_CACHE.get
-      return cached_key if cached_key
-
-      EPHEMERAL_PRIVATE_KEY_MUTEX.synchronize do
-        EPHEMERAL_PRIVATE_KEY_CACHE.get ||
-          EPHEMERAL_PRIVATE_KEY_CACHE.set(OpenSSL::PKey::EC.generate("secp384r1"))
-      end
+      public_key_for(active_kid)
     end
 
     def self.parse_header(token)
@@ -231,25 +220,22 @@ module Preference
           jti: jti,
           typ: TOKEN_TYPE,
           iss: JwtConfiguration.issuer,
-          aud: JwtConfiguration.audiences,
-          nonce: SecureRandom.uuid,
+          aud: JwtConfiguration.audience_for(host),
           iat: now,
-          nbf: now,
-          exp: now + ACCESS_TOKEN_TTL.to_i,
+          exp: now + Integer(ACCESS_TOKEN_TTL.to_s, 10),
         }
       end
 
       def decode_options
         {
           algorithms: [JWT_ALGORITHM],
-          required_claims: %w(iss aud typ exp nbf public_id jti preference_type),
+          required_claims: %w(iss aud typ exp public_id jti preference_type),
           leeway: JwtConfiguration.leeway_seconds,
           verify_iss: true,
           iss: JwtConfiguration.issuer,
           verify_aud: false,
           verify_iat: true,
           verify_exp: true,
-          verify_nbf: true,
         }
       end
 
@@ -466,18 +452,7 @@ module Preference
     end
 
     def show_cookie_banner?
-      return false unless request.format.html?
-      return false if cookie_banner_endpoint_url.blank?
-
-      token = cookies[Preference::CookieName.access]
-      return true if token.blank?
-
-      payload = Token.decode(token, host: request.host)
-      consent = extract_cookie_banner_consent(payload)
-      consent != true
-    rescue StandardError => e
-      Rails.logger.warn("[Preference::Base] cookie banner fallback to visible: #{e.class}")
-      true
+      false
     end
 
     def cookie_banner_endpoint_url
@@ -739,7 +714,7 @@ module Preference
           level_id: preference_audit_level_class::INFO,
           occurred_at: Time.current,
           expires_at: expires_at_value,
-          ip_address: request.remote_ip || "0.0.0.0",
+          ip_address: request.remote_ip || default_audit_ip,
           context: context,
         )
       end
@@ -755,6 +730,10 @@ module Preference
       @preference_prefix_underscore ||= preference_class.name.underscore
     end
 
+    def default_audit_ip
+      IPAddr.new((127 << 24) + 1).to_s
+    end
+
     def preference_colortheme_association
       @preference_colortheme_association ||= "#{preference_prefix_underscore}_colortheme"
     end
@@ -767,7 +746,7 @@ module Preference
       # which we want to convert to Hash with indifferent access after ensuring it's permitted.
       p_hash = attributes.to_h.with_indifferent_access
 
-      PreferenceRecord.transaction do
+      preference_connection_owner.transaction do
         child.update!(p_hash)
         create_audit_log(
           event_id: audit_event,
@@ -787,7 +766,7 @@ module Preference
       # If option_id is already an integer, use it as-is
       option_id_key = Preference::IoKeys::Params::OPTION_ID
       if params[option_id_key].is_a?(Integer) || params[option_id_key].to_s.match?(/^\d+$/)
-        params[option_id_key] = params[option_id_key].to_i
+        params[option_id_key] = Integer(params[option_id_key].to_s, 10)
         return params
       end
 
@@ -880,6 +859,20 @@ module Preference
       end
     end
 
+    def preference_connection_owner
+      @preference_connection_owner ||=
+        preference_class.ancestors.find do |ancestor|
+          ancestor.is_a?(Class) && ancestor < ActiveRecord::Base && ancestor.abstract_class?
+        end
+    end
+
+    def with_preference_connection(role)
+      connection_owner = preference_connection_owner
+      return yield if connection_owner.blank?
+
+      connection_owner.connected_to(role: role) { yield }
+    end
+
     # ==========================================================================
     # 5) Refresh/access token lifecycle (Cookie/Header/Request I/O boundary)
     # ==========================================================================
@@ -893,7 +886,6 @@ module Preference
 
       @preference_payload = payload
 
-      # Load @preferences if public_id is present in the token
       public_id = Token.extract_public_id(payload)
       if public_id.present?
         @preferences = preference_class.includes(preference_associations_to_preload).find_by(public_id: public_id)
@@ -919,17 +911,22 @@ module Preference
             else
               refresh_token_lookup_digest(token_value)
             end
-          PreferenceRecord.connected_to(role: :writing) do
+          with_preference_connection(:writing) do
             relation = preference_class.includes(preference_associations_to_preload)
             if digest
               @refresh_presented_digest = digest
               @refresh_public_id = refresh_public_id
               pref =
                 if refresh_public_id.present?
-                  relation.find_by(public_id: refresh_public_id, token_digest: digest)
+                  relation.find_by(public_id: refresh_public_id)
                 else
                   relation.find_by(token_digest: digest)
                 end
+
+              if pref.present? && pref.token_digest.present? && !secure_compare?(pref.token_digest, digest)
+                handle_preference_refresh_failed(pref, refresh_public_id)
+                return [nil, false]
+              end
 
               if pref.present? && !preference_refresh_binding_allowed?(pref)
                 handle_preference_refresh_device_denied(pref, refresh_public_id)
@@ -954,6 +951,9 @@ module Preference
         return [nil, false]
       end
 
+      # Don't create new preference if device binding was denied (security violation)
+      return [nil, false] if @preference_refresh_device_denied
+
       return [nil, false] unless create_if_missing
 
       @refresh_presented_digest = nil
@@ -966,13 +966,16 @@ module Preference
       expires_at = refresh_token_expiry
       generated_token = nil
 
-      PreferenceRecord.connected_to(role: :writing) do
-        PreferenceRecord.transaction do
+      generated_device_id = SecureRandom.uuid
+
+      with_preference_connection(:writing) do
+        preference_connection_owner.transaction do
           ensure_preference_reference_defaults!
           @preferences = preference_class.create!(
             expires_at: expires_at,
             jti: Jit::Security::Jwt::JtiGenerator.generate,
-            device_id: SecureRandom.uuid,
+            device_id: generated_device_id,
+            device_id_digest: digest_device_id(generated_device_id),
             binding_method_id: preference_binding_method_class::LEGACY,
             dbsc_status_id: preference_dbsc_status_class::NOTHING,
           )
@@ -1024,7 +1027,7 @@ module Preference
       return if @refresh_token_value.blank? || preference.blank? || @refresh_presented_digest.blank?
 
       rotated_preference =
-        PreferenceRecord.connected_to(role: :writing) do
+        with_preference_connection(:writing) do
           preference.class.rotate!(
             presented_digest: @refresh_presented_digest,
             device_id: preference.device_id,
@@ -1124,8 +1127,8 @@ module Preference
         binding_method: dbsc_binding_method_name(preference),
         status: dbsc_status_name(preference),
         session_id: preference.dbsc_session_id,
-        registration_url: preference_dbsc_registration_path,
-        verification_url: preference_dbsc_registration_path,
+        registration_url: preference_dbsc_path,
+        verification_url: preference_dbsc_path,
       }
     end
 
@@ -1144,7 +1147,7 @@ module Preference
 
       response.set_header(
         Preference::IoKeys::Headers::DBSC_REGISTRATION,
-        %(("ES256" "RS256");path="#{preference_dbsc_registration_path}";challenge="#{challenge}"),
+        %((ES256 RS256);path="#{preference_dbsc_path}";challenge="#{challenge}"),
       )
     end
 
@@ -1156,14 +1159,14 @@ module Preference
       nil
     end
 
-    def preference_dbsc_registration_path
+    def preference_dbsc_path
       case preference_class.name
       when "AppPreference"
-        apex_app_edge_v0_dbsc_registration_path
+        apex_app_edge_v0_dbsc_path
       when "OrgPreference"
-        apex_org_edge_v0_dbsc_registration_path
+        apex_org_edge_v0_dbsc_path
       when "ComPreference"
-        apex_com_edge_v0_dbsc_registration_path
+        apex_com_edge_v0_dbsc_path
       end
     end
 
@@ -1190,32 +1193,32 @@ module Preference
       region = preference.public_send("#{association_prefix}_region")&.option_id
       timezone = preference.public_send("#{association_prefix}_timezone")&.option_id
       colortheme = preference.public_send("#{association_prefix}_colortheme")&.option_id
-      consented = preference_cookie_consented(preference, association_prefix)
-      consent = preference_cookie_consent(preference, association_prefix)
+      consent_state = preference_cookie_consent_state(preference, association_prefix)
 
       {
         "lx" => option_id_to_language(language, option_prefix) || "ja",
         "ri" => option_id_to_region(region, option_prefix) || "jp",
         "tz" => option_id_to_timezone(timezone, option_prefix) || "Asia/Tokyo",
         "ct" => normalize_colortheme(option_id_to_colortheme(colortheme, option_prefix)) || "sy",
-        "consented" => consented,
-        "consent" => consent,
+        "consented" => consent_state[:consented],
+        "functional" => consent_state[:functional],
+        "performant" => consent_state[:performant],
+        "targetable" => consent_state[:targetable],
       }
     end
 
-    def preference_cookie_consented(preference, association_prefix)
-      preference.public_send("#{association_prefix}_cookie")&.consented
-    rescue NoMethodError
-      nil
-    end
-
-    def preference_cookie_consent(preference, association_prefix)
+    def preference_cookie_consent_state(preference, association_prefix)
       cookie = preference.public_send("#{association_prefix}_cookie")
-      return nil if cookie.blank? || cookie.consented_at.blank?
+      return { consented: false, functional: false, performant: false, targetable: false } if cookie.blank?
 
-      cookie.consented
+      {
+        consented: !!cookie.consented,
+        functional: !!cookie.functional,
+        performant: !!cookie.performant,
+        targetable: !!cookie.targetable,
+      }
     rescue NoMethodError
-      nil
+      { consented: false, functional: false, performant: false, targetable: false }
     end
 
     def option_id_to_language(option_id, prefix)
@@ -1277,6 +1280,7 @@ module Preference
 
     def clear_preference_refresh_failure!
       @preference_refresh_failed = false
+      @preference_refresh_device_denied = false
     end
 
     def preference_refresh_failed?
@@ -1284,28 +1288,30 @@ module Preference
     end
 
     def extract_preference_refresh_device_id
-      header_device_id = request.headers[Preference::IoKeys::Headers::DEVICE_ID].to_s.presence
       cookie_device_id = read_preference_device_id_cookie
 
-      if header_device_id.blank? && cookie_device_id.blank?
+      if cookie_device_id.blank?
         @preference_refresh_device_reason = "missing"
         return nil
       end
 
-      if header_device_id.present? && cookie_device_id.present? && header_device_id != cookie_device_id
-        @preference_refresh_device_reason = "mismatch"
-        return nil
-      end
-
-      header_device_id || cookie_device_id
+      cookie_device_id
     end
 
     def preference_refresh_binding_allowed?(preference)
       return preference_refresh_dbsc_allowed?(preference) if preference.binding_method_dbsc?
 
       refresh_device_id = extract_preference_refresh_device_id
-      if refresh_device_id.blank? || preference.device_id.to_s != refresh_device_id.to_s
-        @preference_refresh_device_reason = refresh_device_id.blank? ? "missing" : "mismatch"
+      if refresh_device_id.blank?
+        @preference_refresh_device_reason = "missing"
+        return false
+      end
+
+      # Compare using SHA3-384 digest for security
+      # Cookie contains plaintext device_id, DB stores digest
+      presented_digest = digest_device_id(refresh_device_id)
+      if preference.device_id_digest.blank? || !secure_compare?(preference.device_id_digest, presented_digest)
+        @preference_refresh_device_reason = "mismatch"
         return false
       end
 
@@ -1335,6 +1341,7 @@ module Preference
     def handle_preference_refresh_device_denied(preference, refresh_public_id)
       clear_preference_auth_cookies!
       @preference_refresh_failed = true
+      @preference_refresh_device_denied = true
 
       Rails.logger.warn(
         {
@@ -1391,7 +1398,7 @@ module Preference
     def handle_preference_refresh_replay!(preference)
       now = Time.current
 
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference.update!(compromised_at: now, revoked_at: now) if preference.compromised_at.nil?
       end
 
@@ -1408,7 +1415,7 @@ module Preference
     end
 
     def rotate_preference_jti!(preference)
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
       end
     end
@@ -1422,7 +1429,6 @@ module Preference
         request: request,
         expires: expires_at,
         httponly: httponly,
-        secure: Rails.env.production?,
         same_site: :lax,
       )
     end
@@ -1432,7 +1438,7 @@ module Preference
     end
 
     def access_token_cookie_name
-      Preference::CookieName.access
+      self.class.name.start_with?("Apex::App::Preference") ? Authentication::Base::ACCESS_COOKIE_KEY : Preference::CookieName.access
     end
 
     def refresh_token_cookie_name
@@ -1456,7 +1462,7 @@ module Preference
     end
 
     def set_preference_device_id_cookie!(device_id, expires_at:)
-      cookies.encrypted[preference_device_id_cookie_name] = preference_cookie_options(
+      cookies[preference_device_id_cookie_name] = preference_cookie_options(
         expires_at: expires_at,
         httponly: true,
       ).merge(
@@ -1465,7 +1471,7 @@ module Preference
     end
 
     def read_preference_device_id_cookie
-      cookies.encrypted[preference_device_id_cookie_name]
+      cookies[preference_device_id_cookie_name].to_s.presence
     end
 
     def clear_preference_auth_cookies!

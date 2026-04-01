@@ -188,7 +188,7 @@ module Common
     #
     # @return [Integer] A unique counter value
     def generate_otp_counter
-      [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
+      Integer([Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_s, 10)
     end
 
     # Performs constant-time comparison of OTP codes

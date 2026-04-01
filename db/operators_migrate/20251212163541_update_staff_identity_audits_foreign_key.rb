@@ -10,9 +10,9 @@ class UpdateStaffIdentityAuditsForeignKey < ActiveRecord::Migration[8.2]
     return if foreign_key_exists?(:staff_identity_audits, column: :status_id)
 
     if foreign_key_exists?(:staff_identity_audits, :staff_identity_audit_statuses)
-      remove_foreign_key :staff_identity_audits, :staff_identity_audit_statuses
+      remove_foreign_key(:staff_identity_audits, :staff_identity_audit_statuses)
     end
-    add_foreign_key :staff_identity_audits, :staff_identity_audit_statuses, column: :status_id
+    add_foreign_key(:staff_identity_audits, :staff_identity_audit_statuses, column: :status_id)
 
   end
 end

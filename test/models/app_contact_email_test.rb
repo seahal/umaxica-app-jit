@@ -17,7 +17,7 @@
 #  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  app_contact_id         :bigint           not null
+#  app_contact_id         :bigint           default(0), not null
 #
 # Indexes
 #
@@ -95,7 +95,6 @@ class AppContactEmailTest < ActiveSupport::TestCase
     assert_equal "foobar@example.com", @email.reload.email_address
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "generate_verifier! should create a code and set expiration" do
     freeze_time do
       raw_code = @email.generate_verifier!
@@ -106,7 +105,6 @@ class AppContactEmailTest < ActiveSupport::TestCase
       assert_equal 3, @email.verifier_attempts_left
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "verify_code should return true for correct code" do
     raw_code = @email.generate_verifier!
@@ -116,7 +114,6 @@ class AppContactEmailTest < ActiveSupport::TestCase
     assert_equal 0, @email.verifier_attempts_left
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "verify_code should return false for incorrect code and decrement attempts" do
     @email.generate_verifier!
 
@@ -133,7 +130,6 @@ class AppContactEmailTest < ActiveSupport::TestCase
     # After 0 attempts, it should still be false
     assert_not @email.verify_code("000000")
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "verify_code should fail if expired" do
     raw_code = @email.generate_verifier!

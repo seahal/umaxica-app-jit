@@ -7,7 +7,7 @@ default: &default
   port: 5432
   timeout: 30000
   username: <%= ENV.fetch("POSTGRESQL_USER", "postgres") %>
-  password: <%= ENV["POSTGRESQL_PASSWORD"] %>
+  password: <%= Rails.application.credentials.dig(:DATABASE, :PASSWORD) || ENV["POSTGRESQL_PASSWORD"] %>
   lock_timeout: 2s
   statement_timeout: 2s
   advisory_locks: false
@@ -65,17 +65,17 @@ development:
     database: development_search_db
     host: <%= ENV["POSTGRESQL_SEARCH_SUB"] || default_host %>
     migrations_paths: db/searches_migrate
-  preference:
+  commerce:
     !!merge <<: *default
-    database: development_preference_db
-    host: <%= ENV["POSTGRESQL_PREFERENCE_PUB"] || default_host %>
-    migrations_paths: db/preferences_migrate
-  preference_replica:
+    database: development_commerce_db
+    host: <%= ENV["POSTGRESQL_COMMERCE_PUB"] || default_host %>
+    migrations_paths: db/commerces_migrate
+  commerce_replica:
     !!merge <<: *default
     replica: true
-    database: development_preference_db
-    host: <%= ENV["POSTGRESQL_PREFERENCE_SUB"] || default_host %>
-    migrations_paths: db/preferences_migrate
+    database: development_commerce_db
+    host: <%= ENV["POSTGRESQL_COMMERCE_SUB"] || default_host %>
+    migrations_paths: db/commerces_migrate
   token:
     !!merge <<: *default
     database: development_token_db
@@ -98,17 +98,17 @@ development:
     database: development_document_db
     host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] || default_host %>
     migrations_paths: db/documents_migrate
-  news:
+  publication:
     !!merge <<: *default
-    database: development_news_db
-    host: <%= ENV["POSTGRESQL_NEWS_PUB"] || default_host %>
-    migrations_paths: db/news_migrate
-  news_replica:
+    database: development_publication_db
+    host: <%= ENV["POSTGRESQL_PUBLICATION_PUB"] || default_host %>
+    migrations_paths: db/publications_migrate
+  publication_replica:
     !!merge <<: *default
     replica: true
-    database: development_news_db
-    host: <%= ENV["POSTGRESQL_NEWS_SUB"] || default_host %>
-    migrations_paths: db/news_migrate
+    database: development_publication_db
+    host: <%= ENV["POSTGRESQL_PUBLICATION_SUB"] || default_host %>
+    migrations_paths: db/publications_migrate
   billing:
     !!merge <<: *default
     database: development_billing_db
@@ -142,17 +142,17 @@ development:
     database: development_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] || default_host %>
     migrations_paths: db/notifications_migrate
-  cable:
+  cache:
     !!merge <<: *default
-    database: development_cable_db
-    host: <%= ENV["POSTGRESQL_CABLE_PUB"] || default_host %>
-    migrations_paths: db/cables_migrate
-  cable_replica:
+    database: development_cache_db
+    host: <%= ENV["POSTGRESQL_CACHE_PUB"] || default_host %>
+    migrations_paths: db/caches_migrate
+  cache_replica:
     !!merge <<: *default
     replica: true
-    database: development_cable_db
-    host: <%= ENV["POSTGRESQL_CABLE_SUB"] || default_host %>
-    migrations_paths: db/cables_migrate
+    database: development_cache_db
+    host: <%= ENV["POSTGRESQL_CACHE_SUB"] || default_host %>
+    migrations_paths: db/caches_migrate
   queue:
     !!merge <<: *default
     database: development_queue_db
@@ -297,17 +297,17 @@ test:
     database: test_search_db
     host: <%= test_host %>
     migrations_paths: db/searches_migrate
-  preference:
+  commerce:
     !!merge <<: *test_default
-    database: test_preference_db
+    database: test_commerce_db
     host: <%= test_host %>
-    migrations_paths: db/preferences_migrate
-  preference_replica:
+    migrations_paths: db/commerces_migrate
+  commerce_replica:
     !!merge <<: *test_default
     replica: true
-    database: test_preference_db
+    database: test_commerce_db
     host: <%= test_host %>
-    migrations_paths: db/preferences_migrate
+    migrations_paths: db/commerces_migrate
   token:
     !!merge <<: *test_default
     database: test_token_db
@@ -330,17 +330,17 @@ test:
     database: test_notification_db
     host: <%= test_host %>
     migrations_paths: db/notifications_migrate
-  cable:
+  cache:
     !!merge <<: *test_default
-    database: test_cable_db
+    database: test_cache_db
     host: <%= test_host %>
-    migrations_paths: db/cables_migrate
-  cable_replica:
+    migrations_paths: db/caches_migrate
+  cache_replica:
     !!merge <<: *test_default
     replica: true
-    database: test_cable_db
+    database: test_cache_db
     host: <%= test_host %>
-    migrations_paths: db/cables_migrate
+    migrations_paths: db/caches_migrate
   queue:
     !!merge <<: *test_default
     database: test_queue_db
@@ -374,17 +374,17 @@ test:
     database: test_document_db
     host: <%= test_host %>
     migrations_paths: db/documents_migrate
-  news:
+  publication:
     !!merge <<: *test_default
-    database: test_news_db
+    database: test_publication_db
     host: <%= test_host %>
-    migrations_paths: db/news_migrate
-  news_replica:
+    migrations_paths: db/publications_migrate
+  publication_replica:
     !!merge <<: *test_default
     replica: true
-    database: test_news_db
+    database: test_publication_db
     host: <%= test_host %>
-    migrations_paths: db/news_migrate
+    migrations_paths: db/publications_migrate
   billing:
     !!merge <<: *test_default
     database: test_billing_db
@@ -547,23 +547,23 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.SEARCH_REPLICA&.PASSWORD %>
     migrations_paths: db/searches_migrate
-  preference:
+  commerce:
     !!merge <<: *default
-    database: production_preference_db
+    database: production_commerce_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.PREFERENCE&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.COMMERCE&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.PREFERENCE&.PASSWORD %>
-    migrations_paths: db/preferences_migrate
-  preference_replica:
+    password: <%= Rails.application.credentials&.DATABASE&.COMMERCE&.PASSWORD %>
+    migrations_paths: db/commerces_migrate
+  commerce_replica:
     !!merge <<: *default
     replica: true
-    database: production_preference_db
+    database: production_commerce_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.PREFERENCE_REPLICA&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.COMMERCE_REPLICA&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.PREFERENCE_REPLICA&.PASSWORD %>
-    migrations_paths: db/preferences_migrate
+    password: <%= Rails.application.credentials&.DATABASE&.COMMERCE_REPLICA&.PASSWORD %>
+    migrations_paths: db/commerces_migrate
   activity:
     !!merge <<: *default
     database: production_activity_db
@@ -674,23 +674,23 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION_REPLICA&.PASSWORD %>
     migrations_paths: db/notifications_migrate
-  cable:
+  cache:
     !!merge <<: *default
-    database: production_cable_db
+    database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.CABLE&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.CACHE&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.CABLE&.PASSWORD %>
-    migrations_paths: db/cables_migrate
-  cable_replica:
+    password: <%= Rails.application.credentials&.DATABASE&.CACHE&.PASSWORD %>
+    migrations_paths: db/caches_migrate
+  cache_replica:
     !!merge <<: *default
     replica: true
-    database: production_cable_db
+    database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.CABLE_REPLICA&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.HOST %>
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.CABLE_REPLICA&.PASSWORD %>
-    migrations_paths: db/cables_migrate
+    password: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.PASSWORD %>
+    migrations_paths: db/caches_migrate
   storage:
     !!merge <<: *default
     database: production_storage_db

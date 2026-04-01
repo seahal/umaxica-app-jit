@@ -5,37 +5,51 @@ module Sign
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Session
+      include ::Preference::Global
+      include ::Preference::Adoption
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Verification::Staff
-      include ::Preference::Global
-      include ::Preference::Adoption
       include Pundit::Authorization
       include ::RestrictedSessionGuard
-      include ::Current
+      include ::CurrentSupport
       include ::Finisher
 
+      allow_browser versions: :modern
+
+      # Restricted session guard - explicitly enabled to block restricted sessions
+      # from accessing routes other than /in/session
+      # NOTE: Order matters (dependencies rely on this sequence)
+      # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
+      before_action :check_default_rate_limit
+      before_action :reset_flash
+      prepend_before_action :set_preferences_cookie
+      prepend_before_action :resolve_param_context
+      prepend_before_action :set_region
+      prepend_before_action :set_locale
+      prepend_before_action :set_timezone
+      prepend_before_action :set_color_theme
+      before_action :enforce_restricted_session_guard!
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
-      before_action :set_preferences_cookie
-      before_action :resolve_param_context
-      before_action :set_region
-      before_action :set_locale
-      before_action :set_timezone
-      before_action :set_color_theme
       before_action :set_current
-      append_after_action :finish_request
+      after_action :purge_current
 
-      protect_from_forgery with: :exception
-
-      allow_browser versions: :modern
+      protect_from_forgery using: :header_or_legacy_token,
+                           trusted_origins: ENV.fetch(
+                             "SIGN_ORG_TRUSTED_ORIGINS",
+                             "http://sign.org.localhost,https://sign.org.localhost",
+                           )
+                             .split(",").map(&:strip),
+                           with: :exception
 
       guest_only!
 
       private
 
       # Redirect logged-in users from guest_only! pages to the configuration page.
-      # Overrides Auth::Base#after_login_path. ri is added automatically via default_url_options.
+      # Overrides Authentication::Base#after_login_path. ri is added automatically via default_url_options.
       def after_login_path
         sign_org_configuration_path
       rescue StandardError

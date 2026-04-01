@@ -14,7 +14,6 @@ class Sign::App::LayoutTest < ActionDispatch::IntegrationTest
     default_headers.merge("X-TEST-CURRENT-USER" => user.id.to_s)
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "layout links when not logged in" do
     get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
 
@@ -41,5 +40,4 @@ class Sign::App::LayoutTest < ActionDispatch::IntegrationTest
   #     assert_select "a[href*=?][data-turbo-method='delete']", "/authentication", count: 0
   #   end
   # end
-  # rubocop:enable Minitest/MultipleAssertions
 end

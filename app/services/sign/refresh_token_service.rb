@@ -15,14 +15,14 @@ module Sign
 
     def call
       public_id, verifier = parse_refresh_token!
-      digest = UserToken.digest_refresh_token(verifier)
 
       result = nil
       ActiveRecord::Base.connected_to(role: :writing) do
         token = find_token(public_id)
         raise InvalidRefreshToken, "token_not_found" unless token
-        raise InvalidRefreshToken, "invalid_digest" unless token.refresh_token_digest == digest
+        raise InvalidRefreshToken, "invalid_digest" unless token.refresh_token_digest_matches?(verifier)
 
+        digest = token.class.digest_refresh_token(verifier)
         result = token.class.rotate_refresh!(
           presented_refresh_digest: digest,
           device_id: token.device_id,
@@ -71,10 +71,11 @@ module Sign
         actor.update!(attrs)
       end
 
+      actor_key = actor_identifier_column(token) || :user_id
       Sign::Risk::Emitter.emit(
         "refresh_reuse_detected",
-        user_id: actor_identifier(token),
-        user_token_id: token.public_id,
+        actor_key => actor_identifier(token),
+        :user_token_id => token.public_id,
       )
 
       Rails.event.notify(

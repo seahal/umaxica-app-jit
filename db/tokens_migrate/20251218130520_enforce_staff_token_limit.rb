@@ -8,7 +8,7 @@ class EnforceStaffTokenLimit < ActiveRecord::Migration[8.2]
   def up
     return unless table_exists?(:staff_tokens)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       CREATE OR REPLACE FUNCTION #{FUNCTION_NAME}()
       RETURNS trigger AS $$
       DECLARE
@@ -24,7 +24,7 @@ class EnforceStaffTokenLimit < ActiveRecord::Migration[8.2]
       $$ LANGUAGE plpgsql;
     SQL
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       CREATE TRIGGER #{TRIGGER_NAME}
       BEFORE INSERT ON staff_tokens
       FOR EACH ROW EXECUTE FUNCTION #{FUNCTION_NAME}();
@@ -34,11 +34,11 @@ class EnforceStaffTokenLimit < ActiveRecord::Migration[8.2]
   def down
     return unless table_exists?(:staff_tokens)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DROP TRIGGER IF EXISTS #{TRIGGER_NAME} ON staff_tokens;
     SQL
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DROP FUNCTION IF EXISTS #{FUNCTION_NAME}();
     SQL
   end

@@ -8,24 +8,24 @@ class StandardizeTokenDeletableAtToInfinity < ActiveRecord::Migration[8.2]
   def up
     TABLES.each do |table|
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           UPDATE #{table}
           SET deletable_at = 'infinity'
           WHERE deletable_at IS NULL
         SQL
 
-        change_column_null table, :deletable_at, false
+        change_column_null(table, :deletable_at, false)
       end
 
-      change_column_default table, :deletable_at, -> { "'infinity'" }
-      add_index table, :deletable_at, algorithm: :concurrently unless index_exists?(table, :deletable_at)
+      change_column_default(table, :deletable_at, -> { "'infinity'" })
+      add_index(table, :deletable_at, algorithm: :concurrently) unless index_exists?(table, :deletable_at)
     end
   end
 
   def down
     TABLES.each do |table|
-      change_column_null table, :deletable_at, true
-      change_column_default table, :deletable_at, nil
+      change_column_null(table, :deletable_at, true)
+      change_column_default(table, :deletable_at, nil)
     end
   end
 end

@@ -49,7 +49,7 @@ module Email
 
     {
       otp_private_key: otp_private_key,
-      otp_counter: otp_counter.to_i,
+      otp_counter: Integer(otp_counter.to_s, 10),
       otp_expires_at: otp_expires_at.to_i,
     }
   end
@@ -103,19 +103,18 @@ module Email
 
   def increment_attempts!
     # Use atomic increment to prevent race condition with concurrent requests
-    self.class.increment_counter(:otp_attempts_count, id, touch: true) # rubocop:disable Rails/SkipsModelValidations
+    record = self.class.find(id)
+    record.update!(otp_attempts_count: otp_attempts_count + 1, updated_at: Time.current)
     reload
     # Atomically set locked_at only when attempts reached threshold and not already locked
     # Check for both NULL and -infinity as sentinel values for "not locked"
-    affected = self.class.where(id: id)
+    records = self.class.where(id: id)
       .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp")
       .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
-      # Skip model validations intentionally: this is a guarded atomic DB update
-      # to avoid race conditions when multiple processes increment simultaneously.
-      # rubocop:disable Rails/SkipsModelValidations
-      .update_all(locked_at: Time.current)
-    # rubocop:enable Rails/SkipsModelValidations
-    reload if affected.positive?
+      .to_a
+    records.each { |r| r.update!(locked_at: Time.current) }
+
+    reload if records.any?
   end
 
   def raw_address

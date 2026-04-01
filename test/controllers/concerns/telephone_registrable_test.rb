@@ -24,12 +24,11 @@ class TelephoneRegistrableTest < ActiveSupport::TestCase
 
   setup do
     @controller = TestController.new
-    @original_cache = Rails.cache
-    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    RateLimit.store.clear
   end
 
   teardown do
-    Rails.cache = @original_cache
+    RateLimit.store.clear
   end
 
   # ---------------------------------------------------------------------------
@@ -37,29 +36,23 @@ class TelephoneRegistrableTest < ActiveSupport::TestCase
   # ---------------------------------------------------------------------------
 
   test "check_telephone_verification_rate_limit! allows requests within limit" do
-    remaining = nil
-    5.times do
-      remaining = @controller.send(:check_telephone_verification_rate_limit!)
+    assert_nothing_raised do
+      5.times { @controller.send(:check_telephone_verification_rate_limit!) }
     end
-
-    assert_equal 0, remaining
   end
 
   test "check_telephone_verification_rate_limit! raises error when limit exceeded" do
     5.times { @controller.send(:check_telephone_verification_rate_limit!) }
 
-    error =
-      assert_raises(RateLimiter::RateLimitExceeded) do
-        @controller.send(:check_telephone_verification_rate_limit!)
-      end
-
-    assert_not_nil error.retry_after
+    assert_raises(ActionController::TooManyRequests) do
+      @controller.send(:check_telephone_verification_rate_limit!)
+    end
   end
 
   test "rate limit is per IP address" do
     5.times { @controller.send(:check_telephone_verification_rate_limit!) }
 
-    assert_raises(RateLimiter::RateLimitExceeded) do
+    assert_raises(ActionController::TooManyRequests) do
       @controller.send(:check_telephone_verification_rate_limit!)
     end
 

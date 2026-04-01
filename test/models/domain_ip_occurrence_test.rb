@@ -26,7 +26,7 @@
 require "test_helper"
 
 class DomainIpOccurrenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "DomainIpOccurrence", DomainIpOccurrence.name
+  end
 end

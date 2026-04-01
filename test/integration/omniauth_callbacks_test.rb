@@ -65,8 +65,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: SocialCallbackTestHelper.callback_headers(@host)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_redirected_to @expected_redirect
     follow_redirect!
@@ -105,11 +105,11 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: SocialCallbackTestHelper.callback_headers(@host)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
-    assert_match(%r{/in/checkpoint}, response.redirect_url)
+    assert_match(%r{/configuration}, response.redirect_url)
     assert_nil session[:pending_mfa]
   end
 
@@ -187,7 +187,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
     assert_response :redirect
-    assert_match(%r{/in/checkpoint}, response.redirect_url)
+    assert_match(%r{/configuration}, response.redirect_url)
     assert_nil session[:pending_mfa]
   end
 
@@ -216,7 +216,6 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "google login with session limit exceeded redirects to session management" do
     # Create an existing user with Google social identity
     user = User.create!
@@ -232,8 +231,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     # Create 2 active sessions to hit the limit
     UserToken.where(user_id: user.id).delete_all
     2.times do
-      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
-      token.rotate_refresh_token!
+      create_rotated_active_user_session(user, rotations: 3)
     end
 
     OmniAuth.config.mock_auth[:google_app] = OmniAuth::AuthHash.new(
@@ -261,5 +259,15 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
     assert_equal 1, restricted.count
   end
-  # rubocop:enable Minitest/MultipleAssertions
+
+  private
+
+  def create_rotated_active_user_session(user, rotations:)
+    token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+
+    rotations.times do
+      refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+    end
+  end
 end

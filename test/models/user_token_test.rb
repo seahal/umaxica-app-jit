@@ -12,6 +12,7 @@
 #  dbsc_challenge_issued_at     :datetime
 #  dbsc_public_key              :jsonb
 #  deletable_at                 :datetime         default(Infinity), not null
+#  device_id_digest             :string
 #  expired_at                   :datetime
 #  last_step_up_at              :datetime
 #  last_step_up_scope           :string
@@ -40,6 +41,7 @@
 #  index_user_tokens_on_dbsc_session_id               (dbsc_session_id) UNIQUE
 #  index_user_tokens_on_deletable_at                  (deletable_at)
 #  index_user_tokens_on_device_id                     (device_id)
+#  index_user_tokens_on_device_id_digest              (device_id_digest)
 #  index_user_tokens_on_expired_at                    (expired_at)
 #  index_user_tokens_on_public_id                     (public_id) UNIQUE
 #  index_user_tokens_on_refresh_expires_at            (refresh_expires_at)
@@ -60,10 +62,8 @@
 #  fk_user_tokens_on_user_token_kind_id            (user_token_kind_id => user_token_kinds.id)
 #  fk_user_tokens_on_user_token_status_id          (user_token_status_id => user_token_statuses.id)
 #
-
 require "test_helper"
 
-# Covers refresh token behavior and session constraints for users.
 class UserTokenTest < ActiveSupport::TestCase
   include ActiveSupport::Testing::TimeHelpers
 
@@ -143,7 +143,6 @@ class UserTokenTest < ActiveSupport::TestCase
   test "enforces maximum concurrent sessions per user" do
     user = User.create!
 
-    # Create tokens up to the total max (active + restricted)
     UserToken::MAX_TOTAL_SESSIONS_PER_USER.times do
       UserToken.create!(user: user)
     end

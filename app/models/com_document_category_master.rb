@@ -20,7 +20,8 @@
 
 class ComDocumentCategoryMaster < DocumentRecord
   # Fixed IDs - do not modify these values
-  NOTHING = 1
+  NOTHING = 0
+  LEGACY_NOTHING = 1
   include Treeable
 
   belongs_to :parent,

@@ -55,7 +55,7 @@ module Sign
     def handle_csrf_failure
       raise ActionController::InvalidCrossOriginRequest unless request.format.json?
 
-      render json: { error: I18n.t("errors.invalid_authenticity_token", default: "セッションが期限切れです。ページを再読み込みしてください。") },
+      render json: { error: I18n.t("errors.invalid_authenticity_token") },
              status: :unprocessable_content
     end
   end

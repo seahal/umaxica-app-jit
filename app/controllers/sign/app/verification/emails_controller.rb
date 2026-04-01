@@ -9,11 +9,13 @@ class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseC
 
     if email_otp_session_active?
       nonce = ensure_email_nonce!
-      redirect_to edit_sign_app_verification_email_path(
-        nonce,
-        ri: params[:ri],
-        scope: current_reauth_scope,
-        return_to: current_reauth_return_to_param,
+      redirect_to(
+        edit_sign_app_verification_email_path(
+          nonce,
+          ri: params[:ri],
+          scope: current_reauth_scope,
+          return_to: current_reauth_return_to_param,
+        ),
       )
       return
     end
@@ -24,11 +26,13 @@ class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseC
     end
 
     nonce = ensure_email_nonce!
-    redirect_to edit_sign_app_verification_email_path(
-      nonce,
-      ri: params[:ri],
-      scope: current_reauth_scope,
-      return_to: current_reauth_return_to_param,
+    redirect_to(
+      edit_sign_app_verification_email_path(
+        nonce,
+        ri: params[:ri],
+        scope: current_reauth_scope,
+        return_to: current_reauth_return_to_param,
+      ),
     )
   end
 
@@ -46,11 +50,13 @@ class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseC
 
     if email_otp_session_active?
       nonce = ensure_email_nonce!
-      redirect_to edit_sign_app_verification_email_path(
-        nonce,
-        ri: params[:ri],
-        scope: current_reauth_scope,
-        return_to: current_reauth_return_to_param,
+      redirect_to(
+        edit_sign_app_verification_email_path(
+          nonce,
+          ri: params[:ri],
+          scope: current_reauth_scope,
+          return_to: current_reauth_return_to_param,
+        ),
       )
       return
     end
@@ -61,11 +67,13 @@ class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseC
     end
 
     nonce = ensure_email_nonce!
-    redirect_to edit_sign_app_verification_email_path(
-      nonce,
-      ri: params[:ri],
-      scope: current_reauth_scope,
-      return_to: current_reauth_return_to_param,
+    redirect_to(
+      edit_sign_app_verification_email_path(
+        nonce,
+        ri: params[:ri],
+        scope: current_reauth_scope,
+        return_to: current_reauth_return_to_param,
+      ),
     )
   end
 

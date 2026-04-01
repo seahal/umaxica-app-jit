@@ -17,11 +17,13 @@ class NormalizeUserPasskeyWebauthnId < ActiveRecord::Migration[8.2]
     normalize_webauthn_ids
     remove_duplicate_webauthn_ids
 
-    add_index :user_passkeys,
-              :webauthn_id,
-              unique: true,
-              algorithm: :concurrently,
-              if_not_exists: true
+    add_index(
+      :user_passkeys,
+      :webauthn_id,
+      unique: true,
+      algorithm: :concurrently,
+      if_not_exists: true,
+    )
   end
 
   def down
@@ -38,7 +40,7 @@ class NormalizeUserPasskeyWebauthnId < ActiveRecord::Migration[8.2]
         next if old_value.blank?
 
         unless base64_charset?(old_value)
-          say "Manual review needed: user_passkeys id=#{passkey.id} has non-base64 characters", true
+          say("Manual review needed: user_passkeys id=#{passkey.id} has non-base64 characters", true)
           next
         end
 
@@ -47,7 +49,7 @@ class NormalizeUserPasskeyWebauthnId < ActiveRecord::Migration[8.2]
 
         passkey.update!(webauthn_id: normalized, updated_at: Time.current)
       rescue StandardError => e
-        say "Failed to normalize user_passkeys id=#{passkey.id}: #{e.class}: #{e.message}", true
+        say("Failed to normalize user_passkeys id=#{passkey.id}: #{e.class}: #{e.message}", true)
       end
     end
   end
@@ -86,13 +88,13 @@ class NormalizeUserPasskeyWebauthnId < ActiveRecord::Migration[8.2]
       next if duplicates.size <= 1
 
       kept = duplicates.shift
-      say "Duplicate user_passkeys webauthn_id detected; keeping id=#{kept.id}", true
+      say("Duplicate user_passkeys webauthn_id detected; keeping id=#{kept.id}", true)
 
       duplicates.each do |passkey|
-        say "Deleting duplicate user_passkeys id=#{passkey.id}", true
+        say("Deleting duplicate user_passkeys id=#{passkey.id}", true)
         UserPasskey.where(id: passkey.id).delete_all
       rescue StandardError => e
-        say "Failed to delete duplicate user_passkeys id=#{passkey.id}: #{e.class}: #{e.message}", true
+        say("Failed to delete duplicate user_passkeys id=#{passkey.id}: #{e.class}: #{e.message}", true)
       end
     end
   end

@@ -2,7 +2,7 @@
 
 class ValidateUserClientForeignKeys < ActiveRecord::Migration[8.2]
   def change
-    validate_foreign_key :user_clients, :users
-    validate_foreign_key :user_clients, :clients
+    validate_foreign_key(:user_clients, :users)
+    validate_foreign_key(:user_clients, :clients)
   end
 end

@@ -3,29 +3,15 @@
 
 require "test_helper"
 
-class Sign::Org::PreferenceControllerTest < ActionDispatch::IntegrationTest
+class Sign::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+  end
+
   test "should get show" do
-    get apex_org_preference_url(ri: "jp", lx: "ja")
+    get sign_org_preference_url(ri: "jp")
 
     assert_response :success
-  end
-
-  test "footer should contain preference link" do
-    get sign_org_root_url(ri: "jp", lx: "ja")
-
-    assert_response :success
-    # follow_redirect!
-    assert_response :success
-    assert_match "footer", response.body
-    assert_match apex_org_preference_url, response.body
-  end
-
-  test "preference page links to apex preference" do
-    get apex_org_preference_url(ri: "jp", lx: "ja")
-
-    assert_response :success
-    assert_select "a[href*=?]",
-                  apex_org_preference_url,
-                  text: "プリファレンス"
+    assert_select "a[href=?]", edit_sign_org_preference_region_path(ri: "jp")
   end
 end

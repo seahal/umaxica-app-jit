@@ -9,26 +9,26 @@ class ChangeStaffPublicIdToUppercase16Base32 < ActiveRecord::Migration[8.2]
     backfill_invalid_public_ids
 
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         DROP CONSTRAINT IF EXISTS chk_staffs_public_id_format;
       SQL
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         DROP CONSTRAINT IF EXISTS chk_staffs_public_id_length;
       SQL
 
-      change_column_default :staffs, :public_id, from: "", to: nil
-      change_column :staffs, :public_id, :string, limit: PUBLIC_ID_LENGTH, null: false
+      change_column_default(:staffs, :public_id, from: "", to: nil)
+      change_column(:staffs, :public_id, :string, limit: PUBLIC_ID_LENGTH, null: false)
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         ADD CONSTRAINT chk_staffs_public_id_length
         CHECK (char_length(public_id) = #{PUBLIC_ID_LENGTH});
       SQL
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         ADD CONSTRAINT chk_staffs_public_id_format
         CHECK (public_id ~ '#{VALID_PATTERN}');
@@ -38,25 +38,25 @@ class ChangeStaffPublicIdToUppercase16Base32 < ActiveRecord::Migration[8.2]
 
   def down
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         DROP CONSTRAINT IF EXISTS chk_staffs_public_id_format;
       SQL
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         DROP CONSTRAINT IF EXISTS chk_staffs_public_id_length;
       SQL
 
-      change_column :staffs, :public_id, :string, limit: 8, null: false
+      change_column(:staffs, :public_id, :string, limit: 8, null: false)
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         ADD CONSTRAINT chk_staffs_public_id_length
         CHECK (char_length(public_id) = 8);
       SQL
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         ADD CONSTRAINT chk_staffs_public_id_format
         CHECK (public_id ~ '^[abcdefhjklmnpqrtuvwxy23456789]{8}$');

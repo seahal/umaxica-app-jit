@@ -76,26 +76,9 @@ Account -> Membership -> Workspace -> Team
 
 - `AvatarOwnership` を作り、`starts_at`/`ends_at` で所有履歴を残す（監査・揉め事対策）
 
-## Billing（現段階：無料、将来有料のプレースホルダ）
+## Billing
 
-方針:
-
-- 今は無料で運用し、将来 Stripe を導入する。
-- アプリ内の課金判断は Stripe を直接見ず、将来 `Entitlement` 等に寄せられるように “窓口” を作る。
-
-現段階の最小プレースホルダ案:
-
-- `Workspace` に以下のカラムを用意（NULL可・未使用でOK）
-  - `billing_provider`（例: `"stripe"`）
-  - `billing_customer_id`（Stripe customer id）
-  - `billing_plan`（まずは `"free"` 固定で開始）
-  - `billing_active`（まずは `true`）
-  - `trial_ends_at`（必要になったら）
-
-将来の拡張（Stripe webhook 駆動）:
-
-- `BillingAccount` / `Subscription` / `Invoice` / `Entitlement` / `billing_webhook_events` を追加
-- webhook で `Subscription` と `Entitlement` を更新し、アプリは `Entitlement` を参照して制御する
+Billing foundation and future Stripe integration tracking moved to GitHub issue #577.
 
 ### Billing DB セットアップ（ローカル/CI）
 

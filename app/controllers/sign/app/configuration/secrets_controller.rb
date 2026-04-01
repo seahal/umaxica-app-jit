@@ -40,7 +40,7 @@ module Sign
           )
 
           flash[:notice] = t(".created")
-          redirect_to sign_app_configuration_secrets_path
+          redirect_to(sign_app_configuration_secrets_path)
         rescue ActiveRecord::RecordInvalid => e
           render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_content
         end
@@ -48,19 +48,21 @@ module Sign
         def destroy
           if AuthMethodGuard.last_method?(current_user, excluding: @secret)
             flash[:alert] = t(".last_method")
-            return redirect_to sign_app_configuration_secrets_path
+            return redirect_to(sign_app_configuration_secrets_path)
           end
 
           UserSecrets::Destroy.call(actor: current_user, secret: @secret)
           flash[:notice] = t(".destroyed")
-          redirect_to sign_app_configuration_secrets_path, status: :see_other
+          redirect_to(sign_app_configuration_secrets_path, status: :see_other)
         end
 
         # Reserved for future secret rotation support.
         def regenerate
-          redirect_to sign_app_configuration_secret_path(@secret.public_id),
-                      alert: t("messages.not_implemented"),
-                      status: :see_other
+          redirect_to(
+            sign_app_configuration_secret_path(@secret.public_id),
+            alert: t("messages.not_implemented"),
+            status: :see_other,
+          )
         end
 
         private

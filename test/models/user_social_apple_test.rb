@@ -6,29 +6,29 @@
 # Table name: user_social_apples
 # Database name: principal
 #
-#  id                                   :bigint           not null, primary key
-#  expires_at                           :integer          not null
-#  last_authenticated_at                :datetime
-#  provider                             :string           default("apple"), not null
-#  refresh_token                        :string           default(""), not null
-#  token                                :string           default(""), not null
-#  uid                                  :string           default(""), not null
-#  created_at                           :datetime         not null
-#  updated_at                           :datetime         not null
-#  user_id                              :bigint           not null
-#  user_identity_social_apple_status_id :bigint           default(1), not null
+#  id                    :bigint           not null, primary key
+#  last_authenticated_at :datetime
+#  provider              :string           default("apple"), not null
+#  refresh_token         :string           default(""), not null
+#  token                 :string           default(""), not null
+#  token_expires_at      :integer          not null
+#  uid                   :string           default(""), not null
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  status_id             :bigint           default(1), not null
+#  user_id               :bigint           not null
 #
 # Indexes
 #
-#  idx_on_user_identity_social_apple_status_id_93441f369d  (user_identity_social_apple_status_id)
-#  index_user_identity_social_apples_on_user_id_unique     (user_id) UNIQUE WHERE (user_id IS NOT NULL)
-#  index_user_social_apples_on_expires_at                  (expires_at)
-#  index_user_social_apples_on_uid_and_provider            (uid,provider) UNIQUE
+#  index_user_identity_social_apples_on_user_id_unique  (user_id) UNIQUE WHERE (user_id IS NOT NULL)
+#  index_user_social_apples_on_status_id                (status_id)
+#  index_user_social_apples_on_token_expires_at         (token_expires_at)
+#  index_user_social_apples_on_uid_and_provider         (uid,provider) UNIQUE
 #
 # Foreign Keys
 #
+#  fk_rails_...  (status_id => user_social_apple_statuses.id)
 #  fk_rails_...  (user_id => users.id)
-#  fk_rails_...  (user_identity_social_apple_status_id => user_social_apple_statuses.id)
 #
 
 require "test_helper"
@@ -74,7 +74,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     identity = UserSocialApple.new(user: User.find_by!(public_id: "one_id"), uid: "uid", token: "token")
 
     assert_not identity.valid?
-    assert_not_empty identity.errors[:expires_at]
+    assert_not_empty identity.errors[:token_expires_at]
   end
 
   test "association deletion: destroys when user is destroyed" do
@@ -177,7 +177,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "active-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: UserSocialAppleStatus::ACTIVE,
+      status_id: UserSocialAppleStatus::ACTIVE,
     )
 
     inactive = UserSocialApple.create!(
@@ -185,7 +185,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "inactive-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: UserSocialAppleStatus::REVOKED,
+      status_id: UserSocialAppleStatus::REVOKED,
     )
 
     assert_includes UserSocialApple.active, active
@@ -198,6 +198,21 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     identity = UserSocialApple.new(provider: "apple")
 
     assert_equal "apple", identity.normalized_provider
+  end
+
+  test "status_id uses the canonical status column" do
+    identity = UserSocialApple.new(status_id: UserSocialAppleStatus::ACTIVE)
+
+    assert_equal UserSocialAppleStatus::ACTIVE, identity.status_id
+    assert_equal UserSocialAppleStatus::ACTIVE, identity.status_id
+    assert_equal UserSocialAppleStatus::ACTIVE, identity.status_id
+  end
+
+  test "token_expires_at aliases expires_at" do
+    identity = UserSocialApple.new(token_expires_at: 123)
+
+    assert_equal 123, identity.token_expires_at
+    assert_equal 123, identity.expires_at
   end
 
   class MockAuth < OpenStruct; end

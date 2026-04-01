@@ -3,7 +3,7 @@
 class MigrateStaffTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
-      add_column :staff_token_statuses, :id_small, :integer, limit: 2
+      add_column(:staff_token_statuses, :id_small, :integer, limit: 2)
 
       # Ensure required values exist
       %w(ACTIVE).each do |val|
@@ -23,7 +23,7 @@ class MigrateStaffTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
       execute("UPDATE staff_token_statuses SET id_small = 0 WHERE id IN ('NEYO', '')")
 
       # Backfill Others (start from 2)
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         WITH numbered AS (
           SELECT id, ROW_NUMBER() OVER (ORDER BY id) + 1 AS rn
           FROM staff_token_statuses
@@ -35,23 +35,23 @@ class MigrateStaffTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
         WHERE staff_token_statuses.id = numbered.id
       SQL
 
-      change_column_null :staff_token_statuses, :id_small, false, 0
+      change_column_null(:staff_token_statuses, :id_small, false, 0)
 
       # Drop old PK + dependent FKs
-      execute "ALTER TABLE staff_token_statuses DROP CONSTRAINT staff_token_statuses_pkey CASCADE"
+      execute("ALTER TABLE staff_token_statuses DROP CONSTRAINT staff_token_statuses_pkey CASCADE")
 
       # Drop string-specific constraints/indexes
-      execute "DROP INDEX IF EXISTS index_staff_token_statuses_on_lower_id"
-      execute "ALTER TABLE staff_token_statuses DROP CONSTRAINT IF EXISTS chk_staff_token_statuses_id_format"
+      execute("DROP INDEX IF EXISTS index_staff_token_statuses_on_lower_id")
+      execute("ALTER TABLE staff_token_statuses DROP CONSTRAINT IF EXISTS chk_staff_token_statuses_id_format")
 
-      rename_column :staff_token_statuses, :id, :id_old_string
-      # rubocop:disable Rails/DangerousColumnNames
-      rename_column :staff_token_statuses, :id_small, :id
-      # rubocop:enable Rails/DangerousColumnNames
-      execute "ALTER TABLE staff_token_statuses ADD PRIMARY KEY (id)"
+      rename_column(:staff_token_statuses, :id, :id_old_string)
+
+      rename_column(:staff_token_statuses, :id_small, :id)
+
+      execute("ALTER TABLE staff_token_statuses ADD PRIMARY KEY (id)")
 
       # Optional constraint
-      execute "ALTER TABLE staff_token_statuses ADD CONSTRAINT chk_staff_token_statuses_id_positive CHECK (id >= 0)"
+      execute("ALTER TABLE staff_token_statuses ADD CONSTRAINT chk_staff_token_statuses_id_positive CHECK (id >= 0)")
     end
   end
 

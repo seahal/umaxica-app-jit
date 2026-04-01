@@ -9,14 +9,18 @@
 #  id                             :bigint           not null, primary key
 #  address                        :string           not null
 #  locked_at                      :datetime
+#  notifiable                     :boolean          default(TRUE), not null
 #  otp_attempts_count             :integer          default(0), not null
 #  otp_counter                    :text             not null
 #  otp_expires_at                 :datetime
 #  otp_last_sent_at               :datetime
 #  otp_private_key                :string           not null
+#  promotional                    :boolean          default(TRUE), not null
+#  subscribable                   :boolean          default(TRUE), not null
+#  undeletable                    :boolean          default(FALSE), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
-#  public_id                      :string(21)       not null
+#  public_id                      :string(21)       default(""), not null
 #  staff_id                       :bigint           not null
 #  staff_identity_email_status_id :bigint           default(6), not null
 #
@@ -52,6 +56,7 @@ class StaffEmail < OperatorRecord
   validates :otp_private_key, presence: true, length: { maximum: 255 }
   validates :staff_identity_email_status_id, numericality: { only_integer: true }
   validate :enforce_staff_email_limit, on: :create
+  before_destroy :prevent_destroy_when_undeletable
   before_validation do
     self.staff_id ||= 0
   end
@@ -67,6 +72,13 @@ class StaffEmail < OperatorRecord
   encrypts :address, deterministic: true
 
   private
+
+  def prevent_destroy_when_undeletable
+    return unless undeletable?
+
+    errors.add(:base, :undeletable, message: "cannot delete a protected email address")
+    throw(:abort)
+  end
 
   def enforce_staff_email_limit
     return unless staff_id

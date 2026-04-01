@@ -9,11 +9,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
   end
 
   DOMAINS = [
-    { name: "apex_app", host: "app.localhost", preference_url_method: :apex_app_preference_url },
-    { name: "apex_org", host: "org.localhost", preference_url_method: :apex_org_preference_url },
-    { name: "apex_com", host: "com.localhost", preference_url_method: :apex_com_preference_url },
-    { name: "sign_app", host: "sign.app.localhost", root_url_method: :sign_app_root_url },
-    { name: "sign_org", host: "sign.org.localhost", root_url_method: :sign_org_root_url },
+    { name: "sign_app", host: "sign.app.localhost", preference_url_method: :sign_app_preference_url },
+    { name: "sign_org", host: "sign.org.localhost", preference_url_method: :sign_org_preference_url },
+    { name: "sign_com", host: "sign.com.localhost", preference_url_method: :sign_com_preference_url },
   ].freeze
 
   # =============================================================================
@@ -228,9 +226,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
   # =============================================================================
 
   REGIONAL_DOMAINS = [
-    { name: "core_app", host: "www.app.localhost", root_url_method: :core_app_root_url },
-    { name: "core_org", host: "www.org.localhost", root_url_method: :core_org_root_url },
-    { name: "core_com", host: "www.com.localhost", root_url_method: :core_com_root_url },
+    { name: "core_app", host: "ww.app.localhost", root_url_method: :core_app_root_url },
+    { name: "core_org", host: "ww.org.localhost", root_url_method: :core_org_root_url },
+    { name: "core_com", host: "ww.com.localhost", root_url_method: :core_com_root_url },
   ].freeze
 
   REGIONAL_DOMAINS.each do |domain|

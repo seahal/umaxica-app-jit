@@ -143,9 +143,8 @@ class MigrationHelpersDocumentReferenceSmallintTest < ActiveSupport::TestCase
     assert_includes migration.calls, [:remove_foreign_key, "children", { column: "legacy_id" }]
   end
 
-  test "convert_string_id_pk_table orchestrates schema changes" do # rubocop:disable Minitest/MultipleAssertions
+  def setup_convert_string_id_test
     migration = FakeMigration.new(existing_columns: [:id], existing_indexes: ["index_documents_on_lower_name"])
-
     migration.convert_string_id_pk_table(
       table_name: :documents,
       sentinel_id: "NEYO",
@@ -153,16 +152,41 @@ class MigrationHelpersDocumentReferenceSmallintTest < ActiveSupport::TestCase
       check_constraint: "documents_id_check",
       child_foreign_keys: [{ table: :document_children, column: :document_id }],
     )
+    migration
+  end
+
+  test "convert_string_id_pk_table adds safety and id_small column" do
+    migration = setup_convert_string_id_test
 
     assert_includes migration.calls, [:safety_assured]
     assert_includes migration.calls, [:add_column, :documents, :id_small, :integer, { limit: 2 }]
+  end
+
+  test "convert_string_id_pk_table updates id_small column constraints" do
+    migration = setup_convert_string_id_test
+
     assert_includes migration.calls, [:change_column_default, :documents, :id_small, { from: nil, to: 0 }]
     assert_includes migration.calls, [:change_column_null, :documents, :id_small, false]
+  end
+
+  test "convert_string_id_pk_table removes index and primary key" do
+    migration = setup_convert_string_id_test
+
     assert_includes migration.calls, [:remove_index, :documents, { name: "index_documents_on_lower_name" }]
     assert_includes migration.calls, [:drop_primary_key_constraint, :documents]
+  end
+
+  test "convert_string_id_pk_table renames column and adds primary key" do
+    migration = setup_convert_string_id_test
+
     assert_includes migration.calls, %i(remove_column documents id)
     assert_includes migration.calls, %i(rename_column documents id_small id)
     assert_includes migration.calls, [:add_primary_key_constraint, :documents]
+  end
+
+  test "convert_string_id_pk_table executes data migration sql" do
+    migration = setup_convert_string_id_test
+
     assert migration.executed_sql.any? { |sql| sql.include?("UPDATE documents") }
     assert migration.executed_sql.any? { |sql| sql.include?("INSERT INTO documents_legacy_id_map") }
   end

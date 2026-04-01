@@ -56,6 +56,63 @@ class ApplicationPolicy
       end
   end
 
+  # Extract JWT scopes from Current.token (set by authentication)
+  # @return [Array<String>]
+  def jwt_scopes
+    return [] if Current.token.blank?
+
+    Auth::TokenClaims.scopes(Current.token)
+  end
+
+  # Check if the actor has a specific scope
+  # @param scope [String] the scope to check (e.g., "read:self", "write:org")
+  # @return [Boolean]
+  def has_scope?(scope)
+    jwt_scopes.include?(scope.to_s)
+  end
+
+  # Check if the actor has permission for the current domain
+  # @param allowed_domains [Array<String>] list of allowed domain prefixes (e.g., ["app", "org"])
+  # @return [Boolean]
+  def domain_permitted?(*allowed_domains)
+    return true if allowed_domains.blank?
+
+    domain = extract_domain_from_audience
+    return true if domain.blank?
+
+    allowed_domains.map(&:to_s).include?(domain.to_s)
+  end
+
+  # Extract domain from audience claim in Current.token
+  def extract_domain_from_audience
+    return nil if Current.token.blank?
+
+    audiences = Array(Current.token["aud"])
+    return nil if audiences.empty?
+
+    audiences.first.to_s.split(".").first
+  end
+
+  # Get JWT subject (actor ID) from Current.token
+  def jwt_subject
+    return nil if Current.token.blank?
+
+    Auth::TokenClaims.subject(Current.token)
+  end
+
+  # Check if current token is for specific domain
+  def domain_app?
+    extract_domain_from_audience == "app"
+  end
+
+  def domain_org?
+    extract_domain_from_audience == "org"
+  end
+
+  def domain_com?
+    extract_domain_from_audience == "com"
+  end
+
   # Check if actor owns the record
   # @return [Boolean]
   def owner?

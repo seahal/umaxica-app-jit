@@ -48,14 +48,14 @@
                   </p>
                 <% end %>
               </div>
-              <div>
-                <% if session.public_id != @current_session_public_id %>
-                  <label>
-                    <%= check_box_tag "revoke_refs[]", session.signed_ref, false %>
-                    <span><%= t("sign.app.in.session.revoke") %></span>
-                  </label>
-                <% end %>
-              </div>
+                <div>
+                  <% if session.public_id != @current_session_public_id %>
+                    <label>
+                      <%= radio_button_tag "ref", session.signed_ref, false %>
+                      <span><%= t("sign.app.in.session.revoke") %></span>
+                    </label>
+                  <% end %>
+                </div>
             </li>
           <% end %>
         </ul>
@@ -92,14 +92,14 @@
     <% end %>
 
     <div>
-      <% if current_session_restricted? %>
-        <%= link_to t("sign.app.in.session.cancel"),
-                    sign_app_in_session_path,
-                    method: :delete,
-                    data: { turbo_method: :delete, turbo_confirm: t("sign.app.in.session.cancel_confirm") } %>
-      <% end %>
-
       <%= form.submit t("sign.app.in.session.revoke_selected") %>
     </div>
+  <% end %>
+
+  <% if current_session_restricted? %>
+    <%= button_to t("sign.app.in.session.cancel_logout"),
+                  sign_app_in_session_path,
+                  method: :delete,
+                  form: { data: { turbo_confirm: t("sign.app.in.session.cancel_logout_confirm") } } %>
   <% end %>
 </div>

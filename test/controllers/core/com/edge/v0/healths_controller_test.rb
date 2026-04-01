@@ -30,6 +30,7 @@ module Core
             assert_response :success
             assert_equal "OK", response.parsed_body["status"]
             assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.parsed_body["timestamp"])
+            assert response.parsed_body.key?("revision")
           end
 
           test "raises error for unsupported yaml format" do
@@ -38,6 +39,7 @@ module Core
             assert_response :success
             assert_equal "OK", response.parsed_body["status"]
             assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.parsed_body["timestamp"])
+            assert response.parsed_body.key?("revision")
           end
 
           test "should handle redirect if response is redirect" do

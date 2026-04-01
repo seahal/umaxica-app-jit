@@ -23,6 +23,21 @@ require "test_helper"
 class ComDocumentCategoryMasterTest < ActiveSupport::TestCase
   include TreeableSharedTests
 
+  test "has correct constants" do
+    assert_equal 0, ComDocumentCategoryMaster::NOTHING
+    assert_equal 1, ComDocumentCategoryMaster::LEGACY_NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = ComDocumentCategoryMaster.find(ComDocumentCategoryMaster::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
+  test "treeable class is defined" do
+    assert_equal ComDocumentCategoryMaster, treeable_class
+  end
+
   private
 
   def treeable_class

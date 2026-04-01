@@ -15,6 +15,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
 
     @staff = staffs(:one)
     @staff.update!(status_id: StaffStatus::ACTIVE)
+    StaffToken.where(staff_id: @staff.id).delete_all
     @staff_email = StaffEmail.create!(
       staff: @staff,
       address: "google_staff@example.com",
@@ -31,15 +32,24 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
 
   # --- Successful sign-in ---
 
-  test "omniauth redirects to checkpoint on successful staff sign-in" do
+  test "omniauth redirects to destination on successful staff sign-in" do
     state = initiate_social_auth_flow!
 
     get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
 
     assert_nil flash[:alert], "Unexpected alert: #{flash[:alert]}"
-    assert_redirected_to sign_org_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_org_root_path(ri: "jp")
     assert_not_nil flash[:notice]
     assert_includes flash[:notice], "Google"
+  end
+
+  test "omniauth marks the matched staff email as undeletable" do
+    assert_not_predicate @staff_email, :undeletable?
+    state = initiate_social_auth_flow!
+
+    get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
+
+    assert_predicate @staff_email.reload, :undeletable?
   end
 
   # --- Staff not found ---
@@ -64,6 +74,16 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
     assert_equal I18n.t("sign.org.social.sessions.create.not_found"), flash[:alert]
   end
 
+  test "omniauth redirects to sign-in with failure when staff is withdrawn" do
+    @staff.update!(status_id: StaffStatus::ACTIVE, withdrawn_at: Time.current)
+    state = initiate_social_auth_flow!
+
+    get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
+
+    assert_redirected_to new_sign_org_in_path(ri: "jp")
+    assert_equal I18n.t("sign.org.social.sessions.create.failure"), flash[:alert]
+  end
+
   # --- Failure callback ---
 
   test "failure redirects to sign-in with error" do
@@ -75,7 +95,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
 
   # --- Session limit ---
 
-  test "omniauth redirects with session_limit alert when sessions are exceeded" do
+  test "omniauth redirects to session management when sessions are exceeded" do
     Sign::Org::Auth::OmniauthCallbacksController.any_instance.stub(
       :log_in, { status: :session_limit_exceeded },
     ) do
@@ -83,8 +103,22 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
       get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
     end
 
-    assert_redirected_to new_sign_org_in_path(ri: "jp")
-    assert_equal I18n.t("sign.org.social.sessions.create.session_limit"), flash[:alert]
+    assert_redirected_to sign_org_in_session_path(ri: "jp")
+    assert_equal I18n.t(
+      "sign.org.in.session.restricted_notice",
+      default: "セッション数が上限に達しています。既存セッションを管理してください。",
+    ), flash[:notice]
+  end
+
+  test "omniauth redirects to session management when one logical staff session has many rotated ancestors" do
+    create_rotated_active_staff_session(@staff, rotations: 4)
+    state = initiate_social_auth_flow!
+
+    get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
+
+    assert_redirected_to sign_org_in_session_path(ri: "jp")
+    assert_equal "セッション数が上限に達しています。既存セッションを管理してください。", flash[:notice]
+    assert_equal 1, StaffToken.where(staff_id: @staff.id, status: StaffToken::STATUS_RESTRICTED).count
   end
 
   private
@@ -93,7 +127,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
   # then follows the redirect through OmniAuth request phase.
   # Returns the state parameter for use in callback requests.
   def initiate_social_auth_flow!
-    get new_sign_org_social_session_path(provider: GOOGLE_PROVIDER, ri: "jp")
+    get(new_sign_org_social_session_path(provider: GOOGLE_PROVIDER, ri: "jp"))
 
     assert_response :redirect
 
@@ -117,5 +151,14 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
         expires_at: 1.hour.from_now.to_i,
       },
     )
+  end
+
+  def create_rotated_active_staff_session(staff, rotations:)
+    token = StaffToken.create!(staff: staff, status: StaffToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+
+    rotations.times do
+      refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+    end
   end
 end

@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: org_preference_binding_methods
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #

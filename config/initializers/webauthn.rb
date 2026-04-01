@@ -45,8 +45,10 @@ module Webauthn
         raise TrustedOriginsNotConfiguredError,
               "TRUSTED_ORIGINS environment variable is required but not set. " \
               "Please configure it with comma-separated origin URLs. " \
-              "Example for development: TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 " \
-              "Example for production: TRUSTED_ORIGINS=https://sign.app.example.com,https://sign.org.example.com"
+              "Example for development: TRUSTED_ORIGINS=http://sign.app.localhost:3000, " \
+              "http://sign.org.localhost:3000" \
+              "Example for production: TRUSTED_ORIGINS=https://sign.app.example.com, " \
+              "https://sign.org.example.com"
       end
 
       # Validate origin format

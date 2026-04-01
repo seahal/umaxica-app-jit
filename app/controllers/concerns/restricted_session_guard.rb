@@ -1,16 +1,19 @@
 # typed: false
 # frozen_string_literal: true
 
-# Enforces isolation mode for restricted sessions.
-# Restricted sessions can only access /in/session and are blocked everywhere else.
+# Provides methods for enforcing isolation mode for restricted sessions.
+# Controllers must explicitly enable this by calling:
+#   before_action :enforce_restricted_session_guard!
+#
+# This concern does NOT automatically add any callbacks when included,
+# avoiding surprise side effects. Controllers opt-in to the behavior.
 module RestrictedSessionGuard
   extend ActiveSupport::Concern
 
   BLOCKED_MESSAGE = "きんそくじこうです"
 
-  included do
-    before_action :enforce_restricted_session_guard!
-  end
+  # Note: No automatic before_action is added here.
+  # Controllers must explicitly add: before_action :enforce_restricted_session_guard!
 
   private
 

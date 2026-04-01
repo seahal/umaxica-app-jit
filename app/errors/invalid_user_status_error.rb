@@ -1,17 +1,22 @@
 # typed: false
 # frozen_string_literal: true
 
-class InvalidUserStatusError < StandardError
-  # Define a reader to read the invalid status value
+class InvalidUserStatusError < ApplicationError
   attr_reader :invalid_status
 
-  # As a convention, accept an error message and the invalid status value.
-  def initialize(invalid_status:, message: "Invalid user status specified")
-    # Call StandardError constructor with super(),
-    # and pass the error message you want to display.
-    super("#{message}: {invalid_status: \"#{invalid_status}\"}")
-
-    # Let the error object itself hold the invalid status value.
+  def initialize(invalid_status:, i18n_key: nil, **context)
     @invalid_status = invalid_status
+    super(i18n_key, :unprocessable_entity, invalid_status: invalid_status, **context)
+  end
+
+  def message
+    provided_message = context[:message]
+    if provided_message
+      "#{provided_message}: {invalid_status: #{invalid_status.inspect}}"
+    elsif i18n_key
+      super
+    else
+      "Invalid user status: #{invalid_status}"
+    end
   end
 end

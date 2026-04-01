@@ -47,16 +47,7 @@ apple_team_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_TEAM_ID)
 apple_key_id = Rails.app.creds.option(:OMNI_AUTH_APPLE_KEY_ID)
 apple_pem = Rails.app.creds.option(:OMNI_AUTH_APPLE_PRIVATE_KEY)
 
-# TODO: REMOVE them.
-# Validate required credentials
-if google_app_client_id.blank? || google_app_client_secret.blank?
-  Rails.logger.warn("[OmniAuth] Google OAuth (app) credentials are missing. Google sign-in for users will not work.")
-end
-if google_org_client_id.blank? || google_org_client_secret.blank?
-  Rails.logger.warn("[OmniAuth] Google OAuth (org) credentials are missing. Google sign-in for staff will not work.")
-end
-
-Rails.application.config.middleware.use OmniAuth::Builder do
+Rails.application.config.middleware.use(OmniAuth::Builder) do
   # ---------------------------------------------------------------------------
   # Google OAuth2 - App (user sign-in/sign-up)
   # ---------------------------------------------------------------------------
@@ -114,11 +105,11 @@ Rails.application.config.middleware.use OmniAuth::Builder do
              authorized_client_ids: [apple_client_id],
              # Apple's form_post callback is a cross-site POST from appleid.apple.com.
              # SameSite=Lax session cookies are NOT sent on cross-site POSTs, so the
-             # OmniAuth state stored in session is lost. Skip OmniAuth's state check —
+             # OmniAuth state stored in session is lost. Skip OmniAuth's state check
              # Apple's signed id_token (verified via JWKS) already provides CSRF protection.
              provider_ignores_state: true,
              authorize_params: {
-               response_mode: "form_post",
+               response_mode: "query",
                response_type: "code",
              },
            }

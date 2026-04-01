@@ -19,7 +19,7 @@ class SetUuidv7DefaultForStringIdTables < ActiveRecord::Migration[8.2]
   def up
     STRING_UUID_TABLES.each do |table_name|
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           ALTER TABLE #{table_name}
           ALTER COLUMN id SET DEFAULT uuidv7()::text;
         SQL
@@ -30,7 +30,7 @@ class SetUuidv7DefaultForStringIdTables < ActiveRecord::Migration[8.2]
   def down
     STRING_UUID_TABLES.each do |table_name|
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           ALTER TABLE #{table_name}
           ALTER COLUMN id DROP DEFAULT;
         SQL

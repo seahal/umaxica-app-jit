@@ -12,6 +12,7 @@
 #  dbsc_challenge_issued_at      :datetime
 #  dbsc_public_key               :jsonb
 #  deletable_at                  :datetime         default(Infinity), not null
+#  device_id_digest              :string
 #  expired_at                    :datetime
 #  last_step_up_at               :datetime
 #  last_step_up_scope            :string
@@ -40,6 +41,7 @@
 #  index_staff_tokens_on_dbsc_session_id                (dbsc_session_id) UNIQUE
 #  index_staff_tokens_on_deletable_at                   (deletable_at)
 #  index_staff_tokens_on_device_id                      (device_id)
+#  index_staff_tokens_on_device_id_digest               (device_id_digest)
 #  index_staff_tokens_on_expired_at                     (expired_at)
 #  index_staff_tokens_on_public_id                      (public_id) UNIQUE
 #  index_staff_tokens_on_refresh_expires_at             (refresh_expires_at)
@@ -71,10 +73,13 @@ class StaffToken < TokenRecord
   include ::TokenStatusManagement
   include ::DbscBindable
 
+  DBSC_BINDING_METHOD_CLASS = StaffTokenBindingMethod
+  DBSC_STATUS_CLASS = StaffTokenDbscStatus
+
   LOGIN_SESSION_TTL = 12.hours
   DELETION_GRACE_PERIOD = 1.day
-  MAX_SESSIONS_PER_STAFF = 2
-  MAX_TOTAL_SESSIONS_PER_STAFF = 3
+  MAX_SESSIONS_PER_STAFF = 1
+  MAX_TOTAL_SESSIONS_PER_STAFF = 2
 
   belongs_to :staff
   belongs_to :staff_token_status
@@ -95,6 +100,9 @@ class StaffToken < TokenRecord
   # This is a model-level validation to provide a friendly error message to the user.
   # The primary enforcement of the session limit is done by a database trigger,
   # which is more reliable and avoids race conditions.
+  #
+  # Staff are allowed one fully active session plus one restricted session that can
+  # only be used to manage sessions, so the total live row limit is two.
   def enforce_concurrent_session_limit
     return unless staff_id
 

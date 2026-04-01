@@ -53,7 +53,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     google_identity.reload
 
-    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
+    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.status_id
   end
 
   test "unlink Apple requires recent reauth" do
@@ -79,7 +79,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     apple_identity.reload
 
-    assert_equal UserSocialAppleStatus::ACTIVE, apple_identity.user_identity_social_apple_status_id
+    assert_equal UserSocialAppleStatus::ACTIVE, apple_identity.status_id
   end
 
   # ============================================================================
@@ -167,7 +167,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     # Google identity should be soft-deleted (status changed to REVOKED)
     google_identity.reload
 
-    assert_equal UserSocialGoogleStatus::REVOKED, google_identity.user_identity_social_google_status_id,
+    assert_equal UserSocialGoogleStatus::REVOKED, google_identity.status_id,
                  "Google identity should be REVOKED"
 
     # Apple identity should still exist and be ACTIVE
@@ -210,7 +210,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     # Apple identity should be soft-deleted (status changed to REVOKED)
     apple_identity.reload
 
-    assert_equal UserSocialAppleStatus::REVOKED, apple_identity.user_identity_social_apple_status_id,
+    assert_equal UserSocialAppleStatus::REVOKED, apple_identity.status_id,
                  "Apple identity should be REVOKED"
   end
 
@@ -250,7 +250,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     google_identity.reload
 
-    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
+    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.status_id
   end
 
   test "unlink Google succeeds with passkey and verified telephone" do
@@ -287,7 +287,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     google_identity.reload
 
-    assert_equal UserSocialGoogleStatus::REVOKED, google_identity.user_identity_social_google_status_id
+    assert_equal UserSocialGoogleStatus::REVOKED, google_identity.status_id
   end
 
   # ============================================================================
@@ -387,7 +387,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
     apple_identity.reload
 
-    assert_equal UserSocialAppleStatus::REVOKED, apple_identity.user_identity_social_apple_status_id
+    assert_equal UserSocialAppleStatus::REVOKED, apple_identity.status_id
   end
 
   test "unlink fails when only active identity is social and others are REVOKED" do
@@ -423,6 +423,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     # Google should still be ACTIVE (not unlinked)
     google_identity.reload
 
-    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
+    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.status_id
   end
 end

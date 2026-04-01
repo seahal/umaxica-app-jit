@@ -6,6 +6,6 @@ class Apex::Org::Emergency::Com::TokensController < ApplicationController
   end
 
   def update
-    redirect_to action: :show
+    redirect_to(action: :show)
   end
 end

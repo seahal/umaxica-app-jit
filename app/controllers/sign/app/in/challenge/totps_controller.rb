@@ -7,6 +7,7 @@ module Sign
       module Challenge
         class TotpsController < ApplicationController
           include SessionLimitGate
+          include ::CloudflareTurnstile
 
           class TotpChallengeForm
             include ActiveModel::Model
@@ -33,12 +34,23 @@ module Sign
               return render :new, status: :unprocessable_content
             end
 
+            unless cloudflare_turnstile_stealth_validation["success"]
+              @totp_form.errors.add(
+                :base, t(
+                  "sign.app.in.mfa.turnstile_failed",
+                  default: "検証に失敗しました。もう一度お試しください。",
+                ),
+              )
+              return render :new, status: :unprocessable_content
+            end
+
             user = pending_mfa_user
             last_otp_at, totp_record = verify_totp_for(user, @totp_form.token)
 
             if last_otp_at
               handle_totp_success(user, totp_record, last_otp_at)
             else
+              Sign::Risk::Emitter.emit("auth_failed", user_id: user&.id, ip: request.remote_ip, reason: "totp_mismatch")
               @totp_form.errors.add(:token, t("sign.app.in.mfa.verification_failed"))
               render :new, status: :unprocessable_content
             end
@@ -50,9 +62,11 @@ module Sign
             return unless !pending_mfa_valid? || pending_mfa_user.nil?
 
             clear_pending_mfa!
-            redirect_to new_sign_app_in_path,
-                        alert: I18n.t("sign.app.in.mfa.session_expired"),
-                        status: :see_other
+            redirect_to(
+              new_sign_app_in_path,
+              alert: I18n.t("sign.app.in.mfa.session_expired"),
+              status: :see_other,
+            )
           end
 
           def verify_totp_for(user, token)
@@ -74,15 +88,25 @@ module Sign
             when :session_limit_hard_reject
               render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
             when :restricted
-              redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
+              redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
             when :success
-              issue_checkpoint!
-              redirect_to sign_app_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
-                          notice: I18n.t("sign.app.in.mfa.totp.success")
+              if issue_bulletin!
+                redirect_to(
+                  sign_app_in_bulletin_path(rd: result[:redirect_path], ri: params[:ri]),
+                  notice: I18n.t("sign.app.in.mfa.totp.success"),
+                )
+              else
+                safe_redirect_to_rd_or_default!(
+                  result[:redirect_path],
+                  default_path: sign_app_configuration_path(ri: params[:ri]),
+                )
+              end
             else
-              redirect_to new_sign_app_in_path,
-                          alert: I18n.t("sign.app.in.mfa.verification_failed"),
-                          status: :see_other
+              redirect_to(
+                new_sign_app_in_path,
+                alert: I18n.t("sign.app.in.mfa.verification_failed"),
+                status: :see_other,
+              )
             end
           end
 

@@ -14,7 +14,7 @@ class IncreaseUserTokenLimitToThree < ActiveRecord::Migration[8.2]
   def up
     # Drop and recreate the function with new limit
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         CREATE OR REPLACE FUNCTION #{FUNCTION_NAME}()
         RETURNS trigger AS $$
         DECLARE
@@ -35,7 +35,7 @@ class IncreaseUserTokenLimitToThree < ActiveRecord::Migration[8.2]
   def down
     # Restore original limit
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         CREATE OR REPLACE FUNCTION #{FUNCTION_NAME}()
         RETURNS trigger AS $$
         DECLARE

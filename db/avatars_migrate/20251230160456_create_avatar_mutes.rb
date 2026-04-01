@@ -2,16 +2,20 @@
 
 class CreateAvatarMutes < ActiveRecord::Migration[8.2]
   def change
-    create_table :avatar_mutes do |t|
-      t.references :muter_avatar,
-                   null: false,
-                   foreign_key: { to_table: :avatars, validate: false },
-                   type: :string
-      t.references :muted_avatar,
-                   null: false,
-                   foreign_key: { to_table: :avatars, validate: false },
-                   type: :string
-      t.datetime :expires_at
+    create_table(:avatar_mutes) do |t|
+      t.references(
+        :muter_avatar,
+        null: false,
+        foreign_key: { to_table: :avatars, validate: false },
+        type: :string,
+      )
+      t.references(
+        :muted_avatar,
+        null: false,
+        foreign_key: { to_table: :avatars, validate: false },
+        type: :string,
+      )
+      t.datetime(:expires_at)
 
       t.timestamps
     end

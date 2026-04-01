@@ -2,6 +2,6 @@
 
 class CreateScavengerRegionalStatuses < ActiveRecord::Migration[8.2]
   def change
-    create_table :scavenger_regional_statuses, id: :bigserial
+    create_table(:scavenger_regional_statuses, id: :bigserial)
   end
 end

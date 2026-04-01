@@ -8,6 +8,7 @@ module Sign
     private
 
     def verify_and_login(challenge, actor_id)
+      @_risk_actor_id = actor_id
       credential = build_authentication_credential
       return unless credential
 
@@ -15,6 +16,7 @@ module Sign
 
       unless passkey && passkey_belongs_to_challenge_actor?(passkey, actor_id)
         Rails.logger.warn(passkey_owner_mismatch_log_message)
+        emit_passkey_auth_failed(reason: "credential_not_found")
         return render_error("errors.webauthn.credential_not_found", :unauthorized)
       end
 

@@ -27,7 +27,7 @@
 require "test_helper"
 
 class DivisionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "Division", Division.name
+  end
 end

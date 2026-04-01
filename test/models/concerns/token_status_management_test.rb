@@ -20,38 +20,54 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_equal 15.minutes, TokenStatusManagement::RESTRICTED_TTL
   end
 
-  test "active_status scope returns only active non-expired tokens" do
+  test "active_status scope returns only active usable tokens" do
     @token.update!(status: "active", expired_at: nil)
     restricted = UserToken.create!(user: @user, status: "restricted")
     revoked = UserToken.create!(user: @user, expired_at: Time.current)
+    refresh_expired = UserToken.create!(user: @user, status: "active", refresh_expires_at: 1.minute.ago)
+    compromised = UserToken.create!(user: @user, status: "active", compromised_at: Time.current)
+    rotated_source = UserToken.create!(user: @user, status: "active")
+    rotated_refresh = rotated_source.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: rotated_refresh)
 
     results = UserToken.active_status
 
     assert_includes results, @token
     assert_not_includes results, restricted
     assert_not_includes results, revoked
+    assert_not_includes results, refresh_expired
+    assert_not_includes results, compromised
+    assert_not_includes results, rotated_source.reload
   end
 
-  test "restricted_status scope returns only restricted non-expired tokens" do
+  test "restricted_status scope returns only restricted usable tokens" do
     active = UserToken.create!(user: @user, status: "active")
     @token.update!(status: "restricted", expired_at: nil)
     revoked = UserToken.create!(user: @user, status: "restricted", expired_at: Time.current)
+    refresh_expired = UserToken.create!(user: @user, status: "restricted", refresh_expires_at: 1.minute.ago)
 
     results = UserToken.restricted_status
 
     assert_includes results, @token
     assert_not_includes results, active
     assert_not_includes results, revoked
+    assert_not_includes results, refresh_expired
   end
 
-  test "not_revoked scope returns only non-expired tokens" do
+  test "not_revoked scope returns only usable tokens" do
     @token.update!(expired_at: nil)
     revoked = UserToken.create!(user: @user, expired_at: Time.current)
+    refresh_expired = UserToken.create!(user: @user, refresh_expires_at: 1.minute.ago)
+    rotated_source = UserToken.create!(user: @user)
+    rotated_refresh = rotated_source.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: rotated_refresh)
 
     results = UserToken.not_revoked
 
     assert_includes results, @token
     assert_not_includes results, revoked
+    assert_not_includes results, refresh_expired
+    assert_not_includes results, rotated_source.reload
   end
 
   test "future revoked_at stays valid until due and past revoked_at is excluded" do
@@ -76,7 +92,7 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     assert_not_predicate @token, :restricted?
   end
 
-  test "active_status? returns true when status is active and not expired" do
+  test "active_status? returns true only when active and currently usable" do
     @token.update!(status: "active", expired_at: nil)
 
     assert_predicate @token, :active_status?
@@ -88,6 +104,24 @@ class TokenStatusManagementTest < ActiveSupport::TestCase
     @token.update!(status: "active", expired_at: Time.current)
 
     assert_not_predicate @token, :active_status?
+  end
+
+  test "currently_usable? returns false for rotated, refresh-expired, and compromised tokens" do
+    @token.update!(status: "active", expired_at: nil)
+
+    assert_predicate @token, :currently_usable?
+
+    @token.update!(rotated_at: Time.current)
+
+    assert_not_predicate @token, :currently_usable?
+
+    @token.update!(rotated_at: nil, refresh_expires_at: 1.minute.ago)
+
+    assert_not_predicate @token, :currently_usable?
+
+    @token.update!(refresh_expires_at: 1.day.from_now, compromised_at: Time.current)
+
+    assert_not_predicate @token, :currently_usable?
   end
 
   test "mark_restricted! updates status to restricted" do

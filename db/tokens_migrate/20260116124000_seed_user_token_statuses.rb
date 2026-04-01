@@ -8,7 +8,7 @@ class SeedUserTokenStatuses < ActiveRecord::Migration[8.2]
 
     STATUS_IDS.each do |status_id|
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_token_statuses (id)
           VALUES ('#{status_id}')
           ON CONFLICT (id) DO NOTHING

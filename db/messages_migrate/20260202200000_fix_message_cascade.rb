@@ -14,8 +14,8 @@ class FixMessageCascade < ActiveRecord::Migration[8.2]
       # 3. Ensure public_id NOT NULL for all message tables
       %w(user_messages staff_messages client_messages admin_messages).each do |table|
         if table_exists?(table) && column_exists?(table, :public_id)
-          execute "UPDATE #{table} SET public_id = '' WHERE public_id IS NULL"
-          execute "ALTER TABLE #{table} ALTER COLUMN public_id SET NOT NULL"
+          execute("UPDATE #{table} SET public_id = '' WHERE public_id IS NULL")
+          execute("ALTER TABLE #{table} ALTER COLUMN public_id SET NOT NULL")
         end
       end
     end
@@ -39,12 +39,12 @@ class FixMessageCascade < ActiveRecord::Migration[8.2]
     SQL
 
     fk_rows.each do |row|
-      execute "ALTER TABLE #{from_table} DROP CONSTRAINT #{row["conname"]}"
+      execute("ALTER TABLE #{from_table} DROP CONSTRAINT #{row["conname"]}")
     end
 
     # Add new FK with ON DELETE CASCADE
     fk_name = "fk_#{from_table}_on_#{column}_cascade"
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       ALTER TABLE #{from_table}#{" "}
       ADD CONSTRAINT #{fk_name}#{" "}
       FOREIGN KEY (#{column}) REFERENCES #{to_table} (id)#{" "}

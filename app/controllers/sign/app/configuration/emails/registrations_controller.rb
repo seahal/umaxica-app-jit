@@ -15,6 +15,15 @@ module Sign
 
           private
 
+          def ensure_turnstile!(email_address, confirm_policy)
+            turnstile_result = cloudflare_turnstile_stealth_validation
+            return true if turnstile_result["success"]
+
+            @user_email = UserEmail.new(raw_address: email_address, confirm_policy: confirm_policy)
+            @user_email.errors.add(:base, t("sign.app.registration.email.create.turnstile_validation_failed"))
+            false
+          end
+
           def email_registration_target_user
             current_user
           end

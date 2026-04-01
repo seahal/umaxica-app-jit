@@ -13,6 +13,12 @@ module Core
     module_function
 
     def for(surface:, request_host:)
+      host = normalize_host(request_host)
+
+      # In development/test with localhost, always derive from the request host
+      # so cookies are not set for a production domain the browser will reject.
+      return derive_from_host(request_host) if localhost_host?(host.to_s)
+
       configured = Rails.app.creds.option(SURFACE_CREDENTIAL_KEYS.fetch(surface.to_sym))&.strip
       return normalize_configured(configured) if configured.present?
 
@@ -43,7 +49,7 @@ module Core
     private_class_method :derive_from_host
 
     def normalize_host(value)
-      value.to_s.downcase.delete_suffix(".").split(":").first
+      Core::HostNormalization.normalize(value)
     end
     private_class_method :normalize_host
 
@@ -62,6 +68,10 @@ module Core
     end
     private_class_method :localhost_cookie_domain
 
+    # SECURITY NOTE: Scoping cookies to the apex domain (e.g., ".example.com") is intentional
+    # for cross-subdomain SSO. This means auth cookies are readable by ALL subdomains.
+    # Accepted risk: an XSS on any subdomain could access auth cookies (mitigated by httponly).
+    # A subdomain compromise would expose session tokens for all services on the same apex.
     def best_effort_apex(host)
       parts = host.split(".")
       return nil if parts.length < 2

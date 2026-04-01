@@ -56,6 +56,13 @@ module Sign
         assert_select "html[lang=en]"
         assert_select "a", text: /Need an account/
       end
+
+      test "does not show apple social login button" do
+        get new_sign_app_in_url(ri: "jp"), headers: { "Host" => @host }
+
+        assert_response :success
+        assert_select "form[action=?]", "/auth/apple", count: 0
+      end
     end
   end
 end

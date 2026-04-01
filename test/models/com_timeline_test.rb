@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: com_timelines
-# Database name: news
+# Database name: publication
 #
 #  id                 :bigint           not null, primary key
 #  expires_at         :datetime         default(Infinity), not null

@@ -28,7 +28,8 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
-  config.cache_store = :null_store
+  config.cache_store = :solid_cache_store
+  config.solid_cache.connects_to = { shards: { cache: { writing: :cache, reading: :cache_replica } } }
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # config.active_storage.service = :local
@@ -101,10 +102,11 @@ Rails.application.configure do
   config.hosts << "com.localhost"
   config.hosts << "org.localhost"
   config.hosts << "sign.app.localhost"
+  config.hosts << "sign.com.localhost"
   config.hosts << "sign.org.localhost"
-  config.hosts << "www.app.localhost"
-  config.hosts << "www.com.localhost"
-  config.hosts << "www.org.localhost"
+  config.hosts << "ww.app.localhost"
+  config.hosts << "ww.com.localhost"
+  config.hosts << "ww.org.localhost"
   config.hosts << "help.app.localhost"
   config.hosts << "help.com.localhost"
   config.hosts << "help.org.localhost"
@@ -117,6 +119,7 @@ Rails.application.configure do
   # Production hostnames allowed in development for Cloudflare Tunnel testing.
   # Remove once local-only development is sufficient.
   config.hosts << "sign.umaxica.app"
+  config.hosts << "sign.umaxica.com"
   config.hosts << "sign.umaxica.org"
 
   ## file watcher
@@ -146,5 +149,5 @@ Rails.application.configure do
   config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
 
   # Enable Gzip compression
-  config.middleware.use Rack::Deflater
+  config.middleware.use(Rack::Deflater)
 end

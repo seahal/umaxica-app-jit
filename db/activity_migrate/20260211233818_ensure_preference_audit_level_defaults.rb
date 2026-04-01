@@ -5,9 +5,9 @@ class EnsurePreferenceAuditLevelDefaults < ActiveRecord::Migration[8.2]
     # Insert defaults directly using SQL to avoid model connection issues
     safety_assured do
       [1].each do |id|
-        execute "INSERT INTO app_preference_audit_levels (id) VALUES (#{id}) ON CONFLICT DO NOTHING"
-        execute "INSERT INTO com_preference_audit_levels (id) VALUES (#{id}) ON CONFLICT DO NOTHING"
-        execute "INSERT INTO org_preference_audit_levels (id) VALUES (#{id}) ON CONFLICT DO NOTHING"
+        execute("INSERT INTO app_preference_audit_levels (id) VALUES (#{id}) ON CONFLICT DO NOTHING")
+        execute("INSERT INTO com_preference_audit_levels (id) VALUES (#{id}) ON CONFLICT DO NOTHING")
+        execute("INSERT INTO org_preference_audit_levels (id) VALUES (#{id}) ON CONFLICT DO NOTHING")
       end
     end
   end

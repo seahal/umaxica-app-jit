@@ -39,7 +39,7 @@ module Sign
           )
 
           flash[:notice] = t(".created")
-          redirect_to sign_org_configuration_secrets_path
+          redirect_to(sign_org_configuration_secrets_path)
         rescue ActiveRecord::RecordInvalid => e
           @secret = e.record
           @raw_secret = raw_secret.presence || StaffSecret.generate_raw_secret
@@ -55,7 +55,7 @@ module Sign
           )
 
           flash[:notice] = t(".updated")
-          redirect_to sign_org_configuration_secrets_path
+          redirect_to(sign_org_configuration_secrets_path)
         rescue ActiveRecord::RecordInvalid => e
           @secret = e.record.is_a?(StaffSecret) ? e.record : @secret
           render :edit, status: :unprocessable_content
@@ -64,7 +64,7 @@ module Sign
         def destroy
           StaffSecrets::Destroy.call(actor: current_staff, secret: @secret)
           flash[:notice] = t(".destroyed")
-          redirect_to sign_org_configuration_secrets_path, status: :see_other
+          redirect_to(sign_org_configuration_secrets_path, status: :see_other)
         end
 
         private

@@ -9,19 +9,34 @@ I18n::Backend::Simple.include I18n::Backend::Fallbacks
 
 region_code = ENV.fetch("REGION_CODE") # REGION_CODE is required, no default value
 locale_root = Rails.root.join("config/locales")
-region_dir = locale_root.join(region_code)
 
-unless region_dir.directory?
-  raise "REGION_CODE='#{region_code}' is invalid. Directory not found: #{region_dir}. " \
-        "Valid values are: #{locale_root.children.filter_map { |child| child.basename if child.directory? }.join(", ")}"
+# "all" is a virtual region that combines jp + us (us takes priority over jp).
+# Other region codes map directly to a directory under config/locales/.
+REGION_COMPOSE = { "all" => %w(jp us) }.freeze
+region_dirs =
+  if REGION_COMPOSE.key?(region_code)
+    REGION_COMPOSE[region_code].map { |code| locale_root.join(code) }
+  else
+    [locale_root.join(region_code)]
+  end
+
+region_dirs.each do |dir|
+  next if dir.directory?
+
+  raise ArgumentError,
+        "REGION_CODE='#{region_code}' is invalid. Directory not found: #{dir}. " \
+        "Valid values are: #{locale_root.children.filter_map { |child|
+          child.basename if child.directory?
+        }.join(", ")}, all"
 end
 
-Dir[locale_root.join("**", "*.{rb,yml}")]
-region_locale_files = Dir[region_dir.join("**", "*.{rb,yml}")]
+# Collect region locale files in priority order (later entries win in i18n)
+region_locale_files = region_dirs.flat_map { |dir| Dir[dir.join("**", "*.{rb,yml}")] }
 
 # Identify all region directories to exclude others
 all_region_dirs = locale_root.children.select(&:directory?)
-other_region_dirs = all_region_dirs.reject { |dir| dir == region_dir }
+included_region_dirs = region_dirs.to_set
+other_region_dirs = all_region_dirs.reject { |dir| included_region_dirs.include?(dir) }
 other_region_files = other_region_dirs.flat_map { |dir| Dir[dir.join("**", "*.{rb,yml}")] }.map(&:to_s)
 
 # Reject only files from other regions

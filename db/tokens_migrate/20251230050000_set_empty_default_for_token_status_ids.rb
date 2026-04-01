@@ -5,7 +5,7 @@ class SetEmptyDefaultForTokenStatusIds < ActiveRecord::Migration[8.2]
     %w(user_token_statuses staff_token_statuses).each do |table|
       next unless table_exists?(table)
 
-      change_column_default table, :id, from: "NEYO", to: ""
+      change_column_default(table, :id, from: "NEYO", to: "")
     end
   end
 
@@ -13,7 +13,7 @@ class SetEmptyDefaultForTokenStatusIds < ActiveRecord::Migration[8.2]
     %w(user_token_statuses staff_token_statuses).each do |table|
       next unless table_exists?(table)
 
-      change_column_default table, :id, from: "", to: "NEYO"
+      change_column_default(table, :id, from: "", to: "NEYO")
     end
   end
 

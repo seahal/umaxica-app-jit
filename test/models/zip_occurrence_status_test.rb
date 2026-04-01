@@ -12,6 +12,13 @@
 require "test_helper"
 
 class ZipOccurrenceStatusTest < ActiveSupport::TestCase
+  test "can load nothing status from db" do
+    nothing = ZipOccurrenceStatus.find(ZipOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
   test "accepts integer ids" do
     record = ZipOccurrenceStatus.new(id: 3)
 

@@ -19,7 +19,7 @@
 #  updated_at                        :datetime         not null
 #  public_id                         :string(21)       not null
 #  user_id                           :bigint           not null
-#  user_identity_telephone_status_id :bigint           default(1), not null
+#  user_identity_telephone_status_id :bigint           default(2), not null
 #
 # Indexes
 #

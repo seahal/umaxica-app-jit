@@ -1,8 +1,9 @@
 # typed: false
+# rubocop:disable Layout/LineLength
 # == Schema Information
 #
 # Table name: app_timeline_categories
-# Database name: news
+# Database name: publication
 #
 #  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
@@ -23,7 +24,7 @@
 
 # frozen_string_literal: true
 
-class AppTimelineCategory < NewsRecord
+class AppTimelineCategory < PublicationRecord
   belongs_to :app_timeline, inverse_of: :category
   belongs_to :app_timeline_category_master,
              primary_key: :id,
@@ -31,3 +32,4 @@ class AppTimelineCategory < NewsRecord
 
   validates :app_timeline_id, uniqueness: true
 end
+# rubocop:enable Layout/LineLength

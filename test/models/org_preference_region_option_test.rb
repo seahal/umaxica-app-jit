@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_preference_region_options
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
@@ -38,5 +38,17 @@ class OrgPreferenceRegionOptionTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordNotDestroyed) do
       option.destroy!
     end
+  end
+
+  test "name returns US for US id" do
+    option = OrgPreferenceRegionOption.find_or_create_by!(id: OrgPreferenceRegionOption::US)
+
+    assert_equal "US", option.name
+  end
+
+  test "name returns JP for JP id" do
+    option = OrgPreferenceRegionOption.find_or_create_by!(id: OrgPreferenceRegionOption::JP)
+
+    assert_equal "JP", option.name
   end
 end

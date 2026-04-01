@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_timeline_revisions
-# Database name: news
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text
@@ -36,7 +36,7 @@
 require "test_helper"
 
 class OrgTimelineRevisionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "OrgTimelineRevision", OrgTimelineRevision.name
+  end
 end

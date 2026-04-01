@@ -33,8 +33,10 @@ module Sign
           initialize_totp
 
           if @totp.private_key.blank?
-            redirect_to new_sign_app_configuration_totp_path,
-                        notice: t("sign.app.registration.email.flow.invalid")
+            redirect_to(
+              new_sign_app_configuration_totp_path,
+              notice: t("sign.app.registration.email.flow.invalid"),
+            )
             return
           end
 
@@ -58,7 +60,7 @@ module Sign
           @totp.last_otp_at = Time.zone.at(last_otp_at)
           @totp.save!
           session[:private_key] = nil
-          redirect_to sign_app_configuration_totps_path, notice: t("messages.totp_successfully_created")
+          redirect_to(sign_app_configuration_totps_path, notice: t("messages.totp_successfully_created"))
         end
 
         def handle_failure
@@ -71,8 +73,10 @@ module Sign
         def update
           @totp = find_totp
           if @totp.update(update_params)
-            redirect_to sign_app_configuration_totps_path,
-                        notice: t("messages.totp_successfully_updated")
+            redirect_to(
+              sign_app_configuration_totps_path,
+              notice: t("messages.totp_successfully_updated"),
+            )
           else
             render :edit, status: :unprocessable_content
           end
@@ -81,8 +85,10 @@ module Sign
         def destroy
           @totp = find_totp
           @totp.destroy!
-          redirect_to sign_app_configuration_totps_path,
-                      notice: t("messages.totp_successfully_deleted")
+          redirect_to(
+            sign_app_configuration_totps_path,
+            notice: t("messages.totp_successfully_deleted"),
+          )
         end
 
         private

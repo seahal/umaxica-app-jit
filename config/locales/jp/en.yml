@@ -327,6 +327,7 @@ en:
           destroy:
             success: Email address deleted.
             last_method: You must keep at least one login or recovery method.
+            protected: This email address is protected and cannot be deleted.
         telephone:
           edit:
             title: Delete Phone Number
@@ -1033,11 +1034,13 @@ en:
     app:
       preferences:
         footer:
+          home: Home
           preference: Preferences
     org:
       preferences:
         footer:
           preference: Preferences
+          cookie: Cookie
   email:
     app:
       preference_mailer:
@@ -1085,7 +1088,11 @@ en:
           success: Your inquiry has been received.
       preferences:
         footer:
+          home: Home
           preference: Preferences
+          newsroom: NewsRoom
+          document: Document
+          help_center: Help Center
       contact:
         emails:
           new:
@@ -1138,11 +1145,19 @@ en:
           success: Your inquiry has been received.
       preferences:
         footer:
+          home: Home
           preference: Preferences
+          newsroom: NewsRoom
+          document: Document
+          help_center: Help Center
     app:
       preferences:
         footer:
+          home: Home
           preference: Preferences
+          newsroom: NewsRoom
+          document: Document
+          help_center: Help Center
     contact:
       errors:
         id_required: Contact ID is required
@@ -1424,14 +1439,17 @@ en:
     com:
       preferences:
         footer:
+          home: Home
           preference: Preferences
     app:
       preferences:
         footer:
+          home: Home
           preference: Preferences
     org:
       preferences:
         footer:
+          home: Home
           preference: Preferences
   news:
     posts:
@@ -1451,12 +1469,34 @@ en:
     com:
       preferences:
         footer:
+          home: Home
           preference: Preferences
     app:
       preferences:
         footer:
+          home: Home
           preference: Preferences
     org:
       preferences:
         footer:
+          home: Home
           preference: Preferences
+
+  layouts:
+    shared:
+      footer_theme_controls:
+        title: Theme settings
+        description: Choose your display theme (or follow your system setting)
+        options:
+          system: Follow system setting
+          light: Light
+          dark: Dark
+
+      footer_cookie_controls:
+        close_button: Close
+        title: About our use of cookies
+        description_html: We use essential cookies and cookies for analytics and marketing purposes. Please review our %{privacy_policy} for details.
+        privacy_policy: Privacy Policy
+        reject_all: Reject all
+        open_settings: Manage settings
+        accept_all: Accept all

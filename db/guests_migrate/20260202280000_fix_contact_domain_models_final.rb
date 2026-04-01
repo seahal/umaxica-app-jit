@@ -9,7 +9,7 @@ class FixContactDomainModelsFinal < ActiveRecord::Migration[8.2]
         com_contact_categories com_contact_statuses
         org_contact_categories org_contact_statuses
       ).each do |table|
-        remove_column table, :code if column_exists?(table, :code)
+        remove_column(table, :code) if column_exists?(table, :code)
       end
 
       # Universal Statuses
@@ -27,11 +27,11 @@ class FixContactDomainModelsFinal < ActiveRecord::Migration[8.2]
       }
 
       %w(app_contact_statuses com_contact_statuses org_contact_statuses).each do |table|
-        execute "TRUNCATE TABLE #{table} RESTART IDENTITY CASCADE"
+        execute("TRUNCATE TABLE #{table} RESTART IDENTITY CASCADE")
         contact_statuses.each do |id, _code|
-          execute "INSERT INTO #{table} (id) VALUES (#{id})"
+          execute("INSERT INTO #{table} (id) VALUES (#{id})")
         end
-        execute "SELECT setval(pg_get_serial_sequence('#{table}', 'id'), #{contact_statuses.keys.max})"
+        execute("SELECT setval(pg_get_serial_sequence('#{table}', 'id'), #{contact_statuses.keys.max})")
       end
 
       # Specific Categories
@@ -42,23 +42,23 @@ class FixContactDomainModelsFinal < ActiveRecord::Migration[8.2]
       }
 
       categories.each do |table, mapping|
-        execute "TRUNCATE TABLE #{table} RESTART IDENTITY CASCADE"
+        execute("TRUNCATE TABLE #{table} RESTART IDENTITY CASCADE")
         mapping.each do |id, _code|
-          execute "INSERT INTO #{table} (id) VALUES (#{id})"
+          execute("INSERT INTO #{table} (id) VALUES (#{id})")
         end
-        execute "SELECT setval(pg_get_serial_sequence('#{table}', 'id'), #{mapping.keys.max})"
+        execute("SELECT setval(pg_get_serial_sequence('#{table}', 'id'), #{mapping.keys.max})")
       end
 
       # Helper for adding columns missing in a table
       add_missing_column =
         ->(table, col, type, options = {}) {
-          add_column table, col, type, **options unless column_exists?(table, col)
+          add_column(table, col, type, **options) unless column_exists?(table, col)
         }
 
       # 2. Emails and Telephones
       %i(com_contact_emails app_contact_emails org_contact_emails).each do |table|
         t_name = table.to_s
-        remove_column t_name, :code if column_exists?(t_name, :code)
+        remove_column(t_name, :code) if column_exists?(t_name, :code)
 
         add_missing_column.call(t_name, :email_address, :string, limit: 1000, null: false, default: "")
         add_missing_column.call(t_name, :activated, :boolean, null: false, default: false)
@@ -74,17 +74,23 @@ class FixContactDomainModelsFinal < ActiveRecord::Migration[8.2]
         if table == :com_contact_emails
           add_missing_column.call(t_name, :deletable, :boolean, null: false, default: false)
           add_missing_column.call(t_name, :remaining_views, :integer, limit: 2, default: 10, null: false)
-          add_missing_column.call(t_name, :expires_at, :timestamptz, null: false, default: -> { "CURRENT_TIMESTAMP + interval '1 day'" })
+          add_missing_column.call(
+            t_name,
+            :expires_at,
+            :timestamptz,
+            null: false,
+            default: -> { "CURRENT_TIMESTAMP + interval '1 day'" },
+          )
           add_missing_column.call(t_name, :hotp_secret, :string)
           add_missing_column.call(t_name, :hotp_counter, :integer)
         end
 
-        add_index table, :email_address unless index_exists?(table, :email_address)
+        add_index(table, :email_address) unless index_exists?(table, :email_address)
       end
 
       %i(com_contact_telephones app_contact_telephones org_contact_telephones).each do |table|
         t_name = table.to_s
-        remove_column t_name, :code if column_exists?(t_name, :code)
+        remove_column(t_name, :code) if column_exists?(t_name, :code)
 
         add_missing_column.call(t_name, :telephone_number, :string, limit: 1000, null: false, default: "")
         add_missing_column.call(t_name, :activated, :boolean, null: false, default: false)
@@ -97,11 +103,17 @@ class FixContactDomainModelsFinal < ActiveRecord::Migration[8.2]
         if table == :com_contact_telephones
           add_missing_column.call(t_name, :deletable, :boolean, null: false, default: false)
           add_missing_column.call(t_name, :remaining_views, :integer, limit: 2, default: 10, null: false)
-          add_missing_column.call(t_name, :expires_at, :timestamptz, null: false, default: -> { "CURRENT_TIMESTAMP + interval '1 day'" })
+          add_missing_column.call(
+            t_name,
+            :expires_at,
+            :timestamptz,
+            null: false,
+            default: -> { "CURRENT_TIMESTAMP + interval '1 day'" },
+          )
           add_missing_column.call(t_name, :hotp_secret, :string)
           add_missing_column.call(t_name, :hotp_counter, :integer)
         end
-        add_index table, :telephone_number unless index_exists?(table, :telephone_number)
+        add_index(table, :telephone_number) unless index_exists?(table, :telephone_number)
       end
     end
   end

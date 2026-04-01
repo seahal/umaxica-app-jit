@@ -161,7 +161,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         params = {
           challenge_id: challenge_id,
           credential: {
@@ -182,21 +182,19 @@ module Sign::App::In
         assert_equal "ok", json["status"]
         assert_not_nil json["access_token"]
         assert_equal "Bearer", json["token_type"]
-        assert_equal Auth::Base::ACCESS_TOKEN_TTL.to_i, json["expires_in"]
-        assert_includes json["redirect_url"], "rd="
+        assert_equal Authentication::Base::ACCESS_TOKEN_TTL.to_i, json["expires_in"]
+        assert_equal sign_app_configuration_path(ri: "jp"), json["redirect_url"]
 
         # Challenge verification updates sign count
         assert_equal 1, @passkey.reload.sign_count
       end
     end
 
-    # rubocop:disable Minitest/MultipleAssertions
     test "verification with session limit exceeded returns session_restricted" do
       # Create 2 active sessions to hit the limit
       UserToken.where(user_id: @user.id).delete_all
       2.times do
-        token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
-        token.rotate_refresh_token!
+        create_rotated_active_user_session(@user, rotations: 3)
       end
 
       # Get challenge
@@ -212,7 +210,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         params = {
           challenge_id: challenge_id,
           credential: {
@@ -241,7 +239,6 @@ module Sign::App::In
         assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
       end
     end
-    # rubocop:enable Minitest/MultipleAssertions
 
     test "verification returns same response for credential mismatch and missing verified pii" do
       # Baseline: credential mismatch
@@ -284,7 +281,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
           challenge_id: pii_challenge_id,
           credential: {
@@ -321,7 +318,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      WebAuthn::Credential.stub :from_get, mock_credential do
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
         post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
           challenge_id: challenge_id,
           credential: {
@@ -352,7 +349,7 @@ module Sign::App::In
       Sign::App::In::PasskeysController.any_instance.stub(
         :complete_sign_in_or_start_mfa!, { status: :unknown },
       ) do
-        WebAuthn::Credential.stub :from_get, mock_credential do
+        WebAuthn::Credential.stub(:from_get, mock_credential) do
           post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
             challenge_id: challenge_id,
             credential: {
@@ -374,7 +371,6 @@ module Sign::App::In
       email = UserEmail.find_by(user: @user).address
       post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email)
       challenge_id = response.parsed_body["challenge_id"]
-
       mismatch_error = Sign::Webauthn::ChallengePurposeMismatchError.new("purpose mismatch")
 
       Sign::App::In::PasskeysController.any_instance.stub(
@@ -402,8 +398,7 @@ module Sign::App::In
       # Create 2 active + 1 restricted to hit the hard limit
       UserToken.where(user_id: @user.id).delete_all
       2.times do
-        token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
-        token.rotate_refresh_token!
+        create_rotated_active_user_session(@user, rotations: 3)
       end
       restricted = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
       restricted.rotate_refresh_token!(expires_at: 15.minutes.from_now)
@@ -436,6 +431,15 @@ module Sign::App::In
         identifier: identifier,
         "cf-turnstile-response": "test_token",
       }
+    end
+
+    def create_rotated_active_user_session(user, rotations:)
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      refresh = token.rotate_refresh_token!
+
+      rotations.times do
+        refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+      end
     end
   end
 end

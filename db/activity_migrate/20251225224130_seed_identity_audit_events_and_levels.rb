@@ -43,13 +43,13 @@ class SeedIdentityAuditEventsAndLevels < ActiveRecord::Migration[8.2]
 
     ids.each do |id|
       if has_timestamps
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id, created_at, updated_at)
           VALUES ('#{id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO NOTHING
         SQL
       else
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id)
           VALUES ('#{id}')
           ON CONFLICT (id) DO NOTHING

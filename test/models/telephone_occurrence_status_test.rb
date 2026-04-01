@@ -12,6 +12,13 @@
 require "test_helper"
 
 class TelephoneOccurrenceStatusTest < ActiveSupport::TestCase
+  test "can load nothing status from db" do
+    nothing = TelephoneOccurrenceStatus.find(TelephoneOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
   test "accepts integer ids" do
     record = TelephoneOccurrenceStatus.new(id: 9)
 
@@ -20,7 +27,7 @@ class TelephoneOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "constants are defined" do
     assert_equal 1, TelephoneOccurrenceStatus::ACTIVE
-    assert_equal 2, TelephoneOccurrenceStatus::NOTHING
+    assert_equal 0, TelephoneOccurrenceStatus::NOTHING
   end
 
   test "has occurrences association" do

@@ -5,7 +5,7 @@
 #
 #  id :bigint           not null, primary key
 #
-nobody:
+nothing:
   id: 0
 user:
   id: 1

@@ -13,7 +13,7 @@ class AddMissingIndexesToUniversals < ActiveRecord::Migration[8.2]
       user
       zip
     ).each do |prefix|
-      add_index :"#{prefix}_occurrences", :status_id
+      add_index(:"#{prefix}_occurrences", :status_id)
     end
   end
 end

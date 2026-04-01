@@ -9,17 +9,17 @@
 #  id :bigint           not null, primary key
 #
 class UserTokenDbscStatus < TokenRecord
+  # Fixed IDs - do not modify these values
   NOTHING = 0
-  PENDING = 1
-  ACTIVE = 2
+  ACTIVE = 1
+  PENDING = 2
   FAILED = 3
   REVOKE = 4
-  DEFAULTS = [NOTHING, PENDING, ACTIVE, FAILED, REVOKE].freeze
+  DEFAULTS = [NOTHING, ACTIVE, PENDING, FAILED, REVOKE].freeze
 
   has_many :user_tokens, dependent: :restrict_with_error
 
   def self.ensure_defaults!
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    (DEFAULTS - existing_ids).each { |id| create!(id: id) }
+    insert_missing_fixed_ids!(DEFAULTS)
   end
 end

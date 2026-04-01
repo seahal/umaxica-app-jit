@@ -25,7 +25,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
       provider: "google_app",
-      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )
@@ -42,7 +42,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_apple_#{SecureRandom.hex(4)}",
       provider: "apple",
-      user_identity_social_apple_status_id: UserSocialAppleStatus::ACTIVE,
+      status_id: UserSocialAppleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )
@@ -112,7 +112,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
       provider: "google_app",
-      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )
@@ -131,7 +131,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
       provider: "google_app",
-      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )
@@ -149,7 +149,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
       provider: "google_app",
-      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )
@@ -174,7 +174,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
       provider: "google_app",
-      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      status_id: UserSocialGoogleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )
@@ -183,7 +183,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_apple_#{SecureRandom.hex(4)}",
       provider: "apple",
-      user_identity_social_apple_status_id: UserSocialAppleStatus::ACTIVE,
+      status_id: UserSocialAppleStatus::ACTIVE,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )
@@ -205,7 +205,7 @@ class AuthMethodGuardTest < ActiveSupport::TestCase
       user: user,
       uid: "test_google_#{SecureRandom.hex(4)}",
       provider: "google_app",
-      user_identity_social_google_status_id: UserSocialGoogleStatus::REVOKED,
+      status_id: UserSocialGoogleStatus::REVOKED,
       token: "token",
       expires_at: 1.week.from_now.to_i,
     )

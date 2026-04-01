@@ -106,6 +106,29 @@ ENV PORT=8080 \
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} /usr/local/bundle /usr/local/bundle
 COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} ${APP_HOME} ${APP_HOME}
 
+# Harden: lock out root and remove privilege escalation paths
+RUN usermod -s /usr/sbin/nologin root \
+    && usermod -L root \
+    && rm -f /usr/bin/sudo /usr/bin/su /usr/sbin/sudo /usr/sbin/su \
+    && rm -f /usr/bin/chsh /usr/bin/chfn /usr/bin/newgrp /usr/bin/passwd /usr/bin/gpasswd \
+    && find / -xdev -perm /4000 -exec chmod u-s {} + 2>/dev/null || true \
+    && find / -xdev -perm /2000 -exec chmod g-s {} + 2>/dev/null || true
+
+# Writable directories for Rails runtime (owner-only rwx)
+RUN install -d -m 700 -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
+    tmp tmp/pids tmp/cache tmp/sockets \
+    log \
+    storage
+
+# Lock down app files: read + execute only (no write), owner-only
+RUN find "${APP_HOME}" -mindepth 1 \
+    ! -type l \
+    ! -path "${APP_HOME}/tmp/*" \
+    ! -path "${APP_HOME}/log/*" \
+    ! -path "${APP_HOME}/storage/*" \
+    -exec chmod 500 {} + \
+    && find /usr/local/bundle ! -type l -exec chmod 500 {} +
+
 USER ${DOCKER_USER}
 
 EXPOSE 8080
@@ -146,13 +169,11 @@ RUN apt-get update -qq \
 # ============================================================================
 FROM development-base AS development
 SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
-ARG COMMIT_HASH
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
 ARG GITHUB_ACTIONS
-ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/${DOCKER_USER}
 WORKDIR ${HOME}/workspace
 
@@ -160,10 +181,12 @@ WORKDIR ${HOME}/workspace
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bat \
+    bubblewrap \
     entr \
     fd-find \
     fontconfig \
     fzf \
+    git-secrets \
     htop \
     iproute2 \
     jq \
@@ -183,11 +206,8 @@ RUN apt-get update -qq \
     zip \
     socat \
     netcat-openbsd \
-    python3 \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
-
-COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json pnpm-lock.yaml ./
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/* /home/jit/
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
@@ -205,12 +225,6 @@ RUN npm install -g pnpm@10.27.0 && \
 
 # Install Vite+ (unified frontend toolchain: Vite, Vitest, Oxlint, Oxfmt, tsdown)
 RUN curl -fsSL https://vite.plus | bash
-
-RUN install -d -o "${DOCKER_UID}" -g "${DOCKER_GID}" \
-    "${HOME}/.cache" \
-    "${HOME}/.config" \
-    "${HOME}/.npm" \
-    "${HOME}/.local" \
-    "${HOME}/.bundle"
+ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
 
 USER ${DOCKER_USER}

@@ -3,10 +3,10 @@
 <h1><%= t("apex.#{scope}.preference.locale.edit.title") %></h1>
 <p class="locale-description"><%= t("apex.#{scope}.preference.locale.edit.description") %></p>
 
-<% language_options = I18n.t("apex.#{scope}.preference.locale.edit.language_options", default: {}).map do |code, label|
+<% language_options = I18n.t("apex.#{scope}.preference.locale.edit.language_options").map do |code, label|
   [label, code]
 end %>
-<% timezone_options = I18n.t("apex.#{scope}.preference.locale.edit.timezone_options", default: {}).map do |identifier, label|
+<% timezone_options = I18n.t("apex.#{scope}.preference.locale.edit.timezone_options").map do |identifier, label|
   [label, identifier]
 end %>
 <% selected_language = @current_language.presence || PreferenceRegions::DEFAULT_LANGUAGE %>

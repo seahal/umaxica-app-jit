@@ -33,11 +33,13 @@ module Jit
 
         test "sends message with valid parameters" do
           mock_client = Minitest::Mock.new
-          mock_client.expect :publish, OpenStruct.new(message_id: "test-id"), [{
-            phone_number: "+1234567890",
-            message: "Hello World",
-            subject: "SMS",
-          }]
+          mock_client.expect(
+            :publish, OpenStruct.new(message_id: "test-id"), [{
+              phone_number: "+1234567890",
+              message: "Hello World",
+              subject: "SMS",
+            }],
+          )
 
           driver = AwsDriver.new(access_key_id: "key", secret_access_key: "secret", region: "us-east-1")
           driver.instance_variable_set(:@client, mock_client)
@@ -50,11 +52,13 @@ module Jit
 
         test "sends message with custom subject" do
           mock_client = Minitest::Mock.new
-          mock_client.expect :publish, OpenStruct.new(message_id: "test-id"), [{
-            phone_number: "+1234567890",
-            message: "Hello World",
-            subject: "Custom Subject",
-          }]
+          mock_client.expect(
+            :publish, OpenStruct.new(message_id: "test-id"), [{
+              phone_number: "+1234567890",
+              message: "Hello World",
+              subject: "Custom Subject",
+            }],
+          )
 
           driver = AwsDriver.new(access_key_id: "key", secret_access_key: "secret", region: "us-east-1")
           driver.instance_variable_set(:@client, mock_client)

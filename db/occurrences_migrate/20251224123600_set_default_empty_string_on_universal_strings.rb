@@ -14,9 +14,9 @@ class SetDefaultEmptyStringOnUniversalStrings < ActiveRecord::Migration[8.2]
     )
 
     tables.each do |table|
-      change_column_default table, :body, from: nil, to: ""
-      change_column_default table, :public_id, from: nil, to: ""
-      change_column_default table, :status_id, from: nil, to: ""
+      change_column_default(table, :body, from: nil, to: "")
+      change_column_default(table, :public_id, from: nil, to: "")
+      change_column_default(table, :status_id, from: nil, to: "")
     end
   end
 end

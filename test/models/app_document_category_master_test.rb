@@ -23,6 +23,21 @@ require "test_helper"
 class AppDocumentCategoryMasterTest < ActiveSupport::TestCase
   include TreeableSharedTests
 
+  test "has correct constants" do
+    assert_equal 0, AppDocumentCategoryMaster::NOTHING
+    assert_equal 1, AppDocumentCategoryMaster::LEGACY_NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = AppDocumentCategoryMaster.find(AppDocumentCategoryMaster::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
+  test "treeable class is defined" do
+    assert_equal AppDocumentCategoryMaster, treeable_class
+  end
+
   private
 
   def treeable_class

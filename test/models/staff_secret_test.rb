@@ -129,6 +129,45 @@ class StaffSecretTest < ActiveSupport::TestCase
     assert_not record.login_secret?
   end
 
+  test "permanent_secret? predicate returns true for LOGIN kind" do
+    record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: StaffSecretKind::LOGIN)
+
+    assert_predicate record, :permanent_secret?
+    assert_not record.one_time_secret?
+  end
+
+  test "verify_for_secret_sign_in! keeps permanent login secret active" do
+    record, raw_secret = StaffSecret.issue!(name: "Permanent Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
+
+    assert record.verify_for_secret_sign_in!(raw_secret)
+    assert_equal StaffSecretStatus::ACTIVE, record.reload.staff_secret_status_id
+    assert_predicate record.last_used_at, :present?
+  end
+
+  test "verify_for_secret_sign_in! allows repeated use for permanent login secret" do
+    record, raw_secret = StaffSecret.issue!(name: "Permanent Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
+
+    assert record.verify_for_secret_sign_in!(raw_secret)
+    first_last_used_at = record.reload.last_used_at
+
+    travel 1.second do
+      assert record.verify_for_secret_sign_in!(raw_secret)
+    end
+
+    record.reload
+
+    assert_equal StaffSecretStatus::ACTIVE, record.staff_secret_status_id
+    assert_operator record.last_used_at, :>, first_last_used_at
+  end
+
+  test "allowed_for_secret_sign_in excludes totp secrets" do
+    login_secret, = StaffSecret.issue!(name: "Login Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
+    totp_secret, = StaffSecret.issue!(name: "TOTP Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::TOTP)
+
+    assert_includes StaffSecret.allowed_for_secret_sign_in, login_secret
+    assert_not_includes StaffSecret.allowed_for_secret_sign_in, totp_secret
+  end
+
   test "public_id is automatically generated on create" do
     record = StaffSecret.create!(
       staff: @staff,

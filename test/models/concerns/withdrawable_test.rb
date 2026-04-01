@@ -166,9 +166,7 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
   end
 
   test "withdrawn scope returns empty when no users are withdrawn" do
-    # rubocop:disable Rails/SkipsModelValidations
     User.update_all(withdrawn_at: nil)
-    # rubocop:enable Rails/SkipsModelValidations
 
     withdrawn_users = User.withdrawn
 

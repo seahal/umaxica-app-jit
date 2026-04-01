@@ -5,7 +5,7 @@ require "test_helper"
 
 class AuthSessionLimitTest < ActiveSupport::TestCase
   class SessionLimitHarness
-    include Auth::Base
+    include Authentication::Base
 
     attr_accessor :session_data
 
@@ -117,11 +117,47 @@ class AuthSessionLimitTest < ActiveSupport::TestCase
     assert_equal 2, result
   end
 
+  test "count_active_sessions ignores rotated refresh-token ancestors" do
+    UserToken.where(user_id: @user.id).delete_all
+
+    token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: refresh)
+
+    result = @harness.send(:count_active_sessions, @user)
+
+    assert_equal 1, result
+  end
+
+  test "count_active_sessions ignores rotated refresh-token ancestors for staff" do
+    staff = ::Staff.first
+    StaffToken.where(staff_id: staff.id).delete_all
+
+    token = StaffToken.create!(staff: staff, status: StaffToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: refresh)
+
+    result = @harness.send(:count_active_sessions, staff)
+
+    assert_equal 1, result
+  end
+
   test "restricted_session_exists? returns true when restricted session exists" do
     UserToken.where(user_id: @user.id).delete_all
     UserToken.create!(user: @user, status: "restricted")
 
     assert @harness.send(:restricted_session_exists?, @user)
+  end
+
+  test "restricted_session_exists? ignores expired restricted sessions" do
+    UserToken.where(user_id: @user.id).delete_all
+    UserToken.create!(
+      user: @user,
+      status: UserToken::STATUS_RESTRICTED,
+      refresh_expires_at: 1.minute.ago,
+    )
+
+    assert_not @harness.send(:restricted_session_exists?, @user)
   end
 
   test "restricted_session_exists? returns false when no restricted session" do
@@ -140,7 +176,7 @@ class AuthSessionLimitTest < ActiveSupport::TestCase
     freeze_time do
       result = @harness.send(:restricted_session_expires_at)
 
-      assert_equal (15.minutes.from_now).to_i, result.to_i
+      assert_equal 15.minutes.from_now.to_i, result.to_i
     end
   end
 

@@ -141,7 +141,7 @@ module TelephoneNormalization
   def self.convert_international_prefix(input)
     # Handle "010" prefix (Japan international dialing)
     if input.start_with?("010")
-      result = "+" + input.drop(3)
+      result = "+" + input[3, input.length].to_s
       # Remove domestic 0 after country code if present
       # Pattern: +[1-3 digits]0[1-9...]
       result = remove_domestic_zero_after_country_code(result)
@@ -150,7 +150,7 @@ module TelephoneNormalization
 
     # Handle "00" prefix (international dialing in many countries)
     if input.start_with?("00")
-      result = "+" + input.drop(2)
+      result = "+" + input[2, input.length].to_s
       # Remove domestic 0 after country code if present
       result = remove_domestic_zero_after_country_code(result)
       return [result, true]
@@ -177,7 +177,7 @@ module TelephoneNormalization
     if input.start_with?("+81") && input.length >= 6
       # Check if there's a 0 right after +81
       if input[3] == "0" && input[4]&.match?(/[1-9]/)
-        return "+81" + input.drop(4)
+        return "+81" + input[4, input.length].to_s
       end
 
       return input
@@ -227,7 +227,7 @@ module TelephoneNormalization
     # Domestic format: starts with 0
     if input.start_with?("0")
       # Remove leading 0 and add +81
-      return "+#{DEFAULT_COUNTRY_CODE}#{input.drop(1)}"
+      return "+#{DEFAULT_COUNTRY_CODE}#{input[1, input.length]}"
     end
 
     # No + and doesn't start with 0: invalid (ambiguous)

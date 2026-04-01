@@ -7,13 +7,13 @@ class AddReservedToUserStatuses < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
       if column_exists?(:user_statuses, :code)
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_statuses (id, code)
           VALUES (#{RESERVED_STATUS_ID}, '#{RESERVED_STATUS_CODE}')
           ON CONFLICT (id) DO UPDATE SET code = EXCLUDED.code
         SQL
       else
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_statuses (id)
           VALUES (#{RESERVED_STATUS_ID})
           ON CONFLICT (id) DO NOTHING
@@ -24,7 +24,7 @@ class AddReservedToUserStatuses < ActiveRecord::Migration[8.2]
 
   def down
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         DELETE FROM user_statuses
         WHERE id = #{RESERVED_STATUS_ID}
       SQL

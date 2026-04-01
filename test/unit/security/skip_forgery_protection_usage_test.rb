@@ -7,10 +7,7 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
   self.use_transactional_tests = false
   self.fixture_table_names = []
 
-  ALLOWED_SKIP_FORGERY_PROTECTION_PATHS = [
-    "app/controllers/csp_violations_controller.rb", # Browser CSP reports cannot include CSRF tokens
-    "app/controllers/sign/app/tokens_controller.rb", # OIDC token endpoint is a non-browser POST without CSRF tokens
-  ].freeze
+  ALLOWED_SKIP_FORGERY_PROTECTION_PATHS = [].freeze
 
   test "skip_forgery_protection is only used in approved controllers" do
     controller_files = Rails.root.glob("app/controllers/**/*_controller.rb")
@@ -27,14 +24,14 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
     missing_allowed = ALLOWED_SKIP_FORGERY_PROTECTION_PATHS - found_paths
 
     assert_empty violations,
-                 <<~MSG
+                 <<~MSG.squish
                    skip_forgery_protection must not be added to controllers without review.
                    Remove it from:
                      #{violations.join("\n  ")}
                  MSG
 
     assert_empty missing_allowed,
-                 <<~MSG
+                 <<~MSG.squish
                    Allowed list contains controllers that no longer call skip_forgery_protection.
                    Please update ALLOWED_SKIP_FORGERY_PROTECTION_PATHS:
                      #{missing_allowed.join("\n  ")}

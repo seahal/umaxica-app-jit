@@ -20,14 +20,19 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
-  test "renders expected layout structure" do
+  test "renders head layout structure" do
     get news_app_root_url
 
     assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: /#{brand_name} \(app\) Newsroom/
     end
+  end
+
+  test "renders body layout structure" do
+    get news_app_root_url
+
+    assert_layout_contract
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
         assert_select "h1", text: /#{brand_name}.*\(news, app\)/
@@ -41,7 +46,6 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get news_app_root_url

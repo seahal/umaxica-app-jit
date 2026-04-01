@@ -23,6 +23,14 @@ class Sign::Org::InsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "a[href=?]", new_sign_org_in_passkey_path(query)
     assert_select "a[href=?]", new_sign_org_in_secret_path(query)
+    assert_select "a[href=?]", new_sign_org_social_session_path(query.merge(provider: "google_org"))
+  end
+
+  test "does not render sign up link on sign in page" do
+    get new_sign_org_in_url(ri: "jp"), headers: { "Host" => @host }
+
+    assert_response :success
+    assert_select "a[href=?]", new_sign_org_up_path(ri: "jp"), count: 0
   end
 
   test "renders back to root link" do

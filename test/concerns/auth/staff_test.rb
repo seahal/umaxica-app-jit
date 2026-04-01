@@ -3,7 +3,7 @@
 
 require "test_helper"
 
-class Auth::StaffTest < ActiveSupport::TestCase
+class Authentication::StaffTest < ActiveSupport::TestCase
   fixtures :staffs, :staff_statuses, :staff_tokens, :staff_token_kinds, :staff_token_statuses
   class FormatMock
     attr_accessor :format_type
@@ -18,7 +18,7 @@ class Auth::StaffTest < ActiveSupport::TestCase
   end
 
   class DummyClass
-    include Auth::Staff
+    include Authentication::Staff
 
     attr_accessor :session, :cookies, :request, :response
 
@@ -36,12 +36,12 @@ class Auth::StaffTest < ActiveSupport::TestCase
       @session = {}
     end
 
-    def sign_org_edge_v0_token_dbsc_registration_path
-      "/edge/v0/token/dbsc_registration"
+    def sign_org_edge_v0_token_dbsc_path
+      "/edge/v0/token/dbsc"
     end
 
-    def sign_app_edge_v0_token_dbsc_registration_path
-      "/edge/v0/token/dbsc_registration"
+    def sign_app_edge_v0_token_dbsc_path
+      "/edge/v0/token/dbsc"
     end
   end
 
@@ -85,10 +85,11 @@ class Auth::StaffTest < ActiveSupport::TestCase
   setup do
     @obj = DummyClass.new
     @staff = staffs(:one)
+    StaffToken.where(staff_id: @staff.id).delete_all
   end
 
   test "module can be included" do
-    assert_kind_of Auth::Staff, @obj
+    assert_kind_of Authentication::Staff, @obj
   end
 
   test "log_in sets access token in cookie" do
@@ -96,7 +97,7 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert @obj.cookies[::Auth::Staff::ACCESS_COOKIE_KEY]
+    assert @obj.cookies[::Authentication::Staff::ACCESS_COOKIE_KEY]
     assert_predicate @obj, :logged_in?
     assert_equal @staff, @obj.current_staff
   end
@@ -106,9 +107,9 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    access_opts = @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)
-    refresh_opts = @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)
-    device_opts = @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)
+    access_opts = @obj.cookies.options_for(::Authentication::Staff::ACCESS_COOKIE_KEY)
+    refresh_opts = @obj.cookies.options_for(::Authentication::Staff::REFRESH_COOKIE_KEY)
+    device_opts = @obj.cookies.options_for(::Authentication::Base::DEVICE_COOKIE_KEY)
 
     assert_operator access_opts[:expires], :>, 10.minutes.from_now
     assert_operator access_opts[:expires], :<, 2.hours.from_now
@@ -133,9 +134,9 @@ class Auth::StaffTest < ActiveSupport::TestCase
     @obj.send(:log_in, @staff)
 
     assert_difference("StaffToken.count", -1) { @obj.send(:log_out) }
-    assert_nil @obj.cookies[::Auth::Staff::ACCESS_COOKIE_KEY]
-    assert_nil @obj.cookies.encrypted[::Auth::Staff::REFRESH_COOKIE_KEY]
-    assert_nil @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY]
+    assert_nil @obj.cookies[::Authentication::Staff::ACCESS_COOKIE_KEY]
+    assert_nil @obj.cookies.encrypted[::Authentication::Staff::REFRESH_COOKIE_KEY]
+    assert_nil @obj.cookies[::Authentication::Base::DEVICE_COOKIE_KEY]
   end
 
   test "log_in derives shared cookie domain from localhost host" do
@@ -144,9 +145,9 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)[:domain]
-    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)[:domain]
-    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Base::DEVICE_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(::Authentication::Staff::ACCESS_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(::Authentication::Staff::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(::Authentication::Base::DEVICE_COOKIE_KEY)[:domain]
   end
 
   test "log_in returns tokens hash" do
@@ -158,9 +159,9 @@ class Auth::StaffTest < ActiveSupport::TestCase
       assert_kind_of Hash, tokens
       assert tokens[:access_token]
       assert tokens[:refresh_token]
-      assert_predicate @obj.cookies[::Auth::Base::DEVICE_COOKIE_KEY], :present?
+      assert_predicate @obj.cookies[::Authentication::Base::DEVICE_COOKIE_KEY], :present?
       assert_equal "Bearer", tokens[:token_type]
-      assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+      assert_equal ::Authentication::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
     end
   end
 
@@ -184,8 +185,8 @@ class Auth::StaffTest < ActiveSupport::TestCase
         StaffToken.create!(staff: @staff)
       end
 
-    # Generate access token using Auth::Base::Token
-    access_token = Auth::Base::Token.encode(
+    # Generate access token using Authentication::Base::Token
+    access_token = Authentication::Base::Token.encode(
       @staff,
       host: @obj.request.host,
       session_public_id: token_record.public_id,

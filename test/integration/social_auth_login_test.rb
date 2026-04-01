@@ -88,8 +88,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: browser_headers.merge(@callback_headers)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
 
     assert_equal user_count_before, User.count
   end
@@ -134,8 +134,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: browser_headers.merge(@callback_headers)
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
 

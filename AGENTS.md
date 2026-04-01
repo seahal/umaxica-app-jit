@@ -1,5 +1,89 @@
 # Repository Guidelines
 
+## Agent Instruction Priority
+
+You MUST follow instructions in this order:
+
+1. This file (`AGENTS.md`)
+2. `.harnes/policies/*`
+3. `.harnes/context/*`
+4. `.harnes/tasks/*`
+
+If there is any conflict, follow the higher priority.
+
+## Mandatory Behavior
+
+You MUST:
+
+- Read relevant files in `.harnes/` before making changes
+- Follow all rules in `.harnes/policies/`
+- Follow architecture defined in `.harnes/context/`
+- Follow task procedures in `.harnes/tasks/`
+
+## Execution Rules
+
+Before submitting any change, you MUST:
+
+1. Ensure no forbidden patterns are used
+2. Ensure code follows routing and architecture rules
+3. Ensure authentication and authorization pipeline is respected
+4. Ensure tests are included and meaningful
+
+## Excluded Directories
+
+The following directories should be excluded from routine operations because they tend to waste
+tokens or contain third-party code that is not normally relevant:
+
+- `tmp/`
+- `log/`
+
+The following directories contain third-party libraries and MUST be excluded from routine operations
+(reading, searching, editing, and analysis) unless they are strictly required for the task and the
+user has explicitly confirmed that they may be inspected:
+
+- `vendor/`
+- `node_modules/`
+
+## Forbidden Actions
+
+You MUST NOT:
+
+- Ignore `.harnes/policies/*`
+- Skip authentication or authorization
+- Introduce unsafe migrations
+- Add meaningless or weak tests
+- Bypass safety constraints
+- Read, modify, or search within `vendor/` or `node_modules/` without strict necessity and explicit
+  user confirmation
+
+## Error Handling
+
+If a rule cannot be satisfied:
+
+- Stop
+- Explain the issue
+- Propose a safe alternative
+
+Do not proceed with unsafe implementation.
+
+## Quality Standard
+
+Your output MUST be:
+
+- Safe
+- Deterministic
+- Aligned with project architecture
+- Fully test-covered
+
+## Agent Summary
+
+You are not allowed to improvise outside defined rules.
+
+When in doubt:
+
+- Follow `.harnes/policies/`
+- Prefer safety over speed
+
 ## Project Structure & Module Organization
 
 This is a Rails 8 app with domain-separated surfaces (`app`, `com`, `org`) implemented across
@@ -35,6 +119,8 @@ controllers, views, and routes.
 ## Testing Guidelines
 
 - Framework: Minitest (`test/test_helper.rb`) with fixtures.
+- Respect t_wada-style testing practices when designing and writing tests.
+- Prefer tests that avoid mocks and stubs whenever reasonably possible.
 - Name tests with `_test.rb` and mirror source structure (example: `app/services/auth/foo.rb` ->
   `test/services/auth/foo_test.rb`).
 - Run migrations before tests when schema changes are involved:
@@ -66,7 +152,7 @@ controllers, views, and routes.
 - WebAuthn commands require `TRUSTED_ORIGINS` set in environment.
 - Run hooks before commit: `lefthook run pre-commit` (audit, lint, Brakeman, tests).
 
-<!--VITE PLUS START-->
+  <!--VITE PLUS START-->
 
 # Using Vite+, the Unified Toolchain for the Web
 
@@ -141,9 +227,11 @@ documentation, features, and bugs.
   all package manager operations.
 - **Always use Vite commands to run tools:** Don't attempt to run `vp vitest` or `vp oxlint`. They
   do not exist. Use `vp test` and `vp lint` instead.
-- **Running scripts:** Vite+ commands take precedence over `package.json` scripts. If there is a
-  `test` script defined in `scripts` that conflicts with the built-in `vp test` command, run it
-  using `vp run test`.
+- **Running scripts:** Vite+ built-in commands (`vp dev`, `vp build`, `vp test`, etc.) always run
+  the Vite+ built-in tool, not any `package.json` script of the same name. To run a custom script
+  that shares a name with a built-in command, use `vp run <script>`. For example, if you have a
+  custom `dev` script that runs multiple services concurrently, run it with `vp run dev`, not
+  `vp dev` (which always starts Vite's dev server).
 - **Do not install Vitest, Oxlint, Oxfmt, or tsdown directly:** Vite+ wraps these tools. They must
   not be installed directly. You cannot upgrade these tools by installing their latest versions.
   Always use Vite+ commands.
@@ -162,3 +250,12 @@ documentation, features, and bugs.
 - [ ] Run `vp install` after pulling remote changes and before getting started.
 - [ ] Run `vp check` and `vp test` to validate changes.
 <!--VITE PLUS END-->
+
+## Git Commit Policy
+
+Never run `git commit` automatically. Always complete the requested changes, report what was done,
+and stop — without committing. Let the user decide when to commit.
+
+If you want these rules enforced through the harness as well, mirror the same wording into an
+appropriate .harnes/policies/... file so that AGENTS.md (priority 1) and the harness policies stay
+aligned.

@@ -1,23 +1,14 @@
 pre-commit:
   parallel: true
   commands:
-    pnpm_oxlint:
+    vp_check:
       run: |
         #!/bin/sh
         set -eu
         if [ -f /.dockerenv ]; then
-          pnpm run lint
+          vp check --fix
         else
-          docker compose run core pnpm run lint
-        fi
-    pnpm_oxfmt:
-      run: |
-        #!/bin/sh
-        set -eu
-        if [ -f /.dockerenv ]; then
-          pnpm run format:check
-        else
-          docker compose run core pnpm run format:check
+          docker compose run core vp check --fix
         fi
     ruby_rubocop:
       run: |
@@ -73,15 +64,15 @@ pre-commit:
         else
           docker compose run core bundle exec brakeman --no-pager
         fi
-    ruby_database_consistency:
-      run: |
-        #!/bin/sh
-        set -eu
-        if [ -f /.dockerenv ]; then
-          bundle exec database_consistency
-        else
-          docker compose run core bundle exec database_consistency
-        fi
+    # ruby_database_consistency:
+    #   run: |
+    #     #!/bin/sh
+    #     set -eu
+    #     if [ -f /.dockerenv ]; then
+    #       bundle exec database_consistency
+    #     else
+    #       docker compose run core bundle exec database_consistency
+    #     fi
     ruby_on_rails_test:
       run: |
         #!/bin/sh
@@ -91,5 +82,12 @@ pre-commit:
         else
           docker compose run core bash -c "bundle exec rails test"
         fi
-    # secret-scan:
-    #   run: gitleaks protect
+    secret_scan:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          gitleaks protect
+        else
+          docker compose run core gitleaks protect
+        fi

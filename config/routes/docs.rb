@@ -6,10 +6,18 @@ scope module: :docs, as: :docs do
     scope module: :com, as: :com do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0, defaults: { format: :json } do
@@ -29,10 +37,18 @@ scope module: :docs, as: :docs do
     scope module: :app, as: :app do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0, defaults: { format: :json } do
@@ -53,10 +69,18 @@ scope module: :docs, as: :docs do
     scope module: :org, as: :org do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html/json
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0, defaults: { format: :json } do

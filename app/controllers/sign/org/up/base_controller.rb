@@ -1,0 +1,45 @@
+# typed: false
+# frozen_string_literal: true
+
+module Sign
+  module Org
+    module Up
+      class BaseController < ApplicationController
+        include ::RateLimit
+        include Pundit::Authorization
+        # Note: Authentication::Staff is NOT included here for unauthenticated sign-up
+        include ::Preference::Global
+        include ::Preference::Adoption
+        include ::CurrentSupport
+        include ::Finisher
+
+        allow_browser versions: :modern
+
+        before_action :set_preferences_cookie
+        before_action :resolve_param_context
+        before_action :set_region
+        before_action :set_locale
+        before_action :set_timezone
+        before_action :set_color_theme
+        before_action :set_current
+        append_after_action :finish_request
+
+        protect_from_forgery using: :header_or_legacy_token,
+                             trusted_origins: ENV.fetch(
+                               "SIGN_ORG_TRUSTED_ORIGINS",
+                               "http://sign.org.localhost,https://sign.org.localhost",
+                             )
+                               .split(",").map(&:strip),
+                             with: :exception
+
+        private
+
+        def after_login_path
+          sign_org_configuration_path
+        rescue StandardError
+          "/"
+        end
+      end
+    end
+  end
+end

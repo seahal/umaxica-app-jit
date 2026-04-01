@@ -24,8 +24,8 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     csrf_token = "test_csrf_token"
     cookies["csrf_token"] = csrf_token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
-    cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = @device_id
 
     post "/edge/v0/token/refresh",
          headers: {
@@ -37,15 +37,15 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_response :ok
 
-    assert response_has_cookie?(Auth::Base::ACCESS_COOKIE_KEY),
-           "Response should set access cookie (#{Auth::Base::ACCESS_COOKIE_KEY})"
-    assert response_has_cookie?(Auth::Base::REFRESH_COOKIE_KEY),
-           "Response should set refresh cookie (#{Auth::Base::REFRESH_COOKIE_KEY})"
+    assert response_has_cookie?(Authentication::Base::ACCESS_COOKIE_KEY),
+           "Response should set access cookie (#{Authentication::Base::ACCESS_COOKIE_KEY})"
+    assert response_has_cookie?(Authentication::Base::REFRESH_COOKIE_KEY),
+           "Response should set refresh cookie (#{Authentication::Base::REFRESH_COOKIE_KEY})"
 
     raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
     cookie_lines = raw_header.is_a?(Array) ? raw_header : raw_header.to_s.split("\n")
-    access_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::ACCESS_COOKIE_KEY}=") }.to_s
-    refresh_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::REFRESH_COOKIE_KEY}=") }.to_s
+    access_cookie = cookie_lines.find { |line| line.start_with?("#{Authentication::Base::ACCESS_COOKIE_KEY}=") }.to_s
+    refresh_cookie = cookie_lines.find { |line| line.start_with?("#{Authentication::Base::REFRESH_COOKIE_KEY}=") }.to_s
 
     assert_match(/samesite=lax/i, access_cookie)
     assert_match(/samesite=lax/i, refresh_cookie)
@@ -56,23 +56,23 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
   end
 
   test "POST refresh syncs preference_consented cookie on success" do
-    token_record = StaffToken.create!(staff: @staff, device_id: @device_id)
-    refresh_plain = token_record.rotate_refresh_token!
-
     csrf_token = "test_csrf_token"
     cookies["csrf_token"] = csrf_token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
-    cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = @device_id
 
     controller = Sign::Org::Edge::V0::Token::RefreshesController
     expires_at = Time.utc(2035, 5, 6, 7, 8, 9)
 
-    with_cookie_domain_credentials(COOKIE_DOMAIN_ORG: ".org.refresh.example.test") do
-      controller.any_instance.stub(
-        :decode_and_verify_preference_jwt,
-        { "preferences" => { "consented" => false }, "public_id" => "pref-org-public-id" },
-      ) do
-        controller.any_instance.stub(:refresh_token_expires_at, expires_at) do
+    travel_to(expires_at - Preference::Base::REFRESH_TOKEN_TTL) do
+      token_record = StaffToken.create!(staff: @staff, device_id: @device_id)
+      refresh_plain = token_record.rotate_refresh_token!
+      cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+      with_cookie_domain_credentials(COOKIE_DOMAIN_ORG: ".org.refresh.example.test") do
+        controller.any_instance.stub(
+          :decode_and_verify_preference_jwt,
+          { "preferences" => { "consented" => false }, "public_id" => "pref-org-public-id" },
+        ) do
           post "/edge/v0/token/refresh",
                headers: {
                  "Host" => @host,
@@ -88,7 +88,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     set_cookie = response.headers["Set-Cookie"].to_s
 
     assert_includes set_cookie, "preference_consented=0"
-    assert_includes set_cookie, "domain=.org.refresh.example.test"
+    assert_includes set_cookie, "domain=.org.localhost"
     assert_includes set_cookie.downcase, "path=/"
     expires = response_cookie_expiry("preference_consented")
 
@@ -102,8 +102,8 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     csrf_token = "test_csrf_token"
     cookies["csrf_token"] = csrf_token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
-    cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = @device_id
 
     post "/edge/v0/token/refresh",
          headers: {
@@ -116,7 +116,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :ok
 
     response_cookies = extract_cookies_from_response
-    cookies[Auth::Base::ACCESS_COOKIE_KEY] = response_cookies[Auth::Base::ACCESS_COOKIE_KEY]
+    cookies[Authentication::Base::ACCESS_COOKIE_KEY] = response_cookies[Authentication::Base::ACCESS_COOKIE_KEY]
 
     get "/edge/v0/token/check",
         headers: { "Host" => @host, "Accept" => "application/json" },
@@ -135,8 +135,8 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     csrf_token = "test_csrf_token"
     cookies["csrf_token"] = csrf_token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
-    cookies[Auth::Base::DEVICE_COOKIE_KEY] = @device_id
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = @device_id
 
     post "/edge/v0/token/refresh",
          headers: {
@@ -158,7 +158,7 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     csrf_token = "test_csrf_token"
     cookies["csrf_token"] = csrf_token
-    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v0/token/refresh",
          headers: {
@@ -177,6 +177,31 @@ class Sign::Org::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_equal "missing", occurrence.context["reason"]
     assert_predicate occurrence.context["request_id"], :present?
     assert_predicate occurrence.context["ip_hash"], :present?
+  end
+
+  test "POST refresh with restricted token returns localized error message" do
+    token_record = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_RESTRICTED, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+
+    csrf_token = "test_csrf_token"
+    cookies["csrf_token"] = csrf_token
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = @device_id
+
+    post "/edge/v0/token/refresh",
+         headers: {
+           "Host" => @host,
+           "Accept" => "application/json",
+           "X-CSRF-Token" => csrf_token,
+         },
+         as: :json
+
+    assert_response :forbidden
+
+    json = response.parsed_body
+
+    assert_equal I18n.t("sign.token_refresh.errors.restricted_session"), json["error"]
+    assert_equal "restricted_session", json["error_code"]
   end
 
   private

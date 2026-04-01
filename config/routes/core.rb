@@ -7,28 +7,31 @@ scope module: :core, as: :core do
     scope module: :com, as: :com do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html
       resource :health, only: :show, format: :html
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
-
           resource :preference, only: %i(show create)
+          resources :messages, only: %i(index show create update destroy)
         end
       end
       # configuration
       resource :configuration, only: [:show]
       # contact page
-      resources :contacts, only: %i(new create show) do
-        scope module: :contact do
-          resource :email, only: [:new, :create]
-          resource :telephone, only: [:new, :create]
-        end
-      end
+      resources :contacts, only: %i(new create show)
     end
   end
 
@@ -37,17 +40,25 @@ scope module: :core, as: :core do
     scope module: :app, as: :app do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # endpoint of health check
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
-
           resource :preference, only: :show
+          resources :messages, only: %i(index show create update destroy)
         end
       end
       # configuration
@@ -57,12 +68,7 @@ scope module: :core, as: :core do
         end
       end
       # contact page
-      resources :contacts, only: %i(new create show) do
-        scope module: :contact do
-          resource :email, only: [:new, :create]
-          resource :telephone, only: [:new, :create]
-        end
-      end
+      resources :contacts, only: %i(new create show)
     end
   end
 
@@ -72,17 +78,25 @@ scope module: :core, as: :core do
     scope module: :org, as: :org do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+      namespace :web do
+        namespace :v0 do
+          resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
+        end
+      end
       # Edge API endpoint (browser/SPA)
       namespace :edge do
         namespace :v0 do
           resource :health, only: :show
           resource :sitemap, only: :show
-
           resource :preference, only: :show
+          resources :messages, only: %i(index show create update destroy)
         end
       end
       # configuration
@@ -92,12 +106,7 @@ scope module: :core, as: :core do
         end
       end
       # contact page
-      resources :contacts, only: %i(new create show) do
-        scope module: :contact do
-          resource :email, only: [:new, :create]
-          resource :telephone, only: [:new, :create]
-        end
-      end
+      resources :contacts, only: %i(new create show)
       # for emergency
       namespace :emergency do
         namespace :app do

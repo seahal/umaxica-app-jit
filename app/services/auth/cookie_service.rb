@@ -17,7 +17,7 @@ module Auth
     end
 
     def set_device_id_cookie(device_id, expires_at)
-      cookies.encrypted[device_cookie_key] =
+      cookies[device_cookie_key] =
         device_cookie_options(expires_at: expires_at).merge(value: device_id)
     end
 
@@ -32,17 +32,11 @@ module Auth
     end
 
     def read_device_id_cookie
-      cookies.encrypted[device_cookie_key].to_s.presence
+      cookies[device_cookie_key].to_s.presence
     end
 
     def extract_access_token_from_request
-      auth_header = request.headers[Auth::IoKeys::Headers::AUTHORIZATION]
-      if auth_header.present?
-        prefix, token = auth_header.split(" ", 2)
-        return token if prefix.casecmp("Bearer").zero? && token.present?
-      end
-
-      cookies[access_cookie_key]
+      Auth::AuthorizationHeader.bearer_token(request) || cookies[access_cookie_key]
     end
 
     def access_cookie_key
@@ -64,10 +58,10 @@ module Auth
         surface: Core::Surface.current(request),
         request: request,
         httponly: true,
-        secure: Rails.env.production?,
         same_site: :lax,
         path: "/",
         expires: expires,
+        domain: false,
       )
     end
 
@@ -77,6 +71,7 @@ module Auth
         request: request,
         same_site: :lax,
         path: "/",
+        domain: false,
       ).except(:expires, :httponly, :secure, :same_site)
     end
 

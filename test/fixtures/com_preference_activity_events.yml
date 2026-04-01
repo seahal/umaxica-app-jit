@@ -5,6 +5,8 @@
 #
 #  id :bigint           not null, primary key
 #
+nothing:
+  id: 0
 create_new_preference_token:
   id: 1
 refresh_token_rotated:

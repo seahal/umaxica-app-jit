@@ -6,6 +6,7 @@ module Sign
     module Up
       class EmailsController < ApplicationController
         include Sign::EmailRegistrable
+        include ::CloudflareTurnstile
 
         guest_only! message: I18n.t("sign.app.registration.email.already_logged_in")
 
@@ -15,17 +16,42 @@ module Sign
 
         def edit
           @user_email = UserEmail.find_by(public_id: params["id"])
+
+          # Security: Verify email exists and belongs to current session
+          if @user_email.blank?
+            reset_email_flow!
+            redirect_to(
+              new_sign_app_up_email_path,
+              notice: t("sign.app.registration.email.edit.not_found"),
+            )
+            return
+          end
+
+          # Security: Validate the email belongs to the current registration flow
           return if valid_email_session?
 
           reset_email_flow!
           redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
           flash[:notice] = redirect_params.delete(:notice)
-          redirect_to new_sign_app_up_email_path(redirect_params)
+          redirect_to(new_sign_app_up_email_path(redirect_params))
+          nil
         end
 
         def create
           email_params = params.expect(user_email: %i(raw_address address confirm_policy))
           email_address = email_params[:raw_address] || email_params[:address]
+
+          unless cloudflare_turnstile_validation["success"]
+            @user_email = UserEmail.new(address: email_address)
+            @user_email.errors.add(
+              :base, t(
+                "sign.app.registration.email.create.turnstile_failed",
+                default: "ボット検証に失敗しました。もう一度お試しください。",
+              ),
+            )
+            render :new, status: :unprocessable_content
+            return
+          end
 
           result = initiate_email_verification!(
             email_address,
@@ -49,56 +75,71 @@ module Sign
           redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
           flash[:notice] = redirect_params.delete(:notice)
           sanitize_redirect_params!(redirect_params)
-          redirect_to edit_sign_app_up_email_path(@user_email, redirect_params)
+          redirect_to(edit_sign_app_up_email_path(@user_email, redirect_params))
         end
 
         def update
           @user_email = UserEmail.find_by(public_id: params["id"])
 
-          # Validate email session before processing
-          unless valid_email_session?
-            reset_email_flow!
-            redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
-            flash[:notice] = redirect_params.delete(:notice)
-            redirect_to new_sign_app_up_email_path(redirect_params)
-            return
-          end
+          return redirect_invalid_session unless valid_email_session?
+          return render_code_required unless validate_code_present
 
-          # Validate submitted code presence
-          submitted_code = params.dig("user_email", "pass_code")
-          if submitted_code.blank?
-            @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.code_required"))
-            render :edit, status: :unprocessable_content
-            return
-          end
+          result = process_verification_code
+          return if result == :redirected
 
-          if existing_signup_email_flow?
-            result = handle_existing_email_verification(submitted_code)
-            return if result == :redirected
-          else
-            result =
-              complete_email_verification!(params["id"], submitted_code) do |user_email|
-                create_user_and_login(user_email)
-              end
-          end
+          return handle_locked_result if result == :locked
+          return render :edit, status: :unprocessable_content unless result
 
-          if result == :locked
-            reset_email_flow!
-            flash[:alert] = t("sign.app.registration.email.update.attempts_exceeded")
-            redirect_to new_sign_app_up_email_path
-            return
-          elsif !result
-            render :edit, status: :unprocessable_content
-            return
-          end
-
-          progress_email_flow!(:update)
-          issue_checkpoint!
-          redirect_to sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-                      notice: t("sign.app.registration.email.update.success")
+          complete_update_and_redirect
         end
 
         private
+
+        def redirect_invalid_session
+          reset_email_flow!
+          redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
+          flash[:notice] = redirect_params.delete(:notice)
+          redirect_to(new_sign_app_up_email_path(redirect_params))
+        end
+
+        def validate_code_present
+          params.dig("user_email", "pass_code").present?
+        end
+
+        def render_code_required
+          @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.code_required"))
+          render :edit, status: :unprocessable_content
+        end
+
+        def process_verification_code
+          submitted_code = params.dig("user_email", "pass_code")
+          if existing_signup_email_flow?
+            handle_existing_email_verification(submitted_code)
+          else
+            complete_email_verification!(params["id"], submitted_code) do |user_email|
+              create_user_and_login(user_email)
+            end
+          end
+        end
+
+        def handle_locked_result
+          reset_email_flow!
+          flash[:alert] = t("sign.app.registration.email.update.attempts_exceeded")
+          redirect_to(new_sign_app_up_email_path)
+        end
+
+        def complete_update_and_redirect
+          progress_email_flow!(:update)
+          create_welcome_bulletin!(current_resource)
+          if issue_bulletin!
+            redirect_to(
+              sign_app_in_bulletin_path(rd: params[:rd], ri: params[:ri]),
+              notice: t("sign.app.registration.email.update.success"),
+            )
+          else
+            safe_redirect_to_rd_or_default!(params[:rd], default_path: sign_app_configuration_path(ri: params[:ri]))
+          end
+        end
 
         def sanitize_redirect_params!(redirect_params)
           return if redirect_params[:rd].blank?
@@ -124,7 +165,7 @@ module Sign
           return false if @user_email.blank?
 
           if existing_signup_email_flow?
-            return false unless session_existing_email_id.to_i == @user_email.id
+            return false unless Integer(session_existing_email_id.to_s, 10) == @user_email.id
 
             existing_signup_skip_otp? || !@user_email.otp_expired?
           else
@@ -149,8 +190,10 @@ module Sign
         def handle_existing_email_verification(submitted_code)
           if existing_signup_skip_otp?
             reset_email_flow!
-            redirect_to new_sign_app_in_path,
-                        notice: t("sign.app.registration.email.update.sign_in_required")
+            redirect_to(
+              new_sign_app_in_path,
+              notice: t("sign.app.registration.email.update.sign_in_required"),
+            )
             return :redirected
           end
 
@@ -169,8 +212,10 @@ module Sign
           clear_otp(@user_email)
           reset_email_flow!
           session.delete(Sign::EmailRegistrable::EXISTING_EMAIL_SESSION_KEY)
-          redirect_to new_sign_app_in_path,
-                      notice: t("sign.app.registration.email.update.sign_in_required")
+          redirect_to(
+            new_sign_app_in_path,
+            notice: t("sign.app.registration.email.update.sign_in_required"),
+          )
           :redirected
         end
 

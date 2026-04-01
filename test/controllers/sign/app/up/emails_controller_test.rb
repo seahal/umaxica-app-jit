@@ -59,7 +59,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_includes response.location, "/up/emails/new"
     assert_not_includes response.location, "notice="
-    assert_equal I18n.t("sign.app.registration.email.edit.session_expired"), flash[:notice]
+    assert_equal I18n.t("sign.app.registration.email.edit.not_found"), flash[:notice]
     assert_includes response.location, "ri=jp"
   end
 
@@ -74,7 +74,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil I18n.t(update_key, default: nil)
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "can re-register same email if previous registration was unverified" do
     email = "test_re_reg@example.com"
 
@@ -298,6 +297,42 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.registration.email.update.sign_in_required"), flash[:notice]
   end
 
+  test "update for existing registered email with OTP required" do
+    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+    existing_email = UserEmail.create!(
+      user: user,
+      address: "existing_otp_required@example.com",
+      confirm_policy: "1",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: existing_email.address,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+    assert_match(%r{/up/emails/[^/]+/edit}, response.location)
+
+    patch sign_app_up_email_url(existing_email, ri: "jp"),
+          params: {
+            id: existing_email.id,
+            user_email: {
+              pass_code: "123456",
+            },
+          },
+          headers: default_headers
+
+    assert_response :redirect
+    assert_redirected_to new_sign_app_in_path(ri: "jp")
+    assert_equal I18n.t("sign.app.registration.email.update.sign_in_required"), flash[:notice]
+  end
+
   test "create with validation failure enqueues no emails and returns 422" do
     email = "invalid_email"
 
@@ -322,23 +357,24 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     email = "turnstile_fail@example.com"
 
     assert_enqueued_emails 0 do
-      post sign_app_up_emails_url(ri: "jp"),
-           params: {
-             user_email: {
-               raw_address: email,
-               confirm_policy: "1",
-             },
-             "cf-turnstile-response": "test",
-           },
-           headers: default_headers
+      post(
+        sign_app_up_emails_url(ri: "jp"),
+        params: {
+          user_email: {
+            raw_address: email,
+            confirm_policy: "1",
+          },
+          "cf-turnstile-response": "test",
+        },
+        headers: default_headers,
+      )
     end
 
     assert_response :unprocessable_content
-    assert_includes @response.body, I18n.t("sign.app.registration.email.create.turnstile_validation_failed")
+    assert_includes @response.body, "ボット検証に失敗しました"
   ensure
     CloudflareTurnstile.test_validation_response = { "success" => true }
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "rejects wrong OTP codes with error message" do
     email = "test_wrong_otp@example.com"
@@ -357,7 +393,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     end
 
     # Extract email ID from redirect location
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
@@ -463,7 +498,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
 
@@ -533,7 +567,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.registration.email.already_logged_in"), flash[:alert]
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "redirects to encoded URL after successful registration when rd parameter is provided" do
     email = "redirect_test@example.com"
     redirect_url = "/dashboard"
@@ -557,7 +590,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
 
@@ -576,14 +608,13 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: default_headers
 
-    # Should redirect to checkpoint and preserve rd
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp", rd: encoded_rd)
+    # Should redirect directly to the decoded rd destination
+    assert_redirected_to redirect_url
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   # Transaction Tests for User Creation
-  # rubocop:disable Minitest/MultipleAssertions
-  test "successful OTP verification creates user, audit log, and saves email in transaction" do
+
+  test "successful OTP verification creates user and saves email in transaction" do
     email = "transaction_success@example.com"
 
     # Create registration record
@@ -601,7 +632,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
     otp_data = user_email.get_otp
@@ -609,7 +639,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
 
     initial_user_count = User.count
-    initial_audit_count = UserActivity.count
 
     # Submit correct OTP
     patch sign_app_up_email_url(user_email, ri: "jp"),
@@ -622,7 +651,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     # Verify success response
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
 
     # Verify User count unchanged (pending user was updated, not created)
     assert_equal initial_user_count, User.count
@@ -637,19 +666,58 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     user = user_email.user
 
     assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, user.status_id
+  end
+
+  test "successful OTP verification creates audit log in transaction" do
+    email = "audit_log_test@example.com"
+
+    # Create registration record
+    perform_enqueued_jobs do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
+    email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    user_email = UserEmail.find_by(public_id: email_id)
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    initial_audit_count = UserActivity.count
+
+    # Submit correct OTP
+    patch sign_app_up_email_url(user_email, ri: "jp"),
+          params: {
+            id: user_email.id,
+            user_email: {
+              pass_code: correct_code,
+            },
+          },
+          headers: default_headers
+
+    # Verify success response
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
 
     # Verify UserActivity was created
     assert_equal initial_audit_count + 1, UserActivity.count
     audit = UserActivity.last
+    user = user_email.reload.user
 
     assert_equal user.id.to_s, audit.user_id
     assert_equal user.id, audit.actor_id
     assert_equal "User", audit.actor_type
     assert_equal UserActivityEvent::SIGNED_UP_WITH_EMAIL, audit.event_id
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "successful OTP verification recreates missing signup audit event" do
     email = "missing_audit_event_signup@example.com"
 
@@ -682,16 +750,14 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: default_headers
 
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
     assert UserActivityEvent.exists?(id: UserActivityEvent::SIGNED_UP_WITH_EMAIL)
     assert UserActivity.exists?(
       event_id: UserActivityEvent::SIGNED_UP_WITH_EMAIL,
       subject_id: user_email.user_id,
     )
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "sets user session after successful registration" do
     email = "session_set@example.com"
 
@@ -710,7 +776,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Extract email ID from redirect location
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
     otp_data = user_email.get_otp
@@ -728,7 +793,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     # Verify JWT access token cookie was set
-    assert_not_nil cookies[::Auth::User::ACCESS_COOKIE_KEY],
+    assert_not_nil cookies[::Authentication::User::ACCESS_COOKIE_KEY],
                    "Access token cookie should be set after successful registration"
 
     # Verify user and token were created
@@ -737,7 +802,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil user, "User should be created"
     assert UserToken.exists?(user_id: user.id), "User token should be created"
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "successful registration sets auth cookies with app-localhost domain" do
     email = "cookie_domain_up_#{SecureRandom.hex(4)}@example.com"
@@ -789,7 +853,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     end
 
     # Extract email ID from redirect location
-    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
     user_email = UserEmail.find_by(public_id: email_id)
@@ -856,7 +919,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_session_id, session.id
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "creates pending user with UNVERIFIED_WITH_SIGN_UP status during email registration" do
     email = "pending_user_test@example.com"
 
@@ -886,9 +948,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user_email.user.status_id
     assert_equal UserEmailStatus::UNVERIFIED_WITH_SIGN_UP, user_email.user_email_status_id
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "does not leave zero or null user_id in database" do
     email = "no_zero_user_id@example.com"
 
@@ -917,9 +977,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     # Verify user actually exists
     assert User.exists?(id: user_email.user_id), "User record should exist for user_id"
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "deletes pending user when unverified email is replaced" do
     email = "replace_pending_test@example.com"
 
@@ -972,9 +1030,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       assert_not_nil second_email.user
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "can abandon first email and register with a different email without error" do
     first_email = "first_abandoned@example.com"
     second_email = "second_attempt@example.com"
@@ -1031,7 +1087,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_nil User.find_by(id: first_user_id),
                "First pending user should be cleaned up when registering with a different email"
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   # OTP Resend Cooldown Tests
   test "create returns 429 when resending OTP within cooldown for new signup" do

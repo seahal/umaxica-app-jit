@@ -43,9 +43,9 @@ bundle exec erb_lint .           # Check
 bundle exec erb_lint -a .        # Auto-fix
 
 # JavaScript/TypeScript
-pnpm run check                   # Biome check & fix
-pnpm run lint                    # Biome lint
-pnpm run format                  # Biome format
+vp check                         # Format, lint, and type check
+vp lint                          # Lint (oxlint)
+vp fmt                           # Format (oxfmt)
 ```
 
 ### Security Checks
@@ -177,9 +177,9 @@ Test environment automatically sets these (see `test/test_helper.rb`):
 ```ruby
 ENV["SIGN_SERVICE_URL"] = "sign.app.localhost"
 ENV["SIGN_STAFF_URL"] = "sign.org.localhost"
-ENV["CORE_SERVICE_URL"] = "www.app.localhost"
-ENV["CORE_STAFF_URL"] = "www.org.localhost"
-ENV["CORE_CORPORATE_URL"] = "www.com.localhost"
+ENV["CORE_SERVICE_URL"] = "ww.app.localhost"
+ENV["CORE_STAFF_URL"] = "ww.org.localhost"
+ENV["CORE_CORPORATE_URL"] = "ww.com.localhost"
 ENV["APEX_SERVICE_URL"] = "app.localhost"
 ENV["APEX_STAFF_URL"] = "org.localhost"
 ENV["APEX_CORPORATE_URL"] = "com.localhost"
@@ -378,9 +378,11 @@ documentation, features, and bugs.
   all package manager operations.
 - **Always use Vite commands to run tools:** Don't attempt to run `vp vitest` or `vp oxlint`. They
   do not exist. Use `vp test` and `vp lint` instead.
-- **Running scripts:** Vite+ commands take precedence over `package.json` scripts. If there is a
-  `test` script defined in `scripts` that conflicts with the built-in `vp test` command, run it
-  using `vp run test`.
+- **Running scripts:** Vite+ built-in commands (`vp dev`, `vp build`, `vp test`, etc.) always run
+  the Vite+ built-in tool, not any `package.json` script of the same name. To run a custom script
+  that shares a name with a built-in command, use `vp run <script>`. For example, if you have a
+  custom `dev` script that runs multiple services concurrently, run it with `vp run dev`, not
+  `vp dev` (which always starts Vite's dev server).
 - **Do not install Vitest, Oxlint, Oxfmt, or tsdown directly:** Vite+ wraps these tools. They must
   not be installed directly. You cannot upgrade these tools by installing their latest versions.
   Always use Vite+ commands.

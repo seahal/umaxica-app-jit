@@ -26,19 +26,19 @@ class RenameOperatorIdentityTables < ActiveRecord::Migration[8.2]
 
   def down
     safety_assured do
-      rename_table :operator_statuses, :admin_identity_statuses
-      rename_table :staff_telephones, :staff_identity_telephones
-      rename_table :staff_telephone_statuses, :staff_identity_telephone_statuses
-      rename_table :staff_statuses, :staff_identity_statuses
-      rename_table :staff_secrets, :staff_identity_secrets
-      rename_table :staff_secret_statuses, :staff_identity_secret_statuses
-      rename_table :staff_passkeys, :staff_identity_passkeys
-      rename_table :staff_passkey_statuses, :staff_identity_passkey_statuses
-      rename_table :staff_emails, :staff_identity_emails
-      rename_table :staff_email_statuses, :staff_identity_email_statuses
-      rename_table :staff_audits, :staff_identity_audits
-      rename_table :staff_audit_levels, :staff_identity_audit_levels
-      rename_table :staff_audit_events, :staff_identity_audit_events
+      rename_table(:operator_statuses, :admin_identity_statuses)
+      rename_table(:staff_telephones, :staff_identity_telephones)
+      rename_table(:staff_telephone_statuses, :staff_identity_telephone_statuses)
+      rename_table(:staff_statuses, :staff_identity_statuses)
+      rename_table(:staff_secrets, :staff_identity_secrets)
+      rename_table(:staff_secret_statuses, :staff_identity_secret_statuses)
+      rename_table(:staff_passkeys, :staff_identity_passkeys)
+      rename_table(:staff_passkey_statuses, :staff_identity_passkey_statuses)
+      rename_table(:staff_emails, :staff_identity_emails)
+      rename_table(:staff_email_statuses, :staff_identity_email_statuses)
+      rename_table(:staff_audits, :staff_identity_audits)
+      rename_table(:staff_audit_levels, :staff_identity_audit_levels)
+      rename_table(:staff_audit_events, :staff_identity_audit_events)
     end
   end
 

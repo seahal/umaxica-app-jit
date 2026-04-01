@@ -42,8 +42,8 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
     user = users(:one)
     setup_apple_mock_auth(uid: "apple_link_missing_flow_#{SecureRandom.hex(4)}")
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: SocialCallbackTestHelper.callback_headers(@host).merge(as_user_headers(user, host: @host))
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host).merge(as_user_headers(user, host: @host))
 
     assert_response :redirect
     assert_includes(
@@ -65,8 +65,8 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
     assert_response :redirect
 
     travel_to 6.minutes.from_now do
-      post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-           headers: SocialCallbackTestHelper.callback_headers(@host).merge(as_user_headers(user, host: @host))
+      get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+          headers: SocialCallbackTestHelper.callback_headers(@host).merge(as_user_headers(user, host: @host))
     end
 
     assert_response :forbidden

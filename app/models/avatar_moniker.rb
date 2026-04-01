@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 # == Schema Information
 #
 # Table name: avatar_monikers
@@ -39,3 +41,4 @@ class AvatarMoniker < AvatarRecord
   validates :valid_from, presence: true
   validates :id, length: { maximum: 255 }
 end
+# rubocop:enable Layout/LineLength

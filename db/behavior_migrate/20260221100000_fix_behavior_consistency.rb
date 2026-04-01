@@ -28,8 +28,14 @@ class FixBehaviorConsistency < ActiveRecord::Migration[8.2]
 
         add_index(table, :subject_id, algorithm: :concurrently) unless index_exists?(table, :subject_id)
 
-        add_foreign_key(table, "#{prefix}_behavior_events", column: :event_id) unless foreign_key_exists?(table, "#{prefix}_behavior_events", column: :event_id)
-        add_foreign_key(table, "#{prefix}_behavior_levels", column: :level_id) unless foreign_key_exists?(table, "#{prefix}_behavior_levels", column: :level_id)
+        add_foreign_key(table, "#{prefix}_behavior_events", column: :event_id) unless foreign_key_exists?(
+          table,
+          "#{prefix}_behavior_events", column: :event_id,
+        )
+        add_foreign_key(table, "#{prefix}_behavior_levels", column: :level_id) unless foreign_key_exists?(
+          table,
+          "#{prefix}_behavior_levels", column: :level_id,
+        )
       end
     end
   end

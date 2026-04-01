@@ -4,40 +4,59 @@
 module Sign
   module Risk
     class Engine
+      WINDOW = 5.minutes
+
       # Returns integer score 0..100
-      def self.score(user_id)
-        return 0 unless user_id
-        return 0 unless defined?(REDIS_CLIENT)
+      def self.score(user_id: nil, staff_id: nil)
+        return 0 unless user_id || staff_id
 
-        key = "sign:risk:events:#{user_id}"
-        # Look back 5 minutes
-        now = Time.current.to_f
-        five_min_ago = now - 5.minutes.to_f
+        window_start = WINDOW.ago
 
-        # zrangebyscore returns array of strings (JSON)
-        events_json = REDIS_CLIENT.zrangebyscore(key, five_min_ago, "+inf")
-        events = events_json.map { |j| JSON.parse(j) }
+        if staff_id
+          score_for_staff(staff_id, window_start)
+        else
+          score_for_user(user_id, window_start)
+        end
+      end
 
+      def self.score_for_user(user_id, window_start)
+        scope = UserOccurrence
+          .where("event_type LIKE ?", "risk.%")
+          .where("context @> ?", { user_id: user_id }.to_json)
+          .where(created_at: window_start..)
+
+        evaluate_rules(scope)
+      end
+
+      def self.score_for_staff(staff_id, window_start)
+        scope = StaffOccurrence
+          .where("event_type LIKE ?", "risk.%")
+          .where("context @> ?", { staff_id: staff_id }.to_json)
+          .where(created_at: window_start..)
+
+        evaluate_rules(scope)
+      end
+
+      def self.evaluate_rules(scope)
         # Rule 1: Refresh Token Reuse Detected -> 100
-        # "refresh_reuse_detected"
-        if events.any? { |e| e["name"] == "refresh_reuse_detected" }
+        if scope.exists?(event_type: "risk.refresh_reuse_detected")
           return 100
         end
 
-        # Rule 2: Auth Failed short time (e.g. 5 times in 5 mins) -> 60
-        auth_failures = events.count { |e| e["name"] == "auth_failed" }
-        if auth_failures >= 5
+        # Rule 2: Auth Failed 5+ times in window -> 60
+        if scope.where(event_type: "risk.auth_failed").count >= 5
           return 60
         end
 
-        # Rule 3: Refresh Failed short time -> 40
-        refresh_failures = events.count { |e| e["name"] == "refresh_failed" }
-        if refresh_failures >= 5
+        # Rule 3: Refresh Failed 5+ times in window -> 40
+        if scope.where(event_type: "risk.refresh_failed").count >= 5
           return 40
         end
 
         0
       end
+
+      private_class_method :score_for_user, :score_for_staff, :evaluate_rules
     end
   end
 end

@@ -83,7 +83,6 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t(
       "session_limit.gate_expired",
       locale: :ja,
-      default: "操作がタイムアウトしました。もう一度ログインしてください。",
     ), flash[:alert]
   end
 
@@ -113,7 +112,6 @@ class SessionLimitGateTest < ActionDispatch::IntegrationTest
       assert_equal I18n.t(
         "session_limit.gate_expired",
         locale: :ja,
-        default: "操作がタイムアウトしました。もう一度ログインしてください。",
       ), flash[:alert]
     end
   end

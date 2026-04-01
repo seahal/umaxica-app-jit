@@ -16,6 +16,7 @@ module RefreshTokenable
     before_validation :ensure_refresh_token_family_id, on: :create
     before_validation :ensure_refresh_token_generation, on: :create
     before_validation :ensure_device_id, on: :create
+    before_validation :ensure_device_id_digest, on: :create
     validates :refresh_token_digest, uniqueness: true, allow_nil: true
   end
 
@@ -44,14 +45,16 @@ module RefreshTokenable
           relation = relation.where(arel_table[:revoked_at].eq(nil).or(arel_table[:revoked_at].gt(now)))
         end
 
-        updated = relation.update_all(rotated_at: now, last_used_at: now, updated_at: now)
+        updated = relation.first
 
-        if updated != 1
+        if updated.blank?
           current_token.reload
           return { status: :replay, token: current_token } if current_token.rotated_at.present?
 
           return { status: :invalid, token: current_token }
         end
+
+        updated.update!(rotated_at: now, last_used_at: now, updated_at: now)
 
         current_token.reload
         replacement, raw_refresh_token = create_rotated_token_record!(current_token)
@@ -74,9 +77,10 @@ module RefreshTokenable
 
       attrs = {
         refresh_token_family_id: previous_token.refresh_token_family_id.presence || SecureRandom.uuid,
-        refresh_token_generation: previous_token.refresh_token_generation.to_i + 1,
+        refresh_token_generation: Integer(previous_token.refresh_token_generation.to_s, 10) + 1,
         refresh_expires_at: previous_token.refresh_expires_at,
         device_id: previous_token.device_id,
+        device_id_digest: column_names.include?("device_id_digest") ? digest_device_id(previous_token.device_id) : nil,
         dbsc_session_id: previous_token.dbsc_session_id,
         dbsc_public_key: previous_token.dbsc_public_key,
         dbsc_challenge: previous_token.dbsc_challenge,
@@ -89,10 +93,20 @@ module RefreshTokenable
       attrs[actor_key] = previous_token.public_send(actor_key) if actor_key
       attrs[token_status_key] = previous_token.public_send(token_status_key) if token_status_key
       attrs[token_kind_key] = previous_token.public_send(token_kind_key) if token_kind_key
-      attrs[:user_token_binding_method_id] = previous_token.user_token_binding_method_id if previous_token.has_attribute?(:user_token_binding_method_id)
-      attrs[:staff_token_binding_method_id] = previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
-      attrs[:user_token_dbsc_status_id] = previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
-      attrs[:staff_token_dbsc_status_id] = previous_token.staff_token_dbsc_status_id if previous_token.has_attribute?(:staff_token_dbsc_status_id)
+      attrs[:user_token_binding_method_id] =
+        previous_token.user_token_binding_method_id if previous_token.has_attribute?(:user_token_binding_method_id)
+      attrs[:staff_token_binding_method_id] =
+        previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
+      attrs[:customer_token_binding_method_id] =
+        previous_token.customer_token_binding_method_id if previous_token.has_attribute?(
+          :customer_token_binding_method_id,
+        )
+      attrs[:user_token_dbsc_status_id] =
+        previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
+      attrs[:staff_token_dbsc_status_id] =
+        previous_token.staff_token_dbsc_status_id if previous_token.has_attribute?(:staff_token_dbsc_status_id)
+      attrs[:customer_token_dbsc_status_id] =
+        previous_token.customer_token_dbsc_status_id if previous_token.has_attribute?(:customer_token_dbsc_status_id)
 
       replacement = create!(attrs)
       raw_refresh_token, verifier = generate_refresh_token(public_id: replacement.public_id)
@@ -103,6 +117,7 @@ module RefreshTokenable
     def actor_foreign_key_from(token)
       return :user_id if token.has_attribute?(:user_id)
       return :staff_id if token.has_attribute?(:staff_id)
+      return :customer_id if token.has_attribute?(:customer_id)
 
       nil
     end
@@ -110,6 +125,7 @@ module RefreshTokenable
     def token_status_key_from(token)
       return :user_token_status_id if token.has_attribute?(:user_token_status_id)
       return :staff_token_status_id if token.has_attribute?(:staff_token_status_id)
+      return :customer_token_status_id if token.has_attribute?(:customer_token_status_id)
 
       nil
     end
@@ -117,6 +133,7 @@ module RefreshTokenable
     def token_kind_key_from(token)
       return :user_token_kind_id if token.has_attribute?(:user_token_kind_id)
       return :staff_token_kind_id if token.has_attribute?(:staff_token_kind_id)
+      return :customer_token_kind_id if token.has_attribute?(:customer_token_kind_id)
 
       nil
     end
@@ -146,7 +163,7 @@ module RefreshTokenable
       self.refresh_token_digest = digest_refresh_token(verifier)
       self.refresh_expires_at = expires_at || default_refresh_expires_at
       self.last_used_at = Time.current
-      self.refresh_token_generation = refresh_token_generation.to_i + 1
+      self.refresh_token_generation = Integer(refresh_token_generation.to_s, 10) + 1
       save!
 
       # Return the combined token for the client.
@@ -214,5 +231,11 @@ module RefreshTokenable
     return unless has_attribute?(:device_id)
 
     self.device_id = SecureRandom.uuid if device_id.blank?
+  end
+
+  def ensure_device_id_digest
+    return unless has_attribute?(:device_id_digest)
+
+    self.device_id_digest = digest_device_id(device_id)
   end
 end

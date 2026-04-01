@@ -14,7 +14,6 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     @telephone.save!(validate: false)
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "store_otp updates otp fields" do
     expires_at = 5.minutes.from_now.to_i
     @telephone.store_otp("secret", 123, expires_at)
@@ -28,7 +27,6 @@ class TelephoneConcernTest < ActiveSupport::TestCase
 
     assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "get_otp returns otp details if valid" do
     expires_at = 5.minutes.from_now.to_i
@@ -61,7 +59,6 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     assert_nil @telephone.get_otp
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "clear_otp clears otp fields" do
     @telephone.store_otp("secret", 123, 5.minutes.from_now.to_i)
     @telephone.clear_otp
@@ -79,7 +76,6 @@ class TelephoneConcernTest < ActiveSupport::TestCase
 
     assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "otp_expired? returns true if expired or nil" do
     @telephone.update!(otp_expires_at: "-infinity") # Use sentinel
@@ -109,7 +105,6 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     assert_not @telephone.otp_active?
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "locked? returns true if locked_at present or attempts exceeded" do
     assert_not @telephone.locked?
 
@@ -121,9 +116,7 @@ class TelephoneConcernTest < ActiveSupport::TestCase
 
     assert_predicate @telephone, :locked?
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "increment_attempts! increments counter and locks if threshold reached" do
     @telephone.store_otp("secret", 123, 5.minutes.from_now.to_i)
 
@@ -143,5 +136,4 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     assert_predicate @telephone, :locked?
     assert_not_nil @telephone.locked_at
   end
-  # rubocop:enable Minitest/MultipleAssertions
 end

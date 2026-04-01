@@ -93,6 +93,10 @@ class CoreSurfaceTest < ActiveSupport::TestCase
     assert_equal "example.com", Core::Surface.send(:normalized_host, "example.com:8080")
   end
 
+  test "normalized_host extracts host from a URL string" do
+    assert_equal "app.example.com", Core::Surface.send(:normalized_host, "https://APP.EXAMPLE.COM:3000/path")
+  end
+
   test "normalized_host returns nil for blank" do
     assert_nil Core::Surface.send(:normalized_host, "")
     assert_nil Core::Surface.send(:normalized_host, nil)

@@ -181,10 +181,9 @@ class EmailTest < ActiveSupport::TestCase
   test "increment_attempts! is thread-safe under concurrent access" do
     email = create_email(address: "concurrent@example.com", confirm_policy: true)
 
-    # rubocop:disable ThreadSafety/NewThread
-    threads =
+    futures =
       10.times.map do
-        Thread.new do
+        Concurrent::Promises.future do
           10.times do
             ActiveRecord::Base.connection_pool.with_connection do
               # Use a fresh instance to better simulate concurrent requests
@@ -194,14 +193,13 @@ class EmailTest < ActiveSupport::TestCase
         end
       end
 
-    threads.each(&:join)
+    Concurrent::Promises.zip(*futures).value!
 
-    # rubocop:enable ThreadSafety/NewThread
     assert_equal 100, email.reload.otp_attempts_count
   end
 
   # OTP method tests
-  # rubocop:disable Minitest/MultipleAssertions
+
   test "store_otp stores OTP configuration" do
     email = create_email(address: "otp@example.com", confirm_policy: true)
     otp_key = "secret_key_123"
@@ -215,7 +213,6 @@ class EmailTest < ActiveSupport::TestCase
     assert_equal 0, email.otp_attempts_count
     assert_not email.locked?
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "get_otp returns OTP configuration when valid" do
     email = create_email(address: "otp2@example.com", confirm_policy: true)
@@ -306,7 +303,6 @@ class EmailTest < ActiveSupport::TestCase
     assert_not email.otp_active?
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "clear_otp clears all OTP data" do
     email = create_email(address: "otp12@example.com", confirm_policy: true)
     email.store_otp("key", 50, 1.hour.from_now.to_i)
@@ -347,7 +343,6 @@ class EmailTest < ActiveSupport::TestCase
     assert_equal 0, email.otp_attempts_count
     assert_not email.locked?
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "validates pass_code presence when pass_code is not nil" do
     email = build_email(address: nil, pass_code: nil)

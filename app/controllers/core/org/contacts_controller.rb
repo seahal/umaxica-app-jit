@@ -55,8 +55,10 @@ module Core
         end
 
         write_behavior_event(@contact)
-        redirect_to core_org_contact_url(@contact, **core_staff_redirect_options),
-                    notice: I18n.t("help.org.contacts.create.success")
+        redirect_to(
+          core_org_contact_url(@contact, **core_staff_redirect_options),
+          notice: I18n.t("help.org.contacts.create.success"),
+        )
       rescue ActiveRecord::RecordInvalid
         render :new, status: :unprocessable_content
       end

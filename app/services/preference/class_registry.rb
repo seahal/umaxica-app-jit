@@ -107,6 +107,21 @@ module Preference
           colortheme: StaffPreferenceColortheme,
         }.freeze,
       }.freeze,
+      "Customer" => {
+        preference: CustomerPreference,
+        option_classes: {
+          timezone: CustomerPreferenceTimezoneOption,
+          language: CustomerPreferenceLanguageOption,
+          region: CustomerPreferenceRegionOption,
+          colortheme: CustomerPreferenceColorthemeOption,
+        }.freeze,
+        record_classes: {
+          timezone: CustomerPreferenceTimezone,
+          language: CustomerPreferenceLanguage,
+          region: CustomerPreferenceRegion,
+          colortheme: CustomerPreferenceColortheme,
+        }.freeze,
+      }.freeze,
     }.freeze
 
     def fetch(prefix)

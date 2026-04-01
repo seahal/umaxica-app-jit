@@ -12,7 +12,7 @@ module Sign
     def prepare_passkey_challenge!
       allow_credentials = verification_passkeys_scope.active.map { |pk| { id: pk.webauthn_id } }
       if allow_credentials.empty?
-        @verification_errors = [I18n.t(verification_no_passkey_i18n_key, default: "パスキーが登録されていません")]
+        @verification_errors = [I18n.t(verification_no_passkey_i18n_key)]
         return false
       end
 

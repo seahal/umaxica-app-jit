@@ -12,10 +12,12 @@
 class AppTimelineBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  NOTHING = 1
+  NOTHING = 0
+  LEGACY_NOTHING = 1
   CREATED = 2
   UPDATED = 3
   DELETED = 4
+  DEFAULTS = [NOTHING, LEGACY_NOTHING, CREATED, UPDATED, DELETED].freeze
 
   has_many :app_timeline_behaviors,
            class_name: "AppTimelineBehavior",
@@ -23,4 +25,8 @@ class AppTimelineBehaviorEvent < BehaviorRecord
            primary_key: "id",
            inverse_of: :app_timeline_behavior_event,
            dependent: :restrict_with_error
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
+  end
 end

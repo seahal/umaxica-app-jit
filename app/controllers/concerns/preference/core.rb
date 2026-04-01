@@ -12,14 +12,14 @@ module Preference::Core
   COOKIE_EXPIRY = 400.days
 
   def set_region_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_region = load_or_create_preference_child("Region", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_region = load_or_refresh_preference_child("Region", option_id: nil)
     end
   end
 
   def set_region_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_region = load_or_create_preference_child("Region", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_region = load_or_refresh_preference_child("Region", option_id: nil)
 
       update_preference_child_with_audit(
         @preference_region,
@@ -31,14 +31,14 @@ module Preference::Core
   end
 
   def set_language_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_language = load_or_create_preference_child("Language", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_language = load_or_refresh_preference_child("Language", option_id: nil)
     end
   end
 
   def set_language_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_language = load_or_create_preference_child("Language", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_language = load_or_refresh_preference_child("Language", option_id: nil)
 
       update_preference_child_with_audit(
         @preference_language,
@@ -55,16 +55,16 @@ module Preference::Core
   end
 
   def set_timezone_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_timezone = load_or_create_preference_child("Timezone", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_timezone = load_or_refresh_preference_child("Timezone", option_id: nil)
     end
   end
 
   def set_timezone_preferences_update
     raise PreferenceOperationError if @preferences.blank?
 
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_timezone = load_or_create_preference_child("Timezone", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_timezone = load_or_refresh_preference_child("Timezone", option_id: nil)
 
       begin
         update_preference_child_with_audit(
@@ -85,14 +85,14 @@ module Preference::Core
   end
 
   def set_colortheme_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_colortheme = load_or_create_preference_child("Colortheme", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_colortheme = load_or_refresh_preference_child("Colortheme", option_id: nil)
     end
   end
 
   def set_colortheme_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_colortheme = load_or_create_preference_child("Colortheme", option_id: nil)
+    with_preference_connection(:writing) do
+      @preference_colortheme = load_or_refresh_preference_child("Colortheme", option_id: nil)
 
       update_preference_child_with_audit(
         @preference_colortheme,
@@ -110,8 +110,8 @@ module Preference::Core
   end
 
   def set_cookie_preferences_edit
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_cookie = load_or_create_preference_child(
+    with_preference_connection(:writing) do
+      @preference_cookie = load_or_refresh_preference_child(
         "Cookie",
         targetable: false, performant: false, functional: false, consented: false,
       )
@@ -119,8 +119,8 @@ module Preference::Core
   end
 
   def set_cookie_preferences_update
-    PreferenceRecord.connected_to(role: :writing) do
-      @preference_cookie = load_or_create_preference_child(
+    with_preference_connection(:writing) do
+      @preference_cookie = load_or_refresh_preference_child(
         "Cookie",
         targetable: false, performant: false, functional: false, consented: false,
       )
@@ -138,6 +138,20 @@ module Preference::Core
 
   private
 
+  def load_or_refresh_preference_child(child_type, default_attributes = {})
+    association_name = :"#{preference_prefix_underscore}_#{child_type.downcase}"
+
+    # Access-token loading can leave a child association memoized on @preferences.
+    # Reload it here so preference edit/update screens render the latest DB value
+    # without forcing the generic loader to refresh associations for every caller.
+    if @preferences.persisted?
+      association = @preferences.association(association_name)
+      association.reload if association.loaded?
+    end
+
+    load_or_create_preference_child(child_type, default_attributes)
+  end
+
   def reload_preferences_and_reissue_token!
     @preferences.reload
     # Force reload all preference associations to ensure they reflect DB state
@@ -149,8 +163,28 @@ module Preference::Core
     sync_to_resource_preference!
   end
 
-  # Dual-write: when logged in, sync current AppPreference/OrgPreference values
-  # to the corresponding UserPreference/StaffPreference.
+  def render_preference_update_response
+    render json: { preference: preference_response_payload }, status: :ok
+  end
+
+  def preference_response_payload
+    snapshot = resolved_preference_snapshot(@preferences)
+    cookie = resolved_preference_cookie(@preferences)
+
+    {
+      lx: snapshot[:language] || Current::Preference::DEFAULTS[:language],
+      ct: snapshot[:theme] || Current::Preference::DEFAULTS[:theme],
+      ri: snapshot[:region] || Current::Preference::DEFAULTS[:region],
+      tz: snapshot[:timezone] || Current::Preference::DEFAULTS[:timezone],
+      consented: cookie[:consented],
+      functional: cookie[:functional],
+      performant: cookie[:performant],
+      targetable: cookie[:targetable],
+    }
+  end
+
+  # Dual-write: when logged in, sync current AppPreference/ComPreference/OrgPreference values
+  # to the corresponding UserPreference/CustomerPreference/StaffPreference.
   def sync_to_resource_preference!
     return unless respond_to?(:current_resource, true)
 
@@ -160,6 +194,7 @@ module Preference::Core
     resource_pref =
       case preference_class.name
       when "AppPreference" then resource.user_preference
+      when "ComPreference" then ensure_customer_resource_preference_for_sync(resource)
       when "OrgPreference" then resource.staff_preference
       end
     return if resource_pref.blank?
@@ -172,12 +207,33 @@ module Preference::Core
   def resource_pref_prefix_for_sync
     case preference_class.name
     when "AppPreference" then "User"
+    when "ComPreference" then "Customer"
     when "OrgPreference" then "Staff"
     end
   end
 
+  def ensure_customer_resource_preference_for_sync(resource)
+    return unless resource.respond_to?(:customer_preference)
+
+    resource.customer_preference || build_customer_resource_preference_for_sync(resource)
+  end
+
+  def build_customer_resource_preference_for_sync(resource)
+    preference = resource.create_customer_preference
+    CustomerPreferenceLanguage.create(preference: preference)
+    CustomerPreferenceTimezone.create(preference: preference)
+    CustomerPreferenceRegion.create(preference: preference)
+    CustomerPreferenceColortheme.create(preference: preference)
+    preference.reload
+  end
+
   def preference_cookie_params
-    params.expect(preference_cookie: %i(functional performant targetable consented consented_at))
+    return params.expect(
+      preference_cookie: %i(functional performant targetable consented
+                            consented_at),
+    ) if params[:preference_cookie]
+
+    params.permit(:functional, :performant, :targetable, :consented, :consented_at)
   end
 
   def build_cookie_update_params(cookie, params)
@@ -210,7 +266,69 @@ module Preference::Core
   end
 
   def preference_colortheme_params
-    params.expect(preference_colortheme: [:option_id])
+    return params.expect(preference_colortheme: [:option_id]) if params[:preference_colortheme]
+
+    ActionController::Parameters.new(
+      option_id: params[:option_id] || params[:theme] || params[:ct],
+    ).permit(:option_id)
+  end
+
+  def resolved_preference_snapshot(preference)
+    return {} if preference.blank?
+
+    if preference.respond_to?(:language) &&
+        preference.respond_to?(:region) &&
+        preference.respond_to?(:timezone) &&
+        preference.respond_to?(:theme)
+      return {
+        language: preference.language,
+        region: preference.region,
+        timezone: preference.timezone,
+        theme: preference.theme,
+      }.compact
+    end
+
+    association_prefix = preference.class.name.underscore
+
+    {
+      language: preference.public_send("#{association_prefix}_language")&.option&.name&.downcase,
+      region: preference.public_send("#{association_prefix}_region")&.option&.name&.downcase,
+      timezone: preference.public_send("#{association_prefix}_timezone")&.option&.name,
+      theme: colortheme_short_code(preference.public_send("#{association_prefix}_colortheme")&.option&.name),
+    }.compact
+  end
+
+  def resolved_preference_cookie(preference)
+    return default_preference_cookie_state if preference.blank?
+
+    if preference.respond_to?(:consented)
+      return {
+        consented: !!preference.consented,
+        functional: !!preference.functional,
+        performant: !!preference.performant,
+        targetable: !!preference.targetable,
+      }
+    end
+
+    association_prefix = preference.class.name.underscore
+    cookie = preference.public_send("#{association_prefix}_cookie")
+    return default_preference_cookie_state if cookie.blank?
+
+    {
+      consented: !!cookie.consented,
+      functional: !!cookie.functional,
+      performant: !!cookie.performant,
+      targetable: !!cookie.targetable,
+    }
+  end
+
+  def default_preference_cookie_state
+    {
+      consented: false,
+      functional: false,
+      performant: false,
+      targetable: false,
+    }
   end
 
   def safe_return_to_path
@@ -262,7 +380,7 @@ module Preference::Core
     token_digest = refresh_token_lookup_digest(token_value)
     return nil unless token_digest
 
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       preference_class.find_by(token_digest: token_digest)
     end
   end
@@ -281,7 +399,7 @@ module Preference::Core
     association_prefix = preference.class.name.underscore
     prefix = preference_prefix
 
-    PreferenceRecord.connected_to(role: :writing) do
+    with_preference_connection(:writing) do
       Preference::Adoption::CHILD_RECORD_TYPES.each do |type|
         child = preference.public_send("#{association_prefix}_#{type}")
         next unless child
@@ -296,6 +414,15 @@ module Preference::Core
           end
         child.update!(option_id: default_id) if child.option_id != default_id
       end
+
+      cookie = preference.public_send("#{association_prefix}_cookie")
+      cookie&.update!(
+        consented: false,
+        functional: false,
+        performant: false,
+        targetable: false,
+        consented_at: nil,
+      )
     end
   end
 

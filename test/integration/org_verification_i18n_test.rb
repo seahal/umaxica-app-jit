@@ -4,12 +4,14 @@
 require "test_helper"
 
 class OrgVerificationI18nTest < ActionDispatch::IntegrationTest
-  fixtures :staffs, :staff_statuses
-
   setup do
     @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     host! @host
-    @staff = staffs(:one)
+    OperatorRecord.connected_to(role: :writing) do
+      StaffStatus.insert_missing_fixed_ids!([StaffStatus::ACTIVE, StaffStatus::NOTHING, StaffStatus::RESERVED])
+    end
+
+    @staff = Staff.create!(status_id: StaffStatus::NOTHING, public_id: Staff.generate_public_id)
     @token = StaffToken.create!(
       staff: @staff,
       staff_token_status_id: StaffTokenStatus::NOTHING,

@@ -20,20 +20,34 @@ module Sign
       end
     rescue Sign::Webauthn::ChallengeNotFoundError, Sign::Webauthn::ChallengeExpiredError => e
       Rails.logger.warn("WebAuthn challenge error: #{e.message}")
+      emit_passkey_auth_failed(reason: "challenge_invalid")
       render_error("errors.webauthn.challenge_invalid", :bad_request)
     rescue Sign::Webauthn::ChallengePurposeMismatchError => e
       Rails.logger.warn("WebAuthn challenge purpose mismatch: #{e.message}")
+      emit_passkey_auth_failed(reason: "challenge_purpose_mismatch")
       render_error("errors.webauthn.challenge_invalid", :bad_request)
     rescue WebAuthn::SignCountVerificationError => e
       Rails.logger.warn("WebAuthn sign count verification failed: #{e.message}")
+      emit_passkey_auth_failed(reason: "sign_count_mismatch")
       render_error("errors.webauthn.sign_count_mismatch", :unauthorized)
     rescue WebAuthn::Error => e
       Rails.logger.warn("WebAuthn authentication failed: #{e.message}")
+      emit_passkey_auth_failed(reason: "verification_failed")
       render_error("errors.webauthn.verification_failed", :unauthorized)
     end
     # rubocop:enable Metrics/AbcSize
 
     private
+
+    def emit_passkey_auth_failed(reason: nil)
+      actor_key = passkey_challenge_actor_id_key.to_sym
+      actor_id = defined?(@_risk_actor_id) ? @_risk_actor_id : nil
+      return unless actor_id
+
+      Sign::Risk::Emitter.emit("auth_failed", actor_key => actor_id, :ip => request&.remote_ip, :reason => reason)
+    rescue StandardError
+      # Best-effort: do not let risk emission failures disrupt the auth flow
+    end
 
     def passkey_challenge_actor_id_key
       raise NotImplementedError, "#{self.class} must define #passkey_challenge_actor_id_key"

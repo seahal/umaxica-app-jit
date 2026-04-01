@@ -2,13 +2,13 @@
 
 class CreateUserMemberRevocations < ActiveRecord::Migration[8.2]
   def change
-    create_table :user_member_revocations do |t|
-      t.references :user, null: false, foreign_key: true, type: :bigint
-      t.references :member, null: false, foreign_key: true, type: :bigint
+    create_table(:user_member_revocations) do |t|
+      t.references(:user, null: false, foreign_key: true, type: :bigint)
+      t.references(:member, null: false, foreign_key: true, type: :bigint)
 
       t.timestamps
 
-      t.index %i(user_id member_id), unique: true
+      t.index(%i(user_id member_id), unique: true)
     end
   end
 end

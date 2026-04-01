@@ -8,16 +8,24 @@ module Jit
   module Security
     module Jwt
       class KeyringTest < ActiveSupport::TestCase
-        test "active_kid returns default when ENV not set" do
-          ENV.delete("AUTH_JWT_ACTIVE_KID")
+        def with_active_kid_env(value)
+          previous_value = ENV["AUTH_JWT_ACTIVE_KID"]
+          value.nil? ? ENV.delete("AUTH_JWT_ACTIVE_KID") : ENV["AUTH_JWT_ACTIVE_KID"] = value
+          yield
+        ensure
+          previous_value.nil? ? ENV.delete("AUTH_JWT_ACTIVE_KID") : ENV["AUTH_JWT_ACTIVE_KID"] = previous_value
+        end
 
-          assert_equal "default", Keyring.active_kid
+        test "active_kid returns default when ENV not set" do
+          with_active_kid_env(nil) do
+            assert_equal "default", Keyring.active_kid
+          end
         end
 
         test "active_kid returns ENV value when set" do
-          ENV["AUTH_JWT_ACTIVE_KID"] = "custom-kid"
-
-          assert_equal "custom-kid", Keyring.active_kid
+          with_active_kid_env("custom-kid") do
+            assert_equal "custom-kid", Keyring.active_kid
+          end
         end
 
         test "parse_keyset returns empty hash for blank input" do

@@ -4,11 +4,11 @@
 # == Schema Information
 #
 # Table name: com_preference_binding_methods
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
-class ComPreferenceBindingMethod < PreferenceRecord
+class ComPreferenceBindingMethod < CommerceRecord
   NOTHING = 0
   DBSC = 1
   LEGACY = 2
@@ -20,6 +20,8 @@ class ComPreferenceBindingMethod < PreferenceRecord
            dependent: :restrict_with_error
 
   def self.ensure_defaults!
+    return if DEFAULTS.blank?
+
     existing_ids = where(id: DEFAULTS).pluck(:id)
     missing_ids = DEFAULTS - existing_ids
     return if missing_ids.empty?

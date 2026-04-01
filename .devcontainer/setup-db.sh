@@ -24,7 +24,7 @@ echo "✅ PostgreSQL is ready!"
 echo "📦 Preparing all databases..."
 
 # Set REGION_CODE for database operations
-export REGION_CODE=${REGION_CODE:-jp}
+export REGION_CODE=${REGION_CODE:-all}
 
 # Run db:prepare which is idempotent (safe to run multiple times)
 RAILS_ENV=development bin/rails db:prepare || {

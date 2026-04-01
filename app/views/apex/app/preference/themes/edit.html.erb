@@ -25,7 +25,7 @@
     </div>
 
     <div>
-      <%= f.submit t("apex.app.preference.theme.edit.submit", default: t("apex.app.preferences.update_settings")),
+      <%= f.submit t("apex.app.preferences.update_settings"),
                    data: { turbo_submits_with: t("apex.app.preferences.submitting") } %>
       <%= link_to t("apex.app.preferences.back_to_settings"), apex_app_preference_url %>
     </div>

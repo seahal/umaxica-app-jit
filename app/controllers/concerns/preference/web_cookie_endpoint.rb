@@ -10,16 +10,27 @@ module Preference
 
     private
 
-    def show_banner?
-      jwt = cookies[Preference::CookieName.access]
-      return true if jwt.blank?
+    def cookie_consent_state
+      payload = decoded_preference_payload
+      preferences = payload.is_a?(Hash) ? payload["preferences"] : nil
 
-      payload = decode_and_verify_preference_jwt(jwt)
-      consent = extract_cookie_banner_consent(payload)
-      consent != true
+      if preferences.is_a?(Hash)
+        {
+          consented: ActiveModel::Type::Boolean.new.cast(preferences["consented"]),
+          functional: ActiveModel::Type::Boolean.new.cast(preferences["functional"]),
+          performant: ActiveModel::Type::Boolean.new.cast(preferences["performant"]),
+          targetable: ActiveModel::Type::Boolean.new.cast(preferences["targetable"]),
+        }
+      else
+        { consented: false, functional: false, performant: false, targetable: false }
+      end
     rescue StandardError => e
-      Rails.logger.warn("[Preference::WebCookieEndpoint] show_banner fallback to true: #{e.class}")
-      true
+      Rails.logger.warn("[Preference::WebCookieEndpoint] cookie_consent_state fallback: #{e.class}")
+      { consented: false, functional: false, performant: false, targetable: false }
+    end
+
+    def show_banner?
+      false
     end
 
     def set_consented_buffer_cookie!
@@ -86,7 +97,7 @@ module Preference
     def find_preference_by_public_id(public_id)
       return nil if public_id.blank?
 
-      PreferenceRecord.connected_to(role: :reading) do
+      with_preference_connection(:reading) do
         preference_class.find_by(public_id: public_id)
       end
     end
@@ -115,7 +126,7 @@ module Preference
       public_id = decoded_preference_payload&.dig("public_id")
       return if public_id.blank?
 
-      PreferenceRecord.connected_to(role: :writing) do
+      with_preference_connection(:writing) do
         preference_class.transaction do
           preference = preference_class.lock.find_by(public_id: public_id)
           return if preference.blank?
@@ -127,7 +138,7 @@ module Preference
 
           preference.reload
           issue_access_token_from(preference)
-          raise "failed_to_issue_preference_access_token" if @preference_payload.blank?
+          raise RuntimeError, "failed_to_issue_preference_access_token" if @preference_payload.blank?
 
           @decoded_preference_payload = nil
         end

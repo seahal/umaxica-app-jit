@@ -12,6 +12,13 @@
 require "test_helper"
 
 class DomainOccurrenceStatusTest < ActiveSupport::TestCase
+  test "can load nothing status from db" do
+    nothing = DomainOccurrenceStatus.find(DomainOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
   test "accepts integer ids" do
     record = DomainOccurrenceStatus.new(id: 9)
 
@@ -22,7 +29,7 @@ class DomainOccurrenceStatusTest < ActiveSupport::TestCase
     assert_equal 1, DomainOccurrenceStatus::ACTIVE
     assert_equal 2, DomainOccurrenceStatus::DELETED
     assert_equal 3, DomainOccurrenceStatus::INACTIVE
-    assert_equal 4, DomainOccurrenceStatus::NOTHING
+    assert_equal 0, DomainOccurrenceStatus::NOTHING
     assert_equal 5, DomainOccurrenceStatus::PENDING
   end
 

@@ -8,8 +8,8 @@ class EnforceStaffPasskeyNameNotNull < ActiveRecord::Migration[8.2]
       return unless table_exists?(:staff_passkeys)
       return unless column_exists?(:staff_passkeys, :name)
 
-      execute "UPDATE staff_passkeys SET name = 'passkey' WHERE name IS NULL"
-      execute "ALTER TABLE staff_passkeys ALTER COLUMN name SET NOT NULL"
+      execute("UPDATE staff_passkeys SET name = 'passkey' WHERE name IS NULL")
+      execute("ALTER TABLE staff_passkeys ALTER COLUMN name SET NOT NULL")
     end
   end
 

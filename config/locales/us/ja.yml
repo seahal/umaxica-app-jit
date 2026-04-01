@@ -142,6 +142,10 @@ ja:
       done: 連絡先ステータスとカテゴリの更新が完了しました。
     token_refresh:
       errors:
+        withdrawal_required: 退会処理が完了していません。
+        missing_refresh_token: リフレッシュトークンが必要です。
+        invalid_refresh_token: リフレッシュトークンが無効です。
+        restricted_session: きんそくじこうです
   help:
     org:
       contacts:
@@ -1513,3 +1517,22 @@ core:
             not_withdrawn: 退会済みでないため、削除できません。
             failed: アカウント削除処理に失敗しました。後でもう一度お試しください。
           authenticate_error: 認証が必要です。ログインしてください。
+
+  layouts:
+    shared:
+      footer_theme_controls:
+        title: テーマ設定
+        description: 表示テーマを選択してください（システム設定に従うこともできます）
+        options:
+          system: システム設定に従う
+          light: ライト
+          dark: ダーク
+
+      footer_cookie_controls:
+        close_button: 閉じる
+        title: Cookieの利用について
+        description_html: 当サイトでは、必須Cookieおよび分析・マーケティング目的のCookieを使用します。詳細は%{privacy_policy}をご確認ください。
+        privacy_policy: プライバシーポリシー
+        reject_all: すべて拒否
+        open_settings: 設定する
+        accept_all: すべて許可

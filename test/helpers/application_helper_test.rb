@@ -16,6 +16,25 @@ class ApplicationHelperTest < ActionView::TestCase
     define_singleton_method(:cookies) { { "ct" => value } }
   end
 
+  def stub_request_host(host)
+    define_singleton_method(:request) { Struct.new(:host).new(host) }
+  end
+
+  def with_edge_env(overrides)
+    keys = %w(EDGE_SERVICE_URL EDGE_STAFF_URL EDGE_CORPORATE_URL)
+    previous = keys.index_with { |key| ENV[key] }
+
+    overrides.each do |key, value|
+      value.nil? ? ENV.delete(key) : ENV[key] = value
+    end
+
+    yield
+  ensure
+    previous.each do |key, value|
+      value.nil? ? ENV.delete(key) : ENV[key] = value
+    end
+  end
+
   test "theme_cookie_value maps short codes" do
     stub_cookie("dr")
 
@@ -78,7 +97,7 @@ class ApplicationHelperTest < ActionView::TestCase
 
     result = view.page_title
 
-    expected = I18n.t("meta.default_title", default: "")
+    expected = I18n.t("meta.default_title")
 
     assert_equal expected, result
   end
@@ -91,9 +110,41 @@ class ApplicationHelperTest < ActionView::TestCase
 
   test "current_banner_for returns current banner for each surface" do
     travel_to Time.zone.parse("2026-03-18 00:00:00 UTC") do
-      assert_equal app_banners(:newer_current_app_banner), current_banner_for(:app)
-      assert_equal org_banners(:current_org_banner), current_banner_for(:org)
-      assert_equal com_banners(:current_com_banner), current_banner_for(:com)
+      assert_equal app_banners(:newer_current_app_banner), current_banner_for(tld: :app, region: :jp, domain: :news)
+      assert_equal org_banners(:current_org_banner), current_banner_for(tld: :org, region: :jp, domain: :news)
+      assert_equal com_banners(:current_com_banner), current_banner_for(tld: :com, region: :jp, domain: :news)
+    end
+  end
+
+  test "edge_host returns nil when matching edge env is unset" do
+    stub_request_host("ww.com.localhost")
+
+    with_edge_env("EDGE_CORPORATE_URL" => nil) do
+      assert_nil edge_host
+    end
+  end
+
+  test "edge_host resolves service edge host for app surface" do
+    stub_request_host("ww.app.localhost")
+
+    with_edge_env("EDGE_SERVICE_URL" => "https://edge.app.localhost:5171") do
+      assert_equal "edge.app.localhost", edge_host
+    end
+  end
+
+  test "edge_host resolves staff edge host for org surface" do
+    stub_request_host("news.org.localhost")
+
+    with_edge_env("EDGE_STAFF_URL" => "edge.org.localhost") do
+      assert_equal "edge.org.localhost", edge_host
+    end
+  end
+
+  test "edge_host resolves corporate edge host for com surface" do
+    stub_request_host("docs.com.localhost")
+
+    with_edge_env("EDGE_CORPORATE_URL" => "http://edge.com.localhost") do
+      assert_equal "edge.com.localhost", edge_host
     end
   end
 end

@@ -5,7 +5,9 @@ module Core
   module Org
     module Docs
       module App
-        class VersionsController < Core::Org::DocsController
+        class VersionsController < Core::Org::ApplicationController
+          public_strict!
+
           def new
             head :ok
           end

@@ -5,7 +5,9 @@ module Core
   module Org
     module Help
       module Org
-        class ContactsController < Core::Org::HelpController
+        class ContactsController < Core::Org::ApplicationController
+          public_strict!
+
           def index
             head :ok
           end

@@ -97,17 +97,17 @@ module Oidc
         },
         # Core
         "core_app" => {
-          redirect_uris: build_redirect_uris("CORE_SERVICE_URL", "www.app.localhost"),
+          redirect_uris: build_redirect_uris("CORE_SERVICE_URL", "ww.app.localhost"),
           aud: "umaxica-core-app",
           resource_type: "user",
         },
         "core_org" => {
-          redirect_uris: build_redirect_uris("CORE_STAFF_URL", "www.org.localhost"),
+          redirect_uris: build_redirect_uris("CORE_STAFF_URL", "ww.org.localhost"),
           aud: "umaxica-core-org",
           resource_type: "staff",
         },
         "core_com" => {
-          redirect_uris: build_redirect_uris("CORE_CORPORATE_URL", "www.com.localhost"),
+          redirect_uris: build_redirect_uris("CORE_CORPORATE_URL", "ww.com.localhost"),
           aud: "umaxica-core-com",
           resource_type: "user",
         },
@@ -170,12 +170,13 @@ module Oidc
     end
 
     def resolve_secret(client_id)
-      secrets = Rails.app.creds.option(:OIDC_CLIENT_SECRETS)
-      return nil unless secrets
-
-      secrets[client_id.to_sym] || secrets[client_id.to_s]
+      Rails.app.creds.option(credential_key_for(client_id))
     end
 
-    private_class_method :clients, :build_clients, :build_redirect_uris, :resolve_secret
+    def credential_key_for(client_id)
+      :"OIDC_CLIENT_SECRETS_#{client_id.to_s.upcase}"
+    end
+
+    private_class_method :clients, :build_clients, :build_redirect_uris, :resolve_secret, :credential_key_for
   end
 end

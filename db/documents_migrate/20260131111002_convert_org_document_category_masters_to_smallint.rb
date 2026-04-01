@@ -17,7 +17,9 @@ class ConvertOrgDocumentCategoryMastersToSmallint < ActiveRecord::Migration[8.2]
       check_constraint: nil,
       parent_index: "index_org_document_category_masters_on_parent_id",
       child_foreign_keys: [
-        { table: :org_document_categories, column: :org_document_category_master_id, to_table: :org_document_category_masters },
+        { table: :org_document_categories,
+          column: :org_document_category_master_id,
+          to_table: :org_document_category_masters, },
       ],
     )
 

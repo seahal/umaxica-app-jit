@@ -54,8 +54,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     # Create 2 active + 1 restricted to hit the hard limit
     UserToken.where(user_id: @user.id).delete_all
     2.times do
-      token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
-      token.rotate_refresh_token!
+      create_rotated_active_user_session(@user, rotations: 3)
     end
     restricted = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
     restricted.rotate_refresh_token!(expires_at: 15.minutes.from_now)
@@ -66,6 +65,24 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :conflict
     assert_includes response.body, I18n.t("session_limit.login_limit_exceeded")
+  end
+
+  test "redirects to session management when logical session limit is reached despite rotated rows" do
+    _secret, raw_secret = issue_secret!(kind: UserSecretKind::PERMANENT, uses: 10)
+
+    UserToken.where(user_id: @user.id).delete_all
+    2.times do
+      create_rotated_active_user_session(@user, rotations: 4)
+    end
+
+    post sign_app_in_secret_url(ri: "jp"),
+         params: login_params(identifier: @raw_email, secret_value: raw_secret),
+         headers: default_headers
+
+    assert_response :found
+    assert_redirected_to sign_app_in_session_path(ri: "jp")
+    assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
+    assert_equal 1, UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED).count
   end
 
   test "turnstile failure returns unified authentication error" do
@@ -91,7 +108,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
     assert_not_equal old_session_id, session.id
   end
 
@@ -103,7 +120,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
   end
 
   test "secret sign-in redirects to MFA challenge for weak method when MFA is enabled" do
@@ -216,7 +233,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
     assert_equal 0, one_time_secret.reload.uses_remaining
     assert_equal UserSecretStatus::USED, one_time_secret.user_secret_status_id
 
@@ -286,14 +303,14 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_in_checkpoint_path(ri: "jp")
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
     assert_not_nil session.id
   end
 
   test "guest request does not query users with null mfa_user_id" do
     queries =
       capture_sql_queries do
-        get new_sign_app_in_secret_url(ri: "jp"), headers: default_headers
+        get(new_sign_app_in_secret_url(ri: "jp"), headers: default_headers)
       end
 
     assert_response :success
@@ -302,6 +319,15 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def create_rotated_active_user_session(user, rotations:)
+    token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+    refresh = token.rotate_refresh_token!
+
+    rotations.times do
+      refresh = Sign::RefreshTokenService.call(refresh_token: refresh)[:refresh_token]
+    end
+  end
 
   def issue_secret!(kind: UserSecretKind::PERMANENT, uses: 1, expires_at: nil, status: :active)
     UserSecret.issue!(
@@ -348,7 +374,6 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
   public
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "secret login with session limit exceeded redirects to session management" do
     UserToken.where(user_id: @user.id).delete_all
 
@@ -376,5 +401,4 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     # Session limit gate should be issued
     assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
   end
-  # rubocop:enable Minitest/MultipleAssertions
 end

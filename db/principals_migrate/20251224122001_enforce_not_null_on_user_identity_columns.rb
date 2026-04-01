@@ -19,7 +19,7 @@ class EnforceNotNullOnUserIdentityColumns < ActiveRecord::Migration[8.2]
 
     tables.each do |table, columns|
       columns.each do |column|
-        change_column_null table, column, false
+        change_column_null(table, column, false)
       end
     end
   end

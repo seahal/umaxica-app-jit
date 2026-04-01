@@ -7,7 +7,6 @@ module Oidc
 
     included do
       public_strict!
-      skip_forgery_protection only: :show
     end
 
     def show
@@ -25,7 +24,7 @@ module Oidc
       if result.success?
         set_auth_cookies_from_token_response(result.token_response)
         return_to = session.delete(:oidc_return_to)
-        redirect_to return_to || "/", allow_other_host: false
+        redirect_to(return_to || "/", allow_other_host: false)
       else
         Rails.event.notify(
           "oidc.callback.failed",
@@ -34,7 +33,7 @@ module Oidc
           client_id: oidc_client_id,
           host: request.host,
         )
-        redirect_to "/", alert: I18n.t("errors.messages.login_required")
+        redirect_to("/", alert: I18n.t("errors.messages.login_required"))
       end
     end
 
@@ -51,8 +50,8 @@ module Oidc
 
     def set_auth_cookies_from_token_response(token_response)
       now = Time.current
-      access_expires_at = now + Auth::Base::ACCESS_TOKEN_TTL
-      refresh_expires_at = now + Auth::Base::REFRESH_TOKEN_TTL
+      access_expires_at = now + Authentication::Base::ACCESS_TOKEN_TTL
+      refresh_expires_at = now + Authentication::Base::REFRESH_TOKEN_TTL
 
       set_auth_cookies(
         access_token: token_response[:access_token],

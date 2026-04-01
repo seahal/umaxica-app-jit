@@ -24,10 +24,12 @@ module Preference::Edge
   private
 
   def resolved_preference_data
+    # Try preference JWT payload (SSOT for preferences)
     preferences = preference_payload_preferences
     public_id = preference_payload_public_id
     return { preferences:, public_id: } if preferences.present?
 
+    # Fallback: DB query for guests without preference JWT
     fallback_data = load_preferences_from_record
     {
       preferences: fallback_data[:preferences],

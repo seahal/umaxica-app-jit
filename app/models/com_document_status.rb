@@ -11,13 +11,15 @@
 
 class ComDocumentStatus < DocumentRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   ACTIVE = 1
   ARCHIVED = 2
   DELETED = 3
   DRAFT = 4
   INACTIVE = 5
-  NOTHING = 6
+  LEGACY_NOTHING = 6
   PENDING = 7
+  DEFAULTS = [NOTHING, ACTIVE, ARCHIVED, DELETED, DRAFT, INACTIVE, LEGACY_NOTHING, PENDING].freeze
 
   has_many :com_documents,
            foreign_key: :status_id,
@@ -25,4 +27,8 @@ class ComDocumentStatus < DocumentRecord
            dependent: :restrict_with_error
 
   validates :description, length: { maximum: 255 }
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
+  end
 end

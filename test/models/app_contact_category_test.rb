@@ -12,6 +12,24 @@
 require "test_helper"
 
 class AppContactCategoryTest < ActiveSupport::TestCase
+  test "has correct constants" do
+    assert_equal 0, AppContactCategory::NOTHING
+    assert_equal 1, AppContactCategory::LEGACY_NOTHING
+    assert_equal 2, AppContactCategory::APPLICATION_INQUIRY
+  end
+
+  test "can load nothing status from db" do
+    status = AppContactCategory.find(AppContactCategory::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
+  test "ensure_defaults! does nothing when defaults exist" do
+    assert_no_difference "AppContactCategory.count" do
+      AppContactCategory.ensure_defaults!
+    end
+  end
+
   test "should inherit from GuestRecord" do
     assert_operator AppContactCategory, :<, GuestRecord
   end
@@ -86,7 +104,6 @@ class AppContactCategoryTest < ActiveSupport::TestCase
     end
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   # test "should have timestamps" do
   #   category = AppContactCategory.create!(id: "test_app_category")
   #
@@ -95,5 +112,4 @@ class AppContactCategoryTest < ActiveSupport::TestCase
   #   assert_not_nil category.created_at
   #   assert_not_nil category.updated_at
   # end
-  # rubocop:enable Minitest/MultipleAssertions
 end

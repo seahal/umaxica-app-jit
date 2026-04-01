@@ -100,9 +100,11 @@ class Sign::Org::In::SessionsController < Sign::Org::ApplicationController
       consume_session_limit_gate!
       session.delete(:pending_login_staff_id)
       log_out
-      redirect_to new_sign_org_in_path, notice: I18n.t(
-        "sign.org.in.session.cancelled",
-        default: "セッションをキャンセルしました。",
+      redirect_to(
+        new_sign_org_in_path, notice: I18n.t(
+          "sign.org.in.session.cancelled",
+          default: "セッションをキャンセルしました。",
+        ),
       )
     end
   end
@@ -131,11 +133,13 @@ class Sign::Org::In::SessionsController < Sign::Org::ApplicationController
   end
 
   def redirect_to_login
-    redirect_to new_sign_org_in_path,
-                alert: I18n.t(
-                  "sign.org.in.session.login_required",
-                  default: "ログインが必要です。",
-                )
+    redirect_to(
+      new_sign_org_in_path,
+      alert: I18n.t(
+        "sign.org.in.session.login_required",
+        default: "ログインが必要です。",
+      ),
+    )
   end
 
   def redirect_to_return_path(notice:)
@@ -146,7 +150,7 @@ class Sign::Org::In::SessionsController < Sign::Org::ApplicationController
       flash[:notice] = notice
       jump_to_generated_url(return_path, fallback: sign_org_configuration_path)
     else
-      redirect_to sign_org_configuration_path, notice: notice
+      redirect_to(sign_org_configuration_path, notice: notice)
     end
   end
 

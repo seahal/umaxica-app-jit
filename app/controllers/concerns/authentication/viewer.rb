@@ -44,7 +44,7 @@ module Authentication
       if request.format.json?
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
-        redirect_to "/", alert: I18n.t("auth.unauthorized")
+        redirect_to("/", alert: I18n.t("auth.unauthorized"))
       end
     end
 
@@ -70,6 +70,7 @@ module Authentication
       :viewer_id
     end
 
+    # FIXME: what is this method?
     def test_header_key
       "X-TEST-CURRENT-VIEWER"
     end

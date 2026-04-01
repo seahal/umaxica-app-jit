@@ -17,7 +17,7 @@ class CleanupAvatarReferenceOldStringIds < ActiveRecord::Migration[8.2]
   def up
     TABLES.each do |table|
       safety_assured do
-        remove_column table, :id_old_string, :string if column_exists?(table, :id_old_string)
+        remove_column(table, :id_old_string, :string) if column_exists?(table, :id_old_string)
       end
     end
   end

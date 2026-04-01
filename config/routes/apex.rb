@@ -5,8 +5,6 @@ scope module: :apex, as: :apex do
   constraints host: ENV["APEX_CORPORATE_URL"] do
     scope module: :com, as: :com do
       root to: "roots#index"
-      # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
       # health check for html
       resource :health, only: :show, format: :html
       resource :sitemap, only: :show, defaults: { format: :xml }
@@ -14,6 +12,7 @@ scope module: :apex, as: :apex do
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
@@ -21,45 +20,34 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc_registration, only: :create
+          resource :dbsc, only: :create
         end
       end
-      # preferences
-      resource :preference, only: [:show]
-      namespace :preference do
-        # for region settings.
-        resource :region, only: [:edit, :update]
-        namespace :region do
-          # for lx and tz settings.
-          resource :timezone, only: [:edit, :update]
-          resource :language, only: [:edit, :update]
-        end
-        # for dark/light mode
-        resource :theme, only: [:edit, :update]
-        # endpoint of reset preferences.
-        resource :reset, only: [:edit, :destroy]
-        # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
       end
-      resource :configuration, only: [:show]
     end
   end
 
-  # FIXME: what is this?
-  constraints lambda { |request|
-                request.host == ENV["APEX_SERVICE_URL"] && Core::Surface.matches?(request, :app)
-              } do
+  constraints host: ENV["APEX_SERVICE_URL"] do
     scope module: :app, as: :app do
       root to: "roots#index"
-      # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+
       # endpoint of health check
       resource :health, only: :show
       resource :sitemap, only: :show, defaults: { format: :xml }
+
+      # OIDC callback
+      namespace :auth do
+        resource :callback, only: :show
+      end
+
       # Edge API endpoint (browser/Rails view)
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
@@ -67,25 +55,8 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc_registration, only: :create
+          resource :dbsc, only: :create
         end
-      end
-      # preferences
-      resource :preference, only: [:show]
-      namespace :preference do
-        # for region settings.
-        resource :region, only: [:edit, :update]
-        namespace :region do
-          # for lx and tz settings.
-          resource :timezone, only: [:edit, :update]
-          resource :language, only: [:edit, :update]
-        end
-        # for dark/light mode
-        resource :theme, only: [:edit, :update]
-        # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
-        # endpoint of reset preferences.
-        resource :reset, only: [:edit, :destroy]
       end
       resource :configuration, only: [:show]
       namespace :configuration do
@@ -101,19 +72,20 @@ scope module: :apex, as: :apex do
     end
   end
 
-  constraints lambda { |request|
-                request.host == ENV["APEX_STAFF_URL"] && Core::Surface.matches?(request, :org)
-              } do
+  constraints host: ENV["APEX_STAFF_URL"] do
     scope module: :org, as: :org do
       root to: "roots#index"
       # OIDC callback
-      resource :auth_callback, only: :show, path: "auth/callback", controller: "auth/callbacks"
+      namespace :auth do
+        resource :callback, only: :show
+      end
       # health check for html
       resource :health, only: :show, format: :html
       # Edge API endpoint (browser/Rails view)
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
+          resource :theme, only: %i(show update)
         end
       end
       # Edge API endpoint (browser/SPA)
@@ -121,7 +93,7 @@ scope module: :apex, as: :apex do
         namespace :v0 do
           resource :health, only: :show
           resource :cookie, only: %i(show update)
-          resource :dbsc_registration, only: :create
+          resource :dbsc, only: :create
         end
       end
       # for emergency
@@ -138,23 +110,7 @@ scope module: :apex, as: :apex do
           resource :cache, only: %i(show update destroy)
         end
       end
-      # preferences
-      resource :preference, only: [:show]
-      namespace :preference do
-        # for region settings.
-        resource :region, only: [:edit, :update]
-        namespace :region do
-          # for lx and tz settings.
-          resource :timezone, only: [:edit, :update]
-          resource :language, only: [:edit, :update]
-        end
-        # for dark/light mode
-        resource :theme, only: [:edit, :update]
-        # endpoint of reset preferences.
-        resource :reset, only: [:edit, :destroy]
-        # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
-      end
+
       resource :configuration, only: [:show]
       namespace :configuration do
         # logged in user's email settings.

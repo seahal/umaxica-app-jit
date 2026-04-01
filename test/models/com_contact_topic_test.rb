@@ -108,7 +108,6 @@ class ComContactTopicTest < ActiveSupport::TestCase
     assert_kind_of Integer, topic.id
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     contact = build_contact
     topic = build_topic(contact)
@@ -118,7 +117,6 @@ class ComContactTopicTest < ActiveSupport::TestCase
     assert_not_nil topic.created_at
     assert_not_nil topic.updated_at
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have all expected attributes" do
     contact = build_contact

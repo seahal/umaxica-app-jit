@@ -21,7 +21,7 @@ module TokenDeletableSync
     return :expires_at if has_attribute?(:expires_at)
     return :refresh_expires_at if has_attribute?(:refresh_expires_at)
 
-    raise "#{self.class.name} does not have an expires_at-style attribute"
+    raise ArgumentError, "#{self.class.name} does not have an expires_at-style attribute"
   end
 
   def derived_deletable_at

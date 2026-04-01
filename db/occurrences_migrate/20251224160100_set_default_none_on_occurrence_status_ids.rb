@@ -16,13 +16,13 @@ class SetDefaultNoneOnOccurrenceStatusIds < ActiveRecord::Migration[8.2]
     TABLES.each do |table|
       reversible do |dir|
         dir.up do
-          execute "UPDATE #{table} SET status_id = 'NONE' WHERE status_id IS NULL OR status_id = ''"
+          execute("UPDATE #{table} SET status_id = 'NONE' WHERE status_id IS NULL OR status_id = ''")
         end
       end
 
-      change_table table, bulk: true do |t|
-        t.change_default :status_id, from: "", to: "NONE"
-        t.change_null :status_id, false, "NONE"
+      change_table(table, bulk: true) do |t|
+        t.change_default(:status_id, from: "", to: "NONE")
+        t.change_null(:status_id, false, "NONE")
       end
     end
   end

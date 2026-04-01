@@ -11,6 +11,7 @@
 class ComPreferenceActivityEvent < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   CREATE_NEW_PREFERENCE_TOKEN = 1
   REFRESH_TOKEN_ROTATED = 2
   UPDATE_PREFERENCE_COOKIE = 3
@@ -29,6 +30,7 @@ class ComPreferenceActivityEvent < ActivityRecord
            dependent: :restrict_with_error
 
   DEFAULTS = [
+    NOTHING,
     CREATE_NEW_PREFERENCE_TOKEN,
     REFRESH_TOKEN_ROTATED,
     UPDATE_PREFERENCE_COOKIE,
@@ -40,16 +42,6 @@ class ComPreferenceActivityEvent < ActivityRecord
   ].freeze
 
   def self.ensure_defaults!
-    return if DEFAULTS.blank?
-
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    missing_ids = DEFAULTS - existing_ids
-    return if missing_ids.empty?
-
-    if defined?(Prosopite)
-      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
-    else
-      missing_ids.each { |id| create!(id: id) }
-    end
+    insert_missing_fixed_ids!(DEFAULTS)
   end
 end

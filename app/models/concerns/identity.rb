@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-# Shared identity logic for User and Staff.
+# Shared identity logic for User, Staff, and Customer.
 # These are the authenticatable principals that own credentials and sessions.
 module Identity
   extend ActiveSupport::Concern

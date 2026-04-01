@@ -14,7 +14,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(21)       default(""), not null
-#  status_id    :bigint           default(4), not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #
@@ -34,6 +34,12 @@ require "test_helper"
 class DomainOccurrenceTest < ActiveSupport::TestCase
   fixtures :ip_occurrences, :ip_occurrence_statuses
   fixtures :domain_occurrences, :domain_occurrence_statuses
+
+  test "defaults status_id to nothing" do
+    record = DomainOccurrence.new(body: "next-example.jp", public_id: "X" * 21)
+
+    assert_equal DomainOccurrenceStatus::NOTHING, record.status_id
+  end
 
   test "public_id length" do
     record = build_occurrence(DomainOccurrence, body: "example.co.jp", public_id: "A" * 20)

@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_preference_language_options
-# Database name: preference
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
@@ -14,6 +14,16 @@ require "test_helper"
 class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
   setup do
     AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NOTHING)
+  end
+
+  test "has correct constants" do
+    assert_equal 0, AppPreferenceLanguageOption::NOTHING
+    assert_equal 1, AppPreferenceLanguageOption::JA
+    assert_equal 2, AppPreferenceLanguageOption::EN
+  end
+
+  test "defaults includes NOTHING" do
+    assert_includes AppPreferenceLanguageOption::DEFAULTS, AppPreferenceLanguageOption::NOTHING
   end
 
   test "can be created" do
@@ -38,5 +48,23 @@ class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordNotDestroyed) do
       option.destroy!
     end
+  end
+
+  test "name returns ja for JA id" do
+    option = AppPreferenceLanguageOption.find_or_create_by!(id: AppPreferenceLanguageOption::JA)
+
+    assert_equal "ja", option.name
+  end
+
+  test "name returns en for EN id" do
+    option = AppPreferenceLanguageOption.find_or_create_by!(id: AppPreferenceLanguageOption::EN)
+
+    assert_equal "en", option.name
+  end
+
+  test "name returns nil for unknown id" do
+    option = AppPreferenceLanguageOption.find_or_create_by!(id: 999)
+
+    assert_nil option.name
   end
 end

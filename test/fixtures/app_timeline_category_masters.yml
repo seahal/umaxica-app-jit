@@ -1,7 +1,7 @@
 # == Schema Information
 #
 # Table name: app_timeline_category_masters
-# Database name: news
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -15,5 +15,8 @@
 #  fk_app_timeline_category_masters_parent  (parent_id => app_timeline_category_masters.id)
 #
 nothing:
+  id: 0
+  parent_id: 0
+legacy_nothing:
   id: 1
-  parent_id: 1
+  parent_id: 0

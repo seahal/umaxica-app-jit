@@ -35,7 +35,6 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href*=?]", "/contacts/new"
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get help_app_root_url()
 
@@ -49,7 +48,6 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
       assert_select "footer", count: 1
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
     get help_app_root_url()
@@ -62,7 +60,12 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     host! "app.localhost"
     get help_app_root_path
 
+    # First redirect: canonicalize_regional_params adds ri=jp
     assert_redirected_to help_app_root_url(ri: "jp", host: "app.localhost")
+    follow_redirect!
+
+    # After redirect, set_preferences_cookie should have run
+    assert_response :success
     assert_not_nil cookies["preference_access"]
   end
 

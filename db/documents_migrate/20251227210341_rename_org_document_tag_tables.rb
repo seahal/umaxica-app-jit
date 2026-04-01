@@ -3,9 +3,9 @@
 class RenameOrgDocumentTagTables < ActiveRecord::Migration[8.2]
   def up
     # Rename org_document_tags to org_document_tag_masters
-    rename_table :org_document_tags, :org_document_tag_masters
+    rename_table(:org_document_tags, :org_document_tag_masters)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DO $$
       BEGIN
         IF EXISTS (
@@ -20,9 +20,9 @@ class RenameOrgDocumentTagTables < ActiveRecord::Migration[8.2]
     SQL
 
     # Rename org_document_taggers to org_document_tags
-    rename_table :org_document_taggers, :org_document_tags
+    rename_table(:org_document_taggers, :org_document_tags)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DO $$
       BEGIN
         IF EXISTS (
@@ -37,16 +37,16 @@ class RenameOrgDocumentTagTables < ActiveRecord::Migration[8.2]
     SQL
 
     # Update foreign key column name in the new org_document_tags table
-    rename_column :org_document_tags, :org_document_tag_id, :org_document_tag_master_id
+    rename_column(:org_document_tags, :org_document_tag_id, :org_document_tag_master_id)
   end
 
   def down
-    rename_column :org_document_tags, :org_document_tag_master_id, :org_document_tag_id
+    rename_column(:org_document_tags, :org_document_tag_master_id, :org_document_tag_id)
 
     # Rename org_document_tags back to org_document_taggers
-    rename_table :org_document_tags, :org_document_taggers
+    rename_table(:org_document_tags, :org_document_taggers)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DO $$
       BEGIN
         IF EXISTS (
@@ -61,9 +61,9 @@ class RenameOrgDocumentTagTables < ActiveRecord::Migration[8.2]
     SQL
 
     # Rename org_document_tag_masters back to org_document_tags
-    rename_table :org_document_tag_masters, :org_document_tags
+    rename_table(:org_document_tag_masters, :org_document_tags)
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       DO $$
       BEGIN
         IF EXISTS (

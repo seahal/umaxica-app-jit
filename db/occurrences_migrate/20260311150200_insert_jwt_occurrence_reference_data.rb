@@ -58,7 +58,7 @@ class InsertJwtOccurrenceReferenceData < ActiveRecord::Migration[8.2]
 
     safety_assured do
       STATUS_DATA.each do |id, name|
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO jwt_occurrence_statuses (id, name)
           VALUES (#{id}, #{connection.quote(name)})
           ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name
@@ -67,7 +67,7 @@ class InsertJwtOccurrenceReferenceData < ActiveRecord::Migration[8.2]
 
       catalog_rows.each_with_index do |(body, memo), index|
         public_id = format("jwt_occurrence_%06d", index + 1)
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO jwt_occurrences (body, memo, public_id, status_id, expires_at, created_at, updated_at)
           VALUES (
             #{connection.quote(body)},
@@ -94,8 +94,8 @@ class InsertJwtOccurrenceReferenceData < ActiveRecord::Migration[8.2]
     return unless table_exists?(:jwt_occurrences) && table_exists?(:jwt_occurrence_statuses)
 
     safety_assured do
-      execute "DELETE FROM jwt_occurrences"
-      execute "DELETE FROM jwt_occurrence_statuses WHERE id IN (1, 2, 3, 4)"
+      execute("DELETE FROM jwt_occurrences")
+      execute("DELETE FROM jwt_occurrence_statuses WHERE id IN (1, 2, 3, 4)")
     end
   end
 
@@ -117,7 +117,7 @@ class InsertJwtOccurrenceReferenceData < ActiveRecord::Migration[8.2]
   end
 
   def ensure_occurrence_sequence!
-    max_id = select_value("SELECT COALESCE(MAX(id), 0) FROM jwt_occurrences").to_i
+    max_id = Integer(select_value("SELECT COALESCE(MAX(id), 0) FROM jwt_occurrences").to_s, 10)
     ensure_sequence!(:jwt_occurrences, max_id)
   end
 
@@ -126,7 +126,7 @@ class InsertJwtOccurrenceReferenceData < ActiveRecord::Migration[8.2]
     return if sequence_name.blank? || max_id <= 0
 
     safety_assured do
-      execute "SELECT setval(#{connection.quote(sequence_name)}, #{Integer(max_id)}, true)"
+      execute("SELECT setval(#{connection.quote(sequence_name)}, #{Integer(max_id)}, true)")
     end
   end
 end

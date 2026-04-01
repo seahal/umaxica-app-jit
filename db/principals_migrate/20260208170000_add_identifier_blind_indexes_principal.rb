@@ -19,30 +19,34 @@ class AddIdentifierBlindIndexesPrincipal < ActiveRecord::Migration[8.2]
 
     safety_assured do
       if column_exists?(:user_emails, :address_bidx)
-        add_index :user_emails,
-                  :address_bidx,
-                  unique: true,
-                  where: "address_bidx IS NOT NULL",
-                  name: :index_user_emails_on_address_bidx,
-                  if_not_exists: true
+        add_index(
+          :user_emails,
+          :address_bidx,
+          unique: true,
+          where: "address_bidx IS NOT NULL",
+          name: :index_user_emails_on_address_bidx,
+          if_not_exists: true,
+        )
       end
       if column_exists?(:user_telephones, :number_bidx)
-        add_index :user_telephones,
-                  :number_bidx,
-                  unique: true,
-                  where: "number_bidx IS NOT NULL",
-                  name: :index_user_telephones_on_number_bidx,
-                  if_not_exists: true
+        add_index(
+          :user_telephones,
+          :number_bidx,
+          unique: true,
+          where: "number_bidx IS NOT NULL",
+          name: :index_user_telephones_on_number_bidx,
+          if_not_exists: true,
+        )
       end
     end
   end
 
   def down
-    remove_index :user_telephones, name: :index_user_telephones_on_number_bidx, if_exists: true
-    remove_index :user_emails, name: :index_user_emails_on_address_bidx, if_exists: true
+    remove_index(:user_telephones, name: :index_user_telephones_on_number_bidx, if_exists: true)
+    remove_index(:user_emails, name: :index_user_emails_on_address_bidx, if_exists: true)
 
-    remove_column :user_telephones, :number_bidx, if_exists: true
-    remove_column :user_emails, :address_bidx, if_exists: true
+    remove_column(:user_telephones, :number_bidx, if_exists: true)
+    remove_column(:user_emails, :address_bidx, if_exists: true)
   end
 
   private
@@ -73,12 +77,12 @@ class AddIdentifierBlindIndexesPrincipal < ActiveRecord::Migration[8.2]
 
   def ensure_identifier_blind_index_columns
     unless column_exists?(:user_emails, :address_bidx)
-      add_column :user_emails, :address_bidx, :string, if_not_exists: true
+      add_column(:user_emails, :address_bidx, :string, if_not_exists: true)
     end
 
     return if column_exists?(:user_telephones, :number_bidx)
 
-    add_column :user_telephones, :number_bidx, :string, if_not_exists: true
+    add_column(:user_telephones, :number_bidx, :string, if_not_exists: true)
 
   end
 end

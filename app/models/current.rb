@@ -1,32 +1,53 @@
 # typed: false
 # frozen_string_literal: true
 
-# INFORMATION: Look this docs. https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html
-
-# app/models/current.rb
 class Current < ActiveSupport::CurrentAttributes
-  attribute :actor
-  attribute :actor_type
-  attribute :session
-  attribute :token
+  attribute :actor, :actor_type, :session, :token, :domain, :preference,
+            :trace_id, :span_id
 
-  # TODO: return :org, :app or :com
-  def domain
+  resets { self.preference = Current::Preference::NULL }
+
+  def self.actor
+    super || Unauthenticated.instance
   end
 
-  def user?
+  def self.actor_type
+    super || :unauthenticated
+  end
+
+  def self.preference
+    super || Current::Preference::NULL
+  end
+
+  def self.user?
     actor_type == :user
   end
 
-  def staff?
+  def self.staff?
     actor_type == :staff
   end
 
-  def operator?
-    actor_type == :operator
+  def self.customer?
+    actor_type == :customer
   end
 
-  def member?
-    actor_type == :member
+  def self.unauthenticated?
+    actor_type == :unauthenticated
+  end
+
+  def self.authenticated?
+    %i(user customer staff).include?(actor_type)
+  end
+
+  def self.user
+    actor if user?
+  end
+
+  def self.staff
+    actor if staff?
+  end
+
+  def self.customer
+    actor if customer?
   end
 end

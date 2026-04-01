@@ -98,9 +98,7 @@ export default class extends Controller {
 
       // Step 2: Create credential with authenticator
       const publicKeyOptions = normalizePublicKeyOptions(options);
-      const credential = await navigator.credentials.create({
-        publicKey: publicKeyOptions,
-      });
+      const credential = await navigator.credentials.create({ publicKey: publicKeyOptions });
 
       this.showStatus("サーバーで検証中...");
 

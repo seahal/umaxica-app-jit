@@ -20,6 +20,7 @@ module Dbsc
       return failure("record_missing") if record.blank?
       return failure("missing_proof") if proof.blank?
       return failure("missing_challenge") if record.dbsc_challenge.to_s.blank?
+      return failure("challenge_expired") if challenge_expired?
 
       unverified_payload, unverified_header = JWT.decode(proof, nil, false)
       return failure("invalid_type") unless unverified_header["typ"].to_s == "dbsc+jwt"
@@ -60,6 +61,10 @@ module Dbsc
     private
 
     attr_reader :record, :proof, :now, :session_id, :expected_audience
+
+    def challenge_expired?
+      record.dbsc_challenge_issued_at.blank? || record.dbsc_challenge_issued_at < now - CHALLENGE_TTL
+    end
 
     def failure(error_code, message: nil)
       { ok: false, error_code: error_code, message: message }

@@ -15,4 +15,15 @@ class InvalidUserStatusErrorTest < ActiveSupport::TestCase
 
     assert_equal "Bad status: {invalid_status: \"SUSPENDED\"}", error.message
   end
+
+  def test_message_with_i18n_key
+    # We need a valid i18n key that exists in the test environment.
+    # In this environment, it seems "errors.messages.invalid" translates to Japanese.
+    error = InvalidUserStatusError.new(invalid_status: "BANNED", i18n_key: "errors.messages.invalid")
+
+    # Verify it doesn't use the default message
+    assert_not_equal "Invalid user status: BANNED", error.message
+    # And it contains some content from the translation
+    assert_match(/(invalid|不正な値)/i, error.message)
+  end
 end

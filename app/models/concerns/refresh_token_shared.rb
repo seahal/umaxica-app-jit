@@ -48,6 +48,13 @@ module RefreshTokenShared
 
       ActiveSupport::SecurityUtils.secure_compare(expected, actual)
     end
+
+    def digest_device_id(device_id)
+      return nil if device_id.blank?
+
+      # SHA3-384 produces binary output; encode to Base64 for string storage
+      Base64.strict_encode64(SHA3::Digest::SHA3_384.digest(device_id.to_s))
+    end
   end
 
   def generate_refresh_token(public_id:)
@@ -55,7 +62,7 @@ module RefreshTokenShared
   end
 
   delegate :parse_refresh_token, :digest_refresh_token,
-           :legacy_refresh_token_digest, :secure_compare?,
+           :legacy_refresh_token_digest, :secure_compare?, :digest_device_id,
            :refresh_token_separator, :refresh_token_verifier_bytes,
            to: :class
 end

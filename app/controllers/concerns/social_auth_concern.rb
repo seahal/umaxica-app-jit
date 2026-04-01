@@ -122,7 +122,7 @@ module SocialAuthConcern
       "social_auth.reauth_required",
       user_id: current_resource.id,
       last_reauth_at: last_reauth&.iso8601,
-      required_within: ttl.to_i,
+      required_within: Integer(ttl.to_s, 10),
     )
     raise SocialAuth::ReauthRequiredError.new("errors.social_auth.reauth_required")
   end
@@ -186,7 +186,7 @@ module SocialAuthConcern
       format.html do
         flash[:alert] = error.message
         clear_social_auth_intent!
-        redirect_to social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider)
+        redirect_to(social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider))
       end
       format.json do
         clear_social_auth_intent!
@@ -208,7 +208,7 @@ module SocialAuthConcern
       format.html do
         flash[:alert] = I18n.t("errors.social_auth.identity_conflict")
         clear_social_auth_intent!
-        redirect_to social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider)
+        redirect_to(social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider))
       end
       format.json do
         clear_social_auth_intent!
@@ -230,7 +230,7 @@ module SocialAuthConcern
   def validate_intent_ttl!(provider)
     started_at = session[SOCIAL_STARTED_AT_SESSION_KEY]
     return if started_at.blank?
-    return if Time.current <= Time.zone.at(started_at.to_i) + STATE_TTL
+    return if Time.current <= Time.zone.at(Integer(started_at.to_s, 10)) + STATE_TTL
 
     Rails.event.notify(
       "social_auth.intent_expired",

@@ -1,18 +1,19 @@
 # typed: false
 # frozen_string_literal: true
 
-class Sign::Org::Edge::V0::Token::RefreshesController < Sign::Org::Edge::V0::BaseController
+class Sign::Org::Edge::V0::Token::RefreshesController < Sign::Org::ApplicationController
+  include Sign::EdgeV0JsonApi
   include ::Preference::WebCookieEndpoint
 
+  public_strict!
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token
 
   def create
     response.set_header("Cache-Control", "no-store")
 
-    # Read refresh token from params or cookie (regular cookie, not encrypted)
-    # Use Auth::Base constants for cookie keys
-    refresh_plain = params[:refresh_token].presence || cookies[Auth::Base::REFRESH_COOKIE_KEY]
+    # Read refresh token from params or cookie
+    refresh_plain = params[:refresh_token].presence || cookies[Authentication::Base::REFRESH_COOKIE_KEY]
 
     if refresh_plain.blank?
       render json: {
@@ -32,9 +33,19 @@ class Sign::Org::Edge::V0::Token::RefreshesController < Sign::Org::Edge::V0::Bas
       status = refresh_failure_status
       code = refresh_failure_code
       render json: {
-        error: (code == "restricted_session") ? "きんそくじこうです" : I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
+        error: I18n.t(token_refresh_error_key(code)),
         error_code: code,
       }, status: status
     end
+  end
+
+  private
+
+  def token_refresh_error_key(code)
+    {
+      "invalid_refresh_token" => "sign.token_refresh.errors.invalid_refresh_token",
+      "withdrawal_required" => "sign.token_refresh.errors.withdrawal_required",
+      "restricted_session" => "sign.token_refresh.errors.restricted_session",
+    }.fetch(code) { "sign.token_refresh.errors.invalid_refresh_token" }
   end
 end

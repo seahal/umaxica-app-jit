@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_timeline_category_masters
-# Database name: news
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -18,7 +18,7 @@
 
 # frozen_string_literal: true
 
-class ComTimelineCategoryMaster < NewsRecord
+class ComTimelineCategoryMaster < PublicationRecord
   include Treeable
 
   # Fixed IDs - do not modify these values

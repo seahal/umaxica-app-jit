@@ -11,7 +11,7 @@ module Core
           end
 
           def update
-            redirect_to action: :show
+            redirect_to(action: :show)
           end
         end
       end

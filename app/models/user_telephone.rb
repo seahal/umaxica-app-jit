@@ -19,7 +19,7 @@
 #  updated_at                        :datetime         not null
 #  public_id                         :string(21)       not null
 #  user_id                           :bigint           not null
-#  user_identity_telephone_status_id :bigint           default(1), not null
+#  user_identity_telephone_status_id :bigint           default(2), not null
 #
 # Indexes
 #
@@ -40,7 +40,6 @@ class UserTelephone < PrincipalRecord
   self.filter_attributes += %w(number)
 
   MAX_TELEPHONES_PER_USER = 4
-  # TODO: refactorize this line!
   alias_attribute :user_telephone_status_id, :user_identity_telephone_status_id
   include Telephone
   include Turnstile
@@ -52,7 +51,8 @@ class UserTelephone < PrincipalRecord
 
   attribute :user_identity_telephone_status_id, default: UserTelephoneStatus::UNVERIFIED
 
-  belongs_to :user_telephone_status, optional: true, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id
+  belongs_to :user_telephone_status, optional: true, inverse_of: :user_telephones,
+                                     foreign_key: :user_identity_telephone_status_id
   belongs_to :user, inverse_of: :user_telephones
 
   # Note: :number validation is now handled by Telephone concern (E.164 normalization)
@@ -91,14 +91,12 @@ class UserTelephone < PrincipalRecord
     return unless self.class.where(number_digest: number_digest).where.not(id: id).exists?
 
     errors.add(:number, :taken)
-
   end
 
   def enforce_user_telephone_limit
     return unless user_id
 
-    count = self.class.where(user_id: user_id).count
-    return if count < MAX_TELEPHONES_PER_USER
+    return if self.class.where(user_id: user_id).count < MAX_TELEPHONES_PER_USER
 
     errors.add(:base, :too_many, message: "exceeds maximum telephones per user (#{MAX_TELEPHONES_PER_USER})")
   end

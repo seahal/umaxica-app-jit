@@ -6,21 +6,21 @@ class AddFormatChecksToUserIdentityStatusEventLevelIds < ActiveRecord::Migration
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :user_identity_statuses, :id
+    add_format_check(:user_identity_statuses, :id)
 
-    add_format_check :user_identity_email_statuses, :id
-    add_format_check :user_identity_telephone_statuses, :id
+    add_format_check(:user_identity_email_statuses, :id)
+    add_format_check(:user_identity_telephone_statuses, :id)
 
-    add_format_check :user_identity_secret_statuses, :id
+    add_format_check(:user_identity_secret_statuses, :id)
 
-    add_format_check :user_identity_audit_events, :id
+    add_format_check(:user_identity_audit_events, :id)
 
-    add_format_check :user_identity_audit_levels, :id
+    add_format_check(:user_identity_audit_levels, :id)
 
-    add_format_check :user_identity_one_time_password_statuses, :id
-    add_format_check :user_identity_passkey_statuses, :id
-    add_format_check :user_identity_social_apple_statuses, :id
-    add_format_check :user_identity_social_google_statuses, :id
+    add_format_check(:user_identity_one_time_password_statuses, :id)
+    add_format_check(:user_identity_passkey_statuses, :id)
+    add_format_check(:user_identity_social_apple_statuses, :id)
+    add_format_check(:user_identity_social_google_statuses, :id)
   end
 
   private

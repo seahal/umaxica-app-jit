@@ -5,7 +5,7 @@ require "test_helper"
 
 class Core::Org::EmergencyControllersTest < ActionDispatch::IntegrationTest
   setup do
-    host! ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
+    host! ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
   end
 
   test "GET show renders app emergency pages" do

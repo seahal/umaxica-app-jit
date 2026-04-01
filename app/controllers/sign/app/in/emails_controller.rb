@@ -44,7 +44,12 @@ module Sign
             return
           end
 
-          process_email_authentication(normalized_address)
+          result = process_email_authentication(normalized_address)
+
+          if result == :cooldown
+            render plain: t("sign.app.authentication.email.create.cooldown"), status: :too_many_requests
+            return
+          end
 
           return render_session_limit_hard_reject if @session_limit_hard_reject
 
@@ -54,7 +59,7 @@ module Sign
           preserve_redirect_parameter
 
           flash[:notice] = t("sign.app.authentication.email.create.verification_code_sent")
-          redirect_to edit_sign_app_in_email_path(rd: peek_redirect_parameter)
+          redirect_to(edit_sign_app_in_email_path(rd: peek_redirect_parameter))
         end
 
         # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
@@ -82,14 +87,22 @@ module Sign
             respond_to do |format|
               format.html do
                 if result[:restricted]
-                  redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
+                  redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
                 elsif result[:redirect_path]
-                  redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
+                  redirect_to(result[:redirect_path], notice: t("sign.app.in.mfa.required"))
                 else
                   rd_param = retrieve_redirect_parameter
-                  issue_checkpoint!
-                  redirect_to sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri]),
-                              notice: t("sign.app.authentication.email.update.success")
+                  if issue_bulletin!
+                    redirect_to(
+                      sign_app_in_bulletin_path(rd: rd_param, ri: params[:ri]),
+                      notice: t("sign.app.authentication.email.update.success"),
+                    )
+                  else
+                    safe_redirect_to_rd_or_default!(
+                      rd_param,
+                      default_path: sign_app_configuration_path(ri: params[:ri]),
+                    )
+                  end
                 end
               end
               format.json do
@@ -136,7 +149,7 @@ module Sign
 
             unless @user_email
               flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
-              redirect_to new_sign_app_in_email_path(rd: peek_redirect_parameter)
+              redirect_to(new_sign_app_in_email_path(rd: peek_redirect_parameter))
               return
             end
             @otp_resend_state = Sign::In::OtpResendState.issue(kind: :email, target: @user_email.address)
@@ -149,7 +162,7 @@ module Sign
           else
 
             flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
-            redirect_to new_sign_app_in_email_path(rd: peek_redirect_parameter)
+            redirect_to(new_sign_app_in_email_path(rd: peek_redirect_parameter))
           end
         end
 
@@ -169,7 +182,7 @@ module Sign
             session[:user_email_authentication_id] = existing_email.id
             session[:user_email_authentication_address] = nil
 
-            return if otp_request_rate_limited?(existing_email)
+            return :cooldown if otp_request_rate_limited?(existing_email)
 
             otp_code = generate_otp_for(existing_email)
 
@@ -184,6 +197,8 @@ module Sign
             session[:user_email_authentication_id] = nil
             session[:user_email_authentication_address] = normalized_address
           end
+
+          :ok
         end
 
         def verify_otp_and_login(user_email)
@@ -239,6 +254,7 @@ module Sign
         def handle_failed_otp_attempt(user_email, user = nil)
           user ||= user_from_user_email(user_email)
           audit_user_login_failed(user) if user
+          Sign::Risk::Emitter.emit("auth_failed", user_id: user&.id) if user
 
           if user_email.locked?
             { success: false, error: t("sign.app.authentication.email.locked") }

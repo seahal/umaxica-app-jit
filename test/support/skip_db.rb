@@ -4,7 +4,7 @@
 if ENV["SKIP_DB"] == "1"
   module SkipDbTests
     def before_setup
-      skip "SKIP_DB=1 (database unavailable in this environment)"
+      skip("SKIP_DB=1 (database unavailable in this environment)")
     end
   end
 

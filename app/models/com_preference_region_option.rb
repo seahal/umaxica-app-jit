@@ -2,14 +2,14 @@
 # == Schema Information
 #
 # Table name: com_preference_region_options
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class ComPreferenceRegionOption < PreferenceRecord
+class ComPreferenceRegionOption < CommerceRecord
   # Fixed IDs - do not modify these values
   US = 1
   JP = 2

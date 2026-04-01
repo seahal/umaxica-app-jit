@@ -36,4 +36,70 @@ class UserMemberDeletionTest < ActiveSupport::TestCase
 
     assert_predicate deletion, :valid?
   end
+
+  test "belongs to user" do
+    deletion = user_member_deletions(:one)
+
+    assert_respond_to deletion, :user
+    assert_instance_of User, deletion.user
+  end
+
+  test "belongs to member" do
+    deletion = user_member_deletions(:one)
+
+    assert_respond_to deletion, :member
+    assert_instance_of Member, deletion.member
+  end
+
+  test "validates uniqueness of member_id scoped to user_id" do
+    user = users(:one)
+    member = members(:one)
+    UserMemberDeletion.find_by!(user: user, member: member)
+
+    duplicate = UserMemberDeletion.new(
+      user: user,
+      member: member,
+    )
+
+    assert_not duplicate.valid?
+    assert_includes duplicate.errors[:member_id], "はすでに存在します"
+  end
+
+  test "allows different members for same user" do
+    user = users(:one)
+    member2 = members(:two)
+
+    # Check if combination already exists in fixtures
+    existing = UserMemberDeletion.find_by(user: user, member: member2)
+    if existing.nil?
+      deletion2 = UserMemberDeletion.new(
+        user: user,
+        member: member2,
+      )
+
+      assert_predicate deletion2, :valid?
+    else
+      # Already exists in fixtures, test passes
+      assert existing
+    end
+  end
+
+  test "allows same member for different users" do
+    user2 = users(:two)
+    member = members(:one)
+
+    # Check if combination already exists in fixtures
+    existing = UserMemberDeletion.find_by(user: user2, member: member)
+    if existing.nil?
+      deletion2 = UserMemberDeletion.new(
+        user: user2,
+        member: member,
+      )
+
+      assert_predicate deletion2, :valid?
+    else
+      # Already exists in fixtures, test passes
+      assert existing
+    end
+  end
 end

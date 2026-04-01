@@ -72,7 +72,6 @@ class UserPasskeyTest < ActiveSupport::TestCase
     assert_equal status.id, @passkey.status_id
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should require webauthn_id and public_key" do
     @passkey.webauthn_id = nil
 
@@ -136,7 +135,7 @@ class UserPasskeyTest < ActiveSupport::TestCase
     SQL
 
     assert_raises(ActiveRecord::RecordNotUnique) do
-      connection.insert(insert_sql) # rubocop:disable Rails/SkipsModelValidations
+      connection.insert(insert_sql)
     end
   end
 

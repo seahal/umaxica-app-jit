@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_preference_cookies
-# Database name: preference
+# Database name: commerce
 #
 #  id              :bigint           not null, primary key
 #  consent_version :uuid

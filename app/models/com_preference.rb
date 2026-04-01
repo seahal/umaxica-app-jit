@@ -2,13 +2,14 @@
 # == Schema Information
 #
 # Table name: com_preferences
-# Database name: preference
+# Database name: commerce
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
 #  dbsc_challenge           :text
 #  dbsc_challenge_issued_at :datetime
 #  dbsc_public_key          :jsonb
+#  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
 #  revoked_at               :datetime
@@ -30,6 +31,7 @@
 #  index_com_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
 #  index_com_preferences_on_dbsc_status_id     (dbsc_status_id)
 #  index_com_preferences_on_device_id          (device_id)
+#  index_com_preferences_on_device_id_digest   (device_id_digest)
 #  index_com_preferences_on_jti                (jti) UNIQUE
 #  index_com_preferences_on_public_id          (public_id) UNIQUE
 #  index_com_preferences_on_replaced_by_id     (replaced_by_id)
@@ -48,12 +50,15 @@
 
 # frozen_string_literal: true
 
-class ComPreference < PreferenceRecord
+class ComPreference < CommerceRecord
   # TODO: Add `deletable_at` to ComPreference for lifecycle-based cleanup.
   include ::PublicId
   include ::ConsumeOnceToken
   include ::Preference::Resettable
   include ::DbscBindable
+
+  DBSC_BINDING_METHOD_CLASS = ComPreferenceBindingMethod
+  DBSC_STATUS_CLASS = ComPreferenceDbscStatus
 
   attribute :status_id, default: ComPreferenceStatus::NOTHING
 

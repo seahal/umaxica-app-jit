@@ -24,8 +24,10 @@ module Sign
           @user_telephone = UserTelephone.find_by(public_id: params["id"])
           return if valid_telephone_session?
 
-          redirect_to new_sign_app_up_telephone_path,
-                      notice: t("sign.app.registration.telephone.edit.session_expired")
+          redirect_to(
+            new_sign_app_up_telephone_path,
+            notice: t("sign.app.registration.telephone.edit.session_expired"),
+          )
         end
 
         # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
@@ -102,8 +104,10 @@ module Sign
                 subject: "PassCode => #{num}",
               )
 
-              redirect_to edit_sign_app_up_telephone_path(@user_telephone),
-                          notice: t("sign.app.registration.telephone.create.verification_code_sent")
+              redirect_to(
+                edit_sign_app_up_telephone_path(@user_telephone),
+                notice: t("sign.app.registration.telephone.create.verification_code_sent"),
+              )
             end
           rescue ActiveRecord::RecordInvalid => e
             @user_telephone = e.record
@@ -142,7 +146,7 @@ module Sign
             end
           if verification_result == :locked
             flash[:alert] = t("sign.app.registration.telephone.update.attempts_exceeded")
-            redirect_to new_sign_app_up_telephone_path(ri: params[:ri])
+            redirect_to(new_sign_app_up_telephone_path(ri: params[:ri]))
             return
           end
           return render_invalid_telephone_code unless verification_result
@@ -150,8 +154,10 @@ module Sign
           if existing_flow
             clear_otp(@user_telephone)
             session[:user_telephone_registration] = nil
-            redirect_to new_sign_app_in_path,
-                        notice: t("sign.app.registration.telephone.update.sign_in_required")
+            redirect_to(
+              new_sign_app_in_path,
+              notice: t("sign.app.registration.telephone.update.sign_in_required"),
+            )
             return
           end
 
@@ -169,7 +175,7 @@ module Sign
 
           if otp_resend_rate_limited?
             flash[:alert] = t("sign.app.registration.telephone.resend.rate_limited")
-            return redirect_to resend_redirect_path
+            return redirect_to(resend_redirect_path)
           end
 
           if @user_telephone
@@ -184,8 +190,10 @@ module Sign
           end
 
           session[:user_telephone_otp_last_sent_at] = Time.current.to_i
-          redirect_to resend_redirect_path,
-                      notice: t("sign.app.registration.telephone.resend.sent")
+          redirect_to(
+            resend_redirect_path,
+            notice: t("sign.app.registration.telephone.resend.sent"),
+          )
         end
 
         private
@@ -206,8 +214,10 @@ module Sign
         end
 
         def redirect_telephone_session_expired
-          redirect_to new_sign_app_up_telephone_path,
-                      notice: t("sign.app.registration.telephone.edit.session_expired")
+          redirect_to(
+            new_sign_app_up_telephone_path,
+            notice: t("sign.app.registration.telephone.edit.session_expired"),
+          )
         end
 
         def render_telephone_session_expired
@@ -279,8 +289,10 @@ module Sign
         end
 
         def finalize_telephone_registration!
-          redirect_to sign_app_up_telephone_passkey_registration_path(@user_telephone, ri: params[:ri]),
-                      notice: t("sign.app.registration.telephone.update.passkey_required")
+          redirect_to(
+            sign_app_up_telephone_passkey_registration_path(@user_telephone, ri: params[:ri]),
+            notice: t("sign.app.registration.telephone.update.passkey_required"),
+          )
         end
 
         def sms_login_ready?
@@ -311,9 +323,15 @@ module Sign
 
           log_in(user, record_login_audit: true)
           session[:user_telephone_registration] = nil
-          issue_checkpoint!
-          redirect_to sign_app_in_checkpoint_path(rd: params[:rd], ri: params[:ri]),
-                      notice: t("sign.app.registration.telephone.update.success")
+          create_welcome_bulletin!(current_resource)
+          if issue_bulletin!
+            redirect_to(
+              sign_app_in_bulletin_path(rd: params[:rd], ri: params[:ri]),
+              notice: t("sign.app.registration.telephone.update.success"),
+            )
+          else
+            safe_redirect_to_rd_or_default!(params[:rd], default_path: sign_app_configuration_path(ri: params[:ri]))
+          end
         end
 
         def otp_resend_rate_limited?
@@ -392,8 +410,10 @@ module Sign
             subject: "PassCode => #{otp_code}",
           )
 
-          redirect_to edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri]),
-                      notice: t("sign.app.registration.telephone.create.verification_code_sent")
+          redirect_to(
+            edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri]),
+            notice: t("sign.app.registration.telephone.create.verification_code_sent"),
+          )
         end
 
         def telephone_uniqueness_only_error?(user_telephone)

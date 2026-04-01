@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_timeline_category_masters
-# Database name: news
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -18,11 +18,13 @@
 
 # frozen_string_literal: true
 
-class AppTimelineCategoryMaster < NewsRecord
+class AppTimelineCategoryMaster < PublicationRecord
   include Treeable
 
   # Fixed IDs - do not modify these values
-  NOTHING = 1
+  NOTHING = 0
+  LEGACY_NOTHING = 1
+
   belongs_to :parent,
              class_name: "AppTimelineCategoryMaster",
              inverse_of: :children,

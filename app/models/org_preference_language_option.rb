@@ -2,14 +2,14 @@
 # == Schema Information
 #
 # Table name: org_preference_language_options
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class OrgPreferenceLanguageOption < PreferenceRecord
+class OrgPreferenceLanguageOption < OperatorRecord
   # Fixed IDs - do not modify these values
   JA = 1
   EN = 2

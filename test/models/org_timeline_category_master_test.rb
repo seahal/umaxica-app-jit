@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_timeline_category_masters
-# Database name: news
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -21,7 +21,11 @@
 require "test_helper"
 
 class OrgTimelineCategoryMasterTest < ActiveSupport::TestCase
-  include TimelineIntegerTreeTests
+  include TreeableSharedTests
+
+  test "treeable class is defined" do
+    assert_equal OrgTimelineCategoryMaster, treeable_class
+  end
 
   private
 

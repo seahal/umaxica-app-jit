@@ -1,11 +1,13 @@
 # == Schema Information
 #
 # Table name: app_preference_statuses
-# Database name: preference
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
 nothing:
-  id: 2
+  id: 0
 deleted:
   id: 1
+legacy_nothing:
+  id: 2

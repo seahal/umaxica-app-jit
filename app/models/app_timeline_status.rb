@@ -4,12 +4,12 @@
 # == Schema Information
 #
 # Table name: app_timeline_statuses
-# Database name: news
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
 
-class AppTimelineStatus < NewsRecord
+class AppTimelineStatus < PublicationRecord
   # Fixed IDs - do not modify these values
   NOTHING = 1
   ACTIVE = 2

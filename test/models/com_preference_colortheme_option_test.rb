@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_preference_colortheme_options
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
@@ -38,5 +38,17 @@ class ComPreferenceColorthemeOptionTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordNotDestroyed) do
       option.destroy!
     end
+  end
+
+  test "ensure_defaults! restores missing fixed ids" do
+    com_preference_colorthemes(:one).destroy!
+    com_preference_colortheme_options(:system).destroy!
+
+    assert_not ComPreferenceColorthemeOption.exists?(ComPreferenceColorthemeOption::SYSTEM)
+
+    ComPreferenceColorthemeOption.ensure_defaults!
+
+    assert_equal ComPreferenceColorthemeOption::DEFAULTS,
+                 ComPreferenceColorthemeOption.order(:id).pluck(:id)
   end
 end

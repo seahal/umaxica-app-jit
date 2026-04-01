@@ -31,7 +31,7 @@ class Sign::CommonHelperTest < ActionView::TestCase
   test "localized_session_timestamp falls back to strftime when short format is unavailable" do
     test_time = Time.zone.parse("2024-01-01 12:34:00 UTC")
 
-    I18n.stub :t, nil do
+    I18n.stub(:t, nil) do
       assert_equal "2024/01/01 12:34", localized_session_timestamp(test_time)
     end
   end

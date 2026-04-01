@@ -7,4 +7,16 @@
 #  name :string           default(""), not null
 #
 NOTHING:
+  id: 0
+
+legacy_nothing:
   id: 1
+
+active:
+  id: 2
+
+inactive:
+  id: 3
+
+deleted:
+  id: 4

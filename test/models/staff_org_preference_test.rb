@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: staff_org_preferences
-# Database name: preference
+# Database name: operator
 #
 #  id                :bigint           not null, primary key
 #  created_at        :datetime         not null
@@ -20,11 +20,12 @@
 # Foreign Keys
 #
 #  fk_rails_...  (org_preference_id => org_preferences.id) ON DELETE => cascade
+#  fk_rails_...  (staff_id => staffs.id)
 #
 require "test_helper"
 
 class StaffOrgPreferenceTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "StaffOrgPreference", StaffOrgPreference.name
+  end
 end

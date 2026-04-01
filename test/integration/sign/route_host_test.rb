@@ -7,11 +7,25 @@ class SignRouteHostTest < ActionDispatch::IntegrationTest
   test "sign app routes match SIGN_SERVICE_URL" do
     with_env("SIGN_SERVICE_URL" => "sign.app.example.test") do
       Rails.application.reload_routes!
-      host! "sign.app.example.test"
+      host!("sign.app.example.test")
 
-      get "/"
+      get("http://sign.app.example.test/")
 
       assert_not_equal 404, response.status
+    end
+  ensure
+    Rails.application.reload_routes!
+  end
+
+  test "sign com named root route points at sign/com/roots#index" do
+    with_env("SIGN_CORPORATE_URL" => "sign.com.example.test") do
+      Rails.application.reload_routes!
+
+      route = Rails.application.routes.named_routes[:sign_com_root]
+
+      assert_equal "/", route.path.spec.to_s
+      assert_equal "sign/com/roots", route.defaults[:controller]
+      assert_equal "index", route.defaults[:action]
     end
   ensure
     Rails.application.reload_routes!
@@ -20,9 +34,9 @@ class SignRouteHostTest < ActionDispatch::IntegrationTest
   test "sign org routes match SIGN_STAFF_URL" do
     with_env("SIGN_STAFF_URL" => "sign.org.example.test") do
       Rails.application.reload_routes!
-      host! "sign.org.example.test"
+      host!("sign.org.example.test")
 
-      get "/"
+      get("http://sign.org.example.test/")
 
       assert_not_equal 404, response.status
     end

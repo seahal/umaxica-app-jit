@@ -23,7 +23,7 @@ class EnforceRestrictContactStatusForeignKeys < ActiveRecord::Migration[8.2]
     return unless table_exists?(from_table) && table_exists?(to_table)
     return unless column_exists?(from_table, :status_id)
 
-    remove_foreign_key from_table, column: :status_id if foreign_key_exists?(from_table, column: :status_id)
-    add_foreign_key from_table, to_table, column: :status_id, on_delete: on_delete
+    remove_foreign_key(from_table, column: :status_id) if foreign_key_exists?(from_table, column: :status_id)
+    add_foreign_key(from_table, to_table, column: :status_id, on_delete: on_delete)
   end
 end

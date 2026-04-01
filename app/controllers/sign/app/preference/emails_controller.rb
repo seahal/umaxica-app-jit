@@ -5,55 +5,29 @@ module Sign
   module App
     module Preference
       class EmailsController < ApplicationController
-        auth_required! only: %i(show update)
-        before_action :authenticate_user!, only: %i(show update)
-        before_action :set_email_context, only: %i(show edit update)
-
-        def index
-          @current_email = stored_email
-        end
-
-        def show
-        end
-
-        def edit
-        end
-
-        def create
-          email = email_param
-          if email.blank?
-            @current_email = stored_email
-            return render :index, status: :unprocessable_content
-          end
-
-          store_email(email)
-          redirect_to sign_app_preference_email_path(id: "primary")
-        end
-
-        def update
-          email = email_param
-          return render :edit, status: :unprocessable_content if email.blank?
-
-          store_email(email)
-          redirect_to sign_app_preference_email_path(id: params[:id])
-        end
+        public_strict!
+        include ::Preference::EmailActions
 
         private
 
-        def set_email_context
-          @current_email = stored_email
+        def audience_name
+          "app"
         end
 
-        def stored_email
-          session[:sign_preference_email].to_s
+        def preference_mailer_class
+          Email::App::PreferenceMailer
         end
 
-        def store_email(email)
-          session[:sign_preference_email] = email
+        def find_email_record_by_address(email)
+          find_email_with_timing_protection(email)
         end
 
-        def email_param
-          params.fetch(:preference_email, {}).permit(:email)[:email].to_s.strip
+        def preference_email_new_path
+          new_sign_app_preference_email_path
+        end
+
+        def preference_email_edit_url(token)
+          edit_sign_app_preference_email_url(token: token)
         end
       end
     end

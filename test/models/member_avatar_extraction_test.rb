@@ -25,4 +25,7 @@
 require "test_helper"
 
 class MemberAvatarExtractionTest < ActiveSupport::TestCase
+  test "class is defined" do
+    assert_equal "MemberAvatarExtraction", MemberAvatarExtraction.name
+  end
 end

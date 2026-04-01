@@ -90,6 +90,7 @@ class Staff < OperatorRecord
            class_name: "Operator",
            inverse_of: :staff,
            dependent: :destroy
+  has_many :staff_bulletins, dependent: :destroy, inverse_of: :staff
   has_many :staff_org_preferences, dependent: :delete_all
   has_one :staff_preference, dependent: :destroy, inverse_of: :staff
 

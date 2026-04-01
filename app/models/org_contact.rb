@@ -14,7 +14,7 @@
 #  token_viewed     :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :bigint           not null
+#  category_id      :bigint           default(0), not null
 #  public_id        :string(21)       not null
 #  status_id        :bigint           not null
 #
@@ -59,8 +59,8 @@ class OrgContact < GuestRecord
 
   after_initialize do
     if new_record?
-      self.category_id ||= OrgContactCategory::ORGANIZATION_INQUIRY
-      self.status_id ||= OrgContactStatus::NOTHING
+      self.category_id = OrgContactCategory::ORGANIZATION_INQUIRY if category_id.blank? || category_id.to_i.zero?
+      self.status_id = OrgContactStatus::NOTHING if status_id.blank? || status_id.to_i.zero?
     end
   end
 
@@ -98,19 +98,28 @@ class OrgContact < GuestRecord
   end
 
   def verify_email!
-    transition_status(status: OrgContactStatus::CHECKED_EMAIL_ADDRESS, error_message: "Cannot verify email at this time") do
+    transition_status(
+      status: OrgContactStatus::CHECKED_EMAIL_ADDRESS,
+      error_message: "Cannot verify email at this time",
+    ) do
       can_verify_email?
     end
   end
 
   def verify_phone!
-    transition_status(status: OrgContactStatus::CHECKED_TELEPHONE_NUMBER, error_message: "Cannot verify phone at this time") do
+    transition_status(
+      status: OrgContactStatus::CHECKED_TELEPHONE_NUMBER,
+      error_message: "Cannot verify phone at this time",
+    ) do
       can_verify_phone?
     end
   end
 
   def complete!
-    transition_status(status: OrgContactStatus::COMPLETED_CONTACT_ACTION, error_message: "Cannot complete contact at this time") do
+    transition_status(
+      status: OrgContactStatus::COMPLETED_CONTACT_ACTION,
+      error_message: "Cannot complete contact at this time",
+    ) do
       can_complete?
     end
   end

@@ -3,39 +3,50 @@
 
 require "test_helper"
 
-class Sign::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTest
+class Sign::App::Preference::EmailControllerTest < ActionDispatch::IntegrationTest
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    CloudflareTurnstile.test_mode = true
+    CloudflareTurnstile.test_validation_response = { "success" => true }
   end
 
-  test "should get index" do
-    get sign_app_preference_email_index_url(ri: "jp")
+  teardown do
+    CloudflareTurnstile.test_mode = nil
+    CloudflareTurnstile.test_validation_response = nil
+  end
+
+  test "new renders email input form" do
+    get new_sign_app_preference_email_url(ri: "jp")
 
     assert_response :success
   end
 
-  test "should get show" do
-    get sign_app_preference_email_url(id: "primary", ri: "jp")
+  test "create with valid email redirects with success notice" do
+    post sign_app_preference_email_url(ri: "jp"),
+         params: { preference_email: { email: "test@example.com" } }
 
-    assert_response :redirect
+    assert_redirected_to new_sign_app_preference_email_url(ri: "jp")
+    assert_equal I18n.t("base.app.preference.emails.new.success"), flash[:notice]
   end
 
-  test "should create email" do
-    post sign_app_preference_email_index_url(ri: "jp"), params: { preference_email: { email: "new@example.com" } }
+  test "create with blank email re-renders new" do
+    post sign_app_preference_email_url(ri: "jp"),
+         params: { preference_email: { email: "" } }
 
-    assert_redirected_to sign_app_preference_email_url(id: "primary", ri: "jp")
+    assert_response :unprocessable_content
   end
 
-  test "should get edit" do
-    get edit_sign_app_preference_email_url(id: "primary", ri: "jp")
+  test "edit with invalid token redirects to new" do
+    get edit_sign_app_preference_email_url(ri: "jp", token: "invalid")
 
-    assert_response :success
+    assert_redirected_to new_sign_app_preference_email_url(ri: "jp")
+    assert_equal I18n.t("base.shared.preference_emails.token_invalid"), flash[:alert]
   end
 
-  test "should update email" do
-    patch sign_app_preference_email_url(id: "primary", ri: "jp"),
-          params: { preference_email: { email: "updated@example.com" } }
+  test "update with invalid token redirects to new" do
+    patch sign_app_preference_email_url(ri: "jp"),
+          params: { preference_email: { token: "invalid", promotional: "1" } }
 
-    assert_response :redirect
+    assert_redirected_to new_sign_app_preference_email_url(ri: "jp")
   end
 end

@@ -1,15 +1,15 @@
 # == Schema Information
 #
 # Table name: app_preference_dbsc_statuses
-# Database name: preference
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
 nothing:
   id: 0
-pending:
-  id: 1
 active:
+  id: 1
+pending:
   id: 2
 failed:
   id: 3

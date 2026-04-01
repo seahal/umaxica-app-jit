@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require Rails.root.join("app/subscribers/jwt_anomaly_subscriber")
 
 class JwtAnomalySubscriberCoverageTest < ActiveSupport::TestCase
   fixtures :jwt_occurrences
@@ -50,8 +51,8 @@ class JwtAnomalySubscriberCoverageTest < ActiveSupport::TestCase
     end
 
     logged_message = nil
-    Rails.logger.stub :error, ->(message) { logged_message = message } do
-      JwtAnomalyEvent.stub :create!, ->(**) { raise StandardError, "explode" } do
+    Rails.logger.stub(:error, ->(message) { logged_message = message }) do
+      JwtAnomalyEvent.stub(:create!, ->(**) { raise StandardError, "explode" }) do
         JwtAnomalySubscriber.new.emit(
           MockEvent.new(
             name: "jwt.anomaly.detected",
@@ -62,5 +63,26 @@ class JwtAnomalySubscriberCoverageTest < ActiveSupport::TestCase
     end
 
     assert_includes logged_message, "JwtAnomalySubscriber failed"
+  end
+
+  test "build_metadata includes extra fields" do
+    subscriber = JwtAnomalySubscriber.new
+    payload = {
+      code: "TEST_CODE",
+      request_host: "host",
+      kid: "kid",
+      alg: "alg",
+      typ: "typ",
+      iss: "iss",
+      jti: "jti",
+      error_class: "Error",
+      error_message: "msg",
+      extra_field1: "extra1",
+      extra_field2: "extra2",
+    }
+
+    metadata = subscriber.send(:build_metadata, payload)
+
+    assert_equal({ extra_field1: "extra1", extra_field2: "extra2" }, metadata)
   end
 end

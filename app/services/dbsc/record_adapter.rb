@@ -8,38 +8,26 @@ module Dbsc
     module_function
 
     def binding_method_attribute(record)
-      return :binding_method_id if record.has_attribute?(:binding_method_id)
-      return :user_token_binding_method_id if record.has_attribute?(:user_token_binding_method_id)
-      return :staff_token_binding_method_id if record.has_attribute?(:staff_token_binding_method_id)
-
+      record.class.dbsc_binding_method_attribute_name
+    rescue NoMethodError
       raise ArgumentError, "Unsupported DBSC binding method attribute for #{record.class.name}"
     end
 
     def dbsc_status_attribute(record)
-      return :dbsc_status_id if record.has_attribute?(:dbsc_status_id)
-      return :user_token_dbsc_status_id if record.has_attribute?(:user_token_dbsc_status_id)
-      return :staff_token_dbsc_status_id if record.has_attribute?(:staff_token_dbsc_status_id)
-
+      record.class.dbsc_status_attribute_name
+    rescue NoMethodError
       raise ArgumentError, "Unsupported DBSC status attribute for #{record.class.name}"
     end
 
     def binding_method_class(record)
-      return AppPreferenceBindingMethod if record.is_a?(AppPreference)
-      return OrgPreferenceBindingMethod if record.is_a?(OrgPreference)
-      return ComPreferenceBindingMethod if record.is_a?(ComPreference)
-      return UserTokenBindingMethod if record.is_a?(UserToken)
-      return StaffTokenBindingMethod if record.is_a?(StaffToken)
-
+      record.class.dbsc_binding_method_class
+    rescue NoMethodError
       raise ArgumentError, "Unsupported DBSC binding method class for #{record.class.name}"
     end
 
     def dbsc_status_class(record)
-      return AppPreferenceDbscStatus if record.is_a?(AppPreference)
-      return OrgPreferenceDbscStatus if record.is_a?(OrgPreference)
-      return ComPreferenceDbscStatus if record.is_a?(ComPreference)
-      return UserTokenDbscStatus if record.is_a?(UserToken)
-      return StaffTokenDbscStatus if record.is_a?(StaffToken)
-
+      record.class.dbsc_status_class
+    rescue NoMethodError
       raise ArgumentError, "Unsupported DBSC status class for #{record.class.name}"
     end
 

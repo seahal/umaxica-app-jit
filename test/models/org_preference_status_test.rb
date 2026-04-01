@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: org_preference_statuses
-# Database name: preference
+# Database name: operator
 #
 #  id :bigint           not null, primary key
 #
@@ -37,6 +37,14 @@ class OrgPreferenceStatusTest < ActiveSupport::TestCase
 
   test "ensure_defaults! does nothing when defaults exist" do
     assert_no_difference "OrgPreferenceStatus.count" do
+      OrgPreferenceStatus.ensure_defaults!
+    end
+  end
+
+  test "ensure_defaults! creates missing default records" do
+    OrgPreferenceStatus.where(id: OrgPreferenceStatus::DEFAULTS).destroy_all
+
+    assert_difference("OrgPreferenceStatus.count") do
       OrgPreferenceStatus.ensure_defaults!
     end
   end

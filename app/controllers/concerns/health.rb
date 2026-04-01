@@ -12,11 +12,11 @@ module Health
     DocumentRecord,
     GuestRecord,
     MessageRecord,
-    NewsRecord,
+    PublicationRecord,
     NotificationRecord,
     OccurrenceRecord,
     OperatorRecord,
-    PreferenceRecord,
+    CommerceRecord,
     PrincipalRecord,
     TokenRecord,
   ].freeze
@@ -25,8 +25,8 @@ module Health
 
   included do
     # Skip query canonicalization for health checks if the callback exists
-    skip_before_action :canonicalize_query_params, raise: false
-    public_strict! if respond_to?(:public_strict!)
+    skip_before_action :canonicalize_query_params, raise: false # FIXME: i want to remove this line
+    public_strict! if respond_to?(:public_strict!) # TODO: what is this?
   end
 
   private
@@ -37,9 +37,9 @@ module Health
     errors = check_dependencies
 
     if errors.empty?
-      [200, "OK"]
+      [200, "OK", nil, Rails.app.revision.to_s]
     else
-      [503, "UNHEALTHY", errors]
+      [503, "UNHEALTHY", errors, Rails.app.revision.to_s]
     end
   rescue StandardError => e
     # Debug print for tests
@@ -71,11 +71,14 @@ module Health
         klass.connected_to(role: role) do
           klass.with_connection { |conn| conn.execute("SELECT 1") }
         rescue StandardError => e
-          errors << "Database #{klass.name}(#{role}) failed: #{e.message}"
+          Rails.event.record(
+            "health_check.database_failed", database: klass.name, role: role.to_s,
+                                            error_class: e.class.name, error_message: e.message,
+          )
+          errors << "Database #{klass.name}(#{role}) unavailable"
         end
       end
     end
-
     errors
   ensure
     Prosopite.resume if defined?(Prosopite)
@@ -87,25 +90,26 @@ module Health
       begin
         REDIS_CLIENT.ping
       rescue StandardError => e
-        errors << "Redis connection failed: #{e.message}"
+        Rails.event.record("health_check.redis_failed", error_class: e.class.name, error_message: e.message)
+        errors << "Redis unavailable"
       end
     end
     errors
   end
 
-  def show_html
-    @status, @body, @errors = get_status
+  def show_plain_text
+    @status, @body, @errors, @revision = get_status
     timestamp = Time.now.utc.iso8601
     if @errors.present?
-      render html: "#{@body}: #{@errors.join(", ")} (#{timestamp})", status: @status
+      render plain: "#{@body}: #{@errors.join(", ")} (#{timestamp}) #{@revision}", status: @status
     else
-      render html: "#{@body} (#{timestamp})", status: @status
+      render plain: "#{@body} (#{timestamp})  #{@revision}", status: @status
     end
   end
 
   def show_json
     @status, @body, @errors = get_status
-    response_body = { status: @body, timestamp: Time.now.utc.iso8601 }
+    response_body = { status: @body, timestamp: Time.now.utc.iso8601, revision: @revision }
     response_body[:errors] = @errors if @errors.present?
     render json: response_body, status: @status
   end

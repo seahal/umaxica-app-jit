@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_timeline_revisions
-# Database name: news
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text
@@ -36,7 +36,7 @@
 require "test_helper"
 
 class ComTimelineRevisionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "ComTimelineRevision", ComTimelineRevision.name
+  end
 end

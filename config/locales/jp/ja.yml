@@ -251,6 +251,7 @@ ja:
           destroy:
             success: メールアドレスを削除しました。
             last_method: 最後のログイン手段のため削除できません。
+            protected: このメールアドレスは保護されているため削除できません。
         telephone:
           edit:
             title: 電話番号の削除
@@ -889,7 +890,11 @@ ja:
           success: お問い合わせを受け付けました
       preferences:
         footer:
+          home: ホーム
           preference: 設定
+          newsroom: ニュースルーム
+          document: ドキュメント
+          help_center: ヘルプセンター
     com:
       contacts:
         new:
@@ -917,7 +922,11 @@ ja:
           success: お問い合わせを受け付けました
       preferences:
         footer:
+          home: ホーム
           preference: 設定
+          newsroom: ニュースルーム
+          document: ドキュメント
+          help_center: ヘルプセンター
       contact:
         emails:
           new:
@@ -1014,7 +1023,11 @@ ja:
               system: OS のテーマ変更に連動して切り替わります。
       preferences:
         footer:
+          home: ホーム
           preference: 設定
+          newsroom: ニュースルーム
+          document: ドキュメント
+          help_center: ヘルプセンター
     contact:
       errors:
         id_required: お問い合わせIDは必須です
@@ -1389,6 +1402,7 @@ ja:
         language_settings: 言語設定
         timezone_settings: タイムゾーン設定
         theme_settings: テーマ設定
+        email_settings: メール設定
         reset_settings: 設定のリセット
         update_settings: 設定を更新
         submitting: 送信中...
@@ -1607,6 +1621,7 @@ ja:
         token_guidance: 届いたメールのリンクで2時間以内に設定を変更してください。
         back_to_settings: 設定に戻る
         footer:
+          home: ホーム
           preference: 設定
       preference:
         emails:
@@ -1639,6 +1654,7 @@ ja:
         back_to_settings: 設定に戻る
         footer:
           preference: 設定
+          cookie: クッキー
       preference:
         emails:
           new:
@@ -1820,14 +1836,17 @@ ja:
     com:
       preferences:
         footer:
+          home: ホーム
           preference: 設定
     app:
       preferences:
         footer:
+          home: ホーム
           preference: 設定
     org:
       preferences:
         footer:
+          home: ホーム
           preference: 設定
   news:
     posts:
@@ -1847,12 +1866,34 @@ ja:
     com:
       preferences:
         footer:
+          home: ホーム
           preference: 設定
     app:
       preferences:
         footer:
+          home: ホーム
           preference: 設定
     org:
       preferences:
         footer:
+          home: ホーム
           preference: 設定
+
+  layouts:
+    shared:
+      footer_theme_controls:
+        title: テーマ設定
+        description: 表示テーマを選択してください（システム設定に従うこともできます）
+        options:
+          system: システム設定に従う
+          light: ライト
+          dark: ダーク
+
+      footer_cookie_controls:
+        close_button: 閉じる
+        title: Cookieの利用について
+        description_html: 当サイトでは、必須Cookieおよび分析・マーケティング目的のCookieを使用します。詳細は%{privacy_policy}をご確認ください。
+        privacy_policy: プライバシーポリシー
+        reject_all: すべて拒否
+        open_settings: 設定する
+        accept_all: すべて許可

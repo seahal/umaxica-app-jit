@@ -36,7 +36,7 @@ module Sign
           render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
         rescue StandardError => e
           Rails.logger.error("WebAuthn options generation failed: #{e.message}")
-          render json: { error: e.message }, status: :unprocessable_content
+          render json: { error: I18n.t("errors.webauthn.options_failed") }, status: :unprocessable_content
         end
 
         def create
@@ -68,12 +68,13 @@ module Sign
 
             record_signup_audit!(@user)
             log_in(@user, record_login_audit: false)
-            issue_checkpoint!
+            create_welcome_bulletin!(@user)
+            has_bulletin = issue_bulletin!
             session[:user_telephone_registration] = nil
 
             render json: {
               status: "ok",
-              redirect_url: success_redirect_url,
+              redirect_url: has_bulletin ? success_redirect_url : sign_app_configuration_path(ri: params[:ri]),
             }, status: :created
           end
         rescue Sign::Webauthn::ChallengeNotFoundError,
@@ -105,8 +106,10 @@ module Sign
                 error: I18n.t("sign.app.registration.telephone.edit.session_expired"),
               }, status: :unprocessable_content
             else
-              redirect_to new_sign_app_up_telephone_path(ri: params[:ri]),
-                          notice: I18n.t("sign.app.registration.telephone.edit.session_expired")
+              redirect_to(
+                new_sign_app_up_telephone_path(ri: params[:ri]),
+                notice: I18n.t("sign.app.registration.telephone.edit.session_expired"),
+              )
             end
             return
           end
@@ -117,7 +120,7 @@ module Sign
                 error: I18n.t("sign.app.registration.telephone.update.passkey_required"),
               }, status: :unprocessable_content
             else
-              redirect_to edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri])
+              redirect_to(edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri]))
             end
             return
           end
@@ -155,7 +158,7 @@ module Sign
 
         def success_redirect_url
           rd_param = params[:rd].presence || generate_redirect_url(params[:rt])
-          sign_app_in_checkpoint_path(rd: rd_param, ri: params[:ri])
+          sign_app_in_bulletin_path(rd: rd_param, ri: params[:ri])
         end
       end
     end

@@ -41,14 +41,12 @@ class PrincipalRecordTest < ActiveSupport::TestCase
     assert_not_nil writing_config
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "should inherit all ActiveRecord functionality" do
     assert_respond_to PrincipalRecord, :table_name
     assert_respond_to PrincipalRecord, :primary_key
     assert_respond_to PrincipalRecord, :find_by_sql
     assert_respond_to PrincipalRecord, :transaction
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "should be configured for identifier database multi-database setup" do
     # Verify this is part of the multi-database architecture

@@ -22,6 +22,17 @@ require "test_helper"
 require "securerandom"
 
 class AppDocumentTagMasterTest < ActiveSupport::TestCase
+  test "has correct constants" do
+    assert_equal 0, AppDocumentTagMaster::NOTHING
+    assert_equal 1, AppDocumentTagMaster::LEGACY_NOTHING
+  end
+
+  test "can load nothing status from db" do
+    status = AppDocumentTagMaster.find(AppDocumentTagMaster::NOTHING)
+
+    assert_equal 0, status.id
+  end
+
   ROOT_SENTINEL = 0
 
   # NOTE:
@@ -56,11 +67,11 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     # We need a row whose `id` and `parent_id` are the sentinel value to satisfy the
     # self-referential FK on `parent_id`. This sentinel id is intentionally lowercase
     # and would fail `StringPrimaryKey` validations/callbacks, so we insert directly.
-    # rubocop:disable Rails/SkipsModelValidations
+
     AppDocumentTagMaster.insert_all!(
       [{ id: ROOT_SENTINEL, parent_id: ROOT_SENTINEL }],
     )
-    # rubocop:enable Rails/SkipsModelValidations
+
   end
 
   def build_tree!

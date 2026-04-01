@@ -15,7 +15,7 @@ ActiveSupport.on_load(:active_record) do
     end
 
     if defined?(StaffActivityLevel)
-      StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NOTHING)
+      StaffActivityLevel.insert_missing_fixed_ids!([StaffActivityLevel::NOTHING])
     end
 
     if defined?(StaffActivityEvent)
@@ -23,21 +23,21 @@ ActiveSupport.on_load(:active_record) do
     end
 
     if defined?(AppPreferenceActivityLevel)
-      AppPreferenceActivityLevel.find_or_create_by!(id: AppPreferenceActivityLevel::INFO)
+      AppPreferenceActivityLevel.ensure_defaults!
     end
     if defined?(AppPreferenceActivityEvent)
       AppPreferenceActivityEvent.ensure_defaults!
     end
 
     if defined?(ComPreferenceActivityLevel)
-      ComPreferenceActivityLevel.find_or_create_by!(id: ComPreferenceActivityLevel::INFO)
+      ComPreferenceActivityLevel.ensure_defaults!
     end
     if defined?(ComPreferenceActivityEvent)
       ComPreferenceActivityEvent.ensure_defaults!
     end
 
     if defined?(OrgPreferenceActivityLevel)
-      OrgPreferenceActivityLevel.find_or_create_by!(id: OrgPreferenceActivityLevel::INFO)
+      OrgPreferenceActivityLevel.ensure_defaults!
     end
     if defined?(OrgPreferenceActivityEvent)
       OrgPreferenceActivityEvent.ensure_defaults!

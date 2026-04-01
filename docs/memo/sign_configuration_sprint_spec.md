@@ -33,8 +33,8 @@ This document fixes the remaining ambiguous points and is the source of truth fo
 
 ### Common guards (applies to all unlink/disable actions)
 
-- **Recent Reauth required**: use existing step-up gate (`Auth::StepUp::STEP_UP_TTL`, currently 10
-  minutes).
+- **Recent Reauth required**: use the existing step-up gate (`Verification::Base::STEP_UP_TTL`,
+  currently 15 minutes).
 - **No lockout**: after removal, the user must still have **at least one** remaining
   authentication/recovery method.
 - “Last method” removal is rejected with a user-facing error.

@@ -26,7 +26,9 @@ class AddStepUpVerifiedActivityEvents < ActiveRecord::Migration[8.2]
     attrs = { id: event_id }
     attrs[:name] = code if column_exists?(table_name, :name)
     attrs[:label] = "Step-up verified" if column_exists?(table_name, :label)
-    attrs[:description] = "Re-authentication completed and granted for a token-scoped step-up window" if column_exists?(table_name, :description)
+    attrs[:description] = "Re-authentication completed and granted for a token-scoped step-up window" if column_exists?(
+      table_name, :description,
+    )
 
     quoted_table = quote_table_name(table_name)
     columns = attrs.keys.map { |key| quote_column_name(key) }
@@ -34,7 +36,7 @@ class AddStepUpVerifiedActivityEvents < ActiveRecord::Migration[8.2]
     updates = attrs.except(:id).map { |key, value| "#{quote_column_name(key)} = #{quote(value)}" }
     conflict_action = updates.any? ? "DO UPDATE SET #{updates.join(", ")}" : "DO NOTHING"
 
-    execute <<~SQL.squish
+    execute(<<~SQL.squish)
       INSERT INTO #{quoted_table} (#{columns.join(", ")})
       VALUES (#{values.join(", ")})
       ON CONFLICT (id) #{conflict_action}

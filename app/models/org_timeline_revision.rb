@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_timeline_revisions
-# Database name: news
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text
@@ -33,7 +33,7 @@
 
 # frozen_string_literal: true
 
-class OrgTimelineRevision < NewsRecord
+class OrgTimelineRevision < PublicationRecord
   include ::Version
   include ::PublicId
 

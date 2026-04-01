@@ -1,13 +1,14 @@
 # == Schema Information
 #
 # Table name: app_preferences
-# Database name: preference
+# Database name: principal
 #
 #  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
 #  dbsc_challenge           :text
 #  dbsc_challenge_issued_at :datetime
 #  dbsc_public_key          :jsonb
+#  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
 #  revoked_at               :datetime
@@ -21,7 +22,7 @@
 #  device_id                :string
 #  public_id                :string           not null
 #  replaced_by_id           :bigint
-#  status_id                :bigint           default(2), not null
+#  status_id                :bigint           default(0), not null
 #
 # Indexes
 #
@@ -29,6 +30,7 @@
 #  index_app_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
 #  index_app_preferences_on_dbsc_status_id     (dbsc_status_id)
 #  index_app_preferences_on_device_id          (device_id)
+#  index_app_preferences_on_device_id_digest   (device_id_digest)
 #  index_app_preferences_on_jti                (jti) UNIQUE
 #  index_app_preferences_on_public_id          (public_id) UNIQUE
 #  index_app_preferences_on_replaced_by_id     (replaced_by_id)

@@ -56,8 +56,8 @@ module SessionLimitGate
 
     unless valid_gate?(gate)
       session.delete(GATE_SESSION_KEY)
-      flash[:alert] = I18n.t("session_limit.gate_expired", default: "操作がタイムアウトしました。もう一度ログインしてください。")
-      redirect_to login_path
+      flash[:alert] = I18n.t("session_limit.gate_expired")
+      redirect_to(login_path)
       return false
     end
 
@@ -108,7 +108,7 @@ module SessionLimitGate
     return false if gate["nonce"].blank?
     return false if gate["issued_at"].blank?
 
-    issued_at = gate["issued_at"].to_i
+    issued_at = Integer(gate["issued_at"].to_s, 10)
     expires_at = issued_at + GATE_TTL_SECONDS
 
     Time.current.to_i < expires_at

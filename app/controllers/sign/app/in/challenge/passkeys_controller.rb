@@ -10,6 +10,7 @@ module Sign
         class PasskeysController < ApplicationController
           include Sign::Webauthn
           include SessionLimitGate
+          include ::CloudflareTurnstile
 
           before_action :reject_logged_in_session
           before_action :ensure_pending_mfa!
@@ -19,9 +20,11 @@ module Sign
             passkeys = active_passkeys_for(@mfa_user)
 
             if passkeys.empty?
-              redirect_to sign_app_in_challenge_path,
-                          alert: I18n.t("errors.webauthn.no_passkeys_available"),
-                          status: :see_other
+              redirect_to(
+                sign_app_in_challenge_path,
+                alert: I18n.t("errors.webauthn.no_passkeys_available"),
+                status: :see_other,
+              )
               return
             end
 
@@ -33,24 +36,44 @@ module Sign
               )
           rescue Sign::Webauthn::OriginValidationError => e
             Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
-            redirect_to sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.origin_invalid"),
-                                                    status: :see_other
+            redirect_to(
+              sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.origin_invalid"),
+                                          status: :see_other,
+            )
           end
 
           def create
+            unless cloudflare_turnstile_stealth_validation["success"]
+              redirect_to(
+                new_sign_app_in_challenge_passkey_path,
+                alert: I18n.t(
+                  "sign.app.in.mfa.turnstile_failed",
+                  default: "検証に失敗しました。もう一度お試しください。",
+                ),
+                status: :see_other,
+              )
+              return
+            end
+
             with_challenge(passkey_params[:challenge_id], purpose: :authentication) do |challenge|
               verify_passkey!(challenge)
             end
           rescue Sign::Webauthn::ChallengeNotFoundError, Sign::Webauthn::ChallengeExpiredError,
                  Sign::Webauthn::ChallengePurposeMismatchError
-            redirect_to sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.challenge_invalid"),
-                                                    status: :see_other
+            redirect_to(
+              sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.challenge_invalid"),
+                                          status: :see_other,
+            )
           rescue WebAuthn::SignCountVerificationError
-            redirect_to sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.sign_count_mismatch"),
-                                                    status: :see_other
+            redirect_to(
+              sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.sign_count_mismatch"),
+                                          status: :see_other,
+            )
           rescue WebAuthn::Error
-            redirect_to sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.verification_failed"),
-                                                    status: :see_other
+            redirect_to(
+              sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.verification_failed"),
+                                          status: :see_other,
+            )
           end
 
           private
@@ -59,9 +82,11 @@ module Sign
             return unless !pending_mfa_valid? || pending_mfa_user.nil?
 
             clear_pending_mfa!
-            redirect_to new_sign_app_in_path,
-                        alert: I18n.t("sign.app.in.mfa.session_expired"),
-                        status: :see_other
+            redirect_to(
+              new_sign_app_in_path,
+              alert: I18n.t("sign.app.in.mfa.session_expired"),
+              status: :see_other,
+            )
           end
 
           def active_passkeys_for(user)
@@ -79,9 +104,15 @@ module Sign
 
             user = pending_mfa_user
             unless passkey && user && passkey.user_id == user.id
-              redirect_to sign_app_in_challenge_path,
-                          alert: I18n.t("errors.webauthn.credential_not_found"),
-                          status: :see_other
+              Sign::Risk::Emitter.emit(
+                "auth_failed", user_id: user&.id, ip: request.remote_ip,
+                               reason: "mfa_passkey_mismatch",
+              )
+              redirect_to(
+                sign_app_in_challenge_path,
+                alert: I18n.t("errors.webauthn.credential_not_found"),
+                status: :see_other,
+              )
               return
             end
 
@@ -92,8 +123,10 @@ module Sign
 
             complete_mfa_login!(user)
           rescue JSON::ParserError
-            redirect_to sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.verification_failed"),
-                                                    status: :see_other
+            redirect_to(
+              sign_app_in_challenge_path, alert: I18n.t("errors.webauthn.verification_failed"),
+                                          status: :see_other,
+            )
           end
 
           def complete_mfa_login!(user)
@@ -102,15 +135,25 @@ module Sign
             when :session_limit_hard_reject
               render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
             when :restricted
-              redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
+              redirect_to(result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice"))
             when :success
-              issue_checkpoint!
-              redirect_to sign_app_in_checkpoint_path(rd: result[:redirect_path], ri: params[:ri]),
-                          notice: I18n.t("sign.app.in.mfa.passkey.success")
+              if issue_bulletin!
+                redirect_to(
+                  sign_app_in_bulletin_path(rd: result[:redirect_path], ri: params[:ri]),
+                  notice: I18n.t("sign.app.in.mfa.passkey.success"),
+                )
+              else
+                safe_redirect_to_rd_or_default!(
+                  result[:redirect_path],
+                  default_path: sign_app_configuration_path(ri: params[:ri]),
+                )
+              end
             else
-              redirect_to new_sign_app_in_path,
-                          alert: I18n.t("sign.app.in.mfa.verification_failed"),
-                          status: :see_other
+              redirect_to(
+                new_sign_app_in_path,
+                alert: I18n.t("sign.app.in.mfa.verification_failed"),
+                status: :see_other,
+              )
             end
           end
         end

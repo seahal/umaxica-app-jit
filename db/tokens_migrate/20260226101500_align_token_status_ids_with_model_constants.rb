@@ -32,13 +32,13 @@ class AlignTokenStatusIdsWithModelConstants < ActiveRecord::Migration[8.2]
     # Legacy environments used id=2 as NEYO. Move staff_tokens to id=0 first.
     unless row_exists?(:staff_token_statuses, 0)
       if row_exists?(:staff_token_statuses, 2)
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           UPDATE staff_tokens
           SET staff_token_status_id = 0
           WHERE staff_token_status_id = 2
         SQL
 
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           DELETE FROM staff_token_statuses
           WHERE id = 2
         SQL
@@ -63,13 +63,13 @@ class AlignTokenStatusIdsWithModelConstants < ActiveRecord::Migration[8.2]
 
     mapping.each do |id, code|
       if has_code
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id, code)
           VALUES (#{connection.quote(id)}, #{connection.quote(code)})
           ON CONFLICT (id) DO UPDATE SET code = EXCLUDED.code
         SQL
       else
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO #{table_name} (id)
           VALUES (#{connection.quote(id)})
           ON CONFLICT (id) DO NOTHING
@@ -84,6 +84,6 @@ class AlignTokenStatusIdsWithModelConstants < ActiveRecord::Migration[8.2]
     sequence_name = select_value("SELECT pg_get_serial_sequence(#{connection.quote(table_name.to_s)}, 'id')")
     return if sequence_name.blank?
 
-    execute "SELECT setval(#{connection.quote(sequence_name)}, #{Integer(max_id)}, true)"
+    execute("SELECT setval(#{connection.quote(sequence_name)}, #{Integer(max_id)}, true)")
   end
 end

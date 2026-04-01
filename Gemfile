@@ -18,13 +18,15 @@ gem "rack"
 gem "rails", github: "rails/rails", branch: "main"
 # Web server
 gem "puma"
+# Push Notification
+gem "web-push"
+gem "action_push_native"
 # JSON APIs
-# gem "jbuilder" # unused: no .jbuilder templates found
+gem "jbuilder"
 # Use OpenStruct
 gem "ostruct"
 # Database
 gem "pg"
-# gem "neighbor" # unused: no neighbor scopes/modules found
 gem "strong_migrations"
 # Redis
 gem "redis"
@@ -46,25 +48,27 @@ gem "shrine"
 gem "image_processing"
 # AWS SDKs
 gem "aws-sdk-sns" # for sms delivery
+gem "aws-sdk-secretsmanager" # for secret_key_base rotation
 # Asset pipeline
 gem "propshaft"
 # OpenTelemetry
 gem "opentelemetry-sdk", require: false
 gem "opentelemetry-exporter-otlp", require: false
 gem "opentelemetry-instrumentation-all", require: false
+gem "pg_search"
 # Sitemap
 # gem "sitemap_generator" # unused: no sitemap config/task found
 # TOTP
 gem "rotp"
 # QR code generation
 gem "rqrcode"
-# Solid Cable
-gem "solid_cable"
+# Solid Cache
+gem "solid_cache"
 # Solid Queue
 gem "solid_queue"
 gem "mission_control-jobs"
 # Pagination
-# gem "pagy" # unused: no Pagy usage found
+gem "pagy"
 # WebAuthn (FIDO2)
 gem "webauthn"
 # Social login
@@ -80,8 +84,6 @@ gem "stimulus-rails"
 gem "importmap-rails"
 # Tailwind CSS
 gem "tailwindcss-rails"
-# Fastly cache purge
-gem "fastly"
 # HTML head tags
 gem "meta-tags"
 # ID generation
@@ -104,7 +106,6 @@ group :development, :test do
   # Slow test profiling
   gem "test-prof"
   # N+1 query detector
-  # gem "bullet"
   gem "prosopite"
   gem "pg_query"
   # Database consistency checks
@@ -136,10 +137,7 @@ group :development do
   # Performance profiling
   gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps
-  # gem "spring"
   gem "brakeman", require: false
-  # web-console 4.2.1 is incompatible with Rails main (ActionDispatch::RemoteIp API change)
-  # gem "web-console"
   # RuboCop
   gem "rubocop", require: false
   gem "rubocop-ast", require: false

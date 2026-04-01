@@ -2,16 +2,16 @@
 
 class CreateClientIdentityStatuses < ActiveRecord::Migration[8.2]
   def up
-    create_table :client_identity_statuses, id: :string, limit: 255 do |t|
+    create_table(:client_identity_statuses, id: :string, limit: 255) do |t|
       t.timestamps
     end
 
     safety_assured do
-      execute "ALTER TABLE client_identity_statuses ALTER COLUMN id SET DEFAULT 'NEYO'"
+      execute("ALTER TABLE client_identity_statuses ALTER COLUMN id SET DEFAULT 'NEYO'")
     end
   end
 
   def down
-    drop_table :client_identity_statuses
+    drop_table(:client_identity_statuses)
   end
 end

@@ -26,7 +26,7 @@ class SeedUserAuditLevels < ActiveRecord::Migration[8.2]
   def insert_level(level_id)
     if column_exists?(:user_audit_levels, :created_at)
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_audit_levels (id, created_at, updated_at)
           VALUES ('#{level_id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO NOTHING
@@ -34,7 +34,7 @@ class SeedUserAuditLevels < ActiveRecord::Migration[8.2]
       end
     else
       safety_assured do
-        execute <<~SQL.squish
+        execute(<<~SQL.squish)
           INSERT INTO user_audit_levels (id)
           VALUES ('#{level_id}')
           ON CONFLICT (id) DO NOTHING

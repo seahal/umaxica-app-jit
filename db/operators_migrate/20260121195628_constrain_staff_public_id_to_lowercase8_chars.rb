@@ -13,18 +13,18 @@ class ConstrainStaffPublicIdToLowercase8Chars < ActiveRecord::Migration[8.2]
 
     # Step 2: Remove default (was "" from old migrations)
     safety_assured do
-      change_column_default :staffs, :public_id, from: "", to: nil
+      change_column_default(:staffs, :public_id, from: "", to: nil)
     end
 
     # Step 3: Change column to limit: 8, null: false
     # Safe now because all rows have valid 8-char public_id
     safety_assured do
-      change_column :staffs, :public_id, :string, limit: 8, null: false
+      change_column(:staffs, :public_id, :string, limit: 8, null: false)
     end
 
     # Step 4: Add CHECK constraint for length = 8
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         ADD CONSTRAINT chk_staffs_public_id_length
         CHECK (char_length(public_id) = 8);
@@ -33,7 +33,7 @@ class ConstrainStaffPublicIdToLowercase8Chars < ActiveRecord::Migration[8.2]
 
     # Step 5: Add CHECK constraint for allowed characters
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         ADD CONSTRAINT chk_staffs_public_id_format
         CHECK (public_id ~ '^[abcdefhjklmnpqrtuvwxy23456789]{8}$');
@@ -43,18 +43,18 @@ class ConstrainStaffPublicIdToLowercase8Chars < ActiveRecord::Migration[8.2]
 
   def down
     safety_assured do
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         DROP CONSTRAINT IF EXISTS chk_staffs_public_id_format;
       SQL
 
-      execute <<~SQL.squish
+      execute(<<~SQL.squish)
         ALTER TABLE staffs
         DROP CONSTRAINT IF EXISTS chk_staffs_public_id_length;
       SQL
 
-      change_column :staffs, :public_id, :string, limit: 255, null: true
-      change_column_default :staffs, :public_id, ""
+      change_column(:staffs, :public_id, :string, limit: 255, null: true)
+      change_column_default(:staffs, :public_id, "")
     end
   end
 

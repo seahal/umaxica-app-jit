@@ -11,7 +11,7 @@ module Sign
         before_action :set_session, only: %i(destroy)
 
         def index
-          @sessions = current_user.user_tokens.where(expired_at: nil).order(created_at: :desc)
+          @sessions = visible_sessions.order(created_at: :desc)
 
           respond_to do |format|
             format.html
@@ -39,6 +39,10 @@ module Sign
 
         private
 
+        def visible_sessions
+          current_user.user_tokens.session_inventory
+        end
+
         def render_revoke_success
           redirect_to(
             sign_app_configuration_sessions_path,
@@ -48,7 +52,7 @@ module Sign
         end
 
         def other_active_sessions
-          sessions = current_user.user_tokens.where(expired_at: nil)
+          sessions = visible_sessions
           return sessions if current_session_public_id.blank?
 
           sessions.where.not(public_id: current_session_public_id)
@@ -70,7 +74,7 @@ module Sign
         end
 
         def set_session
-          @session = current_user.user_tokens.find_by(public_id: params[:id])
+          @session = visible_sessions.find_by(public_id: params[:id])
           return if @session
 
           head :not_found

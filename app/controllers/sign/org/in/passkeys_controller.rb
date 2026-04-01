@@ -11,7 +11,7 @@ module Sign
       # 2. POST /in/passkeys/options with identifier to get WebAuthn challenge
       # 3. Browser performs navigator.credentials.get()
       # 4. POST /in/passkeys/verification with credential + challenge_id
-      # 5. Server verifies and establishes session via Auth::Base#log_in
+      # 5. Server verifies and establishes session via Authentication::Base#log_in
       #
       # Note: Discoverable credentials (passwordless without identifier) are
       # planned for a future phase. Currently, identifier is required to look up
@@ -84,7 +84,9 @@ module Sign
         end
 
         def perform_passkey_sign_in(passkey)
-          log_in(passkey.staff, record_login_audit: true)
+          complete_sign_in_or_start_mfa!(
+            passkey.staff, rt: retrieve_redirect_parameter_for_bulletin, ri: params[:ri], auth_method: "passkey",
+          )
         end
 
         def handle_domain_specific_login_status(result)
@@ -118,8 +120,12 @@ module Sign
           }, status: :ok
         end
 
-        def passkey_checkpoint_redirect_url
-          sign_org_in_checkpoint_path(rd: retrieve_redirect_parameter_for_checkpoint, ri: params[:ri])
+        def passkey_bulletin_redirect_url
+          sign_org_in_bulletin_path(rd: retrieve_redirect_parameter_for_bulletin, ri: params[:ri])
+        end
+
+        def passkey_default_redirect_url
+          sign_org_root_path(ri: params[:ri])
         end
 
         def minimum_response_budget_enabled?

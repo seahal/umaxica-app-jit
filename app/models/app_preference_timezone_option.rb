@@ -2,15 +2,16 @@
 # == Schema Information
 #
 # Table name: app_preference_timezone_options
-# Database name: preference
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
-class AppPreferenceTimezoneOption < PreferenceRecord
+class AppPreferenceTimezoneOption < PrincipalRecord
   # Fixed IDs - do not modify these values
+  NOTHING = 0
   ETC_UTC = 1
   ASIA_TOKYO = 2
 

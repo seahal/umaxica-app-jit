@@ -21,11 +21,11 @@ class FixContactFks < ActiveRecord::Migration[8.2]
 
         rows = connection.select_all("SELECT conname FROM pg_constraint WHERE conrelid = '#{table_name}'::regclass AND confrelid = '#{status_table}'::regclass")
         rows.each do |row|
-          execute "ALTER TABLE #{table_name} DROP CONSTRAINT #{row["conname"]}"
+          execute("ALTER TABLE #{table_name} DROP CONSTRAINT #{row["conname"]}")
         end
 
         # Add new one with ON DELETE SET NULL
-        execute "ALTER TABLE #{table_name} ADD CONSTRAINT fk_#{table_name}_status_nullify FOREIGN KEY (status_id) REFERENCES #{status_table} (id) ON DELETE SET NULL"
+        execute("ALTER TABLE #{table_name} ADD CONSTRAINT fk_#{table_name}_status_nullify FOREIGN KEY (status_id) REFERENCES #{status_table} (id) ON DELETE SET NULL")
       end
 
       # Fix ComContact email index
@@ -52,9 +52,9 @@ class FixContactFks < ActiveRecord::Migration[8.2]
     # We can just drop index by name if we guess it.
     # index_com_contact_emails_on_com_contact_id
     index_name = "index_#{table}_on_#{col}"
-    execute "DROP INDEX IF EXISTS #{index_name}"
+    execute("DROP INDEX IF EXISTS #{index_name}")
 
     # Create unique index
-    execute "CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS #{index_name} ON #{table} (#{col})"
+    execute("CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS #{index_name} ON #{table} (#{col})")
   end
 end

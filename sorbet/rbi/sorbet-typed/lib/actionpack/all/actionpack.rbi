@@ -387,7 +387,7 @@ class ActionDispatch::Request
   #
   # ```
   # # get "/articles"
-  # request.media_type # => "application/x-www-form-urlencoded"
+  # request.media_type # => "application/x-ww-form-urlencoded"
   # ```
   sig { returns(String) }
   def media_type; end

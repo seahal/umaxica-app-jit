@@ -8,7 +8,7 @@ class CookieDomainTest < ActiveSupport::TestCase
   def stub_creds(_key, value)
     creds_mock = Object.new
     creds_mock.define_singleton_method(:option) { |_key| value }
-    Rails.stub :app, OpenStruct.new(creds: creds_mock) do
+    Rails.stub(:app, OpenStruct.new(creds: creds_mock)) do
       yield
     end
   end
@@ -39,7 +39,7 @@ class CookieDomainTest < ActiveSupport::TestCase
 
   test "for derives domain from request host with subdomain" do
     stub_creds(:COOKIE_DOMAIN_APP, nil) do
-      result = Core::CookieDomain.for(surface: :app, request_host: "www.app.example.com")
+      result = Core::CookieDomain.for(surface: :app, request_host: "ww.app.example.com")
 
       assert_equal ".example.com", result
     end
@@ -91,6 +91,10 @@ class CookieDomainTest < ActiveSupport::TestCase
     assert_equal "example.com", Core::CookieDomain.send(:normalize_host, "example.com:8080")
   end
 
+  test "normalize_host extracts host from a URL string" do
+    assert_equal "app.example.com", Core::CookieDomain.send(:normalize_host, "https://APP.EXAMPLE.COM:3000/path")
+  end
+
   test "localhost_host? returns true for localhost" do
     assert Core::CookieDomain.send(:localhost_host?, "localhost")
   end
@@ -105,7 +109,7 @@ class CookieDomainTest < ActiveSupport::TestCase
 
   test "best_effort_apex extracts apex domain" do
     assert_equal "example.com", Core::CookieDomain.send(:best_effort_apex, "app.example.com")
-    assert_equal "example.com", Core::CookieDomain.send(:best_effort_apex, "www.example.com")
+    assert_equal "example.com", Core::CookieDomain.send(:best_effort_apex, "ww.example.com")
   end
 
   test "best_effort_apex returns nil for single part" do

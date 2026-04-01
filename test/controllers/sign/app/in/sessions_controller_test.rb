@@ -25,6 +25,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show with restricted session displays sessions" do
+    create_active_session(@user)
     token = create_restricted_session(@user)
     headers = as_user_headers_with_token(@user, token, host: @host)
 
@@ -32,6 +33,27 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_not response.redirect?
+    assert_select "input[type=radio][name=ref]"
+    assert_select "input[type=checkbox][name='revoke_refs[]']", false
+    assert_select "button", text: /キャンセルしてログアウト/
+  end
+
+  test "show counts only usable active sessions" do
+    active_token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    rotated_refresh = active_token.rotate_refresh_token!
+    Sign::RefreshTokenService.call(refresh_token: rotated_refresh)
+
+    current_active = UserToken.where(user_id: @user.id, status: UserToken::STATUS_ACTIVE).order(:created_at).last
+    other_active = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    other_active.rotate_refresh_token!
+    restricted_token = create_restricted_session(@user)
+    headers = as_user_headers_with_token(@user, restricted_token, host: @host)
+
+    get sign_app_in_session_url(ri: "jp"), headers: headers
+
+    assert_response :success
+    assert_includes response.body, "(2/#{UserToken::MAX_SESSIONS_PER_USER})"
+    assert_not_equal active_token.public_id, current_active.public_id
   end
 
   test "show with active session returns forbidden" do
@@ -511,11 +533,11 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def as_user_headers_with_token(user, token, host:)
-    access_token = Auth::Base::Token.encode(user, host: host, session_public_id: token.public_id)
+    access_token = Authentication::Base::Token.encode(user, host: host, session_public_id: token.public_id)
     browser_headers.merge(
       "Host" => host,
       "Authorization" => "Bearer #{access_token}",
-      "Cookie" => "#{Auth::Base::ACCESS_COOKIE_KEY}=#{access_token}",
+      "Cookie" => "#{Authentication::Base::ACCESS_COOKIE_KEY}=#{access_token}",
     )
   end
 end

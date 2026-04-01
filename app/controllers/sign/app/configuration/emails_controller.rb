@@ -22,18 +22,30 @@ module Sign
         def destroy
           @user_email = current_user.user_emails.find_by!(public_id: params[:id])
 
+          if @user_email.undeletable?
+            redirect_to(
+              sign_app_configuration_emails_path,
+              alert: t("sign.app.configuration.email.destroy.protected"),
+            )
+            return
+          end
+
           unless AuthMethodGuard.can_remove_email?(current_user, @user_email)
-            redirect_to sign_app_configuration_emails_path,
-                        alert: t("sign.app.configuration.email.destroy.last_method")
+            redirect_to(
+              sign_app_configuration_emails_path,
+              alert: t("sign.app.configuration.email.destroy.last_method"),
+            )
             return
           end
 
           @user_email.destroy!
           create_audit_event!(UserActivityEvent::EMAIL_REMOVED, subject: @user_email)
 
-          redirect_to sign_app_configuration_emails_path,
-                      notice: t("sign.app.configuration.email.destroy.success"),
-                      status: :see_other
+          redirect_to(
+            sign_app_configuration_emails_path,
+            notice: t("sign.app.configuration.email.destroy.success"),
+            status: :see_other,
+          )
         end
 
         private

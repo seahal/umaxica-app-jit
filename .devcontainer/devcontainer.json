@@ -7,10 +7,7 @@
   "workspaceFolder": "/home/jit/workspace",
   "overrideCommand": true,
   "forwardPorts": [3002],
-  "remoteEnv": {
-    "EDITOR": "code --wait --reuse-window",
-    "DEBUGGER_DISABLE": "1"
-  },
+  "remoteEnv": { "EDITOR": "code --wait --reuse-window", "DEBUGGER_DISABLE": "1" },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -23,7 +20,6 @@
         "openai.chatgpt",
         "anthropic.claude-code",
         "anthropic.claude-code",
-
         "-sorbet.sorbet-vscode-extension",
         "-dbaeumer.vscode-eslint",
         "-esbenp.prettier-vscode",
@@ -34,23 +30,17 @@
         "-GitHub.copilot-chat"
       ],
       "settings": {
-        "claude.allowDangerouslySkipPermissions": true,
         "extensions.verifySignature": false,
         "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.profiles.linux": {
-          "bash": {
-            "path": "/bin/bash"
-          },
-          "zsh": {
-            "path": "/bin/zsh"
-          }
+          "bash": { "path": "/bin/bash" },
+          "zsh": { "path": "/bin/zsh" }
         },
         "editor.formatOnSave": true,
         "editor.tabSize": 2,
         "files.trimTrailingWhitespace": true,
         "files.insertFinalNewline": true,
         "editor.codeActionsOnSave": {
-          "source.fixAll.biome": "explicit",
           "source.fixAll.eslint": "explicit",
           "source.fixAll": "explicit"
         },
@@ -60,15 +50,9 @@
           "compose.yaml": "yaml",
           "*.yml": "yaml"
         },
-        "[ruby]": {
-          "editor.defaultFormatter": "Shopify.ruby-lsp"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "biomejs.biome"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "biomejs.biome"
-        },
+        "[ruby]": { "editor.defaultFormatter": "Shopify.ruby-lsp" },
+        "[javascript]": { "editor.defaultFormatter": "voidzero.oxfmt" },
+        "[typescript]": { "editor.defaultFormatter": "voidzero.oxfmt" },
         "ruby.lsp.enabledFeatures": {
           "codeActions": true,
           "diagnostics": true,
@@ -89,19 +73,14 @@
           "signatureHelp": true,
           "typeHierarchy": true
         },
-        "ruby.lint": {
-          "rubocop": true
-        }
+        "ruby.lint": { "rubocop": true }
       }
     },
     "jetbrains": {
       "remoteId": "intellij",
       "backend": "intellij",
       "plugins": ["org.jetbrains.plugins.ruby"],
-      "containerEnv": {
-        "DEVCONTAINER_IDE": "jetbrains",
-        "DEVCONTAINER_AUTO_START_BIN_DEV": "0"
-      }
+      "containerEnv": { "DEVCONTAINER_IDE": "jetbrains", "DEVCONTAINER_AUTO_START_BIN_DEV": "0" }
     }
   },
   "shutdownAction": "stopCompose",
@@ -115,18 +94,17 @@
     "RUBY_DEBUG_OPEN": "false"
   },
   "updateRemoteUserUID": true,
-  "postStartCommand": "sudo chown jit:umaxica log tmp",
+  "postStartCommand": "",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt:1": {},
     "ghcr.io/devcontainers/features/copilot-cli:1": {},
     "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {},
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
     "ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
     "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
-    "ghcr.io/devcontainers/features/sshd:latest": {},
     "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
-    "ghcr.io/jasonthedeveloper/features/trivy:1": {}
+    "ghcr.io/jasonthedeveloper/features/trivy:1": {},
+    "ghcr.io/audacioustux/devcontainers/bun:1": {}
   },
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
@@ -137,6 +115,7 @@
     "source=${localEnv:HOME}/.config/gh,target=/home/jit/.config/gh,type=bind",
     "source=${localEnv:HOME}/.config/git,target=/home/jit/.config/git,type=bind",
     "source=${localEnv:HOME}/.gitconfig,target=/home/jit/.gitconfig,type=bind",
-    "source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind"
+    "source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind",
+    "source=${localEnv:HOME}/.config/opencode,target=/home/jit/.config/opencode,type=bind"
   ]
 }

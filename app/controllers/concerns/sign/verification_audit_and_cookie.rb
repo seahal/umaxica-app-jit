@@ -12,7 +12,7 @@ module Sign
         value: raw_token,
         expires: expires_at,
         httponly: true,
-        secure: Rails.env.production? || request.ssl?,
+        secure: Rails.env.production? || ENV["FORCE_SECURE_COOKIES"].present? || request.ssl?,
         same_site: :lax,
         path: "/",
       }

@@ -8,10 +8,26 @@ module Sign
       before_action :authenticate!
 
       def show
-        # Staff OIDC authorization - extensible stub
-        # Currently returns 501 until staff SSO is implemented
-        render json: { error: "not_implemented", error_description: "Staff SSO is not yet available" },
-               status: :not_implemented
+        result = Oidc::AuthorizeService.call(
+          params: authorize_params,
+          resource: current_staff,
+        )
+
+        if result.success?
+          redirect_to(result.redirect_url, allow_other_host: true)
+        else
+          render json: { error: result.error, error_description: result.error_description },
+                 status: :bad_request
+        end
+      end
+
+      private
+
+      def authorize_params
+        params.permit(
+          :response_type, :client_id, :redirect_uri, :state,
+          :code_challenge, :code_challenge_method, :scope, :nonce,
+        )
       end
     end
   end

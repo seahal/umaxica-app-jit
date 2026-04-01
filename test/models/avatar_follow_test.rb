@@ -26,7 +26,7 @@
 require "test_helper"
 
 class AvatarFollowTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "AvatarFollow", AvatarFollow.name
+  end
 end

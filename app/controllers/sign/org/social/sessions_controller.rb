@@ -23,8 +23,10 @@ module Sign
           provider = params[:provider]
 
           unless SUPPORTED_PROVIDERS.include?(provider)
-            return redirect_to new_sign_org_in_path,
-                               alert: I18n.t("sign.org.social.sessions.invalid_provider")
+            return redirect_to(
+              new_sign_org_in_path,
+              alert: I18n.t("sign.org.social.sessions.invalid_provider"),
+            )
           end
 
           state = prepare_social_auth_intent!("login", provider: provider)

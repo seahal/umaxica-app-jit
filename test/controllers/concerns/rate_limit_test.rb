@@ -3,10 +3,21 @@
 
 require "test_helper"
 
+# ---------------------------------------------------------------------------
+# Dummy controllers for testing the RateLimit concern with Rails 8.1 DSL
+# ---------------------------------------------------------------------------
+
 class RateLimitDummyController < ApplicationController
   include ::RateLimit
 
-  rate_limit_rule :dummy_ip, scope: :ip, limit: 1, period: 60, only: :index
+  has_custom_rate_limit!
+
+  rate_limit to: 1, within: 1.minute,
+             by: -> { request.remote_ip },
+             with: -> { handle_rate_limit_exceeded!("dummy_ip", 60) },
+             store: RateLimit.store,
+             name: "dummy_ip",
+             only: :index
 
   def index
     if request.format.json?
@@ -20,7 +31,14 @@ end
 class RateLimitExceptController < ApplicationController
   include ::RateLimit
 
-  rate_limit_rule :test_rule, scope: :ip, limit: 1, period: 60, except: :excluded_action
+  has_custom_rate_limit!
+
+  rate_limit to: 1, within: 1.minute,
+             by: -> { request.remote_ip },
+             with: -> { handle_rate_limit_exceeded!("test_rule", 60) },
+             store: RateLimit.store,
+             name: "test_rule",
+             except: :excluded_action
 
   def index
     render plain: "ok"
@@ -31,32 +49,16 @@ class RateLimitExceptController < ApplicationController
   end
 end
 
-class RateLimitArrayKeyController < ApplicationController
-  include ::RateLimit
-
-  rate_limit_rule :array_key, scope: :ip, limit: 1, period: 60,
-                              key: -> { ["custom_scope", request.remote_ip] }
-
-  def index
-    render plain: "ok"
-  end
-end
-
-class RateLimitHashKeyController < ApplicationController
-  include ::RateLimit
-
-  rate_limit_rule :hash_key, scope: :ip, limit: 1, period: 60,
-                             key: -> { { scope: "custom_scope", discriminator: "custom_disc" } }
-
-  def index
-    render plain: "ok"
-  end
-end
-
 class RateLimitEmailController < ApplicationController
   include ::RateLimit
 
-  rate_limit_rule :email_rule, scope: :email, limit: 1, period: 60
+  has_custom_rate_limit!
+
+  rate_limit to: 1, within: 1.minute,
+             by: -> { params[:email].to_s.strip.downcase.presence || request.remote_ip },
+             with: -> { handle_rate_limit_exceeded!("email_rule", 60) },
+             store: RateLimit.store,
+             name: "email_rule"
 
   def index
     render plain: "ok"
@@ -66,20 +68,59 @@ end
 class RateLimitTelephoneController < ApplicationController
   include ::RateLimit
 
-  rate_limit_rule :telephone_rule, scope: :telephone, limit: 1, period: 60
+  has_custom_rate_limit!
+
+  rate_limit to: 1, within: 1.minute,
+             by: -> { params[:telephone].to_s.gsub(/\D/, "").presence || request.remote_ip },
+             with: -> { handle_rate_limit_exceeded!("telephone_rule", 60) },
+             store: RateLimit.store,
+             name: "telephone_rule"
 
   def index
     render plain: "ok"
   end
 end
 
+# Controller that includes RateLimit but has no explicit declaration (tests default)
+class RateLimitDefaultOnlyController < ApplicationController
+  include ::RateLimit
+
+  before_action :check_default_rate_limit, unless: :skip_default_rate_limit?
+
+  def index
+    render plain: "ok"
+  end
+end
+
+# Controller that opts out of default rate limiting
+class RateLimitOptOutController < ApplicationController
+  include ::RateLimit
+
+  has_custom_rate_limit!
+
+  # Override default with a high limit to effectively opt out
+  rate_limit to: 10_000, within: 1.minute,
+             by: -> { request.remote_ip },
+             with: -> { handle_rate_limit_exceeded!("opt_out", 60) },
+             store: RateLimit.store,
+             name: "opt_out"
+
+  def index
+    render plain: "ok"
+  end
+end
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
 class RateLimitConcernTest < ActionDispatch::IntegrationTest
   setup do
-    RailsRateLimit.store.clear! if RailsRateLimit.store.respond_to?(:clear!)
+    RateLimit.store.clear
   end
 
   teardown do
-    RailsRateLimit.store.clear! if RailsRateLimit.store.respond_to?(:clear!)
+    RateLimit.store.clear
   end
 
   test "rails rate limiter returns 429 with layer headers and i18n message" do
@@ -104,7 +145,7 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "rails limiter emits a distinct notifications event" do
+  test "rails limiter emits a notification event" do
     payloads = []
 
     callback =
@@ -112,30 +153,18 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
         payloads << payload
       end
 
-    ActiveSupport::Notifications.subscribed(callback, "rails_rate_limit.throttled") do
+    ActiveSupport::Notifications.subscribed(callback, "rate_limit.action_controller") do
       with_dummy_route do
         get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
         get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
       end
     end
 
-    assert_predicate payloads, :any?, "Expected rails_rate_limit.throttled to be emitted"
+    assert_predicate payloads, :any?, "Expected rate_limit.action_controller to be emitted"
     payload = payloads.last
 
-    assert_equal "dummy_ip", payload[:rule]
-    assert_equal "example.com", payload[:tenant]
-    assert_equal "ip", payload[:scope]
-    assert_equal "/test_rate_limit", payload[:path]
-  end
-
-  test "rails limiter uses dedicated namespace and does not collide with rack attack namespace" do
-    with_dummy_route do
-      get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
-    end
-
-    expected_namespace = ENV["RATE_LIMIT_NAMESPACE"].presence || "rate_limit:test:#{Process.pid}"
-
-    assert_equal expected_namespace, RailsRateLimit.store.namespace
+    assert_equal "dummy_ip", payload[:name]
+    assert_predicate payload[:cache_key], :present?
   end
 
   test "rails limiter returns 429 for HTML format with plain text message" do
@@ -178,38 +207,6 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "rate limit with array key builder uses custom scope and discriminator" do
-    with_routing do |set|
-      set.draw do
-        get "/test_array_key", to: "rate_limit_array_key#index"
-      end
-
-      get "/test_array_key", headers: { "Host" => "example.com" }
-
-      assert_response :success
-
-      get "/test_array_key", headers: { "Host" => "example.com" }
-
-      assert_response :too_many_requests
-    end
-  end
-
-  test "rate limit with hash key builder extracts scope and discriminator" do
-    with_routing do |set|
-      set.draw do
-        get "/test_hash_key", to: "rate_limit_hash_key#index"
-      end
-
-      get "/test_hash_key", headers: { "Host" => "example.com" }
-
-      assert_response :success
-
-      get "/test_hash_key", headers: { "Host" => "example.com" }
-
-      assert_response :too_many_requests
-    end
-  end
-
   test "rate limit with email scope uses email parameter as discriminator" do
     with_routing do |set|
       set.draw do
@@ -247,12 +244,47 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "default rate limit is applied when including RateLimit concern" do
+    RateLimit.define_singleton_method(:default_rate_limit) { 1 }
+
+    with_routing do |set|
+      set.draw do
+        get("/test_default", to: "rate_limit_default_only#index")
+      end
+
+      get("/test_default", headers: { "Host" => "example.com" })
+
+      assert_response :success
+
+      get("/test_default", headers: { "Host" => "example.com" })
+
+      assert_response :too_many_requests
+      assert_equal "default_ip", response.headers["X-RateLimit-Rule"]
+    end
+  ensure
+    RateLimit.define_singleton_method(:default_rate_limit) { 300 }
+  end
+
+  test "controller can override default rate limit" do
+    with_routing do |set|
+      set.draw do
+        get "/test_opt_out", to: "rate_limit_opt_out#index"
+      end
+
+      2.times do
+        get "/test_opt_out", headers: { "Host" => "example.com" }
+
+        assert_response :success
+      end
+    end
+  end
+
   private
 
   def with_dummy_route
     with_routing do |set|
       set.draw do
-        get "/test_rate_limit", to: "rate_limit_dummy#index"
+        get("/test_rate_limit", to: "rate_limit_dummy#index")
       end
 
       yield

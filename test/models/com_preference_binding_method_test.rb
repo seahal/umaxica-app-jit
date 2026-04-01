@@ -4,14 +4,14 @@
 # == Schema Information
 #
 # Table name: com_preference_binding_methods
-# Database name: preference
+# Database name: commerce
 #
 #  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class ComPreferenceBindingMethodTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "ComPreferenceBindingMethod", ComPreferenceBindingMethod.name
+  end
 end

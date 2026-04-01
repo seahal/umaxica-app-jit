@@ -6,29 +6,29 @@
 # Table name: user_social_googles
 # Database name: principal
 #
-#  id                                    :bigint           not null, primary key
-#  expires_at                            :integer          not null
-#  last_authenticated_at                 :datetime
-#  provider                              :string           default("google_app"), not null
-#  refresh_token                         :string           default(""), not null
-#  token                                 :string           default(""), not null
-#  uid                                   :string           default(""), not null
-#  created_at                            :datetime         not null
-#  updated_at                            :datetime         not null
-#  user_id                               :bigint           not null
-#  user_identity_social_google_status_id :bigint           default(1), not null
+#  id                    :bigint           not null, primary key
+#  last_authenticated_at :datetime
+#  provider              :string           default("google_app"), not null
+#  refresh_token         :string           default(""), not null
+#  token                 :string           default(""), not null
+#  token_expires_at      :integer          not null
+#  uid                   :string           default(""), not null
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  status_id             :bigint           default(1), not null
+#  user_id               :bigint           not null
 #
 # Indexes
 #
-#  idx_on_user_identity_social_google_status_id_f4bfb6ffdd  (user_identity_social_google_status_id)
-#  index_user_identity_social_googles_on_user_id_unique     (user_id) UNIQUE WHERE (user_id IS NOT NULL)
-#  index_user_social_googles_on_expires_at                  (expires_at)
-#  index_user_social_googles_on_uid_and_provider            (uid,provider) UNIQUE
+#  index_user_identity_social_googles_on_user_id_unique  (user_id) UNIQUE WHERE (user_id IS NOT NULL)
+#  index_user_social_googles_on_status_id                (status_id)
+#  index_user_social_googles_on_token_expires_at         (token_expires_at)
+#  index_user_social_googles_on_uid_and_provider         (uid,provider) UNIQUE
 #
 # Foreign Keys
 #
+#  fk_rails_...  (status_id => user_social_google_statuses.id)
 #  fk_rails_...  (user_id => users.id)
-#  fk_rails_...  (user_identity_social_google_status_id => user_social_google_statuses.id)
 #
 
 require "test_helper"
@@ -74,7 +74,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     identity = UserSocialGoogle.new(user: User.find_by!(public_id: "one_id"), uid: "uid", token: "token")
 
     assert_not identity.valid?
-    assert_not_empty identity.errors[:expires_at]
+    assert_not_empty identity.errors[:token_expires_at]
   end
 
   test "association deletion: destroys when user is destroyed" do
@@ -173,7 +173,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "active-google-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
+      status_id: UserSocialGoogleStatus::ACTIVE,
     )
 
     inactive = UserSocialGoogle.create!(
@@ -181,7 +181,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "inactive-google-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_google_status_id: UserSocialGoogleStatus::REVOKED,
+      status_id: UserSocialGoogleStatus::REVOKED,
     )
 
     assert_includes UserSocialGoogle.active, active
@@ -194,6 +194,21 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     identity = UserSocialGoogle.new(provider: "google_app")
 
     assert_equal "google", identity.normalized_provider
+  end
+
+  test "status_id uses the canonical status column" do
+    identity = UserSocialGoogle.new(status_id: UserSocialGoogleStatus::ACTIVE)
+
+    assert_equal UserSocialGoogleStatus::ACTIVE, identity.status_id
+    assert_equal UserSocialGoogleStatus::ACTIVE, identity.status_id
+    assert_equal UserSocialGoogleStatus::ACTIVE, identity.status_id
+  end
+
+  test "token_expires_at aliases expires_at" do
+    identity = UserSocialGoogle.new(token_expires_at: 123)
+
+    assert_equal 123, identity.token_expires_at
+    assert_equal 123, identity.expires_at
   end
 
   class MockAuth < OpenStruct; end

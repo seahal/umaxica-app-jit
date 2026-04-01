@@ -11,7 +11,7 @@
 require "test_helper"
 
 class ScavengerRegionalStatusTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "class is defined" do
+    assert_equal "ScavengerRegionalStatus", ScavengerRegionalStatus.name
+  end
 end

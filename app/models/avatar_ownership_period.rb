@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 # == Schema Information
 #
 # Table name: avatar_ownership_periods
@@ -39,3 +41,4 @@ class AvatarOwnershipPeriod < AvatarRecord
   validates :valid_from, presence: true
   validates :id, length: { maximum: 255 }
 end
+# rubocop:enable Layout/LineLength

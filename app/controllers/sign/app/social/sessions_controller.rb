@@ -41,8 +41,10 @@ module Sign
           intent = params[:intent] || "login"
 
           unless SUPPORTED_PROVIDERS.include?(provider)
-            return redirect_to new_sign_app_in_path,
-                               alert: I18n.t("sign.app.social.sessions.invalid_provider")
+            return redirect_to(
+              new_sign_app_in_path,
+              alert: I18n.t("sign.app.social.sessions.invalid_provider"),
+            )
           end
 
           # Prepare session with intent context (OmniAuth manages OAuth state)
@@ -71,13 +73,15 @@ module Sign
             SocialAuthService.unlink(provider: provider, user: current_resource)
           end
 
-          redirect_to sign_app_configuration_path,
-                      notice: I18n.t(
-                        "sign.app.social.sessions.unlink.success",
-                        provider: normalized_provider.humanize,
-                      )
+          redirect_to(
+            sign_app_configuration_path,
+            notice: I18n.t(
+              "sign.app.social.sessions.unlink.success",
+              provider: normalized_provider.humanize,
+            ),
+          )
         rescue SocialAuth::BaseError => e
-          redirect_to sign_app_configuration_path, alert: e.message
+          redirect_to(sign_app_configuration_path, alert: e.message)
         end
       end
     end

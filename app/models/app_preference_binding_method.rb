@@ -4,11 +4,11 @@
 # == Schema Information
 #
 # Table name: app_preference_binding_methods
-# Database name: preference
+# Database name: principal
 #
 #  id :bigint           not null, primary key
 #
-class AppPreferenceBindingMethod < PreferenceRecord
+class AppPreferenceBindingMethod < PrincipalRecord
   NOTHING = 0
   DBSC = 1
   LEGACY = 2
@@ -20,6 +20,8 @@ class AppPreferenceBindingMethod < PreferenceRecord
            dependent: :restrict_with_error
 
   def self.ensure_defaults!
+    return if DEFAULTS.blank?
+
     existing_ids = where(id: DEFAULTS).pluck(:id)
     missing_ids = DEFAULTS - existing_ids
     return if missing_ids.empty?

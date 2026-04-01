@@ -73,25 +73,26 @@ module Oidc
 
     def consume_and_issue_tokens!(authorization_code)
       client = Oidc::ClientRegistry.find!(client_id)
-      user = authorization_code.user
+      resource = authorization_code.resource
 
       TokenRecord.connected_to(role: :writing) do
         authorization_code.consume!
 
-        token_record = UserToken.create!(
-          user: user,
-          public_id: SecureRandom.alphanumeric(21),
-          refresh_expires_at: Auth::Base::REFRESH_TOKEN_TTL.from_now,
-          status: "active",
-        )
-
+        token_record = create_token_record!(client, resource)
         refresh_plain = token_record.rotate_refresh_token!
         now = Time.current
-        access_expires_at = now + Auth::Base::ACCESS_TOKEN_TTL
+        access_expires_at = now + Authentication::Base::ACCESS_TOKEN_TTL
+
+        sign_host =
+          if client.resource_type == "staff"
+            ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+          else
+            ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+          end
 
         access_token = Auth::TokenService.encode(
-          user,
-          host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"),
+          resource,
+          host: sign_host,
           session_public_id: token_record.public_id,
           resource_type: client.resource_type,
           expires_at: access_expires_at,
@@ -102,11 +103,29 @@ module Oidc
           token_response: {
             access_token: access_token,
             token_type: "Bearer",
-            expires_in: Auth::Base::ACCESS_TOKEN_TTL.to_i,
+            expires_in: Integer(Authentication::Base::ACCESS_TOKEN_TTL.to_s, 10),
             refresh_token: refresh_plain,
           },
           error: nil,
           error_description: nil,
+        )
+      end
+    end
+
+    def create_token_record!(client, resource)
+      if client.resource_type == "staff"
+        StaffToken.create!(
+          staff: resource,
+          public_id: SecureRandom.alphanumeric(21),
+          refresh_expires_at: Authentication::Base::REFRESH_TOKEN_TTL.from_now,
+          status: "active",
+        )
+      else
+        UserToken.create!(
+          user: resource,
+          public_id: SecureRandom.alphanumeric(21),
+          refresh_expires_at: Authentication::Base::REFRESH_TOKEN_TTL.from_now,
+          status: "active",
         )
       end
     end

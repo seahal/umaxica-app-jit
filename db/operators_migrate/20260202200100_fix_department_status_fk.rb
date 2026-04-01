@@ -22,20 +22,20 @@ class FixDepartmentStatusFk < ActiveRecord::Migration[8.2]
             SQL
 
             if current_type != 'bigint'
-              execute "TRUNCATE TABLE departments CASCADE"
-              execute "ALTER TABLE departments ALTER COLUMN department_status_id DROP DEFAULT"
-              execute "ALTER TABLE departments ALTER COLUMN department_status_id TYPE bigint USING 0"
-              execute "ALTER TABLE departments ALTER COLUMN department_status_id SET DEFAULT 0"
-              execute "ALTER TABLE departments ALTER COLUMN department_status_id SET NOT NULL"
+              execute("TRUNCATE TABLE departments CASCADE")
+              execute("ALTER TABLE departments ALTER COLUMN department_status_id DROP DEFAULT")
+              execute("ALTER TABLE departments ALTER COLUMN department_status_id TYPE bigint USING 0")
+              execute("ALTER TABLE departments ALTER COLUMN department_status_id SET DEFAULT 0")
+              execute("ALTER TABLE departments ALTER COLUMN department_status_id SET NOT NULL")
             end
 
             # Add FK
-            execute <<~SQL.squish
+            execute(<<~SQL.squish)
               ALTER TABLE departments#{" "}
               ADD CONSTRAINT fk_departments_on_department_status_id#{" "}
               FOREIGN KEY (department_status_id) REFERENCES department_statuses (id)
             SQL
-            Rails.logger.debug "Added FK: departments.department_status_id -> department_statuses.id"
+            Rails.logger.debug("Added FK: departments.department_status_id -> department_statuses.id")
           end
         end
       end

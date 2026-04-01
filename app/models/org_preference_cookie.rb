@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_preference_cookies
-# Database name: preference
+# Database name: operator
 #
 #  id              :bigint           not null, primary key
 #  consent_version :uuid
@@ -26,7 +26,7 @@
 
 # frozen_string_literal: true
 
-class OrgPreferenceCookie < PreferenceRecord
+class OrgPreferenceCookie < OperatorRecord
   belongs_to :preference, class_name: "OrgPreference", inverse_of: :org_preference_cookie
 
   validates :preference_id, uniqueness: true

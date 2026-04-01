@@ -20,12 +20,14 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  client_id             :string(64)       not null
-#  user_id               :bigint           not null
+#  staff_id              :bigint
+#  user_id               :bigint
 #
 # Indexes
 #
 #  index_authorization_codes_on_code        (code) UNIQUE
 #  index_authorization_codes_on_expires_at  (expires_at)
+#  index_authorization_codes_on_staff_id    (staff_id)
 #  index_authorization_codes_on_user_id     (user_id)
 #
 require "test_helper"

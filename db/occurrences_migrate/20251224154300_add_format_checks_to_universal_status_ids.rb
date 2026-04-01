@@ -6,14 +6,14 @@ class AddFormatChecksToUniversalStatusIds < ActiveRecord::Migration[8.2]
   FORMAT_REGEX = "^[A-Z0-9_]+$"
 
   def change
-    add_format_check :area_occurrence_statuses, :id
-    add_format_check :domain_occurrence_statuses, :id
-    add_format_check :email_occurrence_statuses, :id
-    add_format_check :ip_occurrence_statuses, :id
-    add_format_check :staff_occurrence_statuses, :id
-    add_format_check :telephone_occurrence_statuses, :id
-    add_format_check :user_occurrence_statuses, :id
-    add_format_check :zip_occurrence_statuses, :id
+    add_format_check(:area_occurrence_statuses, :id)
+    add_format_check(:domain_occurrence_statuses, :id)
+    add_format_check(:email_occurrence_statuses, :id)
+    add_format_check(:ip_occurrence_statuses, :id)
+    add_format_check(:staff_occurrence_statuses, :id)
+    add_format_check(:telephone_occurrence_statuses, :id)
+    add_format_check(:user_occurrence_statuses, :id)
+    add_format_check(:zip_occurrence_statuses, :id)
   end
 
   private

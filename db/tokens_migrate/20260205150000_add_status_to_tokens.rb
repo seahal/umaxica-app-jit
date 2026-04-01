@@ -11,16 +11,16 @@ class AddStatusToTokens < ActiveRecord::Migration[8.2]
   def change
     # Add status column to user_tokens
     safety_assured do
-      add_column :user_tokens, :status, :string, default: "active", null: false, limit: 20
+      add_column(:user_tokens, :status, :string, default: "active", null: false, limit: 20)
     end
 
     # Add status column to staff_tokens
     safety_assured do
-      add_column :staff_tokens, :status, :string, default: "active", null: false, limit: 20
+      add_column(:staff_tokens, :status, :string, default: "active", null: false, limit: 20)
     end
 
     # Add index for status queries (concurrently for safety)
-    add_index :user_tokens, :status, algorithm: :concurrently
-    add_index :staff_tokens, :status, algorithm: :concurrently
+    add_index(:user_tokens, :status, algorithm: :concurrently)
+    add_index(:staff_tokens, :status, algorithm: :concurrently)
   end
 end

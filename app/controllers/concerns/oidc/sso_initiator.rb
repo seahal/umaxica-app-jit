@@ -5,7 +5,7 @@ module Oidc
   module SsoInitiator
     extend ActiveSupport::Concern
 
-    # Override authenticate! from Auth::Base to use OIDC flow on RP domains.
+    # Override authenticate! from Authentication::Base to use OIDC flow on RP domains.
     # When a user is not logged in, instead of redirecting to sign-in directly,
     # we initiate the OIDC Authorization Code flow with PKCE.
     def authenticate!
@@ -35,7 +35,7 @@ module Oidc
       session[:oidc_state] = state
       session[:oidc_return_to] = return_to
 
-      redirect_to oidc_authorize_url(code_challenge, state), allow_other_host: true
+      redirect_to(oidc_authorize_url(code_challenge, state), allow_other_host: true)
     end
 
     def oidc_authorize_url(code_challenge, state)

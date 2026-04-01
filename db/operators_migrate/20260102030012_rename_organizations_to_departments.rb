@@ -5,7 +5,7 @@ class RenameOrganizationsToDepartments < ActiveRecord::Migration[8.2]
     # Rename organization_statuses table to department_statuses
     if table_exists?(:organization_statuses) && !table_exists?(:department_statuses)
       safety_assured do
-        rename_table :organization_statuses, :department_statuses
+        rename_table(:organization_statuses, :department_statuses)
       end
     end
 
@@ -13,11 +13,11 @@ class RenameOrganizationsToDepartments < ActiveRecord::Migration[8.2]
     # (Check both since workspaces was previously organizations)
     if table_exists?(:organizations) && !table_exists?(:departments)
       safety_assured do
-        rename_table :organizations, :departments
+        rename_table(:organizations, :departments)
       end
     elsif table_exists?(:workspaces) && !table_exists?(:departments)
       safety_assured do
-        rename_table :workspaces, :departments
+        rename_table(:workspaces, :departments)
       end
     end
 
@@ -25,7 +25,7 @@ class RenameOrganizationsToDepartments < ActiveRecord::Migration[8.2]
     return unless table_exists?(:departments) && column_exists?(:departments, :organization_status_id)
 
     safety_assured do
-      rename_column :departments, :organization_status_id, :department_status_id
+      rename_column(:departments, :organization_status_id, :department_status_id)
     end
 
   end

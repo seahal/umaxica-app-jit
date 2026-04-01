@@ -12,7 +12,7 @@ class FixMemberPublicIdAndStatusIndexes < ActiveRecord::Migration[8.2]
 
     safety_assured do
       connection.execute("ALTER TABLE members ALTER COLUMN public_id SET NOT NULL")
-      connection.remove_index :member_statuses, name: INDEX_NAME, algorithm: :concurrently, if_exists: true
+      connection.remove_index(:member_statuses, name: INDEX_NAME, algorithm: :concurrently, if_exists: true)
     end
   end
 
@@ -21,7 +21,10 @@ class FixMemberPublicIdAndStatusIndexes < ActiveRecord::Migration[8.2]
 
     safety_assured do
       unless connection.index_exists?(:member_statuses, "lower((id)::text)", name: INDEX_NAME)
-        connection.add_index :member_statuses, "lower((id)::text)", name: INDEX_NAME, unique: true, algorithm: :concurrently
+        connection.add_index(
+          :member_statuses, "lower((id)::text)", name: INDEX_NAME, unique: true,
+                                                 algorithm: :concurrently,
+        )
       end
       connection.execute("ALTER TABLE members ALTER COLUMN public_id DROP NOT NULL")
     end

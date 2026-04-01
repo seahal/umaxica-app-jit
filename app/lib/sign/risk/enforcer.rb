@@ -9,7 +9,12 @@ module Sign
         return unless feature_enabled?
         return unless resource
 
-        score = Engine.score(resource.id)
+        score =
+          if resource.respond_to?(:staff_tokens)
+            Engine.score(staff_id: resource.id)
+          else
+            Engine.score(user_id: resource.id)
+          end
 
         if score >= 100
           revoke!(resource)
@@ -19,20 +24,11 @@ module Sign
       end
 
       def self.revoke!(resource)
-        # Revoke all active tokens for this resource
-        # Assuming resource has association :user_tokens or :staff_tokens
-        # Or we use UserToken/StaffToken directly.
-        # Check resource class name to decide? Or use association
-
-        now = Time.current
-
-        revoke_token_set(resource.user_tokens, now) if resource.respond_to?(:user_tokens)
-        revoke_token_set(resource.staff_tokens, now) if resource.respond_to?(:staff_tokens)
-
-        # Also refresh families? update_all on tokens essentially kills the family if query is by user
+        revoke_token_set(resource.user_tokens) if resource.respond_to?(:user_tokens)
+        revoke_token_set(resource.staff_tokens) if resource.respond_to?(:staff_tokens)
       end
 
-      def self.revoke_token_set(tokens, _now)
+      def self.revoke_token_set(tokens)
         expiry_column = tokens.klass.column_names.include?("expired_at") ? :expired_at : :revoked_at
         tokens.where(expiry_column => nil).find_each do |token|
           token.revoke!
@@ -40,18 +36,27 @@ module Sign
       end
 
       def self.require_step_up!(resource)
-        # Mark step-up required.
-        # Implementation is no-op (flag only).
-        # We can store this in Redis to be picked up by middleware if needed.
-        return unless defined?(REDIS_CLIENT)
-
-        REDIS_CLIENT.set("sign:risk:step_up:#{resource.id}", "1", ex: 10.minutes)
+        # FIXME: Step-up authentication flag storage needs a persistent mechanism.
+        #   Previously used Redis SET with 10-minute TTL. Options:
+        #   (1) Store as an occurrence record with short deletable_at
+        #   (2) Use session-based flag
+        #   (3) Add a column to the token/resource table
+        #   Currently a no-op until the step-up verification reader is implemented.
+        Rails.event.info(
+          "sign.risk.enforcer.step_up_required",
+          resource_type: resource.class.name,
+          resource_id: resource.id,
+        )
       end
 
       def self.feature_enabled?
+        return false if ENV["RISK_ENFORCEMENT_DISABLED"] == "true"
+
         enabled_config = Rails.configuration.try(:x).try(:risk_enforcement).try(:enabled)
-        enabled_config || ENV["RISK_ENFORCEMENT_ENABLED"] == "true"
+        enabled_config || ENV["RISK_ENFORCEMENT_ENABLED"] == "true" || Rails.env.production?
       end
+
+      private_class_method :revoke_token_set
     end
   end
 end

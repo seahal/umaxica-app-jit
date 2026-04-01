@@ -20,7 +20,7 @@ class SetDefaultEmptyStringOnUserIdentityStrings < ActiveRecord::Migration[8.2]
 
     columns.each do |table, cols|
       cols.each do |col|
-        change_column_default table, col, from: nil, to: ""
+        change_column_default(table, col, from: nil, to: "")
       end
     end
   end

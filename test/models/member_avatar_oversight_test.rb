@@ -25,4 +25,7 @@
 require "test_helper"
 
 class MemberAvatarOversightTest < ActiveSupport::TestCase
+  test "class is defined" do
+    assert_equal "MemberAvatarOversight", MemberAvatarOversight.name
+  end
 end

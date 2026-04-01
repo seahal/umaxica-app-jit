@@ -6,6 +6,9 @@ require "openssl"
 module PreferenceJwtHelper
   PREFERENCE_JWT_KEY = OpenSSL::PKey::EC.generate("secp384r1")
 
+  # Preference::JwtConfiguration is defined alongside Preference::Base.
+  _ = Preference::Base
+
   # Encode a real preference JWT token for use in controller tests.
   # This uses actual Preference::Token.encode with stubbed keys, producing
   # a token that passes full JWT verification (signature, claims, host).
@@ -32,12 +35,18 @@ module PreferenceJwtHelper
   def with_preference_jwt_keys(host: nil)
     audiences = host ? [host] : Preference::JwtConfiguration.audiences
 
+    pub_key_for_stub = ->(_kid) { PREFERENCE_JWT_KEY }
+
     Preference::JwtConfiguration.stub(:private_key, PREFERENCE_JWT_KEY) do
       Preference::JwtConfiguration.stub(:public_key, PREFERENCE_JWT_KEY) do
-        Preference::JwtConfiguration.stub(:active_kid, "default") do
-          Preference::JwtConfiguration.stub(:issuer, "jit-preference") do
-            Preference::JwtConfiguration.stub(:audiences, audiences) do
-              yield
+        Preference::JwtConfiguration.stub(:private_key_for_active, PREFERENCE_JWT_KEY) do
+          Preference::JwtConfiguration.stub(:public_key_for, pub_key_for_stub) do
+            Preference::JwtConfiguration.stub(:active_kid, "default") do
+              Preference::JwtConfiguration.stub(:issuer, "jit-preference") do
+                Preference::JwtConfiguration.stub(:audiences, audiences) do
+                  yield
+                end
+              end
             end
           end
         end

@@ -78,7 +78,6 @@ class ComContactCategoryTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::DeleteRestrictionError) { category.destroy }
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   # test "should have timestamps" do
   #   category = ComContactCategory.create!(id: "test_com_category")
   #
@@ -87,5 +86,4 @@ class ComContactCategoryTest < ActiveSupport::TestCase
   #   assert_not_nil category.created_at
   #   assert_not_nil category.updated_at
   # end
-  # rubocop:enable Minitest/MultipleAssertions
 end

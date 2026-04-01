@@ -21,8 +21,10 @@ module Sign
       @available_methods = available_step_up_methods
     rescue ActionController::BadRequest
       session.delete(reauth_session_key)
-      redirect_to verification_invalid_request_redirect_path(ri: params[:ri]),
-                  alert: I18n.t("auth.step_up.invalid_request")
+      redirect_to(
+        verification_invalid_request_redirect_path(ri: params[:ri]),
+        alert: I18n.t("auth.step_up.invalid_request"),
+      )
     end
 
     private
