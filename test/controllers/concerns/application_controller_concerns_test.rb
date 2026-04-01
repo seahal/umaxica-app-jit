@@ -248,9 +248,9 @@ module Concerns
           ::RateLimit,
           ::Session,
           ::Preference::Global,
-          ::Authentication::User,
-          ::Authorization::User,
-          ::Verification::User,
+          ::Authentication::Customer,
+          ::Authorization::Customer,
+          ::Verification::Customer,
           Pundit::Authorization,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
@@ -289,6 +289,7 @@ module Concerns
         ],
         before_actions: %i(
           check_default_rate_limit
+          transparent_refresh_access_token
           enforce_access_policy!
           enforce_verification_if_required
           set_current

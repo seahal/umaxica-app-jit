@@ -70,6 +70,12 @@ module Apex
         assert_respond_to controller, :oidc_client_id
         assert_equal "apex_app", controller.send(:oidc_client_id)
       end
+
+      test "has oidc_sign_host method" do
+        controller = ApplicationController.new
+
+        assert_respond_to controller, :oidc_sign_host
+      end
     end
   end
 end

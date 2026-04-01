@@ -88,19 +88,14 @@ TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bi
 Modern browsers resolve `*.localhost` to `127.0.0.1`, so extra `/etc/hosts` entries are usually not
 needed.
 
-| Surface  | URL                                        |
-| :------- | :----------------------------------------- |
-| App apex | `http://app.localhost:3000`                |
-| Com apex | `http://com.localhost:3000`                |
-| Org apex | `http://org.localhost:3000`                |
-| App sign | `http://sign.app.localhost:3000`           |
-| Org sign | `http://sign.org.localhost:3000`           |
-| App core | `http://www.app.localhost:3000`            |
-| Com core | `http://www.com.localhost:3000`            |
-| Org core | `http://www.org.localhost:3000`            |
-| Docs     | `http://docs.{app,com,org}.localhost:3000` |
-| Help     | `http://help.{app,com,org}.localhost:3000` |
-| News     | `http://news.{app,com,org}.localhost:3000` |
+| Surface | URL                                        |
+| :------ | :----------------------------------------- |
+| Apex    | `http://{app,com,org}.localhost:3000`      |
+| Sign    | `http://sign.{org,com,app}.localhost:3000` |
+| core    | `http://www.{app,com,org}.localhost:3000`  |
+| Docs    | `http://docs.{app,com,org}.localhost:3000` |
+| Help    | `http://help.{app,com,org}.localhost:3000` |
+| News    | `http://news.{app,com,org}.localhost:3000` |
 
 ## Linting and Formatting
 

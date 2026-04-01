@@ -17,14 +17,10 @@ module News
 
       allow_browser versions: :modern
 
-      # NOTE: Order matters - Preference callbacks run before auth
+      # NOTE: Order matters (dependencies rely on this sequence)
+      # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
       before_action :reset_flash
-      skip_before_action :set_preferences_cookie, raise: false
-      skip_before_action :canonicalize_regional_params, raise: false
-      skip_before_action :set_locale, raise: false
-      skip_before_action :set_timezone, raise: false
-      skip_before_action :set_color_theme, raise: false
       prepend_before_action :set_preferences_cookie
       prepend_before_action :canonicalize_regional_params
       prepend_before_action :set_locale
@@ -35,6 +31,7 @@ module News
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
+      before_action :set_current_observability
       after_action :purge_current
 
       # FIXME: Resolve the URL issues before deploying.

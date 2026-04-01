@@ -38,6 +38,7 @@ module Apex
         before_filters = callbacks.select { |c| c.kind == :before }.map(&:filter)
 
         assert_includes before_filters, :check_default_rate_limit
+        assert_includes before_filters, :transparent_refresh_access_token
         assert_includes before_filters, :enforce_access_policy!
         assert_includes before_filters, :enforce_verification_if_required
         assert_includes before_filters, :set_current

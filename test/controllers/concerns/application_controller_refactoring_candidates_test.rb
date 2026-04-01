@@ -97,7 +97,7 @@ module Concerns
 
     test "all domains use consistent authentication pattern" do
       auth_patterns = {
-        "User" => { "Core" => %w(App Com), "Apex" => %w(App Com) },
+        "User" => { "Core" => %w(App Com), "Apex" => %w(App) },
         "Staff" => { "Core" => %w(Org),
                      "Apex" => %w(Org),
                      "Sign" => %w(Org),

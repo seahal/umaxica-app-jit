@@ -49,6 +49,10 @@ module Apex
         "apex_app"
       end
 
+      def oidc_sign_host
+        ENV.fetch("SIGN_APP_URL", "sign.app.localhost")
+      end
+
       private
     end
   end
