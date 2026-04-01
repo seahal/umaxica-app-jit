@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_31_222105) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -95,6 +95,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
     t.string "dbsc_session_id"
     t.bigint "dbsc_status_id", default: 0, null: false
     t.string "device_id"
+    t.string "device_id_digest"
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
@@ -108,6 +109,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
     t.index ["dbsc_session_id"], name: "index_app_preferences_on_dbsc_session_id", unique: true
     t.index ["dbsc_status_id"], name: "index_app_preferences_on_dbsc_status_id"
     t.index ["device_id"], name: "index_app_preferences_on_device_id"
+    t.index ["device_id_digest"], name: "index_app_preferences_on_device_id_digest"
     t.index ["jti"], name: "index_app_preferences_on_jti", unique: true
     t.index ["public_id"], name: "index_app_preferences_on_public_id", unique: true
     t.index ["replaced_by_id"], name: "index_app_preferences_on_replaced_by_id"
@@ -197,6 +199,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
     t.string "dbsc_session_id"
     t.bigint "dbsc_status_id", default: 0, null: false
     t.string "device_id"
+    t.string "device_id_digest"
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
@@ -210,6 +213,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
     t.index ["dbsc_session_id"], name: "index_com_preferences_on_dbsc_session_id", unique: true
     t.index ["dbsc_status_id"], name: "index_com_preferences_on_dbsc_status_id"
     t.index ["device_id"], name: "index_com_preferences_on_device_id"
+    t.index ["device_id_digest"], name: "index_com_preferences_on_device_id_digest"
     t.index ["jti"], name: "index_com_preferences_on_jti", unique: true
     t.index ["public_id"], name: "index_com_preferences_on_public_id", unique: true
     t.index ["replaced_by_id"], name: "index_com_preferences_on_replaced_by_id"
@@ -299,6 +303,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
     t.string "dbsc_session_id"
     t.bigint "dbsc_status_id", default: 0, null: false
     t.string "device_id"
+    t.string "device_id_digest"
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
@@ -312,6 +317,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
     t.index ["dbsc_session_id"], name: "index_org_preferences_on_dbsc_session_id", unique: true
     t.index ["dbsc_status_id"], name: "index_org_preferences_on_dbsc_status_id"
     t.index ["device_id"], name: "index_org_preferences_on_device_id"
+    t.index ["device_id_digest"], name: "index_org_preferences_on_device_id_digest"
     t.index ["jti"], name: "index_org_preferences_on_jti", unique: true
     t.index ["public_id"], name: "index_org_preferences_on_public_id", unique: true
     t.index ["replaced_by_id"], name: "index_org_preferences_on_replaced_by_id"
@@ -340,44 +346,44 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_120000) do
   end
 
   add_foreign_key "app_preference_colorthemes", "app_preference_colortheme_options", column: "option_id", name: "fk_app_preference_colorthemes_on_option_id"
-  add_foreign_key "app_preference_colorthemes", "app_preferences", column: "preference_id"
-  add_foreign_key "app_preference_cookies", "app_preferences", column: "preference_id"
+  add_foreign_key "app_preference_colorthemes", "app_preferences", column: "preference_id", validate: false
+  add_foreign_key "app_preference_cookies", "app_preferences", column: "preference_id", validate: false
   add_foreign_key "app_preference_languages", "app_preference_language_options", column: "option_id", name: "fk_app_preference_languages_on_option_id"
-  add_foreign_key "app_preference_languages", "app_preferences", column: "preference_id"
+  add_foreign_key "app_preference_languages", "app_preferences", column: "preference_id", validate: false
   add_foreign_key "app_preference_regions", "app_preference_region_options", column: "option_id", name: "fk_app_preference_regions_on_option_id"
-  add_foreign_key "app_preference_regions", "app_preferences", column: "preference_id"
+  add_foreign_key "app_preference_regions", "app_preferences", column: "preference_id", validate: false
   add_foreign_key "app_preference_timezones", "app_preference_timezone_options", column: "option_id", name: "fk_app_preference_timezones_on_option_id"
-  add_foreign_key "app_preference_timezones", "app_preferences", column: "preference_id"
+  add_foreign_key "app_preference_timezones", "app_preferences", column: "preference_id", validate: false
   add_foreign_key "app_preferences", "app_preference_binding_methods", column: "binding_method_id", name: "fk_app_preferences_on_binding_method_id"
   add_foreign_key "app_preferences", "app_preference_dbsc_statuses", column: "dbsc_status_id", name: "fk_app_preferences_on_dbsc_status_id"
   add_foreign_key "app_preferences", "app_preference_statuses", column: "status_id", name: "fk_app_preferences_on_status_id"
-  add_foreign_key "app_preferences", "app_preferences", column: "replaced_by_id", on_delete: :nullify
+  add_foreign_key "app_preferences", "app_preferences", column: "replaced_by_id", on_delete: :nullify, validate: false
   add_foreign_key "com_preference_colorthemes", "com_preference_colortheme_options", column: "option_id", name: "fk_com_preference_colorthemes_on_option_id"
-  add_foreign_key "com_preference_colorthemes", "com_preferences", column: "preference_id"
-  add_foreign_key "com_preference_cookies", "com_preferences", column: "preference_id"
+  add_foreign_key "com_preference_colorthemes", "com_preferences", column: "preference_id", validate: false
+  add_foreign_key "com_preference_cookies", "com_preferences", column: "preference_id", validate: false
   add_foreign_key "com_preference_languages", "com_preference_language_options", column: "option_id", name: "fk_com_preference_languages_on_option_id"
-  add_foreign_key "com_preference_languages", "com_preferences", column: "preference_id"
+  add_foreign_key "com_preference_languages", "com_preferences", column: "preference_id", validate: false
   add_foreign_key "com_preference_regions", "com_preference_region_options", column: "option_id", name: "fk_com_preference_regions_on_option_id"
-  add_foreign_key "com_preference_regions", "com_preferences", column: "preference_id"
+  add_foreign_key "com_preference_regions", "com_preferences", column: "preference_id", validate: false
   add_foreign_key "com_preference_timezones", "com_preference_timezone_options", column: "option_id", name: "fk_com_preference_timezones_on_option_id"
-  add_foreign_key "com_preference_timezones", "com_preferences", column: "preference_id"
+  add_foreign_key "com_preference_timezones", "com_preferences", column: "preference_id", validate: false
   add_foreign_key "com_preferences", "com_preference_binding_methods", column: "binding_method_id", name: "fk_com_preferences_on_binding_method_id"
   add_foreign_key "com_preferences", "com_preference_dbsc_statuses", column: "dbsc_status_id", name: "fk_com_preferences_on_dbsc_status_id"
   add_foreign_key "com_preferences", "com_preference_statuses", column: "status_id", name: "fk_com_preferences_on_status_id"
-  add_foreign_key "com_preferences", "com_preferences", column: "replaced_by_id", on_delete: :nullify
+  add_foreign_key "com_preferences", "com_preferences", column: "replaced_by_id", on_delete: :nullify, validate: false
   add_foreign_key "org_preference_colorthemes", "org_preference_colortheme_options", column: "option_id", name: "fk_org_preference_colorthemes_on_option_id"
-  add_foreign_key "org_preference_colorthemes", "org_preferences", column: "preference_id"
-  add_foreign_key "org_preference_cookies", "org_preferences", column: "preference_id"
+  add_foreign_key "org_preference_colorthemes", "org_preferences", column: "preference_id", validate: false
+  add_foreign_key "org_preference_cookies", "org_preferences", column: "preference_id", validate: false
   add_foreign_key "org_preference_languages", "org_preference_language_options", column: "option_id", name: "fk_org_preference_languages_on_option_id"
-  add_foreign_key "org_preference_languages", "org_preferences", column: "preference_id"
+  add_foreign_key "org_preference_languages", "org_preferences", column: "preference_id", validate: false
   add_foreign_key "org_preference_regions", "org_preference_region_options", column: "option_id", name: "fk_org_preference_regions_on_option_id"
-  add_foreign_key "org_preference_regions", "org_preferences", column: "preference_id"
+  add_foreign_key "org_preference_regions", "org_preferences", column: "preference_id", validate: false
   add_foreign_key "org_preference_timezones", "org_preference_timezone_options", column: "option_id", name: "fk_org_preference_timezones_on_option_id"
-  add_foreign_key "org_preference_timezones", "org_preferences", column: "preference_id"
+  add_foreign_key "org_preference_timezones", "org_preferences", column: "preference_id", validate: false
   add_foreign_key "org_preferences", "org_preference_binding_methods", column: "binding_method_id", name: "fk_org_preferences_on_binding_method_id"
   add_foreign_key "org_preferences", "org_preference_dbsc_statuses", column: "dbsc_status_id", name: "fk_org_preferences_on_dbsc_status_id"
   add_foreign_key "org_preferences", "org_preference_statuses", column: "status_id", name: "fk_org_preferences_on_status_id"
-  add_foreign_key "org_preferences", "org_preferences", column: "replaced_by_id", on_delete: :nullify
+  add_foreign_key "org_preferences", "org_preferences", column: "replaced_by_id", on_delete: :nullify, validate: false
   add_foreign_key "staff_org_preferences", "org_preferences", on_delete: :cascade
   add_foreign_key "user_app_preferences", "app_preferences", on_delete: :cascade
 end

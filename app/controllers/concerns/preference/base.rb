@@ -951,6 +951,9 @@ module Preference
         return [nil, false]
       end
 
+      # Don't create new preference if device binding was denied (security violation)
+      return [nil, false] if @preference_refresh_device_denied
+
       return [nil, false] unless create_if_missing
 
       @refresh_presented_digest = nil
@@ -963,13 +966,16 @@ module Preference
       expires_at = refresh_token_expiry
       generated_token = nil
 
+      generated_device_id = SecureRandom.uuid
+
       with_preference_connection(:writing) do
         preference_connection_owner.transaction do
           ensure_preference_reference_defaults!
           @preferences = preference_class.create!(
             expires_at: expires_at,
             jti: Jit::Security::Jwt::JtiGenerator.generate,
-            device_id: SecureRandom.uuid,
+            device_id: generated_device_id,
+            device_id_digest: digest_device_id(generated_device_id),
             binding_method_id: preference_binding_method_class::LEGACY,
             dbsc_status_id: preference_dbsc_status_class::NOTHING,
           )
@@ -1274,6 +1280,7 @@ module Preference
 
     def clear_preference_refresh_failure!
       @preference_refresh_failed = false
+      @preference_refresh_device_denied = false
     end
 
     def preference_refresh_failed?
@@ -1281,28 +1288,30 @@ module Preference
     end
 
     def extract_preference_refresh_device_id
-      header_device_id = request.headers[Preference::IoKeys::Headers::DEVICE_ID].to_s.presence
       cookie_device_id = read_preference_device_id_cookie
 
-      if header_device_id.blank? && cookie_device_id.blank?
+      if cookie_device_id.blank?
         @preference_refresh_device_reason = "missing"
         return nil
       end
 
-      if header_device_id.present? && cookie_device_id.present? && header_device_id != cookie_device_id
-        @preference_refresh_device_reason = "mismatch"
-        return nil
-      end
-
-      header_device_id || cookie_device_id
+      cookie_device_id
     end
 
     def preference_refresh_binding_allowed?(preference)
       return preference_refresh_dbsc_allowed?(preference) if preference.binding_method_dbsc?
 
       refresh_device_id = extract_preference_refresh_device_id
-      if refresh_device_id.blank? || preference.device_id.to_s != refresh_device_id.to_s
-        @preference_refresh_device_reason = refresh_device_id.blank? ? "missing" : "mismatch"
+      if refresh_device_id.blank?
+        @preference_refresh_device_reason = "missing"
+        return false
+      end
+
+      # Compare using SHA3-384 digest for security
+      # Cookie contains plaintext device_id, DB stores digest
+      presented_digest = digest_device_id(refresh_device_id)
+      if preference.device_id_digest.blank? || !secure_compare?(preference.device_id_digest, presented_digest)
+        @preference_refresh_device_reason = "mismatch"
         return false
       end
 
@@ -1332,6 +1341,7 @@ module Preference
     def handle_preference_refresh_device_denied(preference, refresh_public_id)
       clear_preference_auth_cookies!
       @preference_refresh_failed = true
+      @preference_refresh_device_denied = true
 
       Rails.logger.warn(
         {
@@ -1452,7 +1462,7 @@ module Preference
     end
 
     def set_preference_device_id_cookie!(device_id, expires_at:)
-      cookies.encrypted[preference_device_id_cookie_name] = preference_cookie_options(
+      cookies[preference_device_id_cookie_name] = preference_cookie_options(
         expires_at: expires_at,
         httponly: true,
       ).merge(
@@ -1461,7 +1471,7 @@ module Preference
     end
 
     def read_preference_device_id_cookie
-      cookies.encrypted[preference_device_id_cookie_name]
+      cookies[preference_device_id_cookie_name].to_s.presence
     end
 
     def clear_preference_auth_cookies!

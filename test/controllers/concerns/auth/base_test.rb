@@ -9,6 +9,11 @@ module Auth
       class MockCookies
         delegate :[], :[]=, to: :@store
 
+        def []=(key, value)
+          @store[key] = value
+          HeaderKeyHarness.encrypted_cookies[key] = value
+        end
+
         def initialize(store)
           @store = store
         end
@@ -56,7 +61,7 @@ module Auth
           Struct.new(:json?).new(false),
           "app.localhost", "req-123", "127.0.0.1",
         )
-        @cookies = MockCookies.new({}.with_indifferent_access)
+        @cookies = MockCookies.new(self.class.encrypted_cookies)
       end
 
       def cookies
@@ -319,15 +324,18 @@ module Auth
     test "set_device_id_cookie! and read_device_id_cookie" do
       harness = HeaderKeyHarness.new
       expires_at = 1.day.from_now
-
       HeaderKeyHarness.reset_encrypted_cookies!
 
       Core::CookieOptions.stub(:for, {}) do
         harness.send(:set_device_id_cookie!, "dev-123", expires_at: expires_at)
 
-        assert_equal "dev-123", HeaderKeyHarness.encrypted_cookies[Authentication::Base::DEVICE_COOKIE_KEY][:value]
+        # Cookie is now stored as plaintext (not encrypted) with options
+        cookie_value = harness.cookies[Authentication::Base::DEVICE_COOKIE_KEY]
 
-        HeaderKeyHarness.encrypted_cookies[Authentication::Base::DEVICE_COOKIE_KEY] = "dev-123"
+        assert_equal "dev-123", cookie_value.is_a?(Hash) ? cookie_value[:value] : cookie_value
+
+        # Set cookie directly for reading test
+        harness.cookies[Authentication::Base::DEVICE_COOKIE_KEY] = "dev-123"
 
         assert_equal "dev-123", harness.send(:read_device_id_cookie)
       end

@@ -228,19 +228,3 @@ RUN curl -fsSL https://vite.plus | bash
 ENV PATH="${HOME}/.vite-plus/bin:${PATH}"
 
 USER ${DOCKER_USER}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

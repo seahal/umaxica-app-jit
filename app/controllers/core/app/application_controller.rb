@@ -29,7 +29,7 @@ module Core
       before_action :enforce_withdrawal_gate! # TODO: REMOVE THIS. what the hell why we set this here?
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? } # TODO: what is this?
       before_action :enforce_access_policy! # TODO: what is this line?
-      before_action :enforce_verification_if_required  # TODO: what is this line?
+      before_action :enforce_verification_if_required # TODO: what is this line?
       before_action :set_current
       after_action :purge_current
 

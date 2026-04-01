@@ -7,6 +7,7 @@ module Authentication
   module Base
     extend ActiveSupport::Concern
     include Common::Redirect
+    include RefreshTokenShared
 
     # ==========================================================================
     # TOC (approximate)
@@ -1064,7 +1065,7 @@ module Authentication
     end
 
     def set_device_id_cookie!(device_id, expires_at:)
-      cookies.encrypted[device_cookie_key] = device_cookie_options(expires_at: expires_at).merge(value: device_id)
+      cookies[device_cookie_key] = device_cookie_options(expires_at: expires_at).merge(value: device_id)
     end
 
     def clear_device_id_cookie!
@@ -1080,7 +1081,17 @@ module Authentication
     end
 
     def read_device_id_cookie
-      cookies.encrypted[device_cookie_key].to_s.presence
+      store = cookies
+      cookie_value = store&.[](device_cookie_key)
+      stored_value =
+        if cookie_value.is_a?(Hash)
+          cookie_value[:value] || cookie_value["value"]
+        else
+          cookie_value
+        end
+      return stored_value.to_s.presence if stored_value.to_s.present?
+
+      request.headers[Auth::IoKeys::Headers::DEVICE_ID].to_s.presence
     end
 
     def set_auth_cookies(access_token:, refresh_token:, device_id:, access_expires_at:, refresh_expires_at:,
@@ -1456,30 +1467,33 @@ module Authentication
     end
 
     def refresh_device_allowed?(token_record)
-      header_device_id = request.headers[Auth::IoKeys::Headers::DEVICE_ID].to_s.presence
       cookie_device_id = read_device_id_cookie
 
-      if header_device_id.blank? && cookie_device_id.blank?
-        # In test environment, allow missing device ID to simplify tests
-        # ONLY if not explicitly requested via a strict-check header.
-        if Rails.env.test? && request.headers[Auth::IoKeys::Headers::STRICT_DEVICE_CHECK].blank?
-          return true
+      if cookie_device_id.blank?
+        @refresh_device_reason = "missing"
+        return false
+      end
+
+      return true if token_record.blank?
+
+      if token_record.device_id_digest.blank?
+        if token_record.device_id.present?
+          if token_record.device_id == cookie_device_id
+            return true
+          end
+
+          @refresh_device_reason = "mismatch"
+          return false
         end
 
         @refresh_device_reason = "missing"
         return false
       end
 
-      if header_device_id.present? && cookie_device_id.present? && header_device_id != cookie_device_id
-        @refresh_device_reason = "mismatch"
-        return false
-      end
-
-      extracted_device_id = header_device_id || cookie_device_id
-      return true if token_record.blank?
-
-      token_device_id = token_record.device_id.to_s
-      if token_device_id.blank? || token_device_id != extracted_device_id
+      # Compare using SHA3-384 digest for security
+      # Cookie contains plaintext device_id, DB stores digest
+      presented_digest = digest_device_id(cookie_device_id)
+      if token_record.device_id_digest.blank? || !secure_compare?(token_record.device_id_digest, presented_digest)
         @refresh_device_reason = "mismatch"
         return false
       end

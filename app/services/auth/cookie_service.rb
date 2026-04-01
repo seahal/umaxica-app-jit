@@ -17,7 +17,7 @@ module Auth
     end
 
     def set_device_id_cookie(device_id, expires_at)
-      cookies.encrypted[device_cookie_key] =
+      cookies[device_cookie_key] =
         device_cookie_options(expires_at: expires_at).merge(value: device_id)
     end
 
@@ -32,7 +32,7 @@ module Auth
     end
 
     def read_device_id_cookie
-      cookies.encrypted[device_cookie_key].to_s.presence
+      cookies[device_cookie_key].to_s.presence
     end
 
     def extract_access_token_from_request

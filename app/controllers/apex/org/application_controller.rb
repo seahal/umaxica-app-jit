@@ -7,11 +7,11 @@ module Apex
       include ::RateLimit
       include ::Session
       include ::Preference::Global
-      include ::Preference::Adoption  # FIXME: I hate this line.
+      include ::Preference::Adoption # FIXME: I hate this line.
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Verification::Staff
-      include Pundit::Authorization  # FIXME: I hate this line.
+      include Pundit::Authorization # FIXME: I hate this line.
       include ::Oidc::SsoInitiator # FIXME: I hate this line.
       include ::CurrentSupport
       include ::Finisher

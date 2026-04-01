@@ -55,6 +55,7 @@ module ConsumeOnceToken
       attrs = {
         status_id: consumed.status_id,
         device_id: new_device_id,
+        device_id_digest: digest_device_id(new_device_id),
         expires_at: now + PREFERENCE_REFRESH_TTL,
         jti: Jit::Security::Jwt::JtiGenerator.generate,
         binding_method_id: consumed.binding_method_id,

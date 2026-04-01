@@ -62,12 +62,14 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should succeed with valid refresh cookie (transparent refresh)" do
-    # Create a user token
-    token = UserToken.create!(user_id: @user.id)
+    # Create a user token with device_id
+    device_id = SecureRandom.uuid
+    token = UserToken.create!(user_id: @user.id, device_id: device_id, device_id_digest: Base64.strict_encode64(SHA3::Digest::SHA3_384.digest(device_id)))
     refresh_plain = token.rotate_refresh_token!
 
-    # Set only refresh cookie (no access token)
+    # Set refresh cookie and device_id cookie (no access token)
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = device_id
 
     get sign_app_configuration_url(ri: "jp")
 
@@ -77,12 +79,14 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not raise ReadOnlyError during transparent refresh" do
-    # Create a user token
-    token = UserToken.create!(user_id: @user.id)
+    # Create a user token with device_id
+    device_id = SecureRandom.uuid
+    token = UserToken.create!(user_id: @user.id, device_id: device_id, device_id_digest: Base64.strict_encode64(SHA3::Digest::SHA3_384.digest(device_id)))
     refresh_plain = token.rotate_refresh_token!
 
-    # Set only refresh cookie
+    # Set refresh cookie and device_id cookie
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = device_id
 
     # Should not raise any ReadOnlyError
     assert_nothing_raised do
@@ -93,12 +97,14 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should succeed even when audit fails during transparent refresh" do
-    # Create a user token
-    token = UserToken.create!(user_id: @user.id)
+    # Create a user token with device_id
+    device_id = SecureRandom.uuid
+    token = UserToken.create!(user_id: @user.id, device_id: device_id, device_id_digest: Base64.strict_encode64(SHA3::Digest::SHA3_384.digest(device_id)))
     refresh_plain = token.rotate_refresh_token!
 
-    # Set only refresh cookie
+    # Set refresh cookie and device_id cookie
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    cookies[Authentication::Base::DEVICE_COOKIE_KEY] = device_id
 
     # Simulate audit failure by overriding record_audit to raise an error
     @controller.define_singleton_method(:record_audit) do |*_args|

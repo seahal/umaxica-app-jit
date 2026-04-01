@@ -298,36 +298,36 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_154000) do
   end
 
   add_foreign_key "app_timeline_categories", "app_timeline_category_masters", name: "fk_app_timeline_categories_on_app_timeline_category_master_id"
-  add_foreign_key "app_timeline_categories", "app_timelines", on_delete: :cascade
+  add_foreign_key "app_timeline_categories", "app_timelines", on_delete: :cascade, validate: false
   add_foreign_key "app_timeline_category_masters", "app_timeline_category_masters", column: "parent_id", name: "fk_app_timeline_category_masters_parent"
   add_foreign_key "app_timeline_revisions", "app_timelines", on_delete: :cascade
   add_foreign_key "app_timeline_tag_masters", "app_timeline_tag_masters", column: "parent_id", name: "fk_app_timeline_tag_masters_parent"
   add_foreign_key "app_timeline_tags", "app_timeline_tag_masters", name: "fk_app_timeline_tags_on_app_timeline_tag_master_id"
-  add_foreign_key "app_timeline_tags", "app_timelines", on_delete: :cascade
-  add_foreign_key "app_timeline_versions", "app_timelines", on_delete: :cascade
-  add_foreign_key "app_timelines", "app_timeline_revisions", column: "latest_revision_id", on_delete: :nullify
+  add_foreign_key "app_timeline_tags", "app_timelines", on_delete: :cascade, validate: false
+  add_foreign_key "app_timeline_versions", "app_timelines", on_delete: :cascade, validate: false
+  add_foreign_key "app_timelines", "app_timeline_revisions", column: "latest_revision_id", on_delete: :nullify, validate: false
   add_foreign_key "app_timelines", "app_timeline_statuses", column: "status_id", name: "fk_app_timelines_on_status_id"
-  add_foreign_key "app_timelines", "app_timeline_versions", column: "latest_version_id", on_delete: :nullify
+  add_foreign_key "app_timelines", "app_timeline_versions", column: "latest_version_id", on_delete: :nullify, validate: false
   add_foreign_key "com_timeline_categories", "com_timeline_category_masters", name: "fk_com_timeline_categories_on_com_timeline_category_master_id"
-  add_foreign_key "com_timeline_categories", "com_timelines", on_delete: :cascade
+  add_foreign_key "com_timeline_categories", "com_timelines", on_delete: :cascade, validate: false
   add_foreign_key "com_timeline_category_masters", "com_timeline_category_masters", column: "parent_id", name: "fk_com_timeline_category_masters_parent"
   add_foreign_key "com_timeline_revisions", "com_timelines", on_delete: :cascade
   add_foreign_key "com_timeline_tag_masters", "com_timeline_tag_masters", column: "parent_id", name: "fk_com_timeline_tag_masters_parent"
   add_foreign_key "com_timeline_tags", "com_timeline_tag_masters", name: "fk_com_timeline_tags_on_com_timeline_tag_master_id"
-  add_foreign_key "com_timeline_tags", "com_timelines", on_delete: :cascade
-  add_foreign_key "com_timeline_versions", "com_timelines", on_delete: :cascade
-  add_foreign_key "com_timelines", "com_timeline_revisions", column: "latest_revision_id", on_delete: :nullify
+  add_foreign_key "com_timeline_tags", "com_timelines", on_delete: :cascade, validate: false
+  add_foreign_key "com_timeline_versions", "com_timelines", on_delete: :cascade, validate: false
+  add_foreign_key "com_timelines", "com_timeline_revisions", column: "latest_revision_id", on_delete: :nullify, validate: false
   add_foreign_key "com_timelines", "com_timeline_statuses", column: "status_id", name: "fk_com_timelines_on_status_id"
-  add_foreign_key "com_timelines", "com_timeline_versions", column: "latest_version_id", on_delete: :nullify
+  add_foreign_key "com_timelines", "com_timeline_versions", column: "latest_version_id", on_delete: :nullify, validate: false
   add_foreign_key "org_timeline_categories", "org_timeline_category_masters", name: "fk_org_timeline_categories_on_org_timeline_category_master_id"
-  add_foreign_key "org_timeline_categories", "org_timelines", on_delete: :cascade
+  add_foreign_key "org_timeline_categories", "org_timelines", on_delete: :cascade, validate: false
   add_foreign_key "org_timeline_category_masters", "org_timeline_category_masters", column: "parent_id", name: "fk_org_timeline_category_masters_parent"
   add_foreign_key "org_timeline_revisions", "org_timelines", on_delete: :cascade
   add_foreign_key "org_timeline_tag_masters", "org_timeline_tag_masters", column: "parent_id", name: "fk_org_timeline_tag_masters_parent"
   add_foreign_key "org_timeline_tags", "org_timeline_tag_masters", name: "fk_org_timeline_tags_on_org_timeline_tag_master_id"
-  add_foreign_key "org_timeline_tags", "org_timelines", on_delete: :cascade
-  add_foreign_key "org_timeline_versions", "org_timelines", on_delete: :cascade
-  add_foreign_key "org_timelines", "org_timeline_revisions", column: "latest_revision_id", on_delete: :nullify
+  add_foreign_key "org_timeline_tags", "org_timelines", on_delete: :cascade, validate: false
+  add_foreign_key "org_timeline_versions", "org_timelines", on_delete: :cascade, validate: false
+  add_foreign_key "org_timelines", "org_timeline_revisions", column: "latest_revision_id", on_delete: :nullify, validate: false
   add_foreign_key "org_timelines", "org_timeline_statuses", column: "status_id", name: "fk_org_timelines_on_status_id"
-  add_foreign_key "org_timelines", "org_timeline_versions", column: "latest_version_id", on_delete: :nullify
+  add_foreign_key "org_timelines", "org_timeline_versions", column: "latest_version_id", on_delete: :nullify, validate: false
 end

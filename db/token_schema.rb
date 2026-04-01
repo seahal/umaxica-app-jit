@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_29_031000) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_31_222106) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -65,6 +65,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_031000) do
     t.string "dbsc_session_id"
     t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id", default: "", null: false
+    t.string "device_id_digest"
     t.datetime "expired_at"
     t.datetime "last_step_up_at"
     t.string "last_step_up_scope"
@@ -87,6 +88,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_031000) do
     t.index ["dbsc_session_id"], name: "index_customer_tokens_on_dbsc_session_id", unique: true
     t.index ["deletable_at"], name: "index_customer_tokens_on_deletable_at"
     t.index ["device_id"], name: "index_customer_tokens_on_device_id"
+    t.index ["device_id_digest"], name: "index_customer_tokens_on_device_id_digest"
     t.index ["expired_at"], name: "index_customer_tokens_on_expired_at"
     t.index ["public_id"], name: "index_customer_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_customer_tokens_on_refresh_expires_at"
@@ -164,6 +166,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_031000) do
     t.string "dbsc_session_id"
     t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id", default: "", null: false
+    t.string "device_id_digest"
     t.datetime "expired_at"
     t.datetime "last_step_up_at"
     t.string "last_step_up_scope"
@@ -186,6 +189,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_031000) do
     t.index ["dbsc_session_id"], name: "index_staff_tokens_on_dbsc_session_id", unique: true
     t.index ["deletable_at"], name: "index_staff_tokens_on_deletable_at"
     t.index ["device_id"], name: "index_staff_tokens_on_device_id"
+    t.index ["device_id_digest"], name: "index_staff_tokens_on_device_id_digest"
     t.index ["expired_at"], name: "index_staff_tokens_on_expired_at"
     t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_staff_tokens_on_refresh_expires_at"
@@ -236,6 +240,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_031000) do
     t.string "dbsc_session_id"
     t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id", default: "", null: false
+    t.string "device_id_digest"
     t.datetime "expired_at"
     t.datetime "last_step_up_at"
     t.string "last_step_up_scope"
@@ -258,6 +263,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_031000) do
     t.index ["dbsc_session_id"], name: "index_user_tokens_on_dbsc_session_id", unique: true
     t.index ["deletable_at"], name: "index_user_tokens_on_deletable_at"
     t.index ["device_id"], name: "index_user_tokens_on_device_id"
+    t.index ["device_id_digest"], name: "index_user_tokens_on_device_id_digest"
     t.index ["expired_at"], name: "index_user_tokens_on_expired_at"
     t.index ["public_id"], name: "index_user_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_user_tokens_on_refresh_expires_at"

@@ -22,14 +22,14 @@ module Apex
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport -> O11y
       before_action :check_default_rate_limit
       before_action :reset_flash
-      prepend_before_action :set_preferences_cookie  # FIXME: I hate this line.
-      prepend_before_action :resolve_param_context  # FIXME: I hate this line.
+      prepend_before_action :set_preferences_cookie # FIXME: I hate this line.
+      prepend_before_action :resolve_param_context # FIXME: I hate this line.
       prepend_before_action :set_region # FIXME: I hate this line.
       prepend_before_action :set_locale # FIXME: I hate this line.
-      prepend_before_action :set_timezone  # FIXME: I hate this line.
-      prepend_before_action :set_color_theme  # FIXME: I hate this line.
-      before_action :enforce_withdrawal_gate!  # FIXME: I hate this line.
-      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }  # FIXME: I hate this line.
+      prepend_before_action :set_timezone # FIXME: I hate this line.
+      prepend_before_action :set_color_theme # FIXME: I hate this line.
+      before_action :enforce_withdrawal_gate! # FIXME: I hate this line.
+      before_action :transparent_refresh_access_token, unless: -> { request.format.json? } # FIXME: I hate this line.
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current

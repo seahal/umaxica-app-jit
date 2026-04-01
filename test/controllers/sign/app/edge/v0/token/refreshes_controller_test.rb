@@ -419,7 +419,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_equal "mismatch", occurrence.context["reason"]
   end
 
-  test "device_id cookie is encrypted, HttpOnly, and not raw UUID" do
+  test "device_id cookie is HttpOnly and contains raw UUID" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
@@ -436,7 +436,8 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     assert_not_nil device_line, "Response should set device_id cookie"
     assert_match(/httponly/i, device_line)
-    assert_no_match(
+    # Cookie now contains plaintext UUID (DB stores the digest for security)
+    assert_match(
       /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i,
       CGI.unescape(device_line),
     )
@@ -463,7 +464,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     # In production mode (real production, not stubbed), secure flag IS set via Rails.env.production? check
   end
 
-  test "device_id encrypted cookie roundtrips through cookies.encrypted" do
+  test "device_id cookie roundtrips and validates against digest" do
     token_record = UserToken.create!(user: @user, device_id: @device_id)
     refresh_plain = token_record.rotate_refresh_token!
     cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
@@ -501,7 +502,7 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     headers["X-CSRF-Token"] = csrf_token if with_csrf
     if device_id.present?
       headers["X-Device-Id"] = device_id
-      set_encrypted_cookie(Authentication::Base::DEVICE_COOKIE_KEY, device_id)
+      cookies[Authentication::Base::DEVICE_COOKIE_KEY] = device_id
     end
     headers
   end

@@ -16,6 +16,7 @@ module RefreshTokenable
     before_validation :ensure_refresh_token_family_id, on: :create
     before_validation :ensure_refresh_token_generation, on: :create
     before_validation :ensure_device_id, on: :create
+    before_validation :ensure_device_id_digest, on: :create
     validates :refresh_token_digest, uniqueness: true, allow_nil: true
   end
 
@@ -79,6 +80,7 @@ module RefreshTokenable
         refresh_token_generation: Integer(previous_token.refresh_token_generation.to_s, 10) + 1,
         refresh_expires_at: previous_token.refresh_expires_at,
         device_id: previous_token.device_id,
+        device_id_digest: column_names.include?("device_id_digest") ? digest_device_id(previous_token.device_id) : nil,
         dbsc_session_id: previous_token.dbsc_session_id,
         dbsc_public_key: previous_token.dbsc_public_key,
         dbsc_challenge: previous_token.dbsc_challenge,
@@ -229,5 +231,11 @@ module RefreshTokenable
     return unless has_attribute?(:device_id)
 
     self.device_id = SecureRandom.uuid if device_id.blank?
+  end
+
+  def ensure_device_id_digest
+    return unless has_attribute?(:device_id_digest)
+
+    self.device_id_digest = digest_device_id(device_id)
   end
 end

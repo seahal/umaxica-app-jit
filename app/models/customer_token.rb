@@ -12,6 +12,7 @@
 #  dbsc_challenge_issued_at         :datetime
 #  dbsc_public_key                  :jsonb
 #  deletable_at                     :datetime         default(Infinity), not null
+#  device_id_digest                 :string
 #  expired_at                       :datetime
 #  last_step_up_at                  :datetime
 #  last_step_up_scope               :string
@@ -45,6 +46,7 @@
 #  index_customer_tokens_on_dbsc_session_id                   (dbsc_session_id) UNIQUE
 #  index_customer_tokens_on_deletable_at                      (deletable_at)
 #  index_customer_tokens_on_device_id                         (device_id)
+#  index_customer_tokens_on_device_id_digest                  (device_id_digest)
 #  index_customer_tokens_on_expired_at                        (expired_at)
 #  index_customer_tokens_on_public_id                         (public_id) UNIQUE
 #  index_customer_tokens_on_refresh_expires_at                (refresh_expires_at)
