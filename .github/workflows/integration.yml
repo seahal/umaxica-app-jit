@@ -178,10 +178,11 @@ jobs:
       IDENTIFIER_REGION_CODE: "392"
       IDENTIFIER_INSTANCE_ID: "0123456789"
       # Domain URLs - APEX
-      PEAK_CORPORATE_URL: com.localhost
-      PEAK_SERVICE_URL: app.localhost
-      PEAK_STAFF_URL: org.localhost
+      APEX_CORPORATE_URL: com.localhost
+      APEX_SERVICE_URL: app.localhost
+      APEX_STAFF_URL: org.localhost
       # Domain URLs - Auth
+      SIGN_CORPORATE_URL: sign.com.localhost
       SIGN_SERVICE_URL: sign.app.localhost
       SIGN_STAFF_URL: sign.org.localhost
       TRUSTED_ORIGINS: http://sign.app.localhost,http://sign.org.localhost
