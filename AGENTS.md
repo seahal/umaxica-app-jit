@@ -134,6 +134,13 @@ controllers, views, and routes.
 - When making tradeoffs, document the affected quality characteristics in PRs, issues, or review
   notes when they materially influence scope, design, or testing.
 
+## Design Principles
+
+- Prefer SOLID design when shaping code and reviews.
+- Keep responsibilities small and focused.
+- Prefer stable abstractions and explicit dependencies over tight coupling.
+- Favor composition and clear interfaces over clever or deeply nested implementations.
+
 ## Commit & Pull Request Guidelines
 
 - Recent history uses short type-prefixed subjects (`[feat]`, `[update]`, `[refactor]`,
@@ -151,6 +158,12 @@ controllers, views, and routes.
 - Secret management: Rails credentials; never commit plaintext secrets.
 - WebAuthn commands require `TRUSTED_ORIGINS` set in environment.
 - Run hooks before commit: `lefthook run pre-commit` (audit, lint, Brakeman, tests).
+
+## Logging
+
+- For Rails 8.1 and later, use structured logging through `Rails.event` for application logs.
+- Prefer `Rails.event.record(...)` or `Rails.event.error(...)` with structured fields.
+- Do not add new application logging with `Rails.logger.*` when structured logging is available.
 
   <!--VITE PLUS START-->
 
@@ -244,6 +257,20 @@ documentation, features, and bugs.
   utilities.
 - **Type-Aware Linting:** There is no need to install `oxlint-tsgolint`, `vp lint --type-aware`
   works out of the box.
+
+## CI Integration
+
+For GitHub Actions, consider using
+[`voidzero-dev/setup-vp`](https://github.com/voidzero-dev/setup-vp) to replace separate
+`actions/setup-node`, package-manager setup, cache, and install steps with a single action.
+
+```yaml
+- uses: voidzero-dev/setup-vp@v1
+  with:
+    cache: true
+- run: vp check
+- run: vp test
+```
 
 ## Review Checklist for Agents
 

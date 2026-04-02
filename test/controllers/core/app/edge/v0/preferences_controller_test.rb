@@ -95,21 +95,17 @@ module Core
             assert_includes event_ids, AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED
           end
 
-          test "invalid refresh_token is ignored and new preference is created" do
-            # Use a fresh session
+          test "invalid refresh_token is rejected without creating a preference" do
             s = open_session
             s.host!(@host)
             s.cookies[preference_refresh_cookie_name] = "invalid.token"
 
-            # Note: without a device ID, it might fail early if we don't have it.
-            # But the requirement is to ignore invalid tokens.
-
-            s.assert_difference -> { AppPreference.count }, 1 do
-              s.get(main_app_edge_v0_preference_url)
+            s.assert_no_difference -> { AppPreference.count } do
+              s.get(main_app_edge_v0_preference_url, as: :json)
             end
-            s.assert_response :success
+            s.assert_response :unauthorized
 
-            assert_predicate s.response.parsed_body.dig("preference", "public_id"), :present?
+            assert_equal "invalid_refresh_token", s.response.parsed_body["error_code"]
           end
 
           test "legacy refresh token is accepted" do

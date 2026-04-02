@@ -9,9 +9,6 @@ class Core::Com::Web::V0::CookiesControllerTest < ActionDispatch::IntegrationTes
   setup do
     @host = ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost")
     host! @host
-
-    # Create a ComPreference record to satisfy the database requirements
-    ComPreference.create!(public_id: "test-preference") unless ComPreference.exists?(public_id: "test-preference")
   end
 
   test "GET show without access jwt returns consented false" do
@@ -51,7 +48,15 @@ class Core::Com::Web::V0::CookiesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "PATCH update with consented true updates preference cookie and issues access token" do
-    preference = ComPreference.last || ComPreference.create!(public_id: "test-pref-2")
+    preference = ComPreference.create!(status_id: ComPreferenceStatus::NOTHING)
+    ComPreferenceCookie.create!(
+      preference: preference,
+      targetable: false,
+      performant: false,
+      functional: false,
+      consented: false,
+      consented_at: nil,
+    )
 
     token = encode_preference_jwt(
       preferences: { "consented" => false },
@@ -70,5 +75,9 @@ class Core::Com::Web::V0::CookiesControllerTest < ActionDispatch::IntegrationTes
 
     assert_includes set_cookie, "preference_consented="
     assert_includes set_cookie, "#{Preference::CookieName.access}="
+    preference.reload
+
+    assert preference.com_preference_cookie.consented
+    assert_not_nil preference.com_preference_cookie.consented_at
   end
 end

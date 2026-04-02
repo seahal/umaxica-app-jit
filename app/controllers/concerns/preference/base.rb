@@ -919,6 +919,11 @@ module Preference
         return [nil, false]
       end
 
+      if token_value.present?
+        handle_preference_refresh_failed(preference, refresh_public_id)
+        return [nil, false]
+      end
+
       # Don't create new preference if device binding was denied (security violation)
       return [nil, false] if @preference_refresh_device_denied
 

@@ -8,10 +8,10 @@ class Core::Org::Auth::CallbacksControllerTest < ActionDispatch::IntegrationTest
     @host = ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
   end
 
-  test "returns client_id as main_org" do
+  test "returns client_id as core_org" do
     controller = Core::Org::Auth::CallbacksController.new
 
-    assert_equal "main_org", controller.send(:oidc_client_id)
+    assert_equal "core_org", controller.send(:oidc_client_id)
   end
 
   test "callback route exists" do

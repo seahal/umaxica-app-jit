@@ -3,7 +3,7 @@
 
 scope module: :core, as: :main do
   # for client site
-  constraints host: (ENV["MAIN_CORPORATE_URL"]) do
+  constraints host: (ENV["MAIN_CORPORATE_URL"] || ENV["CORE_CORPORATE_URL"]) do
     scope module: :com, as: :com do
       root to: "roots#index"
       # Health
@@ -39,7 +39,7 @@ scope module: :core, as: :main do
   end
 
   # service page
-  constraints host: (ENV["MAIN_SERVICE_URL"]) do
+  constraints host: (ENV["MAIN_SERVICE_URL"] || ENV["CORE_SERVICE_URL"]) do
     scope module: :app, as: :app do
       root to: "roots#index"
       # OIDC callback
@@ -79,7 +79,7 @@ scope module: :core, as: :main do
   end
 
   # For Staff's webpages
-  constraints host: (ENV["MAIN_STAFF_URL"]) do
+  constraints host: (ENV["MAIN_STAFF_URL"] || ENV["CORE_STAFF_URL"]) do
     # mount Karafka::Web::App, at: "/karafka"
     scope module: :org, as: :org do
       root to: "roots#index"

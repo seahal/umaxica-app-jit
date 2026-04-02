@@ -11,6 +11,6 @@ module Robots
   end
 
   def robots_txt
-    ""
+    "User-agent: *\nDisallow:\n"
   end
 end

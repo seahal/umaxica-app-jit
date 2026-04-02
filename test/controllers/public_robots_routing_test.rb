@@ -56,7 +56,7 @@ class PublicRobotsRoutingTest < ActionDispatch::IntegrationTest
       assert_not_predicate response, :redirect?
       if kind == "robots"
         assert_equal "text/plain; charset=utf-8", response.content_type
-        assert_equal "", response.body
+        assert_equal "User-agent: *\nDisallow:\n", response.body
       else
         assert_equal "application/xml; charset=utf-8", response.content_type
       end

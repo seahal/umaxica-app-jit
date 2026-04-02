@@ -14,7 +14,6 @@
 | 5   | `authentication/viewer.rb:10-13`           | `helper_method :current_viewer`                                                                                                                                                                                                                                        | -                                      |
 | 6   | `authorization_audit.rb:9-16`              | `include Common::Redirect`<br>`rescue_from Pundit::NotAuthorizedError`                                                                                                                                                                                                 | Common::Redirect                       |
 | 7   | `sign/error_responses.rb:16-25`            | `include Common::Redirect`<br>`rescue_from Pundit::NotAuthorizedError`<br>`rescue_from ApplicationError`<br>`rescue_from ActionController::InvalidCrossOriginRequest`                                                                                                  | Common::Redirect                       |
-| 8   | `sign/com/controller_behavior.rb:9-22`     | `include Sign::Com::RouteAliasHelper`<br>`helper Sign::Com::ApplicationHelper`<br>`layout "sign/com/application"`<br>`protect_from_forgery`<br>`before_action :enforce_required_telephone_registration!`                                                               | Sign::Com::RouteAliasHelper            |
 | 9   | `sign/org_verification_base.rb:18-22`      | `helper_method :verification_viewer`<br>`before_action :load_verification_viewer`<br>`before_action :verify_verification_viewer`                                                                                                                                       | -                                      |
 | 10  | `sign/app_verification_base.rb:23-28`      | 同上 (app版)                                                                                                                                                                                                                                                           | -                                      |
 | 11  | `sign/com_verification_base.rb:152-157`    | `helper_method :verification_com_user`<br>`before_action :load_verification_com_user`                                                                                                                                                                                  | -                                      |
@@ -45,7 +44,6 @@
 - `include Sign::ErrorResponses` (authentication/base)
 - `include SessionLimitGate` (authentication/base)
 - `include AuthorizationAudit` (authentication/user/staff/customer)
-- `include Sign::Com::RouteAliasHelper` (sign/com/controller_behavior)
 
 ### 2. helper_method登録 (ビューからの可用性)
 
@@ -70,7 +68,6 @@
 ### 5. before_action / after_action (コールバック)
 
 - `before_action :set_preferences_cookie` (preference/base)
-- `before_action :enforce_required_telephone_registration!` (sign/com/controller_behavior)
 - `after_action :_reset_current_state` (current_support)
 - 多数
 

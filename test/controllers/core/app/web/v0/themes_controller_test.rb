@@ -53,6 +53,6 @@ class Core::App::Web::V0::ThemesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "li", response.parsed_body["theme"]
     set_cookie = response.headers["Set-Cookie"].to_s
 
-    assert_includes set_cookie, "ct="
+    assert_includes set_cookie, "ct=li"
   end
 end

@@ -10,7 +10,7 @@ module Core
         private
 
         def oidc_client_id
-          "main_app"
+          "core_app"
         end
       end
     end

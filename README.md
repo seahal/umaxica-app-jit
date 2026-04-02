@@ -44,7 +44,7 @@ bin/importmap audit             # Audit pinned JS packages
 ## Local Setup
 
 - Docker and Docker Compose
-- Ruby `4.0.1`
+- Ruby `4.0.2`
 - Bundler
 - Node.js `20+`
 - `pnpm@10.27.0`
@@ -94,8 +94,6 @@ needed.
 | Sign    | `http://sign.{org,com,app}.localhost:3000` |
 | core    | `http://www.{app,com,org}.localhost:3000`  |
 | Docs    | `http://docs.{app,com,org}.localhost:3000` |
-| Help    | `http://help.{app,com,org}.localhost:3000` |
-| News    | `http://news.{app,com,org}.localhost:3000` |
 
 ## Linting and Formatting
 
@@ -111,6 +109,8 @@ vp check --fix
 Use `rubocop -a`, `erb_lint -a .`, and `vp check --fix` to apply auto-fixes where available.
 
 ## Testing
+
+### Rails Tests
 
 ```bash
 bundle exec rails test
