@@ -8,19 +8,19 @@ class Core::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses
 
   setup do
-    host! ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
+    host! ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
     @user = users(:one)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
 
   test "should get show when logged in" do
-    get core_app_configuration_url, headers: @headers
+    get main_app_configuration_url, headers: @headers
 
     assert_response :success
   end
 
   test "should redirect show when not logged in" do
-    get core_app_configuration_url(ri: "jp")
+    get main_app_configuration_url(ri: "jp")
 
     assert_response :redirect
     # First redirect: canonicalize_regional_params removes ri param
@@ -39,19 +39,19 @@ class Core::Com::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses
 
   setup do
-    host! ENV.fetch("CORE_CORPORATE_URL", "ww.com.localhost")
+    host! ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost")
     @user = users(:one)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
 
   test "should get show when logged in" do
-    get core_com_configuration_url, headers: @headers
+    get main_com_configuration_url, headers: @headers
 
     assert_response :success
   end
 
   test "should redirect show when not logged in" do
-    get core_com_configuration_url(ri: "jp")
+    get main_com_configuration_url(ri: "jp")
 
     assert_response :redirect
     # First redirect: canonicalize_regional_params removes ri param
@@ -69,19 +69,19 @@ class Core::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :staffs, :staff_statuses
 
   setup do
-    host! ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
+    host! ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
     @staff = staffs(:one)
     @headers = { "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
   end
 
   test "should get show when logged in" do
-    get core_org_configuration_url, headers: @headers
+    get main_org_configuration_url, headers: @headers
 
     assert_response :success
   end
 
   test "should redirect show when not logged in" do
-    get core_org_configuration_url(ri: "jp")
+    get main_org_configuration_url(ri: "jp")
 
     assert_response :redirect
     # First redirect: canonicalize_regional_params removes ri param

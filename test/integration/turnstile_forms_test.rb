@@ -14,11 +14,11 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
       # { name: "Sign::Org registration passkeys", env_key: "SIGN_STAFF_URL", path: "/registration/passkeys/new" },
       {
         name: "Core::App contacts",
-        env_key: "CORE_SERVICE_URL",
+        env_key: "MAIN_SERVICE_URL",
         path: "/contacts/new",
-        headers: core_app_contact_headers,
+        headers: main_app_contact_headers,
       },
-      { name: "Core::Com contacts", env_key: "CORE_CORPORATE_URL", path: "/contacts/new" },
+      { name: "Core::Com contacts", env_key: "MAIN_CORPORATE_URL", path: "/contacts/new" },
     ]
   end
 
@@ -76,7 +76,7 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
 
   private
 
-  def core_app_contact_headers
+  def main_app_contact_headers
     user = users(:one)
     ensure_contact_channels!(user)
     { "X-TEST-CURRENT-USER" => user.id.to_s }

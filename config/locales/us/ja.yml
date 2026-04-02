@@ -307,10 +307,28 @@ core:
     layout:
       nav:
         contact: お問い合わせ
+        sign_up: 新規登録
+        log_in: ログイン
+        configuration: 設定
+        logout: ログアウト
+    preferences:
+      footer:
+        home: ホーム
+        preference: 設定
   com:
     layout:
       nav:
         contact: お問い合わせ
+    preferences:
+      footer:
+        preference: 設定
+  org:
+    layout:
+      nav:
+        contact: お問い合わせ
+    preferences:
+      footer:
+        preference: 設定
   news:
     posts:
       index:
@@ -1534,5 +1552,3 @@ core:
         description_html: 当サイトでは、必須Cookieおよび分析・マーケティング目的のCookieを使用します。詳細は%{privacy_policy}をご確認ください。
         privacy_policy: プライバシーポリシー
         reject_all: すべて拒否
-        open_settings: 設定する
-        accept_all: すべて許可

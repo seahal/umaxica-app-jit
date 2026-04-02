@@ -41,6 +41,7 @@ module Sign
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
+      before_action :set_current_observability
       after_action :purge_current
 
       class << self

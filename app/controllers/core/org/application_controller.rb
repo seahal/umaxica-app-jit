@@ -26,9 +26,11 @@ module Core
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
       before_action :reset_flash
+      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
+      before_action :set_current_observability
       after_action :purge_current
 
       public_strict!

@@ -8,11 +8,12 @@ scope module: :sign, as: :sign do
   constraints host: SignHostEnv.service_url do
     scope module: :app, as: :app do
       root to: "roots#index"
-
-      # Health check and sitemap
-      resource :health, only: :show, defaults: { format: :html }
-      resource :sitemap, only: :show, defaults: { format: :xml }
-
+      # Health
+      resource :health, only: :show
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
       # Public web API: OTP delivery, cookie consent, theme
       namespace :web do
         namespace :v0 do
@@ -171,9 +172,12 @@ scope module: :sign, as: :sign do
     scope module: :com, as: :com do
       root to: "roots#index"
 
-      # Health check and sitemap
-      resource :health, only: :show, defaults: { format: :html }
-      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Health
+      resource :health, only: :show
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
 
       # Public web API: OTP delivery, cookie consent, theme
       namespace :web do
@@ -287,9 +291,12 @@ scope module: :sign, as: :sign do
     scope module: :org, as: :org do
       root to: "roots#index"
 
-      # Health check and sitemap
-      resource :health, only: :show, defaults: { format: :html }
-      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Health
+      resource :health, only: :show
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
 
       # Public web API: cookie consent, theme
       namespace :web do

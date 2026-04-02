@@ -899,43 +899,11 @@ module Preference
 
       token_value = refresh_token_value
       @refresh_token_value = token_value
-      refresh_public_id = nil
       @refresh_presented_digest = nil
       @refresh_public_id = nil
-      preference =
-        if token_value.present?
-          refresh_public_id, refresh_verifier = parse_refresh_token(token_value)
-          digest =
-            if refresh_verifier.present?
-              digest_refresh_token(refresh_verifier)
-            else
-              refresh_token_lookup_digest(token_value)
-            end
-          with_preference_connection(:writing) do
-            relation = preference_class.includes(preference_associations_to_preload)
-            if digest
-              @refresh_presented_digest = digest
-              @refresh_public_id = refresh_public_id
-              pref =
-                if refresh_public_id.present?
-                  relation.find_by(public_id: refresh_public_id)
-                else
-                  relation.find_by(token_digest: digest)
-                end
 
-              if pref.present? && pref.token_digest.present? && !secure_compare?(pref.token_digest, digest)
-                handle_preference_refresh_failed(pref, refresh_public_id)
-                return [nil, false]
-              end
-
-              if pref.present? && !preference_refresh_binding_allowed?(pref)
-                handle_preference_refresh_device_denied(pref, refresh_public_id)
-                return [nil, false]
-              end
-              pref
-            end
-          end
-        end
+      refresh_public_id, refresh_digest = refresh_token_data(token_value)
+      preference = find_refresh_preference(refresh_public_id, refresh_digest)
 
       if valid_refresh_preference?(preference)
         @preferences = preference
@@ -960,6 +928,58 @@ module Preference
       @refresh_public_id = nil
       preference = create_new_preference_record!
       [preference, true]
+    end
+
+    def refresh_token_data(token_value)
+      return [nil, nil] if token_value.blank?
+
+      refresh_public_id, refresh_verifier = parse_refresh_token(token_value)
+      refresh_digest =
+        if refresh_verifier.present?
+          digest_refresh_token(refresh_verifier)
+        else
+          refresh_token_lookup_digest(token_value)
+        end
+      [refresh_public_id, refresh_digest]
+    end
+
+    def find_refresh_preference(refresh_public_id, refresh_digest)
+      return nil if refresh_digest.blank?
+
+      @refresh_presented_digest = refresh_digest
+      @refresh_public_id = refresh_public_id
+
+      with_preference_connection(:writing) do
+        relation = preference_class.includes(preference_associations_to_preload)
+        pref =
+          if refresh_public_id.present?
+            relation.find_by(public_id: refresh_public_id)
+          else
+            relation.find_by(token_digest: refresh_digest)
+          end
+
+        digest_mismatch = refresh_digest_mismatch?(pref, refresh_digest)
+        binding_denied = pref.present? && !preference_refresh_binding_allowed?(pref)
+
+        return handle_invalid_refresh_digest(pref, refresh_public_id) if digest_mismatch
+        return handle_denied_refresh_binding(pref, refresh_public_id) if binding_denied
+
+        pref
+      end
+    end
+
+    def refresh_digest_mismatch?(pref, refresh_digest)
+      pref.present? && pref.token_digest.present? && !secure_compare?(pref.token_digest, refresh_digest)
+    end
+
+    def handle_invalid_refresh_digest(pref, refresh_public_id)
+      handle_preference_refresh_failed(pref, refresh_public_id)
+      nil
+    end
+
+    def handle_denied_refresh_binding(pref, refresh_public_id)
+      handle_preference_refresh_device_denied(pref, refresh_public_id)
+      nil
     end
 
     def create_new_preference_record!

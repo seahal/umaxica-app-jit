@@ -5,9 +5,9 @@ require "test_helper"
 
 class CoreContactsFlowTest < ActionDispatch::IntegrationTest
   setup do
-    @app_host = ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
-    @org_host = ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
-    @com_host = ENV.fetch("CORE_CORPORATE_URL", "ww.com.localhost")
+    @app_host = ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
+    @org_host = ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
+    @com_host = ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost")
 
     @user = users(:one)
     @staff = staffs(:one)
@@ -22,7 +22,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
 
   test "app contacts new redirects when not logged in" do
     host! @app_host
-    get new_core_app_contact_url
+    get new_main_app_contact_url
 
     assert_response :redirect
   end
@@ -31,19 +31,19 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     host! @app_host
     clear_user_channels(@user)
 
-    get new_core_app_contact_url, headers: app_auth_headers(@user)
+    get new_main_app_contact_url, headers: app_auth_headers(@user)
 
     assert_response :unprocessable_content
     assert_equal "email を登録してください", response.body
 
     add_user_email(@user)
 
-    get new_core_app_contact_url, headers: app_auth_headers(@user)
+    get new_main_app_contact_url, headers: app_auth_headers(@user)
 
     assert_response :unprocessable_content
     assert_equal "telephone を追加してください", response.body
 
-    post core_app_contacts_url, headers: app_auth_headers(@user), params: {
+    post main_app_contacts_url, headers: app_auth_headers(@user), params: {
       app_contact: base_contact_params.merge(title: "A", body: "B"),
     }
 
@@ -58,7 +58,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     add_user_telephone(@user)
 
     Jit::Security::TurnstileConfig.stub(:stealth_secret_key, nil) do
-      get new_core_app_contact_url, headers: app_auth_headers(@user)
+      get new_main_app_contact_url, headers: app_auth_headers(@user)
 
       assert_response :success
 
@@ -66,7 +66,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
         ["AppContact.count", "AppContactTopic.count", "AppContactEmail.count",
          "AppContactTelephone.count",], 1,
       ) do
-        post core_app_contacts_url, headers: app_auth_headers(@user), params: {
+        post main_app_contacts_url, headers: app_auth_headers(@user), params: {
           app_contact: base_contact_params.merge(title: "a" * 80, body: "b" * 8000),
         }
       end
@@ -77,14 +77,14 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
       assert_equal "a" * 80, contact.app_contact_topics.last.title
 
       assert_no_difference("AppContact.count") do
-        post core_app_contacts_url, headers: app_auth_headers(@user), params: {
+        post main_app_contacts_url, headers: app_auth_headers(@user), params: {
           app_contact: base_contact_params.merge(title: "a" * 81, body: "body"),
         }
       end
       assert_response :unprocessable_content
 
       assert_no_difference("AppContact.count") do
-        post core_app_contacts_url, headers: app_auth_headers(@user), params: {
+        post main_app_contacts_url, headers: app_auth_headers(@user), params: {
           app_contact: base_contact_params.merge(title: "valid title", body: "b" * 8001),
         }
       end
@@ -94,7 +94,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
 
   test "org contacts new redirects when not logged in" do
     host! @org_host
-    get new_core_org_contact_url
+    get new_main_org_contact_url
 
     assert_response :redirect
   end
@@ -103,13 +103,13 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     host! @org_host
     clear_staff_channels(@staff)
 
-    get new_core_org_contact_url, headers: org_auth_headers(@staff)
+    get new_main_org_contact_url, headers: org_auth_headers(@staff)
 
     assert_response :unprocessable_content
     assert_equal "email を登録してください", response.body
 
     add_staff_email(@staff)
-    get new_core_org_contact_url, headers: org_auth_headers(@staff)
+    get new_main_org_contact_url, headers: org_auth_headers(@staff)
 
     assert_response :unprocessable_content
     assert_equal "telephone を追加してください", response.body
@@ -126,7 +126,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
         ["OrgContact.count", "OrgContactTopic.count", "OrgContactEmail.count",
          "OrgContactTelephone.count",], 1,
       ) do
-        post core_org_contacts_url, headers: org_auth_headers(@staff), params: {
+        post main_org_contacts_url, headers: org_auth_headers(@staff), params: {
           org_contact: base_contact_params.merge(
             category_id: OrgContactCategory::ORGANIZATION_INQUIRY,
             title: "Org inquiry",
@@ -147,7 +147,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     add_staff_email(@staff)
     add_staff_telephone(@staff)
 
-    get new_core_org_contact_url(category: "invalid"), headers: org_auth_headers(@staff)
+    get new_main_org_contact_url(category: "invalid"), headers: org_auth_headers(@staff)
 
     assert_response :success
   end
@@ -159,7 +159,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     add_staff_telephone(@staff)
 
     category = OrgContactCategory.first
-    get new_core_org_contact_url(category: category.id), headers: org_auth_headers(@staff)
+    get new_main_org_contact_url(category: category.id), headers: org_auth_headers(@staff)
 
     assert_response :success
   end
@@ -176,7 +176,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
           ["OrgContact.count", "OrgContactTopic.count", "OrgContactEmail.count",
            "OrgContactTelephone.count",], 1,
         ) do
-          post core_org_contacts_url, headers: org_auth_headers(@staff), params: {
+          post main_org_contacts_url, headers: org_auth_headers(@staff), params: {
             :org_contact => base_contact_params.merge(
               category_id: OrgContactCategory::ORGANIZATION_INQUIRY,
               title: "Org inquiry with turnstile",
@@ -197,7 +197,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     add_staff_telephone(@staff)
 
     Jit::Security::TurnstileConfig.stub(:stealth_secret_key, nil) do
-      post core_org_contacts_url, headers: org_auth_headers(@staff), params: {
+      post main_org_contacts_url, headers: org_auth_headers(@staff), params: {
         org_contact: base_contact_params.merge(
           category_id: OrgContactCategory::ORGANIZATION_INQUIRY,
           title: "",
@@ -214,12 +214,12 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
 
-    get new_core_com_contact_url
+    get new_main_com_contact_url
 
     assert_response :success
 
     assert_difference(["ComContact.count", "ComContactTopic.count"], 1) do
-      post core_com_contacts_url, params: {
+      post main_com_contacts_url, params: {
         com_contact: {
           category_id: ComContactCategory::SECURITY_ISSUE,
           confirm_policy: "1",

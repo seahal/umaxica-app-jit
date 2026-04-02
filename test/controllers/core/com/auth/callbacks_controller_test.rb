@@ -5,13 +5,13 @@ require "test_helper"
 
 class Core::Com::Auth::CallbacksControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @host = ENV.fetch("CORE_CORPORATE_URL", "ww.com.localhost")
+    @host = ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost")
   end
 
-  test "returns client_id as core_com" do
+  test "returns client_id as main_com" do
     controller = Core::Com::Auth::CallbacksController.new
 
-    assert_equal "core_com", controller.send(:oidc_client_id)
+    assert_equal "main_com", controller.send(:oidc_client_id)
   end
 
   test "callback route exists" do

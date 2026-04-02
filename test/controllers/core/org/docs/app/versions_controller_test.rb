@@ -9,31 +9,31 @@ module Core
       module App
         class VersionsControllerTest < ActionDispatch::IntegrationTest
           test "should get new" do
-            get new_core_org_docs_app_post_version_url("post_id")
+            get new_main_org_docs_app_post_version_url("post_id")
 
             assert_response :success
           end
 
           test "should create version" do
-            post core_org_docs_app_post_versions_url("post_id")
+            post main_org_docs_app_post_versions_url("post_id")
 
             assert_response :success
           end
 
           test "should get edit" do
-            get edit_core_org_docs_app_post_version_url("post_id", "id")
+            get edit_main_org_docs_app_post_version_url("post_id", "id")
 
             assert_response :success
           end
 
           test "should update version" do
-            patch core_org_docs_app_post_version_url("post_id", "id")
+            patch main_org_docs_app_post_version_url("post_id", "id")
 
             assert_response :success
           end
 
           test "should destroy version" do
-            delete core_org_docs_app_post_version_url("post_id", "id")
+            delete main_org_docs_app_post_version_url("post_id", "id")
 
             assert_response :success
           end

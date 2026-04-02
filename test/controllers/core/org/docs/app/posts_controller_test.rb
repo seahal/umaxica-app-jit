@@ -9,43 +9,43 @@ module Core
       module App
         class PostsControllerTest < ActionDispatch::IntegrationTest
           test "should get index" do
-            get core_org_docs_app_posts_url
+            get main_org_docs_app_posts_url
 
             assert_response :success
           end
 
           test "should get new" do
-            get new_core_org_docs_app_post_url
+            get new_main_org_docs_app_post_url
 
             assert_response :success
           end
 
           test "should create post" do
-            post core_org_docs_app_posts_url
+            post main_org_docs_app_posts_url
 
             assert_response :success
           end
 
           test "should show post" do
-            get core_org_docs_app_post_url("id")
+            get main_org_docs_app_post_url("id")
 
             assert_response :success
           end
 
           test "should get edit" do
-            get edit_core_org_docs_app_post_url("id")
+            get edit_main_org_docs_app_post_url("id")
 
             assert_response :success
           end
 
           test "should update post" do
-            patch core_org_docs_app_post_url("id")
+            patch main_org_docs_app_post_url("id")
 
             assert_response :success
           end
 
           test "should destroy post" do
-            delete core_org_docs_app_post_url("id")
+            delete main_org_docs_app_post_url("id")
 
             assert_response :success
           end

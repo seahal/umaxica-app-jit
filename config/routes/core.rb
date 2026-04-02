@@ -1,18 +1,21 @@
 # typed: false
 # frozen_string_literal: true
 
-scope module: :core, as: :core do
+scope module: :core, as: :main do
   # for client site
-  constraints host: (ENV["CORE_CORPORATE_URL"]) do
+  constraints host: (ENV["MAIN_CORPORATE_URL"]) do
     scope module: :com, as: :com do
       root to: "roots#index"
+      # Health
+      resource :health, only: :show
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
       # OIDC callback
       namespace :auth do
         resource :callback, only: :show
       end
-      # health check for html
-      resource :health, only: :show, format: :html
-      resource :sitemap, only: :show, defaults: { format: :xml }
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
@@ -36,16 +39,19 @@ scope module: :core, as: :core do
   end
 
   # service page
-  constraints host: (ENV["CORE_SERVICE_URL"]) do
+  constraints host: (ENV["MAIN_SERVICE_URL"]) do
     scope module: :app, as: :app do
       root to: "roots#index"
       # OIDC callback
       namespace :auth do
         resource :callback, only: :show
       end
-      # endpoint of health check
+      # Health
       resource :health, only: :show
-      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
@@ -73,7 +79,7 @@ scope module: :core, as: :core do
   end
 
   # For Staff's webpages
-  constraints host: (ENV["CORE_STAFF_URL"]) do
+  constraints host: (ENV["MAIN_STAFF_URL"]) do
     # mount Karafka::Web::App, at: "/karafka"
     scope module: :org, as: :org do
       root to: "roots#index"
@@ -81,9 +87,12 @@ scope module: :core, as: :core do
       namespace :auth do
         resource :callback, only: :show
       end
-      # health check for html
+      # Health
       resource :health, only: :show
-      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)

@@ -31,6 +31,7 @@ module Core
       before_action :enforce_access_policy! # TODO: what is this line?
       before_action :enforce_verification_if_required # TODO: what is this line?
       before_action :set_current
+      before_action :set_current_observability
       after_action :purge_current
 
       # FIXME: re-set

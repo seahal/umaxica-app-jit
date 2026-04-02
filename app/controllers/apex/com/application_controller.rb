@@ -7,9 +7,9 @@ module Apex
       include ::RateLimit
       include ::Session
       include ::Preference::Global
-      include ::Authentication::User
-      include ::Authorization::User
-      include ::Verification::User
+      include ::Authentication::Customer
+      include ::Authorization::Customer
+      include ::Verification::Customer
       include Pundit::Authorization
       include ::Oidc::SsoInitiator
       include ::CurrentSupport
@@ -47,6 +47,10 @@ module Apex
 
       def oidc_client_id
         "apex_com"
+      end
+
+      def oidc_sign_host
+        ENV.fetch("SIGN_APP_URL", "sign.app.localhost")
       end
 
       private

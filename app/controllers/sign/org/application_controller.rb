@@ -31,9 +31,11 @@ module Sign
       prepend_before_action :set_timezone
       prepend_before_action :set_color_theme
       before_action :enforce_restricted_session_guard!
+      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
+      before_action :set_current_observability
       after_action :purge_current
 
       protect_from_forgery using: :header_or_legacy_token,

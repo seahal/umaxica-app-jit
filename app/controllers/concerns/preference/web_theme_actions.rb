@@ -27,8 +27,8 @@ module Preference
     end
 
     def update
-      apply_theme_update_from_request!
-      render json: { theme: current_color_theme }, status: :ok
+      theme = apply_theme_update_from_request!
+      render json: { theme: theme || current_color_theme }, status: :ok
     end
   end
 end

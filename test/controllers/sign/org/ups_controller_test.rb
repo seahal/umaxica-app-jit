@@ -22,7 +22,7 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
   test "renders recruit contact and home links" do
     get new_sign_org_up_url(ri: "jp"), headers: { "Host" => @host }
 
-    core_host = ENV["CORE_STAFF_URL"].presence || "core.org.localhost"
+    core_host = ENV["MAIN_STAFF_URL"].presence || "main.org.localhost"
     # Match the URL while allowing any order of query parameters
     assert_select "div a[href^=?]", "http://#{core_host}/contacts/new",
                   text: I18n.t("sign.org.ups.new.recruit_link_text")

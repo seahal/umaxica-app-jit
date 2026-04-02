@@ -56,7 +56,7 @@ module Core
 
         write_behavior_event(@contact)
         redirect_to(
-          core_app_contact_url(@contact, **core_service_redirect_options),
+          main_app_contact_url(@contact, **main_service_redirect_options),
           notice: I18n.t("help.app.contacts.create.success"),
         )
       rescue ActiveRecord::RecordInvalid
@@ -169,7 +169,7 @@ module Core
         )
       end
 
-      def core_service_redirect_options
+      def main_service_redirect_options
         {
           host: core_service_host,
           port: request.port,
@@ -178,7 +178,7 @@ module Core
       end
 
       def core_service_host
-        env_url = ENV["CORE_SERVICE_URL"].presence
+        env_url = ENV["MAIN_SERVICE_URL"].presence
         return request.host unless env_url
 
         begin
