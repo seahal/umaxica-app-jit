@@ -5,7 +5,11 @@ module Core
   module Org
     module Help
       module Com
+<<<<<<< HEAD
         class ContactsController < ApplicationController
+=======
+        class ContactsController < Core::Org::ApplicationController
+>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.)
           public_strict!
 
           def index

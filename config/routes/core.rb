@@ -1,7 +1,11 @@
 # typed: false
 # frozen_string_literal: true
 
+<<<<<<< HEAD:config/routes/core.rb
 scope module: :core, as: :core do
+=======
+scope module: :core, as: :main do
+>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):config/routes/main.rb
   # for client site
   constraints host: (ENV["CORE_CORPORATE_URL"]) do
     scope module: :com, as: :com do

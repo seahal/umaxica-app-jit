@@ -1,33 +1,17 @@
 # typed: false
 # frozen_string_literal: true
 
+<<<<<<<< HEAD:app/lib/core/host_normalization.rb
 require "uri"
 
 module Core
+========
+# Main::HostNormalization delegates to Core::HostNormalization for backward compatibility
+module Main
+>>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):app/lib/main/host_normalization.rb
   module HostNormalization
-    module_function
-
-    def normalize(value)
-      return nil if value.blank?
-
-      str = value.to_s.strip
-      return nil if str.blank?
-
-      host = parsed_host(str) || fallback_host(str)
-      host&.downcase&.delete_suffix(".")
+    def self.normalize(value)
+      Core::HostNormalization.normalize(value)
     end
-
-    def parsed_host(str)
-      candidate = str.match?(%r{\A[A-Za-z][A-Za-z0-9+\-.]*://}) ? str : "//#{str}"
-      URI.parse(candidate).host.presence
-    rescue URI::InvalidURIError
-      nil
-    end
-    private_class_method :parsed_host
-
-    def fallback_host(str)
-      str.sub(%r{\Ahttps?://}i, "").split("/").first.to_s.split(":").first
-    end
-    private_class_method :fallback_host
   end
 end

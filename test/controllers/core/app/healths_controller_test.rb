@@ -6,6 +6,10 @@ require "test_helper"
 module Core
   module App
     class HealthsControllerTest < ActionDispatch::IntegrationTest
+      setup do
+        host! ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
+      end
+
       test "should get show" do
         get core_app_health_url
 

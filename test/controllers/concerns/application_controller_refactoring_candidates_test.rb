@@ -17,9 +17,12 @@ module Concerns
         Core::App
         Core::Com
         Core::Org
+<<<<<<< HEAD
         Docs::App
         Docs::Com
         Docs::Org
+=======
+>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.)
         News::App
         News::Com
         News::Org

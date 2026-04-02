@@ -8,6 +8,10 @@ module Core
     module News
       module Org
         class VersionsControllerTest < ActionDispatch::IntegrationTest
+          setup do
+            host! ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
+          end
+
           test "should get new" do
             get new_core_org_news_org_post_version_url("post_id")
 

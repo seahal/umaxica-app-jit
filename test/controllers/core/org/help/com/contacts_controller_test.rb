@@ -8,6 +8,10 @@ module Core
     module Help
       module Com
         class ContactsControllerTest < ActionDispatch::IntegrationTest
+          setup do
+            host! ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
+          end
+
           test "should get index" do
             get core_org_help_com_contacts_url
 

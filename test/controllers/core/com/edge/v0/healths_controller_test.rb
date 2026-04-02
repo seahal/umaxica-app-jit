@@ -8,6 +8,10 @@ module Core
     module Edge
       module V0
         class HealthsControllerTest < ActionDispatch::IntegrationTest
+          setup do
+            host! ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost")
+          end
+
           test "returns success for default format" do
             get core_com_edge_v0_health_url
 

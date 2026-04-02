@@ -1,29 +1,17 @@
 # typed: false
 # frozen_string_literal: true
 
+<<<<<<<< HEAD:app/lib/core/cookie_domain.rb
 module Core
+========
+# Main::CookieDomain delegates to Core::CookieDomain for backward compatibility
+module Main
+>>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):app/lib/main/cookie_domain.rb
   module CookieDomain
-    HOST_ONLY = "HOST_ONLY"
-    SURFACE_CREDENTIAL_KEYS = {
-      app: :COOKIE_DOMAIN_APP,
-      com: :COOKIE_DOMAIN_COM,
-      org: :COOKIE_DOMAIN_ORG,
-    }.freeze
-
-    module_function
-
-    def for(surface:, request_host:)
-      host = normalize_host(request_host)
-
-      # In development/test with localhost, always derive from the request host
-      # so cookies are not set for a production domain the browser will reject.
-      return derive_from_host(request_host) if localhost_host?(host.to_s)
-
-      configured = Rails.app.creds.option(SURFACE_CREDENTIAL_KEYS.fetch(surface.to_sym))&.strip
-      return normalize_configured(configured) if configured.present?
-
-      derive_from_host(request_host)
+    def self.for(surface:, request_host:)
+      Core::CookieDomain.for(surface: surface, request_host: request_host)
     end
+<<<<<<<< HEAD:app/lib/core/cookie_domain.rb
 
     def normalize_configured(value)
       return nil if value.blank?
@@ -79,5 +67,7 @@ module Core
       parts.last(2).join(".")
     end
     private_class_method :best_effort_apex
+========
+>>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):app/lib/main/cookie_domain.rb
   end
 end

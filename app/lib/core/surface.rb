@@ -1,34 +1,29 @@
 # typed: false
 # frozen_string_literal: true
 
+<<<<<<<< HEAD:app/lib/core/surface.rb
 module Core
+========
+# Main::Surface delegates to Core::Surface for backward compatibility
+module Main
+>>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):app/lib/main/surface.rb
   module Surface
-    ENV_KEY = "jit.surface"
-    DEFAULT = :com
-    SURFACES = %i(app com org).freeze
+    ENV_KEY = Core::Surface::ENV_KEY
+    DEFAULT = Core::Surface::DEFAULT
+    SURFACES = Core::Surface::SURFACES
 
-    module_function
-
-    def detect(request)
-      host = normalized_host(extract_host(request))
-      return DEFAULT if host.blank?
-
-      labels = host.split(".")
-      labels.each do |label|
-        surface = label.to_sym
-        return surface if SURFACES.include?(surface)
-      end
-
-      DEFAULT
+    def self.detect(request)
+      Core::Surface.detect(request)
     end
 
-    def current(request)
-      detect(request)
+    def self.current(request)
+      Core::Surface.current(request)
     end
 
-    def matches?(request, surface)
-      current(request) == surface.to_sym
+    def self.matches?(request, surface)
+      Core::Surface.matches?(request, surface)
     end
+<<<<<<<< HEAD:app/lib/core/surface.rb
 
     def normalized_host(value)
       Core::HostNormalization.normalize(value)
@@ -41,5 +36,7 @@ module Core
       request.to_s
     end
     private_class_method :extract_host
+========
+>>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):app/lib/main/surface.rb
   end
 end
