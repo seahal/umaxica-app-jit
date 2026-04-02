@@ -182,8 +182,8 @@ jobs:
       PEAK_SERVICE_URL: app.localhost
       PEAK_STAFF_URL: org.localhost
       # Domain URLs - Auth
-      AUTH_SERVICE_URL: sign.app.localhost
-      AUTH_STAFF_URL: sign.org.localhost
+      SIGN_SERVICE_URL: sign.app.localhost
+      SIGN_STAFF_URL: sign.org.localhost
       TRUSTED_ORIGINS: http://sign.app.localhost,http://sign.org.localhost
       # Domain URLs - Core
       CORE_CORPORATE_URL: ww.com.localhost
