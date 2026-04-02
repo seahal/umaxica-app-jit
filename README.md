@@ -14,7 +14,7 @@ and subdomain matter in both development and production.
 
 ## Stack
 
-- Ruby `4.0.1`
+- Ruby `4.0.2`
 - PostgreSQL
   - Solid Queue
 - Valkey/Redis
