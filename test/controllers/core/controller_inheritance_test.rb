@@ -22,9 +22,6 @@ class CoreControllerInheritanceTest < ActiveSupport::TestCase
     assert_equal Core::Org::ApplicationController, Core::Org::RootsController.superclass
     assert_equal Core::Org::ApplicationController, Core::Org::ContactsController.superclass
     assert_equal Core::Org::ApplicationController, Core::Org::ConfigurationsController.superclass
-    assert_equal Core::Org::ApplicationController, Core::Org::Help::Com::ContactsController.superclass
-    assert_equal Core::Org::ApplicationController, Core::Org::Help::Org::ContactsController.superclass
-    assert_equal Core::Org::ApplicationController, Core::Org::Help::App::ContactsController.superclass
   end
 
   test "auth callbacks inherit from ApplicationController" do
@@ -55,12 +52,6 @@ class CoreControllerInheritanceTest < ActiveSupport::TestCase
     assert_equal Core::Org::ApplicationController, Core::Org::Docs::Com::PostsController.superclass
     assert_equal Core::Org::ApplicationController, Core::Org::Docs::Org::PostsController.superclass
     assert_equal Core::Org::ApplicationController, Core::Org::Docs::App::PostsController.superclass
-  end
-
-  test "news controllers inherit from org application controller" do
-    assert_equal Core::Org::ApplicationController, Core::Org::News::Com::PostsController.superclass
-    assert_equal Core::Org::ApplicationController, Core::Org::News::Org::PostsController.superclass
-    assert_equal Core::Org::ApplicationController, Core::Org::News::App::PostsController.superclass
   end
 
   test "base application controllers inherit from ActionController::Base" do

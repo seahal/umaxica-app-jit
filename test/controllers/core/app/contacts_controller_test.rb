@@ -9,12 +9,12 @@ module Core
       fixtures :users, :user_statuses, :app_contact_statuses, :app_contact_categories
 
       setup do
-        host! ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
+        host! ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
         @user = users(:one)
       end
 
       test "new redirects when not logged in" do
-        get new_core_app_contact_url
+        get new_main_app_contact_url
 
         assert_response :redirect
       end

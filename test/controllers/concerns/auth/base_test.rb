@@ -7,15 +7,15 @@ module Auth
   class BaseTest < ActiveSupport::TestCase
     class HeaderKeyHarness
       class MockCookies
-        delegate :[], :[]=, to: :@store
+        delegate :[], to: :@store
+
+        def initialize(store)
+          @store = store
+        end
 
         def []=(key, value)
           @store[key] = value
           HeaderKeyHarness.encrypted_cookies[key] = value
-        end
-
-        def initialize(store)
-          @store = store
         end
 
         def delete(key, _options = nil)

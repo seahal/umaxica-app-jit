@@ -14,19 +14,11 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
       # { name: "Sign::Org registration passkeys", env_key: "SIGN_STAFF_URL", path: "/registration/passkeys/new" },
       {
         name: "Core::App contacts",
-<<<<<<< HEAD
-        env_key: "CORE_SERVICE_URL",
-=======
         env_key: "MAIN_SERVICE_URL",
->>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.)
         path: "/contacts/new",
         headers: main_app_contact_headers,
       },
-<<<<<<< HEAD
-      { name: "Core::Com contacts", env_key: "CORE_CORPORATE_URL", path: "/contacts/new" },
-=======
       { name: "Core::Com contacts", env_key: "MAIN_CORPORATE_URL", path: "/contacts/new" },
->>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.)
     ]
   end
 

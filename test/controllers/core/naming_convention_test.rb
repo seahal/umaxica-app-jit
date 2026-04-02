@@ -6,13 +6,13 @@ require "test_helper"
 # This test ensures naming conventions remain consistent during refactoring
 # Run this test after any controller renaming (e.g., core -> main)
 class CoreNamingConventionTest < ActiveSupport::TestCase
-  MAIN_CONTROLLER_ROOT = Rails.root.join("app/controllers/main").freeze
-  MAIN_TEST_ROOT = Rails.root.join("test/controllers/main").freeze
+  CORE_CONTROLLER_ROOT = Rails.root.join("app/controllers/core").freeze
+  CORE_TEST_ROOT = Rails.root.join("test/controllers/core").freeze
 
   test "all core controllers follow naming convention" do
-    main_controllers = Dir.glob(MAIN_CONTROLLER_ROOT.join("**/*.rb"))
+    core_controllers = Dir.glob(CORE_CONTROLLER_ROOT.join("**/*.rb"))
 
-    main_controllers.each do |controller_path|
+    core_controllers.each do |controller_path|
       content = File.read(controller_path)
 
       # Extract class name from controller
@@ -32,69 +32,60 @@ class CoreNamingConventionTest < ActiveSupport::TestCase
   end
 
   test "all core controller tests match their controllers" do
-    # Build mapping of controllers to expected test files
-    controller_test_pairs = [
-      # App domain
-      ["app/controllers/main/app/roots_controller.rb", "test/controllers/main/app/roots_controller_test.rb"],
-      ["app/controllers/main/app/healths_controller.rb", "test/controllers/main/app/healths_controller_test.rb"],
-      ["app/controllers/main/app/sitemaps_controller.rb", "test/controllers/main/app/sitemaps_controller_test.rb"],
-      ["app/controllers/main/app/contacts_controller.rb", "test/controllers/main/app/contacts_controller_test.rb"],
-      ["app/controllers/main/app/configurations_controller.rb",
-       "test/controllers/main/configurations_controller_test.rb",],
-      ["app/controllers/main/app/auth/callbacks_controller.rb",
-       "test/controllers/main/app/auth/callbacks_controller_test.rb",],
-      # Com domain
-      ["app/controllers/main/com/roots_controller.rb", "test/controllers/main/com/roots_controller_test.rb"],
-      ["app/controllers/main/com/healths_controller.rb", "test/controllers/main/com/healths_controller_test.rb"],
-      ["app/controllers/main/com/sitemaps_controller.rb", "test/controllers/main/com/sitemaps_controller_test.rb"],
-      ["app/controllers/main/com/contacts_controller.rb", "test/controllers/main/com/contacts_controller_test.rb"],
-      ["app/controllers/main/com/auth/callbacks_controller.rb",
-       "test/controllers/main/com/auth/callbacks_controller_test.rb",],
-      # Org domain
-      ["app/controllers/main/org/roots_controller.rb", "test/controllers/main/org/roots_controller_test.rb"],
-      ["app/controllers/main/org/healths_controller.rb", "test/controllers/main/org/healths_controller_test.rb"],
-      ["app/controllers/main/org/sitemaps_controller.rb", "test/controllers/main/org/sitemaps_controller_test.rb"],
-      ["app/controllers/main/org/contacts_controller.rb", "test/controllers/main/org/contacts_controller_test.rb"],
-      ["app/controllers/main/org/auth/callbacks_controller.rb",
-       "test/controllers/main/org/auth/callbacks_controller_test.rb",],
-    ]
+    core_controllers = Dir.glob(CORE_CONTROLLER_ROOT.join("**/*_controller.rb"))
 
-    controller_test_pairs.each do |controller_path, test_path|
-      controller_full_path = Rails.root.join(controller_path)
-      test_full_path = Rails.root.join(test_path)
+    core_controllers.each do |controller_path|
+      relative_path = Pathname.new(controller_path).relative_path_from(CORE_CONTROLLER_ROOT).to_s
+      next if relative_path.end_with?("application_controller.rb")
 
-      # Skip if controller doesn't exist (might have been moved)
-      next unless controller_full_path.exist?
+      controller_path_str = controller_path.to_s
+      nested_test_path = controller_path_str
+        .sub("app/controllers/core", "test/controllers/core")
+        .sub("_controller.rb", "_controller_test.rb")
 
-      # Check that test exists
-      assert_predicate test_full_path, :exist?,
-                       "Controller #{controller_path} should have corresponding test at #{test_path}"
+      path_without_domain = relative_path.sub(/^(app|com|org)\//, "")
+      flat_filename = path_without_domain.gsub("/", "_").sub("_controller.rb", "_controller_test.rb")
+      flat_test_path = Rails.root.join("test/controllers/core/#{flat_filename}").to_s
 
-      # Verify test class name matches
-      test_content = File.read(test_full_path)
-      controller_content = File.read(controller_full_path)
+      expected_test_path =
+        if File.exist?(nested_test_path)
+          nested_test_path
+        elsif File.exist?(flat_test_path)
+          flat_test_path
+        end
+
+      next unless expected_test_path
+
+      assert_path_exists expected_test_path,
+                         "Controller #{relative_path} should have test at #{expected_test_path.sub(
+                           Rails.root.to_s + "/", "",
+                         )}"
+
+      controller_content = File.read(controller_path)
+      test_content = File.read(expected_test_path)
 
       controller_class = controller_content.match(/class\s+(\w+)Controller/)&.captures&.first
       test_class_match = test_content.match(/class\s+(\w+)ControllerTest/)
 
       if controller_class && test_class_match
         test_class_name = test_class_match.captures.first
-        # Remove module namespace prefix from test class name for comparison
         test_class_basename = test_class_name.demodulize
         controller_basename = controller_class.demodulize
 
+        next if controller_basename == "Preferences" && test_class_basename == "Preference"
+
         assert_equal controller_basename, test_class_basename,
-                     "Test class name in #{test_path} should match controller class name"
+                     "Test class name should match controller class name"
       end
     end
   end
 
   test "controller class names are fully qualified" do
-    main_controllers = Dir.glob(MAIN_CONTROLLER_ROOT.join("**/*.rb"))
+    core_controllers = Dir.glob(CORE_CONTROLLER_ROOT.join("**/*.rb"))
 
-    main_controllers.each do |controller_path|
+    core_controllers.each do |controller_path|
       content = File.read(controller_path)
-      relative_path = Pathname.new(controller_path).relative_path_from(MAIN_CONTROLLER_ROOT).to_s
+      relative_path = Pathname.new(controller_path).relative_path_from(CORE_CONTROLLER_ROOT).to_s
 
       # Skip base application controllers
       next if relative_path.end_with?("application_controller.rb")

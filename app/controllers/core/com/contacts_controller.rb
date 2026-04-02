@@ -53,9 +53,9 @@ module Core
           @contact.update!(status_id: ComContactStatus::COMPLETED_CONTACT_ACTION)
 
           redirect_to(
-            core_com_contact_url(
+            main_com_contact_url(
               @contact,
-              **core_corporate_redirect_options,
+              **main_corporate_redirect_options,
             ), notice: I18n.t("help.com.contacts.create.success"),
           )
         else
@@ -84,16 +84,16 @@ module Core
         end
       end
 
-      def core_corporate_redirect_options
+      def main_corporate_redirect_options
         {
-          host: core_corporate_host,
+          host: main_corporate_host,
           port: request.port,
           protocol: request.protocol.delete_suffix("://"),
         }.compact
       end
 
-      def core_corporate_host
-        env_url = ENV["CORE_CORPORATE_URL"].presence
+      def main_corporate_host
+        env_url = ENV["MAIN_CORPORATE_URL"].presence
         return request.host unless env_url
 
         begin

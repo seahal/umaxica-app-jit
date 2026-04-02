@@ -31,13 +31,15 @@ Before submitting any change, you MUST:
 
 ## Excluded Directories
 
-The following directories should be excluded from routine operations because they tend to waste tokens or contain third-party code that is not normally relevant:
+The following directories should be excluded from routine operations because they tend to waste
+tokens or contain third-party code that is not normally relevant:
 
 - `tmp/`
 - `log/`
 
-The following directories contain third-party libraries and MUST be excluded from routine operations (reading, searching, editing, and analysis) unless they are
-strictly required for the task and the user has explicitly confirmed that they may be inspected:
+The following directories contain third-party libraries and MUST be excluded from routine operations
+(reading, searching, editing, and analysis) unless they are strictly required for the task and the
+user has explicitly confirmed that they may be inspected:
 
 - `vendor/`
 - `node_modules/`
@@ -51,7 +53,8 @@ You MUST NOT:
 - Introduce unsafe migrations
 - Add meaningless or weak tests
 - Bypass safety constraints
-- Read, modify, or search within `vendor/` or `node_modules/` without strict necessity and explicit user confirmation
+- Read, modify, or search within `vendor/` or `node_modules/` without strict necessity and explicit
+  user confirmation
 
 ## Error Handling
 
@@ -83,12 +86,14 @@ When in doubt:
 
 ## Project Structure & Module Organization
 
-This is a Rails 8 app with domain-separated surfaces (`app`, `com`, `org`) implemented across controllers, views, and routes.
+This is a Rails 8 app with domain-separated surfaces (`app`, `com`, `org`) implemented across
+controllers, views, and routes.
 
 - Application code: `app/` (`models/`, `controllers/`, `services/`, `policies/`, `jobs/`, `views/`).
 - Frontend JS: `app/javascript/` (Stimulus/importmap, checked with Biome).
 - Tests: `test/` (`controllers/`, `models/`, `services/`, `integration/`, `fixtures/`, `support/`).
-- Database: `db/` plus domain migration folders (for example `db/operators_migrate/`, `db/avatars_migrate/`).
+- Database: `db/` plus domain migration folders (for example `db/operators_migrate/`,
+  `db/avatars_migrate/`).
 - Ops/docs: `docker/`, `compose.yml`, `docs/`, `qa/`.
 
 ## Build, Test, and Development Commands
@@ -104,29 +109,37 @@ This is a Rails 8 app with domain-separated surfaces (`app`, `com`, `org`) imple
 
 ## Coding Style & Naming Conventions
 
-- Ruby: follow RuboCop (`.rubocop.yml`), 2-space indentation, snake_case methods/files, CamelCase classes/modules.
+- Ruby: follow RuboCop (`.rubocop.yml`), 2-space indentation, snake_case methods/files, CamelCase
+  classes/modules.
 - Views/partials: use descriptive, scoped names (example: `app/views/sign/app/...`).
 - JavaScript: use Biome formatting/linting defaults; keep modules under `app/javascript`.
-- Keep domain boundaries explicit in paths and constants (`App`, `Com`, `Org`, `Sign`, `Core`, `Docs`, `News`, `Help`, `Apex`).
+- Keep domain boundaries explicit in paths and constants (`App`, `Com`, `Org`, `Sign`, `Core`,
+  `Docs`, `News`, `Help`, `Apex`).
 
 ## Testing Guidelines
 
 - Framework: Minitest (`test/test_helper.rb`) with fixtures.
 - Respect t_wada-style testing practices when designing and writing tests.
 - Prefer tests that avoid mocks and stubs whenever reasonably possible.
-- Name tests with `_test.rb` and mirror source structure (example: `app/services/auth/foo.rb` -> `test/services/auth/foo_test.rb`).
-- Run migrations before tests when schema changes are involved: `bundle exec rails db:migrate && bundle exec rails test`.
+- Name tests with `_test.rb` and mirror source structure (example: `app/services/auth/foo.rb` ->
+  `test/services/auth/foo_test.rb`).
+- Run migrations before tests when schema changes are involved:
+  `bundle exec rails db:migrate && bundle exec rails test`.
 
 ## Quality Guidelines
 
-- Consider ISO/IEC 25010 quality characteristics when designing, implementing, and reviewing changes, especially functional suitability, performance efficiency,
-  compatibility, usability, reliability, security, maintainability, and portability.
-- When making tradeoffs, document the affected quality characteristics in PRs, issues, or review notes when they materially influence scope, design, or testing.
+- Consider ISO/IEC 25010 quality characteristics when designing, implementing, and reviewing
+  changes, especially functional suitability, performance efficiency, compatibility, usability,
+  reliability, security, maintainability, and portability.
+- When making tradeoffs, document the affected quality characteristics in PRs, issues, or review
+  notes when they materially influence scope, design, or testing.
 
 ## Commit & Pull Request Guidelines
 
-- Recent history uses short type-prefixed subjects (`[feat]`, `[update]`, `[refactor]`, `[checkpoint]`).
-- Preferred commit style: imperative, scoped, and concise (example: `[feat] add org passkey verification flow`).
+- Recent history uses short type-prefixed subjects (`[feat]`, `[update]`, `[refactor]`,
+  `[checkpoint]`).
+- Preferred commit style: imperative, scoped, and concise (example:
+  `[feat] add org passkey verification flow`).
 - PRs should include:
   - Clear summary and motivation.
   - Linked issue/ticket.
@@ -143,13 +156,15 @@ This is a Rails 8 app with domain-separated surfaces (`app`, `com`, `org`) imple
 
 # Using Vite+, the Unified Toolchain for the Web
 
-This project is using Vite+, a unified toolchain built on top of Vite, Rolldown, Vitest, tsdown, Oxlint, Oxfmt, and Vite Task. Vite+ wraps runtime management,
-package management, and frontend tooling in a single global CLI called `vp`. Vite+ is distinct from Vite, but it invokes Vite through `vp dev` and `vp build`.
+This project is using Vite+, a unified toolchain built on top of Vite, Rolldown, Vitest, tsdown,
+Oxlint, Oxfmt, and Vite Task. Vite+ wraps runtime management, package management, and frontend
+tooling in a single global CLI called `vp`. Vite+ is distinct from Vite, but it invokes Vite through
+`vp dev` and `vp build`.
 
 ## Vite+ Workflow
 
-`vp` is a global binary that handles the full development lifecycle. Run `vp help` to print a list of commands and `vp <command> --help` for information about a
-specific command.
+`vp` is a global binary that handles the full development lifecycle. Run `vp help` to print a list
+of commands and `vp <command> --help` for information about a specific command.
 
 ### Start
 
@@ -183,8 +198,8 @@ specific command.
 
 ### Manage Dependencies
 
-Vite+ automatically detects and wraps the underlying package manager such as pnpm, npm, or Yarn through the `packageManager` field in `package.json` or package
-manager-specific lockfiles.
+Vite+ automatically detects and wraps the underlying package manager such as pnpm, npm, or Yarn
+through the `packageManager` field in `package.json` or package manager-specific lockfiles.
 
 - add - Add packages to dependencies
 - remove (`rm`, `un`, `uninstall`) - Remove packages from dependencies
@@ -201,34 +216,46 @@ manager-specific lockfiles.
 
 - upgrade - Update `vp` itself to the latest version
 
-These commands map to their corresponding tools. For example, `vp dev --port 3000` runs Vite's dev server and works the same as Vite. `vp test` runs JavaScript
-tests through the bundled Vitest. The version of all tools can be checked using `vp --version`. This is useful when researching documentation, features, and bugs.
+These commands map to their corresponding tools. For example, `vp dev --port 3000` runs Vite's dev
+server and works the same as Vite. `vp test` runs JavaScript tests through the bundled Vitest. The
+version of all tools can be checked using `vp --version`. This is useful when researching
+documentation, features, and bugs.
 
 ## Common Pitfalls
 
-- **Using the package manager directly:** Do not use pnpm, npm, or Yarn directly. Vite+ can handle all package manager operations.
-- **Always use Vite commands to run tools:** Don't attempt to run `vp vitest` or `vp oxlint`. They do not exist. Use `vp test` and `vp lint` instead.
-- **Running scripts:** Vite+ built-in commands (`vp dev`, `vp build`, `vp test`, etc.) always run the Vite+ built-in tool, not any `package.json` script of the same
-  name. To run a custom script that shares a name with a built-in command, use `vp run <script>`. For example, if you have a custom `dev` script that runs multiple
-  services concurrently, run it with `vp run dev`, not `vp dev` (which always starts Vite's dev server).
-- **Do not install Vitest, Oxlint, Oxfmt, or tsdown directly:** Vite+ wraps these tools. They must not be installed directly. You cannot upgrade these tools by
-  installing their latest versions. Always use Vite+ commands.
-- **Use Vite+ wrappers for one-off binaries:** Use `vp dlx` instead of package-manager-specific `dlx`/`npx` commands.
-- **Import JavaScript modules from `vite-plus`:** Instead of importing from `vite` or `vitest`, all modules should be imported from the project's `vite-plus`
-  dependency. For example, `import { defineConfig } from 'vite-plus';` or `import { expect, test, vi } from 'vite-plus/test';`. You must not install `vitest` to
-  import test utilities.
-- **Type-Aware Linting:** There is no need to install `oxlint-tsgolint`, `vp lint --type-aware` works out of the box.
+- **Using the package manager directly:** Do not use pnpm, npm, or Yarn directly. Vite+ can handle
+  all package manager operations.
+- **Always use Vite commands to run tools:** Don't attempt to run `vp vitest` or `vp oxlint`. They
+  do not exist. Use `vp test` and `vp lint` instead.
+- **Running scripts:** Vite+ built-in commands (`vp dev`, `vp build`, `vp test`, etc.) always run
+  the Vite+ built-in tool, not any `package.json` script of the same name. To run a custom script
+  that shares a name with a built-in command, use `vp run <script>`. For example, if you have a
+  custom `dev` script that runs multiple services concurrently, run it with `vp run dev`, not
+  `vp dev` (which always starts Vite's dev server).
+- **Do not install Vitest, Oxlint, Oxfmt, or tsdown directly:** Vite+ wraps these tools. They must
+  not be installed directly. You cannot upgrade these tools by installing their latest versions.
+  Always use Vite+ commands.
+- **Use Vite+ wrappers for one-off binaries:** Use `vp dlx` instead of package-manager-specific
+  `dlx`/`npx` commands.
+- **Import JavaScript modules from `vite-plus`:** Instead of importing from `vite` or `vitest`, all
+  modules should be imported from the project's `vite-plus` dependency. For example,
+  `import { defineConfig } from 'vite-plus';` or
+  `import { expect, test, vi } from 'vite-plus/test';`. You must not install `vitest` to import test
+  utilities.
+- **Type-Aware Linting:** There is no need to install `oxlint-tsgolint`, `vp lint --type-aware`
+  works out of the box.
 
 ## Review Checklist for Agents
 
 - [ ] Run `vp install` after pulling remote changes and before getting started.
 - [ ] Run `vp check` and `vp test` to validate changes.
-  <!--VITE PLUS END-->
+<!--VITE PLUS END-->
 
 ## Git Commit Policy
 
-Never run `git commit` automatically. Always complete the requested changes, report what was done, and stop — without committing. Let the user decide when to
-commit.
+Never run `git commit` automatically. Always complete the requested changes, report what was done,
+and stop — without committing. Let the user decide when to commit.
 
-If you want these rules enforced through the harness as well, mirror the same wording into an appropriate .harnes/policies/... file so that AGENTS.md (priority 1)
-and the harness policies stay aligned.
+If you want these rules enforced through the harness as well, mirror the same wording into an
+appropriate .harnes/policies/... file so that AGENTS.md (priority 1) and the harness policies stay
+aligned.

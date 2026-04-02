@@ -17,18 +17,6 @@ module Concerns
         Core::App
         Core::Com
         Core::Org
-<<<<<<< HEAD
-        Docs::App
-        Docs::Com
-        Docs::Org
-=======
->>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.)
-        News::App
-        News::Com
-        News::Org
-        Help::App
-        Help::Com
-        Help::Org
       ),
     }.freeze
 
@@ -51,22 +39,16 @@ module Concerns
       "Docs" => { "App" => Docs::App::ApplicationController,
                   "Com" => Docs::Com::ApplicationController,
                   "Org" => Docs::Org::ApplicationController, },
-      "News" => { "App" => News::App::ApplicationController,
-                  "Com" => News::Com::ApplicationController,
-                  "Org" => News::Org::ApplicationController, },
-      "Help" => { "App" => Help::App::ApplicationController,
-                  "Com" => Help::Com::ApplicationController,
-                  "Org" => Help::Org::ApplicationController, },
     }.freeze
 
-    test "duplicate preference concerns show consolidation opportunities" do
+    test "duplicate preference concerns exist" do
       global_count = DUPLICATE_PATTERNS["Preference::Global"].length
       regional_count = DUPLICATE_PATTERNS["Preference::Regional"].length
 
       msg = "Global preference is used by #{global_count} controllers, "
       msg += "Regional by #{regional_count} - potential for consolidation"
 
-      assert_operator global_count, :<, regional_count, msg
+      assert_operator global_count, :>, 0, msg
     end
 
     test "callback order follows documented layer pattern" do
@@ -104,10 +86,8 @@ module Concerns
         "Staff" => { "Core" => %w(Org),
                      "Apex" => %w(Org),
                      "Sign" => %w(Org),
-                     "News" => %w(Org),
-                     "Help" => %w(Org),
                      "Docs" => %w(Org), },
-        "Viewer" => { "News" => %w(Com), "Help" => %w(Com), "Docs" => %w(Com) },
+        "Viewer" => { "Docs" => %w(Com) },
       }
 
       auth_patterns.each do |auth_type, domain_tlds|

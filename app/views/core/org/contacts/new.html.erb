@@ -12,7 +12,7 @@
   </div>
 
   <%= form_with model: @contact,
-                url: core_org_contacts_path,
+                url: main_org_contacts_path,
                 scope: :org_contact,
                 data: { turbo: false },
                 html: {} do |form| %>
@@ -73,7 +73,7 @@
 
     <div>
       <%= link_to t('help.org.contacts.new.cancel'),
-                  core_org_root_path %>
+                  main_org_root_path %>
       <%= form.submit t('help.org.contacts.new.submit') %>
     </div>
   <% end %>

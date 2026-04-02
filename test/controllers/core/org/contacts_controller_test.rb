@@ -12,6 +12,8 @@ module Main
         host! ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
         @staff = staffs(:one)
         @headers = { "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
+        add_staff_contact_channels
+        ensure_contact_references!
       end
 
       test "new redirects when not logged in" do
@@ -29,15 +31,16 @@ module Main
       test "should create contact when logged in" do
         category = org_contact_categories(:one)
 
-        assert_difference("OrgContact.count") do
-          post main_org_contacts_url, headers: @headers, params: {
-            org_contact: {
-              category_id: category.id,
-              email_address: "test@example.com",
-              title: "Test Subject",
-              body: "Test message body",
-            },
-          }
+        Jit::Security::TurnstileConfig.stub(:stealth_secret_key, nil) do
+          assert_difference("OrgContact.count") do
+            post main_org_contacts_url, headers: @headers, params: {
+              org_contact: {
+                category_id: category.id,
+                title: "Test Subject",
+                body: "Test message body",
+              },
+            }
+          end
         end
 
         assert_redirected_to main_org_contact_url(OrgContact.last)
@@ -57,11 +60,26 @@ module Main
         category = org_contact_categories(:one)
         contact = OrgContact.create!(
           category_id: category.id,
-          staff_id: @staff.id,
         )
-        contact.create_org_contact_email!(email_address: "test@example.com")
-        contact.create_org_contact_topic!(title: "Test", description: "Test body")
+        contact.org_contact_emails.create!(email_address: "test@example.com")
+        contact.org_contact_topics.create!(title: "Test", description: "Test body")
         contact
+      end
+
+      def add_staff_contact_channels
+        @staff.staff_emails.create!(
+          address: "staff-#{SecureRandom.hex(4)}@example.com",
+          staff_identity_email_status_id: StaffEmailStatus::VERIFIED,
+        )
+        @staff.staff_telephones.create!(
+          number: "+1555#{rand(1_000_000..9_999_999)}",
+          staff_identity_telephone_status_id: StaffTelephoneStatus::VERIFIED,
+        )
+      end
+
+      def ensure_contact_references!
+        OrgContactStatus.find_or_create_by!(id: OrgContactStatus::NOTHING)
+        OrgContactStatus.find_or_create_by!(id: OrgContactStatus::SET_UP)
       end
     end
   end

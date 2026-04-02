@@ -7,47 +7,77 @@ require "test_helper"
 # Run this after refactoring to catch missing helper definitions
 class CoreViewHelperIntegrityTest < ActionDispatch::IntegrationTest
   test "title helper is available in core views" do
-    # Verify that views can use title() helper
-    # This would fail if ApplicationHelper doesn't define title method
     host! ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost")
 
     get new_main_com_contact_url
 
     assert_response :success
-    # If title helper is missing, view would raise exception
   end
 
   test "get_language helper is available in core layouts" do
-    # Verify get_language is defined and returns expected value
     host! ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
+    user = users(:one)
+    add_user_contact_channels(user)
 
-    get main_app_root_url
+    get main_app_root_url, headers: { "X-TEST-CURRENT-USER" => user.id.to_s }
 
     assert_response :success
-    # Check that HTML lang attribute is set (requires get_language helper)
     assert_match(/<html[^>]*lang=/, response.body)
   end
 
   test "core layouts load without errors" do
-    %w(app com org).each do |domain|
-      env_var = "MAIN_#{domain.upcase}_URL"
-      default_host = "ww.#{domain}.localhost"
-      host! ENV.fetch(env_var, default_host)
+    user = users(:one)
+    staff = staffs(:one)
+    add_user_contact_channels(user)
+    add_staff_contact_channels(staff)
 
-      root_path = send("main_#{domain}_root_path")
-      get root_path
+    {
+      app: { host: ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost"),
+             headers: { "X-TEST-CURRENT-USER" => user.id.to_s }, },
+      com: { host: ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost"), headers: {} },
+      org: { host: ENV.fetch("MAIN_STAFF_URL", "main.org.localhost"),
+             headers: { "X-TEST-CURRENT-STAFF" => staff.id.to_s }, },
+    }.each do |domain, config|
+      host! config[:host]
+      get send("main_#{domain}_root_url"), headers: config[:headers]
 
-      assert_response :success,
-                      "Core #{domain.upcase} layout should render without errors"
+      assert_response :success, "Core #{domain.upcase} layout should render without errors"
     end
   end
 
   test "contact forms render all required helpers" do
     host! ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
-    get new_main_app_contact_url
+    user = users(:one)
+    add_user_contact_channels(user)
+
+    get new_main_app_contact_url, headers: { "X-TEST-CURRENT-USER" => user.id.to_s }
 
     assert_response :success
     # Verify form uses proper URL helpers
     assert_select "form[action=?]", main_app_contacts_path
+  end
+
+  private
+
+  def add_user_contact_channels(user)
+    user.user_emails.create!(
+      address: "user-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+    user.user_telephones.create!(
+      number: "+1555#{rand(1_000_000..9_999_999)}",
+      user_identity_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+  end
+
+  def add_staff_contact_channels(staff)
+    staff.staff_emails.create!(
+      address: "staff-#{SecureRandom.hex(4)}@example.com",
+      staff_identity_email_status_id: StaffEmailStatus::VERIFIED,
+    )
+    staff.staff_telephones.create!(
+      number: "+1555#{rand(1_000_000..9_999_999)}",
+      staff_identity_telephone_status_id: StaffTelephoneStatus::VERIFIED,
+    )
   end
 end

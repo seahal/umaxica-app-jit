@@ -28,14 +28,14 @@ module Core
 
           test "should get show with existing preference" do
             # First request to get a preference and cookie
-            get core_com_edge_v0_preference_url
+            get main_com_edge_v0_preference_url
 
             assert_response :success
             first_json = response.parsed_body
             first_public_id = first_json["preference"]["public_id"]
 
             # Second request should use the cookie from the first request
-            get core_com_edge_v0_preference_url
+            get main_com_edge_v0_preference_url
 
             assert_response :success
             second_json = response.parsed_body
@@ -51,7 +51,7 @@ module Core
           test "should create new preference when cookie is missing" do
             assert_difference -> { ComPreference.count }, 1 do
               assert_difference -> { ComPreferenceActivity.count }, 2 do
-                get core_com_edge_v0_preference_url
+                get main_com_edge_v0_preference_url
 
                 assert_response :success
               end
@@ -72,7 +72,7 @@ module Core
             ComPreferenceDbscStatus.delete_all
 
             assert_difference -> { ComPreference.count }, 1 do
-              get core_com_edge_v0_preference_url
+              get main_com_edge_v0_preference_url
             end
 
             assert_response :success
@@ -83,7 +83,7 @@ module Core
           end
 
           test "should create audit log with CREATE_NEW_PREFERENCE_TOKEN event" do
-            get core_com_edge_v0_preference_url
+            get main_com_edge_v0_preference_url
 
             assert_response :success
 
@@ -96,7 +96,7 @@ module Core
           end
 
           test "should store encrypted token in cookies" do
-            get core_com_edge_v0_preference_url
+            get main_com_edge_v0_preference_url
 
             assert_response :success
 
@@ -106,7 +106,7 @@ module Core
           end
 
           test "should return JSON with correct structure" do
-            get core_com_edge_v0_preference_url
+            get main_com_edge_v0_preference_url
 
             assert_response :success
 
@@ -122,12 +122,12 @@ module Core
           end
 
           test "should not create duplicate preference for same cookie" do
-            get core_com_edge_v0_preference_url
+            get main_com_edge_v0_preference_url
 
             assert_response :success
 
             assert_no_difference -> { ComPreference.count } do
-              get core_com_edge_v0_preference_url
+              get main_com_edge_v0_preference_url
 
               assert_response :success
             end

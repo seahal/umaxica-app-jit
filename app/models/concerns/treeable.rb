@@ -149,7 +149,6 @@ module Treeable
       sql = sanitize_sql_array([sql_template, root_id, root_vals])
 
       connection.exec_query(sql, "subtree_ids").rows.flatten
-
     end
 
     # Ancestor ids (including self).
@@ -187,7 +186,6 @@ module Treeable
       sql = sanitize_sql_array([sql_template, node_id, root_vals, root_vals])
 
       connection.exec_query(sql, "ancestor_ids").rows.flatten
-
     end
 
     # Returns a subtree ordered "by tree order" (prefers `position`) as a Relation.

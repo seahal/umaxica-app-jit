@@ -4,11 +4,7 @@
 require "test_helper"
 
 class Core::Org::EmergencyRoutingTest < ActionDispatch::IntegrationTest
-<<<<<<< HEAD
-  CORE_STAFF_HOST = ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
-=======
   MAIN_STAFF_HOST = ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
->>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.)
 
   test "routes emergency app outage" do
     assert_routed("/emergency/app/outage", :get, "core/org/emergency/app/outages", "show")
@@ -35,7 +31,7 @@ class Core::Org::EmergencyRoutingTest < ActionDispatch::IntegrationTest
   private
 
   def assert_routed(path, method, expected_controller, expected_action)
-    send(method, "http://#{CORE_STAFF_HOST}#{path}")
+    send(method, "http://#{MAIN_STAFF_HOST}#{path}")
 
     assert_equal expected_controller, request.path_parameters[:controller]
     assert_equal expected_action, request.path_parameters[:action]

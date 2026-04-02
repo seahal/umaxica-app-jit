@@ -3,22 +3,18 @@
 
 require "test_helper"
 
-<<<<<<<< HEAD:test/controllers/core/app/web/v0/cookie_controller_test.rb
-class Core::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
-========
 class Core::App::Web::V0::CookiesControllerTest < ActionDispatch::IntegrationTest
->>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):test/controllers/core/app/web/v0/cookies_controller_test.rb
   include PreferenceJwtHelper
 
   setup do
-    @host = ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
+    @host = ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
     host! @host
   end
 
   test "GET show without access jwt returns consented false" do
     cookies.delete(Preference::CookieName.access)
 
-    get core_app_web_v0_cookie_path, as: :json
+    get main_app_web_v0_cookie_path, as: :json
 
     assert_response :ok
     body = response.parsed_body
@@ -38,7 +34,7 @@ class Core::App::Web::V0::CookiesControllerTest < ActionDispatch::IntegrationTes
     cookies[Preference::CookieName.access] = token
 
     with_preference_jwt_keys(host: @host) do
-      get core_app_web_v0_cookie_path, as: :json
+      get main_app_web_v0_cookie_path, as: :json
     end
 
     assert_response :ok
@@ -68,7 +64,7 @@ class Core::App::Web::V0::CookiesControllerTest < ActionDispatch::IntegrationTes
     cookies[Preference::CookieName.access] = token
 
     with_preference_jwt_keys(host: @host) do
-      patch core_app_web_v0_cookie_path, params: { consented: true }, as: :json
+      patch main_app_web_v0_cookie_path, params: { consented: true }, as: :json
     end
 
     assert_response :ok

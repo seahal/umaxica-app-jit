@@ -7,23 +7,23 @@ module Core::Org
   class RootsControllerTest < ActionDispatch::IntegrationTest
     include RootThemeCookieHelper
 
-    CORE_STAFF_URL = ENV.fetch("CORE_STAFF_URL", ENV.fetch("BACK_STAFF_URL", "back-staff.example.com"))
+    MAIN_STAFF_URL = ENV.fetch("MAIN_STAFF_URL", ENV.fetch("BACK_STAFF_URL", "back-staff.example.com"))
 
-    test "should redirect to CORE_STAFF_URL" do
-      get core_org_root_url
+    test "should redirect to MAIN_STAFF_URL" do
+      get main_org_root_url
 
       assert_response :success
     end
 
     test "renders layout contract" do
-      get core_org_root_url
+      get main_org_root_url
 
       assert_response :success
       assert_layout_contract
     end
 
     test "generates sha3-384 token digest on root" do
-      get core_org_root_url
+      get main_org_root_url
 
       assert_response :success
       assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
@@ -32,7 +32,7 @@ module Core::Org
     test "sets theme cookie" do
       assert_theme_cookie_for(
         host: "org.localhost",
-        path: :core_org_root_path,
+        path: :main_org_root_path,
         label: "core org root",
         ri: "jp",
       )

@@ -59,12 +59,10 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
     request = MockRequest.new("ww.example.com")
     surface = :app
 
-    cookie_domain_mock = Object.new
-    cookie_domain_mock.define_singleton_method(:for) { |_args| "example.com" }
-    Core::CookieOptions.stub(:const_get, cookie_domain_mock) do
+    with_cookie_domain_credentials(COOKIE_DOMAIN_APP: "example.com") do
       options = Core::CookieOptions.for(surface: surface, request: request, domain: true)
 
-      assert_equal "example.com", options[:domain]
+      assert_equal ".example.com", options[:domain]
     end
   end
 
@@ -108,5 +106,16 @@ class CoreCookieOptionsTest < ActiveSupport::TestCase
     options = Core::CookieOptions.for(surface: :app, request: request)
 
     assert_predicate options[:domain], :present? if options[:domain]
+  end
+
+  private
+
+  def with_cookie_domain_credentials(overrides)
+    creds = Rails.app.creds
+    fetch = ->(key, default: nil) { overrides.fetch(key, default) }
+
+    creds.stub(:option, fetch) do
+      yield
+    end
   end
 end

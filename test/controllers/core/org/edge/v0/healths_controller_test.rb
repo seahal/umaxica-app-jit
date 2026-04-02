@@ -9,7 +9,7 @@ module Core
       module V0
         class HealthsControllerTest < ActionDispatch::IntegrationTest
           test "returns success for default format" do
-            get core_org_edge_v0_health_url
+            get main_org_edge_v0_health_url
 
             assert_response :success
             assert_includes response.body, "OK"
@@ -17,7 +17,7 @@ module Core
           end
 
           test "returns success for explicit html format" do
-            get core_org_edge_v0_health_url(format: :html)
+            get main_org_edge_v0_health_url(format: :html)
 
             assert_response :success
             assert_includes response.body, "OK"
@@ -25,7 +25,7 @@ module Core
           end
 
           test "returns OK status payload for json format" do
-            get core_org_edge_v0_health_url(format: :json)
+            get main_org_edge_v0_health_url(format: :json)
 
             assert_response :success
             assert_equal "OK", response.parsed_body["status"]
@@ -34,7 +34,7 @@ module Core
           end
 
           test "raises error for unsupported yaml format" do
-            get core_org_edge_v0_health_url(format: :yaml)
+            get main_org_edge_v0_health_url(format: :yaml)
 
             assert_response :success
             assert_equal "OK", response.parsed_body["status"]
@@ -43,7 +43,7 @@ module Core
           end
 
           test "should handle redirect if response is redirect" do
-            get core_org_edge_v0_health_url
+            get main_org_edge_v0_health_url
 
             if response.redirect?
               assert_response :redirect
@@ -54,7 +54,7 @@ module Core
           end
 
           test "should accept both success and redirect responses" do
-            get core_org_edge_v0_health_url(format: :json)
+            get main_org_edge_v0_health_url(format: :json)
 
             assert_includes [200], response.status
           end

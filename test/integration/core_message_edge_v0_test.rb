@@ -5,9 +5,9 @@ require "test_helper"
 
 class CoreMessageEdgeV0Test < ActionDispatch::IntegrationTest
   setup do
-    @app_host = ENV.fetch("CORE_SERVICE_URL", "ww.app.localhost")
-    @com_host = ENV.fetch("CORE_CORPORATE_URL", "ww.com.localhost")
-    @org_host = ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
+    @app_host = ENV.fetch("MAIN_SERVICE_URL", "main.app.localhost")
+    @com_host = ENV.fetch("MAIN_CORPORATE_URL", "main.com.localhost")
+    @org_host = ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
     @message_id = "message-123"
     @user = users(:one)
     @staff = staffs(:one)

@@ -7,7 +7,7 @@ module Sign
       include ::RateLimit
       include ::Session
       include ::Preference::Global
-      include ::Preference::Adoption
+      include ::Preference::Adoption # FIXME: what is this?
       include ::Authentication::User
       include ::Authorization::User
       include ::Verification::User

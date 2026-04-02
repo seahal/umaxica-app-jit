@@ -226,15 +226,9 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
   # =============================================================================
 
   REGIONAL_DOMAINS = [
-<<<<<<< HEAD
-    { name: "core_app", host: "ww.app.localhost", root_url_method: :core_app_root_url },
-    { name: "core_org", host: "ww.org.localhost", root_url_method: :core_org_root_url },
-    { name: "core_com", host: "ww.com.localhost", root_url_method: :core_com_root_url },
-=======
-    { name: "main_app", host: "main.app.localhost", root_url_method: :main_app_root },
-    { name: "main_org", host: "main.org.localhost", root_url_method: :main_org_root },
-    { name: "main_com", host: "main.com.localhost", root_url_method: :main_com_root },
->>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.)
+    { name: "main_app", host: "main.app.localhost", root_url_method: :main_app_root_url },
+    { name: "main_org", host: "main.org.localhost", root_url_method: :main_org_root_url },
+    { name: "main_com", host: "main.com.localhost", root_url_method: :main_com_root_url },
   ].freeze
 
   REGIONAL_DOMAINS.each do |domain|

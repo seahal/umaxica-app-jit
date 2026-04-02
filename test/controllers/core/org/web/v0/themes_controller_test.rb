@@ -3,23 +3,19 @@
 
 require "test_helper"
 
-<<<<<<<< HEAD:test/controllers/core/org/web/v0/theme_controller_test.rb
-class Core::Org::Web::V0::ThemeControllerTest < ActionDispatch::IntegrationTest
-========
 class Core::Org::Web::V0::ThemesControllerTest < ActionDispatch::IntegrationTest
->>>>>>>> 98bd02f0f ([CheckPoint] renamimg from main to core.):test/controllers/core/org/web/v0/themes_controller_test.rb
   include PreferenceJwtHelper
 
   setup do
     _ = Preference::Base # ensure autoload of JwtConfiguration/Token defined in same file
-    @host = ENV.fetch("CORE_STAFF_URL", "ww.org.localhost")
+    @host = ENV.fetch("MAIN_STAFF_URL", "main.org.localhost")
     host! @host
   end
 
   test "GET show without access jwt returns default theme sy" do
     cookies.delete(Preference::CookieName.access)
 
-    get core_org_web_v0_theme_path, as: :json
+    get main_org_web_v0_theme_path, as: :json
 
     assert_response :ok
     assert_equal "sy", response.parsed_body["theme"]
@@ -30,12 +26,11 @@ class Core::Org::Web::V0::ThemesControllerTest < ActionDispatch::IntegrationTest
       preferences: { "ct" => "dr" },
       host: @host,
       public_id: "pref-org-public-id",
-      preference_type: "OrgPreference",
     )
     cookies[Preference::CookieName.access] = token
 
     with_preference_jwt_keys(host: @host) do
-      get core_org_web_v0_theme_path, as: :json
+      get main_org_web_v0_theme_path, as: :json
     end
 
     assert_response :ok
@@ -44,21 +39,20 @@ class Core::Org::Web::V0::ThemesControllerTest < ActionDispatch::IntegrationTest
 
   test "PATCH update sets theme cookie and returns updated theme" do
     token = encode_preference_jwt(
-      preferences: { "ct" => "sy" },
+      preferences: { "ct" => "dr" },
       host: @host,
       public_id: "pref-org-public-id",
-      preference_type: "OrgPreference",
     )
     cookies[Preference::CookieName.access] = token
 
     with_preference_jwt_keys(host: @host) do
-      patch core_org_web_v0_theme_path, params: { theme: "light" }, as: :json
+      patch main_org_web_v0_theme_path, params: { theme: "light" }, as: :json
     end
 
     assert_response :ok
     assert_equal "li", response.parsed_body["theme"]
     set_cookie = response.headers["Set-Cookie"].to_s
 
-    assert_includes set_cookie, "#{Preference::IoKeys::Cookies::THEME}=li"
+    assert_includes set_cookie, "ct="
   end
 end

@@ -11,7 +11,7 @@ module Core
       end
 
       test "should get show" do
-        get core_app_health_url
+        get main_app_health_url
 
         assert_response :success
         assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
@@ -20,7 +20,7 @@ module Core
       end
 
       test "should get show with postfix" do
-        get core_app_health_url(format: :html)
+        get main_app_health_url(format: :html)
 
         assert_response :success
         assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
@@ -29,7 +29,7 @@ module Core
       end
 
       test "should handle redirect if response is redirect" do
-        get core_app_health_url
+        get main_app_health_url
 
         if response.redirect?
           assert_response :redirect
@@ -40,7 +40,7 @@ module Core
       end
 
       test "should accept both success and redirect responses" do
-        get core_app_health_url(format: :html)
+        get main_app_health_url(format: :html)
 
         assert_includes [200], response.status
       end

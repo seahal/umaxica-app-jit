@@ -37,12 +37,6 @@ module Concerns
       Docs::App
       Docs::Com
       Docs::Org
-      News::App
-      News::Com
-      News::Org
-      Help::App
-      Help::Com
-      Help::Org
     ).freeze
 
     CONTROLLER_CLASSES = {
@@ -58,12 +52,6 @@ module Concerns
       "Docs::App" => Docs::App::ApplicationController,
       "Docs::Com" => Docs::Com::ApplicationController,
       "Docs::Org" => Docs::Org::ApplicationController,
-      "News::App" => News::App::ApplicationController,
-      "News::Com" => News::Com::ApplicationController,
-      "News::Org" => News::Org::ApplicationController,
-      "Help::App" => Help::App::ApplicationController,
-      "Help::Com" => Help::Com::ApplicationController,
-      "Help::Org" => Help::Org::ApplicationController,
     }.freeze
 
     DOMAINS.each do |domain|

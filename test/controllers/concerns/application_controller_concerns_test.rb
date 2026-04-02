@@ -21,12 +21,6 @@ module Concerns
       "Docs::App" => Docs::App::ApplicationController,
       "Docs::Com" => Docs::Com::ApplicationController,
       "Docs::Org" => Docs::Org::ApplicationController,
-      "News::App" => News::App::ApplicationController,
-      "News::Com" => News::Com::ApplicationController,
-      "News::Org" => News::Org::ApplicationController,
-      "Help::App" => Help::App::ApplicationController,
-      "Help::Com" => Help::Com::ApplicationController,
-      "Help::Org" => Help::Org::ApplicationController,
     }.freeze
 
     PARENT_CLASSES = {
@@ -37,10 +31,6 @@ module Concerns
       "Apex::Org" => Apex::App::ApplicationController,
       "Docs::Com" => Docs::App::ApplicationController,
       "Docs::Org" => Docs::App::ApplicationController,
-      "News::Com" => News::App::ApplicationController,
-      "News::Org" => News::App::ApplicationController,
-      "Help::Com" => Help::App::ApplicationController,
-      "Help::Org" => Help::App::ApplicationController,
     }.freeze
 
     CONCERNS_BY_DOMAIN = {
@@ -367,172 +357,6 @@ module Concerns
           set_current
         ),
         prepend_before_actions: [],
-      },
-      "News::App" => {
-        includes: [
-          ::RateLimit,
-          ::Session,
-          ::Preference::Regional,
-          ::Authentication::User,
-          ::Authorization::User,
-          ::Verification::User,
-          Pundit::Authorization,
-          ::Oidc::SsoInitiator,
-          ::CurrentSupport,
-          ::Finisher,
-        ],
-        before_actions: %i(
-          check_default_rate_limit
-          enforce_withdrawal_gate!
-          transparent_refresh_access_policy
-          enforce_access_policy!
-          enforce_verification_if_required
-          set_current
-        ),
-        prepend_before_actions: %i(
-          set_preferences_cookie
-          canonicalize_regional_params
-          set_locale
-          set_timezone
-          set_color_theme
-        ),
-      },
-      "News::Com" => {
-        includes: [
-          ::RateLimit,
-          ::Session,
-          ::Preference::Regional,
-          ::Authentication::Viewer,
-          ::Authorization::Viewer,
-          ::Verification::Viewer,
-          Pundit::Authorization,
-          ::Oidc::SsoInitiator,
-          ::CurrentSupport,
-          ::Finisher,
-        ],
-        before_actions: %i(
-          check_default_rate_limit
-          enforce_access_policy!
-          enforce_verification_if_required
-          set_current
-        ),
-        prepend_before_actions: %i(
-          set_preferences_cookie
-          canonicalize_regional_params
-          set_locale
-          set_timezone
-          set_color_theme
-        ),
-      },
-      "News::Org" => {
-        includes: [
-          ::RateLimit,
-          ::Session,
-          ::Preference::Regional,
-          ::Authentication::Staff,
-          ::Authorization::Staff,
-          ::Verification::Staff,
-          Pundit::Authorization,
-          ::Oidc::SsoInitiator,
-          ::CurrentSupport,
-          ::Finisher,
-        ],
-        before_actions: %i(
-          check_default_rate_limit
-          enforce_access_policy!
-          enforce_verification_if_required
-          set_current
-        ),
-        prepend_before_actions: %i(
-          set_preferences_cookie
-          canonicalize_regional_params
-          set_locale
-          set_timezone
-          set_color_theme
-        ),
-      },
-      "Help::App" => {
-        includes: [
-          ::RateLimit,
-          ::Session,
-          ::Preference::Regional,
-          ::Authentication::User,
-          ::Authorization::User,
-          ::Verification::User,
-          Pundit::Authorization,
-          ::Oidc::SsoInitiator,
-          ::CurrentSupport,
-          ::Finisher,
-        ],
-        before_actions: %i(
-          check_default_rate_limit
-          enforce_withdrawal_gate!
-          transparent_refresh_access_token
-          enforce_access_policy!
-          enforce_verification_if_required
-          set_current
-        ),
-        prepend_before_actions: %i(
-          set_preferences_cookie
-          canonicalize_regional_params
-          set_locale
-          set_timezone
-          set_color_theme
-        ),
-      },
-      "Help::Com" => {
-        includes: [
-          ::RateLimit,
-          ::Session,
-          ::Preference::Regional,
-          ::Authentication::Viewer,
-          ::Authorization::Viewer,
-          ::Verification::Viewer,
-          Pundit::Authorization,
-          ::Oidc::SsoInitiator,
-          ::CurrentSupport,
-          ::Finisher,
-        ],
-        before_actions: %i(
-          check_default_rate_limit
-          enforce_access_policy!
-          enforce_verification_if_required
-          set_current
-        ),
-        prepend_before_actions: %i(
-          set_preferences_cookie
-          canonicalize_regional_params
-          set_locale
-          set_timezone
-          set_color_theme
-        ),
-      },
-      "Help::Org" => {
-        includes: [
-          ::RateLimit,
-          ::Session,
-          ::Preference::Regional,
-          ::Authentication::Staff,
-          ::Authorization::Staff,
-          ::Verification::Staff,
-          Pundit::Authorization,
-          ::Oidc::SsoInitiator,
-          ::CurrentSupport,
-          ::Finisher,
-        ],
-        before_actions: %i(
-          check_default_rate_limit
-          enforce_access_policy!
-          enforce_verification_if_required
-          set_current
-        ),
-        prepend_before_actions: %i(
-          set_preferences_cookie
-          canonicalize_regional_params
-          set_locale
-          set_timezone
-          set_color_theme
-        ),
       },
     }.freeze
 

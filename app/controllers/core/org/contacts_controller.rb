@@ -56,7 +56,7 @@ module Core
 
         write_behavior_event(@contact)
         redirect_to(
-          core_org_contact_url(@contact, **core_staff_redirect_options),
+          main_org_contact_url(@contact, **main_staff_redirect_options),
           notice: I18n.t("help.org.contacts.create.success"),
         )
       rescue ActiveRecord::RecordInvalid
@@ -168,7 +168,7 @@ module Core
         @contact = OrgContact.find_by!(public_id: params[:id])
       end
 
-      def core_staff_redirect_options
+      def main_staff_redirect_options
         {
           host: core_staff_host,
           port: request.port,
@@ -177,7 +177,7 @@ module Core
       end
 
       def core_staff_host
-        env_url = ENV["CORE_STAFF_URL"].presence
+        env_url = ENV["MAIN_STAFF_URL"].presence
         return request.host unless env_url
 
         begin

@@ -5,13 +5,17 @@ scope module: :docs, as: :docs do
   constraints host: ENV["DOCS_CORPORATE_URL"] do
     scope module: :com, as: :com do
       root to: "roots#index"
+      # Health
+      resource :health, only: :show
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
       # OIDC callback
       namespace :auth do
         resource :callback, only: :show
       end
-      # health check for html/json
-      resource :health, only: :show
-      resource :sitemap, only: :show, defaults: { format: :xml }
+      # api endpoint for web
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
@@ -40,9 +44,12 @@ scope module: :docs, as: :docs do
       namespace :auth do
         resource :callback, only: :show
       end
-      # health check for html/json
+      # Health
       resource :health, only: :show
-      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)
@@ -72,9 +79,12 @@ scope module: :docs, as: :docs do
       namespace :auth do
         resource :callback, only: :show
       end
-      # health check for html/json
+      # Health
       resource :health, only: :show
-      resource :sitemap, only: :show, defaults: { format: :xml }
+      # Robots
+      resource :robots, only: :show, path: "robots.txt"
+      # Sitemap
+      resource :sitemap, only: :show, path: "sitemap.xml"
       namespace :web do
         namespace :v0 do
           resource :cookie, only: %i(show update)

@@ -14,15 +14,9 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
     Apex::App::ApplicationController
     Apex::Org::ApplicationController
     Apex::Com::ApplicationController
-    Help::App::ApplicationController
-    Help::Org::ApplicationController
-    Help::Com::ApplicationController
     Docs::App::ApplicationController
     Docs::Org::ApplicationController
     Docs::Com::ApplicationController
-    News::App::ApplicationController
-    News::Org::ApplicationController
-    News::Com::ApplicationController
   ).freeze
 
   CONTROLLER_CLASSES = {
@@ -34,15 +28,9 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
     "Apex::App::ApplicationController" => Apex::App::ApplicationController,
     "Apex::Org::ApplicationController" => Apex::Org::ApplicationController,
     "Apex::Com::ApplicationController" => Apex::Com::ApplicationController,
-    "Help::App::ApplicationController" => Help::App::ApplicationController,
-    "Help::Org::ApplicationController" => Help::Org::ApplicationController,
-    "Help::Com::ApplicationController" => Help::Com::ApplicationController,
     "Docs::App::ApplicationController" => Docs::App::ApplicationController,
     "Docs::Org::ApplicationController" => Docs::Org::ApplicationController,
     "Docs::Com::ApplicationController" => Docs::Com::ApplicationController,
-    "News::App::ApplicationController" => News::App::ApplicationController,
-    "News::Org::ApplicationController" => News::Org::ApplicationController,
-    "News::Com::ApplicationController" => News::Com::ApplicationController,
   }.freeze
 
   DOMAIN_CONTROLLERS = {
@@ -55,15 +43,9 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
     "Apex" => { "App" => Apex::App::ApplicationController,
                 "Org" => Apex::Org::ApplicationController,
                 "Com" => Apex::Com::ApplicationController, },
-    "Help" => { "App" => Help::App::ApplicationController,
-                "Org" => Help::Org::ApplicationController,
-                "Com" => Help::Com::ApplicationController, },
     "Docs" => { "App" => Docs::App::ApplicationController,
                 "Org" => Docs::Org::ApplicationController,
                 "Com" => Docs::Com::ApplicationController, },
-    "News" => { "App" => News::App::ApplicationController,
-                "Org" => News::Org::ApplicationController,
-                "Com" => News::Com::ApplicationController, },
   }.freeze
 
   # expected include order (layer order)

@@ -8,7 +8,7 @@ module Core
     class HealthsControllerTest < ActionDispatch::IntegrationTest
       test "should render healthy status" do
         with_stubbed_health_status([200, "OK"]) do
-          get core_org_health_url
+          get main_org_health_url
 
           assert_response :success
           assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
@@ -19,7 +19,7 @@ module Core
 
       test "should render unhealthy status with dependency details" do
         with_stubbed_health_status([503, "UNHEALTHY", ["Database ActivityRecord(writing) unavailable"]]) do
-          get core_org_health_url(format: :html)
+          get main_org_health_url(format: :html)
 
           assert_response :service_unavailable
           assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
