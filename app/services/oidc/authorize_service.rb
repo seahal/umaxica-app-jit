@@ -8,10 +8,12 @@ module Oidc
         def success? = success
       end
 
-    def initialize(params:, resource:)
+    def initialize(params:, resource:, auth_method: nil, acr: nil)
       super()
       @params = params
       @resource = resource
+      @auth_method = auth_method
+      @acr = acr
     end
 
     def call
@@ -28,7 +30,7 @@ module Oidc
 
     private
 
-    attr_reader :params, :resource
+    attr_reader :params, :resource, :auth_method, :acr
 
     def validate!
       raise ArgumentError, "response_type must be 'code'" unless params[:response_type] == "code"
@@ -59,6 +61,8 @@ module Oidc
           :scope => params[:scope],
           :state => params[:state],
           :nonce => params[:nonce],
+          :auth_method => auth_method,
+          :acr => acr,
         )
       end
     end

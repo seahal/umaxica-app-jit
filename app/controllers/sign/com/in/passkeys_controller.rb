@@ -15,6 +15,8 @@ module Sign
         include EmailValidation
         include IdentifierDetection
         include MinimumResponseBudget
+
+        activate_minimum_response_budget
         include SessionLimitGate
         include CloudflareTurnstile
 

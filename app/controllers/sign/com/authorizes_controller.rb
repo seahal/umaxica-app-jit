@@ -11,6 +11,8 @@ module Sign
         result = Oidc::AuthorizeService.call(
           params: authorize_params,
           resource: current_customer,
+          auth_method: resolved_auth_method,
+          acr: resolved_acr,
         )
 
         if result.success?
@@ -28,6 +30,20 @@ module Sign
           :response_type, :client_id, :redirect_uri, :state,
           :code_challenge, :code_challenge_method, :scope, :nonce,
         )
+      end
+
+      def resolved_auth_method
+        return Current.token["amr"] if Current.token.is_a?(Hash) && Current.token["amr"].present?
+        return session[:pending_mfa]["auth_method"] if session[:pending_mfa].is_a?(Hash) &&
+          session[:pending_mfa]["auth_method"].present?
+
+        nil
+      end
+
+      def resolved_acr
+        return Current.token["acr"] if Current.token.is_a?(Hash) && Current.token["acr"].present?
+
+        "aal1"
       end
     end
   end

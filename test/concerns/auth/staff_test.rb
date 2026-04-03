@@ -20,6 +20,8 @@ class Authentication::StaffTest < ActiveSupport::TestCase
   class DummyClass
     include Authentication::Staff
 
+    activate_staff_authentication
+
     attr_accessor :session, :cookies, :request, :response
 
     def initialize

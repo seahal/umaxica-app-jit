@@ -7,7 +7,11 @@ module Docs
       include ::RateLimit
       include ::Session
       include ::Preference::Regional
+
+      activate_preference_regional
       include ::Authentication::Viewer
+
+      activate_viewer_authentication
       include ::Authorization::Viewer
       include ::Verification::Viewer
       include Pundit::Authorization
@@ -17,7 +21,7 @@ module Docs
 
       before_action :check_default_rate_limit
 
-      before_action :reset_flash
+      before_action :validate_flash_boundary
 
       allow_browser versions: :modern
 
@@ -26,6 +30,7 @@ module Docs
       before_action :set_current
       before_action :set_current_observability
       after_action :purge_current
+      after_action :_reset_current_state
 
       # FIXME: Resolve the URL issues before deploying.
       protect_from_forgery using: :header_or_legacy_token,

@@ -116,7 +116,7 @@ module Sign
           verification = verify_secret_for_sign_in(user: user, raw_secret: @secret_form.secret_value)
 
           if user && verification.secret
-            process_standard_login(user)
+            process_standard_login(user, verification.secret)
           else
             failure_reason = verification.reason || :identifier_not_found
             render_failed_login(
@@ -141,7 +141,7 @@ module Sign
                                             method: "secret", secret_id: secret.id,
           )
           clear_mfa_session!
-          result = finalize_mfa_login!(user)
+          result = finalize_mfa_login!(user, verification_method: secret_auth_method(secret))
           case result[:status]
           when :session_limit_hard_reject
             render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])
@@ -173,9 +173,9 @@ module Sign
           render_failed_login(reason: reason, user: user, details: details)
         end
 
-        def process_standard_login(user)
+        def process_standard_login(user, secret)
           result = complete_sign_in_or_start_mfa!(
-            user, rt: nil, ri: params[:ri], auth_method: "secret",
+            user, rt: nil, ri: params[:ri], auth_method: secret_auth_method(secret),
           )
           if result[:status] == :mfa_required
             redirect_to(result[:redirect_path], notice: t("sign.app.in.mfa.required"))
@@ -212,6 +212,12 @@ module Sign
 
         def clear_mfa_session!
           session[MFA_USER_SESSION_KEY] = nil
+        end
+
+        def secret_auth_method(secret)
+          return "recovery_code" if secret&.recovery_secret?
+
+          "secret"
         end
 
         # Secret sign-in uses the most recently issued eligible secret.

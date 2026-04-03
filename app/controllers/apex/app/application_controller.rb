@@ -7,8 +7,12 @@ module Apex
       include ::RateLimit
       include ::Session
       include ::Preference::Global
+
+      activate_preference_global
       include ::Preference::Adoption # FIXME: I hate this line.
       include ::Authentication::User
+
+      activate_user_authentication
       include ::Authorization::User
       include ::Verification::User
       include Pundit::Authorization # FIXME: I hate this line.
@@ -21,7 +25,7 @@ module Apex
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport -> O11y
       before_action :check_default_rate_limit
-      before_action :reset_flash
+      before_action :validate_flash_boundary
       prepend_before_action :set_preferences_cookie # FIXME: I hate this line.
       prepend_before_action :resolve_param_context # FIXME: I hate this line.
       prepend_before_action :set_region # FIXME: I hate this line.
@@ -35,6 +39,7 @@ module Apex
       before_action :set_current
       before_action :set_current_observability
       after_action :purge_current
+      after_action :_reset_current_state
 
       # FIXME: Resolve the URL issues before deploying.
       protect_from_forgery using: :header_or_legacy_token,

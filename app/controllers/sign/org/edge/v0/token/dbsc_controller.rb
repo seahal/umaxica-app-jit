@@ -3,6 +3,8 @@
 
 class Sign::Org::Edge::V0::Token::DbscController < Sign::Org::ApplicationController
   include Sign::EdgeV0JsonApi
+
+  activate_edge_v0_json_api
   include Sign::DbscRegistrationEndpoint
 
   public_strict!

@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 # source "https://gem.coop"
 
-ruby "4.0.2"
+ruby "3.4.9"
 
 # Rake
 gem "rake"

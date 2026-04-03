@@ -94,7 +94,7 @@ module Jit
       def log_missing_secret
         return unless defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
 
-        Rails.logger.warn("[Turnstile] Secret key is missing (mode=#{@mode || :visible}). Verification skipped.")
+        Rails.event.warn("turnstile.secret_key_missing", mode: @mode || :visible)
       end
 
       def failure(message)

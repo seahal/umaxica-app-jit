@@ -31,10 +31,10 @@ module Sign
         options: request_options,
       }, status: :ok
     rescue Sign::Webauthn::OriginValidationError => e
-      Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
+      Rails.event.error("sign.webauthn.authentication.origin_validation_failed", message: e.message, exception: e)
       render_error("errors.webauthn.origin_invalid", :forbidden)
     rescue StandardError => e
-      Rails.logger.error("WebAuthn authentication options failed: #{e.message}")
+      Rails.event.error("sign.webauthn.authentication.options_failed", message: e.message, exception: e)
       render_error("errors.webauthn.options_failed", :unprocessable_content)
     end
     # rubocop:enable Metrics/AbcSize

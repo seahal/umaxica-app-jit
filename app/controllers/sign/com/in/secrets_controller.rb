@@ -62,7 +62,7 @@ module Sign
           verification = verify_secret_for_sign_in(customer: customer, raw_secret: @secret_form.secret_value)
 
           if customer && verification.secret
-            process_standard_login(customer)
+            process_standard_login(customer, verification.secret)
           else
             failure_reason = verification.reason || :identifier_not_found
             render_failed_login(
@@ -141,9 +141,9 @@ module Sign
           )
         end
 
-        def process_standard_login(customer)
+        def process_standard_login(customer, secret)
           result = complete_sign_in_or_start_mfa!(
-            customer, rt: nil, ri: params[:ri], auth_method: "secret",
+            customer, rt: nil, ri: params[:ri], auth_method: secret_auth_method(secret),
           )
 
           if result[:status] == :mfa_required
@@ -170,6 +170,12 @@ module Sign
 
         def invalid_secret_message
           t("sign.app.authentication.secret.create.invalid")
+        end
+
+        def secret_auth_method(secret)
+          return "recovery_code" if secret&.recovery_secret?
+
+          "secret"
         end
 
         def render_failed_login(reason:, identifier: nil, customer: nil, details: {})

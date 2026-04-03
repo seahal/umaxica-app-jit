@@ -15,9 +15,11 @@ module Preference::Global
       .transform_values { |value| value.to_s.downcase }
       .freeze
 
-  included do
-    helper_method :get_language, :get_timezone, :get_region, :get_colortheme
-    helper_method :effective_context, :required_ri
+  class_methods do
+    def activate_preference_global
+      helper_method :get_language, :get_timezone, :get_region, :get_colortheme
+      helper_method :effective_context, :required_ri
+    end
   end
 
   def resolve_param_context

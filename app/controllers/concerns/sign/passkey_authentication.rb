@@ -10,7 +10,7 @@ module Sign
     def build_authentication_credential
       WebAuthn::Credential.from_get(credential_params.to_h)
     rescue StandardError => e
-      Rails.logger.warn("WebAuthn: Invalid credential payload (#{e.class})")
+      Rails.event.warn("webauthn.invalid_credential_payload", error_class: e.class.name)
       render_error("errors.webauthn.credential_not_found", :unauthorized)
       nil
     end

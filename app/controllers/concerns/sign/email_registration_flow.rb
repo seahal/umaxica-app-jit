@@ -8,8 +8,11 @@ module Sign
     include Sign::EmailRegistrable
     include Common::Redirect
 
-    included do
-      skip_before_action :enforce_email_flow!
+    class_methods do
+      def activate_email_registration_flow
+        activate_email_registrable
+        skip_before_action :enforce_email_flow!
+      end
     end
 
     def new

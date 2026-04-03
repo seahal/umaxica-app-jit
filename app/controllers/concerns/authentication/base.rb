@@ -143,11 +143,13 @@ module Authentication
       JWT_ALGORITHM = "ES384"
 
       class << self
-        def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preferences: nil)
+        def encode(resource, host:, session_public_id: nil, resource_type: nil, expires_at: nil, preferences: nil,
+                   acr: nil, amr: nil)
           Auth::TokenService.encode(
             resource, host: host, session_public_id: session_public_id,
                       resource_type: resource_type, expires_at: expires_at,
                       preferences: preferences,
+                      acr: acr, amr: amr,
           )
         end
 
@@ -164,7 +166,7 @@ module Authentication
         end
 
         def extract_type(payload)
-          Auth::TokenService.extract_type(payload)
+          extract_act(payload)
         end
 
         def validate_actor_claim!(payload, expected_act)
@@ -563,7 +565,8 @@ module Authentication
     end
 
     # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
-    def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
+    def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true,
+               auth_method: nil)
       return { status: :login_forbidden } unless resource.login_allowed?
 
       check_login_cooldown!(resource)
@@ -634,6 +637,8 @@ module Authentication
       access_expires_at = access_token_expires_at_for(token_record, now: now)
       refresh_cookie_expires_at = refresh_cookie_expires_at_for(token_record)
 
+      normalized_amr = normalize_amr_for_auth_method(auth_method)
+
       access_token = Token.encode(
         resource,
         host: request.host,
@@ -641,6 +646,8 @@ module Authentication
         resource_type: resource_type,
         expires_at: access_expires_at,
         preferences: build_auth_preference_snapshot(resource),
+        acr: "aal1",
+        amr: normalized_amr,
       )
 
       # Always set cookies (even for JSON responses - required for Edge/SPA)
@@ -858,23 +865,25 @@ module Authentication
       raise NotImplementedError, "am_i_owner? must be implemented"
     end
 
-    included do
-      include ::Sign::ErrorResponses
-      include ::SessionLimitGate
-
-      if respond_to?(:rescue_from)
-        rescue_from LoginCooldownError, with: :render_login_cooldown
-      end
-
-      if respond_to?(:helper_method)
-        helper_method :current_account, :current_session_public_id, :current_session_restricted?
-      end
-    end
-
     # ==========================================================================
     # 5) Abstract contract & policy DSL (controller class API)
     # ==========================================================================
     class_methods do
+      def activate_authentication_base
+        include ::Sign::ErrorResponses
+
+        activate_error_responses
+        include ::SessionLimitGate
+
+        if respond_to?(:rescue_from)
+          rescue_from(LoginCooldownError, with: :render_login_cooldown)
+        end
+
+        return unless respond_to?(:helper_method)
+
+        helper_method :current_account, :current_session_public_id, :current_session_restricted?
+      end
+
       # Declare policy for controller or specific actions (only/except).
       def access_policy_rules
         ACCESS_POLICY_RULES.fetch_or_store(self) do
@@ -1279,6 +1288,8 @@ module Authentication
         resource_type: resource_type,
         expires_at: access_expires_at,
         preferences: build_auth_preference_snapshot(resource),
+        acr: "aal1",
+        amr: [],
       )
 
       set_auth_cookies(
@@ -1987,11 +1998,16 @@ module Authentication
     #
     # @param user [User] the user to log in
     # @return [Hash] result with :status, :redirect_path, etc.
-    def finalize_mfa_login!(user)
+    def finalize_mfa_login!(user, verification_method: nil)
       return_to = pending_mfa&.dig(:return_to)
+      primary_method = pending_mfa&.dig(:auth_method)
       clear_pending_mfa!
 
-      result = log_in(user, require_totp_check: false)
+      result = log_in(
+        user,
+        require_totp_check: false,
+        auth_method: merge_auth_methods(primary_method, verification_method),
+      )
 
       if result[:status] == :session_limit_hard_reject
         { status: :session_limit_hard_reject, message: result[:message], http_status: result[:http_status] }
@@ -2053,7 +2069,7 @@ module Authentication
       auth_method = auth_method.to_s
       return log_in(
         resource, record_login_audit: record_login_audit, token_kind_id: token_kind_id,
-                  require_totp_check: false,
+                  require_totp_check: false, auth_method: auth_method,
       ) if mfa_bypassed_for_auth_method?(auth_method) || !mfa_required_for?(resource)
 
       return_to = resolve_mfa_return_to(rt)
@@ -2232,6 +2248,10 @@ module Authentication
       now = Time.current
       access_expires_at = access_token_expires_at_for(current_session, now: now)
 
+      current_token_payload = Current.token
+      existing_acr = current_token_payload&.dig("acr")
+      existing_amr = current_token_payload&.dig("amr")
+
       new_access_token = Token.encode(
         resource,
         host: request.host,
@@ -2239,6 +2259,8 @@ module Authentication
         resource_type: resource_type,
         expires_at: access_expires_at,
         preferences: build_auth_preference_snapshot(resource),
+        acr: existing_acr,
+        amr: existing_amr,
       )
       return unless new_access_token
 
@@ -2431,6 +2453,63 @@ module Authentication
         end
       message = options[:message] || I18n.t("errors.messages.already_authenticated")
       redirect_to(path, allow_other_host: false, alert: message)
+    end
+
+    AUTH_METHOD_TO_AMR = {
+      "email" => ["email_otp"],
+      "email_otp" => ["email_otp"],
+      "passkey" => ["passkey"],
+      "google" => ["google"],
+      "apple" => ["apple"],
+      "secret" => ["recovery_code"],
+      "recovery_code" => ["recovery_code"],
+      "totp" => ["totp"],
+    }.freeze
+
+    def normalize_amr_for_auth_method(auth_method)
+      return [] if auth_method.blank?
+
+      methods =
+        case auth_method
+        when Array
+          auth_method
+        else
+          parse_auth_method_value(auth_method)
+        end
+
+      methods = Array(methods).map(&:to_s).compact_blank
+      return [] if methods.empty?
+
+      methods.filter_map do |method|
+        AUTH_METHOD_TO_AMR[method]&.dup
+      end.flatten.tap { |arr| arr.uniq! }
+    end
+
+    def merge_auth_methods(primary_method, verification_method)
+      primary = Array(parse_auth_method_value(primary_method)).map(&:to_s).compact_blank
+      secondary = Array(parse_auth_method_value(verification_method)).map(&:to_s).compact_blank
+
+      (primary + secondary).uniq
+    end
+
+    def parse_auth_method_value(value)
+      case value
+      when Array
+        value
+      when String
+        stripped = value.strip
+        return [] if stripped.blank?
+
+        if stripped.start_with?("[")
+          JSON.parse(stripped)
+        else
+          [stripped]
+        end
+      else
+        value.to_s.presence ? [value.to_s] : []
+      end
+    rescue JSON::ParserError
+      [value.to_s]
     end
   end
 end

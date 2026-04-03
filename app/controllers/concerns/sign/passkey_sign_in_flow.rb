@@ -15,7 +15,10 @@ module Sign
       passkey = passkey_sign_in_model.find_by(webauthn_id: credential.id)
 
       unless passkey && passkey_belongs_to_challenge_actor?(passkey, actor_id)
-        Rails.logger.warn(passkey_owner_mismatch_log_message)
+        Rails.event.warn(
+          "sign.webauthn.authentication.credential_owner_mismatch",
+          message: passkey_owner_mismatch_log_message,
+        )
         emit_passkey_auth_failed(reason: "credential_not_found")
         return render_error("errors.webauthn.credential_not_found", :unauthorized)
       end

@@ -51,7 +51,7 @@ class JwtAnomalySubscriberCoverageTest < ActiveSupport::TestCase
     end
 
     logged_message = nil
-    Rails.logger.stub(:error, ->(message) { logged_message = message }) do
+    Rails.event.stub(:error, ->(event_name, **data) { logged_message = { event: event_name, **data } }) do
       JwtAnomalyEvent.stub(:create!, ->(**) { raise StandardError, "explode" }) do
         JwtAnomalySubscriber.new.emit(
           MockEvent.new(
@@ -62,7 +62,8 @@ class JwtAnomalySubscriberCoverageTest < ActiveSupport::TestCase
       end
     end
 
-    assert_includes logged_message, "JwtAnomalySubscriber failed"
+    assert_equal "jwt_anomaly_subscriber.failed", logged_message[:event]
+    assert_equal "StandardError", logged_message[:error_class]
   end
 
   test "build_metadata includes extra fields" do

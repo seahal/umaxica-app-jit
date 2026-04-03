@@ -4,6 +4,8 @@
 class Sign::App::Edge::V0::Token::ChecksController < Sign::App::ApplicationController
   include Sign::EdgeV0JsonApi
 
+  activate_edge_v0_json_api
+
   public_strict!
   skip_before_action :set_preferences_cookie
   skip_before_action :transparent_refresh_access_token

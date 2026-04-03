@@ -149,10 +149,14 @@ module Sign
       end
     end
 
-    included do
-      auth_required!
-      include Sign::AppVerificationBase
-      prepend Overrides
+    class_methods do
+      def activate_com_verification_base
+        auth_required!
+        include Sign::AppVerificationBase
+
+        activate_app_verification_base
+        prepend Overrides
+      end
     end
   end
 end

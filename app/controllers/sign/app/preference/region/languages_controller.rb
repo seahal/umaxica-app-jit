@@ -9,6 +9,8 @@ module Sign
           public_strict!
           include ::Preference::Core
 
+          activate_preference_core
+
           def edit
             set_language_preferences_edit
           end

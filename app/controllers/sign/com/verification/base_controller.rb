@@ -7,7 +7,9 @@ module Sign
       class BaseController < Sign::Com::ApplicationController
         auth_required!
 
-        include Sign::AppVerificationBase
+        include Sign::ComVerificationBase
+
+        activate_com_verification_base
 
         private
 

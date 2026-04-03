@@ -25,7 +25,7 @@ module Preference
         { consented: false, functional: false, performant: false, targetable: false }
       end
     rescue StandardError => e
-      Rails.logger.warn("[Preference::WebCookieEndpoint] cookie_consent_state fallback: #{e.class}")
+      Rails.event.warn("preference.cookie_consent_state_failed", error_class: e.class.name)
       { consented: false, functional: false, performant: false, targetable: false }
     end
 
@@ -43,7 +43,7 @@ module Preference
     def sync_consented_buffer_cookie_safely!
       set_consented_buffer_cookie!
     rescue StandardError => e
-      Rails.logger.warn("[Preference::WebCookieEndpoint] buffer sync skipped: #{e.class}")
+      Rails.event.warn("preference.buffer_sync_skipped", error_class: e.class.name)
     end
 
     def apply_consented_update_from_request!
@@ -53,7 +53,7 @@ module Preference
       persist_cookie_consent!(requested)
       true
     rescue StandardError => e
-      Rails.logger.error("[Preference::WebCookieEndpoint] consent update failed: #{e.class}")
+      Rails.event.error("preference.consent_update_failed", error_class: e.class.name)
       raise
     end
 
@@ -62,7 +62,7 @@ module Preference
       payload = Preference::Token.decode(jwt, host: request.host)
       return payload if payload.is_a?(Hash)
 
-      Rails.logger.info(I18n.t("errors.preference.cookie.invalid_access_token"))
+      Rails.event.info("preference.cookie.invalid_access_token")
       nil
     end
 
@@ -90,7 +90,7 @@ module Preference
 
       nil
     rescue StandardError => e
-      Rails.logger.warn("[Preference::WebCookieEndpoint] refresh expiry fallback: #{e.class}")
+      Rails.event.warn("preference.refresh_expiry_fallback", error_class: e.class.name)
       nil
     end
 

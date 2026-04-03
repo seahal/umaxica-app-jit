@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 class Sign::App::VerificationsController < Sign::App::Verification::BaseController
+  include Sign::AppVerificationBase
+
+  activate_app_verification_base
   include Sign::VerificationEntry
 
   private

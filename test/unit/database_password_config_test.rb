@@ -8,7 +8,9 @@ class DatabasePasswordConfigTest < ActiveSupport::TestCase
     database_yml = Rails.root.join("config/database.yml").read
 
     assert_match(
+      # rubocop:disable Layout/LineLength
       /password: <%= ENV\["POSTGRESQL_PASSWORD"\]\.presence \|\| Rails\.application\.credentials\.dig\(:DATABASE, :PASSWORD\) %>/,
+      # rubocop:enable Layout/LineLength
       database_yml,
     )
   end

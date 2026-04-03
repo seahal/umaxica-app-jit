@@ -5,13 +5,15 @@ module Preference::Regional
   extend ActiveSupport::Concern
   include Preference::Base
 
-  included do
-    helper_method :get_language, :get_timezone, :get_region, :get_colortheme
-    before_action :set_preferences_cookie
-    before_action :canonicalize_regional_params
-    before_action :set_locale
-    before_action :set_timezone
-    before_action :set_color_theme
+  class_methods do
+    def activate_preference_regional
+      helper_method :get_language, :get_timezone, :get_region, :get_colortheme
+      before_action :set_preferences_cookie
+      before_action :canonicalize_regional_params
+      before_action :set_locale
+      before_action :set_timezone
+      before_action :set_color_theme
+    end
   end
 
   def default_url_options

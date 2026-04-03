@@ -163,11 +163,14 @@ class Staff < OperatorRecord
         retry
       end
 
-      Rails.logger.error(
-        "[Staff] Failed to generate unique public_id after #{MAX_PUBLIC_ID_RETRIES} retries: " \
-        "#{e.class}: #{e.message} (last public_id=#{public_id.inspect})",
+      Rails.event.error(
+        "staff.public_id_generation_failed",
+        retries: MAX_PUBLIC_ID_RETRIES,
+        error_class: e.class.name,
+        message: e.message,
+        last_public_id: public_id,
+        backtrace: e.backtrace&.first(5),
       )
-      Rails.logger.error(e.backtrace.first(5).join("\n")) if e.backtrace
       raise
     end
   end

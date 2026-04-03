@@ -4,6 +4,9 @@
 module Sign
   module Com
     class VerificationsController < Verification::BaseController
+      include Sign::ComVerificationBase
+
+      activate_com_verification_base
       include Sign::VerificationEntry
 
       private

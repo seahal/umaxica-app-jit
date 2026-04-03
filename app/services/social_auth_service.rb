@@ -35,9 +35,7 @@ class SocialAuthService
   end
 
   def handle_callback
-    Rails.logger.debug do
-      "[SocialAuth] handle_callback started - intent: #{@intent.inspect}, current_user: #{@current_user&.id}"
-    end
+    Rails.event.debug("social_auth.handle_callback.started", intent: @intent, current_user_id: @current_user&.id)
 
     validate_intent! if @intent.present?
     validate_auth_hash!
@@ -46,30 +44,30 @@ class SocialAuthService
     uid = extract_uid
     identity_class = SocialIdentifiable.model_for_provider(provider)
 
-    Rails.logger.debug do
-      "[SocialAuth] Extracted - provider: #{provider}, uid: #{uid&.first(8)}***, " \
-        "identity_class: #{identity_class.name}"
-    end
+    Rails.event.debug(
+      "social_auth.handle_callback.extracted", provider: provider, uid_prefix: uid&.first(8),
+                                               identity_class: identity_class.name,
+    )
 
     result =
       PrincipalRecord.transaction do
         case @intent
         when "login", nil
-          Rails.logger.debug { "[SocialAuth] Processing login intent" }
+          Rails.event.debug("social_auth.handle_callback.processing_intent", intent: "login")
           handle_login(identity_class, provider, uid)
         when "link"
-          Rails.logger.debug { "[SocialAuth] Processing link intent" }
+          Rails.event.debug("social_auth.handle_callback.processing_intent", intent: "link")
           handle_link(identity_class, provider, uid)
         when "reauth"
-          Rails.logger.debug { "[SocialAuth] Processing reauth intent" }
+          Rails.event.debug("social_auth.handle_callback.processing_intent", intent: "reauth")
           handle_reauth(identity_class, provider, uid)
         end
       end
 
-    Rails.logger.debug do
-      "[SocialAuth] handle_callback completed - user_id: #{result[:user]&.id}, " \
-        "identity_id: #{result[:identity]&.id}"
-    end
+    Rails.event.debug(
+      "social_auth.handle_callback.completed", user_id: result[:user]&.id,
+                                               identity_id: result[:identity]&.id,
+    )
     result
   end
 
@@ -176,7 +174,7 @@ class SocialAuthService
     header_json = Base64.urlsafe_decode64(header_segment + padding)
     alg = JSON.parse(header_json)["alg"]
     unless ALLOWED_ID_TOKEN_ALGORITHMS.include?(alg)
-      Rails.logger.warn("[SocialAuth] Rejected id_token with disallowed algorithm: #{alg.inspect}")
+      Rails.event.warn("social_auth.rejected_id_token_algorithm", algorithm: alg.inspect)
       return nil
     end
 
@@ -184,10 +182,10 @@ class SocialAuthService
     # The token has already been verified by omniauth-apple.
     payload = JWT.decode(id_token, nil, false, algorithms: ALLOWED_ID_TOKEN_ALGORITHMS).first
     uid = payload["sub"]
-    Rails.logger.debug { "[SocialAuth] Extracted uid from id_token: #{uid&.first(8)}***" }
+    Rails.event.debug("social_auth.extracted_uid_from_id_token", uid_prefix: uid&.first(8))
     uid
   rescue JWT::DecodeError, JSON::ParserError, ArgumentError => e
-    Rails.logger.warn("[SocialAuth] Failed to decode id_token: #{e.message}")
+    Rails.event.warn("social_auth.failed_to_decode_id_token", error_class: e.class.name, message: e.message)
     nil
   end
 
@@ -197,34 +195,32 @@ class SocialAuthService
   # - If identity doesn't exist -> create identity and user, sign in
   def handle_login(identity_class, provider, uid)
     identity = identity_class.lock.find_by(uid: uid, provider: provider)
-    Rails.logger.debug { "[SocialAuth] handle_login - identity found: #{identity.present?}" }
+    Rails.event.debug("social_auth.handle_login.identity_lookup", identity_found: identity.present?)
 
     if identity
       # Existing identity
       user = identity.user
-      Rails.logger.debug do
-        "[SocialAuth] Existing identity - user_id: #{user&.id}, orphaned: #{user.nil?}"
-      end
+      Rails.event.debug("social_auth.handle_login.existing_identity", user_id: user&.id, orphaned: user.nil?)
 
       unless user
         # Orphaned identity - create user
-        Rails.logger.debug { "[SocialAuth] Creating user for orphaned identity" }
+        Rails.event.debug("social_auth.handle_login.creating_user_for_orphaned_identity")
         user = create_user_for_identity(identity, identity_class, provider)
       end
 
       identity.update_from_auth_hash!(@auth_hash)
-      Rails.logger.debug { "[SocialAuth] Identity updated from auth_hash" }
+      Rails.event.debug("social_auth.handle_login.identity_updated_from_auth_hash")
       build_result(user, identity, reauthenticated: false, existing_account: true)
     else
       # New identity - create user and identity
-      Rails.logger.debug { "[SocialAuth] Creating new user and identity" }
+      Rails.event.debug("social_auth.handle_login.creating_new_user_and_identity")
       user = build_login_user
       identity = build_identity_for_user(identity_class, user, provider, uid)
 
       persist_user!(user, context: "login_new_identity")
       identity.save!
       identity.touch_authenticated!
-      Rails.logger.debug { "[SocialAuth] New user created - user_id: #{user.id}" }
+      Rails.event.debug("social_auth.handle_login.new_user_created", user_id: user.id)
 
       build_result(user, identity, reauthenticated: false, existing_account: false)
     end
@@ -247,13 +243,11 @@ class SocialAuthService
   def handle_link(identity_class, provider, uid)
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in") unless @current_user
 
-    Rails.logger.debug { "[SocialAuth] handle_link - current_user_id: #{@current_user.id}" }
+    Rails.event.debug("social_auth.handle_link.started", current_user_id: @current_user.id)
 
     # Check if user already has this provider linked
     existing_for_user = identity_for_user(identity_class, provider)
-    Rails.logger.debug do
-      "[SocialAuth] User already has provider: #{existing_for_user.present?}"
-    end
+    Rails.event.debug("social_auth.handle_link.user_already_has_provider", provider_exists: existing_for_user.present?)
 
     if existing_for_user
       # User already has this provider - update and ensure it's ACTIVE
@@ -269,23 +263,24 @@ class SocialAuthService
         end
 
       existing_for_user.update!(identity_class.status_column => active_status)
-      Rails.logger.debug { "[SocialAuth] Reactivated existing identity" }
+      Rails.event.debug("social_auth.handle_link.reactivated_existing_identity")
       return build_result(@current_user, existing_for_user, reauthenticated: false)
     end
 
     identity = identity_class.lock.find_by(uid: uid, provider: provider)
-    Rails.logger.debug do
-      "[SocialAuth] Identity with uid exists: #{identity.present?}, " \
-        "belongs_to_current_user: #{identity&.user_id == @current_user.id}"
-    end
+    Rails.event.debug(
+      "social_auth.handle_link.identity_lookup", identity_found: identity.present?,
+                                                 belongs_to_current_user: identity&.user_id == @current_user.id,
+    )
 
     if identity
       # Identity exists
       if identity.user_id != @current_user.id
         # Belongs to another user - conflict
-        Rails.logger.debug do
-          "[SocialAuth] Conflict - identity belongs to another user: #{identity.user_id}"
-        end
+        Rails.event.debug(
+          "social_auth.handle_link.conflict_identity_belongs_to_another_user",
+          other_user_id: identity.user_id,
+        )
         raise SocialAuth::ConflictError.new(
           "errors.social_auth.linked_to_another_user",
           provider: SocialIdentifiable.normalize_provider(provider),
@@ -293,12 +288,12 @@ class SocialAuthService
       end
 
       # Belongs to current user (shouldn't happen due to unique constraint, but handle it)
-      Rails.logger.debug { "[SocialAuth] Identity already belongs to current user, updating" }
+      Rails.event.debug("social_auth.handle_link.identity_already_belongs_to_current_user")
       identity.update_from_auth_hash!(@auth_hash)
       build_result(@current_user, identity, reauthenticated: false)
     else
       # Create new identity for current user
-      Rails.logger.debug { "[SocialAuth] Creating new identity for current user" }
+      Rails.event.debug("social_auth.handle_link.creating_new_identity_for_current_user")
       identity = build_identity_for_user(identity_class, @current_user, provider, uid)
       identity.save!
       identity.touch_authenticated!
@@ -309,7 +304,7 @@ class SocialAuthService
         provider: provider,
       )
 
-      Rails.logger.debug { "[SocialAuth] Successfully linked new identity" }
+      Rails.event.debug("social_auth.handle_link.successfully_linked_new_identity")
       build_result(@current_user, identity, reauthenticated: false)
     end
   rescue ActiveRecord::RecordNotUnique => e
@@ -331,16 +326,16 @@ class SocialAuthService
   def handle_reauth(identity_class, provider, uid)
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in") unless @current_user
 
-    Rails.logger.debug { "[SocialAuth] handle_reauth - current_user_id: #{@current_user.id}" }
+    Rails.event.debug("social_auth.handle_reauth.started", current_user_id: @current_user.id)
 
     identity = identity_class.lock.find_by(uid: uid, provider: provider)
-    Rails.logger.debug do
-      "[SocialAuth] Identity found: #{identity.present?}, " \
-        "belongs_to_current_user: #{identity&.user_id == @current_user.id}"
-    end
+    Rails.event.debug(
+      "social_auth.handle_reauth.identity_lookup", identity_found: identity.present?,
+                                                   belongs_to_current_user: identity&.user_id == @current_user.id,
+    )
 
     unless identity && identity.user_id == @current_user.id
-      Rails.logger.debug { "[SocialAuth] Reauth failed - identity mismatch" }
+      Rails.event.debug("social_auth.handle_reauth.identity_mismatch")
       raise SocialAuth::UnauthorizedError.new(
         "errors.social_auth.reauth_identity_mismatch",
         provider: SocialIdentifiable.normalize_provider(provider),
@@ -350,7 +345,7 @@ class SocialAuthService
     now = Time.current
     identity.update_from_auth_hash!(@auth_hash)
     @current_user.update!(last_reauth_at: now)
-    Rails.logger.debug { "[SocialAuth] Reauth successful - last_reauth_at updated" }
+    Rails.event.debug("social_auth.handle_reauth.successful", user_id: @current_user.id)
 
     Rails.event.notify(
       "social_auth.reauthenticated",
@@ -393,7 +388,7 @@ class SocialAuthService
     if status_id.present?
       user.status_id = status_id
     else
-      Rails.logger.error("[SocialAuth] User status missing - unable to assign default status")
+      Rails.event.error("social_auth.user_status_missing_unable_to_assign_default_status")
     end
   end
 
@@ -406,9 +401,12 @@ class SocialAuthService
 
   def log_user_status_error(user, error, context:)
     details = user.errors.details.slice(:user_status, :status_id)
-    Rails.logger.warn(
-      "[SocialAuth] User creation failed (#{context}) - " \
-      "status_id: #{user.status_id.inspect}, errors: #{details.inspect}, message: #{error.message}",
+    Rails.event.warn(
+      "social_auth.user_creation_failed",
+      context: context,
+      status_id: user.status_id.inspect,
+      errors: details.inspect,
+      message: error.message,
     )
   end
 

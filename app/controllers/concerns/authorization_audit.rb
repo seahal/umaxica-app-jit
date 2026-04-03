@@ -6,12 +6,14 @@
 module AuthorizationAudit
   extend ActiveSupport::Concern
 
-  included do
-    include Common::Redirect
+  class_methods do
+    def activate_authorization_audit
+      include Common::Redirect
 
-    # Log authorization failures for audit purposes
-    if respond_to?(:rescue_from)
-      rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error
+      # Log authorization failures for audit purposes
+      return unless respond_to?(:rescue_from)
+
+      rescue_from(Pundit::NotAuthorizedError, with: :handle_authorization_error)
     end
   end
 
@@ -25,6 +27,7 @@ module AuthorizationAudit
     respond_to do |format|
       format.html do
         flash[:alert] = I18n.t("errors.messages.not_authorized")
+        record_flash_boundary
         safe_redirect_back_or_to(root_path)
       end
       format.json do
@@ -45,7 +48,7 @@ module AuthorizationAudit
     create_audit_record(actor, log_data)
   rescue StandardError => e
     # Don't let audit logging break the application
-    Rails.logger.error("Authorization audit logging failed: #{e.message}")
+    Rails.event.error("authorization.audit_logging_failed", error_class: e.class.name, message: e.message)
     Rails.event.notify("authorization.failure_log.failed", error_message: e.message)
   end
 

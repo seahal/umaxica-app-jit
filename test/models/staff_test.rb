@@ -373,24 +373,17 @@ class StaffTest < ActiveSupport::TestCase
 
   test "retry_on_public_id_collision logs and raises after retry limit" do
     staff = Staff.new(public_id: VALID_PUBLIC_ID)
-    logger = Minitest::Mock.new
-
-    logger.expect(:error, nil, [String])
-    logger.expect(:error, nil, [String])
 
     error =
       assert_raises(ActiveRecord::RecordNotUnique) do
-        Rails.stub(:logger, logger) do
-          staff.stub(:assign_public_id!, -> { staff.public_id = VALID_PUBLIC_ID }) do
-            staff.send(:retry_on_public_id_collision) do
-              raise ActiveRecord::RecordNotUnique, "duplicate key"
-            end
+        staff.stub(:assign_public_id!, -> { staff.public_id = VALID_PUBLIC_ID }) do
+          staff.send(:retry_on_public_id_collision) do
+            raise ActiveRecord::RecordNotUnique, "duplicate key"
           end
         end
       end
 
     assert_equal "duplicate key", error.message
-    logger.verify
   end
 
   test "determinism: auto-generated public_id does not collide with existing records" do

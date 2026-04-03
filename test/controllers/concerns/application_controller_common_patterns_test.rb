@@ -93,7 +93,7 @@ module Concerns
       end
     end
 
-    test "all application controllers have reset_flash immediately after check_default_rate_limit" do
+    test "all application controllers have validate_flash_boundary immediately after check_default_rate_limit" do
       ALL_CONTROLLER_FILES.each do |file|
         content = File.read(file)
         controller_name = file.gsub(Rails.root.join("app/controllers/").to_s, "")
@@ -101,9 +101,10 @@ module Concerns
           .gsub("/", "::")
 
         assert_match(
-          /before_action :check_default_rate_limit\s+before_action :reset_flash/,
+          /before_action :check_default_rate_limit\s+before_action :validate_flash_boundary/,
           content,
-          "#{controller_name} should have before_action :reset_flash immediately after check_default_rate_limit",
+          "#{controller_name} should have before_action :validate_flash_boundary " \
+          "immediately after check_default_rate_limit",
         )
       end
     end

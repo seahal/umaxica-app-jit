@@ -9,6 +9,8 @@ module Sign
           auth_required!
 
           include Sign::EmailRegistrationFlow
+
+          activate_email_registration_flow
           include ::Verification::User
 
           before_action :authenticate_user!

@@ -3,6 +3,8 @@
 
 class Sign::Org::VerificationsController < Sign::Org::Verification::BaseController
   include Sign::OrgVerificationBase
+
+  activate_org_verification_base
   include Sign::VerificationEntry
 
   private

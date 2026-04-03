@@ -40,12 +40,13 @@ class CurrentSupportTest < ActiveSupport::TestCase
   end
 
   test "set_current_observability does not mutate unrelated Current attributes" do
-    Current.actor = "existing_actor"
+    user = users(:one)
+    Current.actor = user
     Current.domain = :app
 
     @host.set_current_observability
 
-    assert_equal "existing_actor", Current.actor
+    assert_equal user, Current.actor
     assert_equal :app, Current.domain
   end
 
@@ -191,9 +192,11 @@ class CurrentSupportTest < ActiveSupport::TestCase
         public :safe_current_resource
       end
 
-    Current.actor = :existing_actor
+    user = users(:one)
+    Current.actor = user
+    Current.actor_type = :user
 
-    assert_equal :existing_actor, host_class.new.safe_current_resource
+    assert_equal user, host_class.new.safe_current_resource
   end
 
   private

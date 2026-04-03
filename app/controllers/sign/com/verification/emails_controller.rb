@@ -7,6 +7,8 @@ module Sign
       class EmailsController < Sign::Com::ApplicationController
         include Sign::ComVerificationBase
 
+        activate_com_verification_base
+
         def new
           return unless require_reauth_session!
           return if redirect_if_recent_verification_for_get!

@@ -3,6 +3,8 @@
 
 class Sign::Org::Edge::V0::Token::RefreshesController < Sign::Org::ApplicationController
   include Sign::EdgeV0JsonApi
+
+  activate_edge_v0_json_api
   include ::Preference::WebCookieEndpoint
 
   public_strict!

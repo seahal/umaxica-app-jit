@@ -20,23 +20,25 @@ module Sign
       "social_unlink" => %r{\A/social/},
     }.freeze
 
-    included do
-      include ::Preference::Global
-      include Common::Otp
-      include ::Verification::User
-      include Sign::Webauthn
-      include Sign::VerificationTiming
-      include Sign::VerificationCommonBase
-      include Sign::VerificationAuditAndCookie
-      include Sign::VerificationReauthSessionStore
-      include Sign::VerificationReauthLifecycle
-      include Sign::VerificationPasskeyChecks
-      include Sign::VerificationTotpChecks
+    class_methods do
+      def activate_app_verification_base
+        include ::Preference::Global
+        include Common::Otp
+        include ::Verification::User
+        include Sign::Webauthn
+        include Sign::VerificationTiming
+        include Sign::VerificationCommonBase
+        include Sign::VerificationAuditAndCookie
+        include Sign::VerificationReauthSessionStore
+        include Sign::VerificationReauthLifecycle
+        include Sign::VerificationPasskeyChecks
+        include Sign::VerificationTotpChecks
 
-      before_action :authenticate_user!
-      before_action :set_actor_token
-      before_action :require_ri!
-      before_action :enforce_step_up_prereqs!
+        before_action :authenticate_user!
+        before_action :set_actor_token
+        before_action :require_ri!
+        before_action :enforce_step_up_prereqs!
+      end
     end
 
     private

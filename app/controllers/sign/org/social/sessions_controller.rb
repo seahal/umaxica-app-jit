@@ -13,6 +13,8 @@ module Sign
       class SessionsController < Sign::Org::ApplicationController
         include SocialAuthConcern
 
+        activate_social_auth_concern
+
         SUPPORTED_PROVIDERS = %w(google_org).freeze
 
         public_strict! only: %i(new)

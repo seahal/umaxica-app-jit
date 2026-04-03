@@ -25,7 +25,7 @@ env:
   DOCKER_BUILDKIT: "1"
   COMPOSE_DOCKER_CLI_BUILD: "1"
   # Version Configuration
-  RUBY_VERSION: "4.0.2"
+  RUBY_VERSION: "3.4.9"
   NODE_VERSION: "24"
   # Rails Configuration
   RAILS_ENV: test
@@ -39,7 +39,6 @@ env:
   BUNDLE_FROZEN: "true"
   # Region Configuration
   REGION_CODE: all
-  APEX_REGION: true
 jobs:
   # ====================
   # FAST CHECKS (Lint & Security)
@@ -185,7 +184,7 @@ jobs:
       SIGN_CORPORATE_URL: sign.com.localhost
       SIGN_SERVICE_URL: sign.app.localhost
       SIGN_STAFF_URL: sign.org.localhost
-      TRUSTED_ORIGINS: http://sign.app.localhost,http://sign.org.localhost
+      TRUSTED_ORIGINS: http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001
       # Domain URLs - Core
       CORE_CORPORATE_URL: ww.com.localhost
       CORE_SERVICE_URL: ww.app.localhost
@@ -209,7 +208,6 @@ jobs:
       STATUS_URL: status.localhost
       ASSET_URL: asset.localhost
       # Region
-      APEX_REGION: true
       GLOBAL_MODE: true
       REGION_CODE: all
       # Valkey
@@ -346,7 +344,7 @@ jobs:
       RACK_ENV: test
       RAILS_ENV: test
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      TRUSTED_ORIGINS: http://sign.app.localhost,http://sign.org.localhost
+      TRUSTED_ORIGINS: http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432
       POSTGRESQL_PASSWORD: password
@@ -415,20 +413,24 @@ jobs:
       - name: Run database consistency checks
         run: bundle exec database_consistency
   lint-js:
-    name: JavaScript Lint (oxlint + oxfmt)
+    name: JavaScript Checks
     runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6.0.1
         with:
           persist-credentials: false
-      - uses: voidzero-dev/setup-vp@v1
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: true
-      - run: vp install
-      - run: vp check
-      - run: vp test
+      - name: Install frontend dependencies
+        run: vp install
+      - name: Run JavaScript checks
+        run: vp check
+      - name: Run JavaScript tests
+        run: vp test
   # ====================
   # SECURITY SCANS
   # ====================
@@ -451,7 +453,7 @@ jobs:
           context: .
           target: production
           tags: umaxica-app:${{ github.sha }}
-          build-args: RUBY_VERSION=4.0.2
+          build-args: RUBY_VERSION=3.4.9
           cache-from: type=gha
           cache-to: type=gha,mode=max
           load: true

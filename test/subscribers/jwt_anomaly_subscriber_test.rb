@@ -171,11 +171,12 @@ class JwtAnomalySubscriberTest < ActiveSupport::TestCase
     )
 
     JwtAnomalyEvent.stub(:create!, ->(**) { raise StandardError, "explode" }) do
-      Rails.logger.stub(:error, ->(message) { logged_message = message }) do
+      Rails.event.stub(:error, ->(event_name, **data) { logged_message = { event: event_name, **data } }) do
         JwtAnomalySubscriber.new.emit(mock_event)
       end
     end
 
-    assert_includes logged_message, "JwtAnomalySubscriber failed"
+    assert_equal "jwt_anomaly_subscriber.failed", logged_message[:event]
+    assert_equal "StandardError", logged_message[:error_class]
   end
 end

@@ -5,8 +5,10 @@ module Preference::Edge
   extend ActiveSupport::Concern
   include Preference::Base
 
-  included do
-    public_strict! # may be rewriten in future controllers
+  class_methods do
+    def activate_preference_edge
+      public_strict! # may be rewriten in future controllers
+    end
   end
 
   # POST endpoint for React Router 401/419 CSRF recovery.

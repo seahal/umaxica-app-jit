@@ -35,7 +35,7 @@ module Sign
                 }, user_verification: "discouraged",
               )
           rescue Sign::Webauthn::OriginValidationError => e
-            Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
+            Rails.event.error("sign.webauthn.authentication.origin_validation_failed", message: e.message, exception: e)
             redirect_to(
               sign_org_in_challenge_path, alert: I18n.t("errors.webauthn.origin_invalid"),
                                           status: :see_other,
@@ -130,7 +130,7 @@ module Sign
           end
 
           def complete_mfa_login!(staff)
-            result = finalize_mfa_login!(staff)
+            result = finalize_mfa_login!(staff, verification_method: "passkey")
             case result[:status]
             when :session_limit_hard_reject
               render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])

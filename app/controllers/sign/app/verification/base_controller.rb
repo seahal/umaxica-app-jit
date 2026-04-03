@@ -9,6 +9,8 @@ module Sign
 
         include Sign::AppVerificationBase
 
+        activate_app_verification_base
+
         private
 
         def reauth_actor_id

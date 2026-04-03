@@ -15,7 +15,10 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     def self.rescue_from(*)
     end
 
+    include Session
     include AuthorizationAudit
+
+    activate_authorization_audit
 
     attr_accessor :current_user, :current_staff, :request, :action_name, :controller_name
 
@@ -26,12 +29,17 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
       @controller_name = "widgets"
       @request = OpenStruct.new(remote_ip: "127.0.0.1", user_agent: "TestAgent")
       @flash = {}
+      @session = {}
     end
 
     attr_reader :redirected_to, :rendered
 
     def flash
       @flash
+    end
+
+    def session
+      @session
     end
 
     def redirect_back_or_to(path)

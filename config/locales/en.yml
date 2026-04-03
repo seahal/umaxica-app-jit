@@ -248,13 +248,6 @@ en:
           destroy:
             success: Phone number deleted.
             last_method: You must keep at least one login or recovery method.
-        emergency_key:
-          missing: The emergency key is no longer available.
-          show:
-            title: Emergency Key
-            description: We generated an emergency key for account recovery. Store it safely.
-            one_time_notice: This key is shown only once. Save it in a secure place.
-            back_to_settings: Back to settings
         recovery:
           index:
             description: Review existing recovery codes and ensure they stay up to date.

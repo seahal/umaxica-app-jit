@@ -7,6 +7,8 @@ module Sign
       module V0
         class ThemesController < ApplicationController
           include ::Preference::WebThemeActions
+
+          activate_web_theme_actions
         end
       end
     end

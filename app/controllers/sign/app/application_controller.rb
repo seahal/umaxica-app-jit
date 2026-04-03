@@ -7,8 +7,12 @@ module Sign
       include ::RateLimit
       include ::Session
       include ::Preference::Global
+
+      activate_preference_global
       include ::Preference::Adoption # FIXME: what is this?
       include ::Authentication::User
+
+      activate_user_authentication
       include ::Authorization::User
       include ::Verification::User
       include Pundit::Authorization
@@ -23,7 +27,7 @@ module Sign
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
-      before_action :reset_flash
+      before_action :validate_flash_boundary
       prepend_before_action :set_preferences_cookie
       # Restricted session guard - explicitly enabled to handle expired sessions
       # and prevent access to non-allowed routes for restricted sessions
@@ -40,6 +44,7 @@ module Sign
       before_action :set_current
       before_action :set_current_observability
       after_action :purge_current
+      after_action :_reset_current_state
 
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(

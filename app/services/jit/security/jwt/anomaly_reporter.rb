@@ -87,7 +87,7 @@ module Jit
             }.merge(extra),
           )
         rescue StandardError => e
-          Rails.logger.error("Jwt anomaly reporting failed: #{e.class}: #{e.message}")
+          Rails.event.error("security.jwt.anomaly_report_failed", error_class: e.class.name, message: e.message)
         end
 
         private_class_method :auth_context, :preference_context, :report

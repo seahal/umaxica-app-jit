@@ -134,7 +134,7 @@ module Preference
           { kid: JwtConfiguration.active_kid, typ: TOKEN_TYPE },
         )
       rescue StandardError => e
-        Rails.logger.error("PreferenceToken.encode failed: #{e.message}")
+        Rails.event.error("preference.token_encode_failed", message: e.message)
         nil
       end
 
@@ -171,18 +171,18 @@ module Preference
           header: header,
           reason: "EXPIRED",
         )
-        Rails.logger.debug("PreferenceToken.decode failed: token expired")
+        Rails.event.debug("preference.token_decode_expired")
         nil
       rescue JWT::InvalidIssuerError, JWT::InvalidIatError, JWT::ImmatureSignature => e
         report_claim_error(host: host, header: header, error: e)
-        Rails.logger.debug { "PreferenceToken.decode invalid claims: #{e.class}: #{e.message}" }
+        Rails.event.debug("preference.token_decode_invalid_claims", error_class: e.class.name, message: e.message)
         nil
       rescue JWT::DecodeError, JWT::VerificationError => e
         report_decode_error(host: host, header: header, error: e)
-        Rails.logger.debug { "PreferenceToken.decode invalid token: #{e.message}" }
+        Rails.event.debug("preference.token_decode_invalid_token", message: e.message)
         nil
       rescue StandardError => e
-        Rails.logger.error("PreferenceToken.decode failed: #{e.message}")
+        Rails.event.error("preference.token_decode_failed", message: e.message)
         nil
       end
 
@@ -412,9 +412,11 @@ module Preference
       }.freeze,
     }.freeze
 
-    included do
-      helper_method :show_cookie_banner?, :cookie_banner_endpoint_url if respond_to?(:helper_method)
-      before_action :set_preferences_cookie
+    class_methods do
+      def activate_preference_base
+        helper_method :show_cookie_banner?, :cookie_banner_endpoint_url if respond_to?(:helper_method)
+        before_action :set_preferences_cookie
+      end
     end
 
     private
@@ -754,7 +756,7 @@ module Preference
         )
       end
     rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error("#{audit_event} failed: #{e.message}")
+      Rails.event.error("preference.audit_log_failed", message: e.message, event_id: event_id)
       raise PreferenceOperationError
     end
 
@@ -1368,14 +1370,12 @@ module Preference
       @preference_refresh_failed = true
       @preference_refresh_device_denied = true
 
-      Rails.logger.warn(
-        {
-          message: "Preference refresh denied",
-          reason: @preference_refresh_device_reason || "missing",
-          preference_type: preference_class.name,
-          preference_public_id: preference&.public_id || refresh_public_id,
-          request_id: request.request_id,
-        },
+      Rails.event.warn(
+        "preference.refresh_denied",
+        reason: @preference_refresh_device_reason || "missing",
+        preference_type: preference_class.name,
+        preference_public_id: preference&.public_id || refresh_public_id,
+        request_id: request.request_id,
       )
     end
 
@@ -1383,13 +1383,11 @@ module Preference
       clear_preference_auth_cookies!
       @preference_refresh_failed = true
 
-      Rails.logger.warn(
-        {
-          message: "Preference refresh failed",
-          preference_type: preference_class.name,
-          preference_public_id: preference&.public_id || refresh_public_id,
-          request_id: request.request_id,
-        },
+      Rails.event.warn(
+        "preference.refresh_failed",
+        preference_type: preference_class.name,
+        preference_public_id: preference&.public_id || refresh_public_id,
+        request_id: request.request_id,
       )
     end
 

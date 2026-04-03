@@ -4,9 +4,11 @@
 module MinimumResponseBudget
   extend ActiveSupport::Concern
 
-  included do
-    before_action :start_minimum_response_budget
-    after_action :enforce_minimum_response_budget
+  class_methods do
+    def activate_minimum_response_budget
+      before_action :start_minimum_response_budget
+      after_action :enforce_minimum_response_budget
+    end
   end
 
   private

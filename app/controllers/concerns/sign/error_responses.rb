@@ -13,14 +13,16 @@ module Sign
   module ErrorResponses
     extend ActiveSupport::Concern
 
-    included do
-      include Common::Redirect
+    class_methods do
+      def activate_error_responses
+        include Common::Redirect
 
-      # Automatically set up rescue_from if Pundit is included
-      if respond_to?(:rescue_from)
-        rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized if defined?(Pundit)
-        rescue_from ApplicationError, with: :handle_application_error
-        rescue_from ActionController::InvalidCrossOriginRequest, with: :handle_csrf_failure
+        # Automatically set up rescue_from if Pundit is included
+        return unless respond_to?(:rescue_from)
+
+        rescue_from(Pundit::NotAuthorizedError, with: :handle_not_authorized) if defined?(Pundit)
+        rescue_from(ApplicationError, with: :handle_application_error)
+        rescue_from(ActionController::InvalidCrossOriginRequest, with: :handle_csrf_failure)
       end
     end
 
@@ -28,6 +30,7 @@ module Sign
       respond_to do |format|
         format.html do
           flash[:alert] = exception.message
+          record_flash_boundary
           safe_redirect_back_or_to("/")
         end
         format.json { render json: { error: exception.message }, status: exception.status_code }

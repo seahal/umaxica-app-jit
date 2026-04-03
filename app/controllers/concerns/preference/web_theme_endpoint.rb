@@ -29,7 +29,7 @@ module Preference
       persist_theme!(requested)
       requested
     rescue StandardError => e
-      Rails.logger.error("[Preference::WebThemeEndpoint] theme update failed: #{e.class}")
+      Rails.event.error("preference.web_theme_endpoint.theme_update_failed", error_class: e.class.name)
       raise
     end
 

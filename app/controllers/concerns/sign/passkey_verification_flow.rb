@@ -19,19 +19,19 @@ module Sign
         verify_and_login(challenge, actor_id)
       end
     rescue Sign::Webauthn::ChallengeNotFoundError, Sign::Webauthn::ChallengeExpiredError => e
-      Rails.logger.warn("WebAuthn challenge error: #{e.message}")
+      Rails.event.warn("sign.webauthn.authentication.challenge_error", message: e.message)
       emit_passkey_auth_failed(reason: "challenge_invalid")
       render_error("errors.webauthn.challenge_invalid", :bad_request)
     rescue Sign::Webauthn::ChallengePurposeMismatchError => e
-      Rails.logger.warn("WebAuthn challenge purpose mismatch: #{e.message}")
+      Rails.event.warn("sign.webauthn.authentication.challenge_purpose_mismatch", message: e.message)
       emit_passkey_auth_failed(reason: "challenge_purpose_mismatch")
       render_error("errors.webauthn.challenge_invalid", :bad_request)
     rescue WebAuthn::SignCountVerificationError => e
-      Rails.logger.warn("WebAuthn sign count verification failed: #{e.message}")
+      Rails.event.warn("sign.webauthn.authentication.sign_count_verification_failed", message: e.message)
       emit_passkey_auth_failed(reason: "sign_count_mismatch")
       render_error("errors.webauthn.sign_count_mismatch", :unauthorized)
     rescue WebAuthn::Error => e
-      Rails.logger.warn("WebAuthn authentication failed: #{e.message}")
+      Rails.event.warn("sign.webauthn.authentication.failed", message: e.message)
       emit_passkey_auth_failed(reason: "verification_failed")
       render_error("errors.webauthn.verification_failed", :unauthorized)
     end

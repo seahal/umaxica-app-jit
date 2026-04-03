@@ -4,14 +4,13 @@
 module CurrentSupport
   extend ActiveSupport::Concern
 
-  included do
-    after_action :_reset_current_state
-  end
-
   private
 
   def set_current
     Current.domain = resolved_current_domain
+    Current.surface = resolved_current_surface
+    Current.realm = resolved_current_realm
+    Current.request_id = request.request_id if respond_to?(:request, true) && request.present?
 
     resource = safe_current_resource
     Current.actor = resource.presence || Unauthenticated.instance
@@ -149,5 +148,30 @@ module CurrentSupport
 
     Current.trace_id = context.hex_trace_id
     Current.span_id = context.hex_span_id
+  end
+
+  def resolved_current_surface
+    return Current.surface if Current.surface.present? && Current.surface != :com
+    return unless respond_to?(:request, true) && request.present?
+
+    Core::Surface.current(request)
+  end
+
+  def resolved_current_realm
+    return Current.realm if Current.realm.present? && Current.realm != :www
+    return :www unless respond_to?(:params, true)
+
+    # Derive realm from controller namespace: "sign/app/roots" -> :sign
+    controller_path = params[:controller].to_s
+    first_segment = controller_path.split("/").first
+    case first_segment
+    when "sign" then :sign
+    when "core" then :core
+    when "apex" then :apex
+    when "docs" then :docs
+    when "news" then :news
+    when "help" then :help
+    else :www
+    end
   end
 end

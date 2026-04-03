@@ -6,6 +6,8 @@ module Sign
     module Up
       class EmailsController < ApplicationController
         include Sign::EmailRegistrable
+
+        activate_email_registrable
         include ::CloudflareTurnstile
 
         guest_only! message: I18n.t("sign.app.registration.email.already_logged_in")

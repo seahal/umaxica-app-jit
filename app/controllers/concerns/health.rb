@@ -46,7 +46,7 @@ module Health
       )
     end
     Rails.event.record("health_check.failed", error_class: e.class.name, error_message: e.message)
-    [503, "ERROR"]
+    [503, "ERROR", nil, ""]
   end
 
   def check_dependencies
@@ -102,8 +102,8 @@ module Health
   end
 
   def show_json
-    @status, @body, @errors = get_status
-    response_body = { status: @body, timestamp: Time.now.utc.iso8601, revision: @revision }
+    @status, @body, @errors, @revision = get_status
+    response_body = { status: @body, timestamp: Time.now.utc.iso8601, revision: @revision, surface: Current.surface }
     response_body[:errors] = @errors if @errors.present?
     render json: response_body, status: @status
   end

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 8041099b68f0a44fe9051a35fc15b91882273404
+  revision: af37013f126c529d3ee27ede1fcb13d8c42e2d88
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -124,7 +124,7 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1233.0)
+    aws-partitions (1.1234.0)
     aws-sdk-core (3.244.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -859,13 +859,13 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13073)
-      sorbet-static (= 0.6.13073)
-    sorbet-runtime (0.6.13073)
-    sorbet-static (0.6.13073-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13073)
-      sorbet (= 0.6.13073)
-      sorbet-runtime (= 0.6.13073)
+    sorbet (0.6.13080)
+      sorbet-static (= 0.6.13080)
+    sorbet-runtime (0.6.13080)
+    sorbet-static (0.6.13080-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13080)
+      sorbet (= 0.6.13080)
+      sorbet-runtime (= 0.6.13080)
     spoom (1.7.12)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -898,7 +898,7 @@ GEM
       thor (>= 1.2.0)
       tsort
       yard-sorbet
-    test-prof (1.6.0)
+    test-prof (1.6.1)
     thor (1.5.0)
     timeout (0.6.1)
     tpm-key_attestation (0.14.1)
@@ -1061,7 +1061,7 @@ CHECKSUMS
   argon2 (2.3.3) sha256=535276457cabf71940f21ac31b49b9d3b0d0a4640fe9db2b46b9677e2838453d
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   aws-eventstream (1.4.0) sha256=116bf85c436200d1060811e6f5d2d40c88f65448f2125bc77ffce5121e6e183b
-  aws-partitions (1.1233.0) sha256=928d3486082db11659397eb4c957f41e33fac8848bf87eb42fd921bbb96213c2
+  aws-partitions (1.1234.0) sha256=8f74aa6ca2e945fa50d83a23fc10f5406cb0becd32ac9f8940001ba8b04dcf8a
   aws-sdk-core (3.244.0) sha256=3e458c078b0c5bdee95bc370c3a483374b3224cf730c1f9f0faf849a5d9a18ea
   aws-sdk-secretsmanager (1.129.0) sha256=00445c87a8096da92c9d21ea52bb3d9e3634ae6e62f1b248eb9176f86470c954
   aws-sdk-sns (1.113.0) sha256=15fe37d010e86f4c28b4c2f2133c463ce5c14189ec3673a1f43c30dfee511b0f
@@ -1332,10 +1332,10 @@ CHECKSUMS
   snaky_hash (2.0.3) sha256=25a3d299566e8153fb02fa23fd9a9358845950f7a523ddbbe1fa1e0d79a6d456
   solid_cache (1.0.10) sha256=bc05a2fb3ac78a6f43cbb5946679cf9db67dd30d22939ededc385cb93e120d41
   solid_queue (1.4.0) sha256=e6a18d196f0b27cb6e3c77c5b31258b05fb634f8ed64fb1866ed164047216c2a
-  sorbet (0.6.13073) sha256=0007d4bd5e0fbeca227c7ded558a48658e48a38a30ca2607da38fea5923b4a82
-  sorbet-runtime (0.6.13073) sha256=e88c02c1b00e6d927b3689fa666044a983b31d7fa15f5cebf86b6060dc9f613a
-  sorbet-static (0.6.13073-x86_64-linux) sha256=14b11fd3b4e2cb91e066fcea9595c2b8f891ba026723437274f7f236b026f81d
-  sorbet-static-and-runtime (0.6.13073) sha256=a0721083aa9b766195c77b7027e2b07258e4e62a29c555b0a223c1ea15ce79c8
+  sorbet (0.6.13080) sha256=d79066d877266b6e01af41ddbeeff836af11ad5d33af72890ce73b89cb70525d
+  sorbet-runtime (0.6.13080) sha256=a6f7dc2d9ee3d088405e3b00f93a32bf8d8fef0c94a4bdd2c13400816461bf47
+  sorbet-static (0.6.13080-x86_64-linux) sha256=cb4e50f86040b7ba921a03d06099b48b5c571c0c8fa3fb1a4f00af51424fffea
+  sorbet-static-and-runtime (0.6.13080) sha256=d0faf0f8d9c086fb14f97f12d85b3729ef47dcbe7a38019761107bed6d21caeb
   spoom (1.7.12) sha256=67f0b1f835158dba4f19c03ff75b7b7e285dce9165b7b77c2c78cbf54ebf3013
   stimulus-rails (1.3.4) sha256=765676ffa1f33af64ce026d26b48e8ffb2e0b94e0f50e9119e11d6107d67cb06
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
@@ -1344,7 +1344,7 @@ CHECKSUMS
   tailwindcss-rails (4.4.0) sha256=efa2961351a52acebe616e645a81a30bb4f27fde46cc06ce7688d1cd1131e916
   tailwindcss-ruby (4.2.1-x86_64-linux-gnu) sha256=201d0e5e5d4aba52cae4ee4bd1acd497d2790c83e7f15da964aab8ec93876831
   tapioca (0.18.0) sha256=6e92516b055e727792c84319d4be59438345b2c11e932495a54636fc043e7dc1
-  test-prof (1.6.0) sha256=b04cee7b9684b9b31e23e258f835ba67ee5b4fd5f6cc7204d076ef695805c335
+  test-prof (1.6.1) sha256=0332d9c39a7c118ed942b2db582f055d9f24964d150004ec6b964d2fa262499e
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
   tpm-key_attestation (0.14.1) sha256=7fd4e4653a7afd0a386632ddfb05d10ecfdd47678299c5e69165bc9ae111193f
@@ -1366,7 +1366,7 @@ CHECKSUMS
   zeitwerk (2.7.5) sha256=d8da92128c09ea6ec62c949011b00ed4a20242b255293dd66bf41545398f73dd
 
 RUBY VERSION
-  ruby 4.0.2
+  ruby 3.4.9
 
 BUNDLED WITH
   4.0.6

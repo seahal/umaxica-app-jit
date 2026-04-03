@@ -28,9 +28,11 @@ module SocialAuthConcern
 
   VALID_INTENTS = %w(login link reauth).freeze
 
-  included do
-    rescue_from SocialAuth::BaseError, with: :handle_social_auth_error
-    rescue_from ActiveRecord::RecordNotUnique, with: :handle_record_not_unique
+  class_methods do
+    def activate_social_auth_concern
+      rescue_from(SocialAuth::BaseError, with: :handle_social_auth_error)
+      rescue_from(ActiveRecord::RecordNotUnique, with: :handle_record_not_unique)
+    end
   end
 
   private
@@ -185,6 +187,7 @@ module SocialAuthConcern
     respond_to do |format|
       format.html do
         flash[:alert] = error.message
+        record_flash_boundary
         clear_social_auth_intent!
         redirect_to(social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider))
       end
@@ -207,6 +210,7 @@ module SocialAuthConcern
     respond_to do |format|
       format.html do
         flash[:alert] = I18n.t("errors.social_auth.identity_conflict")
+        record_flash_boundary
         clear_social_auth_intent!
         redirect_to(social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider))
       end

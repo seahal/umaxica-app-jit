@@ -16,7 +16,11 @@ module Sign
       # - Signs in the staff if found and active
       class OmniauthCallbacksController < Sign::Org::ApplicationController
         include SocialAuthConcern
+
+        activate_social_auth_concern
         include SocialCallbackGuard
+
+        activate_social_callback_guard
         include SessionLimitGate
 
         public_strict! only: %i(omniauth failure)
@@ -121,9 +125,24 @@ module Sign
         end
 
         def login_and_redirect(staff, auth)
-          login_result = log_in(staff, record_login_audit: true)
+          login_result = log_in(
+            staff,
+            record_login_audit: true,
+            auth_method: normalized_social_auth_method(auth.provider),
+          )
           provider_name = SocialIdentifiable.normalize_provider(auth.provider).humanize
           handle_login_result(login_result, provider_name)
+        end
+
+        def normalized_social_auth_method(provider)
+          case SocialIdentifiable.normalize_provider(provider)
+          when "google"
+            "google"
+          when "apple"
+            "apple"
+          else
+            "social"
+          end
         end
 
         def extract_email_from_auth(auth)
@@ -229,9 +248,11 @@ module Sign
         # Override to use org path instead of app path
         def reject_social_callback!(reason:, provider:, details: {})
           clear_social_state!
-          Rails.logger.warn(
-            "[SocialCallbackGuard] org phase=callback provider=#{provider.inspect} " \
-            "reason=#{reason} details=#{details.inspect}",
+          Rails.event.warn(
+            "social_auth.callback_guard.org_rejected",
+            provider: provider,
+            reason: reason,
+            details: details,
           )
           redirect_to(
             new_sign_org_in_path,

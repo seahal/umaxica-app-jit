@@ -176,6 +176,145 @@ module Auth
       assert_not_predicate pref, :null?
     end
 
+    test "build includes subject_type, acr, amr claims by default" do
+      payload, _issued_at = setup_token_claims_payload
+
+      assert_equal "user", payload["subject_type"]
+      assert_equal "aal1", payload["acr"]
+      assert_equal [], payload["amr"]
+    end
+
+    test "build includes custom acr claim" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      payload = Auth::TokenClaims.build(
+        resource: DummyResource.new(42),
+        session_public_id: "sess_abc",
+        resource_type: "user",
+        issued_at: issued_at,
+        access_token_ttl: 10.minutes,
+        acr: "aal2",
+      )
+
+      assert_equal "aal2", payload["acr"]
+    end
+
+    test "build includes custom amr claim" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      payload = Auth::TokenClaims.build(
+        resource: DummyResource.new(42),
+        session_public_id: "sess_abc",
+        resource_type: "user",
+        issued_at: issued_at,
+        access_token_ttl: 10.minutes,
+        amr: ["email_otp"],
+      )
+
+      assert_equal ["email_otp"], payload["amr"]
+    end
+
+    test "build includes multiple amr values for step-up" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      payload = Auth::TokenClaims.build(
+        resource: DummyResource.new(42),
+        session_public_id: "sess_abc",
+        resource_type: "user",
+        issued_at: issued_at,
+        access_token_ttl: 10.minutes,
+        amr: ["email_otp", "totp"],
+      )
+
+      assert_equal ["email_otp", "totp"], payload["amr"]
+    end
+
+    test "build rejects invalid amr values" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+
+      assert_raises(ArgumentError) do
+        Auth::TokenClaims.build(
+          resource: DummyResource.new(42),
+          session_public_id: "sess_abc",
+          resource_type: "user",
+          issued_at: issued_at,
+          access_token_ttl: 10.minutes,
+          amr: ["social"],
+        )
+      end
+    end
+
+    test "build uses resource_type as default subject_type" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      payload = Auth::TokenClaims.build(
+        resource: DummyResource.new(42),
+        session_public_id: "sess_abc",
+        resource_type: "staff",
+        issued_at: issued_at,
+        access_token_ttl: 10.minutes,
+      )
+
+      assert_equal "staff", payload["subject_type"]
+    end
+
+    test "build rejects invalid subject_type" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      assert_raises(ArgumentError) do
+        Auth::TokenClaims.build(
+          resource: DummyResource.new(42),
+          session_public_id: "sess_abc",
+          resource_type: "user",
+          issued_at: issued_at,
+          access_token_ttl: 10.minutes,
+          subject_type: "admin",
+        )
+      end
+    end
+
+    test "build rejects invalid acr" do
+      issued_at = Time.zone.parse("2026-02-22 12:00:00")
+      assert_raises(ArgumentError) do
+        Auth::TokenClaims.build(
+          resource: DummyResource.new(42),
+          session_public_id: "sess_abc",
+          resource_type: "user",
+          issued_at: issued_at,
+          access_token_ttl: 10.minutes,
+          acr: "aal3",
+        )
+      end
+    end
+
+    test "acr extractor reads acr claim" do
+      payload = { "acr" => "aal2" }
+
+      assert_equal "aal2", Auth::TokenClaims.acr(payload)
+    end
+
+    test "acr extractor returns nil when absent" do
+      assert_nil Auth::TokenClaims.acr({})
+      assert_nil Auth::TokenClaims.acr(nil)
+    end
+
+    test "amr extractor reads amr claim" do
+      payload = { "amr" => ["email_otp", "totp"] }
+
+      assert_equal ["email_otp", "totp"], Auth::TokenClaims.amr(payload)
+    end
+
+    test "amr extractor returns empty array when absent" do
+      assert_equal [], Auth::TokenClaims.amr({})
+      assert_equal [], Auth::TokenClaims.amr(nil)
+    end
+
+    test "subject_type extractor reads subject_type claim" do
+      payload = { "subject_type" => "staff" }
+
+      assert_equal "staff", Auth::TokenClaims.subject_type(payload)
+    end
+
+    test "subject_type extractor returns nil when absent" do
+      assert_nil Auth::TokenClaims.subject_type({})
+      assert_nil Auth::TokenClaims.subject_type(nil)
+    end
+
     private
 
     def unix_timestamp(value)

@@ -25,4 +25,12 @@ module Sitemap
   def sitemap_urls
     []
   end
+
+  def sitemap_entry(loc:, lastmod: nil, changefreq: nil, priority: nil)
+    entry = { loc: loc }
+    entry[:lastmod] = lastmod.iso8601 if lastmod.respond_to?(:iso8601)
+    entry[:changefreq] = changefreq if changefreq
+    entry[:priority] = priority if priority
+    entry
+  end
 end

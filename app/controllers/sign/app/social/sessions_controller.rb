@@ -16,6 +16,8 @@ module Sign
         include ::Verification::User
         include SocialAuthConcern
 
+        activate_social_auth_concern
+
         SUPPORTED_PROVIDERS = %w(google_app apple).freeze
 
         # Public access for start (login intent doesn't require auth)

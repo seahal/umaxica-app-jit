@@ -18,7 +18,11 @@ module Sign
       # Both are accessible via params[:state].
       class OmniauthCallbacksController < Sign::App::ApplicationController
         include SocialAuthConcern
+
+        activate_social_auth_concern
         include SocialCallbackGuard
+
+        activate_social_callback_guard
         include SessionLimitGate
 
         # Allow unauthenticated access for login intent
@@ -289,7 +293,7 @@ module Sign
 
         def sign_in(user)
           result = complete_sign_in_or_start_mfa!(
-            user, rt: nil, ri: params[:ri], auth_method: "social",
+            user, rt: nil, ri: params[:ri], auth_method: normalized_social_auth_method,
           )
           Rails.event.debug("sign.social.omniauth.sign_in_result", result: result.inspect)
           result
@@ -298,10 +302,21 @@ module Sign
         def sign_in_with_reauth(user)
           # Reauth flow - last_reauth_at is already updated by SocialAuthService
           result = complete_sign_in_or_start_mfa!(
-            user, rt: nil, ri: params[:ri], auth_method: "social",
+            user, rt: nil, ri: params[:ri], auth_method: normalized_social_auth_method,
           )
           Rails.event.debug("sign.social.omniauth.sign_in_reauth_result", result: result.inspect)
           result
+        end
+
+        def normalized_social_auth_method
+          case SocialIdentifiable.normalize_provider(omniauth_provider)
+          when "google"
+            "google"
+          when "apple"
+            "apple"
+          else
+            "social"
+          end
         end
 
         # Handle login failures (session limit, MFA required, etc.)

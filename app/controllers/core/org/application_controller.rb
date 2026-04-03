@@ -7,7 +7,11 @@ module Core
       include ::RateLimit
       include ::Session
       include ::Preference::Regional
+
+      activate_preference_regional
       include ::Authentication::Staff
+
+      activate_staff_authentication
       include ::Authorization::Staff
       include ::Verification::Staff
       include Pundit::Authorization
@@ -25,13 +29,14 @@ module Core
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
-      before_action :reset_flash
+      before_action :validate_flash_boundary
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
       before_action :enforce_verification_if_required
       before_action :set_current
       before_action :set_current_observability
       after_action :purge_current
+      after_action :_reset_current_state
 
       public_strict!
 

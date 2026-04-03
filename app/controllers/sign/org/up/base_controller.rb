@@ -9,6 +9,8 @@ module Sign
         include Pundit::Authorization
         # Note: Authentication::Staff is NOT included here for unauthenticated sign-up
         include ::Preference::Global
+
+        activate_preference_global
         include ::Preference::Adoption
         include ::CurrentSupport
         include ::Finisher
@@ -23,6 +25,7 @@ module Sign
         before_action :set_color_theme
         before_action :set_current
         append_after_action :finish_request
+        after_action :_reset_current_state
 
         protect_from_forgery using: :header_or_legacy_token,
                              trusted_origins: ENV.fetch(

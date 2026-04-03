@@ -23,13 +23,17 @@ class SignErrorResponsesTest < ActiveSupport::TestCase
   end
 
   class Harness
+    include Session
     include Sign::ErrorResponses
 
-    attr_accessor :format_kind, :flash, :request
+    activate_error_responses
+
+    attr_accessor :format_kind, :flash, :request, :session
 
     def initialize
       @format_kind = :json
       @flash = {}
+      @session = {}
       @request = Struct.new(:format).new(Struct.new(:json?).new(true))
     end
 

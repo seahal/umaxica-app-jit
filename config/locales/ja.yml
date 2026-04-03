@@ -728,13 +728,6 @@ ja:
             logged_in: ログイン成功
             login_success: ログイン成功
             unknown: 不明なイベント (%{event_id})
-        emergency_key:
-          missing: 緊急キーの表示期限が切れました。
-          show:
-            title: 緊急キー
-            description: 緊急時に利用できるキーを発行しました。安全な場所に保管してください。
-            one_time_notice: このキーは一度しか表示されません。スクリーンショットまたは安全な保管場所に保存してください。
-            back_to_settings: 設定に戻る
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。

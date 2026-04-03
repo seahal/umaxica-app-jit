@@ -5,9 +5,11 @@ module Sign
   module TelephoneRegistrable
     extend ActiveSupport::Concern
 
-    included do
-      include Common::Redirect
-      include Common::Otp
+    class_methods do
+      def activate_telephone_registrable
+        include Common::Redirect
+        include Common::Otp
+      end
     end
 
     TELEPHONE_VERIFICATION_RATE_LIMIT = 5

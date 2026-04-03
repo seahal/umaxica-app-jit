@@ -26,8 +26,10 @@ module SocialCallbackGuard
 
   REQUEST_PHASE_PATH = %r{\A/auth/(?<provider>google_app|google_org|apple)\z}.freeze
 
-  included do
-    before_action :verify_social_callback_request!, only: [:omniauth], raise: false
+  class_methods do
+    def activate_social_callback_guard
+      before_action :verify_social_callback_request!, only: [:omniauth], raise: false
+    end
   end
 
   module_function
@@ -323,18 +325,13 @@ module SocialCallbackGuard
     source[:referer] =
       SocialCallbackGuard.sanitize_source_header(request.headers["Referer"]) if request.headers["Referer"].present?
 
-    Rails.logger.info(
-      "[SocialCallbackGuard] phase=callback provider=#{provider.inspect} " \
-      "reason=source_observed details=#{source.inspect}",
-    )
+    Rails.event.record("social_auth.callback_guard.source_observed", provider: provider, source: source)
   end
 
   def reject_social_callback!(reason:, provider:, details: {})
     clear_social_state!
 
-    Rails.logger.warn(
-      "[SocialCallbackGuard] phase=callback provider=#{provider.inspect} reason=#{reason} details=#{details.inspect}",
-    )
+    Rails.event.warn("social_auth.callback_guard.rejected", provider: provider, reason: reason, details: details)
 
     redirect_to(
       new_sign_app_in_path,
@@ -387,8 +384,9 @@ module SocialCallbackGuard
   end
 
   def self.reject_request_phase!(phase:, reason:, provider:, details: {})
-    Rails.logger.warn(
-      "[SocialCallbackGuard] phase=#{phase} provider=#{provider.inspect} reason=#{reason} details=#{details.inspect}",
+    Rails.event.warn(
+      "social_auth.callback_guard.rejected_request_phase", phase: phase, provider: provider,
+                                                           reason: reason, details: details,
     )
 
     body = I18n.t("sign.app.social.sessions.create.failure")

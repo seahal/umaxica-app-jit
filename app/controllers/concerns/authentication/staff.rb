@@ -14,16 +14,19 @@ module Authentication
     REFRESH_TOKEN_TTL = Authentication::Base::REFRESH_TOKEN_TTL
     AUDIT_EVENTS = Authentication::Base::AUDIT_EVENTS
 
-    included do
-      helper_method :current_staff, :logged_in?, :active_staff?,
-                    :logged_in_staff? if respond_to?(:helper_method)
-      alias_method :current_staff, :current_resource
-      alias_method :authenticate_staff!, :authenticate!
-      alias_method :logged_in_staff?, :logged_in?
-      before_action :transparent_refresh_access_token, unless: -> {
-        request.format.json?
-      } if respond_to?(:before_action)
-      include ::AuthorizationAudit
+    class_methods do
+      def activate_staff_authentication
+        activate_authentication_base
+
+        helper_method :current_staff, :logged_in?, :active_staff?,
+                      :logged_in_staff? if respond_to?(:helper_method)
+        alias_method(:current_staff, :current_resource)
+        alias_method(:authenticate_staff!, :authenticate!)
+        alias_method(:logged_in_staff?, :logged_in?)
+        include ::AuthorizationAudit
+
+        activate_authorization_audit
+      end
     end
 
     def audit_staff_login_failed(staff)

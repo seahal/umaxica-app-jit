@@ -5,8 +5,10 @@ module Preference::Core
   extend ActiveSupport::Concern
   include Preference::Base
 
-  included do
-    before_action :ensure_preferences_record
+  class_methods do
+    def activate_preference_core
+      before_action :ensure_preferences_record
+    end
   end
 
   COOKIE_EXPIRY = 400.days
@@ -392,7 +394,7 @@ module Preference::Core
       context: { preference_reset: true, kept_values: true },
     )
   rescue StandardError => e
-    Rails.logger.error("log_preference_reset failed: #{e.class} - #{e.message}")
+    Rails.event.error("preference.log_reset_failed", error_class: e.class.name, message: e.message)
   end
 
   def reset_app_org_preference_to_defaults!(preference)

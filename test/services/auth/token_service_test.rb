@@ -121,4 +121,78 @@ class AuthTokenServiceTest < ActiveSupport::TestCase
     assert_equal customer.id, payload["sub"]
     assert_equal "customer", payload["act"]
   end
+
+  test "encode includes subject_type, acr, amr claims" do
+    user = users(:one)
+    token = Auth::TokenService.encode(
+      user, host: "example.com", session_public_id: "sid123",
+            resource_type: "user", acr: "aal1", amr: ["email_otp"],
+    )
+
+    payload = Auth::TokenService.decode(token, host: "example.com", resource_type: "user")
+
+    assert_equal "user", payload["subject_type"]
+    assert_equal "aal1", payload["acr"]
+    assert_equal ["email_otp"], payload["amr"]
+  end
+
+  test "encode with default acr and amr when not provided" do
+    user = users(:one)
+    token = Auth::TokenService.encode(
+      user, host: "example.com", session_public_id: "sid123",
+            resource_type: "user",
+    )
+
+    payload = Auth::TokenService.decode(token, host: "example.com", resource_type: "user")
+
+    assert_equal "aal1", payload["acr"]
+    assert_equal [], payload["amr"]
+  end
+
+  test "decode rejects token missing subject_type claim" do
+    user = users(:one)
+    token = Auth::TokenService.encode(
+      user, host: "example.com", session_public_id: "sid123",
+            resource_type: "user",
+    )
+
+    tampered = tamper_remove_claim(token, "subject_type")
+
+    assert_nil Auth::TokenService.decode(tampered, host: "example.com", resource_type: "user")
+  end
+
+  test "decode rejects token missing acr claim" do
+    user = users(:one)
+    token = Auth::TokenService.encode(
+      user, host: "example.com", session_public_id: "sid123",
+            resource_type: "user",
+    )
+
+    tampered = tamper_remove_claim(token, "acr")
+
+    assert_nil Auth::TokenService.decode(tampered, host: "example.com", resource_type: "user")
+  end
+
+  test "decode rejects token missing amr claim" do
+    user = users(:one)
+    token = Auth::TokenService.encode(
+      user, host: "example.com", session_public_id: "sid123",
+            resource_type: "user",
+    )
+
+    tampered = tamper_remove_claim(token, "amr")
+
+    assert_nil Auth::TokenService.decode(tampered, host: "example.com", resource_type: "user")
+  end
+
+  private
+
+  def tamper_remove_claim(token, claim)
+    require "jwt"
+    decoded = JWT.decode(token, nil, false)
+    payload = decoded[0]
+    header = decoded[1] || { "alg" => "ES384", "typ" => "auth-access-token;user" }
+    payload.delete(claim)
+    JWT.encode(payload, Jit::Security::Jwt::Keyring.private_key_for_active, "ES384", header)
+  end
 end

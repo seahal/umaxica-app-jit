@@ -56,7 +56,7 @@ module Sign
           verification = verify_secret_for_sign_in(staff: staff, raw_secret: @secret_form.secret_value)
 
           if staff && verification.secret
-            process_standard_login(staff)
+            process_standard_login(staff, verification.secret)
           else
             render_failed_login(verification.reason || :identifier_not_found)
           end
@@ -98,9 +98,9 @@ module Sign
           SecretVerificationResult.new(secret: secret, reason: :success)
         end
 
-        def process_standard_login(staff)
+        def process_standard_login(staff, secret)
           result = complete_sign_in_or_start_mfa!(
-            staff, rt: params[:rd], ri: params[:ri], auth_method: "secret",
+            staff, rt: params[:rd], ri: params[:ri], auth_method: secret_auth_method(secret),
           )
 
           if result[:status] == :mfa_required
@@ -150,6 +150,12 @@ module Sign
 
         def invalid_secret_message
           t("sign.org.authentication.secret.create.invalid")
+        end
+
+        def secret_auth_method(secret)
+          return "recovery_code" if secret&.recovery_secret?
+
+          "secret"
         end
 
         def secret_params

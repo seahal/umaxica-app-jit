@@ -14,13 +14,19 @@ module Authentication
     REFRESH_TOKEN_TTL = Authentication::Base::REFRESH_TOKEN_TTL
     AUDIT_EVENTS = Authentication::Base::AUDIT_EVENTS
 
-    included do
-      helper_method :current_customer, :logged_in?, :active_customer?,
-                    :logged_in_customer? if respond_to?(:helper_method)
-      alias_method :current_customer, :current_resource
-      alias_method :authenticate_customer!, :authenticate!
-      alias_method :logged_in_customer?, :logged_in?
-      include ::AuthorizationAudit
+    class_methods do
+      def activate_customer_authentication
+        activate_authentication_base
+
+        helper_method :current_customer, :logged_in?, :active_customer?,
+                      :logged_in_customer? if respond_to?(:helper_method)
+        alias_method(:current_customer, :current_resource)
+        alias_method(:authenticate_customer!, :authenticate!)
+        alias_method(:logged_in_customer?, :logged_in?)
+        include ::AuthorizationAudit
+
+        activate_authorization_audit
+      end
     end
 
     def audit_customer_login_failed(customer)
@@ -101,7 +107,7 @@ module Authentication
         )
       end
     rescue StandardError => e
-      Rails.logger.error("[Authentication::Customer] audit write failed: #{e.class}: #{e.message}")
+      Rails.event.error("auth.customer.audit_write_failed", error_class: e.class.name, message: e.message)
       false
     end
 

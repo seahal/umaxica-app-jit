@@ -8,6 +8,8 @@ module Sign
         auth_required!
 
         include Sign::OrgVerificationBase
+
+        activate_org_verification_base
       end
     end
   end

@@ -5,8 +5,10 @@ module Oidc
   module Callback
     extend ActiveSupport::Concern
 
-    included do
-      public_strict!
+    class_methods do
+      def activate_oidc_callback
+        public_strict!
+      end
     end
 
     def show

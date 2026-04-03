@@ -28,7 +28,7 @@ module Auth
 
         unless audit.save
           error_message = "Audit save failed: #{audit.errors.full_messages.join(", ")}"
-          Rails.logger.error("[Auth::AuditWriter] #{error_message}")
+          Rails.event.error("auth.audit.save_failed", message: error_message)
           raise AuditWriteError, error_message
         end
 
@@ -45,8 +45,10 @@ module Auth
       true
     rescue StandardError => e
       # Observe the failure without blocking authentication
-      Rails.logger.error("[Auth::AuditWriter] Audit write failed (best-effort): #{e.class}: #{e.message}")
-      Rails.logger.error(e.backtrace.first(5).join("\n")) if e.backtrace
+      Rails.event.error(
+        "auth.audit.write_failed", error_class: e.class.name, message: e.message,
+                                   backtrace: e.backtrace&.first(5),
+      )
 
       Rails.event.notify(
         "authentication.audit.failed",

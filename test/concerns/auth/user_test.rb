@@ -21,6 +21,8 @@ class Authentication::UserTest < ActiveSupport::TestCase
   class DummyClass
     include Authentication::User
 
+    activate_user_authentication
+
     attr_accessor :session, :cookies, :request, :response
 
     def initialize

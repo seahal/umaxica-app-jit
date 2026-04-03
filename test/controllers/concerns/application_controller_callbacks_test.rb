@@ -70,13 +70,13 @@ module Concerns
         assert_includes before_actions, :check_default_rate_limit,
                         "#{domain} should have check_default_rate_limit callback"
 
-        reset_flash_index = before_actions.index(:reset_flash)
+        validate_flash_boundary_index = before_actions.index(:validate_flash_boundary)
 
-        assert reset_flash_index,
-               "#{domain} should have reset_flash callback"
+        assert validate_flash_boundary_index,
+               "#{domain} should have validate_flash_boundary callback"
 
-        assert_operator rate_limit_index, :<, reset_flash_index,
-                        "#{domain}: check_default_rate_limit should come before reset_flash"
+        assert_operator rate_limit_index, :<, validate_flash_boundary_index,
+                        "#{domain}: check_default_rate_limit should come before validate_flash_boundary"
 
         assert_includes before_actions, :enforce_access_policy!,
                         "#{domain} should have enforce_access_policy! callback"
@@ -101,19 +101,19 @@ module Concerns
         assert rate_limit_index,
                "#{domain} should have check_default_rate_limit callback"
 
-        reset_flash_index = before_actions.index(:reset_flash)
+        validate_flash_boundary_index = before_actions.index(:validate_flash_boundary)
 
-        assert reset_flash_index,
-               "#{domain} should have reset_flash callback"
+        assert validate_flash_boundary_index,
+               "#{domain} should have validate_flash_boundary callback"
 
         access_policy_index = before_actions.index(:enforce_access_policy!)
 
         return unless access_policy_index
 
-        assert_operator rate_limit_index, :<, reset_flash_index,
-                        "#{domain}: check_default_rate_limit should come before reset_flash"
-        assert_operator reset_flash_index, :<, access_policy_index,
-                        "#{domain}: reset_flash should come before enforce_access_policy!"
+        assert_operator rate_limit_index, :<, validate_flash_boundary_index,
+                        "#{domain}: check_default_rate_limit should come before validate_flash_boundary"
+        assert_operator validate_flash_boundary_index, :<, access_policy_index,
+                        "#{domain}: validate_flash_boundary should come before enforce_access_policy!"
       end
 
       auth_method = "test_#{domain.underscore.gsub("/", "_")}_auth_callback_order"

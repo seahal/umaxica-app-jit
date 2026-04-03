@@ -286,15 +286,189 @@ class Oidc::TokenExchangeServiceTest < ActiveSupport::TestCase
     end
   end
 
+  test "access token includes subject_type, acr, amr claims" do
+    code_record = issue_code!
+
+    result =
+      with_authenticated_client do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: @redirect_uri,
+          client_id: "core_app",
+          client_secret: @client_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+
+    payload = Auth::TokenService.decode(
+      result.token_response[:access_token],
+      host: "sign.app.localhost",
+      resource_type: "user",
+    )
+
+    assert_equal "user", payload["subject_type"]
+    assert_equal "aal1", payload["acr"]
+    assert_equal [], payload["amr"]
+  end
+
+  test "access token includes acr from authorization code" do
+    code_record = AuthorizationCode.issue!(
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: @redirect_uri,
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      acr: "aal2",
+    )
+
+    result =
+      with_authenticated_client do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: @redirect_uri,
+          client_id: "core_app",
+          client_secret: @client_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+
+    payload = Auth::TokenService.decode(
+      result.token_response[:access_token],
+      host: "sign.app.localhost",
+      resource_type: "user",
+    )
+
+    assert_equal "aal2", payload["acr"]
+  end
+
+  test "access token includes amr from auth_method on authorization code" do
+    code_record = AuthorizationCode.issue!(
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: @redirect_uri,
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      auth_method: "email",
+    )
+
+    result =
+      with_authenticated_client do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: @redirect_uri,
+          client_id: "core_app",
+          client_secret: @client_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+
+    payload = Auth::TokenService.decode(
+      result.token_response[:access_token],
+      host: "sign.app.localhost",
+      resource_type: "user",
+    )
+
+    assert_equal ["email_otp"], payload["amr"]
+  end
+
+  test "access token includes multiple amr values serialized on authorization code" do
+    code_record = AuthorizationCode.issue!(
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: @redirect_uri,
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      auth_method: %w(email_otp totp),
+      acr: "aal2",
+    )
+
+    result =
+      with_authenticated_client do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: @redirect_uri,
+          client_id: "core_app",
+          client_secret: @client_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+
+    payload = Auth::TokenService.decode(
+      result.token_response[:access_token],
+      host: "sign.app.localhost",
+      resource_type: "user",
+    )
+
+    assert_equal ["email_otp", "totp"], payload["amr"]
+    assert_equal "aal2", payload["acr"]
+  end
+
+  test "id_token is included in token response" do
+    code_record = issue_code!(nonce: "test_nonce_123")
+
+    result =
+      with_authenticated_client do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: @redirect_uri,
+          client_id: "core_app",
+          client_secret: @client_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+
+    assert_predicate result.token_response[:id_token], :present?
+  end
+
+  test "id_token includes required OIDC claims" do
+    code_record = issue_code!(nonce: "test_nonce_123", auth_method: "email")
+
+    result =
+      with_authenticated_client do
+        Oidc::TokenExchangeService.call(
+          grant_type: "authorization_code",
+          code: code_record.code,
+          redirect_uri: @redirect_uri,
+          client_id: "core_app",
+          client_secret: @client_secret,
+          code_verifier: @code_verifier,
+        )
+      end
+
+    require "jwt"
+    id_token_payload, = JWT.decode(result.token_response[:id_token], nil, false)
+
+    assert_equal Authentication::Base::JwtConfiguration.issuer("user"), id_token_payload["iss"]
+    assert_equal @user.id, id_token_payload["sub"]
+    assert_equal "user", id_token_payload["subject_type"]
+    assert_equal "core_app", id_token_payload["aud"]
+    assert_predicate id_token_payload["exp"], :present?
+    assert_predicate id_token_payload["iat"], :present?
+    assert_predicate id_token_payload["auth_time"], :present?
+    assert_predicate id_token_payload["sid"], :present?
+    assert_equal "aal1", id_token_payload["acr"]
+    assert_equal ["email_otp"], id_token_payload["amr"]
+    assert_equal "test_nonce_123", id_token_payload["nonce"]
+    assert_predicate id_token_payload["jti"], :present?
+  end
+
   private
 
-  def issue_code!
+  def issue_code!(nonce: nil, auth_method: nil, acr: nil)
     AuthorizationCode.issue!(
       user: @user,
       client_id: "core_app",
       redirect_uri: @redirect_uri,
       code_challenge: @code_challenge,
       code_challenge_method: "S256",
+      nonce: nonce,
+      auth_method: auth_method,
+      acr: acr,
     )
   end
 

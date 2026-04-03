@@ -8,6 +8,8 @@ module Sign
         public_strict!
         include ::Preference::Core
 
+        activate_preference_core
+
         def edit
           set_region_preferences_edit
         end

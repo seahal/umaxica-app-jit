@@ -8,6 +8,8 @@ module Sign
         auth_required!
 
         include Sign::TelephoneRegistrable
+
+        activate_telephone_registrable
         include ::Verification::User
 
         before_action :authenticate_user!

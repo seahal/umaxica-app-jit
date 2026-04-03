@@ -2,7 +2,9 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   staged: {
-    "*": "vp check --fix",
+    "*.{js,ts,mjs,mts,jsx,tsx,json,css}": "vp check --fix",
+    "*.rb": "bundle exec rubocop --force-exclusion",
+    "*.erb": "bundle exec erb_lint",
   },
   test: {
     exclude: [

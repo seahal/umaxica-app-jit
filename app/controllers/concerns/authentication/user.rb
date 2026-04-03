@@ -14,12 +14,18 @@ module Authentication
     REFRESH_TOKEN_TTL = Authentication::Base::REFRESH_TOKEN_TTL
     AUDIT_EVENTS = Authentication::Base::AUDIT_EVENTS
 
-    included do
-      helper_method :current_user, :logged_in?, :active_user?, :logged_in_user? if respond_to?(:helper_method)
-      alias_method :current_user, :current_resource
-      alias_method :authenticate_user!, :authenticate!
-      alias_method :logged_in_user?, :logged_in?
-      include ::AuthorizationAudit
+    class_methods do
+      def activate_user_authentication
+        activate_authentication_base
+
+        helper_method :current_user, :logged_in?, :active_user?, :logged_in_user? if respond_to?(:helper_method)
+        alias_method(:current_user, :current_resource)
+        alias_method(:authenticate_user!, :authenticate!)
+        alias_method(:logged_in_user?, :logged_in?)
+        include ::AuthorizationAudit
+
+        activate_authorization_audit
+      end
     end
 
     def audit_user_login_failed(user)

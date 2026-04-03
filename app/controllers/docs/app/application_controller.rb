@@ -7,7 +7,11 @@ module Docs
       include ::RateLimit
       include ::Session
       include ::Preference::Regional
+
+      activate_preference_regional
       include ::Authentication::User
+
+      activate_user_authentication
       include ::Authorization::User
       include ::Verification::User
       include Pundit::Authorization
@@ -20,7 +24,7 @@ module Docs
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
-      before_action :reset_flash
+      before_action :validate_flash_boundary
       before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
@@ -28,6 +32,7 @@ module Docs
       before_action :set_current
       before_action :set_current_observability
       after_action :purge_current
+      after_action :_reset_current_state
 
       # FIXME: Resolve the URL issues before deploying.
       protect_from_forgery using: :header_or_legacy_token,

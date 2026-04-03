@@ -32,10 +32,10 @@ module Sign
             options: creation_options,
           }, status: :ok
         rescue Sign::Webauthn::OriginValidationError => e
-          Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
+          Rails.event.error("sign.webauthn.registration.origin_validation_failed", message: e.message, exception: e)
           render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
         rescue StandardError => e
-          Rails.logger.error("WebAuthn options generation failed: #{e.message}")
+          Rails.event.error("sign.webauthn.registration.options_generation_failed", message: e.message, exception: e)
           render json: { error: I18n.t("errors.webauthn.options_failed") }, status: :unprocessable_content
         end
 
@@ -80,10 +80,10 @@ module Sign
         rescue Sign::Webauthn::ChallengeNotFoundError,
                Sign::Webauthn::ChallengeExpiredError,
                Sign::Webauthn::ChallengePurposeMismatchError => e
-          Rails.logger.warn("WebAuthn challenge error: #{e.message}")
+          Rails.event.warn("sign.webauthn.registration.challenge_error", message: e.message)
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
         rescue WebAuthn::Error => e
-          Rails.logger.warn("WebAuthn verification failed: #{e.message}")
+          Rails.event.warn("sign.webauthn.registration.verification_failed", message: e.message)
           render json: { error: e.message }, status: :unprocessable_content
         rescue ActiveRecord::RecordNotUnique
           render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict

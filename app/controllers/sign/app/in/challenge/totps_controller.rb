@@ -83,7 +83,7 @@ module Sign
           def handle_totp_success(user, totp_record, last_otp_at)
             totp_record&.update!(last_otp_at: Time.zone.at(last_otp_at))
 
-            result = finalize_mfa_login!(user)
+            result = finalize_mfa_login!(user, verification_method: "totp")
             case result[:status]
             when :session_limit_hard_reject
               render_session_limit_hard_reject(message: result[:message], http_status: result[:http_status])

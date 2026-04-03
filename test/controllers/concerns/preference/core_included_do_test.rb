@@ -4,8 +4,8 @@
 require "test_helper"
 
 class PreferenceCoreIncludedDoTest < ActiveSupport::TestCase
-  test "ensure_preferences_record method exists (private)" do
-    skip "Preference::Core requires Preference::Base abstract methods"
+  test "sync_to_resource_preference! method exists (private)" do
+    assert Preference::Core.private_method_defined?(:sync_to_resource_preference!)
   end
 
   test "COOKIE_EXPIRY constant is defined" do

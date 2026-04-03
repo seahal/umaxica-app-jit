@@ -21,6 +21,10 @@ module StaffSecret::Kinds
     staff_secret_kind_id == TOTP
   end
 
+  def recovery_secret?
+    false
+  end
+
   def permanent_secret?
     staff_secret_kind_id == PERMANENT
   end

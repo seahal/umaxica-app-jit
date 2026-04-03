@@ -15,78 +15,80 @@ module Sign
       "withdrawal" => %r{\A/configuration/withdrawal},
     }.freeze
 
-    included do
-      include ::Preference::Global
-      include Common::Otp
-      include ::Authentication::Staff
-      include ::Verification::Staff
-      include Sign::Webauthn
-      include Sign::VerificationTiming
-      include Sign::VerificationCommonBase
-      include Sign::VerificationAuditAndCookie
-      include Sign::VerificationReauthSessionStore
-      include Sign::VerificationReauthLifecycle
-      include Sign::VerificationPasskeyChecks
+    class_methods do
+      def activate_org_verification_base
+        include ::Preference::Global
+        include Common::Otp
+        include ::Authentication::Staff
+        include ::Verification::Staff
+        include Sign::Webauthn
+        include Sign::VerificationTiming
+        include Sign::VerificationCommonBase
+        include Sign::VerificationAuditAndCookie
+        include Sign::VerificationReauthSessionStore
+        include Sign::VerificationReauthLifecycle
+        include Sign::VerificationPasskeyChecks
 
-      before_action :authenticate_staff!
-      before_action :set_actor_token
-      before_action :require_ri!
-      before_action :enforce_step_up_prereqs!
+        before_action :authenticate_staff!
+        before_action :set_actor_token
+        before_action :require_ri!
+        before_action :enforce_step_up_prereqs!
 
-      # Override methods from sub-concerns here to ensure they take precedence
-      # in Ruby's method resolution order (methods defined in included block
-      # are defined on the including class AFTER submodules are mixed in)
+        # Override methods from sub-concerns here to ensure they take precedence
+        # in Ruby's method resolution order (methods defined in included block
+        # are defined on the including class AFTER submodules are mixed in)
 
-      define_method(:reauth_actor_id) { current_staff.id }
+        define_method(:reauth_actor_id) { current_staff.id }
 
-      define_method(:valid_reauth_session?) do |rs|
-        rs.present? &&
-          rs["expires_at"].to_i > Time.current.to_i &&
-          rs["user_id"] == current_staff.id &&
-          rs["scope"].present?
+        define_method(:valid_reauth_session?) do |rs|
+          rs.present? &&
+            rs["expires_at"].to_i > Time.current.to_i &&
+            rs["user_id"] == current_staff.id &&
+            rs["scope"].present?
+        end
+
+        define_method(:handle_invalid_reauth_session!) do
+          clear_reauth_state!
+          safe_redirect_to(
+            sign_org_configuration_path(ri: params[:ri]),
+            fallback: "/configuration",
+            alert: I18n.t("auth.step_up.session_expired"),
+          )
+          false
+        end
+
+        define_method(:clear_reauth_state!) do
+          session.delete(REAUTH_SESSION_KEY)
+        end
+
+        define_method(:verification_model) { StaffVerification }
+
+        define_method(:verification_success_event_id) { StaffActivityEvent::STEP_UP_VERIFIED }
+
+        define_method(:verification_success_notice_key) { "sign.org.verification.success.complete" }
+
+        define_method(:verification_success_fallback_path) { sign_org_verification_path(ri: params[:ri]) }
+
+        define_method(:verification_audit_event_class) { StaffActivityEvent }
+
+        define_method(:verification_audit_level_class) { StaffActivityLevel }
+
+        define_method(:verification_default_activity_level_id) { StaffActivityLevel::NOTHING }
+
+        define_method(:verification_activity_model) { StaffActivity }
+
+        define_method(:current_verification_actor) { current_staff }
+
+        define_method(:verification_actor_type) { "Staff" }
+
+        define_method(:verification_passkeys_scope) { current_staff.staff_passkeys }
+
+        define_method(:verification_passkey_model) { StaffPasskey }
+
+        define_method(:passkey_actor_matches?) { |passkey| passkey.staff_id == current_staff.id }
+
+        define_method(:verification_no_passkey_i18n_key) { "sign.org.verification.errors.no_passkey" }
       end
-
-      define_method(:handle_invalid_reauth_session!) do
-        clear_reauth_state!
-        safe_redirect_to(
-          sign_org_configuration_path(ri: params[:ri]),
-          fallback: "/configuration",
-          alert: I18n.t("auth.step_up.session_expired"),
-        )
-        false
-      end
-
-      define_method(:clear_reauth_state!) do
-        session.delete(REAUTH_SESSION_KEY)
-      end
-
-      define_method(:verification_model) { StaffVerification }
-
-      define_method(:verification_success_event_id) { StaffActivityEvent::STEP_UP_VERIFIED }
-
-      define_method(:verification_success_notice_key) { "sign.org.verification.success.complete" }
-
-      define_method(:verification_success_fallback_path) { sign_org_verification_path(ri: params[:ri]) }
-
-      define_method(:verification_audit_event_class) { StaffActivityEvent }
-
-      define_method(:verification_audit_level_class) { StaffActivityLevel }
-
-      define_method(:verification_default_activity_level_id) { StaffActivityLevel::NOTHING }
-
-      define_method(:verification_activity_model) { StaffActivity }
-
-      define_method(:current_verification_actor) { current_staff }
-
-      define_method(:verification_actor_type) { "Staff" }
-
-      define_method(:verification_passkeys_scope) { current_staff.staff_passkeys }
-
-      define_method(:verification_passkey_model) { StaffPasskey }
-
-      define_method(:passkey_actor_matches?) { |passkey| passkey.staff_id == current_staff.id }
-
-      define_method(:verification_no_passkey_i18n_key) { "sign.org.verification.errors.no_passkey" }
     end
 
     private

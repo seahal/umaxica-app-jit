@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require "json"
+
 module Oidc
   class TokenExchangeService < ApplicationService
     Result =
@@ -83,12 +85,11 @@ module Oidc
         now = Time.current
         access_expires_at = now + Authentication::Base::ACCESS_TOKEN_TTL
 
-        sign_host =
-          if client.resource_type == "staff"
-            ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
-          else
-            ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
-          end
+        sign_host = resolve_sign_host(client)
+
+        auth_method = authorization_code.auth_method.presence
+        acr = authorization_code.acr.presence || "aal1"
+        amr = build_amr_from_auth_method(auth_method)
 
         access_token = Auth::TokenService.encode(
           resource,
@@ -96,6 +97,19 @@ module Oidc
           session_public_id: token_record.public_id,
           resource_type: client.resource_type,
           expires_at: access_expires_at,
+          acr: acr,
+          amr: amr,
+        )
+
+        id_token = build_id_token(
+          resource: resource,
+          resource_type: client.resource_type,
+          host: sign_host,
+          session_public_id: token_record.public_id,
+          nonce: authorization_code.nonce,
+          acr: acr,
+          amr: amr,
+          auth_time: authorization_code.created_at,
         )
 
         Result.new(
@@ -105,6 +119,7 @@ module Oidc
             token_type: "Bearer",
             expires_in: Integer(Authentication::Base::ACCESS_TOKEN_TTL.to_s, 10),
             refresh_token: refresh_plain,
+            id_token: id_token,
           },
           error: nil,
           error_description: nil,
@@ -113,9 +128,17 @@ module Oidc
     end
 
     def create_token_record!(client, resource)
-      if client.resource_type == "staff"
+      case client.resource_type
+      when "staff"
         StaffToken.create!(
           staff: resource,
+          public_id: SecureRandom.alphanumeric(21),
+          refresh_expires_at: Authentication::Base::REFRESH_TOKEN_TTL.from_now,
+          status: "active",
+        )
+      when "customer"
+        CustomerToken.create!(
+          customer: resource,
           public_id: SecureRandom.alphanumeric(21),
           refresh_expires_at: Authentication::Base::REFRESH_TOKEN_TTL.from_now,
           status: "active",
@@ -128,6 +151,85 @@ module Oidc
           status: "active",
         )
       end
+    end
+
+    def resolve_sign_host(client)
+      case client.resource_type
+      when "staff"
+        ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+      when "customer"
+        ENV.fetch("SIGN_COM_URL", "sign.com.localhost")
+      else
+        ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+      end
+    end
+
+    def build_amr_from_auth_method(auth_method)
+      return [] if auth_method.blank?
+
+      methods =
+        case auth_method
+        when Array
+          auth_method
+        when String
+          stripped = auth_method.strip
+          if stripped.start_with?("[")
+            JSON.parse(stripped)
+          else
+            [stripped]
+          end
+        else
+          [auth_method.to_s]
+        end
+
+      methods.filter_map do |method|
+        case method.to_s
+        when "email", "email_otp"
+          "email_otp"
+        when "passkey"
+          "passkey"
+        when "google"
+          "google"
+        when "apple"
+          "apple"
+        when "recovery_code", "secret"
+          "recovery_code"
+        when "totp"
+          "totp"
+        end
+      end.uniq
+    rescue JSON::ParserError
+      []
+    end
+
+    def build_id_token(resource:, resource_type:, host:, session_public_id:, nonce:, acr:, amr:, auth_time:)
+      subject_type = resource_type.to_s
+      auth_time_seconds = Integer(auth_time.to_i)
+
+      payload = {
+        "iss" => Authentication::Base::JwtConfiguration.issuer(resource_type),
+        "sub" => resource.id,
+        "subject_type" => subject_type,
+        "aud" => client_id,
+        "exp" => (Time.current + Authentication::Base::ACCESS_TOKEN_TTL).to_i,
+        "iat" => Time.current.to_i,
+        "auth_time" => auth_time_seconds,
+        "sid" => session_public_id,
+        "acr" => acr,
+        "amr" => amr,
+        "jti" => Jit::Security::Jwt::JtiGenerator.generate,
+      }
+
+      if nonce.present?
+        payload["nonce"] = nonce
+      end
+
+      JWT.encode(
+        payload,
+        Jit::Security::Jwt::Keyring.private_key_for_active,
+        Auth::TokenService::JWT_ALGORITHM,
+        { kid: Jit::Security::Jwt::Keyring.active_kid, typ: "JWT" },
+      )
     end
 
     def failure(error, description)

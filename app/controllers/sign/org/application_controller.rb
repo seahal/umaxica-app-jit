@@ -7,8 +7,12 @@ module Sign
       include ::RateLimit
       include ::Session
       include ::Preference::Global
+
+      activate_preference_global
       include ::Preference::Adoption
       include ::Authentication::Staff
+
+      activate_staff_authentication
       include ::Authorization::Staff
       include ::Verification::Staff
       include Pundit::Authorization
@@ -23,7 +27,7 @@ module Sign
       # NOTE: Order matters (dependencies rely on this sequence)
       # Layer order: RateLimit -> Preference -> AuthN(including AuthZ) -> Verification -> CurrentSupport
       before_action :check_default_rate_limit
-      before_action :reset_flash
+      before_action :validate_flash_boundary
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region
@@ -37,6 +41,7 @@ module Sign
       before_action :set_current
       before_action :set_current_observability
       after_action :purge_current
+      after_action :_reset_current_state
 
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(

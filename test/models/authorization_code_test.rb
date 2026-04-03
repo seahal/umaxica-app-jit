@@ -7,6 +7,8 @@
 # Database name: token
 #
 #  id                    :bigint           not null, primary key
+#  acr                   :string           default("aal1"), not null
+#  auth_method           :string           default(""), not null
 #  code                  :string(64)       not null
 #  code_challenge        :string           not null
 #  code_challenge_method :string(8)        default("S256"), not null

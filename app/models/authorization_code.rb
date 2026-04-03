@@ -1,12 +1,16 @@
 # typed: false
 # frozen_string_literal: true
 
+require "json"
+
 # == Schema Information
 #
 # Table name: authorization_codes
 # Database name: token
 #
 #  id                    :bigint           not null, primary key
+#  acr                   :string           default("aal1"), not null
+#  auth_method           :string           default(""), not null
 #  code                  :string(64)       not null
 #  code_challenge        :string           not null
 #  code_challenge_method :string(8)        default("S256"), not null
@@ -61,7 +65,7 @@ class AuthorizationCode < TokenRecord
     end
 
     def issue!(client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil,
-               nonce: nil, user: nil, staff: nil)
+               nonce: nil, auth_method: nil, acr: nil, user: nil, staff: nil)
       create!(
         code: generate_code,
         user: user,
@@ -73,8 +77,21 @@ class AuthorizationCode < TokenRecord
         scope: scope,
         state: state,
         nonce: nonce,
+        auth_method: serialize_auth_method(auth_method),
+        acr: acr.to_s.presence || "aal1",
         expires_at: CODE_TTL.from_now,
       )
+    end
+
+    private
+
+    def serialize_auth_method(auth_method)
+      case auth_method
+      when Array
+        auth_method.map(&:to_s).compact_blank.to_json
+      else
+        auth_method.to_s.presence || ""
+      end
     end
   end
 

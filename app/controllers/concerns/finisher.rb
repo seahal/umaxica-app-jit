@@ -13,6 +13,6 @@ module Finisher
   def finish_request
     # no-op
   rescue StandardError => e
-    Rails.logger.warn("[Finisher] #{e.class}: #{e.message}")
+    Rails.event.warn("finisher.purge_failed", error_class: e.class.name, message: e.message)
   end
 end

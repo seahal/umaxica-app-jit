@@ -14,7 +14,7 @@ and subdomain matter in both development and production.
 
 ## Stack
 
-- Ruby `4.0.2`
+- Ruby `3.4.9`
 - PostgreSQL
   - Solid Queue
 - Valkey/Redis
@@ -44,7 +44,7 @@ bin/importmap audit             # Audit pinned JS packages
 ## Local Setup
 
 - Docker and Docker Compose
-- Ruby `4.0.2`
+- Ruby `3.4.9`
 - Bundler
 - Node.js `20+`
 - `pnpm@10.27.0`
