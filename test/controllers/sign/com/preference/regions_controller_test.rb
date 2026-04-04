@@ -55,6 +55,47 @@ module Sign
           assert_equal ComPreferenceRegionOption::US, preference.com_preference_region.option_id
           assert_equal "us", @customer.customer_preference.region
         end
+
+        test "access refresh token mismatch clears cookies and returns 401" do
+          # Create two different preferences
+          preference1 = ComPreference.create!(
+            public_id: "test_pref_#{SecureRandom.hex(4)}",
+            status_id: ComPreferenceStatus::NOTHING,
+            expires_at: 400.days.from_now,
+          )
+          preference2 = ComPreference.create!(
+            public_id: "test_pref_#{SecureRandom.hex(4)}",
+            status_id: ComPreferenceStatus::NOTHING,
+            expires_at: 400.days.from_now,
+          )
+
+          # Create tokens for different preferences
+          access_token = ::Preference::Token.encode(
+            { "ri" => "jp" },
+            host: @host,
+            preference_type: "ComPreference",
+            public_id: preference1.public_id,
+            jti: SecureRandom.uuid,
+          )
+
+          refresh_token_value = "#{preference2.public_id}.#{SecureRandom.hex(16)}"
+
+          # Request with mismatched tokens
+          get edit_sign_com_preference_region_path(ri: "jp"),
+              headers: as_customer_headers(@customer, host: @host),
+              env: { "HTTP_COOKIE" => "#{::Preference::CookieName.access}=#{access_token}; " \
+                                      "#{::Preference::CookieName.refresh}=#{refresh_token_value}" }
+
+          assert_response :unauthorized
+
+          # Verify cookies are cleared
+          set_cookie = response.headers["Set-Cookie"]
+          cookie_lines = set_cookie.is_a?(Array) ? set_cookie : set_cookie.to_s.split("\n")
+
+          assert cookie_lines.any? { |line|
+            line.include?("#{::Preference::CookieName.refresh}=") && line.include?("max-age=0")
+          }, "refresh cookie should be cleared"
+        end
       end
     end
   end

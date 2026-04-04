@@ -1,37 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: com_contacts
-# Database name: guest
-#
-#  id               :bigint           not null, primary key
-#  ip_address       :inet
-#  token            :string(32)       default(""), not null
-#  token_digest     :string
-#  token_expires_at :datetime
-#  token_viewed     :boolean          default(FALSE), not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  category_id      :bigint           default(0), not null
-#  public_id        :string(21)       not null
-#  status_id        :bigint           not null
-#
-# Indexes
-#
-#  index_com_contacts_on_category_id       (category_id)
-#  index_com_contacts_on_public_id         (public_id) UNIQUE
-#  index_com_contacts_on_status_id         (status_id)
-#  index_com_contacts_on_token             (token)
-#  index_com_contacts_on_token_digest      (token_digest)
-#  index_com_contacts_on_token_expires_at  (token_expires_at)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (category_id => com_contact_categories.id)
-#  fk_rails_...  (status_id => com_contact_statuses.id) ON DELETE => restrict
-#
 require "test_helper"
 
 class ComContactTest < ActiveSupport::TestCase
@@ -46,7 +15,6 @@ class ComContactTest < ActiveSupport::TestCase
       ComContactEmail.create!(
         com_contact: contact,
         email_address: "test@example.com",
-        expires_at: 1.day.from_now,
       )
     end
 
@@ -54,7 +22,6 @@ class ComContactTest < ActiveSupport::TestCase
       ComContactTelephone.create!(
         com_contact: contact,
         telephone_number: "+1234567890",
-        expires_at: 1.day.from_now,
       )
     end
 
@@ -77,9 +44,8 @@ class ComContactTest < ActiveSupport::TestCase
   def create_all_statuses
     statuses = [
       ComContactStatus::NOTHING,
-      ComContactStatus::SET_UP,
-      ComContactStatus::NULL_COM_STATUS,
-      ComContactStatus::COMPLETED_CONTACT_ACTION,
+      ComContactStatus::COMPLETED,
+      ComContactStatus::FAILED,
     ]
     statuses.each do |id|
       ComContactStatus.find_or_create_by!(id: id)

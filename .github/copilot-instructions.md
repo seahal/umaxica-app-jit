@@ -150,10 +150,10 @@ end
 
 ### Accountable Interface
 
-User and Staff models share a common interface via `Accountably` concern:
+User and Staff models share a common interface via `Accountable` concern:
 
 ```ruby
-module Accountably
+module Accountable
   def staff?
     # Must implement in including class
   end

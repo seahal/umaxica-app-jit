@@ -6,7 +6,7 @@
 module Identity
   extend ActiveSupport::Concern
 
-  include ::Accountably
+  include ::Accountable
   include ::Withdrawable
 
   included do

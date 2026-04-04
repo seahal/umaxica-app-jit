@@ -6,15 +6,11 @@
 # Table name: app_contact_telephones
 # Database name: guest
 #
-#  id                     :bigint           not null, primary key
-#  activated              :boolean          default(FALSE), not null
-#  telephone_number       :string(1000)     default(""), not null
-#  verifier_attempts_left :integer          default(3), not null
-#  verifier_digest        :string(255)
-#  verifier_expires_at    :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  app_contact_id         :bigint           default(0), not null
+#  id               :bigint           not null, primary key
+#  telephone_number :string(1000)     default(""), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  app_contact_id   :bigint           default(0), not null
 #
 # Indexes
 #
@@ -30,6 +26,7 @@ require "test_helper"
 
 class AppContactTelephoneTest < ActiveSupport::TestCase
   fixtures :app_contacts, :app_contact_telephones
+
   def setup
     @app_contact = AppContact.find_by!(public_id: "one_app_contact_00001")
     @telephone = AppContactTelephone.new(
@@ -57,41 +54,17 @@ class AppContactTelephoneTest < ActiveSupport::TestCase
     end
   end
 
-  test "generate_otp! should create a code and set expiration" do
-    freeze_time do
-      raw_otp = @telephone.generate_otp!
+  test "should encrypt telephone_number" do
+    skip "ActiveRecord Encryption is not configured in test environment"
+    @telephone.save!
 
-      assert_not_nil @telephone.otp_digest
-      assert_equal 6, raw_otp.length
-      assert_equal 10.minutes.from_now, @telephone.otp_expires_at
-      assert_equal 3, @telephone.otp_attempts_left
-    end
+    assert_not_equal "+819012345678", @telephone.reload[:telephone_number]
+    assert_equal "+819012345678", @telephone.telephone_number
   end
 
-  test "verify_otp should return true for correct code" do
-    raw_otp = @telephone.generate_otp!
+  test "should belong to app_contact" do
+    @telephone.save!
 
-    assert @telephone.verify_otp(raw_otp)
-    assert @telephone.reload.activated
-    assert_equal 0, @telephone.otp_attempts_left
-  end
-
-  test "verify_otp should return false for incorrect code" do
-    @telephone.generate_otp!
-
-    assert_not @telephone.verify_otp("000000")
-    assert_not @telephone.activated
-    assert_equal 2, @telephone.otp_attempts_left
-  end
-
-  test "can_resend_otp? logic" do
-    assert_predicate @telephone, :can_resend_otp?
-    @telephone.generate_otp!
-
-    assert_not @telephone.can_resend_otp?
-
-    travel 11.minutes do
-      assert_predicate @telephone, :can_resend_otp?
-    end
+    assert_equal @app_contact, @telephone.app_contact
   end
 end

@@ -79,4 +79,35 @@ class Sign::Org::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     assert_includes set_cookie, "preference_consented="
     assert_includes set_cookie, "#{Preference::CookieName.access}="
   end
+
+  test "PATCH update accepts nested preference_cookie consented param" do
+    preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NOTHING)
+    OrgPreferenceCookie.create!(
+      preference: preference,
+      targetable: false,
+      performant: false,
+      functional: false,
+      consented: false,
+      consented_at: nil,
+    )
+    token = encode_preference_jwt(
+      preferences: { "consented" => false },
+      host: @host,
+      public_id: preference.public_id,
+      preference_type: "OrgPreference",
+    )
+    cookies[Preference::CookieName.access] = token
+
+    with_preference_jwt_keys(host: @host) do
+      patch sign_org_web_v0_cookie_path,
+            params: { preference_cookie: { consented: true } },
+            as: :json
+    end
+
+    assert_response :ok
+    preference.reload
+
+    assert preference.org_preference_cookie.consented
+    assert response.parsed_body["consented"]
+  end
 end

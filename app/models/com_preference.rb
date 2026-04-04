@@ -53,7 +53,7 @@
 class ComPreference < CommerceRecord
   # TODO: Add `deletable_at` to ComPreference for lifecycle-based cleanup.
   include ::PublicId
-  include ::ConsumeOnceToken
+  include ::SingleUseToken
   include ::Preference::Resettable
   include ::DbscBindable
 

@@ -47,6 +47,7 @@ class CustomerTest < ActiveSupport::TestCase
     [0, 1, 2, 3].each { |id| CustomerVisibility.find_or_create_by!(id: id) }
     [1, 2, 3, 4].each { |id| CustomerTelephoneStatus.find_or_create_by!(id: id) }
     [1, 2, 3, 4].each { |id| CustomerEmailStatus.find_or_create_by!(id: id) }
+    [1, 2, 3, 4, 5].each { |id| CustomerPasskeyStatus.find_or_create_by!(id: id) }
   end
 
   test "should be valid" do
@@ -195,5 +196,52 @@ class CustomerTest < ActiveSupport::TestCase
     customer = Customer.create!
 
     assert_not customer.passkey_login_available?
+  end
+
+  test "passkey_login_available? returns false when has active passkey but no verified telephone" do
+    # Create a customer with verified email and active passkey but no verified telephone
+    customer = Customer.create!
+    CustomerEmail.create!(
+      customer: customer,
+      address: "verified@example.com",
+      confirm_policy: "1",
+      customer_email_status_id: CustomerEmailStatus::VERIFIED,
+    )
+    CustomerPasskey.create!(
+      customer: customer,
+      status_id: CustomerPasskeyStatus::ACTIVE,
+      public_key: "test_key",
+      sign_count: 0,
+      webauthn_id: "test_webauthn_id",
+      external_id: SecureRandom.uuid,
+    )
+    # Customer has verified email but no verified telephone
+    assert_not customer.passkey_login_available?
+  end
+
+  test "passkey_login_available? returns true when has active passkey and verified telephone" do
+    customer = Customer.create!
+    # First create a verified email for the customer to satisfy the passkey requirement
+    CustomerEmail.create!(
+      customer: customer,
+      address: "verified@example.com",
+      confirm_policy: "1",
+      customer_email_status_id: CustomerEmailStatus::VERIFIED,
+    )
+    CustomerPasskey.create!(
+      customer: customer,
+      status_id: CustomerPasskeyStatus::ACTIVE,
+      public_key: "test_key",
+      sign_count: 0,
+      webauthn_id: "test_webauthn_id",
+      external_id: SecureRandom.uuid,
+    )
+    CustomerTelephone.create!(
+      customer: customer,
+      number: "+15551234567",
+      customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
+    )
+
+    assert_predicate customer, :passkey_login_available?
   end
 end

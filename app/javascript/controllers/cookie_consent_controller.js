@@ -53,10 +53,7 @@ export default class extends Controller {
 
       if (response.ok) {
         const body = await response.json();
-        const consented = Boolean(body.preference?.consented ?? accepted);
-
-        // Update JS-readable consent cookie
-        document.cookie = `preference_consented=${consented ? "1" : "0"}; path=/; max-age=31536000`;
+        const consented = Boolean(body.consented ?? accepted);
 
         // Hide banner
         this.hideBanner();
@@ -64,7 +61,7 @@ export default class extends Controller {
         // Dispatch event
         window.dispatchEvent(
           new CustomEvent("consentChanged", {
-            detail: body.preference || { consented },
+            detail: body || { consented },
           }),
         );
       } else {

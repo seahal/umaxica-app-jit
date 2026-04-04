@@ -27,6 +27,7 @@ describe("CookieBannerController", () => {
       set cookie(val) {
         cookieValue = val;
       },
+      querySelector: vi.fn(() => ({ content: "test-csrf" })),
     });
 
     vi.stubGlobal("fetch", vi.fn());
@@ -45,7 +46,7 @@ describe("CookieBannerController", () => {
 
     test("同意済みの場合、要素を削除する (Cookie フォールバック)", async () => {
       vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")));
-      cookieValue = "cookie_consent=accepted";
+      cookieValue = "preference_consented=1";
 
       await controller.checkConsentState();
       expect(element.remove).toHaveBeenCalled();
@@ -74,17 +75,39 @@ describe("CookieBannerController", () => {
       expect(element.remove).toHaveBeenCalled();
     });
 
-    test("accept: クッキーを設定して要素を削除する", () => {
-      controller.accept(event);
+    test("accept: Rails endpoint を更新して要素を削除する", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ consented: true }) }),
+      );
+
+      await controller.accept(event);
       expect(event.preventDefault).toHaveBeenCalled();
-      expect(document.cookie).toContain("cookie_consent=accepted");
+      expect(fetch).toHaveBeenCalledWith(
+        "/web/v0/cookie",
+        expect.objectContaining({
+          method: "PATCH",
+          body: JSON.stringify({ consented: true }),
+        }),
+      );
       expect(element.remove).toHaveBeenCalled();
     });
 
-    test("reject: クッキーを設定して要素を削除する", () => {
-      controller.reject(event);
+    test("reject: Rails endpoint を更新して要素を削除する", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ consented: false }) }),
+      );
+
+      await controller.reject(event);
       expect(event.preventDefault).toHaveBeenCalled();
-      expect(document.cookie).toContain("cookie_consent=rejected");
+      expect(fetch).toHaveBeenCalledWith(
+        "/web/v0/cookie",
+        expect.objectContaining({
+          method: "PATCH",
+          body: JSON.stringify({ consented: false }),
+        }),
+      );
       expect(element.remove).toHaveBeenCalled();
     });
 

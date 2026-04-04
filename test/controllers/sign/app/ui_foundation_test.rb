@@ -4,11 +4,14 @@
 require "test_helper"
 
 class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
+  include PreferenceJwtHelper
+
   fixtures :users, :user_statuses
 
   setup do
     @user = users(:one)
     @host = ENV["SIGN_SERVICE_URL"]
+    host! @host
   end
 
   test "should render configuration page with new UI foundation" do
@@ -57,24 +60,19 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "dark mode class is rendered based on cookie" do
-    # Testing the theme_html_class helper's effect via integration
+  test "dark mode class is rendered based on theme context" do
     headers = as_user_headers(@user, host: @host)
-    existing_cookie = headers["Cookie"]
-    headers["Cookie"] = [existing_cookie, "ct=dark"].compact.join("; ")
-    get sign_app_configuration_url, headers: headers
+    get sign_app_configuration_url(ct: "dr"), headers: headers
 
     follow_redirect!(headers: headers) if response.redirect?
 
-    assert_select "html.dark"
+    assert_includes response.body, 'class="theme-dark dark"'
 
     headers = as_user_headers(@user, host: @host)
-    existing_cookie = headers["Cookie"]
-    headers["Cookie"] = [existing_cookie, "ct=light"].compact.join("; ")
-    get sign_app_configuration_url, headers: headers
+    get sign_app_configuration_url(ct: "li"), headers: headers
     follow_redirect!(headers: headers) if response.redirect?
 
-    assert_select "html:not(.dark)"
+    assert_includes response.body, 'class="theme-light"'
   end
 
   test "UI components are used in the page" do

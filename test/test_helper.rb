@@ -13,8 +13,8 @@ ENV["MAIN_CORPORATE_URL"] ||= "main.com.localhost"
 ENV["MAIN_SERVICE_URL"] ||= "main.app.localhost"
 ENV["MAIN_STAFF_URL"] ||= "main.org.localhost"
 require "active_model"
-coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
-require_relative "support/simplecov_setup" if coverage_enabled
+COVERAGE_ENABLED = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
+require_relative "support/simplecov_setup" if COVERAGE_ENABLED
 
 require_relative "../config/environment"
 require "rails/test_help"
@@ -25,11 +25,17 @@ end
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
-    parallelize(workers: :number_of_processors, work_stealing: true)
+    # Keep coverage collection in a single process to avoid partial result conflicts.
+    unless COVERAGE_ENABLED
+      # Run tests in parallel with specified workers
+      parallelize(workers: :number_of_processors, work_stealing: true)
+    end
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
+
+    # Include TimeHelpers for freeze_time/travel_to support across all tests
+    include ActiveSupport::Testing::TimeHelpers
 
     # Add more helper methods to be used by all tests here...
   end

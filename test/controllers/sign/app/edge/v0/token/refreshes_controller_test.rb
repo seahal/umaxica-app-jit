@@ -495,6 +495,130 @@ class Sign::App::Edge::V0::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_equal 200, s.response.status
   end
 
+  # Issue #612: AAL downgrade tests
+  test "POST refresh issues access token with acr=aal1 regardless of previous acr" do
+    token_record = UserToken.create!(user: @user, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!
+
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :ok
+
+    # Extract and decode the access token to verify acr claim
+    response_cookies = extract_cookies_from_response
+    access_token = response_cookies[Authentication::Base::ACCESS_COOKIE_KEY]
+
+    assert_predicate access_token, :present?
+
+    decoded_token = JWT.decode(access_token, nil, false).first
+
+    assert_equal "aal1", decoded_token["acr"], "Refreshed token should downgrade to aal1"
+  end
+
+  test "POST refresh clears amr to empty array" do
+    token_record = UserToken.create!(user: @user, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!
+
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :ok
+
+    response_cookies = extract_cookies_from_response
+    access_token = response_cookies[Authentication::Base::ACCESS_COOKIE_KEY]
+    decoded_token = JWT.decode(access_token, nil, false).first
+
+    assert_empty decoded_token["amr"], "Refreshed token should have empty amr"
+  end
+
+  # Issue #612: Replay detection tests
+  test "POST refresh with reused refresh token returns 401 and logs reuse detection" do
+    token_record = UserToken.create!(user: @user, device_id: @device_id)
+    original_refresh = token_record.rotate_refresh_token!
+
+    # First refresh - legitimate use
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = original_refresh
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :ok
+
+    # Attacker attempts to reuse the original refresh token
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = original_refresh
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :unauthorized
+    json = response.parsed_body
+
+    assert_equal "invalid_refresh_token", json["error_code"]
+
+    occurrence = UserOccurrence.order(:id).last
+
+    assert_equal "refresh_reuse_detected", occurrence.event_type
+  end
+
+  test "POST refresh with revoked session token returns 401" do
+    token_record = UserToken.create!(user: @user, device_id: @device_id)
+    refresh_plain = token_record.rotate_refresh_token!
+
+    # Revoke the session
+    token_record.revoke!
+
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_plain
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :unauthorized
+    json = response.parsed_body
+
+    assert_equal "invalid_refresh_token", json["error_code"]
+  end
+
+  test "POST refresh with family compromised token triggers family invalidation" do
+    token_record = UserToken.create!(user: @user, device_id: @device_id)
+
+    # First legitimate refresh
+    refresh_1 = token_record.rotate_refresh_token!
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_1
+
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :ok
+    response_cookies = extract_cookies_from_response
+    refresh_2 = response_cookies[Authentication::Base::REFRESH_COOKIE_KEY]
+
+    # Attacker replays refresh_1 (already consumed)
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_1
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :unauthorized
+
+    # The legitimate user's refresh_2 should also be invalid now (family compromise)
+    cookies.delete(Authentication::Base::REFRESH_COOKIE_KEY)
+    cookies[Authentication::Base::REFRESH_COOKIE_KEY] = refresh_2
+
+    post "/edge/v0/token/refresh",
+         headers: json_headers(with_csrf: true, device_id: @device_id),
+         as: :json
+
+    assert_response :unauthorized
+  end
+
   private
 
   def json_headers(with_csrf:, device_id: nil)

@@ -79,7 +79,7 @@ module Main
 
       def ensure_contact_references!
         OrgContactStatus.find_or_create_by!(id: OrgContactStatus::NOTHING)
-        OrgContactStatus.find_or_create_by!(id: OrgContactStatus::SET_UP)
+        OrgContactStatus.find_or_create_by!(id: OrgContactStatus::COMPLETED)
       end
     end
   end

@@ -24,7 +24,7 @@
 # frozen_string_literal: true
 
 class AppDocumentTag < DocumentRecord
-  include ::CatTag
+  include ::CategoryTag
 
   belongs_to :app_document, inverse_of: :app_document_tags
   belongs_to :app_document_tag_master,

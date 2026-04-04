@@ -40,7 +40,7 @@ module Core
         end
 
         ActiveRecord::Base.transaction do
-          @contact.status_id = OrgContactStatus::SET_UP
+          @contact.status_id = OrgContactStatus::COMPLETED
           @contact.save!
 
           OrgContactEmail.create!(
@@ -148,14 +148,16 @@ module Core
       end
 
       def write_behavior_event(contact)
-        OrgContactBehavior.create!(
-          org_contact: contact,
-          actor: current_staff,
-          occurred_at: Time.current,
-          subject_type: "OrgContact",
+        Rails.event.record(
+          "contact.created",
+          controller: "core/org/contacts",
+          contact_id: contact.public_id,
+          contact_category: contact.category_id,
+          staff_id: current_staff.id,
+          ip_address: request.remote_ip,
         )
       rescue StandardError => e
-        Rails.event.notify(
+        Rails.event.error(
           "contact.behavior.write_failed",
           controller: "core/org/contacts",
           contact_id: contact.public_id,

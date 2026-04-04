@@ -5,21 +5,16 @@
 #
 #  id :bigint           not null, primary key
 #
-nothing:
+# Normal states
+NOTHING:
+  id: 0
+COMPLETED:
   id: 1
-checked_email_address:
+
+# Error/non-normal states (2+)
+FAILED:
   id: 2
-email_pending:
+SPAM_DETECTED:
   id: 3
-phone_verified:
+PENDING_REVIEW:
   id: 4
-completed:
-  id: 5
-email_verified:
-  id: 6
-set_up:
-  id: 7
-checked_telephone_number:
-  id: 9
-completed_contact_action:
-  id: 10

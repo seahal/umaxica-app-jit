@@ -1,36 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: com_contact_telephones
-# Database name: guest
-#
-#  id                     :bigint           not null, primary key
-#  activated              :boolean          default(FALSE), not null
-#  deletable              :boolean          default(FALSE), not null
-#  expires_at             :datetime         not null
-#  hotp_counter           :integer
-#  hotp_secret            :string
-#  remaining_views        :integer          default(10), not null
-#  telephone_number       :string(1000)     default(""), not null
-#  verifier_attempts_left :integer          default(3), not null
-#  verifier_digest        :string(255)
-#  verifier_expires_at    :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  com_contact_id         :bigint           default(0), not null
-#
-# Indexes
-#
-#  index_com_contact_telephones_on_com_contact_id_unique  (com_contact_id) UNIQUE
-#  index_com_contact_telephones_on_telephone_number       (telephone_number)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (com_contact_id => com_contacts.id)
-#
-
 require "test_helper"
 
 class ComContactTelephoneTest < ActiveSupport::TestCase
@@ -41,13 +11,10 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should belong to com_contact" do
-    contact = create_contact(public_id: "phone_1", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_1")
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15551234567",
-      activated: false,
-      deletable: false,
-      expires_at: 1.day.from_now,
     )
 
     assert_respond_to telephone, :com_contact
@@ -55,23 +22,16 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_kind_of ComContact, telephone.com_contact
   end
 
-  # Telephone numbers contain digits and symbols, so downcasing is not applicable
-  # This test has been removed as the downcase behavior was removed from the model
-
   test "should encrypt telephone_number" do
-    contact = create_contact(public_id: "phone_2", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_2")
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15551234568",
-      activated: false,
-      deletable: false,
-      remaining_views: 5,
-      expires_at: 1.day.from_now,
     )
 
     # Read directly from database to check encryption
     raw_value = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone.id}'",
+      "SELECT telephone_number FROM com_contact_telephones WHERE id = #{telephone.id}",
     ).first["telephone_number"]
 
     # Encrypted value should be different from plaintext
@@ -81,73 +41,57 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should support deterministic encryption for telephone_number" do
-    contact1 = create_contact(public_id: "phone_3", created_at: Time.current, updated_at: Time.current)
-    contact2 = create_contact(public_id: "phone_4", created_at: Time.current, updated_at: Time.current)
+    contact1 = create_contact(public_id: "phone_3")
+    contact2 = create_contact(public_id: "phone_4")
 
     # Create two records with the same telephone number
     telephone1 = ComContactTelephone.create!(
       com_contact: contact1,
       telephone_number: "+15551234569",
-      activated: false,
-      deletable: false,
-      remaining_views: 5,
-      expires_at: 1.day.from_now,
     )
 
     telephone2 = ComContactTelephone.create!(
       com_contact: contact2,
       telephone_number: "+15551234569",
-      activated: false,
-      deletable: false,
-      remaining_views: 5,
-      expires_at: 1.day.from_now,
     )
 
     # With deterministic encryption, encrypted values should be the same
     raw1 = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone1.id}'",
+      "SELECT telephone_number FROM com_contact_telephones WHERE id = #{telephone1.id}",
     ).first["telephone_number"]
 
     raw2 = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone2.id}'",
+      "SELECT telephone_number FROM com_contact_telephones WHERE id = #{telephone2.id}",
     ).first["telephone_number"]
 
     assert_equal raw1, raw2
   end
 
   test "should have valid fixtures" do
-    # Note: Encrypted fields in fixtures may cause issues
-    # We create a fresh record instead of loading from fixtures
-    contact = create_contact(public_id: "phone_5", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_5")
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000000",
-      activated: false,
-      deletable: false,
-      remaining_views: 1,
-      expires_at: 1.day.from_now,
     )
 
     assert_predicate telephone, :valid?
   end
 
   test "should use bigint as primary key" do
-    contact = create_contact(public_id: "phone_6", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_6")
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15551111111",
-      expires_at: 1.day.from_now,
     )
 
     assert_kind_of Integer, telephone.id
   end
 
   test "should have timestamps" do
-    contact = create_contact(public_id: "phone_7", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_7")
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15552222222",
-      expires_at: 1.day.from_now,
     )
 
     assert_respond_to telephone, :created_at
@@ -157,43 +101,23 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should have all expected attributes" do
-    contact = create_contact(public_id: "phone_8", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_8")
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15553333333",
-      expires_at: 1.day.from_now,
     )
 
     assert_respond_to telephone, :telephone_number
-    assert_respond_to telephone, :activated
-    assert_respond_to telephone, :deletable
-    assert_respond_to telephone, :remaining_views
-    assert_respond_to telephone, :expires_at
+    assert_respond_to telephone, :com_contact_id
     assert_respond_to telephone, :hotp_secret
     assert_respond_to telephone, :hotp_counter
   end
 
-  test "should have default values" do
-    contact = create_contact(public_id: "phone_9", created_at: Time.current, updated_at: Time.current)
-    telephone = ComContactTelephone.create!(
-      com_contact: contact,
-      telephone_number: "+15554444444",
-      expires_at: 1.day.from_now,
-    )
-
-    assert_not telephone.activated
-    assert_not telephone.deletable
-    assert_equal 10, telephone.remaining_views
-    assert_nil telephone.hotp_secret
-    assert_nil telephone.hotp_counter
-  end
-
   # Validation tests
   test "should validate presence of telephone_number" do
-    contact = create_contact(public_id: "phone_10", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_10")
     telephone = ComContactTelephone.new(
       com_contact: contact,
-      expires_at: 1.day.from_now,
     )
 
     assert_not telephone.valid?
@@ -201,15 +125,13 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should validate format of telephone_number" do
-    contact = create_contact(public_id: "phone_10_1", created_at: Time.current, updated_at: Time.current)
-
     # Invalid telephone formats
     invalid_phones = ["abc", "123-abc-4567", "!!!"]
-    invalid_phones.each do |invalid_phone|
+    invalid_phones.each_with_index do |invalid_phone, i|
+      contact = create_contact(public_id: "phone_inv_#{i}")
       telephone = ComContactTelephone.new(
         com_contact: contact,
         telephone_number: invalid_phone,
-        expires_at: 1.day.from_now,
       )
 
       assert_not telephone.valid?, "#{invalid_phone} should be invalid"
@@ -219,13 +141,10 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     # Valid telephone formats
     valid_phones = ["+1234567890", "+1-123-456-7890", "+1 (123) 456-7890", "+81 90 1234 5678"]
     valid_phones.each_with_index do |valid_phone, i|
+      contact = create_contact(public_id: "phone_val_#{i}")
       telephone = ComContactTelephone.new(
-        com_contact: create_contact(
-          public_id: "phone_10_2_#{i}", created_at: Time.current,
-          updated_at: Time.current,
-        ),
+        com_contact: contact,
         telephone_number: valid_phone,
-        expires_at: 1.day.from_now,
       )
 
       assert_predicate telephone, :valid?, "#{valid_phone} should be valid"

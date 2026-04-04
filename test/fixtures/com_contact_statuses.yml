@@ -5,13 +5,16 @@
 #
 #  id :bigint           not null, primary key
 #
+# Normal states
 NOTHING:
-  id: 1
+  id: 0
 COMPLETED:
-  id: 5
-SET_UP:
-  id: 7
-NULL_COM_STATUS:
-  id: 8
-COMPLETED_CONTACT_ACTION:
-  id: 1010
+  id: 1
+
+# Error/non-normal states (2+)
+FAILED:
+  id: 2
+SPAM_DETECTED:
+  id: 3
+PENDING_REVIEW:
+  id: 4

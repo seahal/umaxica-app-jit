@@ -8,7 +8,7 @@ class SessionConcernTest < ActiveSupport::TestCase
 
   setup do
     Current.reset
-    @session = {}
+    @session = {}.freeze
   end
 
   # Stub session for testing

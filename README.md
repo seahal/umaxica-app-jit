@@ -12,16 +12,23 @@
 Multi-domain Rails application for three audience surfaces. Routing is host-constrained, so domain
 and subdomain matter in both development and production.
 
+## Repository Documentation
+
+- `docs/`: current documentation and operational reference
+- `plans/`: proposals, migration plans, phased work, and future changes
+- `adr/`: accepted architecture and design decision records
+
 ## Stack
 
 - Ruby `3.4.9`
+- Rails edge (pin the version explicitly once the project moves to beta)
 - PostgreSQL
   - Solid Queue
 - Valkey/Redis
 - Importmap + Stimulus + Turbo
   - Tailwind CSS via `tailwindcss-rails`
 - Propshaft
-- `pnpm` only for JavaScript linting/formatting tooling
+- `vp` for JavaScript/frontend tooling, with Vite+ wrapping pnpm, Vitest, Oxlint, and Oxfmt
 
 ## Frontend and Assets
 
@@ -54,7 +61,7 @@ Start the local stack, install dependencies, and boot the app:
 ```bash
 docker compose up
 bundle install
-pnpm install
+vp install
 TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bin/setup
 ```
 
@@ -69,7 +76,7 @@ TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000
 ```
 
 `bin/setup` installs Ruby gems, runs `bin/rails db:prepare`, clears logs and temp files, then starts
-`bin/dev`. It does not install JavaScript packages, so run `pnpm install` first.
+`bin/dev`. It does not install JavaScript packages, so run `vp install` first.
 
 If dependencies are already installed, you can start development directly:
 
@@ -95,7 +102,7 @@ needed.
 | core    | `http://www.{app,com,org}.localhost:3000`  |
 | Docs    | `http://docs.{app,com,org}.localhost:3000` |
 
-## Linting and Formatting
+## Checks
 
 ```bash
 bundle exec rubocop
@@ -104,47 +111,19 @@ bundle exec erb_lint .
 bundle exec erb_lint -a .
 vp check
 vp check --fix
-```
-
-Use `rubocop -a`, `erb_lint -a .`, and `vp check --fix` to apply auto-fixes where available.
-
-## Testing
-
-### Rails Tests
-
-```bash
 bundle exec rails test
 COVERAGE=true bundle exec rails test
-```
-
-### JavaScript Tests
-
-Run JavaScript tests with Vitest:
-
-```bash
 vp test
 vp test --watch                            # Watch mode
-```
-
-JavaScript tests are located in `test/javascript/` and use Vitest with Vite Plus.
-
-## Security and Quality Checks
-
-```bash
 bundle exec brakeman --no-pager
 bundle exec bundler-audit check --update
 bundle exec database_consistency
 bin/importmap audit
-pnpm audit
-bin/debride
+vp pm audit
 ```
 
-`bin/debride` is configured for Rails-aware analysis and can also be scoped to specific paths:
-
-```bash
-bin/debride app/services
-DEBRIDE_MINIMUM=5 bin/debride
-```
+Use `rubocop -a`, `erb_lint -a .`, and `vp check --fix` to apply auto-fixes where available.
+JavaScript tests are located in `test/javascript/` and use Vitest with Vite Plus.
 
 ## Logging
 
@@ -152,28 +131,19 @@ Application logging is structured. Prefer event-style logging over ad hoc `Rails
 adding domain events or operational signals.
 
 ```ruby
-Rails.event.notify("user.created", user_id: user.id)
-Rails.event.tagged("auth") { Rails.event.notify("login.success", user_id: user.id) }
+Rails.event.record("user.created", user_id: user.id)
+Rails.event.tagged("auth") { Rails.event.record("login.success", user_id: user.id) }
 ```
-
-## Pre-commit Checks
-
-Run the Lefthook pre-commit checks before committing:
-
-```bash
-lefthook run pre-commit
-```
-
-These checks cover formatting, linting, security audits, database consistency, and Rails tests.
 
 ## Troubleshooting
 
-| Problem                                  | Fix                                                                                   |
-| :--------------------------------------- | :------------------------------------------------------------------------------------ |
-| Tailwind changes are not reflected       | Run `bin/rails assets:clobber` and restart `bin/dev` or `bin/rails tailwindcss:watch` |
-| Tests fail because databases are missing | Run `bin/rails db:prepare`                                                            |
-| `bin/dev` stops during boot              | Check `TRUSTED_ORIGINS` and database availability                                     |
-| Credentials cannot be decrypted          | Use the shared Rails credentials key for this environment                             |
+| Problem                                  | Fix                                                                                                                            |
+| :--------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| Tailwind changes are not reflected       | Run `bin/rails assets:clobber` and restart `bin/dev` or `bin/rails tailwindcss:watch`                                          |
+| Tests fail because databases are missing | Run `bin/rails db:prepare`                                                                                                     |
+| `bin/dev` stops during boot              | Check `TRUSTED_ORIGINS` and database availability                                                                              |
+| Git operations fail around hooks         | Git hook ownership is still TBC, so do not assume Vite+ hooks or Lefthook are active unless the current Git config confirms it |
+| Credentials cannot be decrypted          | Use the shared Rails credentials key for this environment                                                                      |
 
 ## Acknowledgement
 

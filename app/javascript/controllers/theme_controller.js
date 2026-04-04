@@ -55,17 +55,19 @@ function applyThemeFromCookie() {
   }
 }
 
+function csrfToken() {
+  return document.querySelector('meta[name="csrf-token"]')?.content;
+}
+
 export default class extends Controller {
   connect() {
     void this.fetchAndSyncTheme();
   }
 
-  select(event) {
+  async select(event) {
     const { value } = event.target;
     const code = { system: "sy", dark: "dr", light: "li" }[value] ?? "sy";
-    const secure = location.protocol === "https:" ? "; secure" : "";
-    document.cookie = `ct=${code}; path=/; max-age=31536000; samesite=lax${secure}`;
-    applyThemeFromCookie();
+    await this.updateTheme(code);
   }
 
   async fetchAndSyncTheme() {
@@ -115,5 +117,26 @@ export default class extends Controller {
     if (valueEl) {
       valueEl.textContent = theme;
     }
+  }
+
+  async updateTheme(themeCode) {
+    const response = await fetch("/web/v0/theme", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-CSRF-Token": csrfToken(),
+      },
+      body: JSON.stringify({ theme: themeCode }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const appliedThemeCode = data.theme || themeCode;
+    this.syncRadioFromThemeCode(appliedThemeCode);
+    this.applyThemeFromCode(appliedThemeCode);
   }
 }

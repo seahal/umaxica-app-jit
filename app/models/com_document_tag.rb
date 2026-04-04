@@ -24,7 +24,7 @@
 # frozen_string_literal: true
 
 class ComDocumentTag < DocumentRecord
-  include ::CatTag
+  include ::CategoryTag
 
   belongs_to :com_document, inverse_of: :com_document_tags
   belongs_to :com_document_tag_master,

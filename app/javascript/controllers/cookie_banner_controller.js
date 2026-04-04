@@ -34,17 +34,15 @@ export default class extends Controller {
   }
 
   // Handle accept action
-  accept(event) {
+  async accept(event) {
     event.preventDefault();
-    this.setCookieConsent("accepted");
-    this.element.remove();
+    await this.submitConsent(true);
   }
 
   // Handle reject action
-  reject(event) {
+  async reject(event) {
     event.preventDefault();
-    this.setCookieConsent("rejected");
-    this.element.remove();
+    await this.submitConsent(false);
   }
 
   // Handle open settings action
@@ -71,22 +69,39 @@ export default class extends Controller {
     return await response.json();
   }
 
-  // Helper: Set cookie consent preference
-  setCookieConsent(value) {
-    const expires = new Date();
-    expires.setFullYear(expires.getFullYear() + 1);
-    document.cookie = `cookie_consent=${value}; expires=${expires.toUTCString()}; path=/`;
+  async submitConsent(consented) {
+    const response = await fetch("/web/v0/cookie", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
+      },
+      body: JSON.stringify({ consented }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    this.element.remove();
   }
 
   // Helper: Get current cookie consent value
   getCookieConsent() {
-    const name = "cookie_consent=";
+    const name = "preference_consented=";
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookies = decodedCookie.split(";");
     for (let cookie of cookies) {
       cookie = cookie.trim();
       if (cookie.indexOf(name) === 0) {
-        return this.normalizeConsentValue(cookie.substring(name.length));
+        const value = cookie.substring(name.length).trim();
+        if (value === "1") {
+          return { consented: true };
+        }
+        if (value === "0") {
+          return { consented: false };
+        }
       }
     }
     return null;

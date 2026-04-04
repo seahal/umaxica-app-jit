@@ -15,8 +15,9 @@ BINDING=0.0.0.0
 OPEN_TELEMETRY=false
 # Node Environment
 NODE_ENV=development
+# Vite+ Configuration
+VITE_GIT_HOOKS=0
 # Region
-# GLOBAL_MODE=true
 REGION_CODE=all
 # Database Configuration
 ## Redis (use local Redis service inside Compose)

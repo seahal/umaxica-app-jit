@@ -6,18 +6,11 @@
 # Table name: app_contact_emails
 # Database name: guest
 #
-#  id                     :bigint           not null, primary key
-#  activated              :boolean          default(FALSE), not null
-#  email_address          :string(1000)     default(""), not null
-#  token_digest           :string(255)
-#  token_expires_at       :datetime
-#  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(3), not null
-#  verifier_digest        :string(255)
-#  verifier_expires_at    :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  app_contact_id         :bigint           default(0), not null
+#  id             :bigint           not null, primary key
+#  email_address  :string(1000)     default(""), not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  app_contact_id :bigint           default(0), not null
 #
 # Indexes
 #
@@ -35,25 +28,11 @@ class AppContactEmailTest < ActiveSupport::TestCase
   fixtures :app_contact_categories, :app_contact_statuses
 
   setup do
-    # Seed necessary reference data for tests
-    [AppContactCategory::APPLICATION_INQUIRY, AppContactCategory::NOTHING].each do |id|
-      AppContactCategory.find_or_create_by(id: id)
-    end
-    [
-      AppContactStatus::NOTHING,
-      AppContactStatus::SET_UP,
-      AppContactStatus::CHECKED_EMAIL_ADDRESS,
-      AppContactStatus::CHECKED_TELEPHONE_NUMBER,
-      AppContactStatus::COMPLETED_CONTACT_ACTION,
-    ].each do |id|
-      AppContactStatus.find_or_create_by(id: id)
-    end
-
     @app_contact = AppContact.create!(
       public_id: "test_contact_1",
       confirm_policy: "1",
-      category_id: AppContactCategory::APPLICATION_INQUIRY,
-      status_id: AppContactStatus::NOTHING,
+      category_id: app_contact_categories(:application_inquiry).id,
+      status_id: app_contact_statuses(:NOTHING).id,
     )
 
     @email = AppContactEmail.new(
@@ -95,91 +74,17 @@ class AppContactEmailTest < ActiveSupport::TestCase
     assert_equal "foobar@example.com", @email.reload.email_address
   end
 
-  test "generate_verifier! should create a code and set expiration" do
-    freeze_time do
-      raw_code = @email.generate_verifier!
+  test "should encrypt email_address" do
+    skip "ActiveRecord Encryption is not configured in test environment"
+    @email.save!
 
-      assert_not_nil @email.verifier_digest
-      assert_equal 6, raw_code.length
-      assert_equal 15.minutes.from_now, @email.verifier_expires_at
-      assert_equal 3, @email.verifier_attempts_left
-    end
+    assert_not_equal "test@example.com", @email.reload[:email_address]
+    assert_equal "test@example.com", @email.email_address
   end
 
-  test "verify_code should return true for correct code" do
-    raw_code = @email.generate_verifier!
+  test "should belong to app_contact" do
+    @email.save!
 
-    assert @email.verify_code(raw_code)
-    assert @email.reload.activated
-    assert_equal 0, @email.verifier_attempts_left
-  end
-
-  test "verify_code should return false for incorrect code and decrement attempts" do
-    @email.generate_verifier!
-
-    assert_not @email.verify_code("000000")
-    assert_not @email.activated
-    assert_equal 2, @email.verifier_attempts_left
-
-    assert_not @email.verify_code("000000")
-    assert_equal 1, @email.verifier_attempts_left
-
-    assert_not @email.verify_code("000000")
-    assert_equal 0, @email.verifier_attempts_left
-
-    # After 0 attempts, it should still be false
-    assert_not @email.verify_code("000000")
-  end
-
-  test "verify_code should fail if expired" do
-    raw_code = @email.generate_verifier!
-
-    travel 16.minutes do
-      assert_not @email.verify_code(raw_code)
-    end
-  end
-
-  test "verifier_expired? returns true when verifier has expired" do
-    @email.generate_verifier!
-
-    travel 16.minutes do
-      assert_predicate @email, :verifier_expired?
-    end
-  end
-
-  test "verifier_expired? returns false when verifier has not expired" do
-    @email.generate_verifier!
-
-    travel 10.minutes do
-      assert_not @email.verifier_expired?
-    end
-  end
-
-  test "can_resend_verifier? returns true when not activated and expired" do
-    @email.generate_verifier!
-
-    travel 16.minutes do
-      assert_predicate @email, :can_resend_verifier?
-    end
-  end
-
-  test "can_resend_verifier? returns true when not activated and no attempts left" do
-    @email.generate_verifier!
-    @email.update!(verifier_attempts_left: 0)
-
-    assert_predicate @email, :can_resend_verifier?
-  end
-
-  test "can_resend_verifier? returns false when already activated" do
-    @email.generate_verifier!
-    @email.update!(activated: true)
-
-    assert_not @email.can_resend_verifier?
-  end
-
-  test "can_resend_verifier? returns false when not activated but still has attempts and not expired" do
-    @email.generate_verifier!
-
-    assert_not @email.can_resend_verifier?
+    assert_equal @app_contact, @email.app_contact
   end
 end

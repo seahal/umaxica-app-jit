@@ -53,7 +53,7 @@
 class OrgPreference < OperatorRecord
   # TODO: Add `deletable_at` to OrgPreference for lifecycle-based cleanup.
   include ::PublicId
-  include ::ConsumeOnceToken
+  include ::SingleUseToken
   include ::Preference::Resettable
   include ::DbscBindable
 

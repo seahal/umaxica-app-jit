@@ -430,6 +430,7 @@ module Preference
 
       preference, created = load_preference_record_from_refresh_token!(create_if_missing: true)
       return render_preference_refresh_error! if preference_refresh_failed?
+      return render_preference_device_denied_error! if preference_refresh_device_denied?
       return if preference.blank?
 
       # If a new preference was created and user is logged in, restore from UserPreference/StaffPreference
@@ -440,6 +441,7 @@ module Preference
       return render_preference_refresh_error! if preference_refresh_failed?
 
       issue_access_token_from(@preferences || preference)
+      sync_preference_cookies_from_access_payload
       nil
     end
 
@@ -614,6 +616,17 @@ module Preference
       )
     end
 
+    def sync_preference_cookies_from_access_payload
+      language = preference_payload_value("lx")
+      write_preference_cookie(LANGUAGE_COOKIE_KEY, language) if language.present?
+
+      timezone = preference_payload_value("tz")
+      write_preference_cookie(TIMEZONE_COOKIE_KEY, timezone) if timezone.present?
+
+      theme = normalize_colortheme(preference_payload_value("ct"))
+      write_preference_cookie(THEME_COOKIE_KEY, theme) if theme.present?
+    end
+
     def set_locale_from_params
       locale = normalized_locale(params[Preference::IoKeys::Params::LX])
       locale ||= normalized_locale(cookies[LANGUAGE_COOKIE_KEY])
@@ -695,6 +708,19 @@ module Preference
     end
 
     def ensure_preferences_record
+      # Verify consistency between access token and refresh token
+      # If they point to different preferences, clear cookies and return 401
+      if @preferences.present? && refresh_token_value.present?
+        access_public_id = @preferences.public_id
+        refresh_public_id, _ = refresh_token_data(refresh_token_value)
+
+        if refresh_public_id.present? && access_public_id != refresh_public_id
+          clear_preference_auth_cookies!
+          render_preference_refresh_error!
+          return
+        end
+      end
+
       load_preference_record_from_refresh_token!(create_if_missing: true)
     end
 
@@ -1312,6 +1338,15 @@ module Preference
 
     def preference_refresh_failed?
       @preference_refresh_failed
+    end
+
+    def preference_refresh_device_denied?
+      @preference_refresh_device_denied
+    end
+
+    def render_preference_device_denied_error!
+      clear_preference_auth_cookies!
+      render_preference_refresh_error!
     end
 
     def extract_preference_refresh_device_id

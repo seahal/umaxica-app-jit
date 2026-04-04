@@ -108,6 +108,43 @@ module Core
             assert_equal "invalid_refresh_token", s.response.parsed_body["error_code"]
           end
 
+          test "tampered refresh_token clears all preference auth cookies and returns 401" do
+            s = open_session
+            s.host!(@host)
+
+            # First, establish a valid session
+            s.get(main_app_edge_v0_preference_url)
+            s.assert_response :success
+
+            original_preference_id = s.response.parsed_body.dig("preference", "public_id")
+
+            # Tamper with the refresh token (modify the JWT payload)
+            original_refresh = s.cookies[preference_refresh_cookie_name]
+            tampered_refresh = original_refresh + "tampered"
+            s.cookies[preference_refresh_cookie_name] = tampered_refresh
+
+            # Clear access token and ALL preference cookies to force refresh validation
+            s.cookies.delete(preference_access_cookie_name)
+            s.cookies.delete(preference_device_id_cookie_name)
+
+            # Request with tampered refresh token
+            s.get(main_app_edge_v0_preference_url, as: :json)
+            s.assert_response :unauthorized
+
+            assert_equal "invalid_refresh_token", s.response.parsed_body["error_code"]
+
+            # Verify refresh cookie is cleared (it was presented as tampered)
+            set_cookie = s.response.headers["Set-Cookie"]
+            cookie_lines = set_cookie.is_a?(Array) ? set_cookie : set_cookie.to_s.split("\n")
+
+            assert cookie_lines.any? { |line|
+              line.include?("#{preference_refresh_cookie_name}=") && line.include?("max-age=0")
+            }, "refresh cookie should be cleared after tampered refresh"
+
+            # Original preference should still exist (not compromised)
+            assert AppPreference.exists?(public_id: original_preference_id)
+          end
+
           test "legacy refresh token is accepted" do
             # First request to get a valid device ID
             s = open_session
@@ -229,6 +266,53 @@ module Core
             )
 
             assert_equal 401, s.response.status
+          end
+
+          test "device mismatch clears all preference auth cookies with Set-Cookie header" do
+            s = open_session
+            s.host!(@host)
+            s.get(main_app_edge_v0_preference_url)
+            s.assert_response :success
+
+            refresh_token = s.cookies[preference_refresh_cookie_name]
+            original_device_id = AppPreference.find_by!(
+              public_id: s.response.parsed_body.dig("preference", "public_id"),
+            ).device_id
+
+            # Change device_id in DB to simulate device mismatch
+            public_id = s.response.parsed_body.dig("preference", "public_id")
+            new_device_id = SecureRandom.uuid
+            AppPreference.find_by!(public_id: public_id).update!(
+              device_id: new_device_id,
+              device_id_digest: Base64.strict_encode64(SHA3::Digest::SHA3_384.digest(new_device_id)),
+            )
+
+            # Request with mismatched device_id
+            s.get(
+              main_app_edge_v0_preference_url,
+              headers: {
+                "Cookie" => "#{preference_access_cookie_name}=invalid.access.token; " \
+                            "#{preference_refresh_cookie_name}=#{refresh_token}; " \
+                            "#{preference_device_id_cookie_name}=#{original_device_id}",
+              },
+            )
+
+            s.assert_response :unauthorized
+
+            # Verify all preference auth cookies are cleared via Set-Cookie header
+            # Set-Cookie header can be an Array or a String
+            set_cookie = s.response.headers["Set-Cookie"]
+            cookie_lines = set_cookie.is_a?(Array) ? set_cookie : set_cookie.to_s.split("\n")
+
+            assert cookie_lines.any? { |line|
+              line.include?("#{preference_access_cookie_name}=") && line.include?("max-age=0")
+            }, "access cookie should be cleared"
+            assert cookie_lines.any? { |line|
+              line.include?("#{preference_refresh_cookie_name}=") && line.include?("max-age=0")
+            }, "refresh cookie should be cleared"
+            assert cookie_lines.any? { |line|
+              line.include?("#{preference_device_id_cookie_name}=") && line.include?("max-age=0")
+            }, "device_id cookie should be cleared"
           end
 
           test "refresh replay is detected and rejected" do

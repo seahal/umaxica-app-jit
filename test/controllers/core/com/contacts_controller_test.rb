@@ -57,7 +57,7 @@ module Main
 
       def ensure_contact_references!
         ComContactStatus.find_or_create_by!(id: ComContactStatus::NOTHING)
-        ComContactStatus.find_or_create_by!(id: ComContactStatus::COMPLETED_CONTACT_ACTION)
+        ComContactStatus.find_or_create_by!(id: ComContactStatus::COMPLETED)
       end
 
       def create_com_contact

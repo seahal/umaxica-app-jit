@@ -111,8 +111,8 @@ group :development, :test do
   # type
   gem "tapioca", require: false
   # sorbet
-  gem "sorbet-runtime"
   gem "rack-livereload"
+  # Guard
   gem "guard"
   gem "guard-minitest"
   gem "guard-livereload", require: false
@@ -121,7 +121,6 @@ end
 group :development do
   # Debugging
   gem "debug", platforms: %i( mri windows )
-  gem "sorbet"
   gem "foreman"
   gem "yard"
   # Preview email in the browser instead of sending it

@@ -9,15 +9,14 @@
 #  id :bigint           not null, primary key
 #
 class OrgContactStatus < GuestRecord
-  NOTHING = 1
-  CHECKED_EMAIL_ADDRESS = 2
-  EMAIL_PENDING = 3
-  PHONE_VERIFIED = 4
-  COMPLETED = 5
-  EMAIL_VERIFIED = 6
-  SET_UP = 7
-  CHECKED_TELEPHONE_NUMBER = 9
-  COMPLETED_CONTACT_ACTION = 10
+  # Normal states
+  NOTHING = 0      # Initial state
+  COMPLETED = 1    # Successfully completed
+
+  # Error/non-normal states (2+)
+  FAILED = 2           # Processing failed
+  SPAM_DETECTED = 3    # Spam detected
+  PENDING_REVIEW = 4   # Pending manual review
 
   has_many :org_contacts,
            foreign_key: :status_id,

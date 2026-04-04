@@ -6,6 +6,7 @@ require "test_helper"
 class Apex::Org::Auth::CallbacksControllerTest < ActionDispatch::IntegrationTest
   setup do
     @host = ENV.fetch("APEX_STAFF_URL", "org.localhost")
+    host! @host
   end
 
   test "returns client_id as apex_org" do

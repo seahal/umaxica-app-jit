@@ -1,34 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: org_contact_emails
-# Database name: guest
-#
-#  id                     :bigint           not null, primary key
-#  activated              :boolean          default(FALSE), not null
-#  email_address          :string(1000)     default(""), not null
-#  token_digest           :string(255)
-#  token_expires_at       :datetime
-#  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(3), not null
-#  verifier_digest        :string(255)
-#  verifier_expires_at    :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  org_contact_id         :bigint           default(0), not null
-#
-# Indexes
-#
-#  index_org_contact_emails_on_email_address   (email_address)
-#  index_org_contact_emails_on_org_contact_id  (org_contact_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (org_contact_id => org_contacts.id)
-#
-
 require "test_helper"
 
 class OrgContactEmailTest < ActiveSupport::TestCase
@@ -65,43 +37,6 @@ class OrgContactEmailTest < ActiveSupport::TestCase
       @email.email_address = invalid_address
 
       assert_not @email.valid?, "#{invalid_address.inspect} should be invalid"
-    end
-  end
-
-  test "generate_verifier! should create a code and set expiration" do
-    freeze_time do
-      raw_code = @email.generate_verifier!
-
-      assert_not_nil @email.verifier_digest
-      assert_equal 6, raw_code.length
-      assert_equal 15.minutes.from_now, @email.verifier_expires_at
-      assert_equal 3, @email.verifier_attempts_left
-    end
-  end
-
-  test "verify_code should return true for correct code" do
-    raw_code = @email.generate_verifier!
-
-    assert @email.verify_code(raw_code)
-    assert @email.reload.activated
-    assert_equal 0, @email.verifier_attempts_left
-  end
-
-  test "verify_code should return false for incorrect code" do
-    @email.generate_verifier!
-
-    assert_not @email.verify_code("000000")
-    assert_not @email.activated
-  end
-
-  test "can_resend_verifier? logic" do
-    assert_not @email.can_resend_verifier?
-    @email.generate_verifier!
-    # Still valid attempt window
-    assert_not @email.can_resend_verifier?
-
-    travel 16.minutes do
-      assert_predicate @email, :can_resend_verifier?
     end
   end
 end

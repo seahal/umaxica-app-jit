@@ -141,6 +141,8 @@ module Preference::Core
   private
 
   def load_or_refresh_preference_child(child_type, default_attributes = {})
+    return nil if @preferences.blank?
+
     association_name = :"#{preference_prefix_underscore}_#{child_type.downcase}"
 
     # Access-token loading can leave a child association memoized on @preferences.

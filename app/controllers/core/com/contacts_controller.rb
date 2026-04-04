@@ -50,7 +50,7 @@ module Core
         end
 
         if @contact.save
-          @contact.update!(status_id: ComContactStatus::COMPLETED_CONTACT_ACTION)
+          @contact.update!(status_id: ComContactStatus::COMPLETED)
 
           redirect_to(
             main_com_contact_url(

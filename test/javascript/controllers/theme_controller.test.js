@@ -16,6 +16,7 @@ const { default: ThemeController } =
 
 let cookieReadValue = "";
 let cookieWritten = [];
+let fetchMock;
 
 const classListMock = {
   _store: new Set(),
@@ -66,10 +67,12 @@ beforeEach(() => {
   documentMock.getElementById.mockReturnValue(null);
   documentMock.querySelector.mockReturnValue(null);
   documentMock.addEventListener.mockReset();
+  fetchMock = vi.fn();
 
   vi.stubGlobal("document", documentMock);
   vi.stubGlobal("window", windowMock);
   vi.stubGlobal("location", { protocol: "https:" });
+  vi.stubGlobal("fetch", fetchMock);
 });
 
 // ──────────────────────────────────────────────
@@ -93,41 +96,78 @@ describe("connect", () => {
 // ──────────────────────────────────────────────
 
 describe("select", () => {
-  test('"dark" → ct=dr クッキーを設定する', () => {
+  test('"dark" を PATCH /web/v0/theme に送る', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "dr" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "dark" } });
-    expect(cookieWritten).toContain("ct=dr; path=/; max-age=31536000; samesite=lax; secure");
+    await controller.select({ target: { value: "dark" } });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/web/v0/theme",
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ theme: "dr" }),
+      }),
+    );
   });
 
-  test('"light" → ct=li クッキーを設定する', () => {
+  test('"light" を PATCH /web/v0/theme に送る', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "li" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "light" } });
-    expect(cookieWritten).toContain("ct=li; path=/; max-age=31536000; samesite=lax; secure");
+    await controller.select({ target: { value: "light" } });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/web/v0/theme",
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ theme: "li" }),
+      }),
+    );
   });
 
-  test('"system" → ct=sy クッキーを設定する', () => {
+  test('"system" を PATCH /web/v0/theme に送る', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "sy" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "system" } });
-    expect(cookieWritten).toContain("ct=sy; path=/; max-age=31536000; samesite=lax; secure");
+    await controller.select({ target: { value: "system" } });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/web/v0/theme",
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ theme: "sy" }),
+      }),
+    );
   });
 
-  test("未知の値はデフォルトで ct=sy になる", () => {
+  test("未知の値はデフォルトで theme=sy を送る", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "sy" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "unknown" } });
-    expect(cookieWritten).toContain("ct=sy; path=/; max-age=31536000; samesite=lax; secure");
+    await controller.select({ target: { value: "unknown" } });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/web/v0/theme",
+      expect.objectContaining({
+        body: JSON.stringify({ theme: "sy" }),
+      }),
+    );
   });
 
-  test("https のとき secure フラグが付く", () => {
+  test("select は JS から ct クッキーを書かない", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "dr" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "dark" } });
-    expect(cookieWritten[0]).toMatch(/; secure$/);
-  });
-
-  test("http のとき secure フラグが付かない", () => {
-    vi.stubGlobal("location", { protocol: "http:" });
-    const controller = makeController();
-    controller.select({ target: { value: "dark" } });
-    expect(cookieWritten[0]).not.toMatch(/; secure$/);
+    await controller.select({ target: { value: "dark" } });
+    expect(cookieWritten).toEqual([]);
   });
 });
 
@@ -207,90 +247,115 @@ describe("syncRadio", () => {
 // ──────────────────────────────────────────────
 
 describe("applyThemeFromCookie (統合テスト)", () => {
-  test("ct=dr クッキーでダークテーマを適用する", () => {
-    cookieReadValue = "ct=dr";
+  test("theme=dr 応答でダークテーマを適用する", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "dr" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "dark" } });
+    await controller.select({ target: { value: "dark" } });
 
-    // select した時点でクッキーが書き込まれ、applyThemeFromCookie が呼ばれる
-    // classListMock に dark クラスが追加されているか確認
     expect(classListMock.has("dark")).toBe(true);
     expect(classListMock.has("theme-dark")).toBe(true);
   });
 
-  test("ct=li クッキーでライトテーマを適用する", () => {
-    cookieReadValue = "ct=li";
+  test("theme=li 応答でライトテーマを適用する", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "li" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "light" } });
+    await controller.select({ target: { value: "light" } });
 
     expect(classListMock.has("dark")).toBe(false);
     expect(classListMock.has("theme-light")).toBe(true);
   });
 
-  test("ct=sy クッキーでシステムテーマを適用する (matches: false)", () => {
-    cookieReadValue = "ct=sy";
+  test("theme=sy 応答でシステムテーマを適用する (matches: false)", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "sy" }),
+    });
     windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
     const controller = makeController();
-    controller.select({ target: { value: "system" } });
+    await controller.select({ target: { value: "system" } });
 
     expect(classListMock.has("dark")).toBe(false);
     expect(classListMock.has("theme-system")).toBe(true);
   });
 
-  test("ct=sy クッキーでシステムテーマを適用する (matches: true)", () => {
-    cookieReadValue = "ct=sy";
+  test("theme=sy 応答でシステムテーマを適用する (matches: true)", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "sy" }),
+    });
     windowMock.matchMedia.mockReturnValue({ matches: true, addEventListener: vi.fn() });
     const controller = makeController();
-    controller.select({ target: { value: "system" } });
+    await controller.select({ target: { value: "system" } });
 
     expect(classListMock.has("dark")).toBe(true);
     expect(classListMock.has("theme-system")).toBe(true);
   });
 
-  test("クッキーがない場合のテーマはシステムデフォルト", () => {
-    cookieReadValue = "";
+  test("theme=sy 応答でシステムデフォルトを適用する", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "sy" }),
+    });
     windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
     const controller = makeController();
-    controller.select({ target: { value: "system" } });
+    await controller.select({ target: { value: "system" } });
 
     expect(classListMock.has("dark")).toBe(false);
     expect(classListMock.has("theme-system")).toBe(true);
   });
 
-  test("html.dataset.theme に正しい値が設定される", () => {
-    cookieReadValue = "ct=dr";
+  test("html.dataset.theme に正しい値が設定される", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "dr" }),
+    });
     const controller = makeController();
-    controller.select({ target: { value: "dark" } });
+    await controller.select({ target: { value: "dark" } });
 
     expect(documentMock.documentElement.dataset.theme).toBe("dark");
   });
 
-  test("js-theme-cookie-value 要素がある場合、テーマ値を設定する", () => {
-    cookieReadValue = "ct=li";
+  test("js-theme-cookie-value 要素がある場合、テーマ値を設定する", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "li" }),
+    });
     const valueEl = { textContent: "" };
     documentMock.querySelector.mockReturnValue(valueEl);
     const controller = makeController();
-    controller.select({ target: { value: "light" } });
+    await controller.select({ target: { value: "light" } });
 
     expect(documentMock.querySelector).toHaveBeenCalledWith("#js-theme-cookie-value");
     expect(valueEl.textContent).toBe("light");
   });
 
-  test("js-theme-cookie-value 要素がない場合、エラーにならない", () => {
-    cookieReadValue = "ct=dr";
+  test("js-theme-cookie-value 要素がない場合、エラーにならない", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "dr" }),
+    });
     documentMock.querySelector.mockReturnValue(null);
     const controller = makeController();
 
-    expect(() => controller.select({ target: { value: "dark" } })).not.toThrow();
+    await expect(controller.select({ target: { value: "dark" } })).resolves.toBeUndefined();
   });
 
-  test("システムテーマが選択されると matchMedia が呼ばれる", () => {
-    cookieReadValue = "ct=sy";
+  test("システムテーマが選択されると matchMedia が呼ばれる", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ theme: "sy" }),
+    });
     const matchMediaMock = vi.fn(() => ({ matches: false, addEventListener: vi.fn() }));
     windowMock.matchMedia = matchMediaMock;
     const controller = makeController();
 
-    controller.select({ target: { value: "system" } });
+    await controller.select({ target: { value: "system" } });
     expect(matchMediaMock).toHaveBeenCalledWith("(prefers-color-scheme: dark)");
   });
 });

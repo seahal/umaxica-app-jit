@@ -25,7 +25,7 @@
 # frozen_string_literal: true
 
 class OrgTimelineCategory < PublicationRecord
-  include ::CatTag
+  include ::CategoryTag
 
   belongs_to :org_timeline, inverse_of: :category
   belongs_to :org_timeline_category_master,

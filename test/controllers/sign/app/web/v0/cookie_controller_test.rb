@@ -77,4 +77,34 @@ class Sign::App::Web::V0::CookieControllerTest < ActionDispatch::IntegrationTest
     assert_includes set_cookie, "preference_consented="
     assert_includes set_cookie, "#{Preference::CookieName.access}="
   end
+
+  test "PATCH update accepts nested preference_cookie consented param" do
+    preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING)
+    AppPreferenceCookie.create!(
+      preference: preference,
+      targetable: false,
+      performant: false,
+      functional: false,
+      consented: false,
+      consented_at: nil,
+    )
+    token = encode_preference_jwt(
+      preferences: { "consented" => false },
+      host: @host,
+      public_id: preference.public_id,
+    )
+    cookies[Preference::CookieName.access] = token
+
+    with_preference_jwt_keys(host: @host) do
+      patch sign_app_web_v0_cookie_path,
+            params: { preference_cookie: { consented: true } },
+            as: :json
+    end
+
+    assert_response :ok
+    preference.reload
+
+    assert preference.app_preference_cookie.consented
+    assert response.parsed_body["consented"]
+  end
 end

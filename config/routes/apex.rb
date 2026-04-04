@@ -36,19 +36,16 @@ scope module: :apex, as: :apex do
   constraints host: ENV["APEX_SERVICE_URL"] do
     scope module: :app, as: :app do
       root to: "roots#index"
-
       # Health
       resource :health, only: :show
       # Robots
       resource :robots, only: :show, path: "robots.txt"
       # Sitemap
       resource :sitemap, only: :show, path: "sitemap.xml"
-
       # OIDC callback
       namespace :auth do
         resource :callback, only: :show
       end
-
       # Edge API endpoint (browser/Rails view)
       namespace :web do
         namespace :v0 do
@@ -64,6 +61,7 @@ scope module: :apex, as: :apex do
           resource :dbsc, only: :create
         end
       end
+      # TODO: consider this. we did move this to sign routing.
       resource :configuration, only: [:show]
       namespace :configuration do
         # logged in user's email settings.
@@ -121,6 +119,7 @@ scope module: :apex, as: :apex do
         end
       end
 
+      # TODO: consider this. we did move this to sign routing.
       resource :configuration, only: [:show]
       namespace :configuration do
         # logged in user's email settings.

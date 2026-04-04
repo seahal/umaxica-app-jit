@@ -58,7 +58,7 @@ describe("CookieConsentController", () => {
     test("accept sends true and hides banner on success", async () => {
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ preference: { consented: true } }),
+        json: () => Promise.resolve({ consented: true }),
       });
 
       await controller.submitConsent(true);
@@ -76,7 +76,7 @@ describe("CookieConsentController", () => {
     test("reject sends false and hides banner on success", async () => {
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ preference: { consented: false } }),
+        json: () => Promise.resolve({ consented: false }),
       });
 
       await controller.submitConsent(false);
@@ -94,7 +94,7 @@ describe("CookieConsentController", () => {
     test("dispatches consentChanged event on success", async () => {
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ preference: { consented: true } }),
+        json: () => Promise.resolve({ consented: true }),
       });
 
       await controller.submitConsent(true);

@@ -24,7 +24,7 @@
 # frozen_string_literal: true
 
 class OrgDocumentCategory < DocumentRecord
-  include ::CatTag
+  include ::CategoryTag
 
   belongs_to :org_document, inverse_of: :category
   belongs_to :org_document_category_master,

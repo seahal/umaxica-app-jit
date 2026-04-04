@@ -1,14 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: app_contact_statuses
-# Database name: guest
-#
-#  id :bigint           not null, primary key
-#
-
 require "test_helper"
 
 class AppContactStatusTest < ActiveSupport::TestCase
@@ -26,11 +18,12 @@ class AppContactStatusTest < ActiveSupport::TestCase
   end
 
   test "should restrict destroy when app contacts exist" do
-    status = AppContactStatus.find_or_create_by!(id: AppContactStatus::EMAIL_PENDING)
+    status = AppContactStatus.find_or_create_by!(id: AppContactStatus::COMPLETED)
     # Ensure a contact exists pointing to this status
     AppContact.create!(
       app_contact_status: status,
       public_id: "test_contact_#{SecureRandom.hex(4)}",
+      confirm_policy: "1",
     )
 
     # With dependent: :restrict_with_error, destroy returns false and adds errors

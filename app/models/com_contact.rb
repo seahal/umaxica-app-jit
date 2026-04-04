@@ -6,26 +6,19 @@
 # Table name: com_contacts
 # Database name: guest
 #
-#  id               :bigint           not null, primary key
-#  ip_address       :inet
-#  token            :string(32)       default(""), not null
-#  token_digest     :string
-#  token_expires_at :datetime
-#  token_viewed     :boolean          default(FALSE), not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  category_id      :bigint           default(0), not null
-#  public_id        :string(21)       not null
-#  status_id        :bigint           not null
+#  id          :bigint           not null, primary key
+#  ip_address  :inet
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  category_id :bigint           default(0), not null
+#  public_id   :string(21)       not null
+#  status_id   :bigint           not null
 #
 # Indexes
 #
-#  index_com_contacts_on_category_id       (category_id)
-#  index_com_contacts_on_public_id         (public_id) UNIQUE
-#  index_com_contacts_on_status_id         (status_id)
-#  index_com_contacts_on_token             (token)
-#  index_com_contacts_on_token_digest      (token_digest)
-#  index_com_contacts_on_token_expires_at  (token_expires_at)
+#  index_com_contacts_on_category_id  (category_id)
+#  index_com_contacts_on_public_id    (public_id) UNIQUE
+#  index_com_contacts_on_status_id    (status_id)
 #
 # Foreign Keys
 #
@@ -51,11 +44,6 @@ class ComContact < GuestRecord
              foreign_key: :status_id,
              inverse_of: :com_contacts
   has_many :com_contact_topics, dependent: :destroy, inverse_of: :com_contact
-  has_many :com_contact_behaviors,
-           class_name: "ComContactBehavior",
-           foreign_key: :subject_id,
-           inverse_of: :com_contact,
-           dependent: :delete_all
 
   after_initialize do
     if new_record?
@@ -67,7 +55,7 @@ class ComContact < GuestRecord
   validates :confirm_policy, acceptance: true
 
   def completed?
-    status_id == ComContactStatus::COMPLETED_CONTACT_ACTION
+    status_id == ComContactStatus::COMPLETED
   end
 
   def to_param

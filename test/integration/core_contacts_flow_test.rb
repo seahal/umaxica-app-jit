@@ -73,7 +73,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
       assert_response :redirect
       contact = AppContact.order(:id).last
 
-      assert_equal AppContactStatus::SET_UP, contact.status_id
+      assert_equal AppContactStatus::COMPLETED, contact.status_id
       assert_equal "a" * 80, contact.app_contact_topics.last.title
 
       assert_no_difference("AppContact.count") do
@@ -137,7 +137,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
       assert_response :redirect
       contact = OrgContact.order(:id).last
 
-      assert_equal OrgContactStatus::SET_UP, contact.status_id
+      assert_equal OrgContactStatus::COMPLETED, contact.status_id
     end
   end
 
@@ -233,7 +233,7 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
 
     contact = ComContact.order(created_at: :desc).first
 
-    assert_equal ComContactStatus::COMPLETED_CONTACT_ACTION, contact.status_id
+    assert_equal ComContactStatus::COMPLETED, contact.status_id
 
     assert_response :redirect
     assert_includes @response.redirect_url, "/contacts/#{contact.public_id}"
@@ -246,10 +246,12 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     AppContactCategory.find_or_create_by!(id: AppContactCategory::APPLICATION_INQUIRY)
     OrgContactCategory.find_or_create_by!(id: OrgContactCategory::ORGANIZATION_INQUIRY)
     ComContactCategory.find_or_create_by!(id: ComContactCategory::SECURITY_ISSUE)
-    AppContactStatus.find_or_create_by!(id: AppContactStatus::SET_UP)
-    OrgContactStatus.find_or_create_by!(id: OrgContactStatus::SET_UP)
-    ComContactStatus.find_or_create_by!(id: ComContactStatus::SET_UP)
-    ComContactStatus.find_or_create_by!(id: ComContactStatus::COMPLETED_CONTACT_ACTION)
+    AppContactStatus.find_or_create_by!(id: AppContactStatus::NOTHING)
+    AppContactStatus.find_or_create_by!(id: AppContactStatus::COMPLETED)
+    OrgContactStatus.find_or_create_by!(id: OrgContactStatus::NOTHING)
+    OrgContactStatus.find_or_create_by!(id: OrgContactStatus::COMPLETED)
+    ComContactStatus.find_or_create_by!(id: ComContactStatus::NOTHING)
+    ComContactStatus.find_or_create_by!(id: ComContactStatus::COMPLETED)
   end
 
   def base_contact_params

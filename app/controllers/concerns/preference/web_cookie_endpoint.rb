@@ -116,6 +116,10 @@ module Preference
           params[:consented]
         elsif params.key?(:cookie) && params[:cookie].respond_to?(:key?) && params[:cookie].key?(:consented)
           params[:cookie][:consented]
+        elsif params.key?(:preference_cookie) &&
+            params[:preference_cookie].respond_to?(:key?) &&
+            params[:preference_cookie].key?(:consented)
+          params[:preference_cookie][:consented]
         else
           return nil
         end

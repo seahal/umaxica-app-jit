@@ -285,6 +285,51 @@ class SignPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal "Asia/Tokyo", Time.zone.name
     end
 
+    test "#{domain[:name]} domain initializes timezone cookie from stored default timezone" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+
+      payload = preference_cookie_payload(preference_access_cookie_name, host: domain[:host])
+
+      pref.reload
+      stored_timezone = pref.public_send("#{domain[:name]}_preference_timezone")
+
+      assert_equal 2, stored_timezone.option_id
+      assert_equal "Asia/Tokyo", stored_timezone.option.name
+      assert_equal "Asia/Tokyo", payload.dig("preferences", "tz")
+      assert_equal "Asia/Tokyo", cookies[Preference::Base::TIMEZONE_COOKIE_KEY]
+    end
+
+    test "#{domain[:name]} domain initializes language cookie from stored default language" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+
+      payload = preference_cookie_payload(preference_access_cookie_name, host: domain[:host])
+
+      pref.reload
+      stored_language = pref.public_send("#{domain[:name]}_preference_language")
+
+      assert_equal 1, stored_language.option_id
+      assert_equal "ja", stored_language.option.name
+      assert_equal "ja", payload.dig("preferences", "lx")
+      assert_equal "ja", cookies[Preference::Base::LANGUAGE_COOKIE_KEY]
+    end
+
+    test "#{domain[:name]} domain initializes color theme cookie from stored default theme" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+
+      payload = preference_cookie_payload(preference_access_cookie_name, host: domain[:host])
+
+      pref.reload
+      stored_theme = pref.public_send("#{domain[:name]}_preference_colortheme")
+
+      assert_equal 3, stored_theme.option_id
+      assert_equal "system", stored_theme.option.name
+      assert_equal "sy", payload.dig("preferences", "ct")
+      assert_equal "sy", cookies[Preference::Base::THEME_COOKIE_KEY]
+    end
+
     test "#{domain[:name]} domain redirects timezone edit with updated tz when request omits tz" do
       host!(domain[:host])
 
