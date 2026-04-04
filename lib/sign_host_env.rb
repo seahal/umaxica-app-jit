@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# FIXME: Is this really needed?
 module SignHostEnv
   class MissingHostError < StandardError; end
 

@@ -1,6 +1,30 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: com_contacts
+# Database name: guest
+#
+#  id          :bigint           not null, primary key
+#  ip_address  :inet
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  category_id :bigint           default(0), not null
+#  public_id   :string(21)       not null
+#  status_id   :bigint           not null
+#
+# Indexes
+#
+#  index_com_contacts_on_category_id  (category_id)
+#  index_com_contacts_on_public_id    (public_id) UNIQUE
+#  index_com_contacts_on_status_id    (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (category_id => com_contact_categories.id)
+#  fk_rails_...  (status_id => com_contact_statuses.id) ON DELETE => restrict
+#
 require "test_helper"
 
 class ComContactTest < ActiveSupport::TestCase

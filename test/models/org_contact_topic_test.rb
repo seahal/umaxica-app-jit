@@ -1,6 +1,28 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: org_contact_topics
+# Database name: guest
+#
+#  id             :bigint           not null, primary key
+#  description    :text
+#  title          :string(80)       default(""), not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  org_contact_id :bigint           not null
+#  public_id      :string(21)       not null
+#
+# Indexes
+#
+#  index_org_contact_topics_on_org_contact_id  (org_contact_id)
+#  index_org_contact_topics_on_public_id       (public_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (org_contact_id => org_contacts.id)
+#
 require "test_helper"
 
 class OrgContactTopicTest < ActiveSupport::TestCase

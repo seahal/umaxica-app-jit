@@ -40,16 +40,13 @@
       "resolved": "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt@sha256:bd1f7a64fc308f256a01c61946db094e0c92c4fd9d32f42b7ea8b661788d879d",
       "integrity": "sha256:bd1f7a64fc308f256a01c61946db094e0c92c4fd9d32f42b7ea8b661788d879d"
     },
-    "ghcr.io/stu-bell/devcontainer-features/cursor-cli:0": {
-      "version": "0.1.0",
-      "resolved": "ghcr.io/stu-bell/devcontainer-features/cursor-cli@sha256:d524f4a32d6aaac920c5673968deeba1b2344b7dda28079cc5117cb470b09d84",
-      "integrity": "sha256:d524f4a32d6aaac920c5673968deeba1b2344b7dda28079cc5117cb470b09d84"
-    },
     "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {
       "version": "0.1.4",
       "resolved": "ghcr.io/stu-bell/devcontainer-features/gemini-cli@sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
       "integrity": "sha256:fe4270714eb833f5c41e03da10a5c248c51bcfcaddb330af6672ffb020e25d25",
-      "dependsOn": ["ghcr.io/stu-bell/devcontainer-features/node"]
+      "dependsOn": [
+        "ghcr.io/stu-bell/devcontainer-features/node"
+      ]
     },
     "ghcr.io/stu-bell/devcontainer-features/node": {
       "version": "0.5.0",

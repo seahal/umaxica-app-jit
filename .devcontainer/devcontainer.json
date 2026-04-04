@@ -1,13 +1,21 @@
 {
   "name": "umaxica-app-jit-dc",
-  "dockerComposeFile": ["../compose.yaml", "./compose.override.yml"],
+  "dockerComposeFile": [
+    "../compose.yaml",
+    "./compose.override.yml"
+  ],
   "service": "core",
   "remoteUser": "jit",
   "containerUser": "jit",
   "workspaceFolder": "/home/jit/workspace",
   "overrideCommand": true,
-  "forwardPorts": [3002],
-  "remoteEnv": { "EDITOR": "code --wait --reuse-window", "DEBUGGER_DISABLE": "1" },
+  "forwardPorts": [
+    3002
+  ],
+  "remoteEnv": {
+    "EDITOR": "code --wait --reuse-window",
+    "DEBUGGER_DISABLE": "1"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -19,22 +27,25 @@
         "rubocop.vscode-rubocop",
         "openai.chatgpt",
         "anthropic.claude-code",
-        "anthropic.claude-code",
         "-sorbet.sorbet-vscode-extension",
         "-dbaeumer.vscode-eslint",
         "-esbenp.prettier-vscode",
         "-eamodio.gitlens",
         "-KoichiSasada.vscode-rdbg",
-        "-sorbet.sorbet-vscode-extension",
         "-GitHub.copilot",
-        "-GitHub.copilot-chat"
+        "-GitHub.copilot-chat",
+        "vitest.explorer"
       ],
       "settings": {
         "extensions.verifySignature": false,
         "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.profiles.linux": {
-          "bash": { "path": "/bin/bash" },
-          "zsh": { "path": "/bin/zsh" }
+          "bash": {
+            "path": "/bin/bash"
+          },
+          "zsh": {
+            "path": "/bin/zsh"
+          }
         },
         "editor.formatOnSave": true,
         "editor.tabSize": 2,
@@ -50,9 +61,15 @@
           "compose.yaml": "yaml",
           "*.yml": "yaml"
         },
-        "[ruby]": { "editor.defaultFormatter": "Shopify.ruby-lsp" },
-        "[javascript]": { "editor.defaultFormatter": "voidzero.oxfmt" },
-        "[typescript]": { "editor.defaultFormatter": "voidzero.oxfmt" },
+        "[ruby]": {
+          "editor.defaultFormatter": "Shopify.ruby-lsp"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "voidzero.oxfmt"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "voidzero.oxfmt"
+        },
         "ruby.lsp.enabledFeatures": {
           "codeActions": true,
           "diagnostics": true,
@@ -73,14 +90,21 @@
           "signatureHelp": true,
           "typeHierarchy": true
         },
-        "ruby.lint": { "rubocop": true }
+        "ruby.lint": {
+          "rubocop": true
+        }
       }
     },
     "jetbrains": {
       "remoteId": "intellij",
       "backend": "intellij",
-      "plugins": ["org.jetbrains.plugins.ruby"],
-      "containerEnv": { "DEVCONTAINER_IDE": "jetbrains", "DEVCONTAINER_AUTO_START_BIN_DEV": "0" }
+      "plugins": [
+        "org.jetbrains.plugins.ruby"
+      ],
+      "containerEnv": {
+        "DEVCONTAINER_IDE": "jetbrains",
+        "DEVCONTAINER_AUTO_START_BIN_DEV": "0"
+      }
     }
   },
   "shutdownAction": "stopCompose",
@@ -105,7 +129,6 @@
     "ghcr.io/jasonthedeveloper/features/trivy:1": {},
     "ghcr.io/audacioustux/devcontainers/bun:1": {},
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
-    "ghcr.io/stu-bell/devcontainer-features/cursor-cli:0": {}
   },
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",

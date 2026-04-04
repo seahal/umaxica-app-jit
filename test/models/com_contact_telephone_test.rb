@@ -1,6 +1,28 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: com_contact_telephones
+# Database name: guest
+#
+#  id               :bigint           not null, primary key
+#  hotp_counter     :integer
+#  hotp_secret      :string
+#  telephone_number :string(1000)     default(""), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  com_contact_id   :bigint           default(0), not null
+#
+# Indexes
+#
+#  index_com_contact_telephones_on_com_contact_id_unique  (com_contact_id) UNIQUE
+#  index_com_contact_telephones_on_telephone_number       (telephone_number)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (com_contact_id => com_contacts.id)
+#
 require "test_helper"
 
 class ComContactTelephoneTest < ActiveSupport::TestCase

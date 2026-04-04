@@ -1,6 +1,13 @@
 # typed: false
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: app_contact_statuses
+# Database name: guest
+#
+#  id :bigint           not null, primary key
+#
 require "test_helper"
 
 class AppContactStatusTest < ActiveSupport::TestCase

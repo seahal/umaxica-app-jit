@@ -150,8 +150,6 @@ group :development do
   gem "erb_lint", require: false
   # Annotate models, routes, fixtures, etc.
   gem "annotaterb"
-  # Ruby LSP
-  gem "ruby-lsp"
   # Code quality tools
   gem "flog", require: false
   gem "flay", require: false
