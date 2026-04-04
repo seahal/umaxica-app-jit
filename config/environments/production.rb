@@ -73,8 +73,7 @@ Rails.application.configure do
   # Require --no-sandbox flag to run destructive console operations
   config.sandbox_by_default = true
 
-  config.cache_store = :solid_cache_store
-  config.solid_cache.connects_to = { shards: { cache: { writing: :cache, reading: :cache_replica } } }
+  config.cache_store = :null_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue

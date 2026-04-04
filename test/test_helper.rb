@@ -13,8 +13,8 @@ ENV["MAIN_CORPORATE_URL"] ||= "main.com.localhost"
 ENV["MAIN_SERVICE_URL"] ||= "main.app.localhost"
 ENV["MAIN_STAFF_URL"] ||= "main.org.localhost"
 require "active_model"
-COVERAGE_ENABLED = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
-require_relative "support/simplecov_setup" if COVERAGE_ENABLED
+COVERAGE_DISABLED = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"] == "false")
+require_relative "support/simplecov_setup" unless COVERAGE_DISABLED
 
 require_relative "../config/environment"
 require "rails/test_help"
@@ -26,7 +26,7 @@ end
 module ActiveSupport
   class TestCase
     # Keep coverage collection in a single process to avoid partial result conflicts.
-    unless COVERAGE_ENABLED
+    if COVERAGE_DISABLED
       # Run tests in parallel with specified workers
       parallelize(workers: :number_of_processors, work_stealing: true)
     end

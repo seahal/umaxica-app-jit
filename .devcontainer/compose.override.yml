@@ -3,9 +3,6 @@ services:
     container_name: jit-devcontainer-core
     user: "jit"
     userns_mode: keep-id
-    tmpfs:
-      - /home/jit/workspace/tmp:mode=1777
-      - /home/jit/workspace/log:mode=0777
     environment:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=false

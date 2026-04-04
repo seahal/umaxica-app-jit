@@ -6,7 +6,7 @@ require "test_helper"
 class SocialIdentifiableTest < ActiveSupport::TestCase
   fixtures :users, :user_statuses
 
-  class DummySocial < ApplicationRecord
+  class DummySocial < PrincipalRecord
     self.table_name = "users"
     include SocialIdentifiable
   end

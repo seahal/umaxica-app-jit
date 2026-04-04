@@ -28,8 +28,7 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
-  config.cache_store = :solid_cache_store
-  config.solid_cache.connects_to = { shards: { cache: { writing: :cache, reading: :cache_replica } } }
+  config.cache_store = :null_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # config.active_storage.service = :local
@@ -104,26 +103,21 @@ Rails.application.configure do
   config.hosts << "sign.app.localhost"
   config.hosts << "sign.com.localhost"
   config.hosts << "sign.org.localhost"
-  config.hosts << "ww.app.localhost"
-  config.hosts << "ww.com.localhost"
-  config.hosts << "ww.org.localhost"
-  config.hosts << "help.app.localhost"
-  config.hosts << "help.com.localhost"
-  config.hosts << "help.org.localhost"
+  config.hosts << "www.app.localhost"
+  config.hosts << "www.com.localhost"
+  config.hosts << "www.org.localhost"
   config.hosts << "docs.app.localhost"
   config.hosts << "docs.com.localhost"
   config.hosts << "docs.org.localhost"
-  config.hosts << "news.app.localhost"
-  config.hosts << "news.com.localhost"
-  config.hosts << "news.org.localhost"
-  # Production hostnames allowed in development for Cloudflare Tunnel testing.
-  # Remove once local-only development is sufficient.
   config.hosts << "sign.umaxica.app"
   config.hosts << "sign.umaxica.com"
   config.hosts << "sign.umaxica.org"
 
   ## file watcher
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # static file serve
+  config.public_file_server.enabled = false
 
   ## Email Settings
   ### Set localhost to be used by links generated in mailer templates.
@@ -138,15 +132,8 @@ Rails.application.configure do
     authentication: :login,
   }
 
-  # static file serve
-  config.public_file_server.enabled = false
-
   # SMS Provider Configuration - Use test provider in development
   config.sms_provider = ENV.fetch("SMS_PROVIDER", "test")
-
-  # Use Solid Queue in Development.
-  config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
 
   # Enable Gzip compression
   config.middleware.use(Rack::Deflater)

@@ -5,7 +5,7 @@ require "test_helper"
 
 class PublicIdTest < ActiveSupport::TestCase
   # Define a dummy model for testing
-  class DummyModel < ApplicationRecord
+  class DummyModel < PrincipalRecord
     include PublicId
     # This model is not backed by a real table, so we fake whatever ActiveRecord needs.
     # The dummy_models table does not exist in the test database, but we can temporarily
@@ -21,7 +21,7 @@ class PublicIdTest < ActiveSupport::TestCase
 
   setup do
     # Create a temporary dummy_models table that has a public_id column
-    ActiveRecord::Base.connection.create_table(:dummy_models, temporary: true) do |t|
+    DummyModel.connection.create_table(:dummy_models, temporary: true) do |t|
       t.string(:public_id)
       t.timestamps
     end
@@ -32,7 +32,7 @@ class PublicIdTest < ActiveSupport::TestCase
 
   teardown do
     # Remove the temporary table
-    ActiveRecord::Base.connection.drop_table(:dummy_models, if_exists: true)
+    DummyModel.connection.drop_table(:dummy_models, if_exists: true)
     # Restore the original Nanoid mock
     Nanoid.define_singleton_method(:generate, @original_nanoid_generate)
   end

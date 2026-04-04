@@ -26,7 +26,7 @@
 # these configuration options.
 #
 Rails.application.configure do
-  config.active_record.database_selector = { delay: 10.seconds }
+  config.active_record.database_selector = { delay: 15.seconds }
   config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 end
@@ -41,7 +41,7 @@ end
 # to switch to. The application must provide a mechanism for finding the shard name
 # in a proc. See guides for an example.
 #
-# Rails.application.configure do
-#   config.active_record.shard_selector = { lock: true }
-#   config.active_record.shard_resolver = ->(request) { Tenant.find_by!(host: request.host).shard }
-# end
+Rails.application.configure do
+  config.active_record.shard_selector = { lock: true }
+  # config.active_record.shard_resolver = ->(request) { Tenant.find_by!(host: request.host).shard }
+end
