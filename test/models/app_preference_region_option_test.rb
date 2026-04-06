@@ -57,4 +57,34 @@ class AppPreferenceRegionOptionTest < ActiveSupport::TestCase
 
     assert_nil option.name
   end
+
+  test "ensure_defaults! creates missing default options" do
+    AppPreferenceRegionOption.stub(:default_ids, AppPreferenceRegionOption::DEFAULTS) do
+      AppPreferenceRegionOption.where(id: AppPreferenceRegionOption::DEFAULTS).delete_all
+      AppPreferenceRegionOption.ensure_defaults!
+
+      assert AppPreferenceRegionOption.exists?(AppPreferenceRegionOption::NOTHING)
+      assert AppPreferenceRegionOption.exists?(AppPreferenceRegionOption::US)
+      assert AppPreferenceRegionOption.exists?(AppPreferenceRegionOption::JP)
+    end
+  end
+
+  test "ensure_defaults! does not recreate existing options" do
+    AppPreferenceRegionOption.stub(:default_ids, AppPreferenceRegionOption::DEFAULTS) do
+      AppPreferenceRegionOption.ensure_defaults!
+      count_before = AppPreferenceRegionOption.where(id: AppPreferenceRegionOption::DEFAULTS).count
+      AppPreferenceRegionOption.ensure_defaults!
+      count_after = AppPreferenceRegionOption.where(id: AppPreferenceRegionOption::DEFAULTS).count
+
+      assert_equal count_before, count_after
+    end
+  end
+
+  test "ensure_defaults! handles empty defaults" do
+    AppPreferenceRegionOption.stub(:default_ids, []) do
+      assert_nothing_raised do
+        AppPreferenceRegionOption.ensure_defaults!
+      end
+    end
+  end
 end

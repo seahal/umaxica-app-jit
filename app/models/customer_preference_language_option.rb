@@ -28,11 +28,16 @@ class CustomerPreferenceLanguageOption < GuestRecord
 
   DEFAULTS = [NOTHING, JA, EN].freeze
 
-  def self.ensure_defaults!
-    return if DEFAULTS.blank?
+  def self.default_ids
+    DEFAULTS
+  end
 
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    missing_ids = DEFAULTS - existing_ids
+  def self.ensure_defaults!
+    ids = default_ids
+    return if ids.blank?
+
+    existing_ids = where(id: ids).pluck(:id)
+    missing_ids = ids - existing_ids
     return if missing_ids.empty?
 
     missing_ids.each { |id| create!(id: id) }
