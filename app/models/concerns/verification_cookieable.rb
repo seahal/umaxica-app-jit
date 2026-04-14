@@ -12,4 +12,8 @@ module VerificationCookieable
       Rails.env.production? ? "#{SECURE_COOKIE_PREFIX}#{COOKIE_BASENAME}" : COOKIE_BASENAME
     end
   end
+
+  def self.cookie_name
+    Rails.env.production? ? "#{SECURE_COOKIE_PREFIX}#{COOKIE_BASENAME}" : COOKIE_BASENAME
+  end
 end

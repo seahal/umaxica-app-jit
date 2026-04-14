@@ -9,6 +9,7 @@
 #  dbsc_challenge           :text
 #  dbsc_challenge_issued_at :datetime
 #  dbsc_public_key          :jsonb
+#  deletable_at             :datetime         default(Infinity), not null
 #  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
@@ -30,6 +31,7 @@
 #  index_org_preferences_on_binding_method_id  (binding_method_id)
 #  index_org_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
 #  index_org_preferences_on_dbsc_status_id     (dbsc_status_id)
+#  index_org_preferences_on_deletable_at       (deletable_at)
 #  index_org_preferences_on_device_id          (device_id)
 #  index_org_preferences_on_device_id_digest   (device_id_digest)
 #  index_org_preferences_on_jti                (jti) UNIQUE
@@ -51,7 +53,7 @@
 # frozen_string_literal: true
 
 class OrgPreference < OperatorRecord
-  # TODO: Add `deletable_at` to OrgPreference for lifecycle-based cleanup.
+  scope :deletable, ->(now = Time.current) { where(deletable_at: ..now) }
   include ::PublicId
   include ::SingleUseToken
   include ::Preference::Resettable
@@ -114,6 +116,8 @@ class OrgPreference < OperatorRecord
            inverse_of: :replaced_by,
            dependent: :nullify
 
-  validates :status_id, numericality: { only_integer: true }
+  validates_reference_table :replaced_by_id, association: :replaced_by, allow_nil: true
   validates :jti, uniqueness: true, allow_nil: true
+  validates :binding_method_id, :dbsc_status_id, :status_id,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

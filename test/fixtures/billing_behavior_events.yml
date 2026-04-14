@@ -1,0 +1,19 @@
+# == Schema Information
+#
+# Table name: billing_behavior_events
+# Database name: behavior
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+charge_created:
+  id: 1
+charge_captured:
+  id: 2
+charge_failed:
+  id: 3
+refund_created:
+  id: 4
+tax_calculated:
+  id: 5

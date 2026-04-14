@@ -74,7 +74,8 @@ module Authentication
       :viewer_id
     end
 
-    # FIXME: what is this method?
+    # Header key for test environment viewer injection.
+    # Allows tests to set the current viewer via request headers.
     def test_header_key
       "X-TEST-CURRENT-VIEWER"
     end

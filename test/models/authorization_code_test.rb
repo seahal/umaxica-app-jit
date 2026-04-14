@@ -22,21 +22,26 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  client_id             :string(64)       not null
+#  customer_id           :bigint
 #  staff_id              :bigint
 #  user_id               :bigint
 #
 # Indexes
 #
-#  index_authorization_codes_on_code        (code) UNIQUE
-#  index_authorization_codes_on_expires_at  (expires_at)
-#  index_authorization_codes_on_staff_id    (staff_id)
-#  index_authorization_codes_on_user_id     (user_id)
+#  index_authorization_codes_on_code         (code) UNIQUE
+#  index_authorization_codes_on_customer_id  (customer_id)
+#  index_authorization_codes_on_expires_at   (expires_at)
+#  index_authorization_codes_on_staff_id     (staff_id)
+#  index_authorization_codes_on_user_id      (user_id)
 #
 require "test_helper"
 
 class AuthorizationCodeTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
+    ensure_customer_reference_records!
+    ensure_customer_token_reference_records!
+    @customer = create_verified_customer_with_email(email_address: "authorization-#{SecureRandom.hex(4)}@example.com")
     @code_challenge = Base64.urlsafe_encode64(
       Digest::SHA256.digest("test_code_verifier_abcdefghijklmnop"),
       padding: false,
@@ -60,6 +65,23 @@ class AuthorizationCodeTest < ActiveSupport::TestCase
     assert_equal @code_challenge, code.code_challenge
     assert_equal "test_state", code.state
     assert_operator code.code.length, :>=, 32
+    assert_predicate code, :usable?
+  end
+
+  test "issue! creates a valid customer authorization code" do
+    code = AuthorizationCode.issue!(
+      customer: @customer,
+      client_id: "core_com",
+      redirect_uri: "http://main.com.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      state: "customer_state",
+    )
+
+    assert_predicate code, :persisted?
+    assert_equal @customer.id, code.customer_id
+    assert_equal "customer", code.resource_type
+    assert_equal @customer, code.resource
     assert_predicate code, :usable?
   end
 
@@ -199,6 +221,36 @@ class AuthorizationCodeTest < ActiveSupport::TestCase
     assert_predicate code.errors[:code_challenge_method], :any?, "code_challenge_method should have validation errors"
   end
 
+  test "validates client_id length" do
+    code = AuthorizationCode.new(
+      code: AuthorizationCode.generate_code,
+      user: @user,
+      client_id: "c" * 65,
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_not code.valid?
+    assert_not_empty code.errors[:client_id]
+  end
+
+  test "validates code length" do
+    code = AuthorizationCode.new(
+      code: "c" * 65,
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_not code.valid?
+    assert_not_empty code.errors[:code]
+  end
+
   test "code uniqueness is enforced" do
     code_value = AuthorizationCode.generate_code
 
@@ -224,5 +276,122 @@ class AuthorizationCodeTest < ActiveSupport::TestCase
 
     assert_not duplicate.valid?
     assert_predicate duplicate.errors[:code], :any?, "code should have uniqueness validation errors"
+  end
+
+  test "validates only one resource can be set" do
+    code = AuthorizationCode.new(
+      code: AuthorizationCode.generate_code,
+      user: @user,
+      customer: @customer,
+      client_id: "core_com",
+      redirect_uri: "http://main.com.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_not code.valid?
+    assert_predicate code.errors[:base], :any?
+  end
+
+  test "resource_type returns staff when only staff_id is set" do
+    staff = Staff.create!(status_id: StaffStatus::NOTHING)
+    code = AuthorizationCode.create!(
+      code: AuthorizationCode.generate_code,
+      staff: staff,
+      client_id: "core_com",
+      redirect_uri: "http://main.com.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_equal "staff", code.resource_type
+    assert_equal staff, code.resource
+  end
+
+  test "validates at least one resource must be set" do
+    code = AuthorizationCode.new(
+      code: AuthorizationCode.generate_code,
+      client_id: "core_app",
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_not code.valid?
+    assert_predicate code.errors[:base], :any?
+    assert_includes code.errors[:base], "must belong to either a user, a staff, or a customer"
+  end
+
+  test "issue! with auth_method as array serializes to json" do
+    code = AuthorizationCode.issue!(
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      auth_method: [:password, :otp],
+    )
+
+    assert_equal '["password","otp"]', code.auth_method
+  end
+
+  test "issue! with nil auth_method stores empty string" do
+    code = AuthorizationCode.issue!(
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+    )
+
+    assert_equal "", code.auth_method
+  end
+
+  test "code length validation rejects values exceeding 64 characters" do
+    code = AuthorizationCode.new(
+      code: "a" * 65,
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_not code.valid?
+    assert_not_empty code.errors[:code]
+  end
+
+  test "client_id length validation rejects values exceeding 64 characters" do
+    code = AuthorizationCode.new(
+      code: AuthorizationCode.generate_code,
+      user: @user,
+      client_id: "a" * 65,
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_not code.valid?
+    assert_not_empty code.errors[:client_id]
+  end
+
+  test "code_challenge_method length validation rejects values exceeding 8 characters" do
+    code = AuthorizationCode.new(
+      code: AuthorizationCode.generate_code,
+      user: @user,
+      client_id: "core_app",
+      redirect_uri: "http://www.app.localhost:3000/auth/callback",
+      code_challenge: @code_challenge,
+      code_challenge_method: "S256EXTRA",
+      expires_at: 10.seconds.from_now,
+    )
+
+    assert_not code.valid?
+    assert_not_empty code.errors[:code_challenge_method]
   end
 end

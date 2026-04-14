@@ -3,7 +3,7 @@
 
 require "test_helper"
 
-class SessionConcernTest < ActiveSupport::TestCase
+class SessionConcernUnitTest < ActiveSupport::TestCase
   include Session
 
   setup do
@@ -61,7 +61,7 @@ class SessionConcernTest < ActiveSupport::TestCase
     Current.realm = :core
     Current.surface = :app
     @session[:_flash_boundary] = "apex:org"
-    flash[:alert] = "test"
+    flash[:alert] = "test" # rubocop:disable Rails/I18nLocaleTexts
     validate_flash_boundary
 
     assert flash.discarded
@@ -87,7 +87,7 @@ class SessionConcernTest < ActiveSupport::TestCase
 
   test "reset_flash discards flash and clears boundary" do
     @session[:_flash_boundary] = "sign:app"
-    flash[:alert] = "test"
+    flash[:alert] = "test" # rubocop:disable Rails/I18nLocaleTexts
     reset_flash
 
     assert flash.discarded

@@ -77,6 +77,34 @@ class AppPreferenceActivityTest < ActiveSupport::TestCase
     assert_equal app_preference_activity_events(:create_new_preference_token), @audit.app_preference_activity_event
   end
 
+  test "rejects unknown event_id before database foreign key enforcement" do
+    audit = AppPreferenceActivity.new(
+      subject_id: @preference.id,
+      subject_type: "AppPreference",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: 999_999,
+      level_id: app_preference_activity_levels(:info).id,
+    )
+
+    assert_not audit.valid?
+    assert_includes audit.errors[:event_id], "must reference an existing app_preference_activity_event"
+  end
+
+  test "rejects unknown level_id before database foreign key enforcement" do
+    audit = AppPreferenceActivity.new(
+      subject_id: @preference.id,
+      subject_type: "AppPreference",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: app_preference_activity_events(:create_new_preference_token).id,
+      level_id: 999_999,
+    )
+
+    assert_not audit.valid?
+    assert_includes audit.errors[:level_id], "must reference an existing app_preference_activity_level"
+  end
+
   test "validates presence of subject_id" do
     @audit.subject_id = nil
 

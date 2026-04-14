@@ -190,7 +190,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ### 3.12 Observability
 
 - `config/initializers/opentelemetry.rb` loads OTEL SDK, exporter, and instrumentation.
-- Production config sets `service_name = "umaxica-app-jit-core"` and `use_all`.
+- Production config sets `service_name = "umaxica-apps-jit-core"` and `use_all`.
 - Development example demonstrates how to point to OTLP endpoint (`tempo:4318`).
 - Compose includes Loki/Tempo/Grafana; logs/traces accessible via forwarded ports.
 

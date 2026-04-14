@@ -40,15 +40,31 @@ class ComPreferenceColorthemeOptionTest < ActiveSupport::TestCase
     end
   end
 
-  test "ensure_defaults! restores missing fixed ids" do
-    com_preference_colorthemes(:one).destroy!
-    com_preference_colortheme_options(:system).destroy!
+  test "returns light for LIGHT id" do
+    option = ComPreferenceColorthemeOption.new(id: ComPreferenceColorthemeOption::LIGHT)
 
-    assert_not ComPreferenceColorthemeOption.exists?(ComPreferenceColorthemeOption::SYSTEM)
+    assert_equal "light", option.name
+  end
 
-    ComPreferenceColorthemeOption.ensure_defaults!
+  test "returns dark for DARK id" do
+    option = ComPreferenceColorthemeOption.new(id: ComPreferenceColorthemeOption::DARK)
 
-    assert_equal ComPreferenceColorthemeOption::DEFAULTS,
-                 ComPreferenceColorthemeOption.order(:id).pluck(:id)
+    assert_equal "dark", option.name
+  end
+
+  test "returns system for SYSTEM id" do
+    option = ComPreferenceColorthemeOption.new(id: ComPreferenceColorthemeOption::SYSTEM)
+
+    assert_equal "system", option.name
+  end
+
+  test "returns nil for unknown id" do
+    option = ComPreferenceColorthemeOption.new(id: 999)
+
+    assert_nil option.name
+  end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [1, 2, 3], ComPreferenceColorthemeOption::DEFAULTS
   end
 end

@@ -16,7 +16,7 @@ host—marketing, authentication, docs/news, help/support, BFF, and API—consis
 
 ### 1.2 Scope
 
-- Rails application located at `/home/mslo/ghq/github.com/seahal/umaxica-app-jit`
+- Rails application located at `/home/mslo/ghq/github.com/seahal/umaxica-apps-jit`
 - Namespaced controllers for `Top`, `Sign`, `Help`, `Docs`, `News`, `Bff`, and `Api` surfaces
 - Turbo/React front-end with pnpm-managed tooling (`app/javascript/**`)
 - Multi-database Active Record setup (identity, guest, universal, token, etc.)
@@ -270,7 +270,7 @@ Sensitive columns leverage Active Record encryption.
 
 ## 9. Observability & Operations
 
-- `config/initializers/opentelemetry.rb` configures service names (`umaxica-app-jit-core`) and
+- `config/initializers/opentelemetry.rb` configures service names (`umaxica-apps-jit-core`) and
   instrumentation; production enables `use_all`.
 - Compose-provisioned Loki/Tempo/Grafana host logs/traces locally; dashboards highlight request rate
   and OTP/passkey errors.

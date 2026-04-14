@@ -197,4 +197,138 @@ class UserPasskeyTest < ActiveSupport::TestCase
     assert_not passkey.valid?
     assert_includes passkey.errors[:base], User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
+
+  test "sign_count zero is valid at lower boundary" do
+    @passkey.sign_count = 0
+
+    assert_predicate @passkey, :valid?
+  end
+
+  test "4th passkey succeeds when 3 exist for user" do
+    Prosopite.pause do
+      3.times do |i|
+        UserPasskey.create!(
+          user: @user,
+          webauthn_id: SecureRandom.uuid,
+          external_id: SecureRandom.uuid,
+          public_key: "key-below-#{i}",
+          description: "Key #{i}",
+        )
+      end
+    end
+
+    fourth = UserPasskey.new(
+      user: @user,
+      webauthn_id: SecureRandom.uuid,
+      external_id: SecureRandom.uuid,
+      public_key: "key-at-4",
+      description: "Fourth Key",
+    )
+
+    assert_predicate fourth, :valid?
+    assert fourth.save
+  end
+
+  test "4th passkey is last allowed when exactly 4 for user" do
+    Prosopite.pause do
+      3.times do |i|
+        UserPasskey.create!(
+          user: @user,
+          webauthn_id: SecureRandom.uuid,
+          external_id: SecureRandom.uuid,
+          public_key: "key-limit-#{i}",
+          description: "Key #{i}",
+        )
+      end
+    end
+
+    fourth = UserPasskey.new(
+      user: @user,
+      webauthn_id: SecureRandom.uuid,
+      external_id: SecureRandom.uuid,
+      public_key: "key-4th",
+      description: "Fourth Key",
+    )
+
+    assert_predicate fourth, :valid?
+    assert fourth.save
+    assert_equal 4, UserPasskey.where(user: @user).count
+  end
+
+  test "5th passkey fails when 4 exist for user" do
+    Prosopite.pause do
+      UserPasskey::MAX_PASSKEYS_PER_USER.times do |i|
+        UserPasskey.create!(
+          user: @user,
+          webauthn_id: SecureRandom.uuid,
+          external_id: SecureRandom.uuid,
+          public_key: "key-max-#{i}",
+          description: "Key #{i}",
+        )
+      end
+    end
+
+    fifth = UserPasskey.new(
+      user: @user,
+      webauthn_id: SecureRandom.uuid,
+      external_id: SecureRandom.uuid,
+      public_key: "key-above-limit",
+      description: "Fifth Key",
+    )
+
+    assert_not fifth.valid?
+    assert_includes fifth.errors[:base], "exceeds maximum passkeys per user (#{UserPasskey::MAX_PASSKEYS_PER_USER})"
+  end
+
+  test "passkey limit is per-user and isolates between users" do
+    other_user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    UserEmail.create!(
+      user: other_user,
+      address: "other-user-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    Prosopite.pause do
+      UserPasskey::MAX_PASSKEYS_PER_USER.times do |i|
+        UserPasskey.create!(
+          user: @user,
+          webauthn_id: SecureRandom.uuid,
+          external_id: SecureRandom.uuid,
+          public_key: "key-first-user-#{i}",
+          description: "Key #{i}",
+        )
+      end
+    end
+
+    other_passkey = UserPasskey.new(
+      user: other_user,
+      webauthn_id: SecureRandom.uuid,
+      external_id: SecureRandom.uuid,
+      public_key: "other-user-key",
+      description: "Other User Key",
+    )
+
+    assert_predicate other_passkey, :valid?
+    assert other_passkey.save
+  end
+
+  test "updating existing passkey does not re-run limit check" do
+    Prosopite.pause do
+      UserPasskey::MAX_PASSKEYS_PER_USER.times do |i|
+        UserPasskey.create!(
+          user: @user,
+          webauthn_id: SecureRandom.uuid,
+          external_id: SecureRandom.uuid,
+          public_key: "key-max-#{i}",
+          description: "Key #{i}",
+        )
+      end
+    end
+
+    existing = UserPasskey.where(user: @user).first
+    existing.description = "Updated description"
+
+    assert existing.save
+    assert_predicate existing, :valid?
+  end
 end

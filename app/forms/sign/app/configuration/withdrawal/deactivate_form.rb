@@ -8,7 +8,7 @@ module Sign
         class DeactivateForm
           include ActiveModel::Model
 
-          attr_accessor :ack_deactivate_today
+          attr_accessor :ack_deactivate_today, :ri, :host
 
           validates :ack_deactivate_today, acceptance: true
         end

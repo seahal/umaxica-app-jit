@@ -59,6 +59,15 @@ module Jit
         assert result["success"]
       end
 
+      test "returns success when feature is disabled" do
+        Jit::Security::TurnstileConfig.stub(:enabled?, false) do
+          result = TurnstileVerifier.verify(token: "", remote_ip: "127.0.0.1")
+
+          assert result["success"]
+          assert_nil result["error"]
+        end
+      end
+
       test "performs http request when verifying" do
         TurnstileVerifier.test_mode = false
 
@@ -165,6 +174,71 @@ module Jit
 
         assert_not config_called, "TurnstileConfig should not be called when secret_key is explicit"
         mock_response.verify
+      end
+
+      # -- Error handling -------------------------------------------------
+
+      test "handles http request errors gracefully" do
+        TurnstileVerifier.test_mode = false
+
+        Net::HTTP.stub(:post_form, ->(_uri, _params) { raise StandardError, "Network error" }) do
+          result = TurnstileVerifier.verify(token: "valid", remote_ip: "1.2.3.4", secret_key: "secret")
+
+          assert_not result["success"]
+          assert_equal "Network error", result["error"]
+        end
+      end
+
+      test "logs missing secret when Rails logger is available" do
+        TurnstileVerifier.test_mode = false
+
+        events = []
+        fake_event = Object.new
+        fake_event.define_singleton_method(:warn) do |message, **payload|
+          events << [message, payload]
+        end
+
+        TurnstileConfig.stub(:visible_secret_key, nil) do
+          Rails.stub(:logger, Object.new) do
+            Rails.stub(:event, fake_event) do
+              result = TurnstileVerifier.verify(token: "token", remote_ip: "127.0.0.1")
+
+              assert_equal({ "success" => false, "error" => "missing turnstile secret" }, result)
+            end
+          end
+        end
+
+        assert_equal [["turnstile.secret_key_missing", { mode: :visible }]], events
+      end
+
+      test "resolve_secret_key returns stealth key for stealth mode" do
+        verifier = TurnstileVerifier.new(token: "token", remote_ip: "1.2.3.4", mode: :stealth)
+
+        TurnstileConfig.stub(:stealth_secret_key, "stealth-key") do
+          secret = verifier.send(:resolve_secret_key)
+
+          assert_equal "stealth-key", secret
+        end
+      end
+
+      test "resolve_secret_key returns visible key for other modes" do
+        verifier = TurnstileVerifier.new(token: "token", remote_ip: "1.2.3.4", mode: :visible)
+
+        TurnstileConfig.stub(:visible_secret_key, "visible-key") do
+          secret = verifier.send(:resolve_secret_key)
+
+          assert_equal "visible-key", secret
+        end
+      end
+
+      test "resolve_secret_key returns visible key for nil mode" do
+        verifier = TurnstileVerifier.new(token: "token", remote_ip: "1.2.3.4")
+
+        TurnstileConfig.stub(:visible_secret_key, "visible-key") do
+          secret = verifier.send(:resolve_secret_key)
+
+          assert_equal "visible-key", secret
+        end
       end
     end
   end

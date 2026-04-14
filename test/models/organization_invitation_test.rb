@@ -101,6 +101,18 @@ class OrganizationInvitationTest < ActiveSupport::TestCase
     assert_not_empty duplicate.errors[:code]
   end
 
+  test "code length validation" do
+    invitation = OrganizationInvitation.new(
+      code: "a" * 33,
+      email: "test@example.com",
+      organization_id: @organization.id,
+      invited_by: @staff,
+    )
+
+    assert_not invitation.valid?
+    assert_not_empty invitation.errors[:code]
+  end
+
   test "active? returns true for fresh invitation" do
     assert_predicate @invitation, :active?
   end
@@ -243,5 +255,28 @@ class OrganizationInvitationTest < ActiveSupport::TestCase
 
   test "invited_by association" do
     assert_equal @staff, @invitation.invited_by
+  end
+
+  test "code length validation rejects values exceeding 32 characters" do
+    invitation = OrganizationInvitation.new(
+      email: "test@example.com",
+      organization_id: @organization.id,
+      invited_by: @staff,
+    )
+    invitation.code = "a" * 33
+
+    assert_not invitation.valid?
+    assert_not_empty invitation.errors[:code]
+  end
+
+  test "code length validation accepts values up to 32 characters" do
+    invitation = OrganizationInvitation.new(
+      email: "test@example.com",
+      organization_id: @organization.id,
+      invited_by: @staff,
+    )
+    invitation.code = "a" * 32
+
+    assert_predicate invitation, :valid?
   end
 end

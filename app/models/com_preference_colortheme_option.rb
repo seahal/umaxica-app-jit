@@ -29,8 +29,4 @@ class ComPreferenceColorthemeOption < CommerceRecord
     when SYSTEM then "system"
     end
   end
-
-  def self.ensure_defaults!
-    insert_missing_fixed_ids!(DEFAULTS)
-  end
 end

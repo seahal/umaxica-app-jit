@@ -227,4 +227,47 @@ class UserBulletinTest < ActiveSupport::TestCase
       @user.destroy
     end
   end
+
+  # --- Acceptance: public_id immutability (issue #685) ---
+
+  # create (with public_id) - OK
+  test "public_id can be set explicitly at creation time" do
+    bulletin = UserBulletin.new(user: @user, title: "Explicit ID")
+    bulletin.public_id = "abcdefghijklmnopqrstu"
+
+    assert_predicate bulletin, :valid?
+    bulletin.save!
+
+    assert_equal "abcdefghijklmnopqrstu", bulletin.reload.public_id
+  end
+
+  # update (no change to public_id) - OK
+  test "update without changing public_id is valid" do
+    bulletin = UserBulletin.create!(user: @user, title: "Original")
+    bulletin.title = "Updated"
+
+    assert_predicate bulletin, :valid?
+    assert_nothing_raised { bulletin.save! }
+  end
+
+  # update (change public_id) - rejected by attr_readonly (first defense layer)
+  test "direct assignment to public_id on a persisted record raises ReadonlyAttributeError" do
+    bulletin = UserBulletin.create!(user: @user, title: "Test")
+
+    assert_raises(ActiveRecord::ReadonlyAttributeError) do
+      bulletin.public_id = "zzzzzzzzzzzzzzzzzzzzz"
+    end
+  end
+
+  # update (other attributes) - OK
+  test "update of other attributes does not invalidate public_id" do
+    bulletin      = UserBulletin.create!(user: @user, title: "Original", body: "Body")
+    original_id   = bulletin.public_id
+    bulletin.body = "Updated body"
+
+    assert_predicate bulletin, :valid?
+    bulletin.save!
+
+    assert_equal original_id, bulletin.reload.public_id
+  end
 end

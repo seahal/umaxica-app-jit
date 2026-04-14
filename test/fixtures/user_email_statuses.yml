@@ -20,3 +20,5 @@ verified:
   id: 2
 verified_with_sign_up:
   id: 7
+oauth_linked:
+  id: 8

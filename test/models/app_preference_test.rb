@@ -9,6 +9,7 @@
 #  dbsc_challenge           :text
 #  dbsc_challenge_issued_at :datetime
 #  dbsc_public_key          :jsonb
+#  deletable_at             :datetime         default(Infinity), not null
 #  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
@@ -30,6 +31,7 @@
 #  index_app_preferences_on_binding_method_id  (binding_method_id)
 #  index_app_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
 #  index_app_preferences_on_dbsc_status_id     (dbsc_status_id)
+#  index_app_preferences_on_deletable_at       (deletable_at)
 #  index_app_preferences_on_device_id          (device_id)
 #  index_app_preferences_on_device_id_digest   (device_id_digest)
 #  index_app_preferences_on_jti                (jti) UNIQUE
@@ -76,6 +78,34 @@ class AppPreferenceTest < ActiveSupport::TestCase
     preference = AppPreference.create!(public_id: custom_id)
 
     assert_equal custom_id, preference.public_id
+  end
+
+  test "rejects unknown status_id before database foreign key enforcement" do
+    preference = AppPreference.new(status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:status_id], "must reference an existing app_preference_status"
+  end
+
+  test "rejects unknown binding_method_id before database foreign key enforcement" do
+    preference = AppPreference.new(binding_method_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:binding_method_id], "must reference an existing app_preference_binding_method"
+  end
+
+  test "rejects unknown dbsc_status_id before database foreign key enforcement" do
+    preference = AppPreference.new(dbsc_status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:dbsc_status_id], "must reference an existing app_preference_dbsc_status"
+  end
+
+  test "rejects unknown replaced_by_id before database foreign key enforcement" do
+    preference = AppPreference.new(replaced_by_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:replaced_by_id], "must reference an existing replaced_by"
   end
 
   test "has one app_preference_cookie" do
@@ -240,5 +270,17 @@ class AppPreferenceTest < ActiveSupport::TestCase
     assert_equal "device-1", rotated.device_id
     assert_predicate rotated.token_digest, :present?
     assert_equal rotated.id, preference.reload.replaced_by_id
+  end
+
+  test "deletable scope excludes preferences with deletable_at in the future" do
+    preference = AppPreference.create!
+
+    assert_not_includes AppPreference.deletable, preference
+  end
+
+  test "deletable scope includes preferences with deletable_at in the past" do
+    preference = AppPreference.create!(deletable_at: 1.second.ago)
+
+    assert_includes AppPreference.deletable, preference
   end
 end

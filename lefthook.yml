@@ -1,0 +1,93 @@
+pre-commit:
+  parallel: true
+  commands:
+    vp_check:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          vp check --fix
+        else
+          docker compose run core vp check --fix
+        fi
+    ruby_rubocop:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec rubocop
+        else
+          docker compose run core bundle exec rubocop
+        fi
+    ruby_erb_lint:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec erb_lint -a .
+        else
+          docker compose run core bundle exec erb_lint -a .
+        fi
+    pnpm_audit:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          pnpm audit
+        else
+          docker compose run core pnpm audit
+        fi
+    ruby_audit:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec bundler-audit check --update
+        else
+          docker compose run core bundle exec bundler-audit check --update
+        fi
+    ruby_importmap_audit:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bin/importmap audit
+        else
+          docker compose run core bin/importmap audit
+        fi
+    ruby_brakeman:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec brakeman --no-pager
+        else
+          docker compose run core bundle exec brakeman --no-pager
+        fi
+    # ruby_database_consistency:
+    #   run: |
+    #     #!/bin/sh
+    #     set -eu
+    #     if [ -f /.dockerenv ]; then
+    #       bundle exec database_consistency
+    #     else
+    #       docker compose run core bundle exec database_consistency
+    #     fi
+    ruby_on_rails_test:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec rails test
+        else
+          docker compose run core bash -c "bundle exec rails test"
+        fi
+    secret_scan:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          gitleaks protect
+        else
+          docker compose run core gitleaks protect
+        fi

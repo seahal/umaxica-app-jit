@@ -1,10 +1,11 @@
 # typed: false
 # frozen_string_literal: true
 
-require "ostruct"
 require "securerandom"
 
 module TreeableSharedTests
+  STRING_ID_COLUMN_FALLBACK = Struct.new(:type).new(:string).freeze
+
   private
 
   def treeable_class
@@ -20,7 +21,7 @@ module TreeableSharedTests
   end
 
   def string_id_column?
-    treeable_class.columns_hash.fetch("id", OpenStruct.new(type: :string)).type == :string
+    treeable_class.columns_hash.fetch("id", STRING_ID_COLUMN_FALLBACK).type == :string
   end
 
   def ensure_root_sentinel!(klass)
@@ -283,5 +284,119 @@ module TreeableSharedTests
 
     assert_predicate a, :valid?
     a.save!
+  end
+
+  # Regression tests for max_depth parameter
+  def test_subtree_ids_with_max_depth
+    klass = treeable_class
+    tree = build_tree!(klass)
+
+    # max_depth: 0 should still return the direct children when include_self: false.
+    ids_depth_0 = klass.subtree_ids(tree[:root].id, include_self: false, max_depth: 0)
+
+    assert_includes ids_depth_0, tree[:a].id
+    assert_includes ids_depth_0, tree[:b].id
+    assert_includes ids_depth_0, tree[:c].id
+    assert_not_includes ids_depth_0, tree[:c1].id, "max_depth: 0 should not include grandchild"
+
+    # max_depth: 1 should include the grandchild because one recursive hop is allowed.
+    ids_depth_1 = klass.subtree_ids(tree[:root].id, include_self: false, max_depth: 1)
+
+    assert_includes ids_depth_1, tree[:a].id
+    assert_includes ids_depth_1, tree[:b].id
+    assert_includes ids_depth_1, tree[:c].id
+    assert_includes ids_depth_1, tree[:c1].id
+    assert_not_equal ids_depth_0.sort, ids_depth_1.sort
+
+    # max_depth: 2 should still include grandchild.
+    ids_depth_2 = klass.subtree_ids(tree[:root].id, include_self: false, max_depth: 2)
+
+    assert_includes ids_depth_2, tree[:c1].id, "max_depth: 2 should include grandchild"
+  end
+
+  def test_subtree_ids_with_max_depth_include_self
+    klass = treeable_class
+    tree = build_tree!(klass)
+
+    # max_depth: 1 with include_self should return root and direct children.
+    ids_depth_1_self = klass.subtree_ids(tree[:root].id, include_self: true, max_depth: 1)
+
+    assert_includes ids_depth_1_self, tree[:root].id
+    assert_includes ids_depth_1_self, tree[:a].id
+    assert_includes ids_depth_1_self, tree[:b].id
+    assert_includes ids_depth_1_self, tree[:c].id
+
+    # max_depth: 2 should include the grandchild as well.
+    ids_depth_2_self = klass.subtree_ids(tree[:root].id, include_self: true, max_depth: 2)
+
+    assert_includes ids_depth_2_self, tree[:root].id
+    assert_includes ids_depth_2_self, tree[:a].id
+    assert_includes ids_depth_2_self, tree[:b].id
+    assert_includes ids_depth_2_self, tree[:c].id
+    assert_includes ids_depth_2_self, tree[:c1].id
+  end
+
+  def test_ancestor_ids_with_max_depth
+    klass = treeable_class
+    tree = build_tree!(klass)
+
+    # max_depth: 0 with include_self should return only self.
+    ids_depth_0 = klass.ancestor_ids(tree[:c1].id, include_self: true, max_depth: 0)
+
+    assert_equal [tree[:c1].id], ids_depth_0, "max_depth: 0 with include_self should return only self"
+
+    # max_depth: 1 should include self and parent.
+    ids_depth_1 = klass.ancestor_ids(tree[:c1].id, include_self: true, max_depth: 1)
+
+    assert_includes ids_depth_1, tree[:c1].id
+    assert_includes ids_depth_1, tree[:c].id
+  end
+
+  def test_subtree_in_tree_order_with_max_depth
+    klass = treeable_class
+    tree = build_tree!(klass)
+
+    # max_depth: 1 should include root and children but not grandchild.
+    relation = klass.subtree_in_tree_order(tree[:root].id, include_self: true, max_depth: 1)
+    ids = relation.pluck(:id)
+
+    assert_includes ids, tree[:root].id
+    assert_includes ids, tree[:a].id
+    assert_includes ids, tree[:b].id
+    assert_includes ids, tree[:c].id
+    assert_not_includes ids, tree[:c1].id, "max_depth: 1 should not include grandchild"
+  end
+
+  def test_subtree_ids_returns_empty_for_nonexistent_id
+    klass = treeable_class
+    ensure_root_sentinel!(klass)
+
+    nonexistent_id = string_id_column? ? "NONEXISTENT_999" : 999_999_999
+    ids = klass.subtree_ids(nonexistent_id, include_self: true)
+
+    assert_empty ids, "subtree_ids should return empty for nonexistent id"
+  end
+
+  def test_ancestor_ids_returns_empty_for_nonexistent_id
+    klass = treeable_class
+    ensure_root_sentinel!(klass)
+
+    nonexistent_id = string_id_column? ? "NONEXISTENT_999" : 999_999_999
+    ids = klass.ancestor_ids(nonexistent_id, include_self: true)
+
+    assert_empty ids, "ancestor_ids should return empty for nonexistent id"
+  end
+
+  def test_subtree_ids_returns_empty_for_root_sentinel
+    klass = treeable_class
+    ensure_root_sentinel!(klass)
+
+    ids = klass.subtree_ids(tree_root_sentinel, include_self: false)
+
+    # Should return all root-level nodes (nodes with parent_id = sentinel)
+    root_nodes = klass.where(klass.tree_parent_column => tree_root_sentinel)
+
+    assert_equal root_nodes.where.not(id: tree_root_sentinel).count, ids.size,
+                 "subtree_ids with sentinel should return root nodes"
   end
 end

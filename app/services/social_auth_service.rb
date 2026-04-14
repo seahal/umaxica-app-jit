@@ -206,6 +206,7 @@ class SocialAuthService
         # Orphaned identity - create user
         Rails.event.debug("social_auth.handle_login.creating_user_for_orphaned_identity")
         user = create_user_for_identity(identity, identity_class, provider)
+        audit_social_signup!(user, provider)
       end
 
       identity.update_from_auth_hash!(@auth_hash)
@@ -221,6 +222,7 @@ class SocialAuthService
       identity.save!
       identity.touch_authenticated!
       Rails.event.debug("social_auth.handle_login.new_user_created", user_id: user.id)
+      audit_social_signup!(user, provider)
 
       build_result(user, identity, reauthenticated: false, existing_account: false)
     end
@@ -461,6 +463,39 @@ class SocialAuthService
       subject_id: subject.id.to_s,
       subject_type: subject.class.name,
       occurred_at: Time.current,
+    )
+  end
+
+  def audit_social_signup!(user, provider)
+    event_id =
+      case SocialIdentifiable.normalize_provider(provider)
+      when "google"
+        UserActivityEvent::SIGNED_UP_WITH_GOOGLE
+      when "apple"
+        UserActivityEvent::SIGNED_UP_WITH_APPLE
+      else
+        return
+      end
+
+    ActivityRecord.connected_to(role: :writing) do
+      UserActivityEvent.find_or_create_by!(id: event_id)
+      UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NOTHING)
+    end
+
+    UserActivity.create!(
+      actor_type: "User",
+      actor_id: user.id,
+      event_id: event_id,
+      subject_id: user.id.to_s,
+      subject_type: "User",
+      occurred_at: Time.current,
+    )
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.event.error(
+      "social_auth.signup_audit_failed",
+      user_id: user.id,
+      provider: provider,
+      errors: e.record.errors.full_messages,
     )
   end
 

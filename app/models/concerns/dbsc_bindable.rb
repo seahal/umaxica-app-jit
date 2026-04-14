@@ -11,7 +11,7 @@ module DbscBindable
       return :staff_token_binding_method_id if attribute_names.include?("staff_token_binding_method_id")
       return :customer_token_binding_method_id if attribute_names.include?("customer_token_binding_method_id")
 
-      raise NoMethodError, "No DBSC binding method attribute for #{name}"
+      nil
     end
 
     def dbsc_status_attribute_name
@@ -20,7 +20,16 @@ module DbscBindable
       return :staff_token_dbsc_status_id if attribute_names.include?("staff_token_dbsc_status_id")
       return :customer_token_dbsc_status_id if attribute_names.include?("customer_token_dbsc_status_id")
 
-      raise NoMethodError, "No DBSC status attribute for #{name}"
+      nil
+    end
+
+    def reference_status_attribute_name
+      return :status_id if attribute_names.include?("status_id")
+      return :user_token_status_id if attribute_names.include?("user_token_status_id")
+      return :staff_token_status_id if attribute_names.include?("staff_token_status_id")
+      return :customer_token_status_id if attribute_names.include?("customer_token_status_id")
+
+      nil
     end
 
     def dbsc_binding_method_class
@@ -36,6 +45,7 @@ module DbscBindable
         "AppPreference" => AppPreferenceBindingMethod,
         "ComPreference" => ComPreferenceBindingMethod,
         "OrgPreference" => OrgPreferenceBindingMethod,
+        "SettingPreference" => SettingPreferenceBindingMethod,
         "UserToken" => UserTokenBindingMethod,
         "StaffToken" => StaffTokenBindingMethod,
         "CustomerToken" => CustomerTokenBindingMethod,
@@ -47,10 +57,24 @@ module DbscBindable
         "AppPreference" => AppPreferenceDbscStatus,
         "ComPreference" => ComPreferenceDbscStatus,
         "OrgPreference" => OrgPreferenceDbscStatus,
+        "SettingPreference" => SettingPreferenceDbscStatus,
         "UserToken" => UserTokenDbscStatus,
         "StaffToken" => StaffTokenDbscStatus,
         "CustomerToken" => CustomerTokenDbscStatus,
       }
+    end
+  end
+
+  included do
+    if reference_status_attribute_name
+      validates_reference_table reference_status_attribute_name, association: :"#{name.underscore}_status"
+    end
+    if dbsc_binding_method_attribute_name
+      validates_reference_table dbsc_binding_method_attribute_name,
+                                association: :"#{name.underscore}_binding_method"
+    end
+    if dbsc_status_attribute_name
+      validates_reference_table dbsc_status_attribute_name, association: :"#{name.underscore}_dbsc_status"
     end
   end
 
@@ -71,19 +95,19 @@ module DbscBindable
   end
 
   def dbsc_status_pending?
-    dbsc_status_value == 1
+    dbsc_status_value == self.class.dbsc_status_class::PENDING
   end
 
   def dbsc_status_active?
-    dbsc_status_value == 2
+    dbsc_status_value == self.class.dbsc_status_class::ACTIVE
   end
 
   def dbsc_status_failed?
-    dbsc_status_value == 3
+    dbsc_status_value == self.class.dbsc_status_class::FAILED
   end
 
   def dbsc_status_revoke?
-    dbsc_status_value == 4
+    dbsc_status_value == self.class.dbsc_status_class::REVOKE
   end
 
   def dbsc_enabled?

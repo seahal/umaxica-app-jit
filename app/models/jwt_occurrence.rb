@@ -39,5 +39,7 @@ class JwtOccurrence < OccurrenceRecord
   has_many :jwt_anomaly_events, dependent: :restrict_with_error, inverse_of: :jwt_occurrence
 
   validates :body, length: { maximum: 255 }
-  validates :status_id, numericality: { only_integer: true }
+  validates :status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

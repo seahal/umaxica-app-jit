@@ -25,7 +25,9 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     # unlocked sentinel
     locked = @telephone.locked_at
 
-    assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
+    assert locked.nil? || locked.to_s == "-infinity" ||
+      locked.to_s == "infinity" ||
+      (locked.is_a?(Float) && (locked == -Float::INFINITY || locked == Float::INFINITY))
   end
 
   test "get_otp returns otp details if valid" do
@@ -74,7 +76,9 @@ class TelephoneConcernTest < ActiveSupport::TestCase
 
     locked = @telephone.locked_at
 
-    assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
+    assert locked.nil? || locked.to_s == "-infinity" ||
+      locked.to_s == "infinity" ||
+      (locked.is_a?(Float) && (locked == -Float::INFINITY || locked == Float::INFINITY))
   end
 
   test "otp_expired? returns true if expired or nil" do

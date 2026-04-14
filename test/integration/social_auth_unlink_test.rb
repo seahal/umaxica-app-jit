@@ -97,7 +97,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     )
 
     # Try to unlink
-    delete sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
+    delete Rails.application.routes.url_helpers.sign_app_social_unlink_url(provider: "google_app", ri: "jp"),
            headers: as_user_headers(@user, host: @host)
 
     # Should redirect with error

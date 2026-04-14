@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: app_documents
-# Database name: document
+# Database name: publication
 #
 #  id                 :bigint           not null, primary key
 #  expires_at         :datetime         default(Infinity), not null
@@ -33,8 +33,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (latest_revision_id => app_document_revisions.id) ON DELETE => nullify
-#  fk_rails_...  (latest_version_id => app_document_versions.id) ON DELETE => nullify
+#  fk_rails_...  (latest_revision_id => app_document_revisions.id)
+#  fk_rails_...  (latest_version_id => app_document_versions.id)
 #  fk_rails_...  (status_id => app_document_statuses.id)
 #
 

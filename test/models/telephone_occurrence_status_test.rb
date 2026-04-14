@@ -39,4 +39,21 @@ class TelephoneOccurrenceStatusTest < ActiveSupport::TestCase
   #
   #     assert_expires_at_default(record)
   #   end
+
+  test "ensure_defaults! creates missing default records" do
+    TelephoneOccurrenceStatus.ensure_defaults!
+
+    TelephoneOccurrenceStatus::DEFAULTS.each do |id|
+      assert TelephoneOccurrenceStatus.exists?(id: id)
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    TelephoneOccurrenceStatus.ensure_defaults!
+    initial_count = TelephoneOccurrenceStatus.count
+
+    TelephoneOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, TelephoneOccurrenceStatus.count
+  end
 end

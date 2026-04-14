@@ -90,6 +90,8 @@ class AppTimelineBehaviorTest < ActiveSupport::TestCase
       subject_type: "AppTimeline",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
+      event_id: AppTimelineBehaviorEvent::NOTHING,
+      level_id: AppTimelineBehaviorLevel::NOTHING,
     )
 
     assert_equal timeline, audit.app_timeline

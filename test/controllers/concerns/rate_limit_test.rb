@@ -10,8 +10,6 @@ require "test_helper"
 class RateLimitDummyController < ApplicationController
   include ::RateLimit
 
-  has_custom_rate_limit!
-
   rate_limit to: 1, within: 1.minute,
              by: -> { request.remote_ip },
              with: -> { handle_rate_limit_exceeded!("dummy_ip", 60) },
@@ -30,8 +28,6 @@ end
 
 class RateLimitExceptController < ApplicationController
   include ::RateLimit
-
-  has_custom_rate_limit!
 
   rate_limit to: 1, within: 1.minute,
              by: -> { request.remote_ip },
@@ -52,8 +48,6 @@ end
 class RateLimitEmailController < ApplicationController
   include ::RateLimit
 
-  has_custom_rate_limit!
-
   rate_limit to: 1, within: 1.minute,
              by: -> { params[:email].to_s.strip.downcase.presence || request.remote_ip },
              with: -> { handle_rate_limit_exceeded!("email_rule", 60) },
@@ -68,8 +62,6 @@ end
 class RateLimitTelephoneController < ApplicationController
   include ::RateLimit
 
-  has_custom_rate_limit!
-
   rate_limit to: 1, within: 1.minute,
              by: -> { params[:telephone].to_s.gsub(/\D/, "").presence || request.remote_ip },
              with: -> { handle_rate_limit_exceeded!("telephone_rule", 60) },
@@ -81,24 +73,10 @@ class RateLimitTelephoneController < ApplicationController
   end
 end
 
-# Controller that includes RateLimit but has no explicit declaration (tests default)
-class RateLimitDefaultOnlyController < ApplicationController
-  include ::RateLimit
-
-  before_action :check_default_rate_limit, unless: :skip_default_rate_limit?
-
-  def index
-    render plain: "ok"
-  end
-end
-
-# Controller that opts out of default rate limiting
+# Controller that uses a high custom limit.
 class RateLimitOptOutController < ApplicationController
   include ::RateLimit
 
-  has_custom_rate_limit!
-
-  # Override default with a high limit to effectively opt out
   rate_limit to: 10_000, within: 1.minute,
              by: -> { request.remote_ip },
              with: -> { handle_rate_limit_exceeded!("opt_out", 60) },
@@ -115,6 +93,8 @@ end
 # ---------------------------------------------------------------------------
 
 class RateLimitConcernTest < ActionDispatch::IntegrationTest
+  TEST_REMOTE_IP = "198.51.100.10"
+
   setup do
     RateLimit.store.clear
   end
@@ -125,11 +105,11 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
 
   test "rails rate limiter returns 429 with layer headers and i18n message" do
     with_dummy_route do
-      get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
+      get "/test_rate_limit", headers: request_headers("application/json")
 
       assert_response :success
 
-      get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
+      get "/test_rate_limit", headers: request_headers("application/json")
 
       assert_response :too_many_requests
 
@@ -155,8 +135,8 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
 
     ActiveSupport::Notifications.subscribed(callback, "rate_limit.action_controller") do
       with_dummy_route do
-        get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
-        get "/test_rate_limit", headers: { "Host" => "example.com", "Accept" => "application/json" }
+        get "/test_rate_limit", headers: request_headers("application/json")
+        get "/test_rate_limit", headers: request_headers("application/json")
       end
     end
 
@@ -169,11 +149,11 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
 
   test "rails limiter returns 429 for HTML format with plain text message" do
     with_dummy_route do
-      get "/test_rate_limit"
+      get "/test_rate_limit", headers: request_headers
 
       assert_response :success
 
-      get "/test_rate_limit"
+      get "/test_rate_limit", headers: request_headers
 
       assert_response :too_many_requests
 
@@ -188,20 +168,20 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
         get "/test_except_excluded", to: "rate_limit_except#excluded_action"
       end
 
-      get "/test_except", headers: { "Host" => "example.com" }
+      get "/test_except", headers: request_headers
 
       assert_response :success
 
-      get "/test_except", headers: { "Host" => "example.com" }
+      get "/test_except", headers: request_headers
 
       assert_response :too_many_requests
 
       # Excluded action should not be rate limited
-      get "/test_except_excluded", headers: { "Host" => "example.com" }
+      get "/test_except_excluded", headers: request_headers
 
       assert_response :success
 
-      get "/test_except_excluded", headers: { "Host" => "example.com" }
+      get "/test_except_excluded", headers: request_headers
 
       assert_response :success
     end
@@ -213,11 +193,11 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
         get "/test_email", to: "rate_limit_email#index"
       end
 
-      get "/test_email", params: { email: "test@example.com" }, headers: { "Host" => "example.com" }
+      get "/test_email", params: { email: "test@example.com" }, headers: request_headers
 
       assert_response :success
 
-      get "/test_email", params: { email: "test@example.com" }, headers: { "Host" => "example.com" }
+      get "/test_email", params: { email: "test@example.com" }, headers: request_headers
 
       assert_response :too_many_requests
     end
@@ -229,50 +209,34 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
         get "/test_telephone", to: "rate_limit_telephone#index"
       end
 
-      get "/test_telephone", params: { telephone: "+1-555-123-4567" }, headers: { "Host" => "example.com" }
+      get "/test_telephone", params: { telephone: "+1-555-123-4567" }, headers: request_headers
 
       assert_response :success
 
-      get "/test_telephone", params: { telephone: "+1-555-123-4567" }, headers: { "Host" => "example.com" }
+      get "/test_telephone", params: { telephone: "+1-555-123-4567" }, headers: request_headers
 
       assert_response :too_many_requests
 
       # Different telephone should not be rate limited
-      get "/test_telephone", params: { telephone: "+1-555-999-8888" }, headers: { "Host" => "example.com" }
+      get "/test_telephone", params: { telephone: "+1-555-999-8888" }, headers: request_headers
 
       assert_response :success
     end
   end
 
-  test "default rate limit is applied when including RateLimit concern" do
-    RateLimit.define_singleton_method(:default_rate_limit) { 1 }
-
-    with_routing do |set|
-      set.draw do
-        get("/test_default", to: "rate_limit_default_only#index")
-      end
-
-      get("/test_default", headers: { "Host" => "example.com" })
-
-      assert_response :success
-
-      get("/test_default", headers: { "Host" => "example.com" })
-
-      assert_response :too_many_requests
-      assert_equal "default_ip", response.headers["X-RateLimit-Rule"]
-    end
-  ensure
-    RateLimit.define_singleton_method(:default_rate_limit) { 300 }
+  test "default rate limit constants are defined" do
+    assert_equal 300, RateLimit::DEFAULT_RATE_LIMIT
+    assert_equal 1.minute, RateLimit::DEFAULT_RATE_WINDOW
   end
 
-  test "controller can override default rate limit" do
+  test "controller can use a custom rate limit" do
     with_routing do |set|
       set.draw do
         get "/test_opt_out", to: "rate_limit_opt_out#index"
       end
 
       2.times do
-        get "/test_opt_out", headers: { "Host" => "example.com" }
+        get "/test_opt_out", headers: request_headers
 
         assert_response :success
       end
@@ -280,6 +244,12 @@ class RateLimitConcernTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def request_headers(accept = nil)
+    headers = { "Host" => "example.com", "REMOTE_ADDR" => TEST_REMOTE_IP }
+    headers["Accept"] = accept if accept
+    headers
+  end
 
   def with_dummy_route
     with_routing do |set|

@@ -119,6 +119,36 @@ class CustomerTokenTest < ActiveSupport::TestCase
     assert_equal @customer.id, @token.customer_id
   end
 
+  test "rejects unknown customer_token_kind_id before database foreign key enforcement" do
+    token = CustomerToken.new(customer: @customer, customer_token_kind_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:customer_token_kind_id], "must reference an existing customer_token_kind"
+  end
+
+  test "rejects unknown customer_token_status_id before database foreign key enforcement" do
+    token = CustomerToken.new(customer: @customer, customer_token_status_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:customer_token_status_id], "must reference an existing customer_token_status"
+  end
+
+  test "rejects unknown customer_token_binding_method_id before database foreign key enforcement" do
+    token = CustomerToken.new(customer: @customer, customer_token_binding_method_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:customer_token_binding_method_id],
+                    "must reference an existing customer_token_binding_method"
+  end
+
+  test "rejects unknown customer_token_dbsc_status_id before database foreign key enforcement" do
+    token = CustomerToken.new(customer: @customer, customer_token_dbsc_status_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:customer_token_dbsc_status_id],
+                    "must reference an existing customer_token_dbsc_status"
+  end
+
   test "enforces maximum concurrent sessions per customer" do
     customer = Customer.create!
 

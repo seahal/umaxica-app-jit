@@ -71,7 +71,8 @@ module Authentication
       :staff_id
     end
 
-    # FIXME: what is this method?
+    # Header key for test environment staff injection.
+    # Allows tests to set the current staff via request headers.
     def test_header_key
       "X-TEST-CURRENT-STAFF"
     end

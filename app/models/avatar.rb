@@ -10,6 +10,7 @@
 #  image_data                   :jsonb            not null
 #  lock_version                 :integer          default(0), not null
 #  moniker                      :string           not null
+#  shreddable_at                :datetime         default(Infinity), not null
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
 #  active_handle_id             :bigint           not null
@@ -28,6 +29,7 @@
 #  index_avatars_on_owner_organization_id         (owner_organization_id)
 #  index_avatars_on_public_id                     (public_id) UNIQUE
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
+#  index_avatars_on_shreddable_at                 (shreddable_at)
 #
 # Foreign Keys
 #
@@ -36,7 +38,7 @@
 #
 
 class Avatar < AvatarRecord
-  # TODO: Add `shreddable_at` to Avatar and align deletion lifecycle with shredding flow.
+  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
   include PublicId
 
   belongs_to :member, optional: true, inverse_of: :avatars

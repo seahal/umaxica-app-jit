@@ -89,5 +89,30 @@ class HandleAssignmentTest < ActiveSupport::TestCase
       )
     end
   end
+
+  test "current_attributes returns handle_id and avatar_id" do
+    assert_equal [:handle_id, :avatar_id], HandleAssignment.current_attributes
+  end
+
+  test "current scope returns only infinity valid_to" do
+    assignment = HandleAssignment.create!(
+      avatar: @avatar,
+      handle: @system_handle,
+      valid_from: Time.current,
+    )
+
+    assert_includes HandleAssignment.current, assignment
+  end
+
+  test "valid_from presence validation" do
+    assignment = HandleAssignment.new(
+      avatar: @avatar,
+      handle: @system_handle,
+      valid_from: nil,
+    )
+
+    assert_not assignment.valid?
+    assert_not_empty assignment.errors[:valid_from]
+  end
 end
 # rubocop:enable Layout/LineLength

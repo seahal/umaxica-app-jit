@@ -40,4 +40,26 @@ class AreaOccurrenceStatusTest < ActiveSupport::TestCase
   #
   #   assert_expires_at_default(record)
   # end
+
+  test "ensure_defaults! creates missing default records" do
+    missing_ids = AreaOccurrenceStatus::DEFAULTS.reject { |id| AreaOccurrenceStatus.exists?(id: id) }
+    if missing_ids.any?
+      AreaOccurrenceStatus.ensure_defaults!
+
+      missing_ids.each do |id|
+        assert AreaOccurrenceStatus.exists?(id: id)
+      end
+    else
+      assert AreaOccurrenceStatus::DEFAULTS.all? { |id| AreaOccurrenceStatus.exists?(id: id) }
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    AreaOccurrenceStatus.ensure_defaults!
+    initial_count = AreaOccurrenceStatus.count
+
+    AreaOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, AreaOccurrenceStatus.count
+  end
 end

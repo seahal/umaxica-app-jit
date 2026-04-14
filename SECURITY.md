@@ -11,7 +11,7 @@
 Please do not open public issues for security reports.
 
 - Use GitHub Security Advisories (private):
-  - https://github.com/seahal/umaxica-app-jit/security/advisories/new
+  - https://github.com/seahal/umaxica-apps-jit/security/advisories/new
 - Include: clear description, impact, affected commit/version, and minimal PoC or reproduction
   steps. Logs and configuration details are helpful when available.
 

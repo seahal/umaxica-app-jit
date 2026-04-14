@@ -89,4 +89,102 @@ class ScavengerGlobalTest < ActiveSupport::TestCase
       )
     end
   end
+
+  test "rejects unknown event_id before database foreign key enforcement" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-bad-event-#{SecureRandom.hex(6)}",
+      event_id: 999_999,
+      status_id: ScavengerGlobalStatus::NOTHING,
+    )
+
+    assert_not record.valid?
+    assert_includes record.errors[:event_id], "must reference an existing scavenger_global_event"
+  end
+
+  test "rejects unknown status_id before database foreign key enforcement" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-bad-status-#{SecureRandom.hex(6)}",
+      event_id: ScavengerGlobalEvent::NOTHING,
+      status_id: 999_999,
+    )
+
+    assert_not record.valid?
+    assert_includes record.errors[:status_id], "must reference an existing scavenger_global_status"
+  end
+
+  test "event_id rejects negative values" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-neg-event-#{SecureRandom.hex(6)}",
+      event_id: -1,
+    )
+
+    assert_not record.valid?
+    assert_not_empty record.errors[:event_id]
+  end
+
+  test "event_id rejects decimal values" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-dec-event-#{SecureRandom.hex(6)}",
+      event_id: 1.5,
+    )
+
+    assert_not record.valid?
+    assert_not_empty record.errors[:event_id]
+  end
+
+  test "status_id rejects negative values" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-neg-status-#{SecureRandom.hex(6)}",
+      status_id: -1,
+    )
+
+    assert_not record.valid?
+    assert_not_empty record.errors[:status_id]
+  end
+
+  test "status_id rejects decimal values" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-dec-status-#{SecureRandom.hex(6)}",
+      status_id: 1.5,
+    )
+
+    assert_not record.valid?
+    assert_not_empty record.errors[:status_id]
+  end
+
+  test "event_id accepts zero" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-zero-event-#{SecureRandom.hex(6)}",
+      event_id: 0,
+    )
+
+    # Should pass numericality validation
+    assert_equal 0, record.event_id
+  end
+
+  test "status_id accepts zero" do
+    record = ScavengerGlobal.new(
+      occurred_at: Time.current,
+      job_type: "scavenger:global:test",
+      idempotency_key: "global-zero-status-#{SecureRandom.hex(6)}",
+      status_id: 0,
+    )
+
+    # Should pass numericality validation
+    assert_equal 0, record.status_id
+  end
 end

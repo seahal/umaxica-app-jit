@@ -32,4 +32,25 @@ class JwtOccurrenceStatusTest < ActiveSupport::TestCase
     assert_equal 3, JwtOccurrenceStatus::INACTIVE
     assert_equal 4, JwtOccurrenceStatus::DELETED
   end
+
+  test "ensure_defaults! creates missing default records" do
+    JwtOccurrenceStatus.ensure_defaults!
+
+    JwtOccurrenceStatus::DEFAULTS.each do |id|
+      assert JwtOccurrenceStatus.exists?(id: id)
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    JwtOccurrenceStatus.ensure_defaults!
+    initial_count = JwtOccurrenceStatus.count
+
+    JwtOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, JwtOccurrenceStatus.count
+  end
+
+  test "has occurrences association" do
+    assert_status_association(JwtOccurrenceStatus, :jwt_occurrences)
+  end
 end

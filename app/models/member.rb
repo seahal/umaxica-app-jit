@@ -4,21 +4,23 @@
 # Table name: members
 # Database name: principal
 #
-#  id          :bigint           not null, primary key
-#  moniker     :string
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  division_id :bigint
-#  public_id   :string           not null
-#  status_id   :bigint           default(5), not null
-#  user_id     :bigint
+#  id            :bigint           not null, primary key
+#  moniker       :string
+#  shreddable_at :datetime         default(Infinity), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  division_id   :bigint
+#  public_id     :string           not null
+#  status_id     :bigint           default(5), not null
+#  user_id       :bigint
 #
 # Indexes
 #
-#  index_members_on_division_id  (division_id)
-#  index_members_on_public_id    (public_id) UNIQUE
-#  index_members_on_status_id    (status_id)
-#  index_members_on_user_id      (user_id)
+#  index_members_on_division_id    (division_id)
+#  index_members_on_public_id      (public_id) UNIQUE
+#  index_members_on_shreddable_at  (shreddable_at)
+#  index_members_on_status_id      (status_id)
+#  index_members_on_user_id        (user_id)
 #
 # Foreign Keys
 #
@@ -29,7 +31,7 @@
 # frozen_string_literal: true
 
 class Member < PrincipalRecord
-  # TODO: Add `shreddable_at` to Member and align deletion lifecycle with shredding flow.
+  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
   include ::Account
 
   attribute :status_id, default: MemberStatus::NOTHING
@@ -39,6 +41,8 @@ class Member < PrincipalRecord
              foreign_key: :status_id,
              inverse_of: :members
   belongs_to :division, optional: true, inverse_of: :members
+  validates :status_id,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   has_many :avatars, dependent: :nullify, inverse_of: :member
   has_many :member_avatar_accesses, dependent: :destroy, inverse_of: :member
   has_many :member_avatar_visibilities, dependent: :destroy, inverse_of: :member

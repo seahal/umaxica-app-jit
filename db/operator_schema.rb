@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_15_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -53,11 +53,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
     t.integer "lock_version", default: 0, null: false
     t.string "moniker"
     t.string "public_id", null: false
+    t.datetime "shreddable_at", default: ::Float::INFINITY, null: false
     t.bigint "staff_id", null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_operators_on_department_id"
     t.index ["public_id"], name: "index_operators_on_public_id", unique: true
+    t.index ["shreddable_at"], name: "index_operators_on_shreddable_at"
     t.index ["staff_id"], name: "index_operators_on_staff_id"
     t.index ["status_id"], name: "index_operators_on_status_id"
   end
@@ -141,6 +143,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
     t.jsonb "dbsc_public_key"
     t.string "dbsc_session_id"
     t.bigint "dbsc_status_id", default: 0, null: false
+    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id"
     t.string "device_id_digest"
     t.datetime "expires_at"
@@ -155,6 +158,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
     t.index ["binding_method_id"], name: "index_org_preferences_on_binding_method_id"
     t.index ["dbsc_session_id"], name: "index_org_preferences_on_dbsc_session_id", unique: true
     t.index ["dbsc_status_id"], name: "index_org_preferences_on_dbsc_status_id"
+    t.index ["deletable_at"], name: "index_org_preferences_on_deletable_at"
     t.index ["device_id"], name: "index_org_preferences_on_device_id"
     t.index ["device_id_digest"], name: "index_org_preferences_on_device_id_digest"
     t.index ["jti"], name: "index_org_preferences_on_jti", unique: true
@@ -212,7 +216,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
   end
 
   create_table "staff_emails", force: :cascade do |t|
-    t.string "address", null: false
+    t.string "address", default: "", null: false
+    t.string "address_bidx"
+    t.string "address_digest"
     t.datetime "created_at", null: false
     t.datetime "locked_at"
     t.boolean "notifiable", default: true, null: false
@@ -226,10 +232,11 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
     t.bigint "staff_id", null: false
     t.bigint "staff_identity_email_status_id", default: 0, null: false
     t.boolean "subscribable", default: true, null: false
-    t.boolean "undeletable", default: false, null: false
     t.datetime "updated_at", null: false
     t.index "lower((address)::text)", name: "index_staff_emails_on_lower_address", unique: true
     t.index ["address"], name: "index_staff_emails_on_address"
+    t.index ["address_bidx"], name: "index_staff_emails_on_address_bidx", unique: true, where: "(address_bidx IS NOT NULL)"
+    t.index ["address_digest"], name: "index_staff_emails_on_address_digest", unique: true, where: "(address_digest IS NOT NULL)"
     t.index ["public_id"], name: "index_staff_emails_on_public_id", unique: true
     t.index ["staff_id"], name: "index_staff_emails_on_staff_id"
     t.index ["staff_identity_email_status_id"], name: "index_staff_emails_on_staff_identity_email_status_id"
@@ -346,16 +353,23 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
 
   create_table "staff_telephones", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "locked_at"
-    t.string "number", null: false
+    t.datetime "locked_at", default: -::Float::INFINITY, null: false
+    t.string "number", default: "", null: false
+    t.string "number_bidx"
+    t.string "number_digest"
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter", null: false
-    t.datetime "otp_expires_at"
+    t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
+    t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", null: false
+    t.string "public_id", limit: 21, null: false
     t.bigint "staff_id", null: false
     t.bigint "staff_identity_telephone_status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((number)::text)", name: "index_staff_telephones_on_lower_number", unique: true
+    t.index ["number_bidx"], name: "index_staff_telephones_on_number_bidx", unique: true, where: "(number_bidx IS NOT NULL)"
+    t.index ["number_digest"], name: "index_staff_telephones_on_number_digest", unique: true, where: "(number_digest IS NOT NULL)"
+    t.index ["public_id"], name: "index_staff_telephones_on_public_id", unique: true
     t.index ["staff_id"], name: "index_staff_telephones_on_staff_id"
     t.index ["staff_identity_telephone_status_id"], name: "index_staff_telephones_on_staff_identity_telephone_status_id"
   end
@@ -365,7 +379,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
 
   create_table "staffs", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
     t.string "public_id", limit: 16, null: false
@@ -375,7 +388,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
     t.bigint "visibility_id", default: 2, null: false
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
-    t.index ["deletable_at"], name: "index_staffs_on_deletable_at"
     t.index ["public_id"], name: "index_staffs_on_public_id", unique: true
     t.index ["shreddable_at"], name: "index_staffs_on_shreddable_at"
     t.index ["status_id"], name: "index_staffs_on_status_id"
@@ -405,7 +417,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
 
   add_foreign_key "departments", "department_statuses", name: "fk_departments_on_department_status_id"
   add_foreign_key "departments", "departments", column: "parent_id", validate: false
-  add_foreign_key "departments", "organizations", column: "workspace_id", on_delete: :nullify
+  add_foreign_key "departments", "workspaces", on_delete: :nullify
   add_foreign_key "divisions", "division_statuses"
   add_foreign_key "divisions", "organizations", on_delete: :nullify
   add_foreign_key "operators", "departments", on_delete: :nullify, validate: false
@@ -435,7 +447,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222108) do
   add_foreign_key "staff_operators", "operators", on_delete: :cascade, validate: false
   add_foreign_key "staff_operators", "staffs", on_delete: :cascade, validate: false
   add_foreign_key "staff_org_preferences", "org_preferences", on_delete: :cascade, validate: false
-  add_foreign_key "staff_org_preferences", "staffs", validate: false
+  add_foreign_key "staff_org_preferences", "staffs", on_delete: :cascade, validate: false
   add_foreign_key "staff_passkeys", "staff_passkey_statuses", column: "status_id", validate: false
   add_foreign_key "staff_passkeys", "staffs", validate: false
   add_foreign_key "staff_recovery_codes", "staffs", validate: false

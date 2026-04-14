@@ -521,6 +521,71 @@ module Preference
       nil
     end
 
+    # Create child preference records for setting database
+    def create_preference_options_for_setting(wrapper, params_hash)
+      preference = wrapper.preference
+      option_ids = preference_option_ids_for_setting(params_hash)
+
+      # Create or reset cookie record
+      cookie = SettingPreferenceCookie.find_or_initialize_by(preference_id: preference.id)
+      cookie.assign_attributes(
+        targetable: false,
+        performant: false,
+        functional: false,
+        consented: false,
+      )
+      cookie.save!
+
+      # Ensure option defaults exist
+      SettingPreferenceLanguageOption.ensure_defaults!
+      SettingPreferenceRegionOption.ensure_defaults!
+      SettingPreferenceTimezoneOption.ensure_defaults!
+      SettingPreferenceColorthemeOption.ensure_defaults!
+
+      # Create or update option records
+      SettingPreferenceLanguage.find_or_initialize_by(preference_id: preference.id).tap do |record|
+        record.option_id = option_ids[:language]
+        record.save!
+      end
+      SettingPreferenceRegion.find_or_initialize_by(preference_id: preference.id).tap do |record|
+        record.option_id = option_ids[:region]
+        record.save!
+      end
+      SettingPreferenceTimezone.find_or_initialize_by(preference_id: preference.id).tap do |record|
+        record.option_id = option_ids[:timezone]
+        record.save!
+      end
+      SettingPreferenceColortheme.find_or_initialize_by(preference_id: preference.id).tap do |record|
+        record.option_id = option_ids[:colortheme]
+        record.save!
+      end
+    end
+
+    def preference_option_ids_for_setting(params_hash)
+      {
+        timezone: resolve_option_id_from_param(
+          params_hash[:tz],
+          :timezone,
+          SettingPreferenceTimezoneOption::ASIA_TOKYO,
+        ),
+        language: resolve_option_id_from_param(
+          params_hash[:lx],
+          :language,
+          SettingPreferenceLanguageOption::JA,
+        ),
+        region: resolve_option_id_from_param(
+          params_hash[:ri],
+          :region,
+          SettingPreferenceRegionOption::JP,
+        ),
+        colortheme: resolve_option_id_from_param(
+          params_hash[:ct],
+          :colortheme,
+          SettingPreferenceColorthemeOption::SYSTEM,
+        ),
+      }
+    end
+
     def create_preference_options(preference, params_hash = {})
       prefix = preference_prefix(preference)
       option_ids = preference_option_ids(prefix, params_hash)
@@ -599,7 +664,7 @@ module Preference
       end
     end
 
-    def resolve_option_id_from_param(value, type, default, _prefix)
+    def resolve_option_id_from_param(value, type, default, _prefix = nil)
       return default if value.blank?
 
       sanitized = sanitize_option_id({ option_id: value }, option_type: type)
@@ -678,6 +743,22 @@ module Preference
         end
     end
 
+    # Returns true if using the unified setting database for token-like preferences
+    def use_setting_database?
+      Preference::ClassRegistry.use_setting_database?
+    end
+
+    # Returns the storage adapter for dual-read/write operations
+    def storage_adapter
+      Preference::ClassRegistry.storage_adapter
+    end
+
+    # Returns the appropriate preference class for storage operations
+    # Uses SettingPreference when USE_SETTING_DATABASE is enabled, otherwise legacy
+    def storage_preference_class
+      use_setting_database? ? SettingPreference : preference_class
+    end
+
     def preference_audit_class
       @preference_audit_class ||= Preference::ClassRegistry.audit_class_for(preference_class)
     end
@@ -726,25 +807,37 @@ module Preference
 
     def create_audit_log(event_id:, context:, expires_at: nil)
       expires_at_value = expires_at || REFRESH_TOKEN_TTL.from_now
-      normalized_event_id = normalize_preference_audit_event_id(event_id)
 
-      ActivityRecord.connected_to(role: :writing) do
-        ensure_model_defaults!(preference_audit_level_class)
-
-        if normalized_event_id.present?
-          preference_audit_event_class.find_or_create_by!(id: normalized_event_id)
+      if preference_audit_class == SettingPreferenceActivity
+        SettingRecord.connected_to(role: :writing) do
+          preference_audit_class.create!(
+            preference_id: @preferences.id,
+            action: event_id.to_s,
+            metadata: context,
+            created_at: Time.current,
+          )
         end
+      else
+        normalized_event_id = normalize_preference_audit_event_id(event_id)
 
-        preference_audit_class.create!(
-          subject_id: @preferences.id.to_s,
-          subject_type: @preferences.class.name,
-          event_id: normalized_event_id,
-          level_id: preference_audit_level_class::INFO,
-          occurred_at: Time.current,
-          expires_at: expires_at_value,
-          ip_address: request.remote_ip || default_audit_ip,
-          context: context,
-        )
+        ActivityRecord.connected_to(role: :writing) do
+          ensure_model_defaults!(preference_audit_level_class)
+
+          if normalized_event_id.present?
+            preference_audit_event_class.find_or_create_by!(id: normalized_event_id)
+          end
+
+          preference_audit_class.create!(
+            subject_id: @preferences.id.to_s,
+            subject_type: @preferences.class.name,
+            event_id: normalized_event_id,
+            level_id: preference_audit_level_class::INFO,
+            occurred_at: Time.current,
+            expires_at: expires_at_value,
+            ip_address: request.remote_ip || default_audit_ip,
+            context: context,
+          )
+        end
       end
     end
 
@@ -916,10 +1009,19 @@ module Preference
 
       public_id = Token.extract_public_id(payload)
       if public_id.present?
-        @preferences = preference_class.includes(preference_associations_to_preload).find_by(public_id: public_id)
+        @preferences = find_preference_by_public_id(public_id)
       end
 
       true
+    end
+
+    # Find preference by public_id using storage adapter (dual-read) or legacy path
+    def find_preference_by_public_id(public_id)
+      if use_setting_database?
+        storage_adapter.find_by_public_id(public_id, preference_type: preference_class.name)
+      else
+        preference_class.includes(preference_associations_to_preload).find_by(public_id: public_id)
+      end
     end
 
     def load_preference_record_from_refresh_token!(create_if_missing: false)
@@ -982,22 +1084,35 @@ module Preference
       @refresh_presented_digest = refresh_digest
       @refresh_public_id = refresh_public_id
 
-      with_preference_connection(:writing) do
-        relation = preference_class.includes(preference_associations_to_preload)
-        pref =
+      pref = find_preference_for_refresh(refresh_public_id, refresh_digest)
+      return nil if pref.blank?
+
+      digest_mismatch = refresh_digest_mismatch?(pref, refresh_digest)
+      binding_denied = pref.present? && !preference_refresh_binding_allowed?(pref)
+
+      return handle_invalid_refresh_digest(pref, refresh_public_id) if digest_mismatch
+      return handle_denied_refresh_binding(pref, refresh_public_id) if binding_denied
+
+      pref
+    end
+
+    # Find preference for refresh using storage adapter or legacy path
+    def find_preference_for_refresh(refresh_public_id, refresh_digest)
+      if use_setting_database?
+        if refresh_public_id.present?
+          storage_adapter.find_by_public_id(refresh_public_id, preference_type: preference_class.name)
+        else
+          storage_adapter.find_by_token_digest(refresh_digest, preference_type: preference_class.name)
+        end
+      else
+        with_preference_connection(:writing) do
+          relation = preference_class.includes(preference_associations_to_preload)
           if refresh_public_id.present?
             relation.find_by(public_id: refresh_public_id)
           else
             relation.find_by(token_digest: refresh_digest)
           end
-
-        digest_mismatch = refresh_digest_mismatch?(pref, refresh_digest)
-        binding_denied = pref.present? && !preference_refresh_binding_allowed?(pref)
-
-        return handle_invalid_refresh_digest(pref, refresh_public_id) if digest_mismatch
-        return handle_denied_refresh_binding(pref, refresh_public_id) if binding_denied
-
-        pref
+        end
       end
     end
 
@@ -1017,9 +1132,80 @@ module Preference
 
     def create_new_preference_record!
       expires_at = refresh_token_expiry
-      generated_token = nil
-
       generated_device_id = SecureRandom.uuid
+
+      if use_setting_database?
+        create_new_preference_with_storage_adapter!(expires_at, generated_device_id)
+      else
+        create_new_preference_legacy!(expires_at, generated_device_id)
+      end
+    end
+
+    # Create preference using StorageAdapter (dual-write to setting and legacy)
+    def create_new_preference_with_storage_adapter!(expires_at, device_id)
+      SettingRecord.connected_to(role: :writing) do
+        storage_adapter.ensure_setting_defaults!
+
+        @preferences = storage_adapter.create!(
+          {
+            expires_at: expires_at,
+            jti: Jit::Security::Jwt::JtiGenerator.generate,
+            device_id: device_id,
+            device_id_digest: digest_device_id(device_id),
+            binding_method_id: SettingPreferenceBindingMethod::LEGACY,
+            dbsc_status_id: SettingPreferenceDbscStatus::NOTHING,
+            status_id: SettingPreferenceStatus::NOTHING,
+            owner_id: 0, # Anonymous until adopted
+          },
+          preference_type: preference_class.name,
+        )
+
+        generated_token, verifier = generate_refresh_token(public_id: @preferences.public_id)
+        @preferences.update!(token_digest: digest_refresh_token(verifier))
+
+        # Create child records using setting database models
+        create_preference_options_for_setting(
+          @preferences, params.slice(
+            Preference::IoKeys::Params::RI,
+            Preference::IoKeys::Params::LX,
+            Preference::IoKeys::Params::TZ,
+            Preference::IoKeys::Params::CT,
+          ),
+        )
+
+        # Reload to get associations
+        @preferences = storage_adapter.find_by_public_id(@preferences.public_id, preference_type: preference_class.name)
+
+        create_audit_log(
+          event_id: "CREATE_NEW_PREFERENCE_TOKEN",
+          context: { token_created: true },
+          expires_at: expires_at,
+        )
+        create_audit_log(
+          event_id: "REFRESH_TOKEN_ROTATED",
+          context: { refresh_token_rotated: true, expires_at: expires_at },
+          expires_at: expires_at,
+        )
+
+        @refresh_token_value = generated_token
+        set_refresh_token_cookie(generated_token, expires_at)
+        set_preference_dbsc_cookie!(
+          @preferences.dbsc_session_id,
+          expires_at: preference_dbsc_cookie_expires_at(@preferences),
+        ) if @preferences.binding_method_dbsc?
+        set_preference_device_id_cookie!(@preferences.device_id, expires_at: expires_at)
+        issue_preference_dbsc_registration_header_for(@preferences)
+
+        @preferences
+      rescue ActiveRecord::RecordInvalid => e
+        @preferences&.destroy
+        raise e
+      end
+    end
+
+    # Create preference using legacy path
+    def create_new_preference_legacy!(expires_at, device_id)
+      generated_token = nil
 
       with_preference_connection(:writing) do
         preference_connection_owner.transaction do
@@ -1027,8 +1213,8 @@ module Preference
           @preferences = preference_class.create!(
             expires_at: expires_at,
             jti: Jit::Security::Jwt::JtiGenerator.generate,
-            device_id: generated_device_id,
-            device_id_digest: digest_device_id(generated_device_id),
+            device_id: device_id,
+            device_id_digest: digest_device_id(device_id),
             binding_method_id: preference_binding_method_class::LEGACY,
             dbsc_status_id: preference_dbsc_status_class::NOTHING,
           )
@@ -1079,14 +1265,7 @@ module Preference
     def refresh_refresh_token_lifetime(preference)
       return if @refresh_token_value.blank? || preference.blank? || @refresh_presented_digest.blank?
 
-      rotated_preference =
-        with_preference_connection(:writing) do
-          preference.class.rotate!(
-            presented_digest: @refresh_presented_digest,
-            device_id: preference.device_id,
-            now: Time.current,
-          )
-        end
+      rotated_preference = rotate_preference_token(preference)
 
       unless rotated_preference
         replayed_preference = find_preference_by_presented_token
@@ -1123,6 +1302,26 @@ module Preference
 
       resource = begin; current_resource; rescue; nil; end
       adopt_rotated_preference!(resource, rotated_preference) if resource
+    end
+
+    # Rotate preference token using storage adapter or legacy path
+    def rotate_preference_token(preference)
+      if use_setting_database?
+        storage_adapter.rotate!(
+          presented_digest: @refresh_presented_digest,
+          device_id: preference.device_id,
+          preference_type: preference_class.name,
+          now: Time.current,
+        )
+      else
+        with_preference_connection(:writing) do
+          preference.class.rotate!(
+            presented_digest: @refresh_presented_digest,
+            device_id: preference.device_id,
+            now: Time.current,
+          )
+        end
+      end
     end
 
     def issue_access_token_from(preference)
@@ -1240,6 +1439,12 @@ module Preference
     end
 
     def build_preferences_payload(preference)
+      # If using storage adapter wrapper, use its build_payload method
+      if preference.respond_to?(:build_payload)
+        return preference.build_payload
+      end
+
+      # Legacy path
       association_prefix = preference.class.name.underscore
       option_prefix = preference.class.name.sub("Preference", "")
       language = preference.public_send("#{association_prefix}_language")&.option_id
@@ -1260,8 +1465,15 @@ module Preference
       }
     end
 
-    def preference_cookie_consent_state(preference, association_prefix)
-      cookie = preference.public_send("#{association_prefix}_cookie")
+    def preference_cookie_consent_state(preference, association_prefix = nil)
+      # If using storage adapter wrapper, use its method
+      if preference.respond_to?(:preference_cookie)
+        cookie = preference.preference_cookie
+      else
+        association_prefix ||= preference.class.name.underscore
+        cookie = preference.public_send("#{association_prefix}_cookie")
+      end
+
       return { consented: false, functional: false, performant: false, targetable: false } if cookie.blank?
 
       {
@@ -1448,16 +1660,28 @@ module Preference
     def find_preference_by_presented_token
       return nil if @refresh_presented_digest.blank?
 
-      relation = preference_class.where(token_digest: @refresh_presented_digest)
-      relation = relation.where(public_id: @refresh_public_id) if @refresh_public_id.present?
-      relation.order(:id).last
+      if use_setting_database?
+        if @refresh_public_id.present?
+          storage_adapter.find_by_public_id(@refresh_public_id, preference_type: preference_class.name)
+        else
+          storage_adapter.find_by_token_digest(@refresh_presented_digest, preference_type: preference_class.name)
+        end
+      else
+        relation = preference_class.where(token_digest: @refresh_presented_digest)
+        relation = relation.where(public_id: @refresh_public_id) if @refresh_public_id.present?
+        relation.order(:id).last
+      end
     end
 
     def handle_preference_refresh_replay!(preference)
       now = Time.current
 
-      with_preference_connection(:writing) do
+      if use_setting_database?
         preference.update!(compromised_at: now, revoked_at: now) if preference.compromised_at.nil?
+      else
+        with_preference_connection(:writing) do
+          preference.update!(compromised_at: now, revoked_at: now) if preference.compromised_at.nil?
+        end
       end
 
       clear_preference_auth_cookies!
@@ -1473,8 +1697,12 @@ module Preference
     end
 
     def rotate_preference_jti!(preference)
-      with_preference_connection(:writing) do
+      if use_setting_database?
         preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
+      else
+        with_preference_connection(:writing) do
+          preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
+        end
       end
     end
 
@@ -1546,6 +1774,18 @@ module Preference
     end
 
     def preference_associations_to_preload
+      # When using setting database, use setting_preference_* associations
+      if use_setting_database?
+        return %i(
+          setting_preference_cookie
+          setting_preference_language
+          setting_preference_region
+          setting_preference_timezone
+          setting_preference_colortheme
+        )
+      end
+
+      # Legacy path
       prefix = preference_class.name.underscore
       [
         "#{prefix}_cookie",
@@ -1572,7 +1812,7 @@ module Preference
     # 7) Child-record lazy helpers
     # ==========================================================================
     def load_or_create_preference_child(child_type, default_attributes = {})
-      association_name = "#{preference_prefix_underscore}_#{child_type.downcase}"
+      association_name = child_association_name(child_type)
       child = @preferences.public_send(association_name)
       return child if child.present?
 
@@ -1583,11 +1823,60 @@ module Preference
       child = @preferences.public_send(association_name)
       return child if child.present?
 
-      begin
-        @preferences.public_send("create_#{association_name}!", default_attributes)
-      rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
-        @preferences.reload
-        @preferences.public_send(association_name)
+      create_child_record(child_type, association_name, default_attributes)
+    end
+
+    # Returns the appropriate association name for child records
+    def child_association_name(child_type)
+      if use_setting_database?
+        "setting_preference_#{child_type.downcase}"
+      else
+        "#{preference_prefix_underscore}_#{child_type.downcase}"
+      end
+    end
+
+    # Creates a child record with appropriate error handling
+    def create_child_record(child_type, association_name, default_attributes)
+      if use_setting_database?
+        create_setting_child_record(child_type, default_attributes)
+      else
+        begin
+          @preferences.public_send("create_#{association_name}!", default_attributes)
+        rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+          @preferences.reload
+          @preferences.public_send(association_name)
+        end
+      end
+    end
+
+    # Creates child record in setting database
+    def create_setting_child_record(child_type, default_attributes)
+      preference_id = @preferences.id
+      record_class = Preference::ClassRegistry.storage_adapter.record_class(preference_class.name, child_type)
+
+      # Set default option_id if not provided
+      attrs = default_attributes.dup
+      if attrs[:option_id].blank? && !child_type.to_s.casecmp("cookie").zero?
+        attrs[:option_id] = default_option_id_for_setting(child_type)
+      end
+
+      record_class.create!(attrs.merge(preference_id: preference_id))
+    rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+      @preferences.reload
+      @preferences.public_send("setting_preference_#{child_type.downcase}")
+    end
+
+    # Returns default option_id for setting database child records
+    def default_option_id_for_setting(child_type)
+      case child_type.to_s.downcase
+      when "language"
+        SettingPreferenceLanguageOption::JA
+      when "region"
+        SettingPreferenceRegionOption::JP
+      when "timezone"
+        SettingPreferenceTimezoneOption::ASIA_TOKYO
+      when "colortheme"
+        SettingPreferenceColorthemeOption::SYSTEM
       end
     end
   end

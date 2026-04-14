@@ -24,7 +24,7 @@
 #
 #  fk_departments_on_department_status_id  (department_status_id => department_statuses.id)
 #  fk_rails_...                            (parent_id => departments.id)
-#  fk_rails_...                            (workspace_id => organizations.id) ON DELETE => nullify
+#  fk_rails_...                            (workspace_id => workspaces.id) ON DELETE => nullify
 #
 
 class Department < OperatorRecord
@@ -43,12 +43,12 @@ class Department < OperatorRecord
              primary_key: :id,
              inverse_of: :departments
 
-  belongs_to :workspace, class_name: "Organization", optional: true, inverse_of: :departments
+  belongs_to :workspace, class_name: "Workspace", optional: true, inverse_of: :departments
   has_many :operators, dependent: :nullify, inverse_of: :department
 
   validates :name, presence: true
   validates :department_status_id,
-            length: { maximum: 255 },
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 },
             uniqueness: { scope: :parent_id,
                           message: :already_tagged, }
 end

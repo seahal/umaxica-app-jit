@@ -1,7 +1,7 @@
 # Glossary
 
 This document summarizes domain-specific terms, abbreviations, and naming rules used in the
-umaxica-app-jit repository. Please update it as the project evolves so new contributors and
+umaxica-apps-jit repository. Please update it as the project evolves so new contributors and
 developers can understand it more easily.
 
 ---

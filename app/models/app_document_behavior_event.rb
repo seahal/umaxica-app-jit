@@ -13,10 +13,12 @@ class AppDocumentBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   NOTHING = 0
-  CREATED = 1
-  DEFAULTS = [NOTHING, CREATED].freeze
+  LEGACY_NOTHING = 1
+  CREATED = 2
+  UPDATED = 3
+  DELETED = 4
+  DEFAULTS = [NOTHING, LEGACY_NOTHING, CREATED, UPDATED, DELETED].freeze
 
-  # Placeholder for audit event types; ids are integer constants (e.g., CREATED = 1)
   has_many :app_document_behaviors,
            class_name: "AppDocumentBehavior",
            foreign_key: "event_id",
@@ -25,16 +27,6 @@ class AppDocumentBehaviorEvent < BehaviorRecord
            dependent: :restrict_with_error
 
   def self.ensure_defaults!
-    return if DEFAULTS.blank?
-
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    missing_ids = DEFAULTS - existing_ids
-    return if missing_ids.empty?
-
-    if defined?(Prosopite)
-      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
-    else
-      missing_ids.each { |id| create!(id: id) }
-    end
+    insert_missing_fixed_ids!(DEFAULTS)
   end
 end

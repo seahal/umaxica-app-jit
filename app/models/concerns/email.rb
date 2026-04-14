@@ -11,6 +11,8 @@ module Email
   attr_writer :raw_address
 
   included do
+    # TODO: use this new way!
+    # normalizes :address, with: ->(address) { address.strip.downcase }
     before_validation :normalize_address_from_raw
 
     after_initialize do
@@ -18,8 +20,6 @@ module Email
       self.otp_private_key = ROTP::Base32.random_base32 if otp_private_key.blank?
       self.otp_attempts_count ||= 0
     end
-
-    encrypts :address, downcase: true, deterministic: true
 
     validate :validate_email_address
     validates :confirm_policy, acceptance: true, on: :create,
@@ -102,19 +102,22 @@ module Email
   end
 
   def increment_attempts!
-    # Use atomic increment to prevent race condition with concurrent requests
-    record = self.class.find(id)
-    record.update!(otp_attempts_count: otp_attempts_count + 1, updated_at: Time.current)
-    reload
-    # Atomically set locked_at only when attempts reached threshold and not already locked
-    # Check for both NULL and -infinity as sentinel values for "not locked"
-    records = self.class.where(id: id)
-      .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp")
-      .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
-      .to_a
-    records.each { |r| r.update!(locked_at: Time.current) }
 
-    reload if records.any?
+    self.class.where(id: id).update_all(
+      "otp_attempts_count = otp_attempts_count + 1, updated_at = NOW()",
+    )
+    reload
+
+    # Atomically set locked_at only when threshold is reached and the row is not yet locked.
+    # Check for both NULL and sentinel values that represent "unlocked".
+    self.class.where(id: id)
+      .where(
+        "locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp",
+      )
+      .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
+      .update_all(locked_at: Time.current)
+
+    reload
   end
 
   def raw_address

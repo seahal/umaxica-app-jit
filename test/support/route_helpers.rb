@@ -9,7 +9,8 @@ module RouteHelpers
   end
 
   def sign_app_social_start_url(options = {})
-    new_sign_app_social_session_url(options.reverse_merge(host: "sign.app.localhost"))
+    host = "sign.app.localhost"
+    Rails.application.routes.url_helpers.new_sign_app_social_session_url(options.reverse_merge(host: host))
   end
 end
 

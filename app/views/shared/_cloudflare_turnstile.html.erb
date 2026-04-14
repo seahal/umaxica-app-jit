@@ -1,12 +1,13 @@
 <%# Generate unique ID for this widget instance %>
 <% widget_id = "cf-turnstile-#{SecureRandom.hex(4)}" %>
 <% site_key = Jit::Security::TurnstileConfig.visible_site_key %>
+<% enabled = Jit::Security::TurnstileConfig.enabled? %>
 
-<% if site_key.blank? %>
+<% if enabled && site_key.blank? %>
   <div>
     Cloudflare Turnstile site key is missing. Set credentials or CLOUDFLARE_TURNSTILE_VISIBLE_SITE_KEY.
   </div>
-<% else %>
+<% elsif enabled %>
   <div id="<%= widget_id %>" data-site-key="<%= site_key %>"></div>
 
   <script nonce="<%= content_security_policy_nonce %>">

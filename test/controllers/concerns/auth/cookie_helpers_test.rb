@@ -72,6 +72,10 @@ class AuthCookieHelpersTest < ActiveSupport::TestCase
     def headers
       {}
     end
+
+    def ssl?
+      false
+    end
   end
 
   class MockFormat
@@ -104,6 +108,25 @@ class AuthCookieHelpersTest < ActiveSupport::TestCase
 
   test "DEVICE_COOKIE_KEY constant is defined" do
     assert_equal "auth_device_id", Authentication::Base::DEVICE_COOKIE_KEY
+  end
+
+  test "cookie_options keeps auth cookies host-only" do
+    options = @harness.send(:cookie_options)
+
+    assert_nil options[:domain]
+    assert_equal "/", options[:path]
+    assert_equal :lax, options[:same_site]
+    assert options[:httponly]
+  end
+
+  test "cookie_deletion_options keeps auth cookies host-only" do
+    options = @harness.send(:cookie_deletion_options)
+
+    assert_nil options[:domain]
+    assert_equal "/", options[:path]
+    assert_not options.key?(:same_site)
+    assert_not options.key?(:httponly)
+    assert_not options.key?(:secure)
   end
 
   test "ACCESS_TOKEN_TTL defaults to 1 hour" do

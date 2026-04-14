@@ -140,4 +140,93 @@ class UserOneTimePasswordTest < ActiveSupport::TestCase
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { record.reload }
   end
+
+  test "title exactly 32 characters is valid at upper boundary" do
+    record = UserOneTimePassword.new(
+      user: @user,
+      private_key: @private_key,
+      last_otp_at: @last_otp_at,
+      title: "a" * 32,
+    )
+
+    assert_predicate record, :valid?
+  end
+
+  test "title 33 characters is invalid above upper boundary" do
+    record = UserOneTimePassword.new(
+      user: @user,
+      private_key: @private_key,
+      last_otp_at: @last_otp_at,
+      title: "a" * 33,
+    )
+
+    assert_not record.valid?
+    assert_not_empty record.errors[:title]
+  end
+
+  test "private_key exactly 1024 characters is valid at upper boundary" do
+    record = UserOneTimePassword.new(
+      user: @user,
+      private_key: "x" * 1024,
+      last_otp_at: @last_otp_at,
+    )
+
+    assert_predicate record, :valid?
+  end
+
+  test "2nd TOTP succeeds when 1 exists for user" do
+    UserOneTimePassword.create!(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.current,
+    )
+
+    second = UserOneTimePassword.new(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.current,
+    )
+
+    assert_predicate second, :valid?
+    assert second.save
+  end
+
+  test "2nd TOTP is last allowed when exactly 2 for user" do
+    UserOneTimePassword.create!(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.current,
+    )
+
+    second = UserOneTimePassword.new(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.current,
+    )
+
+    assert_predicate second, :valid?
+    assert second.save
+    assert_equal 2, UserOneTimePassword.where(user: @user).count
+  end
+
+  test "3rd TOTP fails when 2 exist for user" do
+    Prosopite.pause do
+      UserOneTimePassword::MAX_TOTPS_PER_USER.times do
+        UserOneTimePassword.create!(
+          user: @user,
+          private_key: ROTP::Base32.random_base32,
+          last_otp_at: Time.current,
+        )
+      end
+    end
+
+    third = UserOneTimePassword.new(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.current,
+    )
+
+    assert_not third.valid?
+    assert_includes third.errors[:base], "exceeds maximum totps per user (#{UserOneTimePassword::MAX_TOTPS_PER_USER})"
+  end
 end

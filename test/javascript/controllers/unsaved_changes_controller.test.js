@@ -93,6 +93,74 @@ describe("UnsavedChangesController", () => {
     expect(event.returnValue).toBe("Unsaved changes!");
   });
 
+  test("handleBeforeVisit: messageValue がない場合は既定文言を使う", () => {
+    controller.connect();
+    controller.dirty = true;
+    controller.messageValue = "";
+    const event = { preventDefault: vi.fn() };
+    windowMock.confirm.mockReturnValue(false);
+
+    controller.handleBeforeVisit(event);
+
+    expect(windowMock.confirm).toHaveBeenCalledWith("変更は保存されていません。移動しますか？");
+    expect(event.preventDefault).toHaveBeenCalledOnce();
+  });
+
+  test("handleBeforeUnload: messageValue がない場合は既定文言を使う", () => {
+    controller.connect();
+    controller.dirty = true;
+    controller.messageValue = "";
+    const event = { preventDefault: vi.fn(), returnValue: "" };
+
+    controller.handleBeforeUnload(event);
+
+    expect(event.returnValue).toBe("変更は保存されていません。移動しますか？");
+  });
+
+  test("handleBeforeUnload: dirty でないとき、なにもしない", () => {
+    controller.connect();
+    controller.dirty = false;
+    const event = { preventDefault: vi.fn(), returnValue: "" };
+
+    controller.handleBeforeUnload(event);
+    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(event.returnValue).toBe("");
+  });
+
+  test("connect: change イベントリスナーも登録する", () => {
+    controller.connect();
+    expect(controller.element.addEventListener).toHaveBeenCalledWith(
+      "change",
+      controller.handleInput,
+    );
+  });
+
+  test("connect: submit イベントリスナーも登録する", () => {
+    controller.connect();
+    expect(controller.element.addEventListener).toHaveBeenCalledWith(
+      "submit",
+      controller.handleSubmit,
+    );
+  });
+
+  test("disconnect: change イベントリスナーも解除する", () => {
+    controller.connect();
+    controller.disconnect();
+    expect(controller.element.removeEventListener).toHaveBeenCalledWith(
+      "change",
+      controller.handleInput,
+    );
+  });
+
+  test("disconnect: submit イベントリスナーも解除する", () => {
+    controller.connect();
+    controller.disconnect();
+    expect(controller.element.removeEventListener).toHaveBeenCalledWith(
+      "submit",
+      controller.handleSubmit,
+    );
+  });
+
   test("disconnect: イベントリスナーを解除する", () => {
     controller.connect();
     controller.disconnect();

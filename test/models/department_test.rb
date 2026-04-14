@@ -22,7 +22,7 @@
 #
 #  fk_departments_on_department_status_id  (department_status_id => department_statuses.id)
 #  fk_rails_...                            (parent_id => departments.id)
-#  fk_rails_...                            (workspace_id => organizations.id) ON DELETE => nullify
+#  fk_rails_...                            (workspace_id => workspaces.id) ON DELETE => nullify
 #
 
 # frozen_string_literal: true
@@ -30,10 +30,10 @@
 require "test_helper"
 
 class DepartmentTest < ActiveSupport::TestCase
-  fixtures :organizations, :organization_statuses, :department_statuses
+  fixtures :workspaces, :department_statuses
 
   setup do
-    @workspace = organizations(:one)
+    @workspace = workspaces(:one)
   end
 
   test "should be valid" do
@@ -51,5 +51,9 @@ class DepartmentTest < ActiveSupport::TestCase
 
     assert_not department.valid?
     assert_includes department.errors[:name], "を入力してください"
+  end
+
+  test "workspace association resolves to Workspace" do
+    assert_equal Workspace, Department.reflect_on_association(:workspace).klass
   end
 end

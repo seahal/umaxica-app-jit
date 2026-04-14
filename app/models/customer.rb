@@ -8,7 +8,6 @@
 #
 #  id                    :bigint           not null, primary key
 #  deactivated_at        :datetime
-#  deletable_at          :datetime         default(Infinity), not null
 #  lock_version          :integer          default(0), not null
 #  multi_factor_enabled  :boolean          default(FALSE), not null
 #  scheduled_purge_at    :datetime
@@ -24,7 +23,6 @@
 # Indexes
 #
 #  index_customers_on_deactivated_at         (deactivated_at) WHERE (deactivated_at IS NOT NULL)
-#  index_customers_on_deletable_at           (deletable_at)
 #  index_customers_on_public_id              (public_id) UNIQUE
 #  index_customers_on_scheduled_purge_at     (scheduled_purge_at) WHERE (scheduled_purge_at IS NOT NULL)
 #  index_customers_on_shreddable_at          (shreddable_at)
@@ -42,6 +40,8 @@
 class Customer < GuestRecord
   include ::PublicId
   include ::Identity
+
+  self.ignored_columns += ["deletable_at"]
 
   LOGIN_BLOCKED_STATUS_IDS = [CustomerStatus::RESERVED].freeze
   VERIFIED_RECOVERY_EMAIL_STATUS_IDS = [
@@ -63,6 +63,8 @@ class Customer < GuestRecord
   belongs_to :visibility,
              class_name: "CustomerVisibility",
              inverse_of: :customers
+  validates :status_id, :visibility_id,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   has_one :customer_preference,
           dependent: :destroy,
           inverse_of: :customer

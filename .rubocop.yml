@@ -1426,6 +1426,8 @@ Style/DisableCopsWithinSourceCodeDirective:
     - Metrics/AbcSize
     - Metrics/MethodLength
     - Metrics/CyclomaticComplexity
+    - I18n/RailsI18n/DecorateString
+    - Rails/I18nLocaleTexts
 
 
 # メソッド呼び出しの括弧を強制（可読性向上）
@@ -1518,3 +1520,8 @@ ThreadSafety/ClassInstanceVariable:
     - "app/controllers/concerns/social_callback_guard.rb"
     - "lib/jit/security/turnstile_verifier.rb"
     - "lib/jit/security/jwt/jti_generator.rb"
+
+# SQL templates in treeable.rb are not user-facing and don't need i18n decoration
+I18n/RailsI18n/DecorateString:
+  Exclude:
+    - "app/models/concerns/treeable.rb"

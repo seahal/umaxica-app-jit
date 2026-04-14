@@ -2,18 +2,29 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # #FIXME remove or exile this
-  # CSP violation reporting endpoint (host-agnostic, all domains)
-  post "/csp-violation-report", to: "csp_violations#create"
+  # Four-engine deployment architecture:
+  # - signature: Auth/Passkey/OIDC endpoints (sign.* hosts)
+  # - world: Global BFF/Dashboard (apex hosts)
+  # - station: Regional operations (www.* hosts)
+  # - press: Content delivery via closed network (docs/news/help)
 
-  # Global
-  # BFF
-  draw :apex
-  # sign in / up
-  draw :sign
-  # regional
-  ## back end of edge endpoints
-  draw :core
-  # endpoints for docs + help + news
-  draw :docs
+  # Signature engine - Authentication and authorization
+  if Jit::Deployment.signature?
+    mount Jit::Signature::Engine => "/"
+  end
+
+  # World engine - Global BFF and dashboard
+  if Jit::Deployment.world?
+    mount Jit::World::Engine => "/"
+  end
+
+  # Station engine - Regional operations
+  if Jit::Deployment.station?
+    mount Jit::Station::Engine => "/"
+  end
+
+  # Press engine - Content delivery
+  if Jit::Deployment.press?
+    mount Jit::Press::Engine => "/"
+  end
 end

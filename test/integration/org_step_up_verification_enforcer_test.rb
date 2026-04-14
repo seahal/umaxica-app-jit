@@ -89,25 +89,60 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
   end
 
   test "successful verification enables protected POST and records audit" do
+    passkey = StaffPasskey.create!(
+      staff: @staff,
+      webauthn_id: Base64.urlsafe_encode64("stepup_org_passkey_#{SecureRandom.hex(4)}", padding: false),
+      external_id: SecureRandom.uuid,
+      public_key: "stepup_org_passkey_public_key",
+      name: "Step-up Passkey",
+      status_id: StaffPasskeyStatus::ACTIVE,
+    )
     return_to = Base64.urlsafe_encode64(sign_org_configuration_passkeys_path(ri: "jp"))
+    trusted_origins = [
+      "http://#{@host}",
+      "https://#{@host}",
+      "http://#{@host}:3000",
+      "https://#{@host}:3000",
+      "http://sign.app.localhost",
+      "https://sign.app.localhost",
+    ]
 
-    Sign::Org::VerificationsController.any_instance.stub(:available_step_up_methods, [:passkey]) do
-      Sign::Org::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
-        Sign::Org::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
-          get sign_org_verification_url(scope: "configuration_passkey", return_to: return_to, ri: "jp"),
-              headers: @headers
+    Webauthn.stub(:trusted_origins, trusted_origins) do
+      get sign_org_verification_url(scope: "configuration_passkey", return_to: return_to, ri: "jp"),
+          headers: @headers
 
-          assert_response :success
+      get new_sign_org_verification_passkey_url(ri: "jp"), headers: @headers
 
-          post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
-        end
+      assert_response :success
+
+      challenge_id = session[:passkey_challenges].keys.first
+      mock_credential = Object.new
+      mock_credential.define_singleton_method(:id) { passkey.webauthn_id }
+      mock_credential.define_singleton_method(:sign_count) { 1 }
+      mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+      WebAuthn::Credential.stub(:from_get, mock_credential) do
+        post sign_org_verification_passkey_url(ri: "jp"), params: {
+          verification: {
+            challenge_id: challenge_id,
+            credential_json: {
+              id: passkey.webauthn_id,
+              type: "public-key",
+              response: {
+                clientDataJSON: "e30=",
+                authenticatorData: "e30=",
+                signature: "sig",
+                userHandle: @staff.public_id,
+              },
+            }.to_json,
+          },
+        }, headers: @headers
       end
     end
 
     assert_response :redirect
     assert_redirected_to sign_org_configuration_passkeys_url(ri: "jp")
     assert response_has_cookie?(StaffVerification.cookie_name)
-
     assert StaffVerification.active.exists?(staff_token_id: @token.id)
     assert StaffActivity.exists?(
       actor_type: "Staff",

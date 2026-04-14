@@ -53,5 +53,7 @@ class IpOccurrence < OccurrenceRecord
   has_many :zip_occurrences, through: :ip_zip_occurrences
 
   validates :body, length: { maximum: 64 }
-  validates :status_id, numericality: { only_integer: true }
+  validates :status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

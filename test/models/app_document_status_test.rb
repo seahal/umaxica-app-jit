@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: app_document_statuses
-# Database name: document
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
@@ -21,8 +21,8 @@ class AppDocumentStatusTest < ActiveSupport::TestCase
     @status = AppDocumentStatus.find(AppDocumentStatus::ACTIVE)
   end
 
-  test "inherits from DocumentRecord" do
-    assert_operator AppDocumentStatus, :<, DocumentRecord
+  test "inherits from PublicationRecord" do
+    assert_operator AppDocumentStatus, :<, PublicationRecord
   end
 
   test "id is numeric" do

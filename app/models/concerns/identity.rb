@@ -10,7 +10,10 @@ module Identity
   include ::Withdrawable
 
   included do
-    validates :status_id, numericality: { only_integer: true }
+    status_association = :"#{name.underscore}_status"
+
+    validates_reference_table :status_id, association: status_association
+    validates_reference_table :visibility_id, association: :visibility
     scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
   end
 

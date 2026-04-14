@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_document_tags
-# Database name: document
+# Database name: publication
 #
 #  id                         :bigint           not null, primary key
 #  created_at                 :datetime         not null
@@ -12,18 +12,18 @@
 #
 # Indexes
 #
-#  idx_com_document_tags_on_master_and_document  (com_document_tag_master_id,com_document_id) UNIQUE
-#  index_com_document_tags_on_com_document_id    (com_document_id)
+#  idx_on_com_document_tag_master_id_com_document_id_93b8da9f9e  (com_document_tag_master_id,com_document_id) UNIQUE
+#  index_com_document_tags_on_com_document_id                    (com_document_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
+#  fk_rails_...  (com_document_id => com_documents.id)
 #  fk_rails_...  (com_document_tag_master_id => com_document_tag_masters.id)
 #
 
 # frozen_string_literal: true
 
-class ComDocumentTag < DocumentRecord
+class ComDocumentTag < PublicationRecord
   include ::CategoryTag
 
   belongs_to :com_document, inverse_of: :com_document_tags

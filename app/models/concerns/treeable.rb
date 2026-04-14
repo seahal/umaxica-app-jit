@@ -115,6 +115,12 @@ module Treeable
       where(primary_key => ids).order(Arel.sql(order_sql))
     end
 
+    def tree_cte_relation(anchor_relation, recursive_relation)
+      unscoped
+        .with_recursive(tree: [anchor_relation, recursive_relation])
+        .from("tree")
+    end
+
     # Descendant ids (including self).
     def subtree_ids(root_id, include_self: true, max_depth: nil)
       q_pk = connection.quote_column_name(primary_key)
@@ -129,26 +135,25 @@ module Treeable
       end
 
       where_anchor_sql = include_self ? "#{q_pk} = ?" : "#{q_parent} = ?"
-      depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
-      sql_template = <<~SQL.squish
-        WITH RECURSIVE tree AS (
-          SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
-          FROM #{q_table}
-          WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
+      anchor_relation =
+        unscoped
+          .select("#{q_table}.#{q_pk} AS id", "#{q_table}.#{q_parent} AS parent_id", "0 AS depth")
+          .where("(#{where_anchor_sql} AND #{q_table}.#{q_pk} NOT IN (?))", root_id, root_vals)
 
-          UNION ALL
+      recursive_relation =
+        if max_depth
+          unscoped
+            .select("#{q_table}.#{q_pk} AS id", "#{q_table}.#{q_parent} AS parent_id", "tree.depth + 1 AS depth")
+            .joins("JOIN tree ON #{q_table}.#{q_parent} = tree.id")
+            .where(tree: { depth: ...Integer(max_depth) })
+        else
+          unscoped
+            .select("#{q_table}.#{q_pk} AS id", "#{q_table}.#{q_parent} AS parent_id", "tree.depth + 1 AS depth")
+            .joins("JOIN tree ON #{q_table}.#{q_parent} = tree.id")
+        end
 
-          SELECT t.#{q_pk}, t.#{q_parent}, tree.depth + 1
-          FROM #{q_table} t
-          JOIN tree ON t.#{q_parent} = tree.id
-          #{depth_guard}
-        )
-        SELECT id FROM tree;
-      SQL
-      sql = sanitize_sql_array([sql_template, root_id, root_vals])
-
-      connection.exec_query(sql, "subtree_ids").rows.flatten
+      tree_cte_relation(anchor_relation, recursive_relation).pluck("id")
     end
 
     # Ancestor ids (including self).
@@ -165,27 +170,26 @@ module Treeable
           "#{q_pk} = (SELECT #{q_parent} FROM #{q_table} WHERE #{q_pk} = ?)"
         end
 
-      depth_guard = max_depth ? " AND tree.depth < #{Integer(max_depth)}" : ""
+      anchor_relation =
+        unscoped
+          .select("#{q_table}.#{q_pk} AS id", "#{q_table}.#{q_parent} AS parent_id", "0 AS depth")
+          .where("(#{where_anchor_sql} AND #{q_table}.#{q_pk} NOT IN (?))", node_id, root_vals)
 
-      sql_template = <<~SQL.squish
-        WITH RECURSIVE tree AS (
-          SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
-          FROM #{q_table}
-          WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
+      recursive_relation =
+        if max_depth
+          unscoped
+            .select("#{q_table}.#{q_pk} AS id", "#{q_table}.#{q_parent} AS parent_id", "tree.depth + 1 AS depth")
+            .joins("JOIN tree ON tree.parent_id = #{q_table}.#{q_pk}")
+            .where.not(tree: { parent_id: root_vals })
+            .where(tree: { depth: ...Integer(max_depth) })
+        else
+          unscoped
+            .select("#{q_table}.#{q_pk} AS id", "#{q_table}.#{q_parent} AS parent_id", "tree.depth + 1 AS depth")
+            .joins("JOIN tree ON tree.parent_id = #{q_table}.#{q_pk}")
+            .where.not(tree: { parent_id: root_vals })
+        end
 
-          UNION ALL
-
-          SELECT p.#{q_pk}, p.#{q_parent}, tree.depth + 1
-          FROM #{q_table} p
-          JOIN tree ON tree.parent_id = p.#{q_pk}
-          WHERE tree.parent_id NOT IN (?)#{depth_guard}
-        )
-        SELECT id FROM tree
-        ORDER BY depth DESC;
-      SQL
-      sql = sanitize_sql_array([sql_template, node_id, root_vals, root_vals])
-
-      connection.exec_query(sql, "ancestor_ids").rows.flatten
+      tree_cte_relation(anchor_relation, recursive_relation).order(Arel.sql("depth DESC")).pluck("id")
     end
 
     # Returns a subtree ordered "by tree order" (prefers `position`) as a Relation.
@@ -205,7 +209,6 @@ module Treeable
 
       include_self = false if include_self && root_vals.include?(root_id)
       where_anchor_sql = include_self ? "#{q_pk} = ?" : "#{q_parent} = ?"
-      depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
       anchor_path =
         if order_col
@@ -223,32 +226,43 @@ module Treeable
           "tree.path || ARRAY[ROW(t.#{pk_sort_expr})]::record[]"
         end
 
-      sql_template = <<~SQL.squish
-        WITH RECURSIVE tree AS (
-          SELECT
-            #{q_table}.*,
-            0 AS depth,
-            #{anchor_path} AS path
-          FROM #{q_table}
-          WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
+      anchor_relation =
+        unscoped
+          .select(
+            "#{q_table}.#{q_pk} AS id",
+            "#{q_table}.#{q_parent} AS parent_id",
+            "0 AS depth",
+            "#{anchor_path} AS path",
+          )
+          .where("(#{where_anchor_sql} AND #{q_table}.#{q_pk} NOT IN (?))", root_id, root_vals)
 
-          UNION ALL
+      recursive_relation =
+        if max_depth
+          unscoped
+            .from("#{q_table} t")
+            .select(
+              "t.#{q_pk} AS id",
+              "t.#{q_parent} AS parent_id",
+              "tree.depth + 1 AS depth",
+              "#{step_path} AS path",
+            )
+            .joins("JOIN tree ON t.#{q_parent} = tree.id")
+            .where(tree: { depth: ...Integer(max_depth) })
+        else
+          unscoped
+            .from("#{q_table} t")
+            .select(
+              "t.#{q_pk} AS id",
+              "t.#{q_parent} AS parent_id",
+              "tree.depth + 1 AS depth",
+              "#{step_path} AS path",
+            )
+            .joins("JOIN tree ON t.#{q_parent} = tree.id")
+        end
 
-          SELECT
-            t.*,
-            tree.depth + 1 AS depth,
-            #{step_path} AS path
-          FROM #{q_table} t
-          JOIN tree ON t.#{q_parent} = tree.#{q_pk}
-          #{depth_guard}
-        )
-        SELECT #{q_pk}
-        FROM tree
-        ORDER BY path;
-      SQL
-      sql = sanitize_sql_array([sql_template, root_id, root_vals])
+      ids = tree_cte_relation(anchor_relation, recursive_relation).order(Arel.sql("path")).pluck("id")
 
-      ids = connection.exec_query(sql, "subtree_in_tree_order_ids").rows.flatten
+      return none if ids.blank?
 
       # Preserve `ids` order using Postgres `array_position`.
       order_sql = sanitize_sql_array(["array_position(ARRAY[?]::text[], #{q_table}.#{q_pk}::text)", ids])

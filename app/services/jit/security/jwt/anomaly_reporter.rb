@@ -90,7 +90,7 @@ module Jit
           Rails.event.error("security.jwt.anomaly_report_failed", error_class: e.class.name, message: e.message)
         end
 
-        private_class_method :auth_context, :preference_context, :report
+        private_class_method :report
       end
     end
   end

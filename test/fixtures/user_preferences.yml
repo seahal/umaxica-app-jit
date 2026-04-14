@@ -22,6 +22,10 @@
 #
 #  index_user_preferences_on_user_id  (user_id) UNIQUE
 #
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
 one:
   id: 1
   user: one

@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_document_category_masters
-# Database name: document
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -32,6 +32,13 @@ class AppDocumentCategoryMasterTest < ActiveSupport::TestCase
     status = AppDocumentCategoryMaster.find(AppDocumentCategoryMaster::NOTHING)
 
     assert_equal 0, status.id
+  end
+
+  test "connects to publication database" do
+    AppDocumentCategoryMaster.with_connection do |connection|
+      assert_match(/^test_publication_db(_\d+)?$/, connection.select_value("SELECT current_database()"))
+      assert connection.table_exists?("app_document_category_masters")
+    end
   end
 
   test "treeable class is defined" do

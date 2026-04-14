@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: com_document_versions
-# Database name: document
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text
@@ -30,10 +30,10 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
+#  fk_rails_...  (com_document_id => com_documents.id)
 #
 
-class ComDocumentVersion < DocumentRecord
+class ComDocumentVersion < PublicationRecord
   include Version
   include ::PublicId
 

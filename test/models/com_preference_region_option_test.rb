@@ -51,4 +51,26 @@ class ComPreferenceRegionOptionTest < ActiveSupport::TestCase
 
     assert_equal "JP", option.name
   end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [1, 2], ComPreferenceRegionOption::DEFAULTS
+  end
+
+  test "ensure_defaults! creates missing records" do
+    ComPreferenceRegionOption.where(id: ComPreferenceRegionOption::DEFAULTS).destroy_all
+
+    ComPreferenceRegionOption.ensure_defaults!
+
+    assert ComPreferenceRegionOption.exists?(id: ComPreferenceRegionOption::US)
+    assert ComPreferenceRegionOption.exists?(id: ComPreferenceRegionOption::JP)
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    ComPreferenceRegionOption.ensure_defaults!
+    initial_count = ComPreferenceRegionOption.count
+
+    ComPreferenceRegionOption.ensure_defaults!
+
+    assert_equal initial_count, ComPreferenceRegionOption.count
+  end
 end

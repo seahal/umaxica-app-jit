@@ -29,7 +29,7 @@
 
 # frozen_string_literal: true
 
-# Organization mirrors Workspace but keeps the legacy name.
+# Organization uses the legacy organizations table.
 class Organization < OperatorRecord
   belongs_to :organization_status,
              class_name: "OrganizationStatus",
@@ -41,9 +41,9 @@ class Organization < OperatorRecord
   has_many :divisions,
            dependent: :nullify,
            inverse_of: :organization
-  has_many :departments, dependent: :nullify, inverse_of: :workspace
-  has_many :user_memberships, dependent: :destroy, inverse_of: :workspace
 
   validates :domain, uniqueness: true
-  validates :workspace_status_id, numericality: { only_integer: true }, allow_nil: true
+  validates :workspace_status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

@@ -92,6 +92,7 @@ class StaffToken < TokenRecord
   attribute :staff_token_binding_method_id, default: StaffTokenBindingMethod::NOTHING
   attribute :staff_token_dbsc_status_id, default: StaffTokenDbscStatus::NOTHING
 
+  validates_reference_table :staff_token_kind_id, association: :staff_token_kind
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :refresh_expires_at, presence: true
 

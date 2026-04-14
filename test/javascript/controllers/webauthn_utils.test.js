@@ -35,6 +35,15 @@ describe("webauthn_utils", () => {
       expect(() => toArrayBuffer(123)).toThrow(TypeError);
       expect(() => toArrayBuffer(null)).toThrow(TypeError);
     });
+
+    test("エラーメッセージに入力の型情報を含める", () => {
+      expect(() => toArrayBuffer(undefined, "challenge")).toThrow(
+        "Expected challenge to be a base64url string, ArrayBuffer, or byte array, got undefined",
+      );
+      expect(() => toArrayBuffer({ id: 1 }, "credential")).toThrow(
+        "Expected credential to be a base64url string, ArrayBuffer, or byte array, got object(Object)",
+      );
+    });
   });
 
   describe("normalizePublicKeyOptions", () => {
@@ -55,6 +64,98 @@ describe("webauthn_utils", () => {
       const options = { excludeCredentials: [{ id: "Y3JlZGlk" }] };
       const normalized = normalizePublicKeyOptions(options);
       expect(normalized.excludeCredentials[0].id).toBeInstanceOf(ArrayBuffer);
+    });
+
+    test("allowCredentials の id を正規化する", () => {
+      const options = { allowCredentials: [{ id: "Y3JlZGlk" }] };
+      const normalized = normalizePublicKeyOptions(options);
+      expect(normalized.allowCredentials[0].id).toBeInstanceOf(ArrayBuffer);
+    });
+
+    test("ArrayBuffer と配列の id をそのまま正規化する", () => {
+      const options = {
+        excludeCredentials: [{ id: new ArrayBuffer(2) }],
+        allowCredentials: [{ id: [1, 2, 3] }],
+      };
+
+      const normalized = normalizePublicKeyOptions(options);
+
+      expect(normalized.excludeCredentials[0].id).toBeInstanceOf(ArrayBuffer);
+      expect(normalized.allowCredentials[0].id).toBeInstanceOf(ArrayBuffer);
+    });
+
+    test("optionsがnullの場合はTypeErrorを投げる", () => {
+      expect(() => normalizePublicKeyOptions(null)).toThrow(TypeError);
+    });
+
+    test("optionsがundefinedの場合はTypeErrorを投げる", () => {
+      expect(() => normalizePublicKeyOptions(undefined)).toThrow(TypeError);
+    });
+
+    test("optionsがオブジェクトでない場合はTypeErrorを投げる", () => {
+      expect(() => normalizePublicKeyOptions("string")).toThrow(TypeError);
+      expect(() => normalizePublicKeyOptions(123)).toThrow(TypeError);
+      expect(() => normalizePublicKeyOptions(false)).toThrow(
+        "Expected options to be an object, got boolean",
+      );
+      expect(normalizePublicKeyOptions([])).toEqual({});
+    });
+
+    test("challengeがない場合は変換しない", () => {
+      const options = { user: { id: "dXNlcmlk" } };
+      const normalized = normalizePublicKeyOptions(options);
+      expect(normalized.challenge).toBeUndefined();
+      expect(normalized.user.id).toBeInstanceOf(ArrayBuffer);
+    });
+
+    test("userがない場合は変換しない", () => {
+      const options = { challenge: "Y2hhbGxlbmdl" };
+      const normalized = normalizePublicKeyOptions(options);
+      expect(normalized.challenge).toBeInstanceOf(ArrayBuffer);
+      expect(normalized.user).toBeUndefined();
+    });
+
+    test("user.idがない場合は変換しない", () => {
+      const options = { challenge: "Y2hhbGxlbmdl", user: { name: "test" } };
+      const normalized = normalizePublicKeyOptions(options);
+      expect(normalized.challenge).toBeInstanceOf(ArrayBuffer);
+      expect(normalized.user.id).toBeUndefined();
+    });
+
+    test("excludeCredentialsがnullの場合はそのまま", () => {
+      const options = { excludeCredentials: null };
+      const normalized = normalizePublicKeyOptions(options);
+      expect(normalized.excludeCredentials).toBeNull();
+    });
+
+    test("excludeCredentialsがundefinedの場合はそのまま", () => {
+      const options = {};
+      const normalized = normalizePublicKeyOptions(options);
+      expect(normalized.excludeCredentials).toBeUndefined();
+    });
+
+    test("excludeCredentials が配列でない場合は TypeError を投げる", () => {
+      expect(() => normalizePublicKeyOptions({ excludeCredentials: "bad" })).toThrow(
+        "excludeCredentials must be an array",
+      );
+    });
+
+    test("allowCredentials が配列でない場合は TypeError を投げる", () => {
+      expect(() => normalizePublicKeyOptions({ allowCredentials: "bad" })).toThrow(
+        "allowCredentials must be an array",
+      );
+    });
+
+    test("toArrayBufferにnullを渡すとTypeError", () => {
+      expect(() => toArrayBuffer(null)).toThrow(TypeError);
+    });
+
+    test("toArrayBufferにundefinedを渡すとTypeError", () => {
+      expect(() => toArrayBuffer(undefined)).toThrow(TypeError);
+    });
+
+    test("toArrayBufferにnumberを渡すとTypeError", () => {
+      expect(() => toArrayBuffer(123)).toThrow(TypeError);
     });
   });
 });

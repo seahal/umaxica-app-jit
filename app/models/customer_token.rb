@@ -90,6 +90,7 @@ class CustomerToken < TokenRecord
   attribute :customer_token_binding_method_id, default: CustomerTokenBindingMethod::NOTHING
   attribute :customer_token_dbsc_status_id, default: CustomerTokenDbscStatus::NOTHING
 
+  validates_reference_table :customer_token_kind_id, association: :customer_token_kind
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :refresh_expires_at, presence: true
 

@@ -6,16 +6,20 @@
 # Table name: com_contact_emails
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  email_address  :string(1000)     default(""), not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  com_contact_id :bigint           default(0), not null
+#  id                   :bigint           not null, primary key
+#  email_address        :string(1000)     default(""), not null
+#  email_address_bidx   :string
+#  email_address_digest :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  com_contact_id       :bigint           default(0), not null
 #
 # Indexes
 #
 #  index_com_contact_emails_on_com_contact_id_unique  (com_contact_id) UNIQUE
 #  index_com_contact_emails_on_email_address          (email_address)
+#  index_com_contact_emails_on_email_address_bidx     (email_address_bidx) UNIQUE WHERE (email_address_bidx IS NOT NULL)
+#  index_com_contact_emails_on_email_address_digest   (email_address_digest) UNIQUE WHERE (email_address_digest IS NOT NULL)
 #
 # Foreign Keys
 #
@@ -95,26 +99,32 @@ class ComContactEmailTest < ActiveSupport::TestCase
     contact1 = create_contact(
       public_id: "unique_contact_4",
     )
-    contact2 = create_contact(
-      public_id: "unique_contact_5",
-    )
 
-    # Create two records with the same email
+    # Create first record
     email1 = ComContactEmail.create!(
       com_contact: contact1,
       email_address: "same@example.com",
     )
 
+    # Record first raw value
+    raw1 = ComContactEmail.connection.execute(
+      "SELECT email_address FROM com_contact_emails WHERE id = #{email1.id}",
+    ).first["email_address"]
+
+    # Destroy first record to avoid uniqueness violation when creating the second one
+    email1.destroy!
+
+    contact2 = create_contact(
+      public_id: "unique_contact_5",
+    )
+
+    # Create second record with the same email
     email2 = ComContactEmail.create!(
       com_contact: contact2,
       email_address: "same@example.com",
     )
 
-    # With deterministic encryption, encrypted values should be the same
-    raw1 = ComContactEmail.connection.execute(
-      "SELECT email_address FROM com_contact_emails WHERE id = #{email1.id}",
-    ).first["email_address"]
-
+    # Record second raw value
     raw2 = ComContactEmail.connection.execute(
       "SELECT email_address FROM com_contact_emails WHERE id = #{email2.id}",
     ).first["email_address"]

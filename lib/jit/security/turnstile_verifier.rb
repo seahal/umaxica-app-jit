@@ -52,6 +52,8 @@ module Jit
           return self.class.test_response || { "success" => true }
         end
 
+        return { "success" => true } unless TurnstileConfig.enabled?
+
         return failure("missing cf-turnstile-response") if @token.blank?
 
         if @secret_key.blank?

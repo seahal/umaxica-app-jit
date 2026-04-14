@@ -5,6 +5,9 @@ import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 // ──────────────────────────────────────────────
 
 let cookieReadValue = "";
+let themeValueElement = null;
+let matchMediaState = false;
+let matchMediaListener = null;
 const classListMock = {
   _store: new Set(),
   add(...cls) {
@@ -31,24 +34,60 @@ const documentMock = {
   },
   documentElement: { dataset: {}, classList: classListMock },
   getElementById: vi.fn(() => null),
-  querySelector: vi.fn(() => null),
+  querySelector: vi.fn((selector) => {
+    if (selector === "#js-theme-cookie-value") {
+      return themeValueElement;
+    }
+    return null;
+  }),
   addEventListener: vi.fn(),
 };
 
-const windowMock = { matchMedia: vi.fn(() => ({ matches: false, addEventListener: vi.fn() })) };
+const windowMock = {
+  matchMedia: vi.fn(() => ({
+    addEventListener: vi.fn((name, callback) => {
+      if (name === "change") {
+        matchMediaListener = callback;
+      }
+    }),
+    get matches() {
+      return matchMediaState;
+    },
+  })),
+};
 
 vi.stubGlobal("document", documentMock);
 vi.stubGlobal("window", windowMock);
 
-const { applyThemeFromCookie } = await import("../../app/javascript/theme_cookie.js");
+let applyThemeFromCookie;
 
-beforeEach(() => {
+beforeEach(async () => {
+  vi.resetModules();
   cookieReadValue = "";
+  themeValueElement = null;
+  matchMediaState = false;
+  matchMediaListener = null;
   classListMock._store = new Set();
-  windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
+  windowMock.matchMedia.mockImplementation(() => ({
+    addEventListener: vi.fn((name, callback) => {
+      if (name === "change") {
+        matchMediaListener = callback;
+      }
+    }),
+    get matches() {
+      return matchMediaState;
+    },
+  }));
   documentMock.getElementById.mockReturnValue(null);
-  documentMock.querySelector.mockReturnValue(null);
+  documentMock.querySelector.mockImplementation((selector) => {
+    if (selector === "#js-theme-cookie-value") {
+      return themeValueElement;
+    }
+    return null;
+  });
   documentMock.addEventListener.mockReset();
+
+  ({ applyThemeFromCookie } = await import("../../app/javascript/theme_cookie.js"));
 });
 
 describe("applyThemeFromCookie", () => {
@@ -94,10 +133,27 @@ describe("applyThemeFromCookie", () => {
 
   test("js-theme-cookie-value 要素がある場合、テーマ値を設定する", () => {
     cookieReadValue = "ct=li";
-    const valueEl = { textContent: "" };
-    documentMock.querySelector.mockReturnValue(valueEl);
+    themeValueElement = { textContent: "" };
     applyThemeFromCookie();
     expect(documentMock.querySelector).toHaveBeenCalledWith("#js-theme-cookie-value");
-    expect(valueEl.textContent).toBe("light");
+    expect(themeValueElement.textContent).toBe("light");
+  });
+
+  test("未知の値はそのまま lower case で適用する", () => {
+    cookieReadValue = "ct=CUSTOM";
+
+    applyThemeFromCookie();
+
+    expect(documentMock.documentElement.dataset.theme).toBe("custom");
+  });
+
+  test("システムテーマ変更時に dark クラスを更新する", () => {
+    cookieReadValue = "ct=sy";
+
+    applyThemeFromCookie();
+    matchMediaState = true;
+    matchMediaListener();
+
+    expect(classListMock.has("dark")).toBe(true);
   });
 });

@@ -10,6 +10,7 @@
 #  image_data                   :jsonb            not null
 #  lock_version                 :integer          default(0), not null
 #  moniker                      :string           not null
+#  shreddable_at                :datetime         default(Infinity), not null
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
 #  active_handle_id             :bigint           not null
@@ -28,6 +29,7 @@
 #  index_avatars_on_owner_organization_id         (owner_organization_id)
 #  index_avatars_on_public_id                     (public_id) UNIQUE
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
+#  index_avatars_on_shreddable_at                 (shreddable_at)
 #
 # Foreign Keys
 #
@@ -242,5 +244,22 @@ class AvatarTest < ActiveSupport::TestCase
     User.find_or_create_by!(public_id: "one_id") do |u|
       u.status_id = UserStatus::NOTHING
     end
+  end
+
+  test "shreddable scope excludes avatars with shreddable_at in the future" do
+    avatar = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Shreddable Future")
+
+    assert_not_includes Avatar.shreddable, avatar
+  end
+
+  test "shreddable scope includes avatars with shreddable_at in the past" do
+    avatar = Avatar.create!(
+      capability: @capability,
+      active_handle: @handle,
+      moniker: "Shreddable Past",
+      shreddable_at: 1.second.ago,
+    )
+
+    assert_includes Avatar.shreddable, avatar
   end
 end

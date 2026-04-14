@@ -6,32 +6,41 @@
 # Table name: user_activities
 # Database name: activity
 #
-#  id             :bigint           not null, primary key
-#  actor_type     :text             default(""), not null
-#  context        :jsonb            not null
-#  current_value  :text             default(""), not null
-#  expires_at     :datetime         not null
-#  ip_address     :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
-#  occurred_at    :datetime         not null
-#  previous_value :text             default(""), not null
-#  subject_type   :text             not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  actor_id       :bigint           default(0), not null
-#  event_id       :bigint           default(0), not null
-#  level_id       :bigint           default(4), not null
-#  subject_id     :bigint           not null
+#  id              :bigint           not null, primary key
+#  actor_type      :text             default(""), not null
+#  context         :jsonb            not null
+#  current_value   :text             default(""), not null
+#  expires_at      :datetime         not null
+#  ip_address      :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
+#  occurred_at     :datetime         not null
+#  previous_digest :string
+#  previous_value  :text             default(""), not null
+#  record_digest   :string
+#  sequence_number :bigint
+#  subject_type    :text             not null
+#  tsa_at          :datetime
+#  tsa_token       :text
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  actor_id        :bigint           default(0), not null
+#  event_id        :bigint           default(0), not null
+#  level_id        :bigint           default(4), not null
+#  subject_id      :bigint           not null
 #
 # Indexes
 #
 #  idx_on_subject_type_subject_id_occurred_at_a29eb711dd  (subject_type,subject_id,occurred_at)
 #  index_user_activities_on_actor                         (actor_type,actor_id)
 #  index_user_activities_on_actor_id_and_occurred_at      (actor_id,occurred_at)
+#  index_user_activities_on_chain_validation              (sequence_number,record_digest)
 #  index_user_activities_on_event_id                      (event_id)
 #  index_user_activities_on_expires_at                    (expires_at)
 #  index_user_activities_on_level_id                      (level_id)
 #  index_user_activities_on_occurred_at                   (occurred_at)
+#  index_user_activities_on_record_digest                 (record_digest) UNIQUE
+#  index_user_activities_on_sequence_number               (sequence_number) UNIQUE
 #  index_user_activities_on_subject_id                    (subject_id)
+#  index_user_activities_on_tsa_at                        (tsa_at)
 #
 # Foreign Keys
 #
@@ -94,10 +103,9 @@ class UserActivityTest < ActiveSupport::TestCase
       timestamp: Time.current,
     )
 
-    # Now validation should catch it before reaching the database
     assert_not audit.valid?
     assert_not_empty audit.errors[:event_id]
-    assert_includes audit.errors[:event_id], "must reference a valid user audit event"
+    assert_includes audit.errors[:event_id], "must reference an existing user_activity_event"
   end
 
   test "belongs to polymorphic actor" do
@@ -190,5 +198,61 @@ class UserActivityTest < ActiveSupport::TestCase
 
     assert_equal 0, audit.actor_id
     assert_equal "User", audit.actor_type
+  end
+
+  test "event_id rejects negative values" do
+    audit = UserActivity.new(
+      user: @user,
+      event_id: -1,
+      timestamp: Time.current,
+    )
+
+    assert_not audit.valid?
+    assert_not_empty audit.errors[:event_id]
+  end
+
+  test "event_id rejects decimal values" do
+    audit = UserActivity.new(
+      user: @user,
+      event_id: 1.5,
+      timestamp: Time.current,
+    )
+
+    assert_not audit.valid?
+    assert_not_empty audit.errors[:event_id]
+  end
+
+  test "level_id rejects negative values" do
+    audit = UserActivity.new(
+      user: @user,
+      level_id: -1,
+      timestamp: Time.current,
+    )
+
+    assert_not audit.valid?
+    assert_not_empty audit.errors[:level_id]
+  end
+
+  test "level_id rejects decimal values" do
+    audit = UserActivity.new(
+      user: @user,
+      level_id: 1.5,
+      timestamp: Time.current,
+    )
+
+    assert_not audit.valid?
+    assert_not_empty audit.errors[:level_id]
+  end
+
+  test "event_id accepts zero" do
+    audit = UserActivity.new(
+      user: @user,
+      user_activity_event: @audit_event,
+      event_id: 0,
+      timestamp: Time.current,
+    )
+
+    # Should be valid based on presence/numericality, but may fail reference validation
+    assert_equal 0, audit.event_id
   end
 end

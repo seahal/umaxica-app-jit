@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: com_documents
-# Database name: document
+# Database name: publication
 #
 #  id                 :bigint           not null, primary key
 #  expires_at         :datetime         default(Infinity), not null
@@ -33,12 +33,12 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (latest_revision_id => com_document_revisions.id) ON DELETE => nullify
-#  fk_rails_...  (latest_version_id => com_document_versions.id) ON DELETE => nullify
+#  fk_rails_...  (latest_revision_id => com_document_revisions.id)
+#  fk_rails_...  (latest_version_id => com_document_versions.id)
 #  fk_rails_...  (status_id => com_document_statuses.id)
 #
 
-class ComDocument < DocumentRecord
+class ComDocument < PublicationRecord
   include ::SlugId
   include Document
 
@@ -82,7 +82,8 @@ class ComDocument < DocumentRecord
   has_one :category_master,
           through: :category,
           source: :com_document_category_master
-  validates :status_id, numericality: { only_integer: true }
+
+  validates_reference_table :status_id, association: :com_document_status
 
   def latest_version
     com_document_versions.order(created_at: :desc).first!

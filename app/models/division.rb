@@ -38,7 +38,7 @@ class Division < OperatorRecord
            inverse_of: :division
 
   validates :division_status_id,
-            length: { maximum: 255 },
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 },
             uniqueness: { scope: :organization_id,
                           message: :already_tagged, }
 end

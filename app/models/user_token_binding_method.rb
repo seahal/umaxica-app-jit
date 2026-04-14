@@ -15,8 +15,4 @@ class UserTokenBindingMethod < TokenRecord
   DEFAULTS = [NOTHING, DBSC, LEGACY].freeze
 
   has_many :user_tokens, dependent: :restrict_with_error
-
-  def self.ensure_defaults!
-    insert_missing_fixed_ids!(DEFAULTS)
-  end
 end

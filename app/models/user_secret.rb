@@ -54,7 +54,8 @@ class UserSecret < PrincipalRecord
 
   validates :name, length: { maximum: 255 }
   validates :password_digest, presence: true, length: { maximum: 255 }
-
+  validates :user_identity_secret_status_id, :user_secret_kind_id,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :enforce_secret_limit, on: :create
   validate :require_verified_recovery_identity, on: :create
 

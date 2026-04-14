@@ -17,6 +17,8 @@ module Preference::Core
     with_preference_connection(:writing) do
       @preference_region = load_or_refresh_preference_child("Region", option_id: nil)
     end
+
+    render_preference_refresh_error! if @preference_region.blank?
   end
 
   def set_region_preferences_update
@@ -36,6 +38,8 @@ module Preference::Core
     with_preference_connection(:writing) do
       @preference_language = load_or_refresh_preference_child("Language", option_id: nil)
     end
+
+    render_preference_refresh_error! if @preference_language.blank?
   end
 
   def set_language_preferences_update
@@ -60,6 +64,8 @@ module Preference::Core
     with_preference_connection(:writing) do
       @preference_timezone = load_or_refresh_preference_child("Timezone", option_id: nil)
     end
+
+    render_preference_refresh_error! if @preference_timezone.blank?
   end
 
   def set_timezone_preferences_update
@@ -90,6 +96,8 @@ module Preference::Core
     with_preference_connection(:writing) do
       @preference_colortheme = load_or_refresh_preference_child("Colortheme", option_id: nil)
     end
+
+    render_preference_refresh_error! if @preference_colortheme.blank?
   end
 
   def set_colortheme_preferences_update
@@ -118,6 +126,8 @@ module Preference::Core
         targetable: false, performant: false, functional: false, consented: false,
       )
     end
+
+    render_preference_refresh_error! if @preference_cookie.blank?
   end
 
   def set_cookie_preferences_update
@@ -143,7 +153,7 @@ module Preference::Core
   def load_or_refresh_preference_child(child_type, default_attributes = {})
     return nil if @preferences.blank?
 
-    association_name = :"#{preference_prefix_underscore}_#{child_type.downcase}"
+    association_name = child_association_name_for_core(child_type)
 
     # Access-token loading can leave a child association memoized on @preferences.
     # Reload it here so preference edit/update screens render the latest DB value
@@ -156,11 +166,24 @@ module Preference::Core
     load_or_create_preference_child(child_type, default_attributes)
   end
 
+  def child_association_name_for_core(child_type)
+    if use_setting_database?
+      :"setting_preference_#{child_type.downcase}"
+    else
+      :"#{preference_prefix_underscore}_#{child_type.downcase}"
+    end
+  end
+
   def reload_preferences_and_reissue_token!
     @preferences.reload
     # Force reload all preference associations to ensure they reflect DB state
     %w(language region timezone colortheme).each do |type|
-      assoc_name = "#{preference_prefix_underscore}_#{type}"
+      assoc_name =
+        if use_setting_database?
+          "setting_preference_#{type}"
+        else
+          "#{preference_prefix_underscore}_#{type}"
+        end
       @preferences.association(assoc_name.to_sym).reload if @preferences.respond_to?(assoc_name)
     end
     issue_access_token_from(@preferences)
@@ -205,7 +228,7 @@ module Preference::Core
 
     copy_preference_values!(@preferences, resource_pref, resource_pref_prefix_for_sync)
   rescue StandardError => e
-    Rails.event.record("preference.sync_to_resource.error", error: e.class.name, message: e.message)
+    recover_resource_preference_sync_failure!(resource:, resource_pref:, error: e)
   end
 
   def resource_pref_prefix_for_sync
@@ -229,6 +252,40 @@ module Preference::Core
     CustomerPreferenceRegion.create(preference: preference)
     CustomerPreferenceColortheme.create(preference: preference)
     preference.reload
+  end
+
+  def recover_resource_preference_sync_failure!(resource:, resource_pref:, error:)
+    return if @preferences.blank?
+
+    if resource_pref.present?
+      copy_preference_values!(@preferences, resource_pref, resource_pref_prefix_for_sync)
+    end
+
+    create_audit_log(
+      event_id: preference_audit_event_class::SYNC_RECOVERY_FAILED,
+      context: {
+        action: "sync_to_resource_preference",
+        source: @preferences.class.name,
+        target: resource_pref&.class&.name,
+        error_class: error.class.name,
+        error_message: error.message,
+        recovery_target: resource_pref&.class&.name,
+        resource_id: resource&.id,
+      },
+    )
+  rescue StandardError => e
+    Rails.event.record(
+      "preference.sync_recovery_failed",
+      action: "sync_to_resource_preference",
+      source: @preferences.class.name,
+      target: resource_pref&.class&.name,
+      recovery_target: resource_pref&.class&.name,
+      resource_id: resource&.id,
+      error_class: e.class.name,
+      error_message: e.message,
+      original_error_class: error.class.name,
+      original_error_message: error.message,
+    )
   end
 
   def preference_cookie_params
@@ -280,18 +337,34 @@ module Preference::Core
   def resolved_preference_snapshot(preference)
     return {} if preference.blank?
 
-    if preference.respond_to?(:language) &&
-        preference.respond_to?(:region) &&
-        preference.respond_to?(:timezone) &&
-        preference.respond_to?(:theme)
-      return {
-        language: preference.language,
-        region: preference.region,
-        timezone: preference.timezone,
-        theme: preference.theme,
-      }.compact
+    if preference.respond_to?(:preference_language)
+      extract_storage_adapter_snapshot(preference)
+    elsif preference.respond_to?(:language)
+      extract_flat_resource_snapshot(preference)
+    else
+      extract_legacy_snapshot(preference)
     end
+  end
 
+  def extract_storage_adapter_snapshot(preference)
+    {
+      language: preference.preference_language&.option&.name&.downcase,
+      region: preference.preference_region&.option&.name&.downcase,
+      timezone: preference.preference_timezone&.option&.name,
+      theme: colortheme_short_code(preference.preference_colortheme&.option&.name),
+    }.compact
+  end
+
+  def extract_flat_resource_snapshot(preference)
+    {
+      language: preference.language,
+      region: preference.region,
+      timezone: preference.timezone,
+      theme: preference.theme,
+    }.compact
+  end
+
+  def extract_legacy_snapshot(preference)
     association_prefix = preference.class.name.underscore
 
     {
@@ -305,6 +378,20 @@ module Preference::Core
   def resolved_preference_cookie(preference)
     return default_preference_cookie_state if preference.blank?
 
+    # Handle StorageAdapter wrapper (has preference_cookie method)
+    if preference.respond_to?(:preference_cookie)
+      cookie = preference.preference_cookie
+      return default_preference_cookie_state if cookie.blank?
+
+      return {
+        consented: !!cookie.consented,
+        functional: !!cookie.functional,
+        performant: !!cookie.performant,
+        targetable: !!cookie.targetable,
+      }
+    end
+
+    # Handle flat resource preferences (direct columns)
     if preference.respond_to?(:consented)
       return {
         consented: !!preference.consented,
@@ -439,6 +526,7 @@ module Preference::Core
     resource_pref =
       case preference_class.name
       when "AppPreference" then resource.user_preference
+      when "ComPreference" then ensure_customer_resource_preference_for_sync(resource)
       when "OrgPreference" then resource.staff_preference
       end
     return if resource_pref.blank?

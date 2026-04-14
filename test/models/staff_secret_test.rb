@@ -211,6 +211,47 @@ class StaffSecretTest < ActiveSupport::TestCase
     assert_not_empty record2.errors[:public_id]
   end
 
+  test "identity_secret_status_class returns StaffSecretStatus" do
+    assert_equal StaffSecretStatus, StaffSecret.identity_secret_status_class
+  end
+
+  test "identity_secret_status_id_column returns staff_identity_secret_status_id" do
+    assert_equal :staff_identity_secret_status_id, StaffSecret.identity_secret_status_id_column
+  end
+
+  test "generate_raw_secret returns base58 string" do
+    secret = StaffSecret.generate_raw_secret(length: 32)
+
+    assert_equal 32, secret.length
+    assert_match(/\A[A-Za-z0-9]+\z/, secret)
+  end
+
+  test "usable_for_secret_sign_in? returns true for active login secret" do
+    record, = StaffSecret.issue!(name: "Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
+
+    assert_predicate record, :usable_for_secret_sign_in?
+  end
+
+  test "usable_for_secret_sign_in? returns false when status not allowed" do
+    record, = StaffSecret.issue!(name: "Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
+    record.update!(staff_identity_secret_status_id: StaffSecretStatus::DELETED)
+
+    assert_not record.usable_for_secret_sign_in?
+  end
+
+  test "verify_for_secret_sign_in! fails with invalid secret" do
+    record, = StaffSecret.issue!(name: "Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
+
+    assert_not record.verify_for_secret_sign_in!("wrong_secret")
+  end
+
+  test "verify_for_secret_sign_in! fails when status not allowed" do
+    record, raw = StaffSecret.issue!(name: "Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
+    record.update!(staff_identity_secret_status_id: StaffSecretStatus::DELETED)
+
+    assert_not record.verify_for_secret_sign_in!(raw)
+  end
+
   private
 
   def create_secret!

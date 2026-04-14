@@ -4,7 +4,7 @@
 # == Schema Information
 #
 # Table name: org_document_statuses
-# Database name: document
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
@@ -21,8 +21,8 @@ class OrgDocumentStatusTest < ActiveSupport::TestCase
     @status = OrgDocumentStatus.find(OrgDocumentStatus::ACTIVE)
   end
 
-  test "inherits from DocumentRecord" do
-    assert_operator OrgDocumentStatus, :<, DocumentRecord
+  test "inherits from PublicationRecord" do
+    assert_operator OrgDocumentStatus, :<, PublicationRecord
   end
 
   test "id is numeric" do

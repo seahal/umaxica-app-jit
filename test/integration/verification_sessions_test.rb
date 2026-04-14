@@ -36,33 +36,34 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "GET within 15 minutes skips verification" do
+  test "GET within 15 minutes keeps verification available" do
     @token.update!(last_step_up_at: 5.minutes.ago, last_step_up_scope: "configuration_email")
 
-    return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
     get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
 
-    get new_sign_app_verification_totp_url(ri: "jp"), headers: @headers
+    assert_response :success
+    assert_select "a[href='#{new_sign_app_verification_totp_path(ri: "jp")}']"
 
-    assert_response :redirect
-    assert_redirected_to sign_app_verification_url(ri: "jp")
+    assert_includes response.body, I18n.t("sign.app.verification.new.methods.totp")
   end
 
   test "POST within 30 minutes skips verification" do
-    @token.update!(last_step_up_at: 20.minutes.ago, last_step_up_scope: "configuration_email")
+    @token.update!(last_step_up_at: 5.minutes.ago, last_step_up_scope: "configuration_email")
 
-    return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
     get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
 
-    Sign::App::Verification::BaseController.any_instance.stub(:verify_totp!, -> { raise RuntimeError, "unexpected" }) do
+    TokenRecord.connected_to(role: :writing) do
       post sign_app_verification_totp_url(ri: "jp"),
-           params: { verification: { code: "000000" } },
+           params: { verification: { code: "123456" } },
            headers: @headers
     end
 
     assert_response :redirect
-    assert_redirected_to sign_app_verification_url(ri: "jp")
+    assert_redirected_to sign_app_configuration_emails_path(ri: "jp")
+    assert_nil session[:reauth]
   end
 end

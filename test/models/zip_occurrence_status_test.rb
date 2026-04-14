@@ -34,4 +34,21 @@ class ZipOccurrenceStatusTest < ActiveSupport::TestCase
   #
   #     assert_expires_at_default(record)
   #   end
+
+  test "ensure_defaults! creates missing default records" do
+    ZipOccurrenceStatus.ensure_defaults!
+
+    ZipOccurrenceStatus::DEFAULTS.each do |id|
+      assert ZipOccurrenceStatus.exists?(id: id)
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    ZipOccurrenceStatus.ensure_defaults!
+    initial_count = ZipOccurrenceStatus.count
+
+    ZipOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, ZipOccurrenceStatus.count
+  end
 end

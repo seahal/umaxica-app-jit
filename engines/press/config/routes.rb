@@ -1,0 +1,114 @@
+# typed: false
+# frozen_string_literal: true
+
+Jit::Press::Engine.routes.draw do
+  # Docs/Press routes - Content delivery for docs, news, and help
+  # These endpoints are accessed via closed network (Cloudflare VPN tunnel)
+
+  # TODO: i want to rename from docs to post.
+  scope module: :docs, as: :docs do
+    constraints host: ENV["DOCS_CORPORATE_URL"] do
+      scope module: :com, as: :com do
+        root to: "roots#index"
+        # Health
+        resource :health, only: :show
+        # Robots
+        resource :robots, only: :show, path: "robots.txt"
+        # Sitemap
+        resource :sitemap, only: :show, path: "sitemap.xml"
+        # OIDC callback
+        namespace :auth do
+          resource :callback, only: :show
+        end
+        # api endpoint for web
+        namespace :web do
+          namespace :v0 do
+            resource :cookie, only: %i(show update)
+            resource :theme, only: %i(show update)
+          end
+        end
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v0, defaults: { format: :json } do
+            resource :health, only: :show
+            resource :sitemap, only: :show
+            resources :posts, only: [:index, :show] do
+              resources :versions, only: [:index, :show]
+            end
+            resources :tags, only: :index
+            resources :categories, only: :index
+          end
+        end
+      end
+    end
+
+    constraints host: ENV["DOCS_SERVICE_URL"] do
+      scope module: :app, as: :app do
+        root to: "roots#index"
+        # OIDC callback
+        namespace :auth do
+          resource :callback, only: :show
+        end
+        # Health
+        resource :health, only: :show
+        # Robots
+        resource :robots, only: :show, path: "robots.txt"
+        # Sitemap
+        resource :sitemap, only: :show, path: "sitemap.xml"
+        namespace :web do
+          namespace :v0 do
+            resource :cookie, only: %i(show update)
+            resource :theme, only: %i(show update)
+          end
+        end
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v0, defaults: { format: :json } do
+            resource :health, only: :show
+            resource :sitemap, only: :show
+            resources :posts, only: [:index, :show] do
+              resources :versions, only: [:index, :show]
+            end
+            resources :tags, only: :index
+            resources :categories, only: :index
+          end
+        end
+      end
+    end
+
+    # For Staff's webpages api.jp.example.org
+    constraints host: ENV["DOCS_STAFF_URL"] do
+      scope module: :org, as: :org do
+        root to: "roots#index"
+        # OIDC callback
+        namespace :auth do
+          resource :callback, only: :show
+        end
+        # Health
+        resource :health, only: :show
+        # Robots
+        resource :robots, only: :show, path: "robots.txt"
+        # Sitemap
+        resource :sitemap, only: :show, path: "sitemap.xml"
+        namespace :web do
+          namespace :v0 do
+            resource :cookie, only: %i(show update)
+            resource :theme, only: %i(show update)
+          end
+        end
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v0, defaults: { format: :json } do
+            resource :health, only: :show
+            resource :sitemap, only: :show
+            resources :posts, only: [:index, :show] do
+              resources :versions, only: [:index, :show]
+            end
+            resources :tags, only: :index
+            resources :categories, only: :index
+          end
+        end
+      end
+    end
+  end
+end

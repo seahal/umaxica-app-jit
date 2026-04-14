@@ -95,4 +95,132 @@ class AppDocumentBehaviorTest < ActiveSupport::TestCase
 
     assert_equal doc, audit.app_document
   end
+
+  test "rejects unknown event_id before database foreign key enforcement" do
+    doc = AppDocument.create!(
+      status_id: AppDocumentStatus::NOTHING,
+      slug_id: "test-doc-#{SecureRandom.hex(4)}",
+      permalink: "test_perm_#{SecureRandom.hex(4)}",
+      revision_key: "rev_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    behavior = AppDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "AppDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: 999_999,
+      level_id: AppDocumentBehaviorLevel::NOTHING,
+    )
+
+    assert_not behavior.valid?
+    assert_includes behavior.errors[:event_id], "must reference an existing app_document_behavior_event"
+  end
+
+  test "rejects unknown level_id before database foreign key enforcement" do
+    doc = AppDocument.create!(
+      status_id: AppDocumentStatus::NOTHING,
+      slug_id: "test-doc-#{SecureRandom.hex(4)}",
+      permalink: "test_perm_#{SecureRandom.hex(4)}",
+      revision_key: "rev_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    behavior = AppDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "AppDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: AppDocumentBehaviorEvent::CREATED,
+      level_id: 999_999,
+    )
+
+    assert_not behavior.valid?
+    assert_includes behavior.errors[:level_id], "must reference an existing app_document_behavior_level"
+  end
+
+  test "event_id rejects negative values" do
+    doc = AppDocument.create!(
+      status_id: AppDocumentStatus::NOTHING,
+      slug_id: "test-doc-#{SecureRandom.hex(4)}",
+      permalink: "test_perm_#{SecureRandom.hex(4)}",
+      revision_key: "rev_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    behavior = AppDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "AppDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: -1,
+    )
+
+    assert_not behavior.valid?
+    assert_not_empty behavior.errors[:event_id]
+  end
+
+  test "event_id rejects decimal values" do
+    doc = AppDocument.create!(
+      status_id: AppDocumentStatus::NOTHING,
+      slug_id: "test-doc-#{SecureRandom.hex(4)}",
+      permalink: "test_perm_#{SecureRandom.hex(4)}",
+      revision_key: "rev_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    behavior = AppDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "AppDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: 1.5,
+    )
+
+    assert_not behavior.valid?
+    assert_not_empty behavior.errors[:event_id]
+  end
+
+  test "level_id rejects negative values" do
+    doc = AppDocument.create!(
+      status_id: AppDocumentStatus::NOTHING,
+      slug_id: "test-doc-#{SecureRandom.hex(4)}",
+      permalink: "test_perm_#{SecureRandom.hex(4)}",
+      revision_key: "rev_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    behavior = AppDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "AppDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      level_id: -1,
+    )
+
+    assert_not behavior.valid?
+    assert_not_empty behavior.errors[:level_id]
+  end
+
+  test "level_id rejects decimal values" do
+    doc = AppDocument.create!(
+      status_id: AppDocumentStatus::NOTHING,
+      slug_id: "test-doc-#{SecureRandom.hex(4)}",
+      permalink: "test_perm_#{SecureRandom.hex(4)}",
+      revision_key: "rev_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    behavior = AppDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "AppDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      level_id: 1.5,
+    )
+
+    assert_not behavior.valid?
+    assert_not_empty behavior.errors[:level_id]
+  end
 end

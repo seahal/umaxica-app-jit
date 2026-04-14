@@ -14,6 +14,7 @@
 #  otp_attempts_count                :integer          default(0), not null
 #  otp_counter                       :text             default(""), not null
 #  otp_expires_at                    :datetime         default(-Infinity), not null
+#  otp_last_sent_at                  :datetime         default(-Infinity), not null
 #  otp_private_key                   :string           default(""), not null
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
@@ -329,5 +330,168 @@ class UserTelephoneTest < ActiveSupport::TestCase
     expected = IdentifierBlindIndex.bidx_for_telephone("+819012345678")
 
     assert_equal expected, user_telephone.number_digest
+  end
+
+  # Maximum limit boundary analysis
+  test "enforce_user_telephone_limit: exactly at limit is invalid" do
+    Prosopite.pause do
+      UserTelephone::MAX_TELEPHONES_PER_USER.times do |i|
+        UserTelephone.create!(@valid_attributes.merge(raw_number: "+155512310#{i}"))
+      end
+    end
+
+    at_limit = UserTelephone.new(@valid_attributes.merge(raw_number: "+15559000001"))
+
+    assert_not at_limit.valid?
+    assert_includes at_limit.errors[:base],
+                    "exceeds maximum telephones per user (#{UserTelephone::MAX_TELEPHONES_PER_USER})"
+  end
+
+  test "enforce_user_telephone_limit: one below limit is valid" do
+    Prosopite.pause do
+      (UserTelephone::MAX_TELEPHONES_PER_USER - 1).times do |i|
+        UserTelephone.create!(@valid_attributes.merge(raw_number: "+155512310#{i}"))
+      end
+    end
+
+    below_limit = UserTelephone.new(@valid_attributes.merge(raw_number: "+15559000002"))
+
+    assert_predicate below_limit, :valid?
+  end
+
+  # locked? sentinel behavior
+  test "locked? returns false when locked_at is +infinity sentinel" do
+    telephone = UserTelephone.new(@valid_attributes)
+    telephone.locked_at = Float::INFINITY
+
+    assert_not telephone.locked?
+  end
+
+  test "locked? returns false when locked_at is -infinity sentinel" do
+    telephone = UserTelephone.new(@valid_attributes)
+    telephone.locked_at = -Float::INFINITY
+
+    assert_not telephone.locked?
+  end
+
+  test "locked? returns true when locked_at is a past timestamp" do
+    telephone = UserTelephone.new(@valid_attributes)
+    telephone.locked_at = 1.minute.ago
+
+    assert_predicate telephone, :locked?
+  end
+
+  test "locked? returns false when otp_attempts_count is below threshold" do
+    telephone = UserTelephone.new(@valid_attributes)
+    telephone.locked_at = -Float::INFINITY
+    telephone.otp_attempts_count = 2
+
+    assert_not telephone.locked?
+  end
+
+  test "locked? returns true when otp_attempts_count reaches threshold" do
+    telephone = UserTelephone.new(@valid_attributes)
+    telephone.locked_at = -Float::INFINITY
+    telephone.otp_attempts_count = 3
+
+    assert_predicate telephone, :locked?
+  end
+
+  # OTP cooldown behavior
+  test "otp_cooldown_active? returns false when otp_last_sent_at is -infinity sentinel" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.update_columns(otp_last_sent_at: "-infinity")
+
+    assert_not telephone.reload.otp_cooldown_active?
+  end
+
+  test "otp_cooldown_active? returns true when OTP was sent within cooldown period" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.update_columns(otp_last_sent_at: 5.seconds.ago)
+
+    assert_predicate telephone.reload, :otp_cooldown_active?
+  end
+
+  test "otp_cooldown_active? returns false when OTP was sent before cooldown period" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.update_columns(otp_last_sent_at: (Telephone::OTP_COOLDOWN_PERIOD + 1.second).ago)
+
+    assert_not telephone.reload.otp_cooldown_active?
+  end
+
+  test "otp_cooldown_remaining returns positive seconds during active cooldown" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.update_columns(otp_last_sent_at: 5.seconds.ago)
+    telephone.reload
+
+    assert_operator telephone.otp_cooldown_remaining, :>, 0
+  end
+
+  test "otp_cooldown_remaining returns zero when cooldown is not active" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.update_columns(otp_last_sent_at: "-infinity")
+
+    assert_equal 0, telephone.reload.otp_cooldown_remaining
+  end
+
+  # increment_attempts! locks at threshold
+  test "increment_attempts! increments otp_attempts_count by one" do
+    telephone = UserTelephone.create!(@valid_attributes)
+
+    assert_changes -> { telephone.reload.otp_attempts_count }, from: 0, to: 1 do
+      telephone.increment_attempts!
+    end
+  end
+
+  test "increment_attempts! locks the record when attempts reach threshold" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.update_columns(otp_attempts_count: 2, locked_at: "-infinity")
+
+    telephone.increment_attempts!
+
+    assert_predicate telephone.reload, :locked?
+    assert_not_equal(-Float::INFINITY, telephone.locked_at)
+    assert_not_equal Float::INFINITY, telephone.locked_at
+  end
+
+  test "increment_attempts! does not overwrite locked_at when already locked by time" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    original_locked_at = 1.minute.ago
+    telephone.update_columns(otp_attempts_count: 3, locked_at: original_locked_at)
+
+    telephone.increment_attempts!
+
+    reloaded = telephone.reload
+
+    assert_in_delta original_locked_at.to_f, reloaded.locked_at.to_f, 1.0
+  end
+
+  # store_otp and clear_otp sentinel behavior
+  test "store_otp sets locked_at to +infinity sentinel" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.store_otp("TESTSECRET", "1", 5.minutes.from_now.to_i)
+
+    assert_equal Float::INFINITY, telephone.reload.locked_at
+  end
+
+  test "store_otp updates otp_last_sent_at to a recent timestamp" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    before = Time.current
+    telephone.store_otp("TESTSECRET", "1", 5.minutes.from_now.to_i)
+    after = Time.current
+
+    sent_at = telephone.reload.otp_last_sent_at
+
+    assert_operator sent_at, :>=, before
+    assert_operator sent_at, :<=, after
+  end
+
+  test "clear_otp sets locked_at to +infinity sentinel" do
+    telephone = UserTelephone.create!(@valid_attributes)
+    telephone.update_columns(locked_at: 1.minute.ago)
+
+    telephone.clear_otp
+
+    assert_equal Float::INFINITY, telephone.reload.locked_at
   end
 end

@@ -49,6 +49,7 @@ class HandleAssignment < AvatarRecord
   belongs_to :assigned_by_actor, class_name: "Avatar", inverse_of: :assignments_created, optional: true
   belongs_to :handle_assignment_status, optional: true
 
+  validates :valid_from, presence: true
   validates :handle_id, uniqueness: { conditions: -> { current } }
   validates :avatar_id, uniqueness: { conditions: -> { current } }
 

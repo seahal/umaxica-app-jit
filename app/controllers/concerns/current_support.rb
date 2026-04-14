@@ -44,7 +44,7 @@ module CurrentSupport
   end
 
   def resolved_current_actor_type(resource)
-    return Current.actor_type if Current.actor_type.present?
+    return Current.actor_type if Current.actor_type.present? && Current.actor_type != :unauthenticated
     return :unauthenticated if resource.blank?
 
     if resource.respond_to?(:staff?) && resource.staff?
@@ -148,6 +148,18 @@ module CurrentSupport
 
     Current.trace_id = context.hex_trace_id
     Current.span_id = context.hex_span_id
+  end
+
+  def current_analytics_consent
+    Current.preference.cookie
+  end
+
+  def current_optional_analytics_allowed?
+    current_analytics_consent.performant?
+  end
+
+  def current_targeting_allowed?
+    current_analytics_consent.targetable?
   end
 
   def resolved_current_surface

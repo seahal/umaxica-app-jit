@@ -4,12 +4,12 @@
 # == Schema Information
 #
 # Table name: app_document_statuses
-# Database name: document
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
 
-class AppDocumentStatus < DocumentRecord
+class AppDocumentStatus < PublicationRecord
   # Fixed IDs - do not modify these values
   ACTIVE = 1
   ARCHIVED = 2

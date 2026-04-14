@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_03_000000) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_07_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_03_000000) do
     t.string "code_challenge_method", limit: 8, default: "S256", null: false
     t.datetime "consumed_at"
     t.datetime "created_at", null: false
+    t.bigint "customer_id"
     t.datetime "expires_at", null: false
     t.string "nonce"
     t.text "redirect_uri", null: false
@@ -35,10 +36,11 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_03_000000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["code"], name: "index_authorization_codes_on_code", unique: true
+    t.index ["customer_id"], name: "index_authorization_codes_on_customer_id"
     t.index ["expires_at"], name: "index_authorization_codes_on_expires_at"
     t.index ["staff_id"], name: "index_authorization_codes_on_staff_id"
     t.index ["user_id"], name: "index_authorization_codes_on_user_id"
-    t.check_constraint "user_id IS NOT NULL AND staff_id IS NULL OR user_id IS NULL AND staff_id IS NOT NULL", name: "chk_authorization_codes_resource"
+    t.check_constraint "user_id IS NOT NULL AND staff_id IS NULL AND customer_id IS NULL OR user_id IS NULL AND staff_id IS NOT NULL AND customer_id IS NULL OR user_id IS NULL AND staff_id IS NULL AND customer_id IS NOT NULL", name: "chk_authorization_codes_resource"
   end
 
   create_table "customer_token_binding_methods", force: :cascade do |t|

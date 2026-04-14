@@ -40,6 +40,15 @@ describe("CookieConsentController", () => {
       controller.connect();
       expect(bannerElement.classList.remove).not.toHaveBeenCalled();
     });
+
+    test("does not show banner when target is missing", () => {
+      controller.consentedValue = false;
+      controller.hasBannerTarget = false;
+
+      controller.connect();
+
+      expect(bannerElement.classList.remove).not.toHaveBeenCalled();
+    });
   });
 
   describe("showBanner/hideBanner", () => {
@@ -55,6 +64,42 @@ describe("CookieConsentController", () => {
   });
 
   describe("submitConsent", () => {
+    test("accept prevents default and submits true", async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ consented: true }),
+      });
+      const event = { preventDefault: vi.fn() };
+
+      await controller.accept(event);
+
+      expect(event.preventDefault).toHaveBeenCalledOnce();
+      expect(fetch).toHaveBeenCalledWith(
+        "/consent",
+        expect.objectContaining({
+          body: expect.stringContaining('"consented":true'),
+        }),
+      );
+    });
+
+    test("reject prevents default and submits false", async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ consented: false }),
+      });
+      const event = { preventDefault: vi.fn() };
+
+      await controller.reject(event);
+
+      expect(event.preventDefault).toHaveBeenCalledOnce();
+      expect(fetch).toHaveBeenCalledWith(
+        "/consent",
+        expect.objectContaining({
+          body: expect.stringContaining('"consented":false'),
+        }),
+      );
+    });
+
     test("accept sends true and hides banner on success", async () => {
       fetch.mockResolvedValue({
         ok: true,
@@ -104,6 +149,38 @@ describe("CookieConsentController", () => {
       );
     });
 
+    test("uses accepted value when response omits consented", async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({}),
+      });
+
+      await controller.submitConsent(false);
+
+      expect(window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: {},
+          type: "consentChanged",
+        }),
+      );
+    });
+
+    test("uses fallback detail when response body is falsy", async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(""),
+      });
+
+      await controller.submitConsent(true);
+
+      expect(window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: { consented: true },
+          type: "consentChanged",
+        }),
+      );
+    });
+
     test("handles error response", async () => {
       fetch.mockResolvedValue({ ok: false, status: 500 });
       const spy = vi.spyOn(controller, "dispatchError");
@@ -120,6 +197,16 @@ describe("CookieConsentController", () => {
       await controller.submitConsent(true);
 
       expect(spy).toHaveBeenCalledWith("Consent update error", expect.any(Object));
+    });
+  });
+
+  describe("dispatchError", () => {
+    test("dispatches error event with merged detail", () => {
+      controller.dispatchError("Consent update failed", { status: 500 });
+
+      expect(controller.dispatch).toHaveBeenCalledWith("error", {
+        detail: { message: "Consent update failed", status: 500 },
+      });
     });
   });
 });

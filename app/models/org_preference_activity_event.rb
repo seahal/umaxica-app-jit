@@ -19,6 +19,7 @@ class OrgPreferenceActivityEvent < ActivityRecord
   RESET_BY_USER_DECISION = 6
   UPDATE_PREFERENCE_REGION = 7
   UPDATE_PREFERENCE_COLORTHEME = 8
+  SYNC_RECOVERY_FAILED = 9
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :org_preference_activities,
@@ -37,6 +38,7 @@ class OrgPreferenceActivityEvent < ActivityRecord
     RESET_BY_USER_DECISION,
     UPDATE_PREFERENCE_REGION,
     UPDATE_PREFERENCE_COLORTHEME,
+    SYNC_RECOVERY_FAILED,
   ].freeze
 
   def self.ensure_defaults!

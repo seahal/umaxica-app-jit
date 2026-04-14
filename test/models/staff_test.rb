@@ -7,7 +7,6 @@
 # Database name: operator
 #
 #  id                   :bigint           not null, primary key
-#  deletable_at         :datetime         default(Infinity), not null
 #  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
 #  shreddable_at        :datetime         default(Infinity), not null
@@ -20,7 +19,6 @@
 #
 # Indexes
 #
-#  index_staffs_on_deletable_at   (deletable_at)
 #  index_staffs_on_public_id      (public_id) UNIQUE
 #  index_staffs_on_shreddable_at  (shreddable_at)
 #  index_staffs_on_status_id      (status_id)
@@ -500,8 +498,6 @@ class StaffTest < ActiveSupport::TestCase
   def root_workspace
     Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
       workspace.name = "Root Workspace"
-      workspace.domain = "root.example.com"
-      workspace.parent_organization = NIL_UUID
     end
   end
 end

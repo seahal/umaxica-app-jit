@@ -52,8 +52,9 @@ class StaffSecret < OperatorRecord
              foreign_key: :staff_identity_secret_status_id
   belongs_to :staff_secret_kind, inverse_of: :staff_secrets
 
-  validates :staff_identity_secret_status_id, numericality: { only_integer: true }
-  validates :staff_secret_kind_id, numericality: { only_integer: true }
+  validates :staff_identity_secret_status_id, presence: true,
+                                              numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :staff_secret_kind_id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :enforce_secret_limit, on: :create
 
   scope :allowed_for_secret_sign_in, lambda {

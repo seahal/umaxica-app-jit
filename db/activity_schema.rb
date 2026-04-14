@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_14_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -145,6 +145,32 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
     t.check_constraint "level_id >= 0", name: "app_timeline_audits_level_id_non_negative_check"
   end
 
+  create_table "audit_timestamps", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "audit_record_id", null: false
+    t.string "audit_record_type", null: false
+    t.datetime "created_at", null: false
+    t.integer "error_code"
+    t.string "hash_algorithm", default: "SHA256", null: false
+    t.datetime "issued_at", null: false
+    t.binary "nonce"
+    t.string "policy_oid"
+    t.string "serial_number", null: false
+    t.integer "status_id", default: 0, null: false
+    t.binary "tsa_certificate"
+    t.binary "tsa_request", null: false
+    t.binary "tsa_response", null: false
+    t.binary "tsa_token", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "verification_status"
+    t.datetime "verified_at"
+    t.index ["audit_record_type", "audit_record_id", "status_id"], name: "index_audit_timestamps_on_record_and_status"
+    t.index ["audit_record_type", "audit_record_id"], name: "index_audit_timestamps_on_audit_record", unique: true
+    t.index ["issued_at"], name: "index_audit_timestamps_on_issued_at"
+    t.index ["serial_number"], name: "index_audit_timestamps_on_serial_number", unique: true
+    t.index ["status_id"], name: "index_audit_timestamps_on_status_id"
+    t.index ["verification_status"], name: "index_audit_timestamps_on_verification_status", where: "(verification_status IS NOT NULL)"
+  end
+
   create_table "com_contact_audit_events", force: :cascade do |t|
   end
 
@@ -273,6 +299,37 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_99ec847a5c"
     t.check_constraint "event_id >= 0", name: "com_timeline_audits_event_id_non_negative_check"
     t.check_constraint "level_id >= 0", name: "com_timeline_audits_level_id_non_negative_check"
+  end
+
+  create_table "notification_activities", force: :cascade do |t|
+    t.bigint "actor_id", default: 0, null: false
+    t.text "actor_type", default: "", null: false
+    t.jsonb "context", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.text "current_value", default: "", null: false
+    t.bigint "event_id", default: 0, null: false
+    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.inet "ip_address", default: "0.0.0.0", null: false
+    t.bigint "level_id", default: 0, null: false
+    t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.text "previous_value", default: "", null: false
+    t.bigint "subject_id", null: false
+    t.text "subject_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id", "occurred_at"], name: "index_notification_activities_on_actor_id_and_occurred_at"
+    t.index ["event_id"], name: "index_notification_activities_on_event_id"
+    t.index ["expires_at"], name: "index_notification_activities_on_expires_at"
+    t.index ["level_id"], name: "index_notification_activities_on_level_id"
+    t.index ["occurred_at"], name: "index_notification_activities_on_occurred_at"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_notification_act"
+    t.check_constraint "event_id >= 0", name: "notification_activities_event_id_non_negative_check"
+    t.check_constraint "level_id >= 0", name: "notification_activities_level_id_non_negative_check"
+  end
+
+  create_table "notification_activity_events", force: :cascade do |t|
+  end
+
+  create_table "notification_activity_levels", force: :cascade do |t|
   end
 
   create_table "org_contact_audit_events", force: :cascade do |t|
@@ -442,9 +499,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "previous_digest"
     t.text "previous_value", default: "", null: false
+    t.string "record_digest"
+    t.bigint "sequence_number"
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
+    t.datetime "tsa_at"
+    t.text "tsa_token"
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_staff_activities_on_actor_id_and_occurred_at"
     t.index ["actor_type", "actor_id"], name: "index_staff_activities_on_actor"
@@ -452,8 +514,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
     t.index ["expires_at"], name: "index_staff_activities_on_expires_at"
     t.index ["level_id"], name: "index_staff_activities_on_level_id"
     t.index ["occurred_at"], name: "index_staff_activities_on_occurred_at"
+    t.index ["record_digest"], name: "index_staff_activities_on_record_digest", unique: true
+    t.index ["sequence_number", "record_digest"], name: "index_staff_activities_on_chain_validation"
+    t.index ["sequence_number"], name: "index_staff_activities_on_sequence_number", unique: true
     t.index ["subject_id"], name: "index_staff_activities_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_2e96c29236"
+    t.index ["tsa_at"], name: "index_staff_activities_on_tsa_at"
     t.check_constraint "event_id >= 0", name: "staff_activities_event_id_non_negative_check"
     t.check_constraint "level_id >= 0", name: "staff_activities_level_id_non_negative_check"
   end
@@ -475,9 +541,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "previous_digest"
     t.text "previous_value", default: "", null: false
+    t.string "record_digest"
+    t.bigint "sequence_number"
     t.bigint "subject_id", null: false
     t.text "subject_type", null: false
+    t.datetime "tsa_at"
+    t.text "tsa_token"
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_user_activities_on_actor_id_and_occurred_at"
     t.index ["actor_type", "actor_id"], name: "index_user_activities_on_actor"
@@ -485,8 +556,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
     t.index ["expires_at"], name: "index_user_activities_on_expires_at"
     t.index ["level_id"], name: "index_user_activities_on_level_id"
     t.index ["occurred_at"], name: "index_user_activities_on_occurred_at"
+    t.index ["record_digest"], name: "index_user_activities_on_record_digest", unique: true
+    t.index ["sequence_number", "record_digest"], name: "index_user_activities_on_chain_validation"
+    t.index ["sequence_number"], name: "index_user_activities_on_sequence_number", unique: true
     t.index ["subject_id"], name: "index_user_activities_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_a29eb711dd"
+    t.index ["tsa_at"], name: "index_user_activities_on_tsa_at"
     t.check_constraint "event_id >= 0", name: "user_activities_event_id_non_negative_check"
     t.check_constraint "level_id >= 0", name: "user_activities_level_id_non_negative_check"
   end
@@ -513,6 +588,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_29_155000) do
   add_foreign_key "com_preference_activities", "com_preference_activity_levels", column: "level_id", validate: false
   add_foreign_key "com_timeline_audits", "com_timeline_audit_events", column: "event_id", validate: false
   add_foreign_key "com_timeline_audits", "com_timeline_audit_levels", column: "level_id", validate: false
+  add_foreign_key "notification_activities", "notification_activity_events", column: "event_id"
+  add_foreign_key "notification_activities", "notification_activity_levels", column: "level_id"
   add_foreign_key "org_contact_histories", "org_contact_audit_events", column: "event_id", validate: false
   add_foreign_key "org_contact_histories", "org_contact_audit_levels", column: "level_id", validate: false
   add_foreign_key "org_document_audits", "org_document_audit_events", column: "event_id", validate: false

@@ -61,6 +61,8 @@ class UserOccurrence < OccurrenceRecord
   scope :expired, -> { where(status_id: EXPIRED_STATUS_ID) }
 
   validates :body, length: { maximum: 36 }
-  validates :status_id, numericality: { only_integer: true }
   validates :event_type, length: { maximum: 255 }, allow_nil: true
+  validates :status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

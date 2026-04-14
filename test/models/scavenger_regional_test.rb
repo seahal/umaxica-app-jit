@@ -102,4 +102,32 @@ class ScavengerRegionalTest < ActiveSupport::TestCase
       )
     end
   end
+
+  test "rejects unknown event_id before database foreign key enforcement" do
+    record = ScavengerRegional.new(
+      region_id: 10,
+      occurred_at: Time.current,
+      job_type: "scavenger:regional:test",
+      idempotency_key: "regional-bad-event-#{SecureRandom.hex(6)}",
+      event_id: 999_999,
+      status_id: ScavengerRegionalStatus::NOTHING,
+    )
+
+    assert_not record.valid?
+    assert_includes record.errors[:event_id], "must reference an existing scavenger_regional_event"
+  end
+
+  test "rejects unknown status_id before database foreign key enforcement" do
+    record = ScavengerRegional.new(
+      region_id: 10,
+      occurred_at: Time.current,
+      job_type: "scavenger:regional:test",
+      idempotency_key: "regional-bad-status-#{SecureRandom.hex(6)}",
+      event_id: ScavengerRegionalEvent::NOTHING,
+      status_id: 999_999,
+    )
+
+    assert_not record.valid?
+    assert_includes record.errors[:status_id], "must reference an existing scavenger_regional_status"
+  end
 end

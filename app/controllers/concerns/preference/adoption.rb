@@ -22,7 +22,13 @@ module Preference
 
       sync_preferences!(resource_pref)
     rescue StandardError => e
-      Rails.event.record("preference.adoption.error", error: e.class.name, message: e.message)
+      handle_preference_sync_failure!(
+        action: "adopt_preference_for",
+        source: @preferences,
+        target: resource_pref,
+        resource: resource,
+        error: e,
+      )
     end
 
     # Called during preference rotation to keep UserPreference/StaffPreference in sync.
@@ -37,7 +43,13 @@ module Preference
 
       copy_preference_values!(@preferences, resource_pref, resource_pref_prefix)
     rescue StandardError => e
-      Rails.event.record("preference.adoption.rotation_error", error: e.class.name, message: e.message)
+      handle_preference_sync_failure!(
+        action: "adopt_rotated_preference",
+        source: @preferences,
+        target: resource_pref,
+        resource: resource,
+        error: e,
+      )
     end
 
     def adoptable_preference_class?
@@ -111,6 +123,14 @@ module Preference
         copy_preference_values!(@preferences, resource_pref, resource_pref_prefix)
         issue_access_token_from(@preferences)
       end
+    rescue StandardError => e
+      handle_preference_sync_failure!(
+        action: "sync_preferences",
+        source: @preferences,
+        target: resource_pref,
+        resource: resource_pref,
+        error: e,
+      )
     end
 
     # Copy child record option_ids and cookie consent from source to target.
@@ -143,6 +163,94 @@ module Preference
       copy_flat_preference_values!(source, target)
       copy_cookie_consent!(source, target, source_assoc, target_assoc)
       touch_target!(target)
+    end
+
+    def handle_preference_sync_failure!(action:, source:, target:, resource:, error:)
+      surface = preference_class.name.delete_suffix("Preference")
+      local_target = local_preference_for_surface(resource, surface)
+      recover_preference_sync_failure!(action:, source:, target:, local_target:, resource:, error:)
+      create_preference_sync_audit_log!(
+        action: action,
+        source: source,
+        target: target,
+        local_target: local_target,
+        resource: resource,
+        error: error,
+      )
+      Rails.event.record(
+        "preference.sync_failure",
+        action: action,
+        surface: surface,
+        source: source&.class&.name,
+        target: target&.class&.name,
+        local_target: local_target&.class&.name,
+        resource_id: resource&.id,
+        error_class: error.class.name,
+        error_message: error.message,
+      )
+    end
+
+    def create_preference_sync_audit_log!(action:, source:, target:, local_target:, resource:, error:)
+      return if @preferences.blank?
+
+      create_audit_log(
+        event_id: preference_audit_event_class::SYNC_RECOVERY_FAILED,
+        context: {
+          action: action,
+          source: source&.class&.name,
+          target: target&.class&.name,
+          local_target: local_target&.class&.name,
+          recovery_target: local_target&.class&.name,
+          resource_id: resource&.id,
+          error_class: error.class.name,
+          error_message: error.message,
+        },
+      )
+    rescue StandardError => e
+      Rails.event.record(
+        "preference.sync_recovery_audit_failed",
+        action: action,
+        source: source&.class&.name,
+        target: target&.class&.name,
+        local_target: local_target&.class&.name,
+        resource_id: resource&.id,
+        error_class: e.class.name,
+        error_message: e.message,
+        original_error_class: error.class.name,
+        original_error_message: error.message,
+      )
+    end
+
+    def recover_preference_sync_failure!(action:, source:, target:, local_target:, resource:, error:)
+      return if source.blank? || local_target.blank?
+
+      local_source = source
+      local_copy = local_target
+      copy_preference_values!(local_source, local_copy, resource_pref_prefix)
+    rescue StandardError => e
+      Rails.event.record(
+        "preference.sync_recovery_failed",
+        action: action,
+        source: source&.class&.name,
+        target: target&.class&.name,
+        local_target: local_target&.class&.name,
+        resource_id: resource&.id,
+        error_class: e.class.name,
+        error_message: e.message,
+        original_error_class: error.class.name,
+        original_error_message: error.message,
+      )
+    end
+
+    def local_preference_for_surface(resource, surface)
+      case surface
+      when "App"
+        resource.user_preference
+      when "Org"
+        resource.staff_preference
+      when "Com"
+        resource.customer_preference if resource.respond_to?(:customer_preference)
+      end
     end
 
     def resolve_cross_db_option_id(source_child, target_option_class)

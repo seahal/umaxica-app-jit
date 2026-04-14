@@ -32,7 +32,7 @@ class OrganizationInvitation < TokenRecord
              primary_key: :id,
              optional: true
 
-  validates :code, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: true, length: { maximum: 32 }
   validates :email, presence: true
   validates :organization_id, presence: true
   validates :invited_by_id, presence: true

@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_document_category_masters
-# Database name: document
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -18,7 +18,7 @@
 
 # frozen_string_literal: true
 
-class OrgDocumentCategoryMaster < DocumentRecord
+class OrgDocumentCategoryMaster < PublicationRecord
   # Fixed IDs - do not modify these values
   NOTHING = 1
   include Treeable

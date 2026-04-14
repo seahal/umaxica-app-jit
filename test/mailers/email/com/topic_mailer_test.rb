@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "ostruct"
 require "test_helper"
 
 class Email::Com::TopicMailerTest < ActionMailer::TestCase

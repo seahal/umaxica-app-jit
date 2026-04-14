@@ -19,6 +19,10 @@ module Org
       new(invitation_code: invitation_code, email: email).validate!
     end
 
+    def self.consume!(invitation_code:, email: nil)
+      new(invitation_code: invitation_code, email: email).consume!
+    end
+
     def initialize(invitation_code:, email: nil)
       @invitation_code = invitation_code.to_s.downcase.strip
       @email = email.to_s.downcase.strip.presence

@@ -24,15 +24,17 @@ require "json"
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  client_id             :string(64)       not null
+#  customer_id           :bigint
 #  staff_id              :bigint
 #  user_id               :bigint
 #
 # Indexes
 #
-#  index_authorization_codes_on_code        (code) UNIQUE
-#  index_authorization_codes_on_expires_at  (expires_at)
-#  index_authorization_codes_on_staff_id    (staff_id)
-#  index_authorization_codes_on_user_id     (user_id)
+#  index_authorization_codes_on_code         (code) UNIQUE
+#  index_authorization_codes_on_customer_id  (customer_id)
+#  index_authorization_codes_on_expires_at   (expires_at)
+#  index_authorization_codes_on_staff_id     (staff_id)
+#  index_authorization_codes_on_user_id      (user_id)
 #
 class AuthorizationCode < TokenRecord
   CODE_TTL = 10.seconds
@@ -40,23 +42,27 @@ class AuthorizationCode < TokenRecord
 
   belongs_to :user, optional: true
   belongs_to :staff, optional: true
+  belongs_to :customer, optional: true
 
-  validates :code, presence: true, uniqueness: true
-  validates :client_id, presence: true
+  validates :code, presence: true, uniqueness: true, length: { maximum: 64 }
+  validates :client_id, presence: true, length: { maximum: 64 }
   validates :redirect_uri, presence: true
   validates :code_challenge, presence: true
-  validates :code_challenge_method, inclusion: { in: %w(S256) }
+  validates :code_challenge_method, inclusion: { in: %w(S256) }, length: { maximum: 8 }
   validates :expires_at, presence: true
   validate :exactly_one_resource
 
   scope :valid, -> { where(consumed_at: nil, revoked_at: nil).where("expires_at > ?", Time.current) }
 
   def resource
-    user || staff
+    customer || user || staff
   end
 
   def resource_type
-    user_id? ? "user" : "staff"
+    return "customer" if customer_id?
+    return "user" if user_id?
+
+    "staff"
   end
 
   class << self
@@ -65,11 +71,12 @@ class AuthorizationCode < TokenRecord
     end
 
     def issue!(client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil,
-               nonce: nil, auth_method: nil, acr: nil, user: nil, staff: nil)
+               nonce: nil, auth_method: nil, acr: nil, user: nil, staff: nil, customer: nil)
       create!(
         code: generate_code,
         user: user,
         staff: staff,
+        customer: customer,
         client_id: client_id,
         redirect_uri: redirect_uri,
         code_challenge: code_challenge,
@@ -136,10 +143,16 @@ class AuthorizationCode < TokenRecord
   private
 
   def exactly_one_resource
-    if user_id.blank? && staff_id.blank?
-      errors.add(:base, "must belong to either a user or a staff")
-    elsif user_id.present? && staff_id.present?
-      errors.add(:base, "cannot belong to both a user and a staff")
+    resources = {
+      user_id: user_id,
+      staff_id: staff_id,
+      customer_id: customer_id,
+    }.compact_blank
+
+    if resources.empty?
+      errors.add(:base, "must belong to either a user, a staff, or a customer")
+    elsif resources.size > 1
+      errors.add(:base, "cannot belong to more than one resource")
     end
   end
 end

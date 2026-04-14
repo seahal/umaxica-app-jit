@@ -79,6 +79,30 @@ class DomainOccurrenceTest < ActiveSupport::TestCase
     assert_invalid_attribute(record, :status_id)
   end
 
+  test "status_id rejects negative values" do
+    record = build_occurrence(DomainOccurrence, body: "example.co.jp", status_id: -1)
+
+    assert_invalid_attribute(record, :status_id)
+  end
+
+  test "status_id rejects decimal values" do
+    record = build_occurrence(DomainOccurrence, body: "example.co.jp", status_id: 1.5)
+
+    assert_invalid_attribute(record, :status_id)
+  end
+
+  test "status_id accepts zero" do
+    record = build_occurrence(DomainOccurrence, body: "example.co.jp", status_id: 0)
+
+    assert_predicate record, :valid?
+  end
+
+  test "status_id accepts positive integers" do
+    record = build_occurrence(DomainOccurrence, body: "example.co.jp", status_id: 1)
+
+    assert_predicate record, :valid?
+  end
+
   test "memo length" do
     record = build_occurrence(DomainOccurrence, body: "example.co.jp", memo: "a" * 1025)
 

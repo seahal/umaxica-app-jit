@@ -187,19 +187,7 @@ module Preference::Global
     return if params[:ri].present?
     return unless request.get? || request.head?
 
-    redirect_params = request.query_parameters.merge(ri: get_region)
-
-    redirect_url = url_for(
-      protocol: request.protocol,
-      host: request.host,
-      port: request.port,
-      controller: controller_path,
-      action: action_name,
-      **redirect_params.symbolize_keys,
-      only_path: false,
-    )
-
-    redirect_to(redirect_url)
+    redirect_to(build_ri_redirect_url(get_region), status: redirect_status_for_ri?, allow_other_host: false)
   end
 
   def set_locale

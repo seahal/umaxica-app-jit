@@ -57,4 +57,26 @@ class OrgPreferenceLanguageOptionTest < ActiveSupport::TestCase
 
     assert_nil option.name
   end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [1, 2], OrgPreferenceLanguageOption::DEFAULTS
+  end
+
+  test "ensure_defaults! creates missing records" do
+    OrgPreferenceLanguageOption.where(id: OrgPreferenceLanguageOption::DEFAULTS).destroy_all
+
+    OrgPreferenceLanguageOption.ensure_defaults!
+
+    assert OrgPreferenceLanguageOption.exists?(id: OrgPreferenceLanguageOption::JA)
+    assert OrgPreferenceLanguageOption.exists?(id: OrgPreferenceLanguageOption::EN)
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    OrgPreferenceLanguageOption.ensure_defaults!
+    initial_count = OrgPreferenceLanguageOption.count
+
+    OrgPreferenceLanguageOption.ensure_defaults!
+
+    assert_equal initial_count, OrgPreferenceLanguageOption.count
+  end
 end

@@ -38,7 +38,7 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     # Simulate Apple callback as logged-in user
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+    get Rails.application.routes.url_helpers.sign_app_auth_callback_url(provider: "apple", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
 
     # Should redirect to success path (configuration page)
@@ -80,7 +80,7 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
     # Simulate Google callback as logged-in user
     get sign_app_social_start_url(provider: "google_app", intent: "link", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
-    get sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
+    get Rails.application.routes.url_helpers.sign_app_auth_callback_url(provider: "google_app", ri: "jp"),
         headers: @callback_headers.merge(as_user_headers(user, host: @host))
 
     # Should redirect to success path

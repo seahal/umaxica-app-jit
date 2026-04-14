@@ -86,6 +86,34 @@ class UserTokenTest < ActiveSupport::TestCase
     assert_equal @user.id, @token.user_id
   end
 
+  test "rejects unknown user_token_kind_id before database foreign key enforcement" do
+    token = UserToken.new(user: @user, user_token_kind_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:user_token_kind_id], "must reference an existing user_token_kind"
+  end
+
+  test "rejects unknown user_token_status_id before database foreign key enforcement" do
+    token = UserToken.new(user: @user, user_token_status_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:user_token_status_id], "must reference an existing user_token_status"
+  end
+
+  test "rejects unknown user_token_binding_method_id before database foreign key enforcement" do
+    token = UserToken.new(user: @user, user_token_binding_method_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:user_token_binding_method_id], "must reference an existing user_token_binding_method"
+  end
+
+  test "rejects unknown user_token_dbsc_status_id before database foreign key enforcement" do
+    token = UserToken.new(user: @user, user_token_dbsc_status_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:user_token_dbsc_status_id], "must reference an existing user_token_dbsc_status"
+  end
+
   test "assigns numeric id automatically" do
     assert_not_nil @token.id
     assert_kind_of Integer, @token.id
@@ -135,20 +163,6 @@ class UserTokenTest < ActiveSupport::TestCase
     @token.update!(updated_at: Time.current)
 
     assert_operator @token.updated_at, :>, original_updated_at
-  end
-
-  test "enforces maximum concurrent sessions per user" do
-    user = User.create!
-
-    UserToken::MAX_TOTAL_SESSIONS_PER_USER.times do
-      UserToken.create!(user: user)
-    end
-
-    extra_token = UserToken.new(user: user)
-
-    assert_not extra_token.valid?
-    assert_includes extra_token.errors[:base],
-                    "exceeds maximum concurrent sessions per user (#{UserToken::MAX_TOTAL_SESSIONS_PER_USER})"
   end
 
   test "refresh token digest updates and authenticates" do
@@ -245,10 +259,15 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "public_id length boundary" do
-    @token.public_id = "a" * 22
+    user = users(:one)
+    token = UserToken.new(
+      user: user,
+      public_id: "a" * 22,
+      refresh_expires_at: 1.day.from_now,
+    )
 
-    assert_not @token.valid?
-    assert_not_empty @token.errors[:public_id]
+    assert_not token.valid?
+    assert_not_empty token.errors[:public_id]
   end
 
   test "refresh_expires_at is required" do
@@ -381,5 +400,83 @@ class UserTokenTest < ActiveSupport::TestCase
 
   test "find_from_signed_ref returns nil for invalid signature" do
     assert_nil UserToken.find_from_signed_ref("invalid-signed-ref")
+  end
+
+  test "3rd session succeeds when 2 non-rotated exist for user" do
+    user = User.create!
+
+    2.times do
+      UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    end
+
+    third = UserToken.new(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+
+    assert_predicate third, :valid?
+    assert third.save
+  end
+
+  test "rotated tokens are excluded from concurrent session limit" do
+    user = User.create!
+
+    2.times do
+      UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    end
+
+    rotated = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    rotated.update!(rotated_at: Time.current)
+
+    third = UserToken.new(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+
+    assert_predicate third, :valid?
+    assert third.save
+  end
+
+  test "status inclusion validation accepts valid values" do
+    user = User.create!
+    token = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+
+    token.status = "active"
+
+    assert_predicate token, :valid?
+
+    token.status = "restricted"
+
+    assert_predicate token, :valid?
+
+    token.status = "revoked"
+
+    assert_predicate token, :valid?
+  end
+
+  test "status inclusion validation rejects invalid values" do
+    user = User.create!
+    token = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
+    token.status = "invalid_status"
+
+    assert_not token.valid?
+    assert_not_empty token.errors[:status]
+  end
+
+  test "status exactly 20 characters persists at the column boundary" do
+    token = UserToken.new(
+      user: User.create!,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.day.from_now,
+    )
+    token.status = "x" * 20
+
+    assert token.save(validate: false)
+    assert_equal "x" * 20, token.reload.status
+  end
+
+  test "status longer than 20 characters is rejected by the database" do
+    token = UserToken.new(
+      user: User.create!,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      refresh_expires_at: 1.day.from_now,
+    )
+    token.status = "x" * 21
+
+    assert_raises(ActiveRecord::StatementInvalid) { token.save!(validate: false) }
   end
 end

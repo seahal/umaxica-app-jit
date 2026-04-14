@@ -39,4 +39,21 @@ class EmailOccurrenceStatusTest < ActiveSupport::TestCase
   #
   #     assert_expires_at_default(record)
   #   end
+
+  test "ensure_defaults! creates missing default records" do
+    EmailOccurrenceStatus.ensure_defaults!
+
+    EmailOccurrenceStatus::DEFAULTS.each do |id|
+      assert EmailOccurrenceStatus.exists?(id: id)
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    EmailOccurrenceStatus.ensure_defaults!
+    initial_count = EmailOccurrenceStatus.count
+
+    EmailOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, EmailOccurrenceStatus.count
+  end
 end

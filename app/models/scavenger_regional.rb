@@ -46,8 +46,11 @@ class ScavengerRegional < BehaviorRecord
              primary_key: "id",
              inverse_of: :scavenger_regionals
 
-  validates :event_id, numericality: { only_integer: true }, allow_nil: true
-  validates :status_id, numericality: { only_integer: true }, allow_nil: true
+  validates_reference_table :event_id, association: :scavenger_regional_event
+  validates_reference_table :status_id, association: :scavenger_regional_status
+  validates :event_id, :status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :job_type, presence: true, length: { maximum: 64 }
   validates :idempotency_key, presence: true, length: { maximum: 128 }
   validates :region_id, presence: true

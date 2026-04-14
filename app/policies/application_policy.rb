@@ -1,17 +1,50 @@
 # typed: false
 # frozen_string_literal: true
 
-# Base policy class for authorization using Pundit
-# Provides common authorization patterns for both User and Staff actors
-class ApplicationPolicy
-  attr_reader :actor, :record # Use 'actor' instead of 'user' to support both User and Staff
+# Base policy class for authorization using Action Policy.
+# Provides common authorization patterns for both User and Staff actors.
+#
+# Inherits from ActionPolicy::Base for caching, scoping, and rule resolution.
+# The authorization subject is exposed as both `user` (Action Policy convention)
+# and `actor` (project convention, supports User and Staff).
+#
+# == Initialization
+#
+# Supports two call styles during the transition period:
+#
+#   # Legacy style (current tests and internal callers):
+#   SomePolicy.new(actor, record)
+#
+#   # Action Policy style (future preference):
+#   SomePolicy.new(record, user: actor)
+#
+# == Scoping
+#
+# The inner `Scope` class is a transitional plain-Ruby scope, not an Action Policy
+# `scope_for` block. Migrate individual policies to `scope_for :relation` as needed.
+class ApplicationPolicy < ActionPolicy::Base
+  # Declare the authorization subject as optional so policies can be instantiated
+  # without a user (e.g., in tests or unauthenticated contexts).
+  authorize :user, optional: true
 
-  # Alias user to actor for compatibility with standard Pundit expectations and tests
-  alias_method :user, :actor
+  # Project-wide alias: `actor` refers to the authorization subject (User or Staff).
+  alias_method :actor, :user
 
-  def initialize(actor, record)
-    @actor = actor
-    @record = record
+  # Accept both call styles:
+  #   Legacy (actor, record)  - two positional args
+  #   Action Policy (record, user:) - one positional arg + keyword
+  def initialize(*args, **params)
+    case args.length
+    when 2
+      # Legacy style: Policy.new(actor, record)
+      actor_arg, record_arg = args
+      super(record_arg, user: actor_arg, **params)
+    when 1
+      # Action Policy style: Policy.new(record) or Policy.new(record, user: actor)
+      super(args.first, **params)
+    else
+      super(nil, **params)
+    end
   end
 
   # Default permissions - deny all by default (allowlist approach)
@@ -45,7 +78,6 @@ class ApplicationPolicy
 
   protected
 
-  # Get the workspace from the record if it has one
   # @return [Object, nil]
   def organization
     @organization ||=
@@ -64,14 +96,12 @@ class ApplicationPolicy
     Auth::TokenClaims.scopes(Current.token)
   end
 
-  # Check if the actor has a specific scope
   # @param scope [String] the scope to check (e.g., "read:self", "write:org")
   # @return [Boolean]
   def has_scope?(scope)
     jwt_scopes.include?(scope.to_s)
   end
 
-  # Check if the actor has permission for the current domain
   # @param allowed_domains [Array<String>] list of allowed domain prefixes (e.g., ["app", "org"])
   # @return [Boolean]
   def domain_permitted?(*allowed_domains)
@@ -83,7 +113,6 @@ class ApplicationPolicy
     allowed_domains.map(&:to_s).include?(domain.to_s)
   end
 
-  # Extract domain from audience claim in Current.token
   def extract_domain_from_audience
     return nil if Current.token.blank?
 
@@ -93,14 +122,13 @@ class ApplicationPolicy
     audiences.first.to_s.split(".").first
   end
 
-  # Get JWT subject (actor ID) from Current.token
+  # @return [Object, nil]
   def jwt_subject
     return nil if Current.token.blank?
 
     Auth::TokenClaims.subject(Current.token)
   end
 
-  # Check if current token is for specific domain
   def domain_app?
     extract_domain_from_audience == "app"
   end
@@ -113,7 +141,6 @@ class ApplicationPolicy
     extract_domain_from_audience == "com"
   end
 
-  # Check if actor owns the record
   # @return [Boolean]
   def owner?
     return false unless actor
@@ -127,7 +154,6 @@ class ApplicationPolicy
     end
   end
 
-  # Role-based checks
   def operator?
     actor&.has_role?("operator", organization: organization)
   end
@@ -148,7 +174,6 @@ class ApplicationPolicy
     actor&.has_role?("viewer", organization: organization)
   end
 
-  # Combined role checks
   def operator_or_manager?
     actor&.operator_or_manager?(organization: organization)
   end
@@ -165,7 +190,8 @@ class ApplicationPolicy
     actor&.can_contribute?(organization: organization)
   end
 
-  # Scope class for filtering collections based on permissions
+  # Transitional plain-Ruby scope class.
+  # Not an Action Policy scope_for block - migrate to `scope_for :relation` per policy as needed.
   class Scope
     attr_reader :actor, :scope
 
@@ -180,7 +206,6 @@ class ApplicationPolicy
 
     protected
 
-    # Helper to check if actor has a role
     def has_role?(role_key, organization: nil)
       actor&.has_role?(role_key, organization: organization)
     end

@@ -7,6 +7,11 @@
 #
 nothing:
   id: 0
-
-created:
+legacy_nothing:
   id: 1
+created:
+  id: 2
+updated:
+  id: 3
+deleted:
+  id: 4

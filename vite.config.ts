@@ -17,6 +17,22 @@ export default defineConfig({
       "**/build/**",
       "**/coverage/**",
     ],
+    coverage: {
+      provider: "custom",
+      customProviderModule: "./test/javascript/support/vite_plus_coverage_provider.js",
+      include: [
+        "app/javascript/controllers/**/*_controller.js",
+        "app/javascript/theme_cookie.js",
+        "app/javascript/controllers/webauthn_utils.js",
+      ],
+      reporter: ["text", "html"],
+      thresholds: {
+        lines: 99,
+        functions: 99,
+        branches: 99,
+        statements: 99,
+      },
+    },
   },
   fmt: {
     // ============================================================

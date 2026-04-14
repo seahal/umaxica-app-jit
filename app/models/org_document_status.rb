@@ -4,12 +4,12 @@
 # == Schema Information
 #
 # Table name: org_document_statuses
-# Database name: document
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
 
-class OrgDocumentStatus < DocumentRecord
+class OrgDocumentStatus < PublicationRecord
   # Fixed IDs - do not modify these values
   ACTIVE = 1
   ARCHIVED = 2

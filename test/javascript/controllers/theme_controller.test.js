@@ -1,361 +1,381 @@
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 vi.mock("@hotwired/stimulus", () => ({
-  // eslint-disable-next-line @typescript-eslint/no-extraneous-class
   Controller: class {
     connect() {}
   },
 }));
 
-const { default: ThemeController } =
-  await import("../../../app/javascript/controllers/theme_controller.js");
-
-// ──────────────────────────────────────────────
-// DOM グローバルのモック
-// ──────────────────────────────────────────────
-
-let cookieReadValue = "";
-let cookieWritten = [];
+let ThemeController;
+let cookieReadValue;
 let fetchMock;
+let documentMock;
+let windowMock;
+let radioLookup;
+let themeValueElement;
+let matchMediaState;
+let matchMediaListener;
 
 const classListMock = {
   _store: new Set(),
-  add(...cls) {
-    cls.forEach((c) => this._store.add(c));
+  add(...classes) {
+    classes.forEach((name) => this._store.add(name));
   },
-  remove(...cls) {
-    cls.forEach((c) => this._store.delete(c));
+  remove(...classes) {
+    classes.forEach((name) => this._store.delete(name));
   },
-  toggle(cls, force) {
+  toggle(name, force) {
     if (force) {
-      this._store.add(cls);
+      this._store.add(name);
     } else {
-      this._store.delete(cls);
+      this._store.delete(name);
     }
   },
-  has(cls) {
-    return this._store.has(cls);
+  has(name) {
+    return this._store.has(name);
   },
 };
-
-const documentMock = {
-  get cookie() {
-    return cookieReadValue;
-  },
-  set cookie(val) {
-    cookieWritten.push(val);
-  },
-  documentElement: { dataset: {}, classList: classListMock },
-  getElementById: vi.fn(() => null),
-  querySelector: vi.fn(() => null),
-  addEventListener: vi.fn(),
-};
-
-const windowMock = { matchMedia: vi.fn(() => ({ matches: false, addEventListener: vi.fn() })) };
 
 function makeController() {
   const controller = new ThemeController();
-  controller.element = { querySelector: vi.fn() };
+  controller.element = {
+    querySelector: vi.fn((selector) => radioLookup[selector] ?? null),
+  };
   return controller;
 }
 
-beforeEach(() => {
+beforeEach(async () => {
+  vi.resetModules();
+
   cookieReadValue = "";
-  cookieWritten = [];
-  classListMock._store = new Set();
-  windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
-  documentMock.getElementById.mockReturnValue(null);
-  documentMock.querySelector.mockReturnValue(null);
-  documentMock.addEventListener.mockReset();
   fetchMock = vi.fn();
+  radioLookup = {};
+  themeValueElement = null;
+  matchMediaState = false;
+  matchMediaListener = null;
+  classListMock._store = new Set();
+
+  documentMock = {
+    get cookie() {
+      return cookieReadValue;
+    },
+    documentElement: { dataset: {}, classList: classListMock },
+    querySelector: vi.fn((selector) => {
+      if (selector === "#js-theme-cookie-value") {
+        return themeValueElement;
+      }
+      if (selector === 'meta[name="csrf-token"]') {
+        return { content: "csrf-token" };
+      }
+      return null;
+    }),
+  };
+
+  windowMock = {
+    matchMedia: vi.fn(() => ({
+      addEventListener: vi.fn((name, callback) => {
+        if (name === "change") {
+          matchMediaListener = callback;
+        }
+      }),
+      get matches() {
+        return matchMediaState;
+      },
+    })),
+  };
 
   vi.stubGlobal("document", documentMock);
   vi.stubGlobal("window", windowMock);
-  vi.stubGlobal("location", { protocol: "https:" });
   vi.stubGlobal("fetch", fetchMock);
+
+  ({ default: ThemeController } =
+    await import("../../../app/javascript/controllers/theme_controller.js"));
 });
 
-// ──────────────────────────────────────────────
-// connect
-// ──────────────────────────────────────────────
+describe("ThemeController", () => {
+  describe("connect", () => {
+    test("delegates to fetchAndSyncTheme", () => {
+      const controller = makeController();
+      const spy = vi.spyOn(controller, "fetchAndSyncTheme").mockResolvedValue(undefined);
 
-describe("connect", () => {
-  test("syncRadio を呼ぶ", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Failed")));
-    const controller = makeController();
-    const spy = vi.spyOn(controller, "syncRadio");
-    controller.connect();
-    await vi.waitFor(() => {
+      controller.connect();
+
       expect(spy).toHaveBeenCalledOnce();
     });
   });
-});
 
-// ──────────────────────────────────────────────
-// select
-// ──────────────────────────────────────────────
+  describe("select", () => {
+    test("maps dark, light, system, and unknown values to theme codes", async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({ theme: "dr" }),
+      });
+      const controller = makeController();
 
-describe("select", () => {
-  test('"dark" を PATCH /web/v0/theme に送る', async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "dr" }),
+      await controller.select({ target: { value: "dark" } });
+      await controller.select({ target: { value: "light" } });
+      await controller.select({ target: { value: "system" } });
+      await controller.select({ target: { value: "unknown" } });
+
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        1,
+        "/web/v0/theme",
+        expect.objectContaining({ body: JSON.stringify({ theme: "dr" }) }),
+      );
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        2,
+        "/web/v0/theme",
+        expect.objectContaining({ body: JSON.stringify({ theme: "li" }) }),
+      );
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        3,
+        "/web/v0/theme",
+        expect.objectContaining({ body: JSON.stringify({ theme: "sy" }) }),
+      );
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        4,
+        "/web/v0/theme",
+        expect.objectContaining({ body: JSON.stringify({ theme: "sy" }) }),
+      );
     });
-    const controller = makeController();
-    await controller.select({ target: { value: "dark" } });
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/web/v0/theme",
-      expect.objectContaining({
-        method: "PATCH",
-        body: JSON.stringify({ theme: "dr" }),
-      }),
-    );
   });
 
-  test('"light" を PATCH /web/v0/theme に送る', async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "li" }),
+  describe("fetchAndSyncTheme", () => {
+    test("syncs theme from API response", async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({ theme: "dr" }),
+      });
+      const controller = makeController();
+      const syncSpy = vi.spyOn(controller, "syncRadioFromThemeCode");
+      const applySpy = vi.spyOn(controller, "applyThemeFromCode");
+
+      await controller.fetchAndSyncTheme();
+
+      expect(syncSpy).toHaveBeenCalledWith("dr");
+      expect(applySpy).toHaveBeenCalledWith("dr");
     });
-    const controller = makeController();
-    await controller.select({ target: { value: "light" } });
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/web/v0/theme",
-      expect.objectContaining({
-        method: "PATCH",
-        body: JSON.stringify({ theme: "li" }),
-      }),
-    );
-  });
 
-  test('"system" を PATCH /web/v0/theme に送る', async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "sy" }),
+    test("uses system fallback when API omits theme", async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      });
+      const controller = makeController();
+
+      await controller.fetchAndSyncTheme();
+
+      expect(controller.element.querySelector).toHaveBeenCalledWith('input[value="system"]');
+      expect(documentMock.documentElement.dataset.theme).toBe("system");
     });
-    const controller = makeController();
-    await controller.select({ target: { value: "system" } });
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/web/v0/theme",
-      expect.objectContaining({
-        method: "PATCH",
-        body: JSON.stringify({ theme: "sy" }),
-      }),
-    );
-  });
 
-  test("未知の値はデフォルトで theme=sy を送る", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "sy" }),
+    test("falls back to cookie when request rejects", async () => {
+      fetchMock.mockRejectedValue(new Error("Network error"));
+      cookieReadValue = "ct=dr";
+      const radio = { checked: false };
+      radioLookup['input[value="dark"]'] = radio;
+      const controller = makeController();
+
+      await controller.fetchAndSyncTheme();
+
+      expect(radio.checked).toBe(true);
+      expect(documentMock.documentElement.dataset.theme).toBe("dark");
     });
-    const controller = makeController();
-    await controller.select({ target: { value: "unknown" } });
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/web/v0/theme",
-      expect.objectContaining({
-        body: JSON.stringify({ theme: "sy" }),
-      }),
-    );
-  });
 
-  test("select は JS から ct クッキーを書かない", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "dr" }),
+    test("falls back to cookie when response is not ok", async () => {
+      fetchMock.mockResolvedValue({ ok: false, status: 500 });
+      cookieReadValue = "ct=li";
+      const radio = { checked: false };
+      radioLookup['input[value="light"]'] = radio;
+      const controller = makeController();
+
+      await controller.fetchAndSyncTheme();
+
+      expect(radio.checked).toBe(true);
+      expect(documentMock.documentElement.dataset.theme).toBe("light");
     });
-    const controller = makeController();
-    await controller.select({ target: { value: "dark" } });
-    expect(cookieWritten).toEqual([]);
-  });
-});
 
-// ──────────────────────────────────────────────
-// syncRadio
-// ──────────────────────────────────────────────
+    test("falls back to system theme when cookie value is blank", async () => {
+      fetchMock.mockRejectedValue(new Error("Network error"));
+      cookieReadValue = "ct=";
+      themeValueElement = { textContent: "" };
+      const radio = { checked: false };
+      radioLookup['input[value="system"]'] = radio;
+      const controller = makeController();
 
-describe("syncRadio", () => {
-  test('ct=dr のとき radio[value="dark"] をチェックする', () => {
-    cookieReadValue = "ct=dr";
-    const radio = { checked: false };
-    const controller = makeController();
-    controller.element.querySelector.mockReturnValue(radio);
-    controller.syncRadio();
-    expect(controller.element.querySelector).toHaveBeenCalledWith('input[value="dark"]');
-    expect(radio.checked).toBe(true);
-  });
+      await controller.fetchAndSyncTheme();
 
-  test('ct=li のとき radio[value="light"] をチェックする', () => {
-    cookieReadValue = "ct=li";
-    const radio = { checked: false };
-    const controller = makeController();
-    controller.element.querySelector.mockReturnValue(radio);
-    controller.syncRadio();
-    expect(controller.element.querySelector).toHaveBeenCalledWith('input[value="light"]');
-    expect(radio.checked).toBe(true);
-  });
-
-  test('ct=sy のとき radio[value="system"] をチェックする', () => {
-    cookieReadValue = "ct=sy";
-    const radio = { checked: false };
-    const controller = makeController();
-    controller.element.querySelector.mockReturnValue(radio);
-    controller.syncRadio();
-    expect(controller.element.querySelector).toHaveBeenCalledWith('input[value="system"]');
-    expect(radio.checked).toBe(true);
-  });
-
-  test("ct クッキーがない場合は system にフォールバックする", () => {
-    cookieReadValue = "other=value";
-    const radio = { checked: false };
-    const controller = makeController();
-    controller.element.querySelector.mockReturnValue(radio);
-    controller.syncRadio();
-    expect(controller.element.querySelector).toHaveBeenCalledWith('input[value="system"]');
-    expect(radio.checked).toBe(true);
-  });
-
-  test("クッキーが空の場合は system にフォールバックする", () => {
-    cookieReadValue = "";
-    const radio = { checked: false };
-    const controller = makeController();
-    controller.element.querySelector.mockReturnValue(radio);
-    controller.syncRadio();
-    expect(controller.element.querySelector).toHaveBeenCalledWith('input[value="system"]');
-  });
-
-  test("対応する radio がない場合はエラーにならない", () => {
-    cookieReadValue = "ct=dr";
-    const controller = makeController();
-    controller.element.querySelector.mockReturnValue(null);
-    expect(() => controller.syncRadio()).not.toThrow();
-  });
-
-  test("複数クッキーがある場合も ct を正しく読む", () => {
-    cookieReadValue = "foo=bar; ct=li; baz=qux";
-    const radio = { checked: false };
-    const controller = makeController();
-    controller.element.querySelector.mockReturnValue(radio);
-    controller.syncRadio();
-    expect(controller.element.querySelector).toHaveBeenCalledWith('input[value="light"]');
-  });
-});
-
-// ──────────────────────────────────────────────
-// applyThemeFromCookie (統合テスト)
-// ──────────────────────────────────────────────
-
-describe("applyThemeFromCookie (統合テスト)", () => {
-  test("theme=dr 応答でダークテーマを適用する", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "dr" }),
+      expect(radio.checked).toBe(true);
+      expect(documentMock.documentElement.dataset.theme).toBe("system");
+      expect(themeValueElement.textContent).toBe("system");
     });
-    const controller = makeController();
-    await controller.select({ target: { value: "dark" } });
 
-    expect(classListMock.has("dark")).toBe(true);
-    expect(classListMock.has("theme-dark")).toBe(true);
+    test("falls back to custom lower-case theme when cookie is unknown", async () => {
+      fetchMock.mockRejectedValue(new Error("Network error"));
+      cookieReadValue = "ct=CUSTOM";
+      const controller = makeController();
+
+      await controller.fetchAndSyncTheme();
+
+      expect(documentMock.documentElement.dataset.theme).toBe("custom");
+      expect(classListMock.has("theme-custom")).toBe(true);
+    });
+
+    test("falls back to system theme when ct cookie is missing", async () => {
+      fetchMock.mockRejectedValue(new Error("Network error"));
+      cookieReadValue = "";
+      const controller = makeController();
+
+      await controller.fetchAndSyncTheme();
+
+      expect(documentMock.documentElement.dataset.theme).toBe("system");
+    });
   });
 
-  test("theme=li 応答でライトテーマを適用する", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "li" }),
-    });
-    const controller = makeController();
-    await controller.select({ target: { value: "light" } });
+  describe("syncRadio", () => {
+    test("checks dark, light, system, and fallback radios from cookie", () => {
+      const dark = { checked: false };
+      const light = { checked: false };
+      const system = { checked: false };
+      radioLookup['input[value="dark"]'] = dark;
+      radioLookup['input[value="light"]'] = light;
+      radioLookup['input[value="system"]'] = system;
+      const controller = makeController();
 
-    expect(classListMock.has("dark")).toBe(false);
-    expect(classListMock.has("theme-light")).toBe(true);
+      cookieReadValue = "ct=dr";
+      controller.syncRadio();
+      cookieReadValue = "ct=li";
+      controller.syncRadio();
+      cookieReadValue = "ct=sy";
+      controller.syncRadio();
+      cookieReadValue = "other=value";
+      controller.syncRadio();
+
+      expect(dark.checked).toBe(true);
+      expect(light.checked).toBe(true);
+      expect(system.checked).toBe(true);
+    });
+
+    test("does nothing when matching radio is missing", () => {
+      cookieReadValue = "ct=dr";
+      const controller = makeController();
+
+      expect(() => controller.syncRadio()).not.toThrow();
+    });
   });
 
-  test("theme=sy 応答でシステムテーマを適用する (matches: false)", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "sy" }),
-    });
-    windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
-    const controller = makeController();
-    await controller.select({ target: { value: "system" } });
+  describe("syncRadioFromThemeCode", () => {
+    test("checks radio for explicit and fallback theme codes", () => {
+      const dark = { checked: false };
+      const light = { checked: false };
+      const system = { checked: false };
+      radioLookup['input[value="dark"]'] = dark;
+      radioLookup['input[value="light"]'] = light;
+      radioLookup['input[value="system"]'] = system;
+      const controller = makeController();
 
-    expect(classListMock.has("dark")).toBe(false);
-    expect(classListMock.has("theme-system")).toBe(true);
+      controller.syncRadioFromThemeCode("dr");
+      controller.syncRadioFromThemeCode("li");
+      controller.syncRadioFromThemeCode("unknown");
+
+      expect(dark.checked).toBe(true);
+      expect(light.checked).toBe(true);
+      expect(system.checked).toBe(true);
+    });
+
+    test("does nothing when matching radio is missing", () => {
+      const controller = makeController();
+
+      expect(() => controller.syncRadioFromThemeCode("dr")).not.toThrow();
+    });
   });
 
-  test("theme=sy 応答でシステムテーマを適用する (matches: true)", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "sy" }),
-    });
-    windowMock.matchMedia.mockReturnValue({ matches: true, addEventListener: vi.fn() });
-    const controller = makeController();
-    await controller.select({ target: { value: "system" } });
+  describe("applyThemeFromCode", () => {
+    test("applies explicit theme and updates visible value", () => {
+      themeValueElement = { textContent: "" };
+      const controller = makeController();
 
-    expect(classListMock.has("dark")).toBe(true);
-    expect(classListMock.has("theme-system")).toBe(true);
+      controller.applyThemeFromCode("dr");
+
+      expect(documentMock.documentElement.dataset.theme).toBe("dark");
+      expect(classListMock.has("dark")).toBe(true);
+      expect(classListMock.has("theme-dark")).toBe(true);
+      expect(themeValueElement.textContent).toBe("dark");
+    });
+
+    test("applies fallback system theme when code is unknown", () => {
+      const controller = makeController();
+
+      controller.applyThemeFromCode("unknown");
+
+      expect(documentMock.documentElement.dataset.theme).toBe("system");
+      expect(classListMock.has("theme-system")).toBe(true);
+    });
+
+    test("does not fail when visible value element is missing", () => {
+      const controller = makeController();
+
+      expect(() => controller.applyThemeFromCode("li")).not.toThrow();
+      expect(classListMock.has("theme-light")).toBe(true);
+    });
+
+    test("registers one system theme listener and reacts to changes", () => {
+      const controller = makeController();
+
+      controller.applyThemeFromCode("sy");
+      matchMediaState = true;
+      matchMediaListener();
+
+      expect(windowMock.matchMedia).toHaveBeenCalledWith("(prefers-color-scheme: dark)");
+      expect(classListMock.has("dark")).toBe(true);
+    });
   });
 
-  test("theme=sy 応答でシステムデフォルトを適用する", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "sy" }),
+  describe("updateTheme", () => {
+    test("patches theme, syncs radio, and applies returned theme", async () => {
+      const radio = { checked: false };
+      radioLookup['input[value="dark"]'] = radio;
+      themeValueElement = { textContent: "" };
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({ theme: "dr" }),
+      });
+      const controller = makeController();
+
+      await controller.updateTheme("dr");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/web/v0/theme",
+        expect.objectContaining({
+          method: "PATCH",
+          headers: expect.objectContaining({ "X-CSRF-Token": "csrf-token" }),
+          body: JSON.stringify({ theme: "dr" }),
+        }),
+      );
+      expect(radio.checked).toBe(true);
+      expect(themeValueElement.textContent).toBe("dark");
     });
-    windowMock.matchMedia.mockReturnValue({ matches: false, addEventListener: vi.fn() });
-    const controller = makeController();
-    await controller.select({ target: { value: "system" } });
 
-    expect(classListMock.has("dark")).toBe(false);
-    expect(classListMock.has("theme-system")).toBe(true);
-  });
+    test("uses requested theme code when response omits it", async () => {
+      const radio = { checked: false };
+      radioLookup['input[value="light"]'] = radio;
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      });
+      const controller = makeController();
 
-  test("html.dataset.theme に正しい値が設定される", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "dr" }),
+      await controller.updateTheme("li");
+
+      expect(radio.checked).toBe(true);
+      expect(classListMock.has("theme-light")).toBe(true);
     });
-    const controller = makeController();
-    await controller.select({ target: { value: "dark" } });
 
-    expect(documentMock.documentElement.dataset.theme).toBe("dark");
-  });
+    test("throws when patch response is not ok", async () => {
+      fetchMock.mockResolvedValue({ ok: false, status: 422 });
+      const controller = makeController();
 
-  test("js-theme-cookie-value 要素がある場合、テーマ値を設定する", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "li" }),
+      await expect(controller.updateTheme("dr")).rejects.toThrow("HTTP error! status: 422");
     });
-    const valueEl = { textContent: "" };
-    documentMock.querySelector.mockReturnValue(valueEl);
-    const controller = makeController();
-    await controller.select({ target: { value: "light" } });
-
-    expect(documentMock.querySelector).toHaveBeenCalledWith("#js-theme-cookie-value");
-    expect(valueEl.textContent).toBe("light");
-  });
-
-  test("js-theme-cookie-value 要素がない場合、エラーにならない", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "dr" }),
-    });
-    documentMock.querySelector.mockReturnValue(null);
-    const controller = makeController();
-
-    await expect(controller.select({ target: { value: "dark" } })).resolves.toBeUndefined();
-  });
-
-  test("システムテーマが選択されると matchMedia が呼ばれる", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ theme: "sy" }),
-    });
-    const matchMediaMock = vi.fn(() => ({ matches: false, addEventListener: vi.fn() }));
-    windowMock.matchMedia = matchMediaMock;
-    const controller = makeController();
-
-    await controller.select({ target: { value: "system" } });
-    expect(matchMediaMock).toHaveBeenCalledWith("(prefers-color-scheme: dark)");
   });
 });

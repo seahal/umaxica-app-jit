@@ -20,7 +20,10 @@ class CurrentSupportTest < ActiveSupport::TestCase
     include CurrentSupport
 
     # Expose private methods for testing.
-    public :set_current_observability, :resolved_resource_preference
+    public :set_current_observability, :resolved_resource_preference,
+           :resolved_current_token, :resolved_current_actor_type,
+           :resolved_current_preference, :current_analytics_consent,
+           :current_optional_analytics_allowed?, :current_targeting_allowed?
   end
 
   setup do
@@ -148,6 +151,23 @@ class CurrentSupportTest < ActiveSupport::TestCase
     assert_equal "custom_trace", Current.trace_id
   end
 
+  test "current analytics consent reflects current preference cookie" do
+    cookie = Current::Preference::Cookie.new(
+      consented: true, functional: true, performant: true,
+      targetable: false, consent_version: "1", consented_at: Time.current,
+    )
+    Current.preference = Current::Preference.new(cookie: cookie)
+
+    assert_equal cookie, @host.current_analytics_consent
+    assert_predicate @host, :current_optional_analytics_allowed?
+    assert_not @host.current_targeting_allowed?
+  end
+
+  test "current analytics consent defaults to disabled state" do
+    assert_not_predicate @host, :current_optional_analytics_allowed?
+    assert_not_predicate @host, :current_targeting_allowed?
+  end
+
   # --- resolved_resource_preference does NOT call set_current_observability ---
 
   test "resolved_resource_preference does not call set_current_observability" do
@@ -197,6 +217,127 @@ class CurrentSupportTest < ActiveSupport::TestCase
     Current.actor_type = :user
 
     assert_equal user, host_class.new.safe_current_resource
+  end
+
+  test "resolved_current_token prefers access_token_payload hash" do
+    host_class =
+      Class.new(Host) do
+        define_method(:access_token_payload) { { "sid" => "from-access" } }
+        define_method(:load_access_token_payload) { { "sid" => "from-loader" } }
+      end
+
+    assert_equal({ "sid" => "from-access" }, host_class.new.resolved_current_token)
+  end
+
+  test "resolved_current_token uses load_access_token_payload when access_token_payload is nil" do
+    host_class =
+      Class.new(Host) do
+        define_method(:access_token_payload) { nil }
+        define_method(:load_access_token_payload) { { "sid" => "from-loader" } }
+      end
+
+    assert_equal({ "sid" => "from-loader" }, host_class.new.resolved_current_token)
+  end
+
+  test "resolved_current_token ignores non hash payloads" do
+    host_class =
+      Class.new(Host) do
+        define_method(:access_token_payload) { "not-a-hash" }
+        define_method(:load_access_token_payload) { nil }
+      end
+
+    assert_nil host_class.new.resolved_current_token
+  end
+
+  test "resolved_current_token returns nil when payload resolution raises" do
+    host_class =
+      Class.new(Host) do
+        define_method(:access_token_payload) { raise RuntimeError, "boom" }
+      end
+
+    assert_nil host_class.new.resolved_current_token
+  end
+
+  test "resolved_current_actor_type detects staff resource" do
+    assert_equal :staff, @host.resolved_current_actor_type(staffs(:one))
+  end
+
+  test "resolved_current_actor_type detects customer resource" do
+    assert_equal :customer, @host.resolved_current_actor_type(customers(:one))
+  end
+
+  test "resolved_current_actor_type detects user resource" do
+    assert_equal :user, @host.resolved_current_actor_type(users(:one))
+  end
+
+  test "resolved_current_actor_type returns unauthenticated for nil resource" do
+    assert_equal :unauthenticated, @host.resolved_current_actor_type(nil)
+  end
+
+  test "resolved_current_actor_type preserves already assigned Current actor type" do
+    Current.actor_type = :staff
+
+    assert_equal :staff, @host.resolved_current_actor_type(users(:one))
+  end
+
+  test "resolved_current_preference uses DB-backed preference before JWT fallback" do
+    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NOTHING)
+    preference = UserPreference.create!(
+      user: user,
+      language: "en",
+      region: "us",
+      timezone: "Etc/UTC",
+      theme: "dr",
+      consented: true,
+      functional: true,
+      performant: true,
+      targetable: false,
+      consent_version: SecureRandom.uuid,
+      consented_at: Time.current,
+    )
+
+    resolved = @host.resolved_current_preference(user)
+
+    assert_equal preference.language, resolved.language
+    assert_equal preference.region, resolved.region
+    assert_equal preference.timezone, resolved.timezone
+    assert_equal preference.theme, resolved.theme
+    assert_predicate resolved.cookie, :consented?
+    assert_predicate resolved.cookie, :performant?
+  end
+
+  test "resolved_current_preference falls back to JWT claim with cookie payload" do
+    host_class =
+      Class.new(Host) do
+        define_method(:access_token_payload) do
+          { "prf" => { "lx" => "en", "ri" => "us", "tz" => "Etc/UTC", "ct" => "li" } }
+        end
+
+        define_method(:preference_payload_preferences) do
+          { "consented" => true, "functional" => false, "performant" => true, "targetable" => false }
+        end
+      end
+
+    resolved = host_class.new.resolved_current_preference(nil)
+
+    assert_equal "en", resolved.language
+    assert_equal "us", resolved.region
+    assert_equal "Etc/UTC", resolved.timezone
+    assert_equal "li", resolved.theme
+    assert_predicate resolved.cookie, :consented?
+    assert_predicate resolved.cookie, :performant?
+    assert_not resolved.cookie.functional?
+  end
+
+  test "resolved_current_preference returns null preference with safe defaults when no sources exist" do
+    resolved = @host.resolved_current_preference(nil)
+
+    assert_predicate resolved, :null?
+    assert_equal "ja", resolved.language
+    assert_equal "jp", resolved.region
+    assert_equal "Asia/Tokyo", resolved.timezone
+    assert_equal "sy", resolved.theme
+    assert_not resolved.cookie.consented?
   end
 
   private

@@ -42,6 +42,9 @@ class TelephoneOccurrence < OccurrenceRecord
   before_validation :normalize_body_unless_hmac
 
   validates :body, presence: true, length: { maximum: 255 }
+  validates :status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :validate_body_format_unless_hmac
 
   belongs_to :telephone_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :telephone_occurrences
@@ -59,8 +62,6 @@ class TelephoneOccurrence < OccurrenceRecord
   has_many :user_occurrences, through: :telephone_user_occurrences
   has_many :telephone_zip_occurrences, dependent: :destroy, inverse_of: :telephone_occurrence
   has_many :zip_occurrences, through: :telephone_zip_occurrences
-
-  validates :status_id, numericality: { only_integer: true }
 
   private
 

@@ -51,6 +51,17 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     assert_equal "telephone を追加してください", response.body
   end
 
+  test "app contacts rejects staff auth headers" do
+    host! @app_host
+    clear_user_channels(@user)
+    add_user_email(@user)
+    add_user_telephone(@user)
+
+    get new_main_app_contact_url, headers: org_auth_headers(@staff)
+
+    assert_response :redirect
+  end
+
   test "app contacts creates inquiry directly and validates title/body boundaries" do
     host! @app_host
     clear_user_channels(@user)
@@ -113,6 +124,17 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     assert_equal "telephone を追加してください", response.body
+  end
+
+  test "org contacts rejects user auth headers" do
+    host! @org_host
+    clear_staff_channels(@staff)
+    add_staff_email(@staff)
+    add_staff_telephone(@staff)
+
+    get new_main_org_contact_url, headers: app_auth_headers(@user)
+
+    assert_response :redirect
   end
 
   test "org contacts creates inquiry directly" do
@@ -238,6 +260,37 @@ class CoreContactsFlowTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_includes @response.redirect_url, "/contacts/#{contact.public_id}"
     assert_not_includes @response.redirect_url, "/email"
+  end
+
+  test "com contacts stays public when customer auth headers are present" do
+    host! @com_host
+    customer = create_verified_customer_with_email(
+      email_address: "com-guest-#{SecureRandom.hex(4)}@example.com",
+    )
+
+    CloudflareTurnstile.test_mode = true
+    CloudflareTurnstile.test_validation_response = { "success" => true }
+
+    get new_main_com_contact_url, headers: as_customer_headers(customer, host: @com_host)
+
+    assert_response :success
+
+    assert_difference(["ComContact.count", "ComContactTopic.count"], 1) do
+      post main_com_contacts_url,
+           headers: as_customer_headers(customer, host: @com_host),
+           params: {
+             com_contact: {
+               category_id: ComContactCategory::SECURITY_ISSUE,
+               confirm_policy: "1",
+               email_address: "public-#{SecureRandom.hex(4)}@example.com",
+               telephone_number: "+1555#{rand(1_000_000..9_999_999)}",
+               title: "Public inquiry with customer header",
+               body: "Public body",
+             },
+           }
+    end
+
+    assert_response :redirect
   end
 
   private

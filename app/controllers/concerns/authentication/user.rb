@@ -70,7 +70,8 @@ module Authentication
       :user_id
     end
 
-    # FIXME: what is this method?
+    # Header key for test environment user injection.
+    # Allows tests to set the current user via request headers.
     def test_header_key
       "X-TEST-CURRENT-USER"
     end

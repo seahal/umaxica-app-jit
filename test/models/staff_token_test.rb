@@ -87,6 +87,35 @@ class StaffTokenTest < ActiveSupport::TestCase
     assert_equal @staff.id, @token.staff_id
   end
 
+  test "rejects unknown staff_token_kind_id before database foreign key enforcement" do
+    token = StaffToken.new(staff: @staff, staff_token_kind_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:staff_token_kind_id], "must reference an existing staff_token_kind"
+  end
+
+  test "rejects unknown staff_token_status_id before database foreign key enforcement" do
+    token = StaffToken.new(staff: @staff, staff_token_status_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:staff_token_status_id], "must reference an existing staff_token_status"
+  end
+
+  test "rejects unknown staff_token_binding_method_id before database foreign key enforcement" do
+    token = StaffToken.new(staff: @staff, staff_token_binding_method_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:staff_token_binding_method_id],
+                    "must reference an existing staff_token_binding_method"
+  end
+
+  test "rejects unknown staff_token_dbsc_status_id before database foreign key enforcement" do
+    token = StaffToken.new(staff: @staff, staff_token_dbsc_status_id: 999_999)
+
+    assert_not token.valid?
+    assert_includes token.errors[:staff_token_dbsc_status_id], "must reference an existing staff_token_dbsc_status"
+  end
+
   test "assigns numeric id automatically" do
     assert_not_nil @token.id
     assert_kind_of Integer, @token.id

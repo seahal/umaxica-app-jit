@@ -9,23 +9,32 @@ ruby "3.4.9"
 gem "rake"
 # Rack
 gem "rack"
+# Boundary enforcement for granular modular architecture
+gem "packwerk", require: false
 # Rails
 #   gem "rails", "~> 8.1.0"
 gem "rails", github: "rails/rails", branch: "main"
+# Rails Engines for four-deployment architecture
+# - signature: Auth/Passkey/OIDC (permanent URLs)
+# - world: Global BFF/Dashboard (flexible evolution)
+# - station: Regional operations (per-region deploy)
+# - press: Content delivery (closed network via CF VPN)
+gem "jit-world", path: "engines/world" # FIXME: jit_global
+gem "jit-signature", path: "engines/signature" # FIXME: rename jit_visa
+gem "jit-station", path: "engines/station" # FIXME: jit_regional
+gem "jit-press", path: "engines/press" # FIXME: jit_publisher
 # Web server
 gem "puma"
+gem "falcon"
 # Push Notification
-gem "web-push"
 gem "action_push_native"
-# JSON APIs
-gem "jbuilder"
-# Use OpenStruct
-gem "ostruct"
 # Database
 gem "pg"
 gem "strong_migrations"
 # Redis
 gem "redis"
+# Typed Redis structures
+gem "kredis"
 # Timeout
 gem "rack-timeout", group: %i(development production)
 # CORS
@@ -62,6 +71,7 @@ gem "solid_cache"
 # Solid Queue
 gem "solid_queue"
 gem "mission_control-jobs"
+gem "mission_control-servers"
 # Pagination
 gem "pagy"
 # WebAuthn (FIDO2)
@@ -83,14 +93,20 @@ gem "tailwindcss-rails"
 gem "meta-tags"
 # ID generation
 gem "nanoid"
+# OpenStruct
+gem "ostruct"
 # Authentication
-gem "pundit"
+gem "action_policy"
 # billing
 gem "stripe"
 # SQL exploration
 gem "blazer"
 gem "sentry-ruby"
 gem "sentry-rails"
+# Data maintenance tasks with web UI (works with SolidQueue)
+gem "maintenance_tasks"
+# Multi-channel notification framework
+gem "noticed"
 
 group :development, :test do
   # Test coverage
@@ -112,10 +128,6 @@ group :development, :test do
   gem "tapioca", require: false
   # sorbet
   gem "rack-livereload"
-  # Guard
-  gem "guard"
-  gem "guard-minitest"
-  gem "guard-livereload", require: false
 end
 
 group :development do
@@ -144,8 +156,6 @@ group :development do
   gem "rubocop-rubycw", require: false
   gem "rubocop-rails", require: false
   gem "rubocop-sorbet", require: false
-  # Boundary enforcement for granular modular architecture
-  gem "packwerk", require: false
   # ERB lint
   gem "erb_lint", require: false
   # Annotate models, routes, fixtures, etc.
@@ -155,9 +165,9 @@ group :development do
   gem "flay", require: false
   gem "reek", require: false
   # ERD diagrams
-  gem "rails-erd", require: false
-  gem "railroady", require: false
   gem "rails-mermaid_erd", require: false
   # Security
   gem "bundler-audit", require: false
+  # Git hooks manager
+  gem "lefthook", require: false
 end

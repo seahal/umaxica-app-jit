@@ -45,8 +45,11 @@ class OrgTimelineBehavior < BehaviorRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
+  validates_reference_table :event_id, association: :org_timeline_behavior_event
+  validates_reference_table :level_id, association: :org_timeline_behavior_level
+  validates :event_id, presence: true,
+                       numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :level_id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   def org_timeline
     OrgTimeline.find(subject_id) if subject_type == "OrgTimeline"

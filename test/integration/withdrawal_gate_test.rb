@@ -34,7 +34,7 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
   end
 
   test "deactivated user accessing normal page redirects to configuration edit" do
-    get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+    get Rails.application.routes.url_helpers.sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
     assert_redirected_to edit_sign_app_configuration_path(ri: "jp")

@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "ostruct"
 require "test_helper"
 
 class CookieDomainTest < ActiveSupport::TestCase
@@ -16,6 +15,14 @@ class CookieDomainTest < ActiveSupport::TestCase
   test "for returns nil when env variable is blank and request host is localhost" do
     stub_creds(:COOKIE_DOMAIN_APP, nil) do
       result = Core::CookieDomain.for(surface: :app, request_host: "localhost")
+
+      assert_nil result
+    end
+  end
+
+  test "for returns nil when com env variable is blank and request host is localhost" do
+    stub_creds(:COOKIE_DOMAIN_COM, nil) do
+      result = Core::CookieDomain.for(surface: :com, request_host: "localhost")
 
       assert_nil result
     end
@@ -45,6 +52,14 @@ class CookieDomainTest < ActiveSupport::TestCase
     end
   end
 
+  test "for derives domain from request host for com surface" do
+    stub_creds(:COOKIE_DOMAIN_COM, nil) do
+      result = Core::CookieDomain.for(surface: :com, request_host: "main.com.example.com")
+
+      assert_equal ".example.com", result
+    end
+  end
+
   test "for handles IP address" do
     stub_creds(:COOKIE_DOMAIN_APP, nil) do
       result = Core::CookieDomain.for(surface: :app, request_host: "192.168.1.1")
@@ -58,6 +73,14 @@ class CookieDomainTest < ActiveSupport::TestCase
       result = Core::CookieDomain.for(surface: :org, request_host: "localhost")
 
       assert_nil result
+    end
+  end
+
+  test "for uses configured env variable for com surface" do
+    stub_creds(:COOKIE_DOMAIN_COM, ".com.example.com") do
+      result = Core::CookieDomain.for(surface: :com, request_host: "main.com.example.com")
+
+      assert_equal ".com.example.com", result
     end
   end
 

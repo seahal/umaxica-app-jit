@@ -162,6 +162,85 @@ module Preference
     end
   end
 
+  class CreateNewPreferenceWithStorageAdapterTest < ActiveSupport::TestCase
+    setup do
+      @controller = PreferenceSanitizeTestController.new
+      @controller.request = ActionDispatch::TestRequest.create
+      @controller.response = ActionDispatch::TestResponse.new
+      @controller.define_singleton_method(:generate_refresh_token) do |public_id:|
+        _ = public_id
+        ["generated-token", "generated-verifier"]
+      end
+      @controller.define_singleton_method(:digest_refresh_token) do |_verifier|
+        "token-digest"
+      end
+      @controller.define_singleton_method(:create_preference_options_for_setting) do |_wrapper, _params_hash|
+        nil
+      end
+      @controller.define_singleton_method(:create_audit_log) do |**_kwargs|
+        nil
+      end
+      @controller.define_singleton_method(:set_refresh_token_cookie) do |_token, _expires_at|
+        nil
+      end
+      @controller.define_singleton_method(:set_preference_dbsc_cookie!) do |_token, expires_at:|
+        _ = expires_at
+        nil
+      end
+      @controller.define_singleton_method(:set_preference_device_id_cookie!) do |_device_id, expires_at:|
+        _ = expires_at
+        nil
+      end
+      @controller.define_singleton_method(:issue_preference_dbsc_registration_header_for) do |_preference|
+        nil
+      end
+    end
+
+    test "works in readonly mode" do
+      SettingRecord.connected_to(role: :reading) do
+        assert_difference("SettingPreference.count", 1) do
+          @controller.send(:create_new_preference_with_storage_adapter!, 1.day.from_now, "device-123")
+        end
+      end
+    end
+
+    test "create_preference_options_for_setting reuses existing child records" do
+      preference = SettingPreference.create!(
+        owner_type: "Customer",
+        owner_id: 0,
+        jti: SecureRandom.uuid,
+      )
+      wrapper = Preference::StorageAdapter::PreferenceWrapper.new(
+        preference: preference,
+        source: :setting,
+        preference_type: "ComPreference",
+      )
+
+      @controller.send(:create_preference_options_for_setting, wrapper, { ri: "jp" })
+
+      assert_no_difference("SettingPreferenceCookie.count") do
+        assert_no_difference("SettingPreferenceLanguage.count") do
+          assert_no_difference("SettingPreferenceRegion.count") do
+            assert_no_difference("SettingPreferenceTimezone.count") do
+              assert_no_difference("SettingPreferenceColortheme.count") do
+                @controller.send(:create_preference_options_for_setting, wrapper, { ri: "jp" })
+              end
+            end
+          end
+        end
+      end
+    end
+
+    test "create_new_preference_with_storage_adapter! is idempotent for the same anonymous owner" do
+      first = @controller.send(:create_new_preference_with_storage_adapter!, 1.day.from_now, "device-123")
+
+      second = @controller.send(:create_new_preference_with_storage_adapter!, 1.day.from_now, "device-123")
+
+      assert_equal first.public_id, second.public_id
+      assert_equal first.id, second.id
+    end
+  end
+
   class JwtConfigurationTest < ActiveSupport::TestCase
     test "active_kid returns value from ENV" do
       with_env("PREFERENCE_JWT_ACTIVE_KID" => "test_kid") do
@@ -310,11 +389,248 @@ module Preference
       end
     end
 
+    test "decode rejects HMAC confusion attack with HS384 and public key" do
+      Preference::JwtConfiguration.stub(:public_key_for, @key) do
+        Preference::JwtConfiguration.stub(:active_kid, "test_kid") do
+          hmac_secret = @key.to_pem
+          token = JWT.encode(
+            { "preferences" => { "theme" => "dark" } },
+            hmac_secret, "HS384",
+            { "kid" => "test_kid", "typ" => "preference-access-token" },
+          )
+
+          assert_nil Preference::Token.decode(token, host: "app.localhost")
+        end
+      end
+    end
+
+    test "decode rejects HMAC confusion attack with HS256 and public key" do
+      Preference::JwtConfiguration.stub(:public_key_for, @key) do
+        Preference::JwtConfiguration.stub(:active_kid, "test_kid") do
+          hmac_secret = @key.to_pem
+          token = JWT.encode(
+            { "preferences" => { "theme" => "dark" } },
+            hmac_secret, "HS256",
+            { "kid" => "test_kid", "typ" => "preference-access-token" },
+          )
+
+          assert_nil Preference::Token.decode(token, host: "app.localhost")
+        end
+      end
+    end
+
+    test "decode rejects token signed with ES256 algorithm" do
+      es256_key = OpenSSL::PKey::EC.generate("prime256v1")
+      token = JWT.encode(
+        { "preferences" => { "theme" => "dark" } },
+        es256_key, "ES256",
+        { "kid" => "test_kid", "typ" => "preference-access-token" },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    test "decode rejects forged token with injected jwk header" do
+      token = forge_jwt_with_header(
+        {
+          "alg" => "ES384",
+          "typ" => "preference-access-token",
+          "kid" => Preference::JwtConfiguration.active_kid,
+          "jwk" => { "kty" => "EC", "crv" => "P-384" },
+          "jku" => "https://attacker.example.com/jwks",
+        },
+        { "preferences" => { "theme" => "dark" } },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    test "decode rejects auth token type used as preference token" do
+      token = forge_jwt_with_header(
+        { "alg" => "ES384", "typ" => "auth-access-token;user", "kid" => "test_kid" },
+        { "preferences" => { "theme" => "dark" } },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    test "decode rejects token with single segment" do
+      assert_nil Preference::Token.decode("eyJhbGciOiJFUzM4NCJ9", host: "app.localhost")
+    end
+
+    test "decode rejects token with four segments" do
+      token = forge_jwt_with_header(
+        { "alg" => "ES384", "typ" => "preference-access-token", "kid" => "any" },
+        { "preferences" => {} },
+      )
+
+      assert_nil Preference::Token.decode("#{token}extra_segment", host: "app.localhost")
+    end
+
+    test "decode rejects forged token with correct alg ES384 but unknown kid" do
+      token = forge_jwt_with_header(
+        { "alg" => "ES384", "typ" => "preference-access-token", "kid" => "forged-kid" },
+        { "preferences" => { "theme" => "dark" } },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    test "decode rejects forged token with correct alg ES384 and valid kid but invalid signature" do
+      token = forge_jwt_with_header(
+        { "alg" => "ES384", "typ" => "preference-access-token", "kid" => Preference::JwtConfiguration.active_kid },
+        { "preferences" => { "theme" => "dark" } },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    # -- Cross-audience replay test --
+
+    test "decode rejects preference token from different audience domain" do
+      Preference::JwtConfiguration.stub(:private_key_for_active, @key) do
+        Preference::JwtConfiguration.stub(:public_key_for, @key) do
+          Preference::JwtConfiguration.stub(:active_kid, "test_kid") do
+            token = Preference::Token.encode(
+              @preferences,
+              host: "org.localhost",
+              preference_type: @type,
+              public_id: @public_id,
+              jti: @jti,
+            )
+
+            assert_nil Preference::Token.decode(token, host: "app.localhost")
+          end
+        end
+      end
+    end
+
+    # -- Expired / timing boundary tests --
+
+    test "decode rejects token expired beyond leeway" do
+      Preference::JwtConfiguration.stub(:private_key_for_active, @key) do
+        Preference::JwtConfiguration.stub(:public_key_for, @key) do
+          Preference::JwtConfiguration.stub(:active_kid, "test_kid") do
+            now = Time.current.to_i
+            payload = {
+              preferences: @preferences,
+              host: @host,
+              preference_type: @type,
+              public_id: @public_id,
+              jti: @jti,
+              typ: "preference-access-token",
+              iss: Preference::JwtConfiguration.issuer,
+              aud: Preference::JwtConfiguration.audience_for(@host),
+              iat: now - 600,
+              exp: now - 31,
+            }
+            token = JWT.encode(payload, @key, "ES384", { kid: "test_kid", typ: "preference-access-token" })
+
+            assert_nil Preference::Token.decode(token, host: @host)
+          end
+        end
+      end
+    end
+
+    test "decode rejects token with future iat beyond leeway" do
+      Preference::JwtConfiguration.stub(:private_key_for_active, @key) do
+        Preference::JwtConfiguration.stub(:public_key_for, @key) do
+          Preference::JwtConfiguration.stub(:active_kid, "test_kid") do
+            now = Time.current.to_i
+            payload = {
+              preferences: @preferences,
+              host: @host,
+              preference_type: @type,
+              public_id: @public_id,
+              jti: @jti,
+              typ: "preference-access-token",
+              iss: Preference::JwtConfiguration.issuer,
+              aud: Preference::JwtConfiguration.audience_for(@host),
+              iat: now + 300,
+              exp: now + 900,
+            }
+            token = JWT.encode(payload, @key, "ES384", { kid: "test_kid", typ: "preference-access-token" })
+
+            assert_nil Preference::Token.decode(token, host: @host)
+          end
+        end
+      end
+    end
+
+    # -- kid injection tests --
+
+    test "decode rejects token with SQL injection in kid" do
+      token = forge_jwt_with_header(
+        { "alg" => "ES384", "typ" => "preference-access-token", "kid" => "' OR 1=1 --" },
+        { "preferences" => {} },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    test "decode rejects token with path traversal in kid" do
+      token = forge_jwt_with_header(
+        { "alg" => "ES384", "typ" => "preference-access-token", "kid" => "../../etc/passwd" },
+        { "preferences" => {} },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    # -- Malformed token tests --
+
+    test "decode rejects token containing null bytes" do
+      assert_nil Preference::Token.decode("eyJ\x00hbGci.eyJz\x00dWIi.sig", host: "app.localhost")
+    end
+
+    test "decode rejects extremely long token" do
+      assert_nil Preference::Token.decode("a" * 100_000, host: "app.localhost")
+    end
+
+    test "decode rejects token with unicode in segments" do
+      assert_nil Preference::Token.decode("eyJhbGci\u00e9.eyJzdWIi.sig", host: "app.localhost")
+    end
+
+    test "decode rejects token with alg none header" do
+      token = forge_jwt_with_header(
+        { "alg" => "none", "typ" => "preference-access-token", "kid" => "any" },
+        { "preferences" => { "theme" => "dark" } },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    test "decode rejects token with alg empty string header" do
+      token = forge_jwt_with_header(
+        { "alg" => "", "typ" => "preference-access-token", "kid" => "any" },
+        { "preferences" => { "theme" => "dark" } },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
+    test "decode rejects token with alg nil header" do
+      token = forge_jwt_with_header(
+        { "alg" => nil, "typ" => "preference-access-token", "kid" => "any" },
+        { "preferences" => { "theme" => "dark" } },
+      )
+
+      assert_nil Preference::Token.decode(token, host: "app.localhost")
+    end
+
     test "extract_preferences returns preferences from payload" do
       payload = { "preferences" => { "theme" => "light" } }
 
       assert_equal({ "theme" => "light" }, Preference::Token.extract_preferences(payload))
       assert_equal({}, Preference::Token.extract_preferences(nil))
+    end
+
+    private
+
+    def forge_jwt_with_header(header_hash, payload_hash)
+      header = Base64.urlsafe_encode64(JSON.generate(header_hash), padding: false)
+      payload = Base64.urlsafe_encode64(JSON.generate(payload_hash), padding: false)
+      "#{header}.#{payload}."
     end
   end
 

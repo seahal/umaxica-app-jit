@@ -95,6 +95,28 @@ jobs:
         continue-on-error: true
       - name: Run bundle-audit
         run: bin/bundler-audit check --update
+  security-semgrep:
+    name: Security Checks (Semgrep)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: write
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v6.0.1
+        with:
+          persist-credentials: false
+      - name: Run Semgrep and write SARIF
+        run: semgrep scan --config auto --error --sarif --output semgrep.sarif
+      - name: Upload Semgrep SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4.31.10
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+        continue-on-error: true
   gitleaks:
     name: Secret Leaks Detection
     runs-on: ubuntu-slim
@@ -233,8 +255,6 @@ jobs:
       POSTGRESQL_COMMERCE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
       POSTGRESQL_TOKEN_SUB: localhost
-      POSTGRESQL_DOCUMENT_PUB: localhost
-      POSTGRESQL_DOCUMENT_SUB: localhost
       POSTGRESQL_PUBLICATION_PUB: localhost
       POSTGRESQL_PUBLICATION_SUB: localhost
       POSTGRESQL_BILLING_PUB: localhost
@@ -251,14 +271,14 @@ jobs:
       POSTGRESQL_STORAGE_SUB: localhost
       POSTGRESQL_OPERATOR_PUB: localhost
       POSTGRESQL_OPERATOR_SUB: localhost
+      POSTGRESQL_SETTING_PUB: localhost
+      POSTGRESQL_SETTING_SUB: localhost
       POSTGRESQL_AVATAR_PUB: localhost
       POSTGRESQL_AVATAR_SUB: localhost
       POSTGRESQL_FINDER_PUB: localhost
       POSTGRESQL_FINDER_SUB: localhost
       POSTGRESQL_SEARCH_PUB: localhost
       POSTGRESQL_SEARCH_SUB: localhost
-      # Kafka
-      KAFKA_BROKERS: localhost:9092
       # Email
       RESEND_SMTP_ENDPOINT: smtp.resend.com
       RESEND_SMTP_USER_NAME: resend
@@ -285,25 +305,6 @@ jobs:
         options: >-
           --health-cmd "valkey-cli ping" --health-interval 10s --health-timeout 5s --health-retries
           5
-      kafka:
-        image: confluentinc/cp-kafka:7.9.0
-        env:
-          KAFKA_NODE_ID: 1
-          KAFKA_PROCESS_ROLES: broker,controller
-          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://localhost:9093
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-          KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-          KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-          CLUSTER_ID: UmaxicaCluster01
-        ports:
-          - 9092:9092
-        options: >-
-          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092"
-          --health-interval 30s --health-timeout 10s --health-retries 5
     steps:
       - uses: actions/checkout@v6.0.1
         with:
@@ -363,8 +364,6 @@ jobs:
       POSTGRESQL_COMMERCE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
       POSTGRESQL_TOKEN_SUB: localhost
-      POSTGRESQL_DOCUMENT_PUB: localhost
-      POSTGRESQL_DOCUMENT_SUB: localhost
       POSTGRESQL_PUBLICATION_PUB: localhost
       POSTGRESQL_PUBLICATION_SUB: localhost
       POSTGRESQL_BILLING_PUB: localhost
@@ -381,6 +380,8 @@ jobs:
       POSTGRESQL_STORAGE_SUB: localhost
       POSTGRESQL_OPERATOR_PUB: localhost
       POSTGRESQL_OPERATOR_SUB: localhost
+      POSTGRESQL_SETTING_PUB: localhost
+      POSTGRESQL_SETTING_SUB: localhost
       POSTGRESQL_AVATAR_PUB: localhost
       POSTGRESQL_AVATAR_SUB: localhost
       POSTGRESQL_FINDER_PUB: localhost

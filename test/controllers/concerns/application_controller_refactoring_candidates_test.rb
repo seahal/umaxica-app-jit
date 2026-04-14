@@ -58,14 +58,18 @@ module Concerns
         callbacks = controller_class._process_action_callbacks
         before_filters = callbacks.select { |c| c.kind == :before }.map(&:filter)
 
-        rate_limit_idx = before_filters.index(:check_default_rate_limit)
+        rate_limit_idx =
+          before_filters.index do |filter|
+            filter.is_a?(Proc) &&
+              filter.source_location&.first&.include?("/action_controller/metal/rate_limiting.rb")
+          end
         access_policy_idx = before_filters.index(:enforce_access_policy!)
         verification_idx = before_filters.index(:enforce_verification_if_required)
         current_idx = before_filters.index(:set_current)
 
         if rate_limit_idx && access_policy_idx
           assert_operator rate_limit_idx, :<, access_policy_idx,
-                          "#{controller_class}: rate_limit should come before access_policy"
+                          "#{controller_class}: rate limit should come before access_policy"
         end
 
         if access_policy_idx && verification_idx

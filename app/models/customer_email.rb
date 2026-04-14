@@ -19,7 +19,6 @@
 #  otp_private_key           :string           default(""), not null
 #  promotional               :boolean          default(TRUE), not null
 #  subscribable              :boolean          default(TRUE), not null
-#  undeletable               :boolean          default(FALSE), not null
 #  verification_token_digest :binary
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
@@ -49,6 +48,8 @@ class CustomerEmail < GuestRecord
   self.filter_attributes += %w(address)
 
   MAX_EMAILS_PER_CUSTOMER = 4
+
+  encrypts :address, downcase: true, deterministic: true
 
   before_validation :set_address_digests
 
@@ -95,7 +96,7 @@ class CustomerEmail < GuestRecord
   private
 
   def prevent_destroy_when_undeletable
-    return unless undeletable?
+    return unless customer_email_status_id == CustomerEmailStatus::OAUTH_LINKED
 
     errors.add(:base, :undeletable, message: "cannot delete a protected email address")
     throw(:abort)

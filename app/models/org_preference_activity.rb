@@ -48,7 +48,6 @@ class OrgPreferenceActivity < ActivityRecord
              inverse_of: :org_preference_activities
   belongs_to :actor, polymorphic: true, optional: true # Helper methods for compatibility
   belongs_to :org_preference_activity_level, foreign_key: :level_id, inverse_of: :org_preference_activities
-  # event_id references OrgPreferenceActivityEvent.id (string)
   belongs_to :org_preference_activity_event,
              class_name: "OrgPreferenceActivityEvent",
              foreign_key: "event_id",
@@ -58,8 +57,11 @@ class OrgPreferenceActivity < ActivityRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
+  validates_reference_table :event_id, association: :org_preference_activity_event
+  validates_reference_table :level_id, association: :org_preference_activity_level
+  validates :event_id, presence: true,
+                       numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :level_id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   def org_preference
     OrgPreference.find(subject_id) if subject_type == "OrgPreference"

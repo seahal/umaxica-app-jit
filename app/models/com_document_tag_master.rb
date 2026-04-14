@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_document_tag_masters
-# Database name: document
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null
@@ -18,7 +18,7 @@
 
 # frozen_string_literal: true
 
-class ComDocumentTagMaster < DocumentRecord
+class ComDocumentTagMaster < PublicationRecord
   # Fixed IDs - do not modify these values
   NOTHING = 0
   LEGACY_NOTHING = 1

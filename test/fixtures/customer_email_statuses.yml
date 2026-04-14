@@ -25,3 +25,6 @@ unverified_with_sign_up:
 
 verified_with_sign_up:
   id: <%= CustomerEmailStatus::VERIFIED_WITH_SIGN_UP %>
+
+oauth_linked:
+  id: <%= CustomerEmailStatus::OAUTH_LINKED %>

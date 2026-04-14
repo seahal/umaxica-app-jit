@@ -16,6 +16,13 @@ module Concerns
       callbacks.select { |c| c.kind == :before }.map(&:filter)
     end
 
+    def rate_limit_callback_index(before_actions)
+      before_actions.index do |filter|
+        filter.is_a?(Proc) &&
+          filter.source_location&.first&.include?("/action_controller/metal/rate_limiting.rb")
+      end
+    end
+
     def extract_prepend_before_actions(callbacks)
       callbacks.select { |c| c.kind == :before && c.options[:prepend] }.map(&:filter)
     end
@@ -65,10 +72,10 @@ module Concerns
         callbacks = get_callbacks_for(controller_class)
         before_actions = extract_before_actions(callbacks)
         after_actions = extract_after_actions(callbacks)
-        rate_limit_index = before_actions.index(:check_default_rate_limit)
+        rate_limit_index = rate_limit_callback_index(before_actions)
 
-        assert_includes before_actions, :check_default_rate_limit,
-                        "#{domain} should have check_default_rate_limit callback"
+        assert rate_limit_index,
+               "#{domain} should have a rate limit callback"
 
         validate_flash_boundary_index = before_actions.index(:validate_flash_boundary)
 
@@ -76,7 +83,7 @@ module Concerns
                "#{domain} should have validate_flash_boundary callback"
 
         assert_operator rate_limit_index, :<, validate_flash_boundary_index,
-                        "#{domain}: check_default_rate_limit should come before validate_flash_boundary"
+                        "#{domain}: rate limit should come before validate_flash_boundary"
 
         assert_includes before_actions, :enforce_access_policy!,
                         "#{domain} should have enforce_access_policy! callback"
@@ -96,10 +103,10 @@ module Concerns
         callbacks = get_callbacks_for(controller_class)
         before_actions = extract_before_actions(callbacks)
 
-        rate_limit_index = before_actions.index(:check_default_rate_limit)
+        rate_limit_index = rate_limit_callback_index(before_actions)
 
         assert rate_limit_index,
-               "#{domain} should have check_default_rate_limit callback"
+               "#{domain} should have a rate limit callback"
 
         validate_flash_boundary_index = before_actions.index(:validate_flash_boundary)
 
@@ -111,7 +118,7 @@ module Concerns
         return unless access_policy_index
 
         assert_operator rate_limit_index, :<, validate_flash_boundary_index,
-                        "#{domain}: check_default_rate_limit should come before validate_flash_boundary"
+                        "#{domain}: rate limit should come before validate_flash_boundary"
         assert_operator validate_flash_boundary_index, :<, access_policy_index,
                         "#{domain}: validate_flash_boundary should come before enforce_access_policy!"
       end

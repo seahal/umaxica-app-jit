@@ -3,10 +3,11 @@
 <%# Token is set as hidden field "cf-turnstile-response" on form submit. %>
 <% stealth_id = "cf-turnstile-stealth-#{SecureRandom.hex(4)}" %>
 <% site_key = Jit::Security::TurnstileConfig.stealth_site_key %>
+<% enabled = Jit::Security::TurnstileConfig.enabled? %>
 
-<% if site_key.blank? %>
+<% if enabled && site_key.blank? %>
   <!-- Cloudflare Turnstile stealth site key is missing. Set credentials or CLOUDFLARE_TURNSTILE_SITE_STEALTH_KEY. -->
-<% else %>
+<% elsif enabled %>
   <input type="hidden"
          name="cf-turnstile-response"
          id="<%= stealth_id %>-response"

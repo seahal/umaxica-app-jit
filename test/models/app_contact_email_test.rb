@@ -6,16 +6,20 @@
 # Table name: app_contact_emails
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  email_address  :string(1000)     default(""), not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  app_contact_id :bigint           default(0), not null
+#  id                   :bigint           not null, primary key
+#  email_address        :string(1000)     default(""), not null
+#  email_address_bidx   :string
+#  email_address_digest :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  app_contact_id       :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_app_contact_emails_on_app_contact_id  (app_contact_id)
-#  index_app_contact_emails_on_email_address   (email_address)
+#  index_app_contact_emails_on_app_contact_id        (app_contact_id)
+#  index_app_contact_emails_on_email_address         (email_address)
+#  index_app_contact_emails_on_email_address_bidx    (email_address_bidx) UNIQUE WHERE (email_address_bidx IS NOT NULL)
+#  index_app_contact_emails_on_email_address_digest  (email_address_digest) UNIQUE WHERE (email_address_digest IS NOT NULL)
 #
 # Foreign Keys
 #

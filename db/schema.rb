@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_14_152000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -23,9 +23,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.bigint "app_contact_id", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "email_address", limit: 1000, default: "", null: false
+    t.string "email_address_bidx"
+    t.string "email_address_digest"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["app_contact_id"], name: "index_app_contact_emails_on_app_contact_id"
     t.index ["email_address"], name: "index_app_contact_emails_on_email_address"
+    t.index ["email_address_bidx"], name: "index_app_contact_emails_on_email_address_bidx", unique: true, where: "(email_address_bidx IS NOT NULL)"
+    t.index ["email_address_digest"], name: "index_app_contact_emails_on_email_address_digest", unique: true, where: "(email_address_digest IS NOT NULL)"
   end
 
   create_table "app_contact_histories", force: :cascade do |t|
@@ -47,9 +51,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.bigint "app_contact_id", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
+    t.string "telephone_number_bidx"
+    t.string "telephone_number_digest"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["app_contact_id"], name: "index_app_contact_telephones_on_app_contact_id"
     t.index ["telephone_number"], name: "index_app_contact_telephones_on_telephone_number"
+    t.index ["telephone_number_bidx"], name: "index_app_contact_telephones_on_telephone_number_bidx", unique: true, where: "(telephone_number_bidx IS NOT NULL)"
+    t.index ["telephone_number_digest"], name: "index_app_contact_telephones_on_telephone_number_digest", unique: true, where: "(telephone_number_digest IS NOT NULL)"
   end
 
   create_table "app_contact_topics", force: :cascade do |t|
@@ -96,9 +104,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.bigint "com_contact_id", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "email_address", limit: 1000, default: "", null: false
+    t.string "email_address_bidx"
+    t.string "email_address_digest"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id_unique", unique: true
     t.index ["email_address"], name: "index_com_contact_emails_on_email_address"
+    t.index ["email_address_bidx"], name: "index_com_contact_emails_on_email_address_bidx", unique: true, where: "(email_address_bidx IS NOT NULL)"
+    t.index ["email_address_digest"], name: "index_com_contact_emails_on_email_address_digest", unique: true, where: "(email_address_digest IS NOT NULL)"
   end
 
   create_table "com_contact_statuses", force: :cascade do |t|
@@ -110,9 +122,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.integer "hotp_counter"
     t.string "hotp_secret"
     t.string "telephone_number", limit: 1000, default: "", null: false
+    t.string "telephone_number_bidx"
+    t.string "telephone_number_digest"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id_unique", unique: true
     t.index ["telephone_number"], name: "index_com_contact_telephones_on_telephone_number"
+    t.index ["telephone_number_bidx"], name: "index_com_contact_telephones_on_telephone_number_bidx", unique: true, where: "(telephone_number_bidx IS NOT NULL)"
+    t.index ["telephone_number_digest"], name: "index_com_contact_telephones_on_telephone_number_digest", unique: true, where: "(telephone_number_digest IS NOT NULL)"
   end
 
   create_table "com_contact_topics", force: :cascade do |t|
@@ -160,7 +176,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.boolean "promotional", default: true, null: false
     t.string "public_id", limit: 21, null: false
     t.boolean "subscribable", default: true, null: false
-    t.boolean "undeletable", default: false, null: false
     t.datetime "updated_at", null: false
     t.binary "verification_token_digest"
     t.index "lower((address)::text)", name: "index_customer_emails_on_lower_address", unique: true
@@ -300,6 +315,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter", default: "", null: false
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
+    t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
     t.string "public_id", limit: 21, null: false
     t.datetime "updated_at", null: false
@@ -317,7 +333,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
   create_table "customers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "deactivated_at"
-    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
     t.string "public_id", default: "", null: false
@@ -329,7 +344,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.datetime "withdrawal_started_at"
     t.datetime "withdrawn_at", default: ::Float::INFINITY
     t.index ["deactivated_at"], name: "index_customers_on_deactivated_at", where: "(deactivated_at IS NOT NULL)"
-    t.index ["deletable_at"], name: "index_customers_on_deletable_at"
     t.index ["public_id"], name: "index_customers_on_public_id", unique: true
     t.index ["scheduled_purge_at"], name: "index_customers_on_scheduled_purge_at", where: "(scheduled_purge_at IS NOT NULL)"
     t.index ["shreddable_at"], name: "index_customers_on_shreddable_at"
@@ -345,9 +359,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
   create_table "org_contact_emails", force: :cascade do |t|
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "email_address", limit: 1000, default: "", null: false
+    t.string "email_address_bidx"
+    t.string "email_address_digest"
     t.bigint "org_contact_id", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["email_address"], name: "index_org_contact_emails_on_email_address"
+    t.index ["email_address_bidx"], name: "index_org_contact_emails_on_email_address_bidx", unique: true, where: "(email_address_bidx IS NOT NULL)"
+    t.index ["email_address_digest"], name: "index_org_contact_emails_on_email_address_digest", unique: true, where: "(email_address_digest IS NOT NULL)"
     t.index ["org_contact_id"], name: "index_org_contact_emails_on_org_contact_id"
   end
 
@@ -370,9 +388,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_04_080003) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.bigint "org_contact_id", default: 0, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
+    t.string "telephone_number_bidx"
+    t.string "telephone_number_digest"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["org_contact_id"], name: "index_org_contact_telephones_on_org_contact_id"
     t.index ["telephone_number"], name: "index_org_contact_telephones_on_telephone_number"
+    t.index ["telephone_number_bidx"], name: "index_org_contact_telephones_on_telephone_number_bidx", unique: true, where: "(telephone_number_bidx IS NOT NULL)"
+    t.index ["telephone_number_digest"], name: "index_org_contact_telephones_on_telephone_number_digest", unique: true, where: "(telephone_number_digest IS NOT NULL)"
   end
 
   create_table "org_contact_topics", force: :cascade do |t|

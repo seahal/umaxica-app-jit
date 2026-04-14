@@ -47,7 +47,7 @@ class CustomerPasskey < GuestRecord
   validates :external_id, presence: true
   validates :public_key, presence: true
   validates :description, presence: true
-  validates :status_id, numericality: { only_integer: true }
+  validates_reference_table :status_id, association: :status
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validate :enforce_customer_passkey_limit, on: :create
   validate :require_verified_recovery_identity, on: :create

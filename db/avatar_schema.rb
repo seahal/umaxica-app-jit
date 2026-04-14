@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_10_090004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -150,6 +150,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.string "owner_organization_id"
     t.string "public_id", null: false
     t.string "representing_organization_id"
+    t.datetime "shreddable_at", default: ::Float::INFINITY, null: false
     t.datetime "updated_at", null: false
     t.index ["active_handle_id"], name: "index_avatars_on_active_handle_id"
     t.index ["capability_id"], name: "index_avatars_on_capability_id"
@@ -157,6 +158,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
     t.index ["owner_organization_id"], name: "index_avatars_on_owner_organization_id"
     t.index ["public_id"], name: "index_avatars_on_public_id", unique: true
     t.index ["representing_organization_id"], name: "index_avatars_on_representing_organization_id"
+    t.index ["shreddable_at"], name: "index_avatars_on_shreddable_at"
     t.check_constraint "capability_id >= 0", name: "chk_avatars_capability_id_positive"
   end
 

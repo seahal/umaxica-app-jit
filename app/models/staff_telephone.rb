@@ -7,20 +7,27 @@
 # Database name: operator
 #
 #  id                                 :bigint           not null, primary key
-#  locked_at                          :datetime
-#  number                             :string           not null
+#  locked_at                          :datetime         default(-Infinity), not null
+#  number                             :string           default(""), not null
+#  number_bidx                        :string
+#  number_digest                      :string
 #  otp_attempts_count                 :integer          default(0), not null
 #  otp_counter                        :text             not null
-#  otp_expires_at                     :datetime
+#  otp_expires_at                     :datetime         default(-Infinity), not null
+#  otp_last_sent_at                   :datetime         default(-Infinity), not null
 #  otp_private_key                    :string           not null
 #  created_at                         :datetime         not null
 #  updated_at                         :datetime         not null
+#  public_id                          :string(21)       not null
 #  staff_id                           :bigint           not null
 #  staff_identity_telephone_status_id :bigint           default(6), not null
 #
 # Indexes
 #
 #  index_staff_telephones_on_lower_number                        (lower((number)::text)) UNIQUE
+#  index_staff_telephones_on_number_bidx                         (number_bidx) UNIQUE WHERE (number_bidx IS NOT NULL)
+#  index_staff_telephones_on_number_digest                       (number_digest) UNIQUE WHERE (number_digest IS NOT NULL)
+#  index_staff_telephones_on_public_id                           (public_id) UNIQUE
 #  index_staff_telephones_on_staff_id                            (staff_id)
 #  index_staff_telephones_on_staff_identity_telephone_status_id  (staff_identity_telephone_status_id)
 #
@@ -33,6 +40,7 @@
 class StaffTelephone < OperatorRecord
   alias_attribute :staff_telephone_status_id, :staff_identity_telephone_status_id
   include Telephone
+  include PublicId
 
   self.filter_attributes += %w(number)
 
@@ -44,22 +52,42 @@ class StaffTelephone < OperatorRecord
 
   # Note: :number validation is now handled by Telephone concern (E.164 normalization)
   validates :number, presence: true, uniqueness: { case_sensitive: false }
+  validates :number_bidx,
+            uniqueness: { conditions: -> { where.not(number_bidx: nil) } },
+            allow_nil: true
+  validates :number_digest,
+            uniqueness: { conditions: -> { where.not(number_digest: nil) } },
+            allow_nil: true
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :staff_identity_telephone_status_id, numericality: { only_integer: true }
+  validates :staff_identity_telephone_status_id,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validate :ensure_unique_number_digest
   validate :enforce_staff_telephone_limit, on: :create
+  before_validation :set_number_digests
   before_validation do
     self.staff_id ||= "00000000-0000-0000-0000-000000000000"
   end
 
-  after_initialize do
-    self.number ||= ""
+  def to_param
+    public_id
   end
 
-  # Note: :number encryption is handled by Telephone concern
-
   private
+
+  def set_number_digests
+    digest = IdentifierBlindIndex.bidx_for_telephone(raw_number)
+    self.number_bidx = digest
+    self.number_digest = digest if respond_to?(:number_digest=)
+  end
+
+  def ensure_unique_number_digest
+    return if number_digest.blank?
+    return unless self.class.where(number_digest: number_digest).where.not(id: id).exists?
+
+    errors.add(:number, :taken)
+  end
 
   def enforce_staff_telephone_limit
     return unless staff_id

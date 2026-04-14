@@ -17,7 +17,7 @@ class ApplicationError < StandardError
         end
       super(message)
     else
-      super()
+      super(self.class.name)
     end
   end
 

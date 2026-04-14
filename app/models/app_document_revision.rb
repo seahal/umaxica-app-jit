@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_document_revisions
-# Database name: document
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text
@@ -28,12 +28,12 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (app_document_id => app_documents.id) ON DELETE => cascade
+#  fk_rails_...  (app_document_id => app_documents.id)
 #
 
 # frozen_string_literal: true
 
-class AppDocumentRevision < DocumentRecord
+class AppDocumentRevision < PublicationRecord
   include ::Version
   include ::PublicId
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_31_222105) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_10_090002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -198,6 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222105) do
     t.jsonb "dbsc_public_key"
     t.string "dbsc_session_id"
     t.bigint "dbsc_status_id", default: 0, null: false
+    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id"
     t.string "device_id_digest"
     t.datetime "expires_at"
@@ -212,6 +213,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222105) do
     t.index ["binding_method_id"], name: "index_com_preferences_on_binding_method_id"
     t.index ["dbsc_session_id"], name: "index_com_preferences_on_dbsc_session_id", unique: true
     t.index ["dbsc_status_id"], name: "index_com_preferences_on_dbsc_status_id"
+    t.index ["deletable_at"], name: "index_com_preferences_on_deletable_at"
     t.index ["device_id"], name: "index_com_preferences_on_device_id"
     t.index ["device_id_digest"], name: "index_com_preferences_on_device_id_digest"
     t.index ["jti"], name: "index_com_preferences_on_jti", unique: true

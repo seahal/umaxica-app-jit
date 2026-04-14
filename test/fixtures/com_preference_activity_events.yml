@@ -23,3 +23,5 @@ update_preference_region:
   id: 7
 update_preference_colortheme:
   id: 8
+sync_recovery_failed:
+  id: 9

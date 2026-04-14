@@ -83,6 +83,34 @@ class OrgPreferenceActivityTest < ActiveSupport::TestCase
     assert_equal org_preference_activity_events(:create_new_preference_token), @audit.org_preference_activity_event
   end
 
+  test "rejects unknown event_id before database foreign key enforcement" do
+    audit = OrgPreferenceActivity.new(
+      subject_id: @preference.id,
+      subject_type: "OrgPreference",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: 999_999,
+      level_id: org_preference_activity_levels(:info).id,
+    )
+
+    assert_not audit.valid?
+    assert_includes audit.errors[:event_id], "must reference an existing org_preference_activity_event"
+  end
+
+  test "rejects unknown level_id before database foreign key enforcement" do
+    audit = OrgPreferenceActivity.new(
+      subject_id: @preference.id,
+      subject_type: "OrgPreference",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: org_preference_activity_events(:create_new_preference_token).id,
+      level_id: 999_999,
+    )
+
+    assert_not audit.valid?
+    assert_includes audit.errors[:level_id], "must reference an existing org_preference_activity_level"
+  end
+
   test "validates presence of subject_id" do
     @audit.subject_id = nil
 

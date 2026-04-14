@@ -52,5 +52,7 @@ class ZipOccurrence < OccurrenceRecord
   has_many :user_occurrences, through: :user_zip_occurrences
 
   validates :body, length: { maximum: 16 }
-  validates :status_id, numericality: { only_integer: true }
+  validates :status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

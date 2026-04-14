@@ -7,6 +7,7 @@
 #  id            :bigint           not null, primary key
 #  lock_version  :integer          default(0), not null
 #  moniker       :string
+#  shreddable_at :datetime         default(Infinity), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  department_id :bigint
@@ -18,6 +19,7 @@
 #
 #  index_operators_on_department_id  (department_id)
 #  index_operators_on_public_id      (public_id) UNIQUE
+#  index_operators_on_shreddable_at  (shreddable_at)
 #  index_operators_on_staff_id       (staff_id)
 #  index_operators_on_status_id      (status_id)
 #
@@ -31,7 +33,7 @@
 # frozen_string_literal: true
 
 class Operator < OperatorRecord
-  # TODO: Add `shreddable_at` to Operator and align deletion lifecycle with shredding flow.
+  scope :shreddable, ->(now = Time.current) { where(shreddable_at: ..now) }
   include ::Account
 
   attribute :status_id, default: OperatorStatus::NOTHING
@@ -41,6 +43,8 @@ class Operator < OperatorRecord
              inverse_of: :operators
   belongs_to :staff, inverse_of: :operators
   belongs_to :department, optional: true, inverse_of: :operators
+  validates :staff_id, :status_id,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   has_many :staff_operators,
            dependent: :destroy,
            inverse_of: :operator

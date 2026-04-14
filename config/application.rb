@@ -89,5 +89,10 @@ module Jit
 
     # Enable structured logging in all environments.
     config.active_support.structured_logging = true
+
+    # new serializer
+    config.active_support.message_serializer = :message_pack
+    config.action_dispatch.cookies_serializer = :message_pack
+    config.cache_store = :file_store, "tmp/cache", { serializer: :message_pack }
   end
 end

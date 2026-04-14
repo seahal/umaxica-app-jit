@@ -88,4 +88,85 @@ class Dbsc::RegistrationServiceTest < ActiveSupport::TestCase
     assert_not result[:ok]
     assert_equal "challenge_expired", result[:error_code]
   end
+
+  # -- Algorithm passthrough tests (user-controlled alg reaches JWT.decode) --
+
+  test "rejects proof with HMAC confusion attack HS256" do
+    token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
+    token.update!(dbsc_challenge: "challenge-hs256", dbsc_challenge_issued_at: Time.current)
+
+    proof = JWT.encode(
+      { "jti" => "challenge-hs256", "aud" => "https://test.host/registration", "iat" => Time.current.to_i },
+      "any-secret", "HS256", { "typ" => "dbsc+jwt" },
+    )
+
+    result = Dbsc::RegistrationService.call(record: token, proof: proof, session_id: "dbsc-hs256")
+
+    assert_not result[:ok]
+  end
+
+  test "rejects proof with ES384 algorithm not in DBSC whitelist" do
+    token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
+    token.update!(dbsc_challenge: "challenge-es384", dbsc_challenge_issued_at: Time.current)
+
+    es384_key = OpenSSL::PKey::EC.generate("secp384r1")
+    proof = JWT.encode(
+      { "jti" => "challenge-es384", "aud" => "https://test.host/registration", "iat" => Time.current.to_i },
+      es384_key, "ES384", { "typ" => "dbsc+jwt" },
+    )
+
+    result = Dbsc::RegistrationService.call(record: token, proof: proof, session_id: "dbsc-es384")
+
+    assert_not result[:ok]
+  end
+
+  test "rejects proof with alg none header" do
+    token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
+    token.update!(dbsc_challenge: "challenge-none", dbsc_challenge_issued_at: Time.current)
+
+    proof = forge_jwt_with_header(
+      { "alg" => "none", "typ" => "dbsc+jwt" },
+      { "jti" => "challenge-none", "aud" => "https://test.host/registration", "iat" => Time.current.to_i },
+    )
+
+    result = Dbsc::RegistrationService.call(record: token, proof: proof, session_id: "dbsc-none")
+
+    assert_not result[:ok]
+  end
+
+  test "rejects proof with alg empty string header" do
+    token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
+    token.update!(dbsc_challenge: "challenge-empty", dbsc_challenge_issued_at: Time.current)
+
+    proof = forge_jwt_with_header(
+      { "alg" => "", "typ" => "dbsc+jwt" },
+      { "jti" => "challenge-empty", "aud" => "https://test.host/registration", "iat" => Time.current.to_i },
+    )
+
+    result = Dbsc::RegistrationService.call(record: token, proof: proof, session_id: "dbsc-empty")
+
+    assert_not result[:ok]
+  end
+
+  test "rejects proof with alg nil header" do
+    token = UserToken.create!(user: users(:one), refresh_expires_at: 1.day.from_now, deletable_at: 1.day.from_now)
+    token.update!(dbsc_challenge: "challenge-nil", dbsc_challenge_issued_at: Time.current)
+
+    proof = forge_jwt_with_header(
+      { "alg" => nil, "typ" => "dbsc+jwt" },
+      { "jti" => "challenge-nil", "aud" => "https://test.host/registration", "iat" => Time.current.to_i },
+    )
+
+    result = Dbsc::RegistrationService.call(record: token, proof: proof, session_id: "dbsc-nil")
+
+    assert_not result[:ok]
+  end
+
+  private
+
+  def forge_jwt_with_header(header_hash, payload_hash)
+    header = Base64.urlsafe_encode64(JSON.generate(header_hash), padding: false)
+    payload = Base64.urlsafe_encode64(JSON.generate(payload_hash), padding: false)
+    "#{header}.#{payload}."
+  end
 end

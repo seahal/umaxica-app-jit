@@ -12,7 +12,12 @@
 class ComDocumentBehaviorEvent < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
-  CREATED = 1
+  NOTHING = 0
+  LEGACY_NOTHING = 1
+  CREATED = 2
+  UPDATED = 3
+  DELETED = 4
+  DEFAULTS = [NOTHING, LEGACY_NOTHING, CREATED, UPDATED, DELETED].freeze
 
   has_many :com_document_behaviors,
            class_name: "ComDocumentBehavior",
@@ -20,4 +25,8 @@ class ComDocumentBehaviorEvent < BehaviorRecord
            primary_key: "id",
            inverse_of: :com_document_behavior_event,
            dependent: :restrict_with_error
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
+  end
 end

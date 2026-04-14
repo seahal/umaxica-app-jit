@@ -20,7 +20,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (org_preference_id => org_preferences.id) ON DELETE => cascade
-#  fk_rails_...  (staff_id => staffs.id)
+#  fk_rails_...  (staff_id => staffs.id) ON DELETE => cascade
 #
 require "test_helper"
 

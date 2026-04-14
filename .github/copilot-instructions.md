@@ -5,7 +5,7 @@
 ### Setup
 
 ```bash
-docker compose up                # Start PostgreSQL 18+, Valkey, Kafka
+docker compose up                # Start PostgreSQL 18+, Valkey
 bundle install                   # Install Ruby dependencies
 pnpm install                     # Install JavaScript dependencies
 bin/rails db:prepare             # Create, migrate, seed database
@@ -250,7 +250,6 @@ The app integrates with:
 - **Google Cloud**: Cloud Run, OAuth, storage
 - **Stripe**: Billing
 - **Twilio**: Telecommunications
-- **Kafka**: Event streaming
 - **Valkey**: Redis-compatible cache (port 56379)
 
 ### Requirements Analysis Best Practices (from CLAUDE.md)

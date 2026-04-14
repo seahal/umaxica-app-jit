@@ -57,4 +57,26 @@ class ComPreferenceLanguageOptionTest < ActiveSupport::TestCase
 
     assert_nil option.name
   end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [1, 2], ComPreferenceLanguageOption::DEFAULTS
+  end
+
+  test "ensure_defaults! creates missing records" do
+    ComPreferenceLanguageOption.where(id: ComPreferenceLanguageOption::DEFAULTS).destroy_all
+
+    ComPreferenceLanguageOption.ensure_defaults!
+
+    assert ComPreferenceLanguageOption.exists?(id: ComPreferenceLanguageOption::JA)
+    assert ComPreferenceLanguageOption.exists?(id: ComPreferenceLanguageOption::EN)
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    ComPreferenceLanguageOption.ensure_defaults!
+    initial_count = ComPreferenceLanguageOption.count
+
+    ComPreferenceLanguageOption.ensure_defaults!
+
+    assert_equal initial_count, ComPreferenceLanguageOption.count
+  end
 end

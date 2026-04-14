@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_document_categories
-# Database name: document
+# Database name: publication
 #
 #  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
@@ -18,12 +18,12 @@
 # Foreign Keys
 #
 #  fk_rails_...  (org_document_category_master_id => org_document_category_masters.id)
-#  fk_rails_...  (org_document_id => org_documents.id) ON DELETE => cascade
+#  fk_rails_...  (org_document_id => org_documents.id)
 #
 
 # frozen_string_literal: true
 
-class OrgDocumentCategory < DocumentRecord
+class OrgDocumentCategory < PublicationRecord
   include ::CategoryTag
 
   belongs_to :org_document, inverse_of: :category

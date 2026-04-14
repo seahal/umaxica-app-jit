@@ -135,6 +135,49 @@ class Oidc::AuthorizeServiceTest < ActiveSupport::TestCase
     assert_equal "S256", code.code_challenge_method
   end
 
+  test "issues authorization code for customer with com client" do
+    customer = create_verified_customer_with_email(email_address: "authorize-#{SecureRandom.hex(4)}@example.com")
+    com_client = Oidc::ClientRegistry.find("core_com")
+    com_redirect_uri = com_client.redirect_uris.first
+
+    result = Oidc::AuthorizeService.call(
+      params: valid_params.merge(
+        client_id: "core_com",
+        redirect_uri: com_redirect_uri,
+        state: "customer_state",
+      ),
+      resource: customer,
+    )
+
+    assert_predicate result, :success?
+    assert_not_nil result.redirect_url
+    uri = URI.parse(result.redirect_url)
+    query = URI.decode_www_form(uri.query).to_h
+
+    assert_predicate query["code"], :present?
+    assert_equal "customer_state", query["state"]
+  end
+
+  test "customer authorization code is stored with customer_id" do
+    customer = create_verified_customer_with_email(email_address: "authorize-store-#{SecureRandom.hex(4)}@example.com")
+    com_client = Oidc::ClientRegistry.find("core_com")
+    com_redirect_uri = com_client.redirect_uris.first
+
+    assert_difference "AuthorizationCode.count", 1 do
+      Oidc::AuthorizeService.call(
+        params: valid_params.merge(client_id: "core_com", redirect_uri: com_redirect_uri),
+        resource: customer,
+      )
+    end
+
+    code = AuthorizationCode.last
+
+    assert_equal customer.id, code.customer_id
+    assert_nil code.user_id
+    assert_nil code.staff_id
+    assert_equal "core_com", code.client_id
+  end
+
   # --- Staff OIDC tests ---
 
   test "issues authorization code for staff with org client" do

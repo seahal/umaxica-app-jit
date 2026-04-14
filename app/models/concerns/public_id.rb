@@ -8,7 +8,9 @@ module PublicId
     before_create :generate_public_id
     before_validation :generate_public_id, on: :create
 
+    attr_readonly :public_id
     validates :public_id, presence: true, length: { maximum: 21 }, uniqueness: true
+    validates :public_id, unchanged: true
   end
 
   private

@@ -41,22 +41,6 @@ class UserTokenDbscStatusTest < ActiveSupport::TestCase
     assert_respond_to UserTokenDbscStatus.new, :user_tokens
   end
 
-  test "ensure_defaults! creates missing status records" do
-    UserTokenDbscStatus.where(id: UserTokenDbscStatus::REVOKE).destroy_all
-
-    assert_difference("UserTokenDbscStatus.count", 1) do
-      UserTokenDbscStatus.ensure_defaults!
-    end
-
-    assert UserTokenDbscStatus.exists?(id: UserTokenDbscStatus::REVOKE)
-  end
-
-  test "ensure_defaults! skips existing records" do
-    assert_no_difference("UserTokenDbscStatus.count") do
-      UserTokenDbscStatus.ensure_defaults!
-    end
-  end
-
   test "user_tokens association works with dependent restrict" do
     status = UserTokenDbscStatus.find(UserTokenDbscStatus::NOTHING)
     user = User.create!(

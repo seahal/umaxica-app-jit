@@ -11,6 +11,12 @@
 require "test_helper"
 
 class StaffPreferenceRegionOptionTest < ActiveSupport::TestCase
+  test "can be created" do
+    option = StaffPreferenceRegionOption.create!(id: 99)
+
+    assert_not_nil option.id
+  end
+
   test "name returns US for US id" do
     option = StaffPreferenceRegionOption.find_or_create_by!(id: StaffPreferenceRegionOption::US)
 
@@ -27,5 +33,94 @@ class StaffPreferenceRegionOptionTest < ActiveSupport::TestCase
     option = StaffPreferenceRegionOption.find_or_create_by!(id: StaffPreferenceRegionOption::NOTHING)
 
     assert_nil option.name
+  end
+
+  test "name returns nil for unknown id" do
+    option = StaffPreferenceRegionOption.create!(id: 999)
+
+    assert_nil option.name
+  end
+
+  test "ensure_defaults! creates missing default options" do
+    # Create new options with high IDs to avoid conflicts
+    StaffPreferenceRegionOption.create!(id: 1000)
+    StaffPreferenceRegionOption.create!(id: 1001)
+    StaffPreferenceRegionOption.create!(id: 1002)
+
+    test_defaults = [1000, 1001, 1002]
+    StaffPreferenceRegionOption.stub(:default_ids, test_defaults) do
+      # Delete any existing default options to test creation
+      StaffPreferenceRegionOption.where(id: test_defaults).delete_all
+
+      # Ensure defaults are created
+      StaffPreferenceRegionOption.ensure_defaults!
+
+      # Check that all default options exist
+      assert StaffPreferenceRegionOption.exists?(1000)
+      assert StaffPreferenceRegionOption.exists?(1001)
+      assert StaffPreferenceRegionOption.exists?(1002)
+    end
+  end
+
+  test "ensure_defaults! does not recreate existing options" do
+    # Ensure defaults exist first
+    StaffPreferenceRegionOption.ensure_defaults!
+
+    # Count existing options
+    count_before = StaffPreferenceRegionOption.where(id: StaffPreferenceRegionOption::DEFAULTS).count
+
+    # Run ensure_defaults! again
+    StaffPreferenceRegionOption.ensure_defaults!
+
+    # Count should be the same
+    count_after = StaffPreferenceRegionOption.where(id: StaffPreferenceRegionOption::DEFAULTS).count
+
+    assert_equal count_before, count_after
+  end
+
+  test "ensure_defaults! handles empty defaults" do
+    StaffPreferenceRegionOption.stub(:default_ids, []) do
+      # Should not raise an error
+      assert_nothing_raised do
+        StaffPreferenceRegionOption.ensure_defaults!
+      end
+    end
+  end
+
+  test "ensure_defaults! handles nil defaults" do
+    StaffPreferenceRegionOption.stub(:default_ids, nil) do
+      # Should not raise an error
+      assert_nothing_raised do
+        StaffPreferenceRegionOption.ensure_defaults!
+      end
+    end
+  end
+
+  test "DEFAULTS contains expected values" do
+    expected = [StaffPreferenceRegionOption::NOTHING,
+                StaffPreferenceRegionOption::US,
+                StaffPreferenceRegionOption::JP,]
+
+    assert_equal expected, StaffPreferenceRegionOption::DEFAULTS
+  end
+
+  test "DEFAULTS is frozen" do
+    assert_predicate StaffPreferenceRegionOption::DEFAULTS, :frozen?
+  end
+
+  test "has_many association with staff_preference_regions" do
+    option = StaffPreferenceRegionOption.create!(id: 999)
+
+    # Verify the association exists
+    assert_respond_to option, :staff_preference_regions
+    assert_equal [], option.staff_preference_regions.to_a
+  end
+
+  test "dependent restrict_with_error on staff_preference_regions" do
+    option = staff_preference_regions(:one).option
+
+    assert_raises(ActiveRecord::RecordNotDestroyed) do
+      option.destroy!
+    end
   end
 end

@@ -22,11 +22,15 @@ class ComPreferenceStatus < CommerceRecord
 
   DEFAULTS = [DELETED, NOTHING].freeze
 
-  def self.ensure_defaults!
-    return if DEFAULTS.blank?
+  def self.default_ids
+    DEFAULTS
+  end
 
-    existing_ids = where(id: DEFAULTS).pluck(:id)
-    missing_ids = DEFAULTS - existing_ids
+  def self.ensure_defaults!
+    return if default_ids.blank?
+
+    existing_ids = where(id: default_ids).pluck(:id)
+    missing_ids = default_ids - existing_ids
     return if missing_ids.empty?
 
     if defined?(Prosopite)

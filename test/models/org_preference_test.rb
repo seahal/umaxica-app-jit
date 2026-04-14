@@ -9,6 +9,7 @@
 #  dbsc_challenge           :text
 #  dbsc_challenge_issued_at :datetime
 #  dbsc_public_key          :jsonb
+#  deletable_at             :datetime         default(Infinity), not null
 #  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
@@ -30,6 +31,7 @@
 #  index_org_preferences_on_binding_method_id  (binding_method_id)
 #  index_org_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
 #  index_org_preferences_on_dbsc_status_id     (dbsc_status_id)
+#  index_org_preferences_on_deletable_at       (deletable_at)
 #  index_org_preferences_on_device_id          (device_id)
 #  index_org_preferences_on_device_id_digest   (device_id_digest)
 #  index_org_preferences_on_jti                (jti) UNIQUE
@@ -76,6 +78,34 @@ class OrgPreferenceTest < ActiveSupport::TestCase
     preference = OrgPreference.create!(public_id: custom_id)
 
     assert_equal custom_id, preference.public_id
+  end
+
+  test "rejects unknown status_id before database foreign key enforcement" do
+    preference = OrgPreference.new(status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:status_id], "must reference an existing org_preference_status"
+  end
+
+  test "rejects unknown binding_method_id before database foreign key enforcement" do
+    preference = OrgPreference.new(binding_method_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:binding_method_id], "must reference an existing org_preference_binding_method"
+  end
+
+  test "rejects unknown dbsc_status_id before database foreign key enforcement" do
+    preference = OrgPreference.new(dbsc_status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:dbsc_status_id], "must reference an existing org_preference_dbsc_status"
+  end
+
+  test "rejects unknown replaced_by_id before database foreign key enforcement" do
+    preference = OrgPreference.new(replaced_by_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:replaced_by_id], "must reference an existing replaced_by"
   end
 
   test "has one org_preference_cookie" do
@@ -222,5 +252,17 @@ class OrgPreferenceTest < ActiveSupport::TestCase
     assert_predicate rotated.issued_refresh_token, :present?
     assert_not_equal original.id, rotated.id
     assert_equal rotated.id, original.reload.replaced_by_id
+  end
+
+  test "deletable scope excludes preferences with deletable_at in the future" do
+    preference = OrgPreference.create!
+
+    assert_not_includes OrgPreference.deletable, preference
+  end
+
+  test "deletable scope includes preferences with deletable_at in the past" do
+    preference = OrgPreference.create!(deletable_at: 1.second.ago)
+
+    assert_includes OrgPreference.deletable, preference
   end
 end

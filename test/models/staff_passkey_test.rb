@@ -108,23 +108,119 @@ class StaffPasskeyTest < ActiveSupport::TestCase
     end
   end
 
-  test "enforces maximum passkeys per staff" do
-    staff = Staff.find_by!(public_id: "BCDE2345FGHJ67KM")
-    relation_stub = Struct.new(:count).new(StaffPasskey::MAX_PASSKEYS_PER_STAFF)
+  test "4th passkey succeeds when 3 exist for staff with real db" do
+    staff = Staff.create!
 
-    StaffPasskey.stub(:where, relation_stub) do
-      extra_passkey = StaffPasskey.new(
-        staff: staff,
-        name: "Overflow Staff Key",
-        public_key: "overflow-key",
-        sign_count: 0,
-        external_id: SecureRandom.uuid,
-        webauthn_id: SecureRandom.hex(32),
-      )
-
-      assert_not extra_passkey.valid?
-      assert_includes extra_passkey.errors[:base],
-                      "exceeds maximum passkeys per staff (#{StaffPasskey::MAX_PASSKEYS_PER_STAFF})"
+    Prosopite.pause do
+      3.times do |i|
+        StaffPasskey.create!(
+          staff: staff,
+          name: "Staff Key #{i}",
+          public_key: "key-below-#{i}",
+          sign_count: 0,
+          external_id: SecureRandom.uuid,
+          webauthn_id: SecureRandom.hex(32),
+        )
+      end
     end
+
+    fourth = StaffPasskey.new(
+      staff: staff,
+      name: "Fourth Staff Key",
+      public_key: "key-at-4",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_predicate fourth, :valid?
+    assert fourth.save
+  end
+
+  test "4th passkey is last allowed when exactly 4 for staff" do
+    staff = Staff.create!
+
+    Prosopite.pause do
+      3.times do |i|
+        StaffPasskey.create!(
+          staff: staff,
+          name: "Staff Key #{i}",
+          public_key: "key-limit-#{i}",
+          sign_count: 0,
+          external_id: SecureRandom.uuid,
+          webauthn_id: SecureRandom.hex(32),
+        )
+      end
+    end
+
+    fourth = StaffPasskey.new(
+      staff: staff,
+      name: "Fourth Staff Key",
+      public_key: "key-4th",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_predicate fourth, :valid?
+    assert fourth.save
+    assert_equal 4, StaffPasskey.where(staff: staff).count
+  end
+
+  test "5th passkey fails when 4 exist for staff" do
+    staff = Staff.create!
+
+    Prosopite.pause do
+      StaffPasskey::MAX_PASSKEYS_PER_STAFF.times do |i|
+        StaffPasskey.create!(
+          staff: staff,
+          name: "Staff Key #{i}",
+          public_key: "key-max-#{i}",
+          sign_count: 0,
+          external_id: SecureRandom.uuid,
+          webauthn_id: SecureRandom.hex(32),
+        )
+      end
+    end
+
+    fifth = StaffPasskey.new(
+      staff: staff,
+      name: "Fifth Staff Key",
+      public_key: "key-above-limit",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_not fifth.valid?
+    assert_includes fifth.errors[:base], "exceeds maximum passkeys per staff (#{StaffPasskey::MAX_PASSKEYS_PER_STAFF})"
+  end
+
+  test "sign_count negative one is invalid below lower boundary" do
+    staff = Staff.find_by!(public_id: "BCDE2345FGHJ67KM")
+    passkey = StaffPasskey.new(
+      staff: staff,
+      name: "Negative Sign Count",
+      public_key: "test-key",
+      sign_count: -1,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_not passkey.valid?
+    assert_not_empty passkey.errors[:sign_count]
+  end
+
+  test "sign_count zero is valid at lower boundary" do
+    passkey = StaffPasskey.new(
+      staff: Staff.find_by!(public_id: "BCDE2345FGHJ67KM"),
+      name: "Zero Sign Count",
+      public_key: "test-key",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_predicate passkey, :valid?
   end
 end

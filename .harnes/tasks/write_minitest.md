@@ -19,6 +19,11 @@ You MUST:
 - include authorization and authentication cases when relevant
 - include edge cases when input validation, routing, cookies, sessions, tokens, or policies are
   involved
+- identify input and output patterns with attention to abnormal values, false negatives, false
+  positives, boundary values, and state transitions
+- avoid hollow coverage through meaningless mocks
+- avoid host-environment side effects and destructive changes
+- keep tests idempotent and independent of execution time and external state
 
 You MUST NOT:
 

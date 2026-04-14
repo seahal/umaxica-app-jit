@@ -145,15 +145,15 @@ class Authentication::UserTest < ActiveSupport::TestCase
     assert_nil @obj.cookies[::Authentication::Base::DEVICE_COOKIE_KEY]
   end
 
-  test "log_in derives shared cookie domain from localhost host" do
+  test "log_in keeps auth cookies host-only on localhost host" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
     @obj.request.host = "sign.app.localhost"
 
     @obj.send(:log_in, @user)
 
-    assert_equal ".app.localhost", @obj.cookies.options_for(::Authentication::User::ACCESS_COOKIE_KEY)[:domain]
-    assert_equal ".app.localhost", @obj.cookies.options_for(::Authentication::User::REFRESH_COOKIE_KEY)[:domain]
-    assert_equal ".app.localhost", @obj.cookies.options_for(::Authentication::Base::DEVICE_COOKIE_KEY)[:domain]
+    assert_nil @obj.cookies.options_for(::Authentication::User::ACCESS_COOKIE_KEY)[:domain]
+    assert_nil @obj.cookies.options_for(::Authentication::User::REFRESH_COOKIE_KEY)[:domain]
+    assert_nil @obj.cookies.options_for(::Authentication::Base::DEVICE_COOKIE_KEY)[:domain]
   end
 
   test "log_in returns tokens hash" do

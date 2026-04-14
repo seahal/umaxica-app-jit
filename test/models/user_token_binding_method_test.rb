@@ -18,25 +18,6 @@ class UserTokenBindingMethodTest < ActiveSupport::TestCase
     assert_equal [0, 1, 2], UserTokenBindingMethod::DEFAULTS
   end
 
-  test "ensure_defaults! creates missing records" do
-    UserTokenBindingMethod.where(id: UserTokenBindingMethod::DEFAULTS).destroy_all
-
-    UserTokenBindingMethod.ensure_defaults!
-
-    assert UserTokenBindingMethod.exists?(id: UserTokenBindingMethod::NOTHING)
-    assert UserTokenBindingMethod.exists?(id: UserTokenBindingMethod::DBSC)
-    assert UserTokenBindingMethod.exists?(id: UserTokenBindingMethod::LEGACY)
-  end
-
-  test "ensure_defaults! does nothing when all defaults exist" do
-    UserTokenBindingMethod.ensure_defaults!
-    initial_count = UserTokenBindingMethod.count
-
-    UserTokenBindingMethod.ensure_defaults!
-
-    assert_equal initial_count, UserTokenBindingMethod.count
-  end
-
   test "has_many user_tokens association" do
     method = UserTokenBindingMethod.new(id: 1)
 

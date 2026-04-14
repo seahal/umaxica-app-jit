@@ -55,7 +55,7 @@ class MiddlewareOrderTest < ActiveSupport::TestCase
     Authorization
     Verification
     Preference
-    Pundit::Authorization
+    ActionPolicy::Controller
     Oidc::SsoInitiator
     CurrentSupport
     Finisher

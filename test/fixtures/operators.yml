@@ -6,6 +6,7 @@
 #  id            :bigint           not null, primary key
 #  lock_version  :integer          default(0), not null
 #  moniker       :string
+#  shreddable_at :datetime         default(Infinity), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  department_id :bigint
@@ -17,6 +18,7 @@
 #
 #  index_operators_on_department_id  (department_id)
 #  index_operators_on_public_id      (public_id) UNIQUE
+#  index_operators_on_shreddable_at  (shreddable_at)
 #  index_operators_on_staff_id       (staff_id)
 #  index_operators_on_status_id      (status_id)
 #

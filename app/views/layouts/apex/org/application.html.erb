@@ -47,7 +47,7 @@
     <ul>
       <li><a href="<%= "#{request.protocol}#{ENV.fetch('APEX_STAFF_URL', 'org.localhost')}#{request.port_string}/" %>"><%= t('apex.org.preferences.footer.home') %></a></li>
       <li><%= link_to t('apex.org.preferences.footer.preference'), sign_org_preference_url %></li>
-      <li><%= link_to t("apex.org.configurations.title"), apex_org_configuration_path %></li>
+      <li><%= link_to t("apex.org.configurations.title"), sign_org_configuration_url %></li>
     </ul>
   </nav>
   <%= render "layouts/shared/footer_cookie_controls", scope: :org %>

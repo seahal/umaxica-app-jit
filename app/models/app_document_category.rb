@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_document_categories
-# Database name: document
+# Database name: publication
 #
 #  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
@@ -18,12 +18,12 @@
 # Foreign Keys
 #
 #  fk_rails_...  (app_document_category_master_id => app_document_category_masters.id)
-#  fk_rails_...  (app_document_id => app_documents.id) ON DELETE => cascade
+#  fk_rails_...  (app_document_id => app_documents.id)
 #
 
 # frozen_string_literal: true
 
-class AppDocumentCategory < DocumentRecord
+class AppDocumentCategory < PublicationRecord
   include ::CategoryTag
 
   belongs_to :app_document, inverse_of: :category
@@ -32,5 +32,5 @@ class AppDocumentCategory < DocumentRecord
              inverse_of: :app_document_categories
 
   validates :app_document_id, uniqueness: true
-  validates :app_document_category_master_id, length: { maximum: 255 }
+  validates :app_document_category_master_id, numericality: { greater_than: 0 }
 end

@@ -14,7 +14,7 @@ expose any Local endpoints, and vice versa.
 ## Database Classification
 
 Each database is classified into one of three deployment scopes. These are documented as comments on
-each base record file (`app/models/*_record.rb`).
+each base record file (`app/models/*_record.rb`) when a dedicated base record exists.
 
 ### Global (single worldwide instance)
 
@@ -28,27 +28,25 @@ each base record file (`app/models/*_record.rb`).
 | `avatar`       | `AvatarRecord`       | User profiles          |
 | `activity`     | `ActivityRecord`     | Audit logs             |
 | `notification` | `NotificationRecord` | Notifications          |
+| `guest`        | `GuestRecord`        | Guest contacts         |
 
 ### Local (per-region isolated instance)
 
-| Database   | Base Record      | Purpose         |
-| ---------- | ---------------- | --------------- |
-| `document` | `DocumentRecord` | CMS documents   |
-| `news`     | `NewsRecord`     | News/blog posts |
-| `guest`    | `GuestRecord`    | Guest contacts  |
-| `behavior` | `BehaviorRecord` | User behavior   |
-| `message`  | `MessageRecord`  | Messages        |
-| `finder`   | `FinderRecord`   | Search (finder) |
-| `search`   | `SearchRecord`   | Search          |
-| `billing`  | `BillingRecord`  | Billing         |
+| Database      | Base Record         | Purpose                                       |
+| ------------- | ------------------- | --------------------------------------------- |
+| `publication` | `PublicationRecord` | Published content (documents, timelines/news) |
+| `behavior`    | `BehaviorRecord`    | User behavior                                 |
+| `behavior`    | `BehaviorRecord`    | User behavior                                 |
+| `message`     | `MessageRecord`     | Messages                                      |
+| `search`      | `SearchRecord`      | Search                                        |
+| `billing`     | `BillingRecord`     | Billing                                       |
+| `storage`     | `-`                 | ActiveStorage files                           |
 
 ### Per-Deploy (each deployment has its own)
 
-| Database  | Purpose               |
-| --------- | --------------------- |
-| `queue`   | SolidQueue jobs       |
-| `storage` | ActiveStorage files   |
-| `cable`   | ActionCable WebSocket |
+| Database | Purpose         |
+| -------- | --------------- |
+| `queue`  | SolidQueue jobs |
 
 Per-Deploy databases exist in both Global and Local deployments independently. They are
 infrastructure concerns, not business data.
@@ -230,7 +228,7 @@ Models remain in the host app (`app/models/`), not in either engine. Both engine
 through the host:
 
 - **Global Engine** reads/writes Global models directly (PrincipalRecord, TokenRecord, etc.)
-- **Local Engine** reads/writes Local models directly (DocumentRecord, NewsRecord, etc.)
+- **Local Engine** reads/writes Local models directly (PublicationRecord, BehaviorRecord, etc.)
 - **Local Engine** reads Global models via read replicas (e.g., `principal_replica` for user lookup)
 
 `isolate_namespace` isolates controllers, routes, and views, but models are shared through the host

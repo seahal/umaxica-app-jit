@@ -35,6 +35,10 @@ services:
       outer:
         aliases:
           - jit
+    extra_hosts:
+      - "com.localhost:host-gateway"
+      - "app.localhost:host-gateway"
+      - "org.localhost:host-gateway"
     depends_on:
       primary:
         condition: service_healthy
@@ -121,32 +125,6 @@ services:
       timeout: 2s
       retries: 20
       start_period: 3s
-
-  kafka:
-    image: confluentinc/cp-kafka:7.9.0
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      CLUSTER_ID: UmaxicaCluster01
-    ports:
-      - "127.0.0.1:9092:9092"
-    networks:
-      - backend
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
 
   loki:
     image: grafana/loki:latest

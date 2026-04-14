@@ -24,6 +24,15 @@ class Oidc::ClientRegistryTest < ActiveSupport::TestCase
     assert client.redirect_uris.any? { |uri| uri.include?("/auth/callback") }
   end
 
+  test "find returns customer client for com surface" do
+    client = Oidc::ClientRegistry.find("core_com")
+
+    assert_not_nil client
+    assert_equal "core_com", client.client_id
+    assert_equal "umaxica-core-com", client.aud
+    assert_equal "customer", client.resource_type
+  end
+
   test "find returns nil for unknown client_id" do
     assert_nil Oidc::ClientRegistry.find("unknown_client")
   end
@@ -75,11 +84,19 @@ class Oidc::ClientRegistryTest < ActiveSupport::TestCase
     end
   end
 
-  test "app and com clients have user resource_type" do
-    %w(apex_app core_app docs_app news_app help_app apex_com core_com docs_com news_com help_com).each do |client_id|
+  test "app clients have user resource_type" do
+    %w(apex_app core_app docs_app news_app help_app).each do |client_id|
       client = Oidc::ClientRegistry.find(client_id)
 
       assert_equal "user", client.resource_type, "#{client_id} should be user type"
+    end
+  end
+
+  test "com clients have customer resource_type" do
+    %w(apex_com core_com docs_com news_com help_com).each do |client_id|
+      client = Oidc::ClientRegistry.find(client_id)
+
+      assert_equal "customer", client.resource_type, "#{client_id} should be customer type"
     end
   end
 

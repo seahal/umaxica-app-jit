@@ -9,6 +9,6 @@ module Account
   include ::PublicId
 
   included do
-    validates :status_id, numericality: { only_integer: true }
+    validates_reference_table :status_id, association: :"#{name.underscore}_status"
   end
 end

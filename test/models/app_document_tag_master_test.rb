@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_document_tag_masters
-# Database name: document
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null

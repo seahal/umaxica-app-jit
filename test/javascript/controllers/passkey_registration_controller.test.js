@@ -18,6 +18,7 @@ describe("PasskeyRegistrationController", () => {
   let errorTarget;
   let statusTarget;
   let descriptionTarget;
+  let reloadMock;
 
   beforeEach(() => {
     errorTarget = { textContent: "", classList: { add: vi.fn(), remove: vi.fn() } };
@@ -47,7 +48,11 @@ describe("PasskeyRegistrationController", () => {
     });
     vi.stubGlobal("fetch", vi.fn());
     vi.stubGlobal("navigator", { credentials: { create: vi.fn() } });
-    vi.stubGlobal("window", { PublicKeyCredential: true, location: { reload: vi.fn(), href: "" } });
+    reloadMock = vi.fn();
+    vi.stubGlobal("window", {
+      PublicKeyCredential: true,
+      location: { reload: reloadMock, href: "" },
+    });
   });
 
   describe("register", () => {
@@ -197,6 +202,12 @@ describe("PasskeyRegistrationController", () => {
       expect(controller.descriptionValue).toBe("Work Laptop");
     });
 
+    test("returns empty string when description target value is blank", () => {
+      descriptionTarget.value = "";
+
+      expect(controller.descriptionValue).toBe("");
+    });
+
     test("returns empty string when description target missing", () => {
       controller.hasDescriptionTarget = false;
       expect(controller.descriptionValue).toBe("");
@@ -206,6 +217,427 @@ describe("PasskeyRegistrationController", () => {
   describe("csrfToken", () => {
     test("returns csrf token from meta tag", () => {
       expect(controller.csrfToken).toBe("csrf-token");
+    });
+
+    test("returns empty string when meta tag is missing", () => {
+      document.querySelector.mockReturnValue(null);
+
+      expect(controller.csrfToken).toBe("");
+    });
+  });
+
+  describe("encodeCredential", () => {
+    test("encodes credential correctly", () => {
+      const credential = {
+        id: "test-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        authenticatorAttachment: "platform",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({ appid: true }),
+      };
+
+      const result = controller.encodeCredential(credential);
+
+      expect(result.id).toBe("test-id");
+      expect(result.type).toBe("public-key");
+      expect(result.authenticatorAttachment).toBe("platform");
+      expect(result.response.clientDataJSON).toBeDefined();
+      expect(result.response.attestationObject).toBeDefined();
+      expect(result.clientExtensionResults).toEqual({ appid: true });
+    });
+
+    test("encodes credential with null authenticatorAttachment", () => {
+      const credential = {
+        id: "test-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        authenticatorAttachment: null,
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      };
+
+      const result = controller.encodeCredential(credential);
+      expect(result.authenticatorAttachment).toBeNull();
+    });
+  });
+
+  describe("register success flow", () => {
+    test("successful registration with redirect_url", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ redirect_url: "/dashboard" }),
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(statusTarget.textContent).toBe("登録完了！リダイレクト中...");
+      expect(window.location.href).toBe("/dashboard");
+    });
+
+    test("successful registration with successRedirectUrl value", async () => {
+      controller.hasSuccessRedirectUrlValue = true;
+      controller.successRedirectUrlValue = "/settings";
+
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({}),
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(window.location.href).toBe("/settings");
+    });
+
+    test("successful registration with no redirect falls back to reload", async () => {
+      controller.hasSuccessRedirectUrlValue = false;
+
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({}),
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(reloadMock).toHaveBeenCalled();
+    });
+  });
+
+  describe("error handling", () => {
+    test("shows error when options fetch fails with non-JSON", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        headers: { get: () => "text/html" },
+      });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("オプションの取得に失敗しました");
+    });
+
+    test("shows fallback options error when JSON body has no error key", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch.mockResolvedValue({
+        ok: false,
+        status: 422,
+        headers: { get: () => "application/json" },
+        json: () => Promise.resolve({}),
+      });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("オプションの取得に失敗しました");
+    });
+
+    test("treats missing content-type as empty string for options errors", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        headers: { get: () => null },
+      });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("オプションの取得に失敗しました");
+    });
+
+    test("reloads page on 401 during options fetch", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch.mockResolvedValue({
+        ok: false,
+        status: 401,
+        headers: { get: () => "text/html" },
+      });
+
+      await controller.register(event);
+
+      expect(reloadMock).toHaveBeenCalled();
+    });
+
+    test("reloads page on 302 during options fetch", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch.mockResolvedValue({
+        ok: false,
+        status: 302,
+        headers: { get: () => "text/html" },
+      });
+
+      await controller.register(event);
+
+      expect(reloadMock).toHaveBeenCalled();
+    });
+
+    test("shows error when verification fetch fails with non-JSON", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          headers: { get: () => "text/html" },
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("登録に失敗しました");
+    });
+
+    test("reloads page on 401 during verification", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 401,
+          headers: { get: () => "text/html" },
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(reloadMock).toHaveBeenCalled();
+    });
+
+    test("reloads page on 302 during verification", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 302,
+          headers: { get: () => "text/html" },
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(reloadMock).toHaveBeenCalled();
+    });
+
+    test("shows error when verification returns JSON error", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ error: "Invalid credential" }),
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("Invalid credential");
+    });
+
+    test("uses fallback verification error when JSON body has no error key", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({}),
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("登録に失敗しました");
+    });
+
+    test("treats missing content-type as empty string for verification errors", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          headers: { get: () => "application/json" },
+          json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          headers: { get: () => null },
+        });
+
+      navigator.credentials.create.mockResolvedValue({
+        id: "cred-id",
+        rawId: new Uint8Array([1, 2, 3]).buffer,
+        type: "public-key",
+        response: {
+          clientDataJSON: new Uint8Array([4, 5, 6]).buffer,
+          attestationObject: new Uint8Array([7, 8, 9]).buffer,
+        },
+        getClientExtensionResults: () => ({}),
+      });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("登録に失敗しました");
+    });
+
+    test("shows fallback generic error when thrown object has no message", async () => {
+      const event = { preventDefault: vi.fn() };
+      fetch.mockResolvedValue({
+        ok: true,
+        headers: { get: () => "application/json" },
+        json: () => Promise.resolve({ challenge_id: "c1", options: {} }),
+      });
+      navigator.credentials.create.mockRejectedValue({ name: "UnknownError" });
+
+      await controller.register(event);
+
+      expect(errorTarget.textContent).toBe("登録中にエラーが発生しました");
+    });
+  });
+
+  describe("helper methods without targets", () => {
+    test("showError/showStatus/clearMessages do not fail", () => {
+      controller.hasErrorTarget = false;
+      controller.hasStatusTarget = false;
+
+      expect(() => controller.showError("error")).not.toThrow();
+      expect(() => controller.showStatus("status")).not.toThrow();
+      expect(() => controller.clearMessages()).not.toThrow();
     });
   });
 });

@@ -42,13 +42,13 @@ module Concerns
           ::Authentication::User,
           ::Authorization::User,
           ::Verification::User,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::RestrictedSessionGuard,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           set_preferences_cookie
           enforce_restricted_session_guard!
           resolve_param_context
@@ -80,13 +80,13 @@ module Concerns
           ::Authentication::Customer,
           ::Authorization::Customer,
           ::Verification::Customer,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::CurrentSupport,
           Sign::Com::RouteAliasHelper,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           enforce_required_telephone_registration!
           enforce_verification_if_required
           enforce_access_policy!
@@ -109,13 +109,13 @@ module Concerns
           ::Authentication::Staff,
           ::Authorization::Staff,
           ::Verification::Staff,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::RestrictedSessionGuard,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           set_preferences_cookie
           resolve_param_context
           set_region
@@ -143,13 +143,13 @@ module Concerns
           ::Authentication::User,
           ::Authorization::User,
           ::Verification::User,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           enforce_withdrawal_gate!
           transparent_refresh_access_token
           enforce_access_policy!
@@ -166,13 +166,13 @@ module Concerns
           ::Authentication::User,
           ::Authorization::User,
           ::Verification::User,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           transparent_refresh_access_token
           enforce_access_policy!
           enforce_verification_if_required
@@ -189,13 +189,13 @@ module Concerns
           ::Authentication::Staff,
           ::Authorization::Staff,
           ::Verification::Staff,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           enforce_access_policy!
           enforce_verification_if_required
           set_current
@@ -211,13 +211,13 @@ module Concerns
           ::Authentication::User,
           ::Authorization::User,
           ::Verification::User,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           enforce_withdrawal_gate!
           transparent_refresh_access_token
           enforce_access_policy!
@@ -241,13 +241,13 @@ module Concerns
           ::Authentication::Customer,
           ::Authorization::Customer,
           ::Verification::Customer,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           enforce_withdrawal_gate!
           transparent_refresh_access_token
           enforce_access_policy!
@@ -272,13 +272,13 @@ module Concerns
           ::Authentication::Staff,
           ::Authorization::Staff,
           ::Verification::Staff,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           transparent_refresh_access_token
           enforce_access_policy!
           enforce_verification_if_required
@@ -301,13 +301,13 @@ module Concerns
           ::Authentication::User,
           ::Authorization::User,
           ::Verification::User,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           transparent_refresh_access_token
           enforce_access_policy!
           enforce_verification_if_required
@@ -324,13 +324,13 @@ module Concerns
           ::Authentication::Viewer,
           ::Authorization::Viewer,
           ::Verification::Viewer,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           enforce_access_policy!
           enforce_verification_if_required
           set_current
@@ -345,13 +345,13 @@ module Concerns
           ::Authentication::Staff,
           ::Authorization::Staff,
           ::Verification::Staff,
-          Pundit::Authorization,
+          ActionPolicy::Controller,
           ::Oidc::SsoInitiator,
           ::CurrentSupport,
           ::Finisher,
         ],
         before_actions: %i(
-          check_default_rate_limit
+          rate_limit
           enforce_access_policy!
           enforce_verification_if_required
           set_current

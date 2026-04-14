@@ -8,7 +8,6 @@ module Health
     ActivityRecord,
     AvatarRecord,
     BehaviorRecord,
-    DocumentRecord,
     GuestRecord,
     MessageRecord,
     PublicationRecord,
@@ -17,6 +16,7 @@ module Health
     OperatorRecord,
     CommerceRecord,
     PrincipalRecord,
+    SettingRecord,
     TokenRecord,
   ].freeze
 

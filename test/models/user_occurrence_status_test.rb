@@ -38,4 +38,25 @@ class UserOccurrenceStatusTest < ActiveSupport::TestCase
     assert_equal 3, UserOccurrenceStatus::INACTIVE
     assert_equal 4, UserOccurrenceStatus::DELETED
   end
+
+  test "ensure_defaults! creates missing default records" do
+    UserOccurrenceStatus.ensure_defaults!
+
+    UserOccurrenceStatus::DEFAULTS.each do |id|
+      assert UserOccurrenceStatus.exists?(id: id)
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    UserOccurrenceStatus.ensure_defaults!
+    initial_count = UserOccurrenceStatus.count
+
+    UserOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, UserOccurrenceStatus.count
+  end
+
+  test "has occurrences association" do
+    assert_status_association(UserOccurrenceStatus, :user_occurrences)
+  end
 end

@@ -13,8 +13,8 @@ require "test_helper"
 class StaffTokenDbscStatusTest < ActiveSupport::TestCase
   test "constants are defined correctly" do
     assert_equal 0, StaffTokenDbscStatus::NOTHING
-    assert_equal 1, StaffTokenDbscStatus::PENDING
-    assert_equal 2, StaffTokenDbscStatus::ACTIVE
+    assert_equal 1, StaffTokenDbscStatus::ACTIVE
+    assert_equal 2, StaffTokenDbscStatus::PENDING
     assert_equal 3, StaffTokenDbscStatus::FAILED
     assert_equal 4, StaffTokenDbscStatus::REVOKE
     assert_equal [0, 1, 2, 3, 4], StaffTokenDbscStatus::DEFAULTS

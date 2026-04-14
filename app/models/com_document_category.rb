@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_document_categories
-# Database name: document
+# Database name: publication
 #
 #  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
@@ -18,12 +18,12 @@
 # Foreign Keys
 #
 #  fk_rails_...  (com_document_category_master_id => com_document_category_masters.id)
-#  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
+#  fk_rails_...  (com_document_id => com_documents.id)
 #
 
 # frozen_string_literal: true
 
-class ComDocumentCategory < DocumentRecord
+class ComDocumentCategory < PublicationRecord
   include ::CategoryTag
 
   belongs_to :com_document, inverse_of: :category

@@ -4,7 +4,7 @@
 unless Rails.env.production?
   Prosopite.rails_logger = true # Logs to Rails logger.
   Prosopite.prosopite_logger = true # Logs to log/prosopite.log.
-  Prosopite.raise = Rails.env.test? # Fail tests on N+1, only log in development.
+  Prosopite.raise = true # Fail fast on N+1 in development and test.
 
   # Ignore internal Rails tables during multi-DB boot
   Prosopite.ignore_queries = [

@@ -39,4 +39,21 @@ class IpOccurrenceStatusTest < ActiveSupport::TestCase
   #
   #     assert_expires_at_default(record)
   #   end
+
+  test "ensure_defaults! creates missing default records" do
+    IpOccurrenceStatus.ensure_defaults!
+
+    IpOccurrenceStatus::DEFAULTS.each do |id|
+      assert IpOccurrenceStatus.exists?(id: id)
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    IpOccurrenceStatus.ensure_defaults!
+    initial_count = IpOccurrenceStatus.count
+
+    IpOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, IpOccurrenceStatus.count
+  end
 end

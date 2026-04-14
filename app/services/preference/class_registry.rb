@@ -16,66 +16,76 @@ module Preference
       "Colortheme" => :colortheme,
     }.freeze
 
+    # Feature flag: Use setting database for token-like preferences
+    # When enabled, uses StorageAdapter for dual-read/write to setting database
+    USE_SETTING_DATABASE = ENV.fetch("USE_SETTING_DATABASE", "true") == "true"
+
     REGISTRY = {
       "App" => {
-        preference: AppPreference,
-        status: AppPreferenceStatus,
-        cookie: AppPreferenceCookie,
-        audit: AppPreferenceActivity,
+        preference: USE_SETTING_DATABASE ? SettingPreference : AppPreference,
+        legacy_preference: AppPreference,
+        status: USE_SETTING_DATABASE ? SettingPreferenceStatus : AppPreferenceStatus,
+        cookie: USE_SETTING_DATABASE ? SettingPreferenceCookie : AppPreferenceCookie,
+        audit: USE_SETTING_DATABASE ? SettingPreferenceActivity : AppPreferenceActivity,
         audit_event: AppPreferenceActivityEvent,
         audit_level: AppPreferenceActivityLevel,
         option_classes: {
-          timezone: AppPreferenceTimezoneOption,
-          language: AppPreferenceLanguageOption,
-          region: AppPreferenceRegionOption,
-          colortheme: AppPreferenceColorthemeOption,
+          timezone: USE_SETTING_DATABASE ? SettingPreferenceTimezoneOption : AppPreferenceTimezoneOption,
+          language: USE_SETTING_DATABASE ? SettingPreferenceLanguageOption : AppPreferenceLanguageOption,
+          region: USE_SETTING_DATABASE ? SettingPreferenceRegionOption : AppPreferenceRegionOption,
+          colortheme: USE_SETTING_DATABASE ? SettingPreferenceColorthemeOption : AppPreferenceColorthemeOption,
         }.freeze,
         record_classes: {
-          timezone: AppPreferenceTimezone,
-          language: AppPreferenceLanguage,
-          region: AppPreferenceRegion,
-          colortheme: AppPreferenceColortheme,
+          timezone: USE_SETTING_DATABASE ? SettingPreferenceTimezone : AppPreferenceTimezone,
+          language: USE_SETTING_DATABASE ? SettingPreferenceLanguage : AppPreferenceLanguage,
+          region: USE_SETTING_DATABASE ? SettingPreferenceRegion : AppPreferenceRegion,
+          colortheme: USE_SETTING_DATABASE ? SettingPreferenceColortheme : AppPreferenceColortheme,
         }.freeze,
+        owner_type: "User",
       }.freeze,
       "Com" => {
-        preference: ComPreference,
-        status: ComPreferenceStatus,
-        cookie: ComPreferenceCookie,
-        audit: ComPreferenceActivity,
+        preference: USE_SETTING_DATABASE ? SettingPreference : ComPreference,
+        legacy_preference: ComPreference,
+        status: USE_SETTING_DATABASE ? SettingPreferenceStatus : ComPreferenceStatus,
+        cookie: USE_SETTING_DATABASE ? SettingPreferenceCookie : ComPreferenceCookie,
+        audit: USE_SETTING_DATABASE ? SettingPreferenceActivity : ComPreferenceActivity,
         audit_event: ComPreferenceActivityEvent,
         audit_level: ComPreferenceActivityLevel,
         option_classes: {
-          timezone: ComPreferenceTimezoneOption,
-          language: ComPreferenceLanguageOption,
-          region: ComPreferenceRegionOption,
-          colortheme: ComPreferenceColorthemeOption,
+          timezone: USE_SETTING_DATABASE ? SettingPreferenceTimezoneOption : ComPreferenceTimezoneOption,
+          language: USE_SETTING_DATABASE ? SettingPreferenceLanguageOption : ComPreferenceLanguageOption,
+          region: USE_SETTING_DATABASE ? SettingPreferenceRegionOption : ComPreferenceRegionOption,
+          colortheme: USE_SETTING_DATABASE ? SettingPreferenceColorthemeOption : ComPreferenceColorthemeOption,
         }.freeze,
         record_classes: {
-          timezone: ComPreferenceTimezone,
-          language: ComPreferenceLanguage,
-          region: ComPreferenceRegion,
-          colortheme: ComPreferenceColortheme,
+          timezone: USE_SETTING_DATABASE ? SettingPreferenceTimezone : ComPreferenceTimezone,
+          language: USE_SETTING_DATABASE ? SettingPreferenceLanguage : ComPreferenceLanguage,
+          region: USE_SETTING_DATABASE ? SettingPreferenceRegion : ComPreferenceRegion,
+          colortheme: USE_SETTING_DATABASE ? SettingPreferenceColortheme : ComPreferenceColortheme,
         }.freeze,
+        owner_type: "Customer",
       }.freeze,
       "Org" => {
-        preference: OrgPreference,
-        status: OrgPreferenceStatus,
-        cookie: OrgPreferenceCookie,
-        audit: OrgPreferenceActivity,
+        preference: USE_SETTING_DATABASE ? SettingPreference : OrgPreference,
+        legacy_preference: OrgPreference,
+        status: USE_SETTING_DATABASE ? SettingPreferenceStatus : OrgPreferenceStatus,
+        cookie: USE_SETTING_DATABASE ? SettingPreferenceCookie : OrgPreferenceCookie,
+        audit: USE_SETTING_DATABASE ? SettingPreferenceActivity : OrgPreferenceActivity,
         audit_event: OrgPreferenceActivityEvent,
         audit_level: OrgPreferenceActivityLevel,
         option_classes: {
-          timezone: OrgPreferenceTimezoneOption,
-          language: OrgPreferenceLanguageOption,
-          region: OrgPreferenceRegionOption,
-          colortheme: OrgPreferenceColorthemeOption,
+          timezone: USE_SETTING_DATABASE ? SettingPreferenceTimezoneOption : OrgPreferenceTimezoneOption,
+          language: USE_SETTING_DATABASE ? SettingPreferenceLanguageOption : OrgPreferenceLanguageOption,
+          region: USE_SETTING_DATABASE ? SettingPreferenceRegionOption : OrgPreferenceRegionOption,
+          colortheme: USE_SETTING_DATABASE ? SettingPreferenceColorthemeOption : OrgPreferenceColorthemeOption,
         }.freeze,
         record_classes: {
-          timezone: OrgPreferenceTimezone,
-          language: OrgPreferenceLanguage,
-          region: OrgPreferenceRegion,
-          colortheme: OrgPreferenceColortheme,
+          timezone: USE_SETTING_DATABASE ? SettingPreferenceTimezone : OrgPreferenceTimezone,
+          language: USE_SETTING_DATABASE ? SettingPreferenceLanguage : OrgPreferenceLanguage,
+          region: USE_SETTING_DATABASE ? SettingPreferenceRegion : OrgPreferenceRegion,
+          colortheme: USE_SETTING_DATABASE ? SettingPreferenceColortheme : OrgPreferenceColortheme,
         }.freeze,
+        owner_type: "Staff",
       }.freeze,
       "User" => {
         preference: UserPreference,
@@ -122,6 +132,25 @@ module Preference
           colortheme: CustomerPreferenceColortheme,
         }.freeze,
       }.freeze,
+      # Unified setting database entries
+      "Setting" => {
+        preference: SettingPreference,
+        status: SettingPreferenceStatus,
+        cookie: SettingPreferenceCookie,
+        audit: SettingPreferenceActivity,
+        option_classes: {
+          timezone: SettingPreferenceTimezoneOption,
+          language: SettingPreferenceLanguageOption,
+          region: SettingPreferenceRegionOption,
+          colortheme: SettingPreferenceColorthemeOption,
+        }.freeze,
+        record_classes: {
+          timezone: SettingPreferenceTimezone,
+          language: SettingPreferenceLanguage,
+          region: SettingPreferenceRegion,
+          colortheme: SettingPreferenceColortheme,
+        }.freeze,
+      }.freeze,
     }.freeze
 
     def fetch(prefix)
@@ -132,7 +161,8 @@ module Preference
 
     def for_controller_path(controller_path)
       prefix = controller_path.to_s.split("/")[1]&.capitalize
-      fetch(prefix)[:preference]
+      entry = fetch(prefix)
+      entry[:legacy_preference] || entry[:preference]
     end
 
     def prefix_from_preference_class(preference_class)
@@ -165,6 +195,61 @@ module Preference
 
     def record_class(prefix, type)
       fetch(prefix)[:record_classes].fetch(TYPE_KEY_MAP.fetch(type))
+    end
+
+    # Returns true if using the unified setting database for token-like preferences
+    def use_setting_database?
+      USE_SETTING_DATABASE
+    end
+
+    # Returns the StorageAdapter class for unified preference storage
+    def storage_adapter
+      Preference::StorageAdapter
+    end
+
+    # Returns the legacy preference class for the given preference type
+    def legacy_preference_class(preference_type)
+      prefix = preference_type.to_s.delete_suffix("Preference")
+      fetch(prefix)[:legacy_preference]
+    end
+
+    # Returns the owner type (User, Staff, Customer) for a preference type
+    def owner_type_for(preference_type)
+      prefix = preference_type.to_s.delete_suffix("Preference")
+      fetch(prefix)[:owner_type]
+    end
+
+    # Ensure default reference records exist across all preference databases
+    def ensure_all_defaults!
+      # Legacy defaults
+      %w(App Com Org).each do |prefix|
+        ensure_legacy_defaults!(prefix)
+      end
+
+      # Setting database defaults
+      storage_adapter.ensure_setting_defaults! if use_setting_database?
+    end
+
+    private
+
+    def ensure_legacy_defaults!(prefix)
+      entry = fetch(prefix)
+
+      entry[:status].ensure_defaults! if entry[:status].respond_to?(:ensure_defaults!)
+
+      if entry[:preference].respond_to?(:dbsc_binding_method_class)
+        entry[:preference].dbsc_binding_method_class.ensure_defaults!
+      end
+
+      if entry[:preference].respond_to?(:dbsc_status_class)
+        entry[:preference].dbsc_status_class.ensure_defaults!
+      end
+
+      entry[:option_classes].each_value do |klass|
+        klass.ensure_defaults! if klass.respond_to?(:ensure_defaults!)
+      end
+    rescue KeyError
+      # Skip if prefix not found
     end
   end
 end

@@ -1051,7 +1051,7 @@ module Authentication
         httponly: true,
         same_site: :lax,
         path: "/",
-        domain: true,
+        domain: false,
       )
     end
 
@@ -1061,7 +1061,7 @@ module Authentication
         request: request,
         same_site: :lax,
         path: "/",
-        domain: true,
+        domain: false,
       ).except(:expires, :httponly, :secure, :same_site)
     end
 
@@ -1281,7 +1281,26 @@ module Authentication
       access_expires_at = access_token_expires_at_for(token_record)
       refresh_cookie_expires_at = refresh_cookie_expires_at_for(token_record)
 
-      new_access_token = Token.encode(
+      new_access_token = build_access_token(resource, token_record, access_expires_at)
+      set_refresh_cookies(
+        token_record, new_access_token, new_refresh_plain, access_expires_at,
+        refresh_cookie_expires_at,
+      )
+      emit_refresh_events(resource, token_record, previous_token_record)
+      enforce_and_audit_refresh(resource, token_record)
+
+      {
+        access_token: new_access_token,
+        refresh_token: new_refresh_plain,
+        token_type: "Bearer",
+        expires_in: expires_in_for(access_expires_at),
+        user: resource,
+        dbsc: dbsc_payload_for(token_record),
+      }
+    end
+
+    def build_access_token(resource, token_record, access_expires_at)
+      Token.encode(
         resource,
         host: request.host,
         session_public_id: token_record.public_id,
@@ -1291,17 +1310,21 @@ module Authentication
         acr: "aal1",
         amr: [],
       )
+    end
 
+    def set_refresh_cookies(token_record, access_token, refresh_token, access_expires_at, refresh_cookie_expires_at)
       set_auth_cookies(
-        access_token: new_access_token,
-        refresh_token: new_refresh_plain,
+        access_token: access_token,
+        refresh_token: refresh_token,
         device_id: token_record.device_id,
         access_expires_at: access_expires_at,
         refresh_expires_at: refresh_cookie_expires_at,
         dbsc_token: dbsc_cookie_value_for(token_record),
         dbsc_expires_at: dbsc_cookie_expires_at_for(token_record),
       )
+    end
 
+    def emit_refresh_events(resource, token_record, previous_token_record)
       Sign::Risk::Emitter.emit(
         "refresh_rotated",
         **risk_actor_payload(resource.id),
@@ -1318,23 +1341,14 @@ module Authentication
         new_refresh_token_id: token_record.public_id,
         ip_address: request_ip_address,
       )
+    end
 
+    def enforce_and_audit_refresh(resource, token_record)
       # S1: Audit with best-effort semantics - failure does not block refresh
       # AuditWriter.write handles exceptions internally and notifies observers
       record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
-
       Sign::Risk::Enforcer.call(resource)
-
       issue_dbsc_registration_header_for(token_record)
-
-      {
-        access_token: new_access_token,
-        refresh_token: new_refresh_plain,
-        token_type: "Bearer",
-        expires_in: expires_in_for(access_expires_at),
-        user: resource,
-        dbsc: dbsc_payload_for(token_record),
-      }
     end
 
     def request_ip_address

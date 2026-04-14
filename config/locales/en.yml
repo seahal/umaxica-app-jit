@@ -12,6 +12,7 @@ en:
   test:
     error:
       key: Test Error
+  verification_success: Verification successful
   tasks:
     preference_migration:
       migrating_user_app_preference: Migrating UserAppPreference to UserPreference...
@@ -301,6 +302,7 @@ en:
         success:
           complete: Re-authentication completed.
       verification:
+        unavailable: This verification method is unavailable.
         errors:
           email_not_verified: Email address is not verified.
         index:
@@ -768,6 +770,7 @@ en:
         code_format: must contain only uppercase letters, numbers, and underscores
         exceeds_e164_length: exceeds E.164 maximum length of %{max} digits
         country_code_cannot_start_with_zero: country code cannot start with zero
+        already_tagged: is already tagged
         record_invalid: 'Validation failed: %{errors}'
         restrict_dependent_destroy:
           has_one: Cannot delete record because a dependent %{record} exists
@@ -804,6 +807,7 @@ en:
       action_required: 'Action required: Run migration to set DEFAULT uuidv7() for all tables.'
   errors:
     messages:
+      unchanged: cannot be changed
       validation_errors:
         one: 1 error
         other: "%{count} errors"
@@ -1104,6 +1108,7 @@ en:
         email_settings_description: Manage notification senders and descriptions.
       preferences:
         title: Preferences
+        email_settings: Email settings
         cookie_settings: Cookie Settings
         region_settings: Region & Language Settings
         theme_settings: Theme Settings
@@ -1114,98 +1119,104 @@ en:
           cookie: Cookie
           preference: Preference
           privacy: Privacy
-        themes:
-          updated: Theme updated to %{theme}
-          invalid: Invalid theme selected
-        timezones:
-          invalid: Invalid timezone selected
-    app:
-      configurations:
-        title: Configuration
-        description: Review and adjust your service settings.
-        i18n_settings: Locale settings
-        i18n_settings_description: Update the default language and region for this browser.
+    com:
+      preferences:
+        title: Preferences
+        description: Manage preferences for this service.
         email_settings: Email settings
-        email_settings_description: Manage notification senders and descriptions.
+        region_settings: Region settings
+        timezone_settings: Timezone settings
+        language_settings: Language settings
+        theme_settings: Theme settings
+        cookie_settings: Cookie settings
+        reset_settings: Reset settings
+        up_link: Back to top
+        back_to_settings: Back to settings
+        locale_settings: Locale settings
+        submitting: Submitting...
+        update_settings: Update settings
+        theme:
+          select_theme: Select a theme
+        regions:
+          title: Region and language settings
+          region_section: Region settings
+          select_region: Select region
+          select_region_prompt: Choose your region...
+          select_region_selector:
+            US: United States
+            JP: Japan
+            USA: United States
+            JAPAN: Japan
+          select_language: Select language
+          select_language_prompt: Choose your language...
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone: Select timezone
+          select_timezone_prompt: Choose your timezone...
+          select_timezone_selector:
+            UTC: Coordinated Universal Time
+            JST: Japan Standard Time
+          region:
+            timezone:
+              link: Timezone settings
+            language:
+              link: Language settings
       preference:
         cookie:
           edit:
-            h1: Cookie Preferences
+            description: Cookie preferences
+            h1: Cookie preferences
             accept_necessary_cookies: Allow necessary cookies (required)
             accept_functional_cookies: Allow functional cookies
             accept_performance_cookies: Allow performance cookies
             accept_targeting_cookies: Allow targeting cookies
             accept_consent_cookies: Allow consent cookies
         resets:
-          title: Reset Preferences
+          title: Reset preferences
           description: Remove saved preference data for this browser.
-          button: Clear preference data
+          button: Clear saved preference data
           confirm: This action deletes saved preference data for this browser. Continue?
-          destroyed: Preferences have been reset
           back: Back to preferences
-      preferences:
-        title: Preferences
-        cookie_settings: Cookie Settings
-        region_settings: Region & Language Settings
-        theme_settings: Theme Settings
-        reset_settings: Reset Settings
-        up_link: Back to top
-        footer:
-          home: Home
-          cookie: Cookie
-          preference: Preference
-          privacy: Privacy
-        themes:
-          updated: Theme updated to %{theme}
-          invalid: Invalid theme selected
-        timezones:
-          invalid: Invalid timezone selected
-    com:
-      configurations:
-        title: Configuration
-        description: Review and adjust your service settings.
-        i18n_settings: Locale settings
-        i18n_settings_description: Update the default language and region for this browser.
-        email_settings: Email settings
-        email_settings_description: Manage notification senders and descriptions.
-      preference:
-        cookie:
+          destroyed: Preferences reset
+        theme:
           edit:
-            h1: Cookie Preferences
-            accept_necessary_cookies: Allow necessary cookies (required)
-            accept_functional_cookies: Allow functional cookies
-            accept_performance_cookies: Allow performance cookies
-            accept_targeting_cookies: Allow targeting cookies
-            accept_consent_cookies: Allow consent cookies
+            title: Theme settings
+            description: Choose a theme for this service.
+            options:
+              light: Light
+              dark: Dark
+              system: System
         language:
           edit:
-            language_label: Language Select
-            h1: Language Select
-        resets:
-          title: Reset Preferences
-          description: Remove saved preference data for this browser.
-          button: Clear preference data
-          confirm: This action deletes saved preference data for this browser. Continue?
-          destroyed: Preferences have been reset
-          back: Back to preferences
-      preferences:
-        title: Preferences
-        cookie_settings: Cookie Settings
-        region_settings: Region & Language Settings
-        theme_settings: Theme Settings
-        reset_settings: Reset Settings
-        up_link: Back to top
-        footer:
-          home: Home
-          cookie: Cookie
-          preference: Preference
-          privacy: Privacy
-        themes:
-          updated: Corporate theme updated to %{theme}
-          invalid: Invalid theme selected
-        timezones:
-          invalid: Invalid timezone selected
+            heading: Language settings
+            description: Choose the default language for this service.
+            language_label: Language
+        timezone:
+          edit:
+            heading: Timezone settings
+            description: Choose the default timezone for this service.
+            timezone_label: Timezone
+        locale:
+          edit:
+            title: Locale settings
+            description: Change the default language and timezone.
+            language_options:
+              ja: Japanese
+              en: English
+            timezone_options:
+              UTC: Coordinated Universal Time
+              JST: Japan Standard Time
+            language_section: Language settings
+            language_label: Language
+            language_prompt: Choose your language...
+            timezone_section: Timezone settings
+            timezone_label: Timezone
+            timezone_prompt: Choose your timezone...
+            submit: Update settings
+
   custom:
+    key: Custom Error
     error:
       key: Custom Error
   preference:

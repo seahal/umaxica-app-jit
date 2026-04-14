@@ -18,8 +18,4 @@ class UserTokenDbscStatus < TokenRecord
   DEFAULTS = [NOTHING, ACTIVE, PENDING, FAILED, REVOKE].freeze
 
   has_many :user_tokens, dependent: :restrict_with_error
-
-  def self.ensure_defaults!
-    insert_missing_fixed_ids!(DEFAULTS)
-  end
 end

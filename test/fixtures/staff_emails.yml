@@ -4,7 +4,9 @@
 # Database name: operator
 #
 #  id                             :bigint           not null, primary key
-#  address                        :string           not null
+#  address                        :string           default(""), not null
+#  address_bidx                   :string
+#  address_digest                 :string
 #  locked_at                      :datetime
 #  notifiable                     :boolean          default(TRUE), not null
 #  otp_attempts_count             :integer          default(0), not null
@@ -14,7 +16,6 @@
 #  otp_private_key                :string           not null
 #  promotional                    :boolean          default(TRUE), not null
 #  subscribable                   :boolean          default(TRUE), not null
-#  undeletable                    :boolean          default(FALSE), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  public_id                      :string(21)       default(""), not null
@@ -24,6 +25,8 @@
 # Indexes
 #
 #  index_staff_emails_on_address                         (address)
+#  index_staff_emails_on_address_bidx                    (address_bidx) UNIQUE WHERE (address_bidx IS NOT NULL)
+#  index_staff_emails_on_address_digest                  (address_digest) UNIQUE WHERE (address_digest IS NOT NULL)
 #  index_staff_emails_on_lower_address                   (lower((address)::text)) UNIQUE
 #  index_staff_emails_on_public_id                       (public_id) UNIQUE
 #  index_staff_emails_on_staff_id                        (staff_id)

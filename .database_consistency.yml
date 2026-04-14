@@ -1,0 +1,28 @@
+# DatabaseConsistency configuration
+# https://github.com/djezzzl/database_consistency
+
+# Ignore false positive from Rails' ActionText and ActiveStorage
+ActionText::RichText:
+  enabled: false
+ActiveStorage::Attachment:
+  enabled: false
+ActiveStorage::Blob:
+  enabled: false
+ActiveStorage::VariantRecord:
+  enabled: false
+
+# These models include DbscBindable concern which requires database connection
+# to determine attribute names. Exclude them from checking to avoid errors
+# when database is not available during eager loading.
+AppPreference:
+  enabled: false
+ComPreference:
+  enabled: false
+OrgPreference:
+  enabled: false
+UserToken:
+  enabled: false
+StaffToken:
+  enabled: false
+CustomerToken:
+  enabled: false

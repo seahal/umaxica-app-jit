@@ -8,7 +8,6 @@
 #
 #  id                    :bigint           not null, primary key
 #  deactivated_at        :datetime
-#  deletable_at          :datetime         default(Infinity), not null
 #  last_reauth_at        :datetime
 #  lock_version          :integer          default(0), not null
 #  multi_factor_enabled  :boolean          default(FALSE), not null
@@ -26,7 +25,6 @@
 # Indexes
 #
 #  index_users_on_deactivated_at         (deactivated_at) WHERE (deactivated_at IS NOT NULL)
-#  index_users_on_deletable_at           (deletable_at)
 #  index_users_on_public_id              (public_id) UNIQUE
 #  index_users_on_purged_at              (purged_at) WHERE (purged_at IS NOT NULL)
 #  index_users_on_scheduled_purge_at     (scheduled_purge_at) WHERE (scheduled_purge_at IS NOT NULL)
@@ -138,20 +136,21 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "boundary values: public_id must be unique" do
-    @user.public_id = "duplicate-id"
-    @user.save!
+    User.create!(public_id: "duplicate-test-id")
 
-    duplicate_user = User.new(public_id: "duplicate-id")
+    duplicate_user = User.new(public_id: "duplicate-test-id")
 
     assert_not duplicate_user.valid?
     assert_not_empty duplicate_user.errors[:public_id]
+  ensure
+    User.where(public_id: "duplicate-test-id").destroy_all
   end
 
   test "boundary values: public_id length" do
-    @user.public_id = "a" * 22
+    user = User.new(public_id: "a" * 22)
 
-    assert_not @user.valid?
-    assert_not_empty @user.errors[:public_id]
+    assert_not user.valid?
+    assert_not_empty user.errors[:public_id]
   end
 
   test "association deletion: destroys dependent user_emails" do
@@ -191,24 +190,6 @@ class UserTest < ActiveSupport::TestCase
     avatar.avatar_assignments.create!(user: @user, role: "owner")
 
     assert_includes @user.owned_avatars, avatar
-  end
-
-  test "deletable scope picks users with past deletable_at" do
-    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", deletable_at: 1.hour.ago)
-
-    assert_includes User.deletable, user
-  end
-
-  test "deletable scope excludes users with default deletable_at" do
-    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}")
-
-    assert_not_includes User.deletable, user
-  end
-
-  test "deletable scope excludes users with future deletable_at" do
-    user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", deletable_at: 1.hour.from_now)
-
-    assert_not_includes User.deletable, user
   end
 
   test "shreddable scope excludes users with default shreddable_at" do
@@ -444,13 +425,34 @@ class UserTest < ActiveSupport::TestCase
     assert_predicate @user, :withdrawal_in_progress?
   end
 
+  test "public_id is immutable: cannot be changed after creation" do
+    original_public_id = @user.public_id
+
+    assert_raises(ActiveRecord::ReadonlyAttributeError) do
+      @user.public_id = "new_#{SecureRandom.hex(8)}"
+    end
+
+    assert_equal original_public_id, @user.reload.public_id
+  end
+
+  test "public_id is immutable: can be set at creation" do
+    new_public_id = "u_create_#{SecureRandom.hex(6)}"
+    user = User.create!(public_id: new_public_id)
+
+    assert_equal new_public_id, user.public_id
+  end
+
+  test "public_id is immutable: update with other attributes succeeds" do
+    @user.update!(status_id: UserStatus::RESERVED)
+
+    assert_equal UserStatus::RESERVED, @user.status_id
+  end
+
   private
 
   def root_workspace
     Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
       workspace.name = "Root Workspace"
-      workspace.domain = "root.example.com"
-      workspace.parent_organization = NIL_UUID
     end
   end
 end

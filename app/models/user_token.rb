@@ -90,27 +90,7 @@ class UserToken < TokenRecord
   attribute :user_token_binding_method_id, default: UserTokenBindingMethod::NOTHING
   attribute :user_token_dbsc_status_id, default: UserTokenDbscStatus::NOTHING
 
+  validates_reference_table :user_token_kind_id, association: :user_token_kind
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :refresh_expires_at, presence: true
-
-  validate :enforce_concurrent_session_limit, on: :create
-
-  # This model-level validation provides an early, user-facing error message before
-  # the database trigger rejects excess concurrent sessions.
-  # The primary enforcement of the session limit is done by a database trigger,
-  # which is more reliable and avoids race conditions.
-  #
-  # Note: We now allow up to 3 total sessions (2 active + 1 restricted),
-  # but the Auth concern handles restricting the 3rd session.
-  def enforce_concurrent_session_limit
-    return unless user_id
-
-    count = self.class.not_revoked.where(user_id: user_id, rotated_at: nil).count
-    return if count < MAX_TOTAL_SESSIONS_PER_USER
-
-    errors.add(
-      :base, :too_many,
-      message: "exceeds maximum concurrent sessions per user (#{MAX_TOTAL_SESSIONS_PER_USER})",
-    )
-  end
 end

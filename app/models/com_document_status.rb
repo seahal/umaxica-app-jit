@@ -4,12 +4,12 @@
 # == Schema Information
 #
 # Table name: com_document_statuses
-# Database name: document
+# Database name: publication
 #
 #  id :bigint           not null, primary key
 #
 
-class ComDocumentStatus < DocumentRecord
+class ComDocumentStatus < PublicationRecord
   # Fixed IDs - do not modify these values
   NOTHING = 0
   ACTIVE = 1

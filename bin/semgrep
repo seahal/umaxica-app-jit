@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if command -v semgrep >/dev/null 2>&1; then
+  if [ "$#" -eq 0 ]; then
+    exec semgrep scan --config auto
+  fi
+
+  exec semgrep "$@"
+fi
+
+if command -v docker >/dev/null 2>&1; then
+  if [ "$#" -eq 0 ]; then
+    exec docker run --rm -v "$PWD:/src" -w /src semgrep/semgrep semgrep scan --config auto
+  fi
+
+  exec docker run --rm -v "$PWD:/src" -w /src semgrep/semgrep semgrep "$@"
+fi
+
+echo "semgrep is not installed and docker is unavailable" >&2
+exit 1

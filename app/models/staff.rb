@@ -7,7 +7,6 @@
 # Database name: operator
 #
 #  id                   :bigint           not null, primary key
-#  deletable_at         :datetime         default(Infinity), not null
 #  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
 #  shreddable_at        :datetime         default(Infinity), not null
@@ -20,7 +19,6 @@
 #
 # Indexes
 #
-#  index_staffs_on_deletable_at   (deletable_at)
 #  index_staffs_on_public_id      (public_id) UNIQUE
 #  index_staffs_on_shreddable_at  (shreddable_at)
 #  index_staffs_on_status_id      (status_id)
@@ -36,7 +34,7 @@
 class Staff < OperatorRecord
   # Staff represents an operator accountably for the staff/operator console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
-  self.ignored_columns += ["operator_id", "webauthn_id"]
+  self.ignored_columns += %w(operator_id webauthn_id deletable_at)
 
   include ::Identity
 
@@ -102,6 +100,8 @@ class Staff < OperatorRecord
               with: PUBLIC_ID_FORMAT,
               message: :invalid_format,
             }
+  validates :status_id, :visibility_id,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   before_validation :normalize_public_id
   before_validation :assign_public_id!, on: :create
   before_save :normalize_public_id

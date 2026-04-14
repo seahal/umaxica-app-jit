@@ -18,6 +18,7 @@ class StaffEmailStatus < OperatorRecord
   PENDING = 5
   UNVERIFIED = 6
   VERIFIED = 7
+  OAUTH_LINKED = 8
 
   has_many :staff_emails, inverse_of: :staff_email_status, dependent: :restrict_with_error
 end

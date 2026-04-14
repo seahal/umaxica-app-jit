@@ -6,16 +6,20 @@
 # Table name: org_contact_telephones
 # Database name: guest
 #
-#  id               :bigint           not null, primary key
-#  telephone_number :string(1000)     default(""), not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  org_contact_id   :bigint           default(0), not null
+#  id                      :bigint           not null, primary key
+#  telephone_number        :string(1000)     default(""), not null
+#  telephone_number_bidx   :string
+#  telephone_number_digest :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  org_contact_id          :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_org_contact_telephones_on_org_contact_id    (org_contact_id)
-#  index_org_contact_telephones_on_telephone_number  (telephone_number)
+#  index_org_contact_telephones_on_org_contact_id           (org_contact_id)
+#  index_org_contact_telephones_on_telephone_number         (telephone_number)
+#  index_org_contact_telephones_on_telephone_number_bidx    (telephone_number_bidx) UNIQUE WHERE (telephone_number_bidx IS NOT NULL)
+#  index_org_contact_telephones_on_telephone_number_digest  (telephone_number_digest) UNIQUE WHERE (telephone_number_digest IS NOT NULL)
 #
 # Foreign Keys
 #

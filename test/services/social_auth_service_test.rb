@@ -69,4 +69,79 @@ class SocialAuthServiceTest < ActiveSupport::TestCase
     assert_equal "google", result[:provider]
     assert_equal UserSocialGoogleStatus::REVOKED, @identity.reload.status_id
   end
+
+  test "extract_uid_from_id_token accepts forged token with allowed alg without signature verification" do
+    # Documents that this method does NOT verify signatures.
+    # It relies on omniauth-apple having verified the token before this point.
+    # A forged token with a valid algorithm will have its sub claim extracted.
+    attacker_key = OpenSSL::PKey::EC.generate("prime256v1")
+    token = JWT.encode(
+      { "sub" => "forged-uid-999", "iss" => "https://appleid.apple.com" },
+      attacker_key, "ES256",
+    )
+    service = build_service_with_id_token(token)
+
+    result = service.send(:extract_uid_from_id_token)
+
+    assert_equal "forged-uid-999", result,
+                 "extract_uid_from_id_token does not verify signatures — it depends on omniauth-apple"
+  end
+
+  test "extract_uid_from_id_token rejects id token with HMAC confusion attack" do
+    hmac_token = JWT.encode(
+      { "sub" => "forged-uid", "iss" => "https://appleid.apple.com" },
+      "any-secret", "HS256",
+    )
+    service = build_service_with_id_token(hmac_token)
+
+    assert_nil service.send(:extract_uid_from_id_token)
+  end
+
+  test "extract_uid_from_id_token rejects id token with alg none" do
+    token = forge_jwt_with_header(
+      { "alg" => "none" },
+      { "sub" => "apple-user-123", "iss" => "https://appleid.apple.com" },
+    )
+    service = build_service_with_id_token(token)
+
+    assert_nil service.send(:extract_uid_from_id_token)
+  end
+
+  test "extract_uid_from_id_token rejects id token with alg empty string" do
+    token = forge_jwt_with_header(
+      { "alg" => "" },
+      { "sub" => "apple-user-123", "iss" => "https://appleid.apple.com" },
+    )
+    service = build_service_with_id_token(token)
+
+    assert_nil service.send(:extract_uid_from_id_token)
+  end
+
+  test "extract_uid_from_id_token rejects id token with alg nil" do
+    token = forge_jwt_with_header(
+      { "alg" => nil },
+      { "sub" => "apple-user-123", "iss" => "https://appleid.apple.com" },
+    )
+    service = build_service_with_id_token(token)
+
+    assert_nil service.send(:extract_uid_from_id_token)
+  end
+
+  private
+
+  def forge_jwt_with_header(header_hash, payload_hash)
+    header = Base64.urlsafe_encode64(JSON.generate(header_hash), padding: false)
+    payload = Base64.urlsafe_encode64(JSON.generate(payload_hash), padding: false)
+    "#{header}.#{payload}."
+  end
+
+  def build_service_with_id_token(id_token)
+    auth_hash = Struct.new(:provider, :uid, :credentials, :info).new(
+      "apple",
+      "apple-user-123",
+      Struct.new(:token, :refresh_token, :expires_at, :id_token).new("t", "r", 1.hour.from_now.to_i, id_token),
+      Struct.new(:email).new("test@example.com"),
+    )
+    SocialAuthService.new(auth_hash: auth_hash, current_user: nil, intent: "login")
+  end
 end

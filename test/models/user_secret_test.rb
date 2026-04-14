@@ -294,6 +294,156 @@ class UserSecretTest < ActiveSupport::TestCase
     assert_includes record.errors[:base], User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
 
+  test "name exactly 255 characters is valid at upper boundary" do
+    record = UserSecret.new(
+      user: @user,
+      name: "a" * 255,
+      password: secure_secret,
+      password_confirmation: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_predicate record, :valid?
+  end
+
+  test "10th secret succeeds when 9 exist for user" do
+    Prosopite.pause do
+      9.times do
+        create_secret!
+      end
+    end
+
+    tenth = UserSecret.new(
+      user: @user,
+      name: "Tenth Secret",
+      password: secure_secret,
+      password_confirmation: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_predicate tenth, :valid?
+    assert tenth.save
+  end
+
+  test "10th secret is last allowed when exactly 10 for user" do
+    Prosopite.pause do
+      9.times do
+        create_secret!
+      end
+    end
+
+    tenth = UserSecret.new(
+      user: @user,
+      name: "Tenth Secret",
+      password: secure_secret,
+      password_confirmation: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_predicate tenth, :valid?
+    assert tenth.save
+    assert_equal 10, UserSecret.where(user: @user).count
+  end
+
+  test "11th secret fails when 10 exist for user" do
+    Prosopite.pause do
+      UserSecret::MAX_SECRETS_PER_USER.times do
+        create_secret!
+      end
+    end
+
+    eleventh = UserSecret.new(
+      user: @user,
+      name: "Eleventh Secret",
+      password: secure_secret,
+      password_confirmation: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_not eleventh.valid?
+    assert_includes eleventh.errors[:base], "exceeds maximum secrets per user (#{UserSecret::MAX_SECRETS_PER_USER})"
+  end
+
+  test "secret limit is per-user and isolates between users" do
+    other_user =
+      User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
+        u.status_id = UserStatus::NOTHING
+      end
+    UserEmail.create!(
+      user: other_user,
+      address: "other-secret-user-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    Prosopite.pause do
+      UserSecret::MAX_SECRETS_PER_USER.times do
+        create_secret!
+      end
+    end
+
+    other_secret = UserSecret.new(
+      user: other_user,
+      name: "Other User Secret",
+      password: secure_secret,
+      password_confirmation: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_predicate other_secret, :valid?
+    assert other_secret.save
+  end
+
+  test "usable_for_secret_sign_in returns true when now equals expires_at" do
+    freeze_time do
+      record, _raw = UserSecret.issue!(
+        name: "Boundary Test",
+        user: @user,
+        user_secret_kind_id: UserSecretKind::LOGIN,
+      )
+
+      assert record.usable_for_secret_sign_in?(now: record.expires_at)
+    end
+  end
+
+  test "usable_for_secret_sign_in returns false when now is one second past expires_at" do
+    freeze_time do
+      record, _raw = UserSecret.issue!(
+        name: "Boundary Test",
+        user: @user,
+        expires_at: 1.minute.from_now,
+        user_secret_kind_id: UserSecretKind::LOGIN,
+      )
+
+      assert_not record.usable_for_secret_sign_in?(now: record.expires_at + 1.second)
+    end
+  end
+
+  test "usable_for_secret_sign_in returns true when expires_at is infinity" do
+    record, _raw = UserSecret.issue!(
+      name: "Infinity Test",
+      user: @user,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_equal Float::INFINITY, record.expires_at
+    assert record.usable_for_secret_sign_in?(now: Time.current)
+    assert record.usable_for_secret_sign_in?(now: 100.years.from_now)
+  end
+
+  test "verify_for_secret_sign_in uses explicit now keyword for expiry and audit timestamp" do
+    record, raw_secret = UserSecret.issue!(
+      name: "Now Keyword Test",
+      user: @user,
+      expires_at: 5.minutes.from_now,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+    explicit_now = 2.minutes.from_now
+
+    assert record.verify_for_secret_sign_in!(raw_secret, now: explicit_now)
+
+    assert_equal explicit_now.to_i, record.reload.last_used_at.to_i
+  end
+
   private
 
   def create_secret!

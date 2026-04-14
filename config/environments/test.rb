@@ -6,6 +6,11 @@
 # your test database is "scratch space" for the test suite and is wiped
 # and recreated between test runs. Don't rely on the data there!
 
+require Rails.root.join("lib/strict_environment_config")
+require Rails.root.join("lib/mailer_url_options_guard")
+
+ENV["DEFAULT_TEST"] ||= "{test,engines/*/test}/**/*_test.rb"
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -25,8 +30,8 @@ Rails.application.configure do
   config.consider_all_requests_local = true
   config.cache_store = :null_store
 
-  # Render exception templates for rescuable exceptions and raise for other exceptions.
-  config.action_dispatch.show_exceptions = :rescuable
+  # Raise exceptions directly so tests fail at the first rescuable error.
+  config.action_dispatch.show_exceptions = :none
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
@@ -44,29 +49,15 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "example.com" }
-
-  # Raise on deprecation warnings to catch issues early.
-  config.active_support.deprecation = :raise
-
-  # Raise error for missing translations.
-  config.i18n.raise_on_missing_translations = true
+  MailerUrlOptionsGuard.validate!(
+    default_url_options: config.action_mailer.default_url_options,
+    allowed_hosts: %w(example.com),
+  )
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 
-  # Disallow deprecated .connection usage (must use .with_connection for multi-DB)
-  config.active_record.permanent_connection_checkout = :disallowed
-
-  # Raise on SQL warnings from PostgreSQL.
-  config.active_record.db_warnings_action = :raise
-
-  # Detect N+1 queries and raise errors immediately.
-  config.active_record.strict_loading_by_default = true
-  config.active_record.strict_loading_mode = :n_plus_one_only
-  config.active_record.action_on_strict_loading_violation = :raise
-
-  # Raise error when a before_action's only/except options reference missing actions.
-  config.action_controller.raise_on_missing_callback_actions = true
+  StrictEnvironmentConfig.apply!(config)
 
   # The following lines were added by me.
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.

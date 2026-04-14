@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: org_document_versions
-# Database name: document
+# Database name: publication
 #
 #  id              :bigint           not null, primary key
 #  body            :text
@@ -28,7 +28,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (org_document_id => org_documents.id) ON DELETE => cascade
+#  fk_rails_...  (org_document_id => org_documents.id)
 #
 
 # frozen_string_literal: true

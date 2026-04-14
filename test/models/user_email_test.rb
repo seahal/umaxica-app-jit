@@ -19,7 +19,6 @@
 #  otp_private_key           :string           default(""), not null
 #  promotional               :boolean          default(TRUE), not null
 #  subscribable              :boolean          default(TRUE), not null
-#  undeletable               :boolean          default(FALSE), not null
 #  verification_token_digest :binary
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
@@ -154,16 +153,16 @@ class UserEmailTest < ActiveSupport::TestCase
     assert_not_equal @valid_attributes[:address], raw_data["address"] if raw_data
   end
 
-  test "blocks destroying an undeletable email" do
-    user_email = UserEmail.create!(@valid_attributes.merge(undeletable: true))
+  test "blocks destroying an oauth-linked email" do
+    user_email = UserEmail.create!(@valid_attributes.merge(user_email_status_id: UserEmailStatus::OAUTH_LINKED))
 
     assert_raises(ActiveRecord::RecordNotDestroyed) { user_email.destroy! }
     assert_includes user_email.errors[:base], "cannot delete a protected email address"
-    assert_predicate user_email.reload, :undeletable?
+    assert_equal UserEmailStatus::OAUTH_LINKED, user_email.reload.user_email_status_id
   end
 
   test "enforces maximum emails per user" do
-    user = users(:one)
+    user = users(:none_user)
     Prosopite.pause do
       UserEmail::MAX_EMAILS_PER_USER.times do |i|
         UserEmail.create!(
@@ -182,5 +181,157 @@ class UserEmailTest < ActiveSupport::TestCase
 
     assert_not extra_email.valid?
     assert_includes extra_email.errors[:base], "exceeds maximum emails per user (#{UserEmail::MAX_EMAILS_PER_USER})"
+  end
+
+  # Boundary: one below the limit - creation must succeed
+  test "allows creating emails up to one below the limit" do
+    user = users(:none_user)
+    below_limit = UserEmail::MAX_EMAILS_PER_USER - 1
+
+    Prosopite.pause do
+      (below_limit - 1).times do |i|
+        UserEmail.create!(
+          address: "user-below#{i}@example.com",
+          confirm_policy: true,
+          user: user,
+        )
+      end
+    end
+
+    email_at_below_limit = UserEmail.new(
+      address: "user-at-below-limit@example.com",
+      confirm_policy: true,
+      user: user,
+    )
+
+    assert_predicate email_at_below_limit, :valid?
+  end
+
+  # Boundary: exactly at the limit - the final permitted creation must succeed
+  test "allows creating the email that reaches the limit" do
+    user = users(:none_user)
+    limit = UserEmail::MAX_EMAILS_PER_USER
+
+    Prosopite.pause do
+      (limit - 1).times do |i|
+        UserEmail.create!(
+          address: "filling#{i}@example.com",
+          confirm_policy: true,
+          user: user,
+        )
+      end
+    end
+
+    last_permitted = UserEmail.new(
+      address: "last-permitted@example.com",
+      confirm_policy: true,
+      user: user,
+    )
+
+    assert_predicate last_permitted, :valid?
+    assert_nothing_raised { last_permitted.save! }
+  end
+
+  # Equivalence: limit is counted per user - another user is unaffected
+  test "email limit is isolated per user" do
+    saturated_user = users(:none_user)
+    other_user     = users(:one)
+
+    Prosopite.pause do
+      UserEmail::MAX_EMAILS_PER_USER.times do |i|
+        UserEmail.create!(
+          address: "saturated#{i}@example.com",
+          confirm_policy: true,
+          user: saturated_user,
+        )
+      end
+    end
+
+    email_for_other = UserEmail.new(
+      address: "other-user@example.com",
+      confirm_policy: true,
+      user: other_user,
+    )
+
+    assert_predicate email_for_other, :valid?
+  end
+
+  # Equivalence: limit validation only fires on create, not on update
+  test "email limit is not checked on update" do
+    user = users(:none_user)
+
+    Prosopite.pause do
+      UserEmail::MAX_EMAILS_PER_USER.times do |i|
+        UserEmail.create!(
+          address: "update-test#{i}@example.com",
+          confirm_policy: true,
+          user: user,
+        )
+      end
+    end
+
+    existing = UserEmail.where(user: user).first
+    existing.notifiable = false
+
+    assert_predicate existing, :valid?
+    assert_nothing_raised { existing.save! }
+  end
+
+  test "generate_verification_token sets digest and returns raw token" do
+    email = UserEmail.create!(
+      address: "verification-#{SecureRandom.hex(4)}@example.com",
+      confirm_policy: true,
+      user: @user,
+    )
+
+    raw_token = email.generate_verification_token
+
+    assert_predicate raw_token, :present?
+    assert_predicate email.verification_token_digest, :present?
+    assert_not_includes email.attributes.values, raw_token
+  end
+
+  test "verify_verification_token returns true with correct token" do
+    email = UserEmail.create!(
+      address: "verify-#{SecureRandom.hex(4)}@example.com",
+      confirm_policy: true,
+      user: @user,
+    )
+    raw_token = email.generate_verification_token
+
+    assert email.verify_verification_token(raw_token)
+  end
+
+  test "verify_verification_token returns false with wrong token" do
+    email = UserEmail.create!(
+      address: "verify-wrong-#{SecureRandom.hex(4)}@example.com",
+      confirm_policy: true,
+      user: @user,
+    )
+    email.generate_verification_token
+
+    assert_not email.verify_verification_token("wrong_token_value")
+  end
+
+  test "verify_verification_token returns false when raw_token is blank" do
+    email = UserEmail.create!(
+      address: "verify-blank-#{SecureRandom.hex(4)}@example.com",
+      confirm_policy: true,
+      user: @user,
+    )
+    email.generate_verification_token
+
+    assert_not email.verify_verification_token("")
+    assert_not email.verify_verification_token(nil)
+  end
+
+  test "verify_verification_token returns false when digest is blank" do
+    email = UserEmail.create!(
+      address: "verify-no-digest-#{SecureRandom.hex(4)}@example.com",
+      confirm_policy: true,
+      user: @user,
+    )
+
+    assert_not email.verify_verification_token("some_token")
   end
 end

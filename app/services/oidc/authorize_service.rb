@@ -49,7 +49,12 @@ module Oidc
     end
 
     def issue_authorization_code!
-      resource_key = (@client.resource_type == "staff") ? :staff : :user
+      resource_key =
+        case @client.resource_type
+        when "staff" then :staff
+        when "customer" then :customer
+        else :user
+        end
 
       TokenRecord.connected_to(role: :writing) do
         AuthorizationCode.issue!(

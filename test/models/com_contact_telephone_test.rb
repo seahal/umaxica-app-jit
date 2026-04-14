@@ -6,18 +6,22 @@
 # Table name: com_contact_telephones
 # Database name: guest
 #
-#  id               :bigint           not null, primary key
-#  hotp_counter     :integer
-#  hotp_secret      :string
-#  telephone_number :string(1000)     default(""), not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  com_contact_id   :bigint           default(0), not null
+#  id                      :bigint           not null, primary key
+#  hotp_counter            :integer
+#  hotp_secret             :string
+#  telephone_number        :string(1000)     default(""), not null
+#  telephone_number_bidx   :string
+#  telephone_number_digest :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  com_contact_id          :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_com_contact_telephones_on_com_contact_id_unique  (com_contact_id) UNIQUE
-#  index_com_contact_telephones_on_telephone_number       (telephone_number)
+#  index_com_contact_telephones_on_com_contact_id_unique    (com_contact_id) UNIQUE
+#  index_com_contact_telephones_on_telephone_number         (telephone_number)
+#  index_com_contact_telephones_on_telephone_number_bidx    (telephone_number_bidx) UNIQUE WHERE (telephone_number_bidx IS NOT NULL)
+#  index_com_contact_telephones_on_telephone_number_digest  (telephone_number_digest) UNIQUE WHERE (telephone_number_digest IS NOT NULL)
 #
 # Foreign Keys
 #
@@ -64,24 +68,30 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
 
   test "should support deterministic encryption for telephone_number" do
     contact1 = create_contact(public_id: "phone_3")
-    contact2 = create_contact(public_id: "phone_4")
 
-    # Create two records with the same telephone number
+    # Create first record
     telephone1 = ComContactTelephone.create!(
       com_contact: contact1,
       telephone_number: "+15551234569",
     )
 
+    # Record first raw value
+    raw1 = ComContactTelephone.connection.execute(
+      "SELECT telephone_number FROM com_contact_telephones WHERE id = #{telephone1.id}",
+    ).first["telephone_number"]
+
+    # Destroy first record to avoid uniqueness violation when creating the second one
+    telephone1.destroy!
+
+    contact2 = create_contact(public_id: "phone_4")
+
+    # Create second record with the same telephone number
     telephone2 = ComContactTelephone.create!(
       com_contact: contact2,
       telephone_number: "+15551234569",
     )
 
-    # With deterministic encryption, encrypted values should be the same
-    raw1 = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = #{telephone1.id}",
-    ).first["telephone_number"]
-
+    # Record second raw value
     raw2 = ComContactTelephone.connection.execute(
       "SELECT telephone_number FROM com_contact_telephones WHERE id = #{telephone2.id}",
     ).first["telephone_number"]

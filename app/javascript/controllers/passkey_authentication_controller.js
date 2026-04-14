@@ -125,14 +125,18 @@ export default class extends Controller {
       const result = await verificationResponse.json();
 
       // Step 4: Handle result
-      if (result.status === "totp_required") {
-        this.showStatus("二段階認証が必要です...");
-        window.location.href = result.redirect_url;
-      } else if (result.status === "ok") {
-        this.showStatus("ログイン成功！リダイレクト中...");
-        window.location.href = result.redirect_url;
-      } else {
-        throw new Error("予期しない応答です");
+      switch (result.status) {
+        case "mfa_required":
+          this.redirectWithStatus(result.redirect_url, "二段階認証が必要です...");
+          break;
+        case "session_restricted":
+          this.redirectWithStatus(result.redirect_url, result.message || "追加の確認が必要です...");
+          break;
+        case "ok":
+          this.redirectWithStatus(result.redirect_url, "ログイン成功。リダイレクト中...");
+          break;
+        default:
+          throw new Error("予期しない応答です");
       }
     } catch (error) {
       if (error.name === "NotAllowedError") {
@@ -254,6 +258,15 @@ export default class extends Controller {
       this.statusTarget.textContent = message;
       this.statusTarget.classList.remove("hidden");
     }
+  }
+
+  redirectWithStatus(url, message) {
+    if (!url) {
+      throw new Error("リダイレクト先がありません");
+    }
+
+    this.showStatus(message);
+    window.location.href = url;
   }
 
   clearMessages() {

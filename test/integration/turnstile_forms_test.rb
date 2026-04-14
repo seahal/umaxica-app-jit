@@ -74,6 +74,33 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "Turnstile widgets are omitted when disabled" do
+    Jit::Security::TurnstileConfig.stub(:enabled?, false) do
+      @turnstile_form_paths.each do |form_config|
+        name = form_config[:name]
+        env_key = form_config[:env_key]
+        path = form_config[:path]
+
+        host = ENV[env_key]
+        next if host.blank?
+
+        host! host
+        get path, headers: form_config[:headers] || {}
+
+        if response.redirect?
+          follow_redirect!
+        end
+
+        assert_response :success, "Failed to access #{path} for #{name} (#{host})"
+        assert_no_match(
+          /cf-turnstile|cloudflare_turnstile/,
+          response.body,
+          "Expected no Turnstile widget in #{name} (#{host})",
+        )
+      end
+    end
+  end
+
   private
 
   def main_app_contact_headers

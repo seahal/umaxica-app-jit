@@ -14,11 +14,27 @@ module Robots
   def robots_txt
     case Current.surface
     when :org
-      "User-agent: *\nDisallow: /\n"
+      <<~ROBOTS
+        User-agent: *
+        Allow: /
+        Disallow: /auth
+        Disallow: /configuration
+        Disallow: /contacts
+        Disallow: /edge
+        Disallow: /emergency
+        Disallow: /web
+      ROBOTS
     when :app
-      "User-agent: *\nDisallow: /configuration\nDisallow: /api\nDisallow: /web\n"
+      <<~ROBOTS
+        User-agent: *
+        Allow: /
+        Disallow: /configuration
+        Disallow: /contacts
+        Disallow: /edge
+        Disallow: /web
+      ROBOTS
     else
-      "User-agent: *\nDisallow:\n"
+      "User-agent: *\nAllow: /\nDisallow:\n"
     end
   end
 end

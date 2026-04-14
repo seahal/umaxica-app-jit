@@ -13,5 +13,11 @@ class ComTimelineBehaviorLevel < BehaviorRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   NOTHING = 1
+  DEFAULTS = [NOTHING].freeze
+
   has_many :com_timeline_behaviors, dependent: :restrict_with_error, inverse_of: :com_timeline_behavior_level
+
+  def self.ensure_defaults!
+    insert_missing_fixed_ids!(DEFAULTS)
+  end
 end

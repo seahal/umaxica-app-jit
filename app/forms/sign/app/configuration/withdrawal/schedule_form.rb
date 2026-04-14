@@ -8,7 +8,7 @@ module Sign
         class ScheduleForm
           include ActiveModel::Model
 
-          attr_accessor :ack_schedule_purge
+          attr_accessor :ack_schedule_purge, :ri, :host
 
           validates :ack_schedule_purge, acceptance: true
         end

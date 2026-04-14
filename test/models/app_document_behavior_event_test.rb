@@ -39,11 +39,14 @@ class AppDocumentBehaviorEventTest < ActiveSupport::TestCase
   test "ensure_defaults! creates missing defaults" do
     AppDocumentBehaviorEvent.where(id: AppDocumentBehaviorEvent::DEFAULTS).delete_all
 
-    assert_difference "AppDocumentBehaviorEvent.count", 2 do
+    assert_difference "AppDocumentBehaviorEvent.count", 5 do
       AppDocumentBehaviorEvent.ensure_defaults!
     end
 
     assert_not_nil AppDocumentBehaviorEvent.find_by(id: AppDocumentBehaviorEvent::NOTHING)
+    assert_not_nil AppDocumentBehaviorEvent.find_by(id: AppDocumentBehaviorEvent::LEGACY_NOTHING)
     assert_not_nil AppDocumentBehaviorEvent.find_by(id: AppDocumentBehaviorEvent::CREATED)
+    assert_not_nil AppDocumentBehaviorEvent.find_by(id: AppDocumentBehaviorEvent::UPDATED)
+    assert_not_nil AppDocumentBehaviorEvent.find_by(id: AppDocumentBehaviorEvent::DELETED)
   end
 end

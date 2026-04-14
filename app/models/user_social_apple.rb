@@ -47,7 +47,7 @@ class UserSocialApple < PrincipalRecord
   validates :user_id, uniqueness: { conditions: -> { where.not(user_id: nil) } }
   validates :uid, presence: true, uniqueness: { scope: :provider }
   validates :token_expires_at, presence: true
-  validates :status_id, numericality: { only_integer: true }
+  validates_reference_table :status_id, association: :user_social_apple_status, allow_nil: true
 
   def self.status_column
     :status_id

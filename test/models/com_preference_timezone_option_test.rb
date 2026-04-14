@@ -49,4 +49,35 @@ class ComPreferenceTimezoneOptionTest < ActiveSupport::TestCase
       option.destroy!
     end
   end
+
+  test "returns Etc/UTC for ETC_UTC id" do
+    option = ComPreferenceTimezoneOption.new(id: ComPreferenceTimezoneOption::ETC_UTC)
+
+    assert_equal "Etc/UTC", option.name
+  end
+
+  test "returns Asia/Tokyo for ASIA_TOKYO id" do
+    option = ComPreferenceTimezoneOption.new(id: ComPreferenceTimezoneOption::ASIA_TOKYO)
+
+    assert_equal "Asia/Tokyo", option.name
+  end
+
+  test "returns nil for unknown id" do
+    option = ComPreferenceTimezoneOption.new(id: 999)
+
+    assert_nil option.name
+  end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [1, 2], ComPreferenceTimezoneOption::DEFAULTS
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    ComPreferenceTimezoneOption.ensure_defaults!
+    initial_count = ComPreferenceTimezoneOption.count
+
+    ComPreferenceTimezoneOption.ensure_defaults!
+
+    assert_equal initial_count, ComPreferenceTimezoneOption.count
+  end
 end

@@ -1,0 +1,17 @@
+# == Schema Information
+#
+# Table name: settings_preference_dbsc_statuses
+# Database name: setting
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+active:
+  id: 1
+pending:
+  id: 2
+failed:
+  id: 3
+revoke:
+  id: 4

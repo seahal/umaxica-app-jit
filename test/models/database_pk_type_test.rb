@@ -40,7 +40,7 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
     assert_bigint_pk(ComTimelineCategoryMaster)
   end
 
-  test "document schema tables use bigint primary keys" do
+  test "document tables in publication schema use bigint primary keys" do
     assert_bigint_pk(AppDocumentStatus)
     assert_bigint_pk(OrgDocumentTagMaster)
   end

@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: app_document_tags
-# Database name: document
+# Database name: publication
 #
 #  id                         :bigint           not null, primary key
 #  created_at                 :datetime         not null
@@ -12,18 +12,18 @@
 #
 # Indexes
 #
-#  idx_app_document_tags_on_master_and_document  (app_document_tag_master_id,app_document_id) UNIQUE
-#  index_app_document_tags_on_app_document_id    (app_document_id)
+#  idx_on_app_document_tag_master_id_app_document_id_75ee747154  (app_document_tag_master_id,app_document_id) UNIQUE
+#  index_app_document_tags_on_app_document_id                    (app_document_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (app_document_id => app_documents.id) ON DELETE => cascade
+#  fk_rails_...  (app_document_id => app_documents.id)
 #  fk_rails_...  (app_document_tag_master_id => app_document_tag_masters.id)
 #
 
 # frozen_string_literal: true
 
-class AppDocumentTag < DocumentRecord
+class AppDocumentTag < PublicationRecord
   include ::CategoryTag
 
   belongs_to :app_document, inverse_of: :app_document_tags

@@ -39,4 +39,51 @@ class AppPreferenceColorthemeOptionTest < ActiveSupport::TestCase
       option.destroy!
     end
   end
+
+  test "returns light for LIGHT id" do
+    option = AppPreferenceColorthemeOption.new(id: AppPreferenceColorthemeOption::LIGHT)
+
+    assert_equal "light", option.name
+  end
+
+  test "returns dark for DARK id" do
+    option = AppPreferenceColorthemeOption.new(id: AppPreferenceColorthemeOption::DARK)
+
+    assert_equal "dark", option.name
+  end
+
+  test "returns system for SYSTEM id" do
+    option = AppPreferenceColorthemeOption.new(id: AppPreferenceColorthemeOption::SYSTEM)
+
+    assert_equal "system", option.name
+  end
+
+  test "returns nil for unknown id" do
+    option = AppPreferenceColorthemeOption.new(id: 999)
+
+    assert_nil option.name
+  end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [0, 1, 2, 3], AppPreferenceColorthemeOption::DEFAULTS
+  end
+
+  test "ensure_defaults! creates missing records" do
+    AppPreferenceColorthemeOption.where(id: AppPreferenceColorthemeOption::DEFAULTS).destroy_all
+
+    AppPreferenceColorthemeOption.ensure_defaults!
+
+    assert AppPreferenceColorthemeOption.exists?(id: AppPreferenceColorthemeOption::LIGHT)
+    assert AppPreferenceColorthemeOption.exists?(id: AppPreferenceColorthemeOption::DARK)
+    assert AppPreferenceColorthemeOption.exists?(id: AppPreferenceColorthemeOption::SYSTEM)
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    AppPreferenceColorthemeOption.ensure_defaults!
+    initial_count = AppPreferenceColorthemeOption.count
+
+    AppPreferenceColorthemeOption.ensure_defaults!
+
+    assert_equal initial_count, AppPreferenceColorthemeOption.count
+  end
 end

@@ -7,7 +7,9 @@
 # Database name: operator
 #
 #  id                             :bigint           not null, primary key
-#  address                        :string           not null
+#  address                        :string           default(""), not null
+#  address_bidx                   :string
+#  address_digest                 :string
 #  locked_at                      :datetime
 #  notifiable                     :boolean          default(TRUE), not null
 #  otp_attempts_count             :integer          default(0), not null
@@ -17,7 +19,6 @@
 #  otp_private_key                :string           not null
 #  promotional                    :boolean          default(TRUE), not null
 #  subscribable                   :boolean          default(TRUE), not null
-#  undeletable                    :boolean          default(FALSE), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  public_id                      :string(21)       default(""), not null
@@ -27,6 +28,8 @@
 # Indexes
 #
 #  index_staff_emails_on_address                         (address)
+#  index_staff_emails_on_address_bidx                    (address_bidx) UNIQUE WHERE (address_bidx IS NOT NULL)
+#  index_staff_emails_on_address_digest                  (address_digest) UNIQUE WHERE (address_digest IS NOT NULL)
 #  index_staff_emails_on_lower_address                   (lower((address)::text)) UNIQUE
 #  index_staff_emails_on_public_id                       (public_id) UNIQUE
 #  index_staff_emails_on_staff_id                        (staff_id)
@@ -136,12 +139,12 @@ class StaffEmailTest < ActiveSupport::TestCase
     assert_equal staff_email.public_id, staff_email.to_param
   end
 
-  test "blocks destroying an undeletable email" do
-    staff_email = StaffEmail.create!(@valid_attributes.merge(undeletable: true))
+  test "blocks destroying an oauth-linked email" do
+    staff_email = StaffEmail.create!(@valid_attributes.merge(staff_identity_email_status_id: StaffEmailStatus::OAUTH_LINKED))
 
     assert_raises(ActiveRecord::RecordNotDestroyed) { staff_email.destroy! }
     assert_includes staff_email.errors[:base], "cannot delete a protected email address"
-    assert_predicate staff_email.reload, :undeletable?
+    assert_equal StaffEmailStatus::OAUTH_LINKED, staff_email.reload.staff_identity_email_status_id
   end
 
   test "enforces maximum emails per staff" do
@@ -164,5 +167,99 @@ class StaffEmailTest < ActiveSupport::TestCase
 
     assert_not extra_email.valid?
     assert_includes extra_email.errors[:base], "exceeds maximum emails per staff (#{StaffEmail::MAX_EMAILS_PER_STAFF})"
+  end
+
+  # Boundary: one below the limit - creation must succeed
+  test "allows creating emails up to one below the limit" do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    below_limit = StaffEmail::MAX_EMAILS_PER_STAFF - 1
+
+    Prosopite.pause do
+      (below_limit - 1).times do |i|
+        StaffEmail.create!(
+          address: "staff-below#{i}@example.com",
+          confirm_policy: true,
+          staff: staff,
+        )
+      end
+    end
+
+    email_at_below_limit = StaffEmail.new(
+      address: "staff-at-below-limit@example.com",
+      confirm_policy: true,
+      staff: staff,
+    )
+
+    assert_predicate email_at_below_limit, :valid?
+  end
+
+  # Boundary: exactly at the limit - the final permitted creation must succeed
+  test "allows creating the email that reaches the limit" do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    limit = StaffEmail::MAX_EMAILS_PER_STAFF
+
+    Prosopite.pause do
+      (limit - 1).times do |i|
+        StaffEmail.create!(
+          address: "staff-filling#{i}@example.com",
+          confirm_policy: true,
+          staff: staff,
+        )
+      end
+    end
+
+    last_permitted = StaffEmail.new(
+      address: "staff-last-permitted@example.com",
+      confirm_policy: true,
+      staff: staff,
+    )
+
+    assert_predicate last_permitted, :valid?
+    assert_nothing_raised { last_permitted.save! }
+  end
+
+  # Equivalence: limit is counted per staff member - another staff is unaffected
+  test "email limit is isolated per staff" do
+    saturated_staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+    other_staff     = @staff
+
+    Prosopite.pause do
+      StaffEmail::MAX_EMAILS_PER_STAFF.times do |i|
+        StaffEmail.create!(
+          address: "staff-saturated#{i}@example.com",
+          confirm_policy: true,
+          staff: saturated_staff,
+        )
+      end
+    end
+
+    email_for_other = StaffEmail.new(
+      address: "other-staff@example.com",
+      confirm_policy: true,
+      staff: other_staff,
+    )
+
+    assert_predicate email_for_other, :valid?
+  end
+
+  # Equivalence: limit validation only fires on create, not on update
+  test "email limit is not checked on update" do
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NOTHING))
+
+    Prosopite.pause do
+      StaffEmail::MAX_EMAILS_PER_STAFF.times do |i|
+        StaffEmail.create!(
+          address: "staff-update-test#{i}@example.com",
+          confirm_policy: true,
+          staff: staff,
+        )
+      end
+    end
+
+    existing = StaffEmail.where(staff: staff).first
+    existing.notifiable = false
+
+    assert_predicate existing, :valid?
+    assert_nothing_raised { existing.save! }
   end
 end

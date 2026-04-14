@@ -7,7 +7,7 @@ module Authorization
 
     private
 
-    # TBC: Pundit migration lands later.
+    # TBC: Action Policy controller integration lands later.
     def authorize_request!
       true
     end

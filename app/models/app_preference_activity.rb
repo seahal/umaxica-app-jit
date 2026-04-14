@@ -46,7 +46,6 @@ class AppPreferenceActivity < ActivityRecord
              optional: true,
              inverse_of: :app_preference_activities
   belongs_to :app_preference_activity_level, foreign_key: :level_id, inverse_of: :app_preference_activities
-  # event_id references AppPreferenceActivityEvent.id (string)
   belongs_to :app_preference_activity_event,
              class_name: "AppPreferenceActivityEvent",
              foreign_key: "event_id",
@@ -56,8 +55,11 @@ class AppPreferenceActivity < ActivityRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
+  validates_reference_table :event_id, association: :app_preference_activity_event
+  validates_reference_table :level_id, association: :app_preference_activity_level
+  validates :event_id, presence: true,
+                       numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :level_id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   # Helper methods for compatibility
   def app_preference
     AppPreference.find(subject_id) if subject_type == "AppPreference"

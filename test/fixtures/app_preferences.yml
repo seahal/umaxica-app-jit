@@ -8,6 +8,7 @@
 #  dbsc_challenge           :text
 #  dbsc_challenge_issued_at :datetime
 #  dbsc_public_key          :jsonb
+#  deletable_at             :datetime         default(Infinity), not null
 #  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
@@ -29,6 +30,7 @@
 #  index_app_preferences_on_binding_method_id  (binding_method_id)
 #  index_app_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
 #  index_app_preferences_on_dbsc_status_id     (dbsc_status_id)
+#  index_app_preferences_on_deletable_at       (deletable_at)
 #  index_app_preferences_on_device_id          (device_id)
 #  index_app_preferences_on_device_id_digest   (device_id_digest)
 #  index_app_preferences_on_jti                (jti) UNIQUE

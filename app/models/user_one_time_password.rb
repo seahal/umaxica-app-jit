@@ -46,6 +46,9 @@ class UserOneTimePassword < PrincipalRecord
   validates :private_key, presence: true, length: { maximum: 1024 }
   validates :last_otp_at, presence: true
   validates :title, length: { maximum: 32 }, allow_blank: true
+  validates :user_identity_one_time_password_status_id,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :enforce_user_totp_limit, on: :create
 
   after_initialize :generate_private_key_if_blank

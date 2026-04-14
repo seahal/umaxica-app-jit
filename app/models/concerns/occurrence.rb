@@ -7,6 +7,7 @@ module Occurrence
   DEFAULT_LIFECYCLE_AT = Float::INFINITY
 
   included do
+    validates_reference_table :status_id, association: :"#{name.underscore}_status"
     after_initialize :set_default_lifecycle_timestamps
     before_validation :ensure_lifecycle_timestamps
     validates :public_id,

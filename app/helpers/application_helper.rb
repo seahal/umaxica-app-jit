@@ -20,7 +20,7 @@ module ApplicationHelper
   end
 
   def theme_cookie_value
-    resolved_theme = @color_theme.to_s.downcase
+    resolved_theme = controller.try(:color_theme).to_s.downcase
     return resolved_theme if %w(dark light system).include?(resolved_theme)
 
     # Support both symbol and string access, and handle nil

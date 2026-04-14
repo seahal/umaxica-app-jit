@@ -46,4 +46,28 @@ class UserOccurrenceTest < ActiveSupport::TestCase
 
     assert_occurrence_lifecycle_defaults(record)
   end
+
+  test "status_id rejects negative values" do
+    record = build_occurrence(UserOccurrence, body: "test-body-123", status_id: -1)
+
+    assert_invalid_attribute(record, :status_id)
+  end
+
+  test "status_id rejects decimal values" do
+    record = build_occurrence(UserOccurrence, body: "test-body-123", status_id: 1.5)
+
+    assert_invalid_attribute(record, :status_id)
+  end
+
+  test "status_id accepts zero" do
+    record = build_occurrence(UserOccurrence, body: "test-body-123", status_id: 0)
+
+    assert_predicate record, :valid?
+  end
+
+  test "status_id accepts positive integers" do
+    record = build_occurrence(UserOccurrence, body: "test-body-123", status_id: 1)
+
+    assert_predicate record, :valid?
+  end
 end

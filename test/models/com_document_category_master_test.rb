@@ -2,7 +2,7 @@
 # == Schema Information
 #
 # Table name: com_document_category_masters
-# Database name: document
+# Database name: publication
 #
 #  id        :bigint           not null, primary key
 #  parent_id :bigint           not null

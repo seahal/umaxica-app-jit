@@ -19,7 +19,6 @@
 #  otp_private_key           :string           default(""), not null
 #  promotional               :boolean          default(TRUE), not null
 #  subscribable              :boolean          default(TRUE), not null
-#  undeletable               :boolean          default(FALSE), not null
 #  verification_token_digest :binary
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
@@ -69,20 +68,16 @@ class UserEmail < PrincipalRecord
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :user_email_status_id, numericality: { only_integer: true }
+  validates :user_email_status_id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :ensure_unique_address_digest
   validate :enforce_user_email_limit, on: :create
   before_destroy :prevent_destroy_when_undeletable
 
+  encrypts :address, downcase: true, deterministic: true
+
   def to_param
     public_id
   end
-
-  after_initialize do
-    self.address ||= ""
-  end
-
-  encrypts :address, deterministic: true
 
   # Generates a new verification token and saves its digest
   # Returns the raw token
@@ -106,7 +101,7 @@ class UserEmail < PrincipalRecord
   private
 
   def prevent_destroy_when_undeletable
-    return unless undeletable?
+    return unless user_email_status_id == UserEmailStatus::OAUTH_LINKED
 
     errors.add(:base, :undeletable, message: "cannot delete a protected email address")
     throw(:abort)

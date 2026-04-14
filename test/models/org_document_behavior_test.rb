@@ -75,6 +75,36 @@ class OrgDocumentBehaviorTest < ActiveSupport::TestCase
     assert_equal doc, audit.org_document
   end
 
+  test "rejects unknown event_id before database foreign key enforcement" do
+    doc = org_documents(:one)
+    behavior = OrgDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "OrgDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: 999_999,
+      level_id: org_document_behavior_levels(:nothing).id,
+    )
+
+    assert_not behavior.valid?
+    assert_includes behavior.errors[:event_id], "must reference an existing org_document_behavior_event"
+  end
+
+  test "rejects unknown level_id before database foreign key enforcement" do
+    doc = org_documents(:one)
+    behavior = OrgDocumentBehavior.new(
+      subject_id: doc.id,
+      subject_type: "OrgDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: org_document_behavior_events(:created).id,
+      level_id: 999_999,
+    )
+
+    assert_not behavior.valid?
+    assert_includes behavior.errors[:level_id], "must reference an existing org_document_behavior_level"
+  end
+
   test "org_document= helper method sets subject_id and subject_type" do
     test_id = 123
 

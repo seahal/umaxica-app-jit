@@ -23,18 +23,22 @@ class SkipForgeryProtectionUsageTest < ActiveSupport::TestCase
     violations = found_paths - ALLOWED_SKIP_FORGERY_PROTECTION_PATHS
     missing_allowed = ALLOWED_SKIP_FORGERY_PROTECTION_PATHS - found_paths
 
+    # rubocop:disable I18n/RailsI18n/DecorateString
     assert_empty violations,
                  <<~MSG.squish
                    skip_forgery_protection must not be added to controllers without review.
                    Remove it from:
                      #{violations.join("\n  ")}
                  MSG
+    # rubocop:enable I18n/RailsI18n/DecorateString
 
+    # rubocop:disable I18n/RailsI18n/DecorateString
     assert_empty missing_allowed,
                  <<~MSG.squish
                    Allowed list contains controllers that no longer call skip_forgery_protection.
                    Please update ALLOWED_SKIP_FORGERY_PROTECTION_PATHS:
                      #{missing_allowed.join("\n  ")}
                  MSG
+    # rubocop:enable I18n/RailsI18n/DecorateString
   end
 end

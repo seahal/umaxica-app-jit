@@ -22,6 +22,7 @@ ARG DOCKER_GROUP
 ENV HOME=/home/${DOCKER_USER}
 ENV APP_HOME=${HOME}/main
 ENV LANG=C.UTF-8 \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2 \
     RAILS_ENV=production \
     RACK_ENV=production \
     BUNDLE_WITHOUT=development:test \
@@ -48,6 +49,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
     ca-certificates \
+    libjemalloc2 \
     libpq5 \
     libyaml-0-2 \
     tzdata \
@@ -143,6 +145,7 @@ SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV TZ=UTC \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2 \
     BUNDLE_FORCE_RUBY_PLATFORM=1
 
 # hadolint ignore=DL3008
@@ -153,6 +156,7 @@ RUN apt-get update -qq \
     curl \
     git \
     gnupg \
+    libjemalloc2 \
     libpq-dev \
     libvips \
     libxml2-dev \

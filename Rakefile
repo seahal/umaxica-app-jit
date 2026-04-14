@@ -4,6 +4,7 @@
 # for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
 ENV["COVERAGE"] ||= "false"
+ENV["DEFAULT_TEST"] ||= "{test,engines/*/test}/**/*_test.rb"
 
 require_relative 'config/application'
 

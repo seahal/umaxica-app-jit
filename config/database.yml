@@ -43,17 +43,6 @@ development:
     database: development_principal_db
     host: <%= ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
     migrations_paths: db/principals_migrate
-  finder:
-    !!merge <<: *default
-    database: development_finder_db
-    host: <%= ENV["POSTGRESQL_FINDER_PUB"] || default_host %>
-    migrations_paths: db/finders_migrate
-  finder_replica:
-    !!merge <<: *default
-    replica: true
-    database: development_finder_db
-    host: <%= ENV["POSTGRESQL_FINDER_SUB"] || default_host %>
-    migrations_paths: db/finders_migrate
   search:
     !!merge <<: *default
     database: development_search_db
@@ -87,17 +76,6 @@ development:
     database: development_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_SUB"] || default_host %>
     migrations_paths: db/tokens_migrate
-  document:
-    !!merge <<: *default
-    database: development_document_db
-    host: <%= ENV["POSTGRESQL_DOCUMENT_PUB"] || default_host %>
-    migrations_paths: db/documents_migrate
-  document_replica:
-    !!merge <<: *default
-    replica: true
-    database: development_document_db
-    host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] || default_host %>
-    migrations_paths: db/documents_migrate
   publication:
     !!merge <<: *default
     database: development_publication_db
@@ -208,6 +186,17 @@ development:
     database: development_operator_db
     host: <%= ENV["POSTGRESQL_OPERATOR_SUB"] || default_host %>
     migrations_paths: db/operators_migrate
+  setting:
+    !!merge <<: *default
+    database: development_setting_db
+    host: <%= ENV["POSTGRESQL_SETTING_PUB"] || default_host %>
+    migrations_paths: db/settings_migrate
+  setting_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_setting_db
+    host: <%= ENV["POSTGRESQL_SETTING_SUB"] || default_host %>
+    migrations_paths: db/settings_migrate
   avatar:
     !!merge <<: *default
     database: development_avatar_db
@@ -219,9 +208,6 @@ development:
     database: development_avatar_db
     host: <%= ENV["POSTGRESQL_AVATAR_SUB"] || default_host %>
     migrations_paths: db/avatars_migrate
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -248,17 +234,6 @@ test:
     database: test_principal_db
     host: <%= test_host %>
     migrations_paths: db/principals_migrate
-  finder:
-    !!merge <<: *test_default
-    database: test_finder_db
-    host: <%= test_host %>
-    migrations_paths: db/finders_migrate
-  finder_replica:
-    !!merge <<: *test_default
-    replica: true
-    database: test_finder_db
-    host: <%= test_host %>
-    migrations_paths: db/finders_migrate
   search:
     !!merge <<: *test_default
     database: test_search_db
@@ -325,17 +300,6 @@ test:
     database: test_storage_db
     host: <%= test_host %>
     migrations_paths: db/storages_migrate
-  document:
-    !!merge <<: *test_default
-    database: test_document_db
-    host: <%= test_host %>
-    migrations_paths: db/documents_migrate
-  document_replica:
-    !!merge <<: *test_default
-    replica: true
-    database: test_document_db
-    host: <%= test_host %>
-    migrations_paths: db/documents_migrate
   publication:
     !!merge <<: *test_default
     database: test_publication_db
@@ -413,6 +377,17 @@ test:
     database: test_operator_db
     host: <%= test_host %>
     migrations_paths: db/operators_migrate
+  setting:
+    !!merge <<: *test_default
+    database: test_setting_db
+    host: <%= test_host %>
+    migrations_paths: db/settings_migrate
+  setting_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_setting_db
+    host: <%= test_host %>
+    migrations_paths: db/settings_migrate
   avatar:
     !!merge <<: *test_default
     database: test_avatar_db
@@ -459,23 +434,6 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL_REPLICA&.PASSWORD %>
     migrations_paths: db/principals_migrate
-  finder:
-    !!merge <<: *default
-    database: production_finder_db
-    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.FINDER&.HOST %>
-    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.FINDER&.PASSWORD %>
-    migrations_paths: db/finders_migrate
-  finder_replica:
-    !!merge <<: *default
-    replica: true
-    database: production_finder_db
-    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.FINDER_REPLICA&.HOST %>
-    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
-    password: <%= Rails.application.credentials&.DATABASE&.FINDER_REPLICA&.PASSWORD %>
-    migrations_paths: db/finders_migrate
   search:
     !!merge <<: *default
     database: production_search_db
@@ -510,6 +468,23 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.COMMERCE_REPLICA&.PASSWORD %>
     migrations_paths: db/commerces_migrate
+  publication:
+    !!merge <<: *default
+    database: production_publication_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.PUBLICATION&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.PUBLICATION&.PASSWORD %>
+    migrations_paths: db/publications_migrate
+  publication_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_publication_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.PUBLICATION_REPLICA&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.PUBLICATION_REPLICA&.PASSWORD %>
+    migrations_paths: db/publications_migrate
   activity:
     !!merge <<: *default
     database: production_activity_db
@@ -671,6 +646,23 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.OPERATOR_REPLICA&.PASSWORD %>
     migrations_paths: db/operators_migrate
+  setting:
+    !!merge <<: *default
+    database: production_setting_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.SETTING&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.SETTING&.PASSWORD %>
+    migrations_paths: db/settings_migrate
+  setting_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_setting_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.SETTING_REPLICA&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.SETTING_REPLICA&.PASSWORD %>
+    migrations_paths: db/settings_migrate
   avatar:
     !!merge <<: *default
     database: production_avatar_db

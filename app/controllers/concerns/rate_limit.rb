@@ -4,9 +4,10 @@
 # Rate limiting concern backed by Rails 8.1's built-in `rate_limit` DSL.
 #
 # Uses a dedicated RedisCacheStore (Valkey) for atomic counter operations.
-# Include this concern in any controller to get default rate limits:
+# Include this concern in any controller that needs rate-limit helpers.
+# Application controllers can declare their shared default limit with the
+# standard Rails DSL:
 #   - Web requests: 300 req/min by IP
-#   - API requests: 600 req/min by IP
 #
 # Controllers can declare additional limits via the standard Rails DSL:
 #   rate_limit to: 5, within: 1.minute, store: rate_limit_store, only: :create, name: "login"
@@ -18,9 +19,6 @@ module RateLimit
   # so that concurrent workers do not interfere with each other's counters.
   STORE_REGISTRY = {}
   private_constant :STORE_REGISTRY
-
-  SKIP_DEFAULT_CLASSES = Concurrent::Set.new
-  private_constant :SKIP_DEFAULT_CLASSES
 
   def self.store
     STORE_REGISTRY[Process.pid] ||= build_store
@@ -39,14 +37,6 @@ module RateLimit
   DEFAULT_RATE_LIMIT = 300
   DEFAULT_RATE_WINDOW = 1.minute
 
-  def self.default_rate_limit
-    DEFAULT_RATE_LIMIT
-  end
-
-  def self.default_rate_window
-    DEFAULT_RATE_WINDOW
-  end
-
   # Default: 300 req/min by IP address.
   # Controllers can override or add custom limits using the standard Rails DSL.
   #
@@ -56,49 +46,13 @@ module RateLimit
   #     rate_limit to: 5, within: 1.minute, only: :create, name: "login"
   #   end
   #
-  # To opt out of the default rate limit (when you have your own):
-  #   class MyController < ApplicationController
-  #     include RateLimit
-  #     has_custom_rate_limit!
-  #     rate_limit to: 10, within: 1.minute, name: "custom"
-  #   end
-
   class_methods do
     def rate_limit_store
       RateLimit.store
     end
-
-    def has_custom_rate_limit!
-      SKIP_DEFAULT_CLASSES.add(self)
-    end
-
-    def skip_default_rate_limit?
-      SKIP_DEFAULT_CLASSES.include?(self)
-    end
-
-    alias_method :has_custom_rate_limit?, :skip_default_rate_limit?
   end
-
-  protected
-
-  def skip_default_rate_limit?
-    self.class.skip_default_rate_limit?
-  end
-
-  alias_method :has_custom_rate_limit?, :skip_default_rate_limit?
 
   private
-
-  def check_default_rate_limit
-    limit = RateLimit.default_rate_limit
-    window = RateLimit.default_rate_window
-    key = "rate_limit:default:#{request.remote_ip}"
-
-    current = RateLimit.store.increment(key, 1, expires_in: window)
-    return unless current && current > limit
-
-    render_rate_limit_exceeded("default_ip", window.to_i)
-  end
 
   def render_rate_limit_exceeded(rule_name, retry_after = DEFAULT_RETRY_AFTER)
     retry_after_seconds = Integer(retry_after.to_s, 10).positive? ? Integer(retry_after.to_s, 10) : DEFAULT_RETRY_AFTER

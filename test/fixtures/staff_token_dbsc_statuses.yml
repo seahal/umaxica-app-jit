@@ -5,13 +5,13 @@
 #
 #  id :bigint           not null, primary key
 #
-NOTHING:
+nothing:
   id: 0
-PENDING:
+active:
   id: 1
-ACTIVE:
+pending:
   id: 2
-FAILED:
+failed:
   id: 3
-REVOKE:
+revoke:
   id: 4

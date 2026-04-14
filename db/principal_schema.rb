@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_15_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -25,6 +25,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.datetime "updated_at", null: false
     t.index ["accountable_type", "accountable_id"], name: "index_accounts_on_accountable_type_and_accountable_id", unique: true
     t.index ["email"], name: "index_accounts_on_email", unique: true
+  end
+
+  create_table "action_push_native_devices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.bigint "owner_id"
+    t.string "owner_type"
+    t.string "platform", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_type", "owner_id"], name: "index_action_push_native_devices_on_owner"
   end
 
   create_table "app_preference_binding_methods", force: :cascade do |t|
@@ -106,6 +117,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.jsonb "dbsc_public_key"
     t.string "dbsc_session_id"
     t.bigint "dbsc_status_id", default: 0, null: false
+    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.string "device_id"
     t.string "device_id_digest"
     t.datetime "expires_at"
@@ -120,6 +132,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.index ["binding_method_id"], name: "index_app_preferences_on_binding_method_id"
     t.index ["dbsc_session_id"], name: "index_app_preferences_on_dbsc_session_id", unique: true
     t.index ["dbsc_status_id"], name: "index_app_preferences_on_dbsc_status_id"
+    t.index ["deletable_at"], name: "index_app_preferences_on_deletable_at"
     t.index ["device_id"], name: "index_app_preferences_on_device_id"
     t.index ["device_id_digest"], name: "index_app_preferences_on_device_id_digest"
     t.index ["jti"], name: "index_app_preferences_on_jti", unique: true
@@ -191,11 +204,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.bigint "division_id"
     t.string "moniker"
     t.string "public_id", null: false
+    t.datetime "shreddable_at", default: ::Float::INFINITY, null: false
     t.bigint "status_id", default: 5, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["division_id"], name: "index_members_on_division_id"
     t.index ["public_id"], name: "index_members_on_public_id", unique: true
+    t.index ["shreddable_at"], name: "index_members_on_shreddable_at"
     t.index ["status_id"], name: "index_members_on_status_id"
     t.index ["user_id"], name: "index_members_on_user_id"
   end
@@ -292,7 +307,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.bigint "user_id", null: false
     t.index ["app_preference_id"], name: "index_user_app_preferences_on_app_preference_id"
     t.index ["user_id", "app_preference_id"], name: "index_user_app_preferences_on_user_id_and_app_preference_id", unique: true
-    t.index ["user_id"], name: "index_user_app_preferences_on_user_id"
   end
 
   create_table "user_bulletins", force: :cascade do |t|
@@ -388,7 +402,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.boolean "promotional", default: true, null: false
     t.string "public_id", limit: 21, null: false
     t.boolean "subscribable", default: true, null: false
-    t.boolean "undeletable", default: false, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_email_status_id", default: 0, null: false
     t.bigint "user_id", null: false
@@ -659,6 +672,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter", default: "", null: false
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
+    t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
     t.string "public_id", limit: 21, null: false
     t.datetime "updated_at", null: false
@@ -688,7 +702,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "deactivated_at"
-    t.datetime "deletable_at", default: ::Float::INFINITY, null: false
     t.datetime "last_reauth_at"
     t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
@@ -702,7 +715,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
     t.datetime "withdrawal_started_at"
     t.datetime "withdrawn_at", default: ::Float::INFINITY
     t.index ["deactivated_at"], name: "index_users_on_deactivated_at", where: "(deactivated_at IS NOT NULL)"
-    t.index ["deletable_at"], name: "index_users_on_deletable_at"
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
     t.index ["purged_at"], name: "index_users_on_purged_at", where: "(purged_at IS NOT NULL)"
     t.index ["scheduled_purge_at"], name: "index_users_on_scheduled_purge_at", where: "(scheduled_purge_at IS NOT NULL)"
@@ -743,7 +755,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
   add_foreign_key "staff_preference_timezones", "staff_preference_timezone_options", column: "option_id", name: "fk_staff_preference_timezones_on_option_id"
   add_foreign_key "staff_preference_timezones", "staff_preferences", column: "preference_id", name: "fk_staff_preference_timezones_on_preference_id"
   add_foreign_key "user_app_preferences", "app_preferences", on_delete: :cascade
-  add_foreign_key "user_app_preferences", "users", validate: false
+  add_foreign_key "user_app_preferences", "users", on_delete: :cascade, validate: false
   add_foreign_key "user_bulletins", "users"
   add_foreign_key "user_client_deletions", "clients", validate: false
   add_foreign_key "user_client_deletions", "users", validate: false
@@ -788,6 +800,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_31_222107) do
   add_foreign_key "user_preference_regions", "user_preferences", column: "preference_id", name: "fk_user_preference_regions_on_preference_id"
   add_foreign_key "user_preference_timezones", "user_preference_timezone_options", column: "option_id", name: "fk_user_preference_timezones_on_option_id"
   add_foreign_key "user_preference_timezones", "user_preferences", column: "preference_id", name: "fk_user_preference_timezones_on_preference_id"
+  add_foreign_key "user_preferences", "users", validate: false
   add_foreign_key "user_secrets", "user_secret_kinds"
   add_foreign_key "user_secrets", "user_secret_statuses", column: "user_identity_secret_status_id"
   add_foreign_key "user_secrets", "users", validate: false

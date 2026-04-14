@@ -67,4 +67,27 @@ class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
 
     assert_nil option.name
   end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [0, 1, 2], AppPreferenceLanguageOption::DEFAULTS
+  end
+
+  test "ensure_defaults! creates missing records" do
+    AppPreferenceLanguageOption.where(id: AppPreferenceLanguageOption::DEFAULTS).destroy_all
+
+    AppPreferenceLanguageOption.ensure_defaults!
+
+    assert AppPreferenceLanguageOption.exists?(id: AppPreferenceLanguageOption::NOTHING)
+    assert AppPreferenceLanguageOption.exists?(id: AppPreferenceLanguageOption::JA)
+    assert AppPreferenceLanguageOption.exists?(id: AppPreferenceLanguageOption::EN)
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    AppPreferenceLanguageOption.ensure_defaults!
+    initial_count = AppPreferenceLanguageOption.count
+
+    AppPreferenceLanguageOption.ensure_defaults!
+
+    assert_equal initial_count, AppPreferenceLanguageOption.count
+  end
 end

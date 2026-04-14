@@ -48,7 +48,7 @@ class StaffPasskey < OperatorRecord
   validates :external_id, presence: true
   validates :public_key, presence: true
   validates :name, presence: true
-  validates :status_id, numericality: { only_integer: true }
+  validates_reference_table :status_id, association: :status, allow_nil: true
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   validate :enforce_staff_passkey_limit, on: :create

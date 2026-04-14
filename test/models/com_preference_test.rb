@@ -9,6 +9,7 @@
 #  dbsc_challenge           :text
 #  dbsc_challenge_issued_at :datetime
 #  dbsc_public_key          :jsonb
+#  deletable_at             :datetime         default(Infinity), not null
 #  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
@@ -30,6 +31,7 @@
 #  index_com_preferences_on_binding_method_id  (binding_method_id)
 #  index_com_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
 #  index_com_preferences_on_dbsc_status_id     (dbsc_status_id)
+#  index_com_preferences_on_deletable_at       (deletable_at)
 #  index_com_preferences_on_device_id          (device_id)
 #  index_com_preferences_on_device_id_digest   (device_id_digest)
 #  index_com_preferences_on_jti                (jti) UNIQUE
@@ -76,6 +78,34 @@ class ComPreferenceTest < ActiveSupport::TestCase
     preference = ComPreference.create!(public_id: custom_id)
 
     assert_equal custom_id, preference.public_id
+  end
+
+  test "rejects unknown status_id before database foreign key enforcement" do
+    preference = ComPreference.new(status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:status_id], "must reference an existing com_preference_status"
+  end
+
+  test "rejects unknown binding_method_id before database foreign key enforcement" do
+    preference = ComPreference.new(binding_method_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:binding_method_id], "must reference an existing com_preference_binding_method"
+  end
+
+  test "rejects unknown dbsc_status_id before database foreign key enforcement" do
+    preference = ComPreference.new(dbsc_status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:dbsc_status_id], "must reference an existing com_preference_dbsc_status"
+  end
+
+  test "rejects unknown replaced_by_id before database foreign key enforcement" do
+    preference = ComPreference.new(replaced_by_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:replaced_by_id], "must reference an existing replaced_by"
   end
 
   test "has one com_preference_cookie" do
@@ -230,5 +260,17 @@ class ComPreferenceTest < ActiveSupport::TestCase
     assert_predicate rotated.issued_refresh_token, :present?
     assert_not_equal original.id, rotated.id
     assert_equal rotated.id, original.reload.replaced_by_id
+  end
+
+  test "deletable scope excludes preferences with deletable_at in the future" do
+    preference = ComPreference.create!
+
+    assert_not_includes ComPreference.deletable, preference
+  end
+
+  test "deletable scope includes preferences with deletable_at in the past" do
+    preference = ComPreference.create!(deletable_at: 1.second.ago)
+
+    assert_includes ComPreference.deletable, preference
   end
 end

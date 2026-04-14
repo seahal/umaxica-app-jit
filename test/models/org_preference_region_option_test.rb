@@ -51,4 +51,26 @@ class OrgPreferenceRegionOptionTest < ActiveSupport::TestCase
 
     assert_equal "JP", option.name
   end
+
+  test "DEFAULTS contains all expected values" do
+    assert_equal [1, 2], OrgPreferenceRegionOption::DEFAULTS
+  end
+
+  test "ensure_defaults! creates missing records" do
+    OrgPreferenceRegionOption.where(id: OrgPreferenceRegionOption::DEFAULTS).destroy_all
+
+    OrgPreferenceRegionOption.ensure_defaults!
+
+    assert OrgPreferenceRegionOption.exists?(id: OrgPreferenceRegionOption::US)
+    assert OrgPreferenceRegionOption.exists?(id: OrgPreferenceRegionOption::JP)
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    OrgPreferenceRegionOption.ensure_defaults!
+    initial_count = OrgPreferenceRegionOption.count
+
+    OrgPreferenceRegionOption.ensure_defaults!
+
+    assert_equal initial_count, OrgPreferenceRegionOption.count
+  end
 end

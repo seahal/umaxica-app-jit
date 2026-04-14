@@ -3,12 +3,16 @@
 
 module Telephone
   extend ActiveSupport::Concern
-  include TelephoneNormalization
+  include TelephoneNormalization # FIXME: merge here!
+
+  OTP_COOLDOWN_PERIOD = Common::OtpPolicy::SEND_COOLDOWN
 
   attr_accessor :confirm_policy, :confirm_using_mfa, :pass_code
   attr_writer :raw_number
 
   included do
+    # TODO: use this new way!
+    # normalizes :number, with: ->number { ? }
     before_validation :normalize_number_from_raw
 
     after_initialize do
@@ -39,7 +43,8 @@ module Telephone
       otp_counter: otp_counter,
       otp_expires_at: Time.zone.at(expires_at),
       otp_attempts_count: 0,
-      locked_at: "-infinity",
+      locked_at: "infinity", # Sentinel for unlocked: "locks at infinity" = never locked
+      otp_last_sent_at: Time.current,
     )
   end
 
@@ -60,7 +65,7 @@ module Telephone
       otp_counter: "0",
       otp_expires_at: "-infinity",
       otp_attempts_count: 0,
-      locked_at: "-infinity",
+      locked_at: "infinity", # Sentinel for unlocked: "locks at infinity" = never locked
     )
   end
 
@@ -78,26 +83,46 @@ module Telephone
   end
 
   def locked?
-    # PostgreSQL -infinity is used as a sentinel for "not locked"
-    is_locked_by_time = locked_at.present? && locked_at != -Float::INFINITY
+    # locked_at sentinels for "not locked":
+    #   -infinity  old sentinel (backward-compatible with existing rows)
+    #   +infinity  new sentinel (set by store_otp / clear_otp)
+    is_locked_by_time = locked_at.present? &&
+      locked_at != -Float::INFINITY &&
+      locked_at != Float::INFINITY
     is_locked_by_attempts = otp_attempts_count >= 3
     is_locked_by_time || is_locked_by_attempts
   end
 
-  def increment_attempts!
-    # Use atomic increment to prevent race condition with concurrent requests
-    record = self.class.find(id)
-    record.update!(otp_attempts_count: otp_attempts_count + 1, updated_at: Time.current)
-    reload
-    # Atomically set locked_at only when attempts reached threshold and not already locked
-    # Check for both NULL and -infinity as sentinel values for "not locked"
-    records = self.class.where(id: id)
-      .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
-      .where(otp_attempts_count: 3..)
-      .to_a
-    records.each { |r| r.update!(locked_at: Time.current) }
+  def otp_cooldown_active?
+    return false if otp_last_sent_at.blank?
+    return false if otp_last_sent_at == -Float::INFINITY
 
-    reload if records.any?
+    otp_last_sent_at > OTP_COOLDOWN_PERIOD.ago
+  end
+
+  def otp_cooldown_remaining
+    return 0 unless otp_cooldown_active?
+
+    (otp_last_sent_at + OTP_COOLDOWN_PERIOD) - Time.current
+  end
+
+  def increment_attempts!
+
+    # Atomically increment the counter to prevent race conditions with concurrent requests.
+    self.class.where(id: id).update_all("otp_attempts_count = otp_attempts_count + 1, updated_at = NOW()")
+    reload
+
+    # Atomically set locked_at only when the threshold is reached and the row is not yet locked.
+    # Both -infinity and +infinity are sentinel values for "not locked".
+    self.class
+      .where(id: id)
+      .where(
+        "locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp",
+      )
+      .where(otp_attempts_count: 3..)
+      .update_all(locked_at: Time.current)
+
+    reload
   end
 
   def raw_number

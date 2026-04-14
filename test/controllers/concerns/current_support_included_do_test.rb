@@ -4,8 +4,19 @@
 require "test_helper"
 
 class CurrentSupportIncludedDoTest < ActiveSupport::TestCase
-  test "included do registers after_action callback" do
-    skip "after_action callback verification requires integration test"
+  class CallbackHost < ApplicationController
+    include CurrentSupport
+
+    before_action :set_current
+    after_action :_reset_current_state
+  end
+
+  test "controller can wire set_current and _reset_current_state callbacks" do
+    before_actions = CallbackHost._process_action_callbacks.select { |callback| callback.kind == :before }.map(&:filter)
+    after_actions = CallbackHost._process_action_callbacks.select { |callback| callback.kind == :after }.map(&:filter)
+
+    assert_includes before_actions, :set_current
+    assert_includes after_actions, :_reset_current_state
   end
 
   test "set_current method exists in module" do

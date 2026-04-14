@@ -37,6 +37,12 @@ Tests MUST:
   - Test cases MUST include boundary value analysis and equivalence partitioning
   - Applies when validations, ranges, limits, formats, or categorizable inputs are involved
 
+When tests or TDD apply, use the same implementation policy for Minitest and Vitest. Identify input
+and output patterns with attention to abnormal values, false negatives, false positives, boundary
+values, and state transitions. Do not add hollow coverage through meaningless mocks. Avoid
+host-environment side effects and destructive changes. Make tests idempotent and independent of
+execution time and external state.
+
 ---
 
 ## Structure

@@ -93,7 +93,7 @@ module Oidc
         "apex_com" => {
           redirect_uris: build_redirect_uris("APEX_CORPORATE_URL", "com.localhost"),
           aud: "umaxica-apex-com",
-          resource_type: "user",
+          resource_type: "customer",
         },
         # Core
         "core_app" => {
@@ -109,7 +109,7 @@ module Oidc
         "core_com" => {
           redirect_uris: build_redirect_uris("MAIN_CORPORATE_URL", "ww.com.localhost"),
           aud: "umaxica-core-com",
-          resource_type: "user",
+          resource_type: "customer",
         },
         # Docs
         "docs_app" => {
@@ -125,7 +125,7 @@ module Oidc
         "docs_com" => {
           redirect_uris: build_redirect_uris("DOCS_CORPORATE_URL", "docs.com.localhost"),
           aud: "umaxica-docs-com",
-          resource_type: "user",
+          resource_type: "customer",
         },
         # News
         "news_app" => {
@@ -141,7 +141,7 @@ module Oidc
         "news_com" => {
           redirect_uris: build_redirect_uris("NEWS_CORPORATE_URL", "news.com.localhost"),
           aud: "umaxica-news-com",
-          resource_type: "user",
+          resource_type: "customer",
         },
         # Help
         "help_app" => {
@@ -157,7 +157,7 @@ module Oidc
         "help_com" => {
           redirect_uris: build_redirect_uris("HELP_CORPORATE_URL", "help.com.localhost"),
           aud: "umaxica-help-com",
-          resource_type: "user",
+          resource_type: "customer",
         },
       }.freeze
     end

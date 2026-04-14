@@ -59,12 +59,28 @@ class PublicRobotsRoutingTest < ActionDispatch::IntegrationTest
         case host
         when /org\.localhost/, /sign\.org\.localhost/
 
-          assert_equal "User-agent: *\nDisallow: /\n", response.body
+          assert_equal <<~ROBOTS, response.body
+            User-agent: *
+            Allow: /
+            Disallow: /auth
+            Disallow: /configuration
+            Disallow: /contacts
+            Disallow: /edge
+            Disallow: /emergency
+            Disallow: /web
+          ROBOTS
         when /app\.localhost/, /sign\.app\.localhost/
 
-          assert_equal "User-agent: *\nDisallow: /configuration\nDisallow: /api\nDisallow: /web\n", response.body
+          assert_equal <<~ROBOTS, response.body
+            User-agent: *
+            Allow: /
+            Disallow: /configuration
+            Disallow: /contacts
+            Disallow: /edge
+            Disallow: /web
+          ROBOTS
         else
-          assert_equal "User-agent: *\nDisallow:\n", response.body
+          assert_equal "User-agent: *\nAllow: /\nDisallow:\n", response.body
         end
       else
         assert_equal "application/xml; charset=utf-8", response.content_type
