@@ -136,8 +136,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     email = UserEmail.create!(
       address: "protected@example.com",
       user: @user,
-      user_email_status_id: UserEmailStatus::VERIFIED,
-      undeletable: true,
+      user_email_status_id: UserEmailStatus::OAUTH_LINKED,
     )
     UserEmail.create!(
       address: "other@example.com",

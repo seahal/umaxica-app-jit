@@ -102,7 +102,8 @@ module Email
   end
 
   def increment_attempts!
-
+    # rubocop:disable Rails/SkipsModelValidations
+    # Intentionally using update_all for atomic counter increment to prevent race conditions.
     self.class.where(id: id).update_all(
       "otp_attempts_count = otp_attempts_count + 1, updated_at = NOW()",
     )
@@ -116,6 +117,7 @@ module Email
       )
       .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
       .update_all(locked_at: Time.current)
+    # rubocop:enable Rails/SkipsModelValidations
 
     reload
   end

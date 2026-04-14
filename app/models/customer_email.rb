@@ -77,6 +77,11 @@ class CustomerEmail < GuestRecord
     public_id
   end
 
+  # Returns true if this email is protected from deletion (e.g., OAuth-linked)
+  def undeletable?
+    customer_email_status_id == CustomerEmailStatus::OAUTH_LINKED
+  end
+
   def generate_verification_token
     raw_token = SecureRandom.urlsafe_base64(32)
     self.verification_token_digest = Digest::SHA256.hexdigest(raw_token)

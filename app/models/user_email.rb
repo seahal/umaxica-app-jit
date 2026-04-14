@@ -79,6 +79,11 @@ class UserEmail < PrincipalRecord
     public_id
   end
 
+  # Returns true if this email is protected from deletion (e.g., OAuth-linked)
+  def undeletable?
+    user_email_status_id == UserEmailStatus::OAUTH_LINKED
+  end
+
   # Generates a new verification token and saves its digest
   # Returns the raw token
   def generate_verification_token

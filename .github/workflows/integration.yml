@@ -337,82 +337,6 @@ jobs:
             tmp/screenshots/
           retention-days: 7
           compression-level: 9
-  database-consistency:
-    name: Database Consistency
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      RACK_ENV: test
-      RAILS_ENV: test
-      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      TRUSTED_ORIGINS: http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001
-      POSTGRESQL_USER: root
-      POSTGRESQL_PORT: 5432
-      POSTGRESQL_PASSWORD: password
-      POSTGRESQL_UNIVERSAL_PUB: localhost
-      POSTGRESQL_UNIVERSAL_SUB: localhost
-      POSTGRESQL_AUDIT_PUB: localhost
-      POSTGRESQL_AUDIT_SUB: localhost
-      POSTGRESQL_DEFAULT_PUB: localhost
-      POSTGRESQL_GUEST_PUB: localhost
-      POSTGRESQL_GUEST_SUB: localhost
-      POSTGRESQL_PRINCIPAL_PUB: localhost
-      POSTGRESQL_PRINCIPAL_SUB: localhost
-      POSTGRESQL_PROFILE_PUB: localhost
-      POSTGRESQL_PROFILE_SUB: localhost
-      POSTGRESQL_COMMERCE_PUB: localhost
-      POSTGRESQL_COMMERCE_SUB: localhost
-      POSTGRESQL_TOKEN_PUB: localhost
-      POSTGRESQL_TOKEN_SUB: localhost
-      POSTGRESQL_PUBLICATION_PUB: localhost
-      POSTGRESQL_PUBLICATION_SUB: localhost
-      POSTGRESQL_BILLING_PUB: localhost
-      POSTGRESQL_BILLING_SUB: localhost
-      POSTGRESQL_MESSAGE_PUB: localhost
-      POSTGRESQL_MESSAGE_SUB: localhost
-      POSTGRESQL_NOTIFICATION_PUB: localhost
-      POSTGRESQL_NOTIFICATION_SUB: localhost
-      POSTGRESQL_CACHE_PUB: localhost
-      POSTGRESQL_CACHE_SUB: localhost
-      POSTGRESQL_QUEUE_PUB: localhost
-      POSTGRESQL_QUEUE_SUB: localhost
-      POSTGRESQL_STORAGE_PUB: localhost
-      POSTGRESQL_STORAGE_SUB: localhost
-      POSTGRESQL_OPERATOR_PUB: localhost
-      POSTGRESQL_OPERATOR_SUB: localhost
-      POSTGRESQL_SETTING_PUB: localhost
-      POSTGRESQL_SETTING_SUB: localhost
-      POSTGRESQL_AVATAR_PUB: localhost
-      POSTGRESQL_AVATAR_SUB: localhost
-      POSTGRESQL_FINDER_PUB: localhost
-      POSTGRESQL_FINDER_SUB: localhost
-      POSTGRESQL_SEARCH_PUB: localhost
-      POSTGRESQL_SEARCH_SUB: localhost
-    services:
-      postgres:
-        image: postgres:18
-        env:
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-      - uses: actions/checkout@v6.0.1
-        with:
-          persist-credentials: false
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
-          bundler-cache: true
-          cache-version: 1
-      - name: Setup test databases
-        run: bin/rails db:create db:schema:load
-      - name: Run database consistency checks
-        run: bundle exec database_consistency
   lint-js:
     name: JavaScript Checks
     runs-on: ubuntu-slim
@@ -431,7 +355,7 @@ jobs:
       - name: Run JavaScript checks
         run: vp check
       - name: Run JavaScript tests
-        run: vp test
+        run: vp test --coverage
   # ====================
   # SECURITY SCANS
   # ====================

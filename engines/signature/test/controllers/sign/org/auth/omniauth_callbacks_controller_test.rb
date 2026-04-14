@@ -43,13 +43,13 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
     assert_includes flash[:notice], "Google"
   end
 
-  test "omniauth marks the matched staff email as undeletable" do
-    assert_not_predicate @staff_email, :undeletable?
+  test "omniauth marks the matched staff email as oauth_linked" do
+    assert_not_equal StaffEmailStatus::OAUTH_LINKED, @staff_email.staff_identity_email_status_id
     state = initiate_social_auth_flow!
 
     get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
 
-    assert_predicate @staff_email.reload, :undeletable?
+    assert_equal StaffEmailStatus::OAUTH_LINKED, @staff_email.reload.staff_identity_email_status_id
   end
 
   # --- Staff not found ---

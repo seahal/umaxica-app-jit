@@ -44,9 +44,8 @@ class Sign::Com::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     email = CustomerEmail.create!(
       customer: @customer,
       address: "protected-com@example.com",
-      customer_email_status_id: CustomerEmailStatus::VERIFIED,
+      customer_email_status_id: CustomerEmailStatus::OAUTH_LINKED,
       confirm_policy: true,
-      undeletable: true,
     )
 
     assert_no_difference("CustomerEmail.count") do

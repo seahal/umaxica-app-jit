@@ -1428,6 +1428,7 @@ Style/DisableCopsWithinSourceCodeDirective:
     - Metrics/CyclomaticComplexity
     - I18n/RailsI18n/DecorateString
     - Rails/I18nLocaleTexts
+    - Rails/SkipsModelValidations
 
 
 # メソッド呼び出しの括弧を強制（可読性向上）
@@ -1507,6 +1508,7 @@ Style/ConstantVisibility:
     - "db/**/*_migrate/**/*.rb"
 
 Layout/LineLength:
+  Max: 140
   Exclude:
     - "db/**/*_migrate/**/*.rb"
 

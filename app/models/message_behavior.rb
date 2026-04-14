@@ -33,6 +33,12 @@
 #
 
 class MessageBehavior < BehaviorRecord
+  # Allowed subject types for polymorphic lookup
+  # This allowlist replaces safe_constantize for type safety and editor compatibility.
+  SUBJECT_TYPE_CLASSES = {
+    "UserMessage" => UserMessage,
+  }.freeze
+
   belongs_to :actor, polymorphic: true, optional: true
   belongs_to :message_behavior_level, foreign_key: :level_id, inverse_of: :message_behaviors
   belongs_to :message_behavior_event,
@@ -50,11 +56,11 @@ class MessageBehavior < BehaviorRecord
   validates :level_id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   # Return the messageable subject if subject_type corresponds to a valid model.
-  # This method is intentionally flexible to support polymorphic subject types.
+  # Uses an explicit allowlist instead of safe_constantize for type safety.
   def messageable
     return nil if subject_type.blank?
 
-    klass = subject_type.safe_constantize
+    klass = SUBJECT_TYPE_CLASSES[subject_type]
     klass.find_by(id: subject_id) if klass.respond_to?(:find_by)
   end
 end

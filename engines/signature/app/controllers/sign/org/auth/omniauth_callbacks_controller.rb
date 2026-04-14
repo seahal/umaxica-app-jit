@@ -156,8 +156,8 @@ module Sign
           staff_email = nil
           OperatorRecord.connected_to(role: :writing) do
             staff_email = StaffEmail.find_by(address: email)
-            if staff_email && !staff_email.undeletable?
-              staff_email.update!(undeletable: true)
+            if staff_email && staff_email.staff_identity_email_status_id != StaffEmailStatus::OAUTH_LINKED
+              staff_email.update!(staff_identity_email_status_id: StaffEmailStatus::OAUTH_LINKED)
             end
           end
 

@@ -79,6 +79,11 @@ class StaffEmail < OperatorRecord
     public_id
   end
 
+  # Returns true if this email is protected from deletion (e.g., OAuth-linked)
+  def undeletable?
+    staff_identity_email_status_id == StaffEmailStatus::OAUTH_LINKED
+  end
+
   private
 
   def set_address_digests

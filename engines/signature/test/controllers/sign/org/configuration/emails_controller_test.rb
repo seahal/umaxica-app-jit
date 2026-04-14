@@ -84,8 +84,7 @@ class Sign::Org::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     email = StaffEmail.create!(
       address: "protected-staff@example.com",
       staff: @staff,
-      staff_email_status_id: StaffEmailStatus::VERIFIED,
-      undeletable: true,
+      staff_identity_email_status_id: StaffEmailStatus::OAUTH_LINKED,
     )
     StaffEmail.create!(
       address: "other-staff@example.com",
