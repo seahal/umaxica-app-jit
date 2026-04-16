@@ -50,13 +50,12 @@ module Preference
     end
 
     # ============================================================================
-    # Setting database tests (new unified schema)
+    # Setting database tests (new unified schema with explicit owner columns)
     # ============================================================================
 
     test "find_by_public_id returns wrapper from setting database" do
       setting_pref = SettingPreference.create!(
-        owner_type: "User",
-        owner_id: 1,
+        user_id: 1,
         jti: SecureRandom.uuid,
       )
 
@@ -77,7 +76,7 @@ module Preference
       assert_equal :legacy, wrapper.source
     end
 
-    test "create! creates preference in setting database" do
+    test "create! creates preference in setting database with user_id" do
       wrapper = StorageAdapter.create!(
         { jti: SecureRandom.uuid, owner_id: 1 },
         preference_type: "AppPreference",
@@ -87,10 +86,49 @@ module Preference
       assert_equal :setting, wrapper.source
       assert_equal "User", wrapper.owner_type
 
-      # Verify it exists in setting database
+      # Verify it exists in setting database with correct owner column
       setting_pref = SettingPreference.find_by(public_id: wrapper.public_id)
 
       assert_not_nil setting_pref
+      assert_equal 1, setting_pref.user_id
+      assert_nil setting_pref.staff_id
+      assert_nil setting_pref.customer_id
+    end
+
+    test "create! creates preference in setting database with staff_id for OrgPreference" do
+      wrapper = StorageAdapter.create!(
+        { jti: SecureRandom.uuid, owner_id: 1 },
+        preference_type: "OrgPreference",
+      )
+
+      assert_not_nil wrapper
+      assert_equal :setting, wrapper.source
+      assert_equal "Staff", wrapper.owner_type
+
+      setting_pref = SettingPreference.find_by(public_id: wrapper.public_id)
+
+      assert_not_nil setting_pref
+      assert_equal 1, setting_pref.staff_id
+      assert_nil setting_pref.user_id
+      assert_nil setting_pref.customer_id
+    end
+
+    test "create! creates preference in setting database with customer_id for ComPreference" do
+      wrapper = StorageAdapter.create!(
+        { jti: SecureRandom.uuid, owner_id: 1 },
+        preference_type: "ComPreference",
+      )
+
+      assert_not_nil wrapper
+      assert_equal :setting, wrapper.source
+      assert_equal "Customer", wrapper.owner_type
+
+      setting_pref = SettingPreference.find_by(public_id: wrapper.public_id)
+
+      assert_not_nil setting_pref
+      assert_equal 1, setting_pref.customer_id
+      assert_nil setting_pref.user_id
+      assert_nil setting_pref.staff_id
     end
 
     test "create! reuses existing setting preference for the same owner" do
@@ -111,8 +149,7 @@ module Preference
 
     test "preference wrapper delegates methods to underlying preference" do
       setting_pref = SettingPreference.create!(
-        owner_type: "User",
-        owner_id: 1,
+        user_id: 1,
         jti: SecureRandom.uuid,
       )
 
@@ -129,8 +166,7 @@ module Preference
 
     test "preference wrapper provides DBSC status methods" do
       setting_pref = SettingPreference.create!(
-        owner_type: "User",
-        owner_id: 1,
+        user_id: 1,
         jti: SecureRandom.uuid,
         dbsc_status_id: SettingPreferenceDbscStatus::NOTHING,
         binding_method_id: SettingPreferenceBindingMethod::NOTHING,
@@ -196,8 +232,7 @@ module Preference
 
     test "find_by_token_digest finds from setting database first" do
       setting_pref = SettingPreference.create!(
-        owner_type: "User",
-        owner_id: 1,
+        user_id: 1,
         jti: SecureRandom.uuid,
         token_digest: SHA3::Digest::SHA3_384.digest("test_verifier"),
       )
@@ -225,6 +260,31 @@ module Preference
       assert_equal "Customer", com_wrapper.owner_type
     end
 
+    test "wrapper owner_id returns correct owner id for each type" do
+      app_wrapper = StorageAdapter.create!({ owner_id: 42 }, preference_type: "AppPreference")
+
+      assert_equal 42, app_wrapper.owner_id
+
+      org_wrapper = StorageAdapter.create!({ owner_id: 43 }, preference_type: "OrgPreference")
+
+      assert_equal 43, org_wrapper.owner_id
+
+      com_wrapper = StorageAdapter.create!({ owner_id: 44 }, preference_type: "ComPreference")
+
+      assert_equal 44, com_wrapper.owner_id
+    end
+
+    test "supports anonymous owner_id of 0" do
+      wrapper = StorageAdapter.create!({ owner_id: 0 }, preference_type: "AppPreference")
+
+      assert_equal 0, wrapper.owner_id
+      assert_equal "User", wrapper.owner_type
+
+      setting_pref = SettingPreference.find_by(public_id: wrapper.public_id)
+
+      assert_equal 0, setting_pref.user_id
+    end
+
     private
 
     def create_legacy_app_preference
@@ -237,8 +297,7 @@ module Preference
 
     def create_setting_preference_with_children
       setting_pref = SettingPreference.create!(
-        owner_type: "User",
-        owner_id: 1,
+        user_id: 1,
         jti: SecureRandom.uuid,
       )
 

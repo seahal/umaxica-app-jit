@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_15_000003) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_15_000004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -307,6 +307,28 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_15_000003) do
     t.bigint "user_id", null: false
     t.index ["app_preference_id"], name: "index_user_app_preferences_on_app_preference_id"
     t.index ["user_id", "app_preference_id"], name: "index_user_app_preferences_on_user_id_and_app_preference_id", unique: true
+  end
+
+  create_table "user_authorization_codes", force: :cascade do |t|
+    t.string "acr", default: "aal1", null: false
+    t.string "auth_method", default: "", null: false
+    t.string "client_id", limit: 64, null: false
+    t.string "code", limit: 64, null: false
+    t.string "code_challenge", null: false
+    t.string "code_challenge_method", limit: 8, default: "S256", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.string "nonce"
+    t.text "redirect_uri", null: false
+    t.datetime "revoked_at"
+    t.string "scope"
+    t.string "state"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.datetime "varnishable_at", null: false
+    t.index ["code"], name: "index_user_authorization_codes_on_code", unique: true
+    t.index ["user_id"], name: "index_user_authorization_codes_on_user_id"
+    t.index ["varnishable_at"], name: "index_user_authorization_codes_on_varnishable_at"
   end
 
   create_table "user_bulletins", force: :cascade do |t|

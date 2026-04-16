@@ -59,10 +59,13 @@ class AppContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should encrypt telephone_number" do
-    skip "ActiveRecord Encryption is not configured in test environment"
     @telephone.save!
 
-    assert_not_equal "+819012345678", @telephone.reload[:telephone_number]
+    raw_data = AppContactTelephone.connection.select_one(
+      "SELECT telephone_number FROM app_contact_telephones WHERE id = #{@telephone.id}",
+    )
+
+    assert_not_equal "+819012345678", raw_data["telephone_number"]
     assert_equal "+819012345678", @telephone.telephone_number
   end
 

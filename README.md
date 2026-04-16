@@ -138,12 +138,12 @@ TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bi
 Modern browsers resolve `*.localhost` to `127.0.0.1`, so extra `/etc/hosts` entries are usually not
 needed.
 
-| Surface | URL                                        |
-| :------ | :----------------------------------------- |
-| Apex    | `http://{app,com,org}.localhost:3000`      |
-| Sign    | `http://sign.{org,com,app}.localhost:3000` |
-| Core    | `http://www.{app,com,org}.localhost:3000`  |
-| Docs    | `http://docs.{app,com,org}.localhost:3000` |
+| Engine     | Surface | URL                                        |
+| :--------- | :------ | :----------------------------------------- |
+| Zenith     | Apex    | `http://www.{app,com,org}.localhost:3000`  |
+| Signature  | Sign    | `http://sign.{app,com,org}.localhost:3000` |
+| Foundation | Base    | `http://base.{app,com,org}.localhost:3000` |
+| Publisher  | Post    | `http://post.{app,com,org}.localhost:3000` |
 
 ## Testing, Security, and Quality
 

@@ -19,10 +19,10 @@ gem "rails", github: "rails/rails", branch: "main"
 # - world: Global BFF/Dashboard (flexible evolution)
 # - station: Regional operations (per-region deploy)
 # - press: Content delivery (closed network via CF VPN)
-gem "jit-world", path: "engines/world" # FIXME: jit_global
-gem "jit-signature", path: "engines/signature" # FIXME: rename jit_visa
-gem "jit-station", path: "engines/station" # FIXME: jit_regional
-gem "jit-press", path: "engines/press" # FIXME: jit_publisher
+gem "jit-world", path: "engines/world"
+gem "jit-signature", path: "engines/signature"
+gem "jit-station", path: "engines/station"
+gem "jit-press", path: "engines/press"
 # Web server
 gem "puma"
 gem "falcon"

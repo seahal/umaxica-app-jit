@@ -32,7 +32,7 @@ class SettingPreferenceActivityTest < ActiveSupport::TestCase
     SettingPreferenceStatus.ensure_defaults!
     SettingPreferenceBindingMethod.ensure_defaults!
     SettingPreferenceDbscStatus.ensure_defaults!
-    @preference = SettingPreference.create!(owner_type: "User", owner_id: 1)
+    @preference = SettingPreference.create!(owner_type: "User", owner_id: 1, user_id: 1)
   end
 
   test "inherits from SettingRecord" do

@@ -79,10 +79,13 @@ class AppContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should encrypt email_address" do
-    skip "ActiveRecord Encryption is not configured in test environment"
     @email.save!
 
-    assert_not_equal "test@example.com", @email.reload[:email_address]
+    raw_data = AppContactEmail.connection.select_one(
+      "SELECT email_address FROM app_contact_emails WHERE id = #{@email.id}",
+    )
+
+    assert_not_equal "test@example.com", raw_data["email_address"]
     assert_equal "test@example.com", @email.email_address
   end
 

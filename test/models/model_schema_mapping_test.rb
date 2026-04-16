@@ -8,6 +8,8 @@ class ModelSchemaMappingTest < ActiveSupport::TestCase
     assert_equal "app_preferences", AppPreference.table_name
     assert_equal "principal", AppPreference.connection_db_config.name
     assert_equal "principal", User.connection_db_config.name
+    assert_equal "user_authorization_codes", UserAuthorizationCode.table_name
+    assert_equal "principal", UserAuthorizationCode.connection_db_config.name
   end
 
   test "occurrence models map to occurrence database" do
@@ -20,6 +22,13 @@ class ModelSchemaMappingTest < ActiveSupport::TestCase
     assert_equal "token", UserToken.connection_db_config.name
     assert_equal "staff_tokens", StaffToken.table_name
     assert_equal "token", StaffToken.connection_db_config.name
+  end
+
+  test "subject authorization code models map to their subject databases" do
+    assert_equal "staff_authorization_codes", StaffAuthorizationCode.table_name
+    assert_equal "operator", StaffAuthorizationCode.connection_db_config.name
+    assert_equal "customer_authorization_codes", CustomerAuthorizationCode.table_name
+    assert_equal "guest", CustomerAuthorizationCode.connection_db_config.name
   end
 
   test "activity models map to activity database" do

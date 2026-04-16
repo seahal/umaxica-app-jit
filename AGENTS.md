@@ -276,17 +276,15 @@ The app serves multiple domains, each split into three audience tiers: **app** (
 The following table lists representative route files. It is not exhaustive; check `config/routes/`
 for the current state.
 
-| Route file              | Domain purpose                                     | Hosts (dev)                                                      |
-| ----------------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
-| `config/routes/sign.rb` | Authentication (sign-in/up, MFA, passkeys, social) | `sign.app.localhost`, `sign.org.localhost`, `sign.com.localhost` |
-| `config/routes/apex.rb` | Dashboard shell and preferences                    | `app.localhost`, `org.localhost`, `com.localhost`                |
-| `config/routes/core.rb` | Main app backend (contacts, content management)    | `www.app.localhost`, `www.org.localhost`, `www.com.localhost`    |
-| `config/routes/docs.rb` | Documentation delivery                             | `docs.{app,com,org}.localhost`                                   |
-| `config/routes/news.rb` | News/blog delivery                                 | news domains                                                     |
-| `config/routes/help.rb` | Help system                                        | help domains                                                     |
+| Engine     | Route file              | Domain purpose                                     | Hosts (dev)                                                      |
+| ---------- | ----------------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
+| Signature  | `config/routes/sign.rb` | Authentication (sign-in/up, MFA, passkeys, social) | `sign.app.localhost`, `sign.org.localhost`, `sign.com.localhost` |
+| Zenith     | `config/routes/apex.rb` | Dashboard shell and preferences                    | `www.app.localhost`, `www.org.localhost`, `www.com.localhost`    |
+| Foundation | `config/routes/base.rb` | Regional business logic (contacts, management)     | `base.app.localhost`, `base.org.localhost`, `base.com.localhost` |
+| Publisher  | `config/routes/post.rb` | Content delivery (docs, news, help)                | `post.{app,com,org}.localhost`                                   |
 
-Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/sign/org/`,
-`app/controllers/apex/com/`, etc.
+Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/apex/app/`,
+`app/controllers/base/app/`, `app/controllers/post/app/`, etc.
 
 #### Multi-Database Architecture
 

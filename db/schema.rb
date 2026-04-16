@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_14_152000) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_14_152001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -154,6 +154,28 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_14_152000) do
     t.index ["category_id"], name: "index_com_contacts_on_category_id"
     t.index ["public_id"], name: "index_com_contacts_on_public_id", unique: true
     t.index ["status_id"], name: "index_com_contacts_on_status_id"
+  end
+
+  create_table "customer_authorization_codes", force: :cascade do |t|
+    t.string "acr", default: "aal1", null: false
+    t.string "auth_method", default: "", null: false
+    t.string "client_id", limit: 64, null: false
+    t.string "code", limit: 64, null: false
+    t.string "code_challenge", null: false
+    t.string "code_challenge_method", limit: 8, default: "S256", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.string "nonce"
+    t.text "redirect_uri", null: false
+    t.datetime "revoked_at"
+    t.string "scope"
+    t.string "state"
+    t.datetime "updated_at", null: false
+    t.datetime "varnishable_at", null: false
+    t.index ["code"], name: "index_customer_authorization_codes_on_code", unique: true
+    t.index ["customer_id"], name: "index_customer_authorization_codes_on_customer_id"
+    t.index ["varnishable_at"], name: "index_customer_authorization_codes_on_varnishable_at"
   end
 
   create_table "customer_email_statuses", force: :cascade do |t|

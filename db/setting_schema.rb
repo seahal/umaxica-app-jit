@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_07_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_14_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_07_000001) do
     t.bigint "binding_method_id", default: 0, null: false
     t.datetime "compromised_at"
     t.datetime "created_at", null: false
+    t.bigint "customer_id"
     t.text "dbsc_challenge"
     t.datetime "dbsc_challenge_issued_at"
     t.jsonb "dbsc_public_key"
@@ -110,17 +111,20 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_07_000001) do
     t.string "device_id_digest"
     t.datetime "expires_at"
     t.string "jti"
-    t.bigint "owner_id", null: false
-    t.string "owner_type", null: false
+    t.bigint "owner_id"
+    t.string "owner_type"
     t.string "public_id", null: false
     t.bigint "replaced_by_id"
     t.datetime "revoked_at"
     t.datetime "shreddable_at"
+    t.bigint "staff_id"
     t.bigint "status_id", default: 0, null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
     t.datetime "used_at"
+    t.bigint "user_id"
     t.index ["binding_method_id"], name: "index_settings_preferences_on_binding_method_id"
+    t.index ["customer_id"], name: "index_settings_preferences_on_customer_id_unique", unique: true, where: "(customer_id IS NOT NULL)"
     t.index ["dbsc_session_id"], name: "index_settings_preferences_on_dbsc_session_id", unique: true
     t.index ["dbsc_status_id"], name: "index_settings_preferences_on_dbsc_status_id"
     t.index ["deletable_at"], name: "index_settings_preferences_on_deletable_at"
@@ -133,9 +137,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_07_000001) do
     t.index ["replaced_by_id"], name: "index_settings_preferences_on_replaced_by_id"
     t.index ["revoked_at"], name: "index_settings_preferences_on_revoked_at"
     t.index ["shreddable_at"], name: "index_settings_preferences_on_shreddable_at"
+    t.index ["staff_id"], name: "index_settings_preferences_on_staff_id_unique", unique: true, where: "(staff_id IS NOT NULL)"
     t.index ["status_id"], name: "index_settings_preferences_on_status_id"
     t.index ["token_digest"], name: "index_settings_preferences_on_token_digest"
     t.index ["used_at"], name: "index_settings_preferences_on_used_at"
+    t.index ["user_id"], name: "index_settings_preferences_on_user_id_unique", unique: true, where: "(user_id IS NOT NULL)"
+    t.check_constraint "((user_id IS NOT NULL)::integer + (staff_id IS NOT NULL)::integer + (customer_id IS NOT NULL)::integer) = 1", name: "chk_settings_preferences_exactly_one_owner"
   end
 
   add_foreign_key "settings_preference_activities", "settings_preferences", column: "preference_id", name: "fk_settings_preference_activities_on_preference_id", validate: false

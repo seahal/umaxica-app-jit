@@ -50,17 +50,14 @@ module Preference
 
       # Create new preference with dual-write
       def create!(attrs, preference_type:)
-        owner_type = owner_type_from_preference_type(preference_type)
-        setting_attrs = attrs.merge(owner_type: owner_type, owner_id: attrs[:owner_id] || 0)
+        owner_attrs = owner_attrs_from_preference_type(preference_type, attrs[:owner_id] || 0)
+        setting_attrs = attrs.merge(owner_attrs)
 
         SettingRecord.connected_to(role: :writing) do
           SettingPreference.transaction do
             setting_pref =
-              SettingPreference.find_or_create_by!(
-                owner_type: setting_attrs[:owner_type],
-                owner_id: setting_attrs[:owner_id],
-              ) do |record|
-                record.assign_attributes(setting_attrs.except(:owner_type, :owner_id))
+              SettingPreference.find_or_create_by!(owner_attrs) do |record|
+                record.assign_attributes(setting_attrs.except(*owner_attrs.keys))
               end
 
             # Also create in legacy table during dual-write period
@@ -190,6 +187,19 @@ module Preference
         when "OrgPreference" then "Staff"
         when "ComPreference" then "Customer"
         else "User"
+        end
+      end
+
+      # Returns owner attributes hash for the given preference type and owner_id
+      # Maps preference types to their respective owner columns
+      def owner_attrs_from_preference_type(preference_type, owner_id)
+        case preference_type.to_s
+        when "OrgPreference"
+          { staff_id: owner_id }
+        when "ComPreference"
+          { customer_id: owner_id }
+        else
+          { user_id: owner_id }
         end
       end
 
@@ -461,7 +471,9 @@ module Preference
       end
 
       def owner_id
-        @preference.owner_id if @source == :setting
+        return @preference.owner_id if @source == :setting
+
+        nil
       end
 
       delegate :persisted?, to: :@preference

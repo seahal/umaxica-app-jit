@@ -13,7 +13,7 @@
 #  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
-#  owner_type               :string           not null
+#  owner_type               :string
 #  revoked_at               :datetime
 #  shreddable_at            :datetime
 #  token_digest             :binary
@@ -21,17 +21,21 @@
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  binding_method_id        :bigint           default(0), not null
+#  customer_id              :bigint
 #  dbsc_session_id          :string
 #  dbsc_status_id           :bigint           default(0), not null
 #  device_id                :string
-#  owner_id                 :bigint           not null
+#  owner_id                 :bigint
 #  public_id                :string           not null
 #  replaced_by_id           :bigint
+#  staff_id                 :bigint
 #  status_id                :bigint           default(0), not null
+#  user_id                  :bigint
 #
 # Indexes
 #
 #  index_settings_preferences_on_binding_method_id        (binding_method_id)
+#  index_settings_preferences_on_customer_id_unique       (customer_id) UNIQUE WHERE (customer_id IS NOT NULL)
 #  index_settings_preferences_on_dbsc_session_id          (dbsc_session_id) UNIQUE
 #  index_settings_preferences_on_dbsc_status_id           (dbsc_status_id)
 #  index_settings_preferences_on_deletable_at             (deletable_at)
@@ -44,9 +48,11 @@
 #  index_settings_preferences_on_replaced_by_id           (replaced_by_id)
 #  index_settings_preferences_on_revoked_at               (revoked_at)
 #  index_settings_preferences_on_shreddable_at            (shreddable_at)
+#  index_settings_preferences_on_staff_id_unique          (staff_id) UNIQUE WHERE (staff_id IS NOT NULL)
 #  index_settings_preferences_on_status_id                (status_id)
 #  index_settings_preferences_on_token_digest             (token_digest)
 #  index_settings_preferences_on_used_at                  (used_at)
+#  index_settings_preferences_on_user_id_unique           (user_id) UNIQUE WHERE (user_id IS NOT NULL)
 #
 # Foreign Keys
 #
@@ -75,7 +81,10 @@ class SettingPreference < SettingRecord
   attribute :binding_method_id, default: SettingPreferenceBindingMethod::NOTHING
   attribute :dbsc_status_id, default: SettingPreferenceDbscStatus::NOTHING
 
-  belongs_to :owner, polymorphic: true, optional: true
+  # Explicit owner associations (replaces polymorphic owner)
+  belongs_to :user, optional: true
+  belongs_to :staff, optional: true
+  belongs_to :customer, optional: true
 
   belongs_to :setting_preference_status,
              foreign_key: :status_id,
@@ -123,8 +132,49 @@ class SettingPreference < SettingRecord
   validates_reference_table :replaced_by_id, association: :replaced_by, allow_nil: true
   validates :jti, uniqueness: true, allow_nil: true
   validates :dbsc_session_id, uniqueness: true, allow_nil: true
-  validates :owner_type, :owner_id, presence: true
-  validates :owner_id, uniqueness: { scope: :owner_type }
   validates :binding_method_id, :dbsc_status_id, :status_id,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+  # Exactly-one-owner validation
+  validate :exactly_one_owner_present
+
+  # Backward-compatible accessors for polymorphic owner migration
+  def owner
+    user || staff || customer
+  end
+
+  def owner_type
+    return "User" if user_id.present?
+    return "Staff" if staff_id.present?
+    return "Customer" if customer_id.present?
+
+    nil
+  end
+
+  def owner_id
+    user_id || staff_id || customer_id
+  end
+
+  # Set owner by type (used during migration and for convenience)
+  def owner=(record)
+    self.user = nil
+    self.staff = nil
+    self.customer = nil
+
+    case record
+    when User then self.user = record
+    when Staff then self.staff = record
+    when Customer then self.customer = record
+    end
+  end
+
+  private
+
+  def exactly_one_owner_present
+    owner_count = [user_id, staff_id, customer_id].compact.size
+
+    return if owner_count == 1
+
+    errors.add(:base, "must have exactly one owner (user, staff, or customer)")
+  end
 end

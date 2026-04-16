@@ -54,7 +54,7 @@ class User < PrincipalRecord
     UserTelephoneStatus::VERIFIED,
     UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
   ].freeze
-  RECOVERY_IDENTITY_REQUIRED_MESSAGE = "パスキー/シークレットを登録するには、先にメールアドレスまたは電話番号を1つ以上登録（確認）してください。"
+  RECOVERY_IDENTITY_REQUIRED_MESSAGE = I18n.t("activerecord.errors.messages.recovery_identity_required")
 
   # Legacy column scheduled for removal after passkeys table migration.
   # Remove this line as well after DROP COLUMN migration is completed.
@@ -100,6 +100,9 @@ class User < PrincipalRecord
            dependent: :destroy,
            inverse_of: false
   has_many :user_tokens,
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :user_authorization_codes,
            dependent: :destroy,
            inverse_of: :user
   has_many :user_memberships,

@@ -139,12 +139,13 @@ The first matrix should define behavior for:
 ## Session Recap
 
 Recent discussion added a stronger assumption that the platform may be organized around
-`global / regional` as the main DB boundary.
+`Identity / Global / Regional` as the main boundary model.
 
 Implications for rollout planning:
 
-- the rollout model should assume that `global` carries identity and auth roots first
-- `regional` is a likely home for content and interaction roots
+- the rollout model should assume that `Identity` carries identity and auth roots first
+- `Global` is the public sign entry surface
+- `Regional` is a likely home for content and interaction roots
 - cross-boundary behavior cannot depend on loose Rails coupling; it needs an explicit orchestration
   model
 - naming and rollout are linked, because unclear boundaries will produce unclear rollout gates

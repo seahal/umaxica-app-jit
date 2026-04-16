@@ -1,8 +1,11 @@
 # ADR: Split Application into 4 Rails Engines
 
-**Status:** Implemented (2026-04-09)
+**Status:** Implemented (2026-04-09), partially superseded (2026-04-14)
 
 **Supersedes:** GitHub #553 (2-way Global/Local split)
+
+**Partially superseded by:** `adr/engine-isolate-namespace-adoption.md` (the "No isolate_namespace"
+decision and engine names are revised)
 
 ## Context
 
@@ -16,12 +19,16 @@ We will split the application into 4 Rails Engines:
 
 ### Engine Overview
 
-| Engine        | Host Pattern                    | Purpose                                      | Network                    |
-| ------------- | ------------------------------- | -------------------------------------------- | -------------------------- |
-| **signature** | sign.{app,com,org}.\*           | Authentication, passkeys, OIDC, social login | Public, permanent URLs     |
-| **world**     | {app,com,org}.\*                | Global BFF, dashboard, settings              | Public, flexible evolution |
-| **station**   | www.{app,com,org}.\*            | Regional operations, contacts, staff admin   | Regional per-region deploy |
-| **press**     | docs/news/help.{app,com,org}.\* | Content delivery                             | Closed (Cloudflare VPN)    |
+| Engine         | Host Pattern          | Purpose                                      | Network                    |
+| -------------- | --------------------- | -------------------------------------------- | -------------------------- |
+| **Signature**  | sign.{app,com,org}.\* | Authentication, passkeys, OIDC, social login | Public, permanent URLs     |
+| **Zenith**     | www.{app,com,org}.\*  | Global BFF, dashboard, settings              | Public, flexible evolution |
+| **Foundation** | base.{app,com,org}.\* | Regional operations, contacts, staff admin   | Regional per-region deploy |
+| **Publisher**  | post.{app,com,org}.\* | Content delivery                             | Closed (Cloudflare VPN)    |
+
+> **Note (2026-04-14):** Engine names were updated from signature/world/station/press to
+> Signature/Zenith/Foundation/Publisher. Module names were updated: `core` to `base`, `docs` to
+> `post`. See `plans/active/four-engine-rename.md` for the rename plan.
 
 ### Architecture Diagram
 
@@ -52,8 +59,8 @@ We will split the application into 4 Rails Engines:
 1. **Thin Engines**: Engines own routes, controllers, and views only. Models and database
    configuration stay in the main app, shared by all engines.
 
-2. **No isolate_namespace**: Controller namespaces remain unchanged to avoid mass-renaming hundreds
-   of controllers and their test files.
+2. ~~**No isolate_namespace**~~: **Superseded (2026-04-14).** `isolate_namespace` will be adopted
+   for all engines. See `adr/engine-isolate-namespace-adoption.md` for rationale.
 
 3. **Shared Concerns**: Cross-cutting concerns (authentication, authorization, rate limiting) stay
    in `app/controllers/concerns/`. Sign-specific concerns (29 files) move with the signature engine.
@@ -99,11 +106,13 @@ variants.
 
 ### Remaining Work
 
-- **sign-to-visa rename**: The internal namespace `Sign::` will be renamed to `Visa::` in a separate
-  effort. This affects subdomains, ENV variables, modules, directories, route helpers, and i18n keys
-  (~2300 occurrences).
-- **Cross-engine dependency cleanup**: Some shared concerns still contain sign-specific route helper
-  references that should use `CrossEngineUrlHelpers`.
+- **Engine rename (#725)**: Engines are renamed (World to Zenith, Station to Foundation, Press to
+  Publisher). Modules `core` to `base`, `docs` to `post`. The `sign-to-visa` rename was cancelled;
+  `sign` module name is retained.
+- **isolate_namespace adoption**: All engines will adopt `isolate_namespace`. Combined with the
+  rename to avoid double churn. See `adr/engine-isolate-namespace-adoption.md`.
+- **CrossEngineUrlHelpers retirement**: After `isolate_namespace` is adopted, the custom helper
+  module will be replaced by native Rails engine routing proxies.
 
 ## Related Issues
 

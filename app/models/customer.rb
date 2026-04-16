@@ -52,7 +52,7 @@ class Customer < GuestRecord
     CustomerTelephoneStatus::VERIFIED,
     CustomerTelephoneStatus::VERIFIED_WITH_SIGN_UP,
   ].freeze
-  RECOVERY_IDENTITY_REQUIRED_MESSAGE = "パスキー/シークレットを登録するには、先にメールアドレスまたは電話番号を1つ以上登録（確認）してください。"
+  RECOVERY_IDENTITY_REQUIRED_MESSAGE = I18n.t("activerecord.errors.messages.recovery_identity_required")
 
   attribute :status_id, default: CustomerStatus::NOTHING
 
@@ -82,6 +82,9 @@ class Customer < GuestRecord
            inverse_of: :customer
   has_many :customer_tokens,
            dependent: :delete_all,
+           inverse_of: :customer
+  has_many :customer_authorization_codes,
+           dependent: :destroy,
            inverse_of: :customer
 
   def staff?

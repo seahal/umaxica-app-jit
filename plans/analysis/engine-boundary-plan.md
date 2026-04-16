@@ -1,156 +1,87 @@
-# Engine Boundary Plan For A Global SNS
-
-## Agent Brief
-
-Use this file with one dedicated AI agent.
-
-Agent role:
-
-- challenge the current engine split
-- identify coupling and boundary leaks
-- suggest safer dependency direction
-
-Expected output from the agent:
-
-- concrete boundary problems
-- engine or subsystem alternatives
-- migration sequencing ideas
-- risks from cross-engine helpers and cross-database sync
-
-Out of scope for this agent:
-
-- global audit taxonomy
-- legal rollout sequencing
-- full product capability policy design
+# Engine Boundary Plan
 
 ## Summary
 
-This note reviews the current Rails engine split and records the boundary changes that should be
-considered before the platform grows into a global SNS with strict legal and operational controls.
+The engine architecture follows a consolidated 3-engine model:
 
-The current four-engine layout is a good deployment start, but it still groups behavior mainly by
-hosted surface. It does not yet cleanly isolate legal policy, trust and safety workflows, audit
-evidence, or data movement.
+- `Identity`
+- `Global`
+- `Regional`
 
-## Problem Statement
+Each engine acts as a boundary of responsibility, mapping to a specific set of domain databases and
+its own isolated infrastructure instances.
 
-An engine split only helps if the boundaries match ownership and failure domains.
+## Engine Boundaries
 
-Today, the platform is split into:
+| Engine       | Namespace       | Host Labels / Entry Points             | Domain Database Group |
+| ------------ | --------------- | -------------------------------------- | --------------------- |
+| **Identity** | `Jit::Identity` | `sign.{app,com,org}.*`                 | `Activity`            |
+| **Global**   | `Jit::Global`   | `www.{app,com,org}.*` (apex)           | `Journal`             |
+| **Regional** | `Jit::Regional` | `base.*`, `docs.*`, `help.*`, `news.*` | `Chronicle`           |
 
-- `signature`: sign and identity flows
-- `world`: apex and dashboard flows
-- `station`: main service and regional operations
-- `press`: docs and content delivery
+### Migration Mapping
 
-That split helps routing and deployment, but it does not fully contain data movement or policy
-decisions. Several helpers and concerns still cross the intended boundaries.
+- **`signature`** -> **Identity**
+- **`world`** -> **Global**
+- **`station`** + **`press`** -> **Regional**
 
-## Current Repo Findings
+### Boundary Rules
 
-- `config/routes.rb` mounts the four engines by deployment mode.
-- `CrossEngineUrlHelpers` exposes cross-engine route dispatch from shared code.
-- `Preference::Adoption` synchronizes values across databases and model families after login and
-  token rotation.
-- Several application controllers still compose many shared concerns directly, including
-  authentication, verification, preference, current state, and cross-cutting helpers.
-- `Core::Surface` detects app/com/org from host labels, which is useful for presentation but not
-  sufficient for policy ownership.
+- **Shared Models**: Centralized in `app/models/` for unified domain definitions.
+- **Database Connectivity**: Managed via Abstract Base Classes and `DEPLOY_MODE` in `database.yml`.
+- **Routing Isolation**: Engines use `isolate_namespace` and native Rails routing proxies for
+  cross-engine calls.
+- **Cross-Engine Links**: Must be explicit through route proxies `identity.*`, `global.*`, and
+  `regional.*`.
+- **Host App Links**: Must use `main_app.*`.
+- **ENV Naming**: Host and origin variables use `ENGINE_HOSTLABEL_AUDIENCE_URL`.
+- **Policy Boundaries**: Business logic should not be leaked into route helpers or layouts.
 
-Primary references:
+## Database Ownership Mapping
 
-- `/home/jit/workspace/config/routes.rb`
-- `/home/jit/workspace/lib/cross_engine_url_helpers.rb`
-- `/home/jit/workspace/app/controllers/concerns/preference/adoption.rb`
-- `/home/jit/workspace/engines/signature/app/controllers/sign/app/application_controller.rb`
-- `/home/jit/workspace/engines/station/app/controllers/core/app/application_controller.rb`
+Ownership is expressed through base records and `connects_to` configurations within each engine's
+domain.
 
-## Risks If Unchanged
+### Domain-Specific Groups
 
-- Engine boundaries may look strict in deployment diagrams but remain loosely coupled in runtime
-  behavior.
-- Cross-engine route helper usage may hide accidental boundary violations.
-- Cross-database synchronization may create data copies without a clear owner or policy gate.
-- Later legal and moderation features may be forced into the wrong engine because the current split
-  is optimized for UI surfaces, not responsibility domains.
+| Boundary     | Database Group / Domain Databases                                                               |
+| ------------ | ----------------------------------------------------------------------------------------------- |
+| **Identity** | **Activity**: `principal`, `operator`, `token`, `preference`, `guest`, `activity`, `occurrence` |
+| **Global**   | **Journal**: `journal`, `notification`, `avatar`                                                |
+| **Regional** | **Chronicle**: `publication`, `chronicle`, `message`, `search`, `billing`, `commerce`           |
 
-## Target Direction
+### Shared Infrastructure
 
-Keep the existing four engines as a deployment shape for now, but treat them as transitional.
+Shared infrastructure components (`queue`, `cache`, `storage`, `cable`) are **duplicated for each
+engine**. Each engine has its own dedicated instances of these components to ensure total
+operational isolation and avoid cross-engine load interference.
 
-The longer-term boundary model should move toward responsibility-based subsystems:
+| Infrastructure | Status                                          |
+| -------------- | ----------------------------------------------- |
+| **Queue**      | Per-engine Solid Queue instance and worker pool |
+| **Cache**      | Per-engine Solid Cache instance                 |
+| **Storage**    | Per-engine Active Storage configuration         |
+| **Cable**      | Per-engine Action Cable configuration           |
 
-- Identity and authentication
-- Core product interaction
-- Trust and safety
-- Privacy and rights handling
-- Documentation and public notices
-- Shared audit and policy infrastructure
+## Risks To Watch
 
-This does not require an immediate engine explosion. It does require stricter rules:
+- **Cross-Engine Data Coupling**: Accidentally referencing a database from a different engine's
+  group without an interface.
+- **Shared Concern Bloat**: Shared controllers/concerns in the host app growing into a "fourth
+  engine."
+- **Infrastructure Overhead**: Increased resource usage from running three separate queue/cache
+  instances.
+- **Redundant Model definitions**: Ensuring we keep only one source of truth in `app/models/`.
 
-- cross-engine calls must go through named interfaces
-- implicit synchronization must move behind explicit services
-- policy decisions must not live in route helpers or preference concerns
-- data movement across databases must become observable and reviewable
+## Suggested Next Steps
 
-## Boundary Leaks To Track
-
-- Cross-engine URL helper dispatch
-- Preference adoption and cross-database copying
-- Shared controller concerns that decide too much at request level
-- Environment-variable host mapping that mixes deployment wiring with business routing assumptions
-
-## Open Questions
-
-- Which boundaries must become separate engines, and which should remain shared libraries?
-- Should trust and safety be its own engine or a protected internal subsystem first?
-- Which current cross-engine helper calls are only convenience, and which are structural needs?
-- Where should policy contracts live so every engine can depend on them without circular coupling?
-
-## Suggested Next Implementation Steps
-
-1. Inventory all current cross-engine helper usage and categorize it by necessity.
-2. Mark preference adoption and other cross-database sync paths as explicit boundary crossings.
-3. Introduce service interfaces for policy, audit, and residency decisions before further engine
-   extraction.
-4. Keep the current four engines, but stop adding new cross-engine convenience paths.
-5. Open targeted refactor issues for URL helper isolation and synchronization ownership.
-
-## Questions To Ask The Agent
-
-- Which current engine boundaries are false boundaries?
-- Which shared concerns should move behind services first?
-- What should remain an engine boundary versus a library boundary?
-- Which current cross-engine flows are unacceptable for a global SNS?
-
-## Session Recap
-
-The latest boundary and naming discussion changed the working frame in a material way.
-
-Current working assumptions:
-
-- `database boundary` is the parent design axis
-- `Rails engine` names should be decided after the DB split is clear
-- `subdomain` names should be treated as entry labels, not as the primary architecture boundary
-- `subdomain` names are external-facing, memorable, and fixed at 4 letters
-- FQDN stability requirements, especially around passkey-related flows, are a valid reason to keep
-  multiple subdomains inside one engine
-
-Important current conclusions:
-
-- the previous 4-engine split may no longer be the right long-term shape
-- a 2-way engine model aligned to `global / regional` is now a serious candidate
-- however, `regional` is still unresolved because public/editable and non-public/readonly concerns
-  may deserve separate engines if model and DB boundaries also split later
-- the regional readonly content side is not an independent business root today because content is
-  still edited from the regional editable side
-
-This means the key question for follow-up is no longer only “which 4 engine names are best?” but
-also “should engine count collapse to 2, or should regional later split again for model ownership?”
+1. Inventory existing base records and update their `connects_to` based on the new 3-group mapping.
+2. Mark and refactor all cross-boundary route helper uses to use the engine proxies.
+3. Configure `database.yml` and initializers to support per-engine deployment modes for shared
+   infrastructure.
+4. Prepare for the code-level migration to consolidate current four engines into these three.
 
 ## Related Analyses
 
-- [Redesign Direction](./redesign-direction.md)
-- [Audit And Evidence Plan](./audit-and-evidence-plan.md)
-- [Jurisdiction Rollout Plan](./jurisdiction-rollout-plan.md)
+- `adr/three-engine-consolidation.md`
+- `plans/active/three-engine-reframe.md`

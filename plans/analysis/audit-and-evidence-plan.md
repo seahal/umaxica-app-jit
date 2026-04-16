@@ -141,15 +141,15 @@ shape that audit evidence will need to follow.
 
 Working implications:
 
-- `global / regional` is becoming the main candidate for DB boundary design
-- audit records may need a clearer rule for which evidence is global, which is regional, and which
-  must be correlated across both
+- `Identity / Global / Regional` is becoming the main candidate for boundary design
+- audit records may need a clearer rule for which evidence belongs to Activity, which belongs to
+  Journal, which belongs to Chronicle, and which must be correlated across boundaries
 - if subdomains become entry labels rather than architecture boundaries, audit evidence should avoid
   overloading subdomain names as the main ownership key
 
 This makes it more important to define:
 
-- global evidence versus regional evidence classes
+- Activity, Journal, and Chronicle evidence classes
 - cross-boundary correlation identifiers
 - retention and replay rules when one boundary succeeds and another lags
 

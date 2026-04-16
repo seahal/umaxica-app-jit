@@ -75,6 +75,9 @@ class Staff < OperatorRecord
   has_many :staff_tokens,
            dependent: :destroy,
            inverse_of: :staff
+  has_many :staff_authorization_codes,
+           dependent: :destroy,
+           inverse_of: :staff
   has_many :staff_messages,
            dependent: :destroy,
            inverse_of: :staff

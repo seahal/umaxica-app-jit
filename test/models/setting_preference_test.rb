@@ -15,7 +15,7 @@
 #  device_id_digest         :string
 #  expires_at               :datetime
 #  jti                      :string
-#  owner_type               :string           not null
+#  owner_type               :string
 #  revoked_at               :datetime
 #  shreddable_at            :datetime
 #  token_digest             :binary
@@ -23,17 +23,21 @@
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  binding_method_id        :bigint           default(0), not null
+#  customer_id              :bigint
 #  dbsc_session_id          :string
 #  dbsc_status_id           :bigint           default(0), not null
 #  device_id                :string
-#  owner_id                 :bigint           not null
+#  owner_id                 :bigint
 #  public_id                :string           not null
 #  replaced_by_id           :bigint
+#  staff_id                 :bigint
 #  status_id                :bigint           default(0), not null
+#  user_id                  :bigint
 #
 # Indexes
 #
 #  index_settings_preferences_on_binding_method_id        (binding_method_id)
+#  index_settings_preferences_on_customer_id_unique       (customer_id) UNIQUE WHERE (customer_id IS NOT NULL)
 #  index_settings_preferences_on_dbsc_session_id          (dbsc_session_id) UNIQUE
 #  index_settings_preferences_on_dbsc_status_id           (dbsc_status_id)
 #  index_settings_preferences_on_deletable_at             (deletable_at)
@@ -46,9 +50,11 @@
 #  index_settings_preferences_on_replaced_by_id           (replaced_by_id)
 #  index_settings_preferences_on_revoked_at               (revoked_at)
 #  index_settings_preferences_on_shreddable_at            (shreddable_at)
+#  index_settings_preferences_on_staff_id_unique          (staff_id) UNIQUE WHERE (staff_id IS NOT NULL)
 #  index_settings_preferences_on_status_id                (status_id)
 #  index_settings_preferences_on_token_digest             (token_digest)
 #  index_settings_preferences_on_used_at                  (used_at)
+#  index_settings_preferences_on_user_id_unique           (user_id) UNIQUE WHERE (user_id IS NOT NULL)
 #
 # Foreign Keys
 #
@@ -68,46 +74,87 @@ class SettingPreferenceTest < ActiveSupport::TestCase
 
   def build_preference(**attrs)
     SettingPreference.new(
-      owner_type: "User",
-      owner_id: 1,
+      user_id: 1,
       **attrs,
     )
   end
 
   test "generates public_id on create" do
-    preference = SettingPreference.create!(owner_type: "User", owner_id: 1)
+    preference = SettingPreference.create!(user_id: 1)
 
     assert_not_nil preference.public_id
     assert_equal 21, preference.public_id.length
   end
 
-  test "requires owner_type" do
-    preference = build_preference(owner_type: nil)
+  test "requires exactly one owner (user)" do
+    preference = SettingPreference.new(user_id: 1)
 
-    assert_not preference.valid?
-    assert_includes preference.errors[:owner_type], "を入力してください"
+    assert_predicate preference, :valid?
   end
 
-  test "requires owner_id" do
-    preference = build_preference(owner_id: nil)
+  test "requires exactly one owner (staff)" do
+    preference = SettingPreference.new(staff_id: 1)
 
-    assert_not preference.valid?
-    assert_includes preference.errors[:owner_id], "を入力してください"
+    assert_predicate preference, :valid?
   end
 
-  test "enforces unique owner per owner type" do
-    SettingPreference.create!(owner_type: "User", owner_id: 999)
+  test "requires exactly one owner (customer)" do
+    preference = SettingPreference.new(customer_id: 1)
 
-    duplicate = build_preference(owner_type: "User", owner_id: 999)
+    assert_predicate preference, :valid?
+  end
+
+  test "rejects zero owners" do
+    preference = SettingPreference.new
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:base], "must have exactly one owner (user, staff, or customer)"
+  end
+
+  test "rejects multiple owners" do
+    preference = SettingPreference.new(user_id: 1, staff_id: 2)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:base], "must have exactly one owner (user, staff, or customer)"
+  end
+
+  test "rejects all three owners" do
+    preference = SettingPreference.new(user_id: 1, staff_id: 2, customer_id: 3)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:base], "must have exactly one owner (user, staff, or customer)"
+  end
+
+  test "enforces unique user_id" do
+    SettingPreference.create!(user_id: 999)
+
+    duplicate = SettingPreference.new(user_id: 999)
 
     assert_raises(ActiveRecord::RecordNotUnique) { duplicate.save!(validate: false) }
   end
 
-  test "allows same owner_id with different owner_type" do
-    SettingPreference.create!(owner_type: "User", owner_id: 42)
+  test "enforces unique staff_id" do
+    SettingPreference.create!(staff_id: 999)
+
+    duplicate = SettingPreference.new(staff_id: 999)
+
+    assert_raises(ActiveRecord::RecordNotUnique) { duplicate.save!(validate: false) }
+  end
+
+  test "enforces unique customer_id" do
+    SettingPreference.create!(customer_id: 999)
+
+    duplicate = SettingPreference.new(customer_id: 999)
+
+    assert_raises(ActiveRecord::RecordNotUnique) { duplicate.save!(validate: false) }
+  end
+
+  test "allows same owner_id across different owner types" do
+    SettingPreference.create!(user_id: 42)
 
     assert_nothing_raised do
-      SettingPreference.create!(owner_type: "Staff", owner_id: 42)
+      SettingPreference.create!(staff_id: 42)
+      SettingPreference.create!(customer_id: 42)
     end
   end
 
@@ -130,16 +177,16 @@ class SettingPreferenceTest < ActiveSupport::TestCase
   end
 
   test "scope deletable returns preferences with deletable_at in the past" do
-    past   = SettingPreference.create!(owner_type: "User", owner_id: 2, deletable_at: 1.hour.ago)
-    future = SettingPreference.create!(owner_type: "User", owner_id: 3, deletable_at: 1.hour.from_now)
+    past   = SettingPreference.create!(user_id: 2, deletable_at: 1.hour.ago)
+    future = SettingPreference.create!(user_id: 3, deletable_at: 1.hour.from_now)
 
     assert_includes SettingPreference.deletable, past
     assert_not_includes SettingPreference.deletable, future
   end
 
   test "scope shreddable returns preferences with shreddable_at in the past" do
-    past   = SettingPreference.create!(owner_type: "User", owner_id: 4, shreddable_at: 1.hour.ago)
-    future = SettingPreference.create!(owner_type: "User", owner_id: 5, shreddable_at: 1.hour.from_now)
+    past   = SettingPreference.create!(user_id: 4, shreddable_at: 1.hour.ago)
+    future = SettingPreference.create!(user_id: 5, shreddable_at: 1.hour.from_now)
 
     assert_includes SettingPreference.shreddable, past
     assert_not_includes SettingPreference.shreddable, future
@@ -159,6 +206,24 @@ class SettingPreferenceTest < ActiveSupport::TestCase
     assert_not_nil reflection
   end
 
+  test "belongs_to user association is defined" do
+    reflection = SettingPreference.reflect_on_association(:user)
+
+    assert_not_nil reflection
+  end
+
+  test "belongs_to staff association is defined" do
+    reflection = SettingPreference.reflect_on_association(:staff)
+
+    assert_not_nil reflection
+  end
+
+  test "belongs_to customer association is defined" do
+    reflection = SettingPreference.reflect_on_association(:customer)
+
+    assert_not_nil reflection
+  end
+
   test "DBSC_BINDING_METHOD_CLASS is SettingPreferenceBindingMethod" do
     assert_equal SettingPreferenceBindingMethod, SettingPreference::DBSC_BINDING_METHOD_CLASS
   end
@@ -169,8 +234,7 @@ class SettingPreferenceTest < ActiveSupport::TestCase
 
   test "validates uniqueness of dbsc_session_id" do
     SettingPreference.create!(
-      owner_type: "User",
-      owner_id: 100,
+      user_id: 100,
       dbsc_session_id: "unique_session_id",
     )
 
@@ -182,26 +246,106 @@ class SettingPreferenceTest < ActiveSupport::TestCase
 
   test "allows nil dbsc_session_id" do
     preference1 = build_preference(dbsc_session_id: nil)
-    preference2 = build_preference(dbsc_session_id: nil, owner_id: 9999)
+    preference2 = build_preference(dbsc_session_id: nil, user_id: 9999)
 
     assert_predicate preference1, :valid?
     assert_predicate preference2, :valid?
   end
 
-  test "validates uniqueness of owner_id scoped to owner_type" do
-    SettingPreference.create!(owner_type: "User", owner_id: 8888)
+  # Backward compatibility tests for polymorphic owner migration
+  test "owner_type returns User when user_id is set" do
+    preference = SettingPreference.new(user_id: 1)
 
-    duplicate = build_preference(owner_type: "User", owner_id: 8888)
-
-    assert_not duplicate.valid?
-    assert_not_empty duplicate.errors[:owner_id]
+    assert_equal "User", preference.owner_type
   end
 
-  test "allows same owner_id with different owner_type at model level" do
-    SettingPreference.create!(owner_type: "User", owner_id: 7777)
+  test "owner_type returns Staff when staff_id is set" do
+    preference = SettingPreference.new(staff_id: 1)
 
-    different_type = build_preference(owner_type: "Staff", owner_id: 7777)
+    assert_equal "Staff", preference.owner_type
+  end
 
-    assert_predicate different_type, :valid?
+  test "owner_type returns Customer when customer_id is set" do
+    preference = SettingPreference.new(customer_id: 1)
+
+    assert_equal "Customer", preference.owner_type
+  end
+
+  test "owner_type returns nil when no owner is set" do
+    preference = SettingPreference.new
+
+    assert_nil preference.owner_type
+  end
+
+  test "owner_id returns user_id when user_id is set" do
+    preference = SettingPreference.new(user_id: 42)
+
+    assert_equal 42, preference.owner_id
+  end
+
+  test "owner_id returns staff_id when staff_id is set" do
+    preference = SettingPreference.new(staff_id: 42)
+
+    assert_equal 42, preference.owner_id
+  end
+
+  test "owner_id returns customer_id when customer_id is set" do
+    preference = SettingPreference.new(customer_id: 42)
+
+    assert_equal 42, preference.owner_id
+  end
+
+  test "owner returns nil when no owner is set" do
+    preference = SettingPreference.new
+
+    assert_nil preference.owner
+  end
+
+  test "owner= assigns user when given a User" do
+    user = User.new(id: 1)
+    preference = SettingPreference.new
+    preference.owner = user
+
+    assert_equal 1, preference.user_id
+    assert_nil preference.staff_id
+    assert_nil preference.customer_id
+  end
+
+  test "owner= assigns staff when given a Staff" do
+    staff = Staff.new(id: 1)
+    preference = SettingPreference.new
+    preference.owner = staff
+
+    assert_equal 1, preference.staff_id
+    assert_nil preference.user_id
+    assert_nil preference.customer_id
+  end
+
+  test "owner= assigns customer when given a Customer" do
+    customer = Customer.new(id: 1)
+    preference = SettingPreference.new
+    preference.owner = customer
+
+    assert_equal 1, preference.customer_id
+    assert_nil preference.user_id
+    assert_nil preference.staff_id
+  end
+
+  test "owner= clears other owners when reassigned" do
+    preference = SettingPreference.new(user_id: 1)
+    staff = Staff.new(id: 2)
+    preference.owner = staff
+
+    assert_equal 2, preference.staff_id
+    assert_nil preference.user_id
+    assert_nil preference.customer_id
+  end
+
+  test "supports anonymous/bootstrap owner_id of 0" do
+    preference = SettingPreference.new(user_id: 0)
+
+    assert_predicate preference, :valid?
+    assert_equal 0, preference.owner_id
+    assert_equal "User", preference.owner_type
   end
 end

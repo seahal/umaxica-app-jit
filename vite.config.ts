@@ -7,11 +7,13 @@ export default defineConfig({
     "*.erb": "bundle exec erb_lint",
   },
   test: {
+    include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     exclude: [
       "**/node_modules/**",
       "**/vendor/**",
       "**/.ruby-lsp/**",
-      "**/.pnpm-store/**",
+      ".pnpm-store/**",
+      ".agents/**",
       "**/tmp/**",
       "**/dist/**",
       "**/build/**",
@@ -119,6 +121,7 @@ export default defineConfig({
       "build/**",
       "coverage/**",
       ".ruby-lsp/**",
+      ".agents/**",
       "public/assets/**",
       "public/packs/**",
 
@@ -218,6 +221,7 @@ export default defineConfig({
       "build/**",
       "coverage/**",
       ".ruby-lsp/**",
+      ".agents/**",
       "public/assets/**",
       "public/packs/**",
     ],

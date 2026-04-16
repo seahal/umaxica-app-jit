@@ -776,6 +776,7 @@ en:
           has_one: Cannot delete record because a dependent %{record} exists
           has_many: Cannot delete record because dependent %{record} exist
         identity_audit_event_format_invalid: must be composed of uppercase letters and underscores only
+        recovery_identity_required: "To register a passkey or secret, first register (verify) at least one email address or phone number."
       models:
         staff:
           attributes:

@@ -108,15 +108,16 @@ The previous verification is no longer current for the required scope or TTL and
 
 ## Identity Roles
 
-### Identity Provider
+### Identity Boundary
 
-The service that authenticates the subject, manages the core login state, and issues tokens.
+The boundary that authenticates the subject, manages the core login state, and issues tokens.
 
-In this system, `sign.*` is intended to play this role.
+### Global Boundary
 
-### Relying Party
+The public sign entry surface that delegates identity work to the Identity boundary and then
+establishes the shared shell state.
 
-An application surface that delegates login to the identity provider and then establishes its own
-local application session.
+### Regional Boundary
 
-Examples include non-`sign` surfaces such as `apex`, `core`, `docs`, `help`, and `news`.
+The boundary for `core`, `docs`, `help`, and `news` flows that depend on shared identity but own
+their own business and content chronicle records.

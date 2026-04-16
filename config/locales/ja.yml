@@ -98,6 +98,7 @@ ja:
           has_one: "%{record}が存在しているので削除できません"
           has_many: "%{record}が存在しているので削除できません"
         identity_audit_event_format_invalid: は大文字とアンダースコアのみで構成される必要があります
+        recovery_identity_required: "パスキー/シークレットを登録するには、先にメールアドレスまたは電話番号を1つ以上登録（確認）してください。"
         invalid_e164_format: はE.164形式（例：+819012345678）である必要があります
         exceeds_e164_length: はE.164形式の最大桁数（%{max}桁）を超えています
         country_code_cannot_start_with_zero: の国番号は0から始めることができません

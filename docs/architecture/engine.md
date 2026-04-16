@@ -1,279 +1,137 @@
-# Engine-based Global/Local Separation Design
+# Engine and Database Boundary Design
 
 ## Background
 
-This application serves multiple domains across regions (jp, us, etc.). The system needs to be split
-into two deployment units:
+The platform is organized into three Rails engines to enforce operational and code-level isolation:
 
-- **Global**: Worldwide single instance (authentication, preferences)
-- **Local**: Per-region instance (content, billing, regional services)
+- `Identity`
+- `Global`
+- `Regional`
 
-These two units must be **completely isolated** at the routing level. A Global deployment must not
-expose any Local endpoints, and vice versa.
+Each engine manages a specific set of domain responsibilities and maps to a dedicated database
+group.
 
-## Database Classification
+## Engine Roles
 
-Each database is classified into one of three deployment scopes. These are documented as comments on
-each base record file (`app/models/*_record.rb`) when a dedicated base record exists.
+| Engine       | Namespace       | Host Labels / Entry Points             | Main responsibility                                 | Domain Database Group |
+| ------------ | --------------- | -------------------------------------- | --------------------------------------------------- | --------------------- |
+| **Identity** | `Jit::Identity` | `sign.{app,com,org,dev}.*`             | Authentication, identity, token lifecycle           | `Activity`            |
+| **Global**   | `Jit::Global`   | `{app,com,org,dev}.*` (apex)           | Shared shell, public sign entry, shared preferences | `Journal`             |
+| **Regional** | `Jit::Regional` | `base.*`, `docs.*`, `help.*`, `news.*` | Regional business logic, content, and support       | `Chronicle`           |
 
-### Global (single worldwide instance)
+### Migration Path
 
-| Database       | Base Record          | Purpose                |
-| -------------- | -------------------- | ---------------------- |
-| `principal`    | `PrincipalRecord`    | User identity          |
-| `operator`     | `OperatorRecord`     | Staff management       |
-| `token`        | `TokenRecord`        | Authentication tokens  |
-| `preference`   | `PreferenceRecord`   | User/staff preferences |
-| `occurrence`   | `OccurrenceRecord`   | Rate limiting          |
-| `avatar`       | `AvatarRecord`       | User profiles          |
-| `activity`     | `ActivityRecord`     | Audit logs             |
-| `notification` | `NotificationRecord` | Notifications          |
-| `guest`        | `GuestRecord`        | Guest contacts         |
+The existing extracted engines will be consolidated as follows:
 
-### Local (per-region isolated instance)
+- `signature` -> `Identity`
+- `world` -> `Global`
+- `station` + `press` -> `Regional`
 
-| Database      | Base Record         | Purpose                                       |
-| ------------- | ------------------- | --------------------------------------------- |
-| `publication` | `PublicationRecord` | Published content (documents, timelines/news) |
-| `behavior`    | `BehaviorRecord`    | User behavior                                 |
-| `behavior`    | `BehaviorRecord`    | User behavior                                 |
-| `message`     | `MessageRecord`     | Messages                                      |
-| `search`      | `SearchRecord`      | Search                                        |
-| `billing`     | `BillingRecord`     | Billing                                       |
-| `storage`     | `-`                 | ActiveStorage files                           |
+### Routing and Isolation
 
-### Per-Deploy (each deployment has its own)
+- **`isolate_namespace`**: Every engine uses `isolate_namespace` for code-level isolation.
+- **Routing Proxies**: Cross-boundary navigation must use native Rails engine routing proxies. The
+  mount alias becomes the route proxy (e.g., `identity.*`, `global.*`, `regional.*`).
+- **Host App Routes**: Engines must use `main_app.*` to link back to the host application.
+- **Host Labels**: Different entry points (like `docs.*` or `base.*`) are handled via host
+  constraints in the routing layer of the respective engine.
 
-| Database | Purpose         |
-| -------- | --------------- |
-| `queue`  | SolidQueue jobs |
+### Request Context Boundary
 
-Per-Deploy databases exist in both Global and Local deployments independently. They are
-infrastructure concerns, not business data.
+Request-scoped current context is also owned by the engine boundary.
 
-## Controller / Route Classification
+- `Identity` uses engine-local current context
+- `Global` uses engine-local current context
+- `Regional` uses engine-local current context only for `base.*`
+- `Regional` `docs.*`, `help.*`, and `news.*` do not use `Current`
 
-### Global (sign, apex)
+If `docs.*`, `help.*`, or `news.*` need request metadata, they should use explicit helpers or small
+request-scoped value objects instead of a shared mutable current container.
 
-| Route file | Domain purpose                             | Hosts (dev)                                       |
-| ---------- | ------------------------------------------ | ------------------------------------------------- |
-| `sign.rb`  | Authentication (sign-in/up, MFA, passkeys) | `sign.app.localhost`, `sign.org.localhost`        |
-| `apex.rb`  | Dashboard shell & preferences              | `app.localhost`, `org.localhost`, `com.localhost` |
+Engine-local `Current` remains an accepted pattern for request-scoped runtime state. This helps keep
+actor, token, preference, and request metadata from leaking across concurrent requests in threaded
+app servers such as Puma.
 
-### Local (core, docs, news, help)
+The implementation sequence for this boundary is still **TBC**. Any future `plans/` documents for
+this work are temporary and may change.
 
-| Route file | Domain purpose   | Hosts (dev)                                                   |
-| ---------- | ---------------- | ------------------------------------------------------------- |
-| `core.rb`  | Main app backend | `www.app.localhost`, `www.org.localhost`, `www.com.localhost` |
-| `docs.rb`  | Documentation    | `docs.com.localhost`                                          |
-| `news.rb`  | News/blog        | news domains                                                  |
-| `help.rb`  | Help system      | help domains                                                  |
+### Canonical ENV Naming
 
-## Target Architecture: Two Rails Engines
+Host and origin environment variables use this canonical format:
 
-### Directory Structure
+- `ENGINE_HOSTLABEL_AUDIENCE_URL`
 
-```
-workspace/
-├── app/                              # Host app (shared foundation only)
-│   ├── models/                       # All models (shared by both engines)
-│   │   ├── application_record.rb
-│   │   ├── principal_record.rb       # Global
-│   │   ├── document_record.rb        # Local
-│   │   └── ...
-│   ├── controllers/
-│   │   └── application_controller.rb # Base controller only
-│   ├── helpers/
-│   ├── services/
-│   └── views/layouts/shared/         # Shared layouts
-│
-├── engines/
-│   ├── global/                       # Global Engine
-│   │   ├── app/
-│   │   │   ├── controllers/
-│   │   │   │   ├── sign/             # sign.app, sign.org
-│   │   │   │   └── apex/             # apex.app, apex.org, apex.com
-│   │   │   └── views/
-│   │   │       ├── sign/
-│   │   │       └── apex/
-│   │   ├── config/
-│   │   │   └── routes.rb             # sign + apex routes
-│   │   ├── lib/global/
-│   │   │   └── engine.rb
-│   │   └── global.gemspec
-│   │
-│   └── local/                        # Local Engine
-│       ├── app/
-│       │   ├── controllers/
-│       │   │   ├── core/
-│       │   │   ├── docs/
-│       │   │   ├── news/
-│       │   │   └── help/
-│       │   └── views/
-│       │       ├── core/
-│       │       ├── docs/
-│       │       ├── news/
-│       │       └── help/
-│       ├── config/
-│       │   └── routes.rb             # core + docs + news + help routes
-│       ├── lib/local/
-│       │   └── engine.rb
-│       └── local.gemspec
-│
-├── config/
-│   ├── routes.rb                     # Host: mounts engines only
-│   └── database.yml
-└── Gemfile
-```
+Where:
 
-### Host Routes (`config/routes.rb`)
+- `ENGINE` is one of `IDENTITY`, `GLOBAL`, `REGIONAL`
+- `HOSTLABEL` is one of `SIGN`, `APEX`, `BASE`, `DOCS`, `HELP`, `NEWS`
+- `AUDIENCE` is one of `APP`, `COM`, `ORG`
 
-The host app does not define business routes. It only mounts the appropriate engine based on the
-deployment mode:
+Examples:
 
-```ruby
-Rails.application.routes.draw do
-  post "/csp-violation-report", to: "csp_violations#create"
+- `IDENTITY_SIGN_APP_URL`
+- `GLOBAL_APEX_COM_URL`
+- `REGIONAL_BASE_ORG_URL`
+- `REGIONAL_DOCS_APP_URL`
+- `REGIONAL_HELP_COM_URL`
+- `REGIONAL_NEWS_ORG_URL`
 
-  if Jit::Deployment.global?
-    mount Global::Engine, at: "/"
-  end
+Legacy names such as `SIGN_*`, `APEX_*`, `MAIN_*`, `CORE_*`, and `DOCS_*` are migration-source names
+only. They are not part of the target design.
 
-  if Jit::Deployment.local?
-    mount Local::Engine, at: "/"
-  end
-end
-```
+## Database Ownership
 
-### Engine Definitions
+Models are centralized in `app/models/` for shared domain definitions, but each engine is the
+operational owner of a specific database group.
 
-**Global Engine** (`engines/global/lib/global/engine.rb`):
+### Activity-owned databases (Identity Engine)
 
-```ruby
-module Global
-  class Engine < ::Rails::Engine
-    isolate_namespace Global
-  end
-end
-```
+- `principal`, `operator`, `token`, `preference`, `guest`, `activity`, `occurrence`
 
-**Local Engine** (`engines/local/lib/local/engine.rb`):
+### Journal-owned databases (Global Engine)
 
-```ruby
-module Local
-  class Engine < ::Rails::Engine
-    isolate_namespace Local
-  end
-end
-```
+- `journal`, `notification`, `avatar`
 
-### Engine Routes
+### Chronicle-owned databases (Regional Engine)
 
-**Global** (`engines/global/config/routes.rb`):
+- `publication`, `chronicle`, `message`, `search`, `billing`, `commerce`
 
-```ruby
-Global::Engine.routes.draw do
-  # sign routes (from current config/routes/sign.rb)
-  # apex routes (from current config/routes/apex.rb)
-end
-```
+### Shared Infrastructure Databases
 
-**Local** (`engines/local/config/routes.rb`):
+Infrastructure databases (`queue`, `cache`, `storage`, `cable`) are **duplicated per engine**. Each
+of the three engine deployment modes runs its own isolated instance of these services to prevent
+cross-engine resource contention.
 
-```ruby
-Local::Engine.routes.draw do
-  # core routes (from current config/routes/core.rb)
-  # docs routes (from current config/routes/docs.rb)
-  # news routes (from current config/routes/news.rb)
-  # help routes (from current config/routes/help.rb)
-end
-```
+- **Solid Queue**: Separate job database and worker pool per engine.
+- **Solid Cache**: Separate cache database per engine.
 
-### Gemfile
+## Model and Database Policy
 
-```ruby
-gem "global", path: "engines/global"
-gem "local",  path: "engines/local"
-```
+- **Centralized Models**: Shared model definitions stay in `app/models/` to ensure a single source
+  of truth for domain logic.
+- **Abstract Base Classes**: Database connectivity is partitioned via domain-specific base records
+  (e.g., `ActivityRecord`, `JournalRecord`, `ChronicleRecord`) using Rails' `connects_to`.
+- **Deployment-Mode Connectivity**: The `database.yml` and initialization logic use the
+  `DEPLOY_MODE` environment variable to establish connections _only_ for the database group owned by
+  the active engine.
+- **Enforced Boundaries**: Attempting to access a model whose database is not owned by the active
+  engine will result in a connection error, providing strict operational boundaries while
+  maintaining a unified codebase.
 
-### Deployment Mode (`lib/jit/deployment.rb`)
+## Deployment Modes
 
-```ruby
-module Jit
-  module Deployment
-    def self.mode
-      ENV.fetch("DEPLOY_MODE", "development")
-    end
+| Mode          | Engines mounted            | Infrastructure Mode          |
+| ------------- | -------------------------- | ---------------------------- |
+| `identity`    | Identity                   | Identity-isolated instances  |
+| `global`      | Global                     | Global-isolated instances    |
+| `regional`    | Regional                   | Regional-isolated instances  |
+| `development` | Identity, Global, Regional | All instances (local config) |
 
-    def self.global?
-      mode.in?(%w[global development])
-    end
+## Related
 
-    def self.local?
-      mode.in?(%w[local development])
-    end
-  end
-end
-```
-
-| `DEPLOY_MODE` | Global Engine | Local Engine | Use case                |
-| ------------- | ------------- | ------------ | ----------------------- |
-| `global`      | mounted       | NOT loaded   | Production (worldwide)  |
-| `local`       | NOT loaded    | mounted      | Production (per-region) |
-| `development` | mounted       | mounted      | Local development       |
-
-## Model Sharing
-
-Models remain in the host app (`app/models/`), not in either engine. Both engines access models
-through the host:
-
-- **Global Engine** reads/writes Global models directly (PrincipalRecord, TokenRecord, etc.)
-- **Local Engine** reads/writes Local models directly (PublicationRecord, BehaviorRecord, etc.)
-- **Local Engine** reads Global models via read replicas (e.g., `principal_replica` for user lookup)
-
-`isolate_namespace` isolates controllers, routes, and views, but models are shared through the host
-app. This is intentional — it avoids model duplication and keeps DB connections centralized.
-
-## Cross-Region Database Access
-
-Local deployments need read access to Global databases (e.g., looking up user info from
-`principal`). This is handled at the infrastructure level:
-
-- **Aurora Global Database** (or equivalent) provides low-latency read replicas in each region
-- No application-level caching is needed; the DB layer handles cross-region replication
-- Local deployments connect to the regional read replica of Global databases via `database.yml`
-  environment variables
-
-## Shared Resources
-
-The following stay in the host app and are available to both engines:
-
-- All models (`app/models/`)
-- Shared concerns (`app/controllers/concerns/`, `app/models/concerns/`)
-- Services (`app/services/`)
-- Helpers (`app/helpers/`)
-- Shared layouts and partials (`app/views/layouts/shared/`)
-- Mailers, jobs, and other cross-cutting concerns
-- Configuration (credentials, initializers)
-
-## Migration Path
-
-This is a significant refactoring. A phased approach is recommended:
-
-### Phase 1: Deployment Mode Switch (low risk)
-
-Add `Jit::Deployment` module and gate existing routes with `global?` / `local?` checks. No file
-moves. This alone enables separated deployments.
-
-### Phase 2: Extract Engines (high effort)
-
-Move controllers and views into engine directories. Update route files. Adjust tests. This provides
-clean code boundaries but is a large change.
-
-### What to Watch Out For
-
-- **Concerns shared between Global and Local controllers**: Keep in host `app/controllers/concerns/`
-- **Helper methods**: Keep shared helpers in host, engine-specific helpers in the engine
-- **Asset pipeline**: Each engine can have its own assets, or share via the host
-- **Test organization**: Engine tests can live in `engines/global/test/` and `engines/local/test/`,
-  or remain in the host's `test/` directory during transition
+- `adr/current-context-boundary-by-engine.md`
+- `adr/three-engine-consolidation.md`
+- `adr/engine-isolate-namespace-adoption.md`
+- `docs/architecture/current_context.md`
+- `plans/active/three-engine-reframe.md`
+- `plans/analysis/engine-boundary-plan.md`

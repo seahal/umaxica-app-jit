@@ -6,8 +6,9 @@ This checklist tracks model-layer implementation readiness for audit and evidenc
 
 It follows the current working boundary draft:
 
-- `activity` is the global canonical evidence layer
-- `behavior` is the regional detailed behavior layer
+- `activity` is the Identity canonical evidence layer
+- `journal` is the Global canonical history layer
+- `chronicle` is the Regional detailed chronicle layer
 - controller-level write points are out of scope for this phase
 
 This file is intended for near-term implementation tracking. It is not the full design note. The
@@ -19,7 +20,7 @@ In scope for this checklist:
 
 - event reference models
 - event IDs and reference data
-- activity and behavior record models
+- activity, journal, and chronicle record models
 - model-adjacent persistence rules
 - model and service tests that prove write behavior
 
@@ -35,7 +36,7 @@ Out of scope for this checklist:
 
 Treat one checkbox as done only when all of the following are true for that event or rule:
 
-- the event has a stable home in `activity`, `behavior`, or both
+- the event has a stable home in `activity`, `journal`, `chronicle`, or both
 - the event ID exists as a model constant or documented fixed ID target
 - reference data seeding or migration work is defined
 - the write path is implemented in the model layer or model-adjacent service layer
@@ -48,28 +49,29 @@ Use model-style event names in this checklist.
 - For existing event families, use the current constant form:
   - `UserActivityEvent::LOGGED_IN`
   - `StaffActivityEvent::TOKEN_REFRESHED`
-  - `AppTimelineBehaviorEvent::UPDATED`
+  - `AppTimelineChronicleEvent::UPDATED`
 - For planned event families that do not exist yet, use the intended future model-style form:
-  - `MessageBehaviorEvent::SENT`
-  - `BillingBehaviorEvent::CHARGE_CREATED`
-  - `NotificationActivityEvent::DEVICE_REGISTERED`
+  - `MessageChronicleEvent::SENT`
+  - `BillingChronicleEvent::CHARGE_CREATED`
+  - `NotificationJournalEvent::DEVICE_REGISTERED`
 
 This keeps the checklist aligned with model-layer implementation instead of free-form dotted names.
 
-## Foundation And Invariants
+## Boundary And Invariants
 
-- [ ] `activity` is documented as the global canonical evidence layer
-- [ ] `behavior` is documented as the regional detailed behavior layer
+- [ ] `activity` is documented as the Identity canonical evidence layer
+- [ ] `journal` is documented as the Global canonical history layer
+- [ ] `chronicle` is documented as the Regional detailed chronicle layer
 - [ ] model-layer code does not use subdomain labels as the primary evidence ownership key
 - [ ] model-layer code uses explicit event families instead of free-form event names
 - [ ] activity event IDs are stable and fixed by constant or seeded reference row
-- [ ] behavior event IDs are stable and fixed by constant or seeded reference row
+- [ ] chronicle event IDs are stable and fixed by constant or seeded reference row
 - [ ] each event family has a clear owning record base class
 - [ ] event writes do not depend on controller-only context in this phase
 - [ ] each write path has a clear failure policy
 - [ ] each write path has a clear database destination
 - [ ] cross-boundary events can be correlated later without renaming core event IDs
-- [ ] acceptance rules distinguish `activity only`, `behavior only`, and `both`
+- [ ] acceptance rules distinguish `activity only`, `journal only`, `chronicle only`, and `both`
 
 ## Activity Only: User Identity And Security
 
@@ -112,147 +114,148 @@ This keeps the checklist aligned with model-layer implementation instead of free
 - [ ] `StaffActivityEvent::STAFF_SECRET_UPDATED`
 - [ ] `StaffActivityEvent::STEP_UP_VERIFIED`
 
-## Activity Only: Global Preference Root
+## Journal Only: Global Preference Root
 
-- [ ] `AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN`
-- [ ] `AppPreferenceActivityEvent::REFRESH_TOKEN_ROTATED`
-- [ ] `AppPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE`
-- [ ] `AppPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE`
-- [ ] `AppPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE`
-- [ ] `AppPreferenceActivityEvent::RESET_BY_USER_DECISION`
-- [ ] `AppPreferenceActivityEvent::UPDATE_PREFERENCE_REGION`
-- [ ] `AppPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME`
-- [ ] `ComPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN`
-- [ ] `ComPreferenceActivityEvent::REFRESH_TOKEN_ROTATED`
-- [ ] `ComPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE`
-- [ ] `ComPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE`
-- [ ] `ComPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE`
-- [ ] `ComPreferenceActivityEvent::RESET_BY_USER_DECISION`
-- [ ] `ComPreferenceActivityEvent::UPDATE_PREFERENCE_REGION`
-- [ ] `ComPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME`
-- [ ] `OrgPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN`
-- [ ] `OrgPreferenceActivityEvent::REFRESH_TOKEN_ROTATED`
-- [ ] `OrgPreferenceActivityEvent::UPDATE_PREFERENCE_COOKIE`
-- [ ] `OrgPreferenceActivityEvent::UPDATE_PREFERENCE_LANGUAGE`
-- [ ] `OrgPreferenceActivityEvent::UPDATE_PREFERENCE_TIMEZONE`
-- [ ] `OrgPreferenceActivityEvent::RESET_BY_USER_DECISION`
-- [ ] `OrgPreferenceActivityEvent::UPDATE_PREFERENCE_REGION`
-- [ ] `OrgPreferenceActivityEvent::UPDATE_PREFERENCE_COLORTHEME`
+- [ ] `AppPreferenceJournalEvent::CREATE_NEW_PREFERENCE_TOKEN`
+- [ ] `AppPreferenceJournalEvent::REFRESH_TOKEN_ROTATED`
+- [ ] `AppPreferenceJournalEvent::UPDATE_PREFERENCE_COOKIE`
+- [ ] `AppPreferenceJournalEvent::UPDATE_PREFERENCE_LANGUAGE`
+- [ ] `AppPreferenceJournalEvent::UPDATE_PREFERENCE_TIMEZONE`
+- [ ] `AppPreferenceJournalEvent::RESET_BY_USER_DECISION`
+- [ ] `AppPreferenceJournalEvent::UPDATE_PREFERENCE_REGION`
+- [ ] `AppPreferenceJournalEvent::UPDATE_PREFERENCE_COLORTHEME`
+- [ ] `ComPreferenceJournalEvent::CREATE_NEW_PREFERENCE_TOKEN`
+- [ ] `ComPreferenceJournalEvent::REFRESH_TOKEN_ROTATED`
+- [ ] `ComPreferenceJournalEvent::UPDATE_PREFERENCE_COOKIE`
+- [ ] `ComPreferenceJournalEvent::UPDATE_PREFERENCE_LANGUAGE`
+- [ ] `ComPreferenceJournalEvent::UPDATE_PREFERENCE_TIMEZONE`
+- [ ] `ComPreferenceJournalEvent::RESET_BY_USER_DECISION`
+- [ ] `ComPreferenceJournalEvent::UPDATE_PREFERENCE_REGION`
+- [ ] `ComPreferenceJournalEvent::UPDATE_PREFERENCE_COLORTHEME`
+- [ ] `OrgPreferenceJournalEvent::CREATE_NEW_PREFERENCE_TOKEN`
+- [ ] `OrgPreferenceJournalEvent::REFRESH_TOKEN_ROTATED`
+- [ ] `OrgPreferenceJournalEvent::UPDATE_PREFERENCE_COOKIE`
+- [ ] `OrgPreferenceJournalEvent::UPDATE_PREFERENCE_LANGUAGE`
+- [ ] `OrgPreferenceJournalEvent::UPDATE_PREFERENCE_TIMEZONE`
+- [ ] `OrgPreferenceJournalEvent::RESET_BY_USER_DECISION`
+- [ ] `OrgPreferenceJournalEvent::UPDATE_PREFERENCE_REGION`
+- [ ] `OrgPreferenceJournalEvent::UPDATE_PREFERENCE_COLORTHEME`
 
-## Activity Only: Global Notification Root
+## Journal Only: Global Notification Root
 
-- [x] `NotificationActivityEvent::DEVICE_REGISTERED`
-- [x] `NotificationActivityEvent::DEVICE_REVOKED`
-- [x] `NotificationActivityEvent::DEVICE_ROTATED`
-- [x] `NotificationActivityEvent::WEBPUSH_SUBSCRIPTION_CREATED`
-- [x] `NotificationActivityEvent::WEBPUSH_SUBSCRIPTION_REVOKED`
-- [x] `NotificationActivityEvent::IOS_DEVICE_REGISTERED`
-- [x] `NotificationActivityEvent::IOS_DEVICE_REVOKED`
-- [x] `NotificationActivityEvent::DELIVERY_TARGET_DISABLED`
-- [x] `NotificationActivityEvent::DELIVERY_TARGET_ENABLED`
-- [x] `NotificationActivityEvent::TOKEN_INVALIDATED`
+- [x] `NotificationJournalEvent::DEVICE_REGISTERED`
+- [x] `NotificationJournalEvent::DEVICE_REVOKED`
+- [x] `NotificationJournalEvent::DEVICE_ROTATED`
+- [x] `NotificationJournalEvent::WEBPUSH_SUBSCRIPTION_CREATED`
+- [x] `NotificationJournalEvent::WEBPUSH_SUBSCRIPTION_REVOKED`
+- [x] `NotificationJournalEvent::IOS_DEVICE_REGISTERED`
+- [x] `NotificationJournalEvent::IOS_DEVICE_REVOKED`
+- [x] `NotificationJournalEvent::DELIVERY_TARGET_DISABLED`
+- [x] `NotificationJournalEvent::DELIVERY_TARGET_ENABLED`
+- [x] `NotificationJournalEvent::TOKEN_INVALIDATED`
 
-## Behavior Only: Regional Content Records
+## Chronicle Only: Regional Content Records
 
-- [x] `AppDocumentBehaviorEvent::CREATED`
-- [x] `ComDocumentBehaviorEvent::CREATED`
-- [x] `OrgDocumentBehaviorEvent::CREATED`
-- [x] `AppDocumentBehaviorEvent::UPDATED`
-- [x] `ComDocumentBehaviorEvent::UPDATED`
-- [x] `OrgDocumentBehaviorEvent::UPDATED`
-- [x] `AppDocumentBehaviorEvent::DELETED`
-- [x] `ComDocumentBehaviorEvent::DELETED`
-- [x] `OrgDocumentBehaviorEvent::DELETED`
-- [x] `AppTimelineBehaviorEvent::CREATED`
-- [x] `ComTimelineBehaviorEvent::CREATED`
-- [x] `OrgTimelineBehaviorEvent::CREATED`
-- [x] `AppTimelineBehaviorEvent::UPDATED`
-- [x] `ComTimelineBehaviorEvent::UPDATED`
-- [x] `OrgTimelineBehaviorEvent::UPDATED`
-- [x] `AppTimelineBehaviorEvent::DELETED`
-- [x] `ComTimelineBehaviorEvent::DELETED`
-- [x] `OrgTimelineBehaviorEvent::DELETED`
+- [x] `AppDocumentChronicleEvent::CREATED`
+- [x] `ComDocumentChronicleEvent::CREATED`
+- [x] `OrgDocumentChronicleEvent::CREATED`
+- [x] `AppDocumentChronicleEvent::UPDATED`
+- [x] `ComDocumentChronicleEvent::UPDATED`
+- [x] `OrgDocumentChronicleEvent::UPDATED`
+- [x] `AppDocumentChronicleEvent::DELETED`
+- [x] `ComDocumentChronicleEvent::DELETED`
+- [x] `OrgDocumentChronicleEvent::DELETED`
+- [x] `AppTimelineChronicleEvent::CREATED`
+- [x] `ComTimelineChronicleEvent::CREATED`
+- [x] `OrgTimelineChronicleEvent::CREATED`
+- [x] `AppTimelineChronicleEvent::UPDATED`
+- [x] `ComTimelineChronicleEvent::UPDATED`
+- [x] `OrgTimelineChronicleEvent::UPDATED`
+- [x] `AppTimelineChronicleEvent::DELETED`
+- [x] `ComTimelineChronicleEvent::DELETED`
+- [x] `OrgTimelineChronicleEvent::DELETED`
 
-## Behavior Only: Regional Publishing And Support — EXPLICITLY DEFERRED
+## Chronicle Only: Regional Publishing And Support — EXPLICITLY DEFERRED
 
 These event families require news/docs/help database infrastructure that does not exist yet. They
 are deferred until the respective surface has a concrete publication storage model.
 
-- [ ] `NewsBehaviorEvent::POST_CREATED` (deferred: no DB infrastructure)
-- [ ] `NewsBehaviorEvent::POST_UPDATED` (deferred: no DB infrastructure)
-- [ ] `NewsBehaviorEvent::POST_PUBLISHED` (deferred: no DB infrastructure)
-- [ ] `NewsBehaviorEvent::POST_UNPUBLISHED` (deferred: no DB infrastructure)
-- [ ] `NewsBehaviorEvent::VERSION_CREATED` (deferred: no DB infrastructure)
-- [ ] `DocsBehaviorEvent::POST_CREATED` (deferred: no DB infrastructure)
-- [ ] `DocsBehaviorEvent::POST_UPDATED` (deferred: no DB infrastructure)
-- [ ] `DocsBehaviorEvent::POST_PUBLISHED` (deferred: no DB infrastructure)
-- [ ] `DocsBehaviorEvent::VERSION_CREATED` (deferred: no DB infrastructure)
-- [ ] `HelpBehaviorEvent::ARTICLE_CREATED` (deferred: no DB infrastructure)
-- [ ] `HelpBehaviorEvent::ARTICLE_UPDATED` (deferred: no DB infrastructure)
-- [ ] `HelpBehaviorEvent::ARTICLE_PUBLISHED` (deferred: no DB infrastructure)
+- [ ] `NewsChronicleEvent::POST_CREATED` (deferred: no DB infrastructure)
+- [ ] `NewsChronicleEvent::POST_UPDATED` (deferred: no DB infrastructure)
+- [ ] `NewsChronicleEvent::POST_PUBLISHED` (deferred: no DB infrastructure)
+- [ ] `NewsChronicleEvent::POST_UNPUBLISHED` (deferred: no DB infrastructure)
+- [ ] `NewsChronicleEvent::VERSION_CREATED` (deferred: no DB infrastructure)
+- [ ] `DocsChronicleEvent::POST_CREATED` (deferred: no DB infrastructure)
+- [ ] `DocsChronicleEvent::POST_UPDATED` (deferred: no DB infrastructure)
+- [ ] `DocsChronicleEvent::POST_PUBLISHED` (deferred: no DB infrastructure)
+- [ ] `DocsChronicleEvent::VERSION_CREATED` (deferred: no DB infrastructure)
+- [ ] `HelpChronicleEvent::ARTICLE_CREATED` (deferred: no DB infrastructure)
+- [ ] `HelpChronicleEvent::ARTICLE_UPDATED` (deferred: no DB infrastructure)
+- [ ] `HelpChronicleEvent::ARTICLE_PUBLISHED` (deferred: no DB infrastructure)
 
-## Behavior Only: Regional Messaging, Search, Billing, And Contact
+## Chronicle Only: Regional Messaging, Search, Billing, And Contact
 
-- [x] `MessageBehaviorEvent::SENT`
-- [x] `MessageBehaviorEvent::UPDATED`
-- [x] `MessageBehaviorEvent::DELETED`
-- [x] `MessageBehaviorEvent::DELIVERED`
-- [x] `MessageBehaviorEvent::DELIVERY_FAILED`
-- [x] `MessageBehaviorEvent::MODERATION_APPLIED`
-- [x] `SearchBehaviorEvent::QUERY_EXECUTED`
-- [x] `SearchBehaviorEvent::INDEX_UPDATED`
-- [x] `SearchBehaviorEvent::INDEX_REBUILT`
-- [x] `BillingBehaviorEvent::CHARGE_CREATED`
-- [x] `BillingBehaviorEvent::CHARGE_CAPTURED`
-- [x] `BillingBehaviorEvent::CHARGE_FAILED`
-- [x] `BillingBehaviorEvent::REFUND_CREATED`
-- [x] `BillingBehaviorEvent::TAX_CALCULATED`
-- [x] `ContactBehaviorEvent::SUBMITTED`
-- [x] `ContactBehaviorEvent::UPDATED`
-- [x] `ContactBehaviorEvent::VERIFICATION_STARTED`
-- [x] `ContactBehaviorEvent::VERIFICATION_COMPLETED`
+- [x] `MessageChronicleEvent::SENT`
+- [x] `MessageChronicleEvent::UPDATED`
+- [x] `MessageChronicleEvent::DELETED`
+- [x] `MessageChronicleEvent::DELIVERED`
+- [x] `MessageChronicleEvent::DELIVERY_FAILED`
+- [x] `MessageChronicleEvent::MODERATION_APPLIED`
+- [x] `SearchChronicleEvent::QUERY_EXECUTED`
+- [x] `SearchChronicleEvent::INDEX_UPDATED`
+- [x] `SearchChronicleEvent::INDEX_REBUILT`
+- [x] `BillingChronicleEvent::CHARGE_CREATED`
+- [x] `BillingChronicleEvent::CHARGE_CAPTURED`
+- [x] `BillingChronicleEvent::CHARGE_FAILED`
+- [x] `BillingChronicleEvent::REFUND_CREATED`
+- [x] `BillingChronicleEvent::TAX_CALCULATED`
+- [x] `ContactChronicleEvent::SUBMITTED`
+- [x] `ContactChronicleEvent::UPDATED`
+- [x] `ContactChronicleEvent::VERIFICATION_STARTED`
+- [x] `ContactChronicleEvent::VERIFICATION_COMPLETED`
 
-## Behavior Only: Regional Detail And Operations — EXPLICITLY DEFERRED
+## Chronicle Only: Regional Detail And Operations — EXPLICITLY DEFERRED
 
 These event families require news/docs/help/content database infrastructure that does not exist yet.
 
-- [ ] `ContentBehaviorEvent::READ` (deferred: no DB infrastructure)
-- [ ] `ContentBehaviorEvent::VIEWED` (deferred: no DB infrastructure)
-- [ ] `ContentBehaviorEvent::SHARED` (deferred: no DB infrastructure)
-- [ ] `ContentBehaviorEvent::FLAGGED` (deferred: no DB infrastructure)
-- [ ] `ContentBehaviorEvent::MODERATION_REVIEW_STARTED` (deferred: no DB infrastructure)
-- [ ] `ContentBehaviorEvent::MODERATION_REVIEW_COMPLETED` (deferred: no DB infrastructure)
-- [ ] `HelpBehaviorEvent::SEARCH_EXECUTED` (deferred: no DB infrastructure)
-- [ ] `HelpBehaviorEvent::CONTACT_STATUS_CHANGED` (deferred: no DB infrastructure)
-- [ ] `DocsBehaviorEvent::TAXONOMY_UPDATED` (deferred: no DB infrastructure)
-- [ ] `NewsBehaviorEvent::TAXONOMY_UPDATED` (deferred: no DB infrastructure)
+- [ ] `ContentChronicleEvent::READ` (deferred: no DB infrastructure)
+- [ ] `ContentChronicleEvent::VIEWED` (deferred: no DB infrastructure)
+- [ ] `ContentChronicleEvent::SHARED` (deferred: no DB infrastructure)
+- [ ] `ContentChronicleEvent::FLAGGED` (deferred: no DB infrastructure)
+- [ ] `ContentChronicleEvent::MODERATION_REVIEW_STARTED` (deferred: no DB infrastructure)
+- [ ] `ContentChronicleEvent::MODERATION_REVIEW_COMPLETED` (deferred: no DB infrastructure)
+- [ ] `HelpChronicleEvent::SEARCH_EXECUTED` (deferred: no DB infrastructure)
+- [ ] `HelpChronicleEvent::CONTACT_STATUS_CHANGED` (deferred: no DB infrastructure)
+- [ ] `DocsChronicleEvent::TAXONOMY_UPDATED` (deferred: no DB infrastructure)
+- [ ] `NewsChronicleEvent::TAXONOMY_UPDATED` (deferred: no DB infrastructure)
 
-## Both: Global Summary Plus Regional Detail — FUTURE WORK
+## Both: Journal Summary Plus Regional Chronicle — FUTURE WORK
 
-Dual-write patterns between activity and behavior databases require service-layer orchestration that
+Dual-write patterns between journal and chronicle databases require service-layer orchestration that
 is out of scope for the current model-layer implementation phase.
 
 - [ ] regulated communication writes a global summary event plus a regional detail event
 - [ ] paid-state transition writes a global summary event plus a regional billing detail event
 - [ ] moderation that changes account state writes a global summary event plus a regional case event
 - [ ] preference changes with regional effect can be projected without duplicating the root event
-- [ ] cross-boundary write order is defined for `activity` then `behavior`
-- [ ] cross-boundary write order is defined for `behavior` then `activity`
+- [ ] cross-boundary write order is defined for `journal` then `chronicle`
+- [ ] cross-boundary write order is defined for `chronicle` then `journal`
 - [ ] duplicate detection rules exist for retry-safe dual writes
-- [ ] correlation IDs exist for paired `activity` and `behavior` records
+- [ ] correlation IDs exist for paired `journal` and `chronicle` records
 - [ ] tests prove the paired-write happy path
 - [ ] tests prove the paired-write partial-failure path
 
 ## Model-Layer Test Checklist
 
 - [ ] each `activity only` family has reference-model tests
-- [ ] each `behavior only` family has reference-model tests
+- [ ] each `journal only` family has reference-model tests
+- [ ] each `chronicle only` family has reference-model tests
 - [ ] representative record models prove valid event persistence
 - [ ] representative record models prove invalid event rejection
 - [ ] service tests prove auth-related activity writes
-- [ ] service tests prove preference activity writes
-- [ ] service tests prove regional behavior writes
-- [ ] tests distinguish global versus regional destination DBs
+- [ ] service tests prove preference journal writes
+- [ ] service tests prove regional chronicle writes
+- [ ] tests distinguish activity, journal, and chronicle destination DBs
 - [ ] tests do not depend on controller request setup for model-layer event creation
 - [ ] tests name the protected rule, not the implementation detail
 

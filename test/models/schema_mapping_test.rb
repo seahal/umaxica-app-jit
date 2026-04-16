@@ -22,6 +22,11 @@ class SchemaMappingTest < ActiveSupport::TestCase
     assert_equal "principal", AppPreference.connection_db_config.name.to_s
   end
 
+  test "UserAuthorizationCode maps to principal database and correct table" do
+    assert_equal "user_authorization_codes", UserAuthorizationCode.table_name
+    assert_equal "principal", UserAuthorizationCode.connection_db_config.name.to_s
+  end
+
   # Operator database family
   test "Staff maps to operator database and correct table" do
     assert_equal "staffs", Staff.table_name
@@ -33,6 +38,11 @@ class SchemaMappingTest < ActiveSupport::TestCase
     assert_equal "token", StaffToken.connection_db_config.name.to_s
   end
 
+  test "StaffAuthorizationCode maps to operator database and correct table" do
+    assert_equal "staff_authorization_codes", StaffAuthorizationCode.table_name
+    assert_equal "operator", StaffAuthorizationCode.connection_db_config.name.to_s
+  end
+
   # Guest database family
   test "Customer maps to guest database and correct table" do
     assert_equal "customers", Customer.table_name
@@ -42,6 +52,11 @@ class SchemaMappingTest < ActiveSupport::TestCase
   test "CustomerToken maps to token database and correct table" do
     assert_equal "customer_tokens", CustomerToken.table_name
     assert_equal "token", CustomerToken.connection_db_config.name.to_s
+  end
+
+  test "CustomerAuthorizationCode maps to guest database and correct table" do
+    assert_equal "customer_authorization_codes", CustomerAuthorizationCode.table_name
+    assert_equal "guest", CustomerAuthorizationCode.connection_db_config.name.to_s
   end
 
   # Occurrence database family
