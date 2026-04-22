@@ -195,7 +195,7 @@ GEM
     database_consistency (3.0.2)
       activerecord (>= 3.2)
     date (3.5.1)
-    debride (1.15.1)
+    debride (1.15.2)
       path_expander (~> 2.0)
       prism (~> 1.7)
       sexp_processor (~> 4.17)
@@ -1108,7 +1108,7 @@ CHECKSUMS
   csv (3.3.5) sha256=6e5134ac3383ef728b7f02725d9872934f523cb40b961479f69cf3afa6c8e73f
   database_consistency (3.0.2) sha256=7dbcccee51e125de5512eeb36a26ec78196904f6db84e95beeb859a971bd79e0
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
-  debride (1.15.1) sha256=25bc96aa745d4f8c88e500010e18ef1d084154baae1d10d3b205a1b76a325a2e
+  debride (1.15.2) sha256=5e5c50b150a37c418a7d48a2137ebb9f29d8a72fa550e626a4e1f8d418b79538
   debug (1.11.1) sha256=2e0b0ac6119f2207a6f8ac7d4a73ca8eb4e440f64da0a3136c30343146e952b6
   docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
   down (5.5.0) sha256=787e14fcfe7824b8cac676c608359e4083b2e4d6e1d3b1745b79f27bcf931585
