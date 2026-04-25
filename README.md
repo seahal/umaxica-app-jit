@@ -140,7 +140,7 @@ needed.
 
 | Engine     | Surface | URL                                        |
 | :--------- | :------ | :----------------------------------------- |
-| Zenith     | Apex    | `http://www.{app,com,org}.localhost:3000`  |
+| Zenith     | Acme    | `http://www.{app,com,org}.localhost:3000`  |
 | Signature  | Sign    | `http://sign.{app,com,org}.localhost:3000` |
 | Foundation | Base    | `http://base.{app,com,org}.localhost:3000` |
 | Publisher  | Post    | `http://post.{app,com,org}.localhost:3000` |

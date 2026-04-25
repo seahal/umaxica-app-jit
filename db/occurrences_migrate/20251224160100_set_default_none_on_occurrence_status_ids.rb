@@ -1,29 +1,24 @@
 # frozen_string_literal: true
 
 class SetDefaultNoneOnOccurrenceStatusIds < ActiveRecord::Migration[8.2]
-  TABLES = %i(
+  TABLES = %i[
     area_occurrences
     domain_occurrences
     email_occurrences
     ip_occurrences
-    staff_occurrences
     telephone_occurrences
-    user_occurrences
-    zip_occurrences
-  ).freeze
+  ].freeze
 
-  def change
+  def up
     TABLES.each do |table|
-      reversible do |dir|
-        dir.up do
-          execute("UPDATE #{table} SET status_id = 'NONE' WHERE status_id IS NULL OR status_id = ''")
-        end
-      end
+      safety_assured { execute("UPDATE #{table} SET status_id = 'NONE' WHERE status_id IS NULL") }
+      safety_assured { change_column_default(table, :status_id, from: nil, to: "NONE") }
+    end
+  end
 
-      change_table(table, bulk: true) do |t|
-        t.change_default(:status_id, from: "", to: "NONE")
-        t.change_null(:status_id, false, "NONE")
-      end
+  def down
+    TABLES.each do |table|
+      safety_assured { change_column_default(table, :status_id, from: "NONE", to: nil) }
     end
   end
 end

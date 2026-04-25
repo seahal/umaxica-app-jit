@@ -49,7 +49,7 @@ Test type detection from resource:
 
 ### 5. Controller integration (real request round-trip)
 
-For at least one surface per realm (sign, apex, core), verify:
+For at least one surface per realm (sign, acme, core), verify:
 
 - Authenticated request → `Current.actor` matches the authenticated resource.
 - Unauthenticated request → `Current.actor` is `Unauthenticated.instance`.

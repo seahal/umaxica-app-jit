@@ -2,38 +2,42 @@
 
 ## Background
 
-The platform is organized into three Rails engines to enforce operational and code-level isolation:
+The platform is organized into four Rails engines to enforce operational and code-level isolation:
 
 - `Identity`
-- `Global`
-- `Regional`
+- `Zenith`
+- `Foundation`
+- `Distributor`
 
 Each engine manages a specific set of domain responsibilities and maps to a dedicated database
 group.
 
 ## Engine Roles
 
-| Engine       | Namespace       | Host Labels / Entry Points             | Main responsibility                                 | Domain Database Group |
-| ------------ | --------------- | -------------------------------------- | --------------------------------------------------- | --------------------- |
-| **Identity** | `Jit::Identity` | `sign.{app,com,org,dev}.*`             | Authentication, identity, token lifecycle           | `Activity`            |
-| **Global**   | `Jit::Global`   | `{app,com,org,dev}.*` (apex)           | Shared shell, public sign entry, shared preferences | `Journal`             |
-| **Regional** | `Jit::Regional` | `base.*`, `docs.*`, `help.*`, `news.*` | Regional business logic, content, and support       | `Chronicle`           |
+| Engine          | Namespace          | Host Labels / Entry Points       | Main responsibility                                 | Domain Database Group                   |
+| --------------- | ------------------ | -------------------------------- | --------------------------------------------------- | --------------------------------------- |
+| **Identity**    | `Jit::Identity`    | `sign.{app,org,com,dev,net}.*`   | Authentication, identity, token lifecycle           | `Activity`                              |
+| **Zenith**      | `Jit::Zenith`      | `{app,org,com,dev,net}.*` (acme) | Shared shell, public sign entry, shared preferences | `Journal`                               |
+| **Foundation**  | `Jit::Foundation`  | `base.{app,org,com,dev,net}.*`   | Business operations, contacts, and staff admin      | `Chronicle` family except `publication` |
+| **Distributor** | `Jit::Distributor` | `post.{app,org,com,dev,net}.*`   | API and content delivery                            | `Publication`                           |
 
-### Migration Path
+### Current Mapping
 
-The existing extracted engines will be consolidated as follows:
+The existing extracted engines map to the canonical names as follows:
 
 - `signature` -> `Identity`
-- `world` -> `Global`
-- `station` + `press` -> `Regional`
+- `world` -> `Zenith`
+- `station` -> `Foundation`
+- `press` -> `Distributor`
 
 ### Routing and Isolation
 
 - **`isolate_namespace`**: Every engine uses `isolate_namespace` for code-level isolation.
 - **Routing Proxies**: Cross-boundary navigation must use native Rails engine routing proxies. The
-  mount alias becomes the route proxy (e.g., `identity.*`, `global.*`, `regional.*`).
+  mount alias becomes the route proxy (e.g., `identity.*`, `zenith.*`, `foundation.*`,
+  `distributor.*`).
 - **Host App Routes**: Engines must use `main_app.*` to link back to the host application.
-- **Host Labels**: Different entry points (like `docs.*` or `base.*`) are handled via host
+- **Host Labels**: Different entry points (like `post.*` or `base.*`) are handled via host
   constraints in the routing layer of the respective engine.
 
 ### Request Context Boundary
@@ -41,12 +45,12 @@ The existing extracted engines will be consolidated as follows:
 Request-scoped current context is also owned by the engine boundary.
 
 - `Identity` uses engine-local current context
-- `Global` uses engine-local current context
-- `Regional` uses engine-local current context only for `base.*`
-- `Regional` `docs.*`, `help.*`, and `news.*` do not use `Current`
+- `Zenith` uses engine-local current context
+- `Foundation` uses engine-local current context for `base.*`
+- `Distributor` does not use shared `Current` by default
 
-If `docs.*`, `help.*`, or `news.*` need request metadata, they should use explicit helpers or small
-request-scoped value objects instead of a shared mutable current container.
+If `post.*` needs request metadata, it should use explicit helpers or small request-scoped value
+objects instead of a shared mutable current container.
 
 Engine-local `Current` remains an accepted pattern for request-scoped runtime state. This helps keep
 actor, token, preference, and request metadata from leaking across concurrent requests in threaded
@@ -63,21 +67,21 @@ Host and origin environment variables use this canonical format:
 
 Where:
 
-- `ENGINE` is one of `IDENTITY`, `GLOBAL`, `REGIONAL`
-- `HOSTLABEL` is one of `SIGN`, `APEX`, `BASE`, `DOCS`, `HELP`, `NEWS`
-- `AUDIENCE` is one of `APP`, `COM`, `ORG`
+- `ENGINE` is one of `IDENTITY`, `ZENITH`, `FOUNDATION`, `DISTRIBUTOR`
+- `HOSTLABEL` is one of `SIGN`, `ACME`, `BASE`, `POST`
+- `AUDIENCE` is one of `APP`, `ORG`, `COM`, `DEV`, `NET`
 
 Examples:
 
 - `IDENTITY_SIGN_APP_URL`
-- `GLOBAL_APEX_COM_URL`
-- `REGIONAL_BASE_ORG_URL`
-- `REGIONAL_DOCS_APP_URL`
-- `REGIONAL_HELP_COM_URL`
-- `REGIONAL_NEWS_ORG_URL`
+- `ZENITH_ACME_COM_URL`
+- `FOUNDATION_BASE_ORG_URL`
+- `DISTRIBUTOR_POST_APP_URL`
+- `DISTRIBUTOR_POST_DEV_URL`
+- `DISTRIBUTOR_POST_NET_URL`
 
-Legacy names such as `SIGN_*`, `APEX_*`, `MAIN_*`, `CORE_*`, and `DOCS_*` are migration-source names
-only. They are not part of the target design.
+Legacy names such as `SIGN_*`, `ACME_*`, `BASE_*`, `POST_*`, `MAIN_*`, `CORE_*`, and `DOCS_*` are
+migration-source names only. They are not part of the target design.
 
 ## Database Ownership
 
@@ -88,19 +92,23 @@ operational owner of a specific database group.
 
 - `principal`, `operator`, `token`, `preference`, `guest`, `activity`, `occurrence`
 
-### Journal-owned databases (Global Engine)
+### Journal-owned databases (Zenith Engine)
 
 - `journal`, `notification`, `avatar`
 
-### Chronicle-owned databases (Regional Engine)
+### Foundation-owned databases
 
-- `publication`, `chronicle`, `message`, `search`, `billing`, `commerce`
+- `chronicle`, `message`, `search`, `billing`, `commerce`
+
+### Distributor-owned databases
+
+- `publication`
 
 ### Shared Infrastructure Databases
 
 Infrastructure databases (`queue`, `cache`, `storage`, `cable`) are **duplicated per engine**. Each
-of the three engine deployment modes runs its own isolated instance of these services to prevent
-cross-engine resource contention.
+engine deployment mode runs its own isolated instance of these services to prevent cross-engine
+resource contention.
 
 - **Solid Queue**: Separate job database and worker pool per engine.
 - **Solid Cache**: Separate cache database per engine.
@@ -120,18 +128,19 @@ cross-engine resource contention.
 
 ## Deployment Modes
 
-| Mode          | Engines mounted            | Infrastructure Mode          |
-| ------------- | -------------------------- | ---------------------------- |
-| `identity`    | Identity                   | Identity-isolated instances  |
-| `global`      | Global                     | Global-isolated instances    |
-| `regional`    | Regional                   | Regional-isolated instances  |
-| `development` | Identity, Global, Regional | All instances (local config) |
+| Mode          | Engines mounted                           | Infrastructure Mode            |
+| ------------- | ----------------------------------------- | ------------------------------ |
+| `identity`    | Identity                                  | Identity-isolated instances    |
+| `zenith`      | Zenith                                    | Zenith-isolated instances      |
+| `foundation`  | Foundation                                | Foundation-isolated instances  |
+| `distributor` | Distributor                               | Distributor-isolated instances |
+| `development` | Identity, Zenith, Foundation, Distributor | All instances (local config)   |
 
 ## Related
 
 - `adr/current-context-boundary-by-engine.md`
-- `adr/three-engine-consolidation.md`
+- `adr/four-engine-restoration-and-base-contract.md`
 - `adr/engine-isolate-namespace-adoption.md`
 - `docs/architecture/current_context.md`
-- `plans/active/three-engine-reframe.md`
-- `plans/analysis/engine-boundary-plan.md`
+- `plans/active/four-engine-reframe.md`
+- `plans/active/foundation-distributor-db-boundary-plan.md`

@@ -1,0 +1,268 @@
+# typed: false
+# == Schema Information
+#
+# Table name: org_preferences
+# Database name: operator
+#
+#  id                       :bigint           not null, primary key
+#  compromised_at           :datetime
+#  dbsc_challenge           :text
+#  dbsc_challenge_issued_at :datetime
+#  dbsc_public_key          :jsonb
+#  deletable_at             :datetime         default(Infinity), not null
+#  device_id_digest         :string
+#  expires_at               :datetime
+#  jti                      :string
+#  revoked_at               :datetime
+#  token_digest             :binary
+#  used_at                  :datetime
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  binding_method_id        :bigint           default(0), not null
+#  dbsc_session_id          :string
+#  dbsc_status_id           :bigint           default(0), not null
+#  device_id                :string
+#  public_id                :string           not null
+#  replaced_by_id           :bigint
+#  status_id                :bigint           default(2), not null
+#
+# Indexes
+#
+#  index_org_preferences_on_binding_method_id  (binding_method_id)
+#  index_org_preferences_on_dbsc_session_id    (dbsc_session_id) UNIQUE
+#  index_org_preferences_on_dbsc_status_id     (dbsc_status_id)
+#  index_org_preferences_on_deletable_at       (deletable_at)
+#  index_org_preferences_on_device_id          (device_id)
+#  index_org_preferences_on_device_id_digest   (device_id_digest)
+#  index_org_preferences_on_jti                (jti) UNIQUE
+#  index_org_preferences_on_public_id          (public_id) UNIQUE
+#  index_org_preferences_on_replaced_by_id     (replaced_by_id)
+#  index_org_preferences_on_revoked_at         (revoked_at)
+#  index_org_preferences_on_status_id          (status_id)
+#  index_org_preferences_on_token_digest       (token_digest)
+#  index_org_preferences_on_used_at            (used_at)
+#
+# Foreign Keys
+#
+#  fk_org_preferences_on_binding_method_id  (binding_method_id => org_preference_binding_methods.id)
+#  fk_org_preferences_on_dbsc_status_id     (dbsc_status_id => org_preference_dbsc_statuses.id)
+#  fk_org_preferences_on_status_id          (status_id => org_preference_statuses.id)
+#  fk_rails_...                             (replaced_by_id => org_preferences.id) ON DELETE => nullify
+#
+
+# frozen_string_literal: true
+
+require "test_helper"
+
+class OrgPreferenceTest < ActiveSupport::TestCase
+  setup do
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NOTHING)
+  end
+
+  test "generates public_id on create" do
+    preference = OrgPreference.create!
+
+    assert_not_nil preference.public_id
+    assert_equal 21, preference.public_id.length
+  end
+
+  test "validates public_id maximum length" do
+    preference = OrgPreference.new(public_id: "a" * 22)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:public_id], "は21文字以内で入力してください"
+  end
+
+  test "does not overwrite existing public_id" do
+    custom_id = "custom_public_id_123"
+    preference = OrgPreference.create!(public_id: custom_id)
+
+    assert_equal custom_id, preference.public_id
+  end
+
+  test "rejects unknown status_id before database foreign key enforcement" do
+    preference = OrgPreference.new(status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:status_id], "must reference an existing org_preference_status"
+  end
+
+  test "rejects unknown binding_method_id before database foreign key enforcement" do
+    preference = OrgPreference.new(binding_method_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:binding_method_id], "must reference an existing org_preference_binding_method"
+  end
+
+  test "rejects unknown dbsc_status_id before database foreign key enforcement" do
+    preference = OrgPreference.new(dbsc_status_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:dbsc_status_id], "must reference an existing org_preference_dbsc_status"
+  end
+
+  test "rejects unknown replaced_by_id before database foreign key enforcement" do
+    preference = OrgPreference.new(replaced_by_id: 999_999)
+
+    assert_not preference.valid?
+    assert_includes preference.errors[:replaced_by_id], "must reference an existing replaced_by"
+  end
+
+  test "has one org_preference_cookie" do
+    preference = OrgPreference.create!
+    cookie = preference.create_org_preference_cookie!
+
+    assert_equal cookie, preference.org_preference_cookie
+  end
+
+  test "destroys org_preference_cookie when destroyed" do
+    preference = OrgPreference.create!
+    cookie = preference.create_org_preference_cookie!
+    cookie_id = cookie.id
+    preference.destroy!
+
+    assert_nil OrgPreferenceCookie.find_by(id: cookie_id)
+  end
+
+  test "has one org_preference_region" do
+    preference = OrgPreference.create!
+    region = preference.create_org_preference_region!
+
+    assert_equal region, preference.org_preference_region
+  end
+
+  test "destroys org_preference_region when destroyed" do
+    preference = OrgPreference.create!
+    region = preference.create_org_preference_region!
+    region_id = region.id
+    preference.destroy!
+
+    assert_nil OrgPreferenceRegion.find_by(id: region_id)
+  end
+
+  test "has one org_preference_timezone" do
+    preference = OrgPreference.create!
+    timezone = preference.create_org_preference_timezone!
+
+    assert_equal timezone, preference.org_preference_timezone
+  end
+
+  test "destroys org_preference_timezone when destroyed" do
+    preference = OrgPreference.create!
+    timezone = preference.create_org_preference_timezone!
+    timezone_id = timezone.id
+    preference.destroy!
+
+    assert_nil OrgPreferenceTimezone.find_by(id: timezone_id)
+  end
+
+  test "has one org_preference_language" do
+    preference = OrgPreference.create!
+    language = preference.create_org_preference_language!
+
+    assert_equal language, preference.org_preference_language
+  end
+
+  test "destroys org_preference_language when destroyed" do
+    preference = OrgPreference.create!
+    language = preference.create_org_preference_language!
+    language_id = language.id
+    preference.destroy!
+
+    assert_nil OrgPreferenceLanguage.find_by(id: language_id)
+  end
+
+  test "has one org_preference_colortheme" do
+    preference = OrgPreference.create!
+    colortheme = preference.create_org_preference_colortheme!
+
+    assert_equal colortheme, preference.org_preference_colortheme
+  end
+
+  test "destroys org_preference_colortheme when destroyed" do
+    preference = OrgPreference.create!
+    colortheme = preference.create_org_preference_colortheme!
+    colortheme_id = colortheme.id
+    preference.destroy!
+
+    assert_nil OrgPreferenceColortheme.find_by(id: colortheme_id)
+  end
+
+  test "consume_once_by_digest! is replay-detectable" do
+    digest = OrgPreference.digest_refresh_token("org-consume-once")
+    preference = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NOTHING,
+      expires_at: 1.day.from_now,
+      token_digest: digest,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+
+    first = OrgPreference.consume_once_by_digest!(digest: digest)
+
+    assert_equal preference.id, first.id
+    assert_predicate first.used_at, :present?
+    assert_nil OrgPreference.consume_once_by_digest!(digest: digest)
+    assert_predicate preference.reload, :replay?
+  end
+
+  test "consume_once_by_digest! rejects revoked compromised and expired rows" do
+    revoked = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NOTHING,
+      expires_at: 1.day.from_now,
+      token_digest: OrgPreference.digest_refresh_token("org-revoked"),
+      revoked_at: Time.current,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+    compromised = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NOTHING,
+      expires_at: 1.day.from_now,
+      token_digest: OrgPreference.digest_refresh_token("org-compromised"),
+      compromised_at: Time.current,
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+    expired = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NOTHING,
+      expires_at: 1.minute.ago,
+      token_digest: OrgPreference.digest_refresh_token("org-expired"),
+      jti: SecureRandom.uuid,
+      device_id: SecureRandom.uuid,
+    )
+
+    assert_nil OrgPreference.consume_once_by_digest!(digest: revoked.token_digest)
+    assert_nil OrgPreference.consume_once_by_digest!(digest: compromised.token_digest)
+    assert_nil OrgPreference.consume_once_by_digest!(digest: expired.token_digest)
+  end
+
+  test "rotate! creates replacement row and replacement link" do
+    digest = OrgPreference.digest_refresh_token("org-rotate")
+    original = OrgPreference.create!(
+      status_id: OrgPreferenceStatus::NOTHING,
+      expires_at: 1.day.from_now,
+      token_digest: digest,
+      jti: SecureRandom.uuid,
+      device_id: "org-device",
+    )
+
+    rotated = OrgPreference.rotate!(presented_digest: digest, device_id: "org-device", now: Time.current)
+
+    assert_predicate rotated, :present?
+    assert_predicate rotated.issued_refresh_token, :present?
+    assert_not_equal original.id, rotated.id
+    assert_equal rotated.id, original.reload.replaced_by_id
+  end
+
+  test "deletable scope excludes preferences with deletable_at in the future" do
+    preference = OrgPreference.create!
+
+    assert_not_includes OrgPreference.deletable, preference
+  end
+
+  test "deletable scope includes preferences with deletable_at in the past" do
+    preference = OrgPreference.create!(deletable_at: 1.second.ago)
+
+    assert_includes OrgPreference.deletable, preference
+  end
+end

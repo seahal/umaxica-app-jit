@@ -7,8 +7,8 @@ services:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
-    env_file: docker/core/env
-    entrypoint: ["/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh"]
+    env_file: docker/base/env
+    entrypoint: ["/bin/bash", "/home/jit/workspace/docker/base/entrypoint.sh"]
     command: ["sleep", "infinity"]
     restart: always
     user: "${UID:-1000}:${GID:-1000}"

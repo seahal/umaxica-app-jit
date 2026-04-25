@@ -1,0 +1,34 @@
+# == Schema Information
+#
+# Table name: zip_occurrences
+# Database name: occurrence
+#
+#  id           :bigint           not null, primary key
+#  body         :string           default(""), not null
+#  deletable_at :datetime         default(Infinity), not null
+#  memo         :string           default(""), not null
+#  revoked_at   :datetime         default(Infinity), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  public_id    :string(21)       default(""), not null
+#  status_id    :bigint           default(0), not null
+#
+# Indexes
+#
+#  index_zip_occurrences_on_body          (body) UNIQUE
+#  index_zip_occurrences_on_deletable_at  (deletable_at)
+#  index_zip_occurrences_on_public_id     (public_id) UNIQUE
+#  index_zip_occurrences_on_revoked_at    (revoked_at)
+#  index_zip_occurrences_on_status_id     (status_id)
+#
+# Foreign Keys
+#
+#  fk_zip_occurrences_on_status_id  (status_id => zip_occurrence_statuses.id)
+#
+one:
+  public_id: one_zip_occ_id_000001
+  body: "90210"
+  memo: ""
+  status_id: <%= ZipOccurrenceStatus::ACTIVE %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -1,16 +1,17 @@
-# Regional Content Design
+# Foundation and Distributor Content Design
 
 ## Purpose
 
-This document records the current stable design for `Regional` content surfaces.
+This document records the current stable design for content surfaces split across `Foundation` and
+`Distributor`.
 
-It covers only `docs` and `news`.
+It covers only `post.*` delivery for docs and news families.
 
 `help` is not part of this design and is planned separately.
 
 ## Surface Mapping
 
-`Regional` content is split by surface and storage model:
+Content is split by surface role and storage model:
 
 - `docs` uses the `Document` model family
 - `news` uses the `Timeline` model family
@@ -23,7 +24,10 @@ Audience-specific storage remains separate:
 
 Editing is performed only from the `org` staff CMS surface.
 
-Public delivery exists for `app`, `com`, and `org`.
+Foundation owns editorial write flows. Distributor owns public and API delivery on `post.*`.
+
+Public delivery exists for `app`, `com`, `org`, `dev`, and `net`, but `dev` and `net` are restricted
+by audience purpose.
 
 ## Canonical Content Models
 
@@ -105,7 +109,7 @@ In v1:
 
 ## Out of Scope
 
-The following are outside the current `docs/news` design:
+The following are outside the current docs/news design:
 
 - `help`
 - `avatar.posts`

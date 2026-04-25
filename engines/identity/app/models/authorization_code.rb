@@ -1,0 +1,158 @@
+# typed: false
+# frozen_string_literal: true
+
+require "json"
+
+# == Schema Information
+#
+# Table name: authorization_codes
+# Database name: token
+#
+#  id                    :bigint           not null, primary key
+#  acr                   :string           default("aal1"), not null
+#  auth_method           :string           default(""), not null
+#  code                  :string(64)       not null
+#  code_challenge        :string           not null
+#  code_challenge_method :string(8)        default("S256"), not null
+#  consumed_at           :datetime
+#  expires_at            :datetime         not null
+#  nonce                 :string
+#  redirect_uri          :text             not null
+#  revoked_at            :datetime
+#  scope                 :string
+#  state                 :string
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  client_id             :string(64)       not null
+#  customer_id           :bigint
+#  staff_id              :bigint
+#  user_id               :bigint
+#
+# Indexes
+#
+#  index_authorization_codes_on_code         (code) UNIQUE
+#  index_authorization_codes_on_customer_id  (customer_id)
+#  index_authorization_codes_on_expires_at   (expires_at)
+#  index_authorization_codes_on_staff_id     (staff_id)
+#  index_authorization_codes_on_user_id      (user_id)
+#
+class AuthorizationCode < TokenRecord
+  CODE_TTL = 10.seconds
+  CODE_BYTES = 32
+
+  belongs_to :user, optional: true
+  belongs_to :staff, optional: true
+  belongs_to :customer, optional: true
+
+  validates :code, presence: true, uniqueness: true, length: { maximum: 64 }
+  validates :client_id, presence: true, length: { maximum: 64 }
+  validates :redirect_uri, presence: true
+  validates :code_challenge, presence: true
+  validates :code_challenge_method, inclusion: { in: %w(S256) }, length: { maximum: 8 }
+  validates :expires_at, presence: true
+  validate :exactly_one_resource
+
+  scope :valid, -> { where(consumed_at: nil, revoked_at: nil).where("expires_at > ?", Time.current) }
+
+  def resource
+    customer || user || staff
+  end
+
+  def resource_type
+    return "customer" if customer_id?
+    return "user" if user_id?
+
+    "staff"
+  end
+
+  class << self
+    def generate_code
+      SecureRandom.urlsafe_base64(CODE_BYTES)
+    end
+
+    def issue!(client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil,
+               nonce: nil, auth_method: nil, acr: nil, user: nil, staff: nil, customer: nil)
+      create!(
+        code: generate_code,
+        user: user,
+        staff: staff,
+        customer: customer,
+        client_id: client_id,
+        redirect_uri: redirect_uri,
+        code_challenge: code_challenge,
+        code_challenge_method: code_challenge_method,
+        scope: scope,
+        state: state,
+        nonce: nonce,
+        auth_method: serialize_auth_method(auth_method),
+        acr: acr.to_s.presence || "aal1",
+        expires_at: CODE_TTL.from_now,
+      )
+    end
+
+    private
+
+    def serialize_auth_method(auth_method)
+      case auth_method
+      when Array
+        auth_method.map(&:to_s).compact_blank.to_json
+      else
+        auth_method.to_s.presence || ""
+      end
+    end
+  end
+
+  def expired?
+    expires_at <= Time.current
+  end
+
+  def consumed?
+    consumed_at.present?
+  end
+
+  def revoked?
+    revoked_at.present?
+  end
+
+  def usable?
+    !expired? && !consumed? && !revoked?
+  end
+
+  def consume!
+    raise RuntimeError, "Authorization code already consumed" if consumed?
+    raise RuntimeError, "Authorization code revoked" if revoked?
+    raise RuntimeError, "Authorization code expired" if expired?
+
+    update!(consumed_at: Time.current)
+  end
+
+  def revoke!
+    update!(revoked_at: Time.current) unless revoked?
+  end
+
+  def verify_pkce(code_verifier)
+    return false if code_verifier.blank?
+
+    expected = Base64.urlsafe_encode64(
+      Digest::SHA256.digest(code_verifier),
+      padding: false,
+    )
+    ActiveSupport::SecurityUtils.secure_compare(code_challenge, expected)
+  end
+
+  private
+
+  def exactly_one_resource
+    resources = {
+      user_id: user_id,
+      staff_id: staff_id,
+      customer_id: customer_id,
+    }.compact_blank
+
+    if resources.empty?
+      errors.add(:base, "must belong to either a user, a staff, or a customer")
+    elsif resources.size > 1
+      errors.add(:base, "cannot belong to more than one resource")
+    end
+  end
+end

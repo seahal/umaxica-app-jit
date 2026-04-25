@@ -1,0 +1,20 @@
+# == Schema Information
+#
+# Table name: com_contact_statuses
+# Database name: guest
+#
+#  id :bigint           not null, primary key
+#
+# Normal states
+NOTHING:
+  id: 0
+COMPLETED:
+  id: 1
+
+# Error/non-normal states (2+)
+FAILED:
+  id: 2
+SPAM_DETECTED:
+  id: 3
+PENDING_REVIEW:
+  id: 4

@@ -1,0 +1,9 @@
+# Auto-generated minimal fixture
+# == Schema Information
+#
+# Table name: division_statuses
+# Database name: operator
+#
+#  id :bigint           not null, primary key
+#
+#  index_division_statuses_on_lower_id  (lower((id)::text)) UNIQUE

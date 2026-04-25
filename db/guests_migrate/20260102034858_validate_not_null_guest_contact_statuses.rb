@@ -18,7 +18,7 @@ class ValidateNotNullGuestContactStatuses < ActiveRecord::Migration[8.2]
   def apply_not_null(table, column, name)
     return unless table_exists?(table) && column_exists?(table, column)
 
-    validate_check_constraint(table, name: name)
+    safety_assured { validate_check_constraint(table, name: name) }
     change_column_null(table, column, false)
     remove_check_constraint(table, name: name)
   end
@@ -26,11 +26,7 @@ class ValidateNotNullGuestContactStatuses < ActiveRecord::Migration[8.2]
   def remove_not_null(table, column, name)
     return unless table_exists?(table) && column_exists?(table, column)
 
-    add_check_constraint(
-      table, "#{column} IS NOT NULL",
-      name: name,
-      validate: false,
-    )
+    add_check_constraint(table, "#{column} IS NOT NULL", name: name, validate: false)
     change_column_null(table, column, true)
   end
 end

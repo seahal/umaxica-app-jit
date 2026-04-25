@@ -1,0 +1,27 @@
+# == Schema Information
+#
+# Table name: jwt_occurrence_statuses
+# Database name: occurrence
+#
+#  id   :bigint           not null, primary key
+#  name :string           default(""), not null
+#
+nothing:
+  id: 0
+  name: nothing
+
+legacy_nothing:
+  id: 1
+  name: legacy_nothing
+
+active:
+  id: 2
+  name: active
+
+inactive:
+  id: 3
+  name: inactive
+
+deleted:
+  id: 4
+  name: deleted

@@ -1,0 +1,59 @@
+# typed: false
+# == Schema Information
+#
+# Table name: departments
+# Database name: operator
+#
+#  id                   :bigint           not null, primary key
+#  name                 :string           not null
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  department_status_id :bigint           default(0), not null
+#  parent_id            :bigint
+#  workspace_id         :bigint
+#
+# Indexes
+#
+#  index_departments_on_department_status_id_and_parent_id  (department_status_id,parent_id) UNIQUE
+#  index_departments_on_parent_id                           (parent_id)
+#  index_departments_on_workspace_id                        (workspace_id)
+#
+# Foreign Keys
+#
+#  fk_departments_on_department_status_id  (department_status_id => department_statuses.id)
+#  fk_rails_...                            (parent_id => departments.id)
+#  fk_rails_...                            (workspace_id => workspaces.id) ON DELETE => nullify
+#
+
+# frozen_string_literal: true
+
+require "test_helper"
+
+class DepartmentTest < ActiveSupport::TestCase
+  fixtures :workspaces, :department_statuses
+
+  setup do
+    @workspace = workspaces(:one)
+  end
+
+  test "should be valid" do
+    department = Department.new(
+      name: "Test Dept",
+      department_status_id: DepartmentStatus::NOTHING,
+      workspace: @workspace,
+    )
+
+    assert_predicate department, :valid?, department.errors.full_messages.to_sentence
+  end
+
+  test "requires name" do
+    department = Department.new(department_status_id: DepartmentStatus::NOTHING)
+
+    assert_not department.valid?
+    assert_includes department.errors[:name], "を入力してください"
+  end
+
+  test "workspace association resolves to Workspace" do
+    assert_equal Workspace, Department.reflect_on_association(:workspace).klass
+  end
+end

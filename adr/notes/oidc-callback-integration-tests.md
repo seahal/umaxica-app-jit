@@ -1,6 +1,6 @@
 # OIDC Callback Integration Tests Note
 
-This note records the callback coverage added for the Apex relying-party surfaces.
+This note records the callback coverage added for the Acme relying-party surfaces.
 
 ## Status
 
@@ -8,14 +8,14 @@ Completed on 2026-04-07.
 
 ## Context
 
-The callback concern is shared across Apex, Core, and Docs surfaces. The plan focused on proving
-real callback behavior for the Apex surfaces first.
+The callback concern is shared across Acme, Core, and Docs surfaces. The plan focused on proving
+real callback behavior for the Acme surfaces first.
 
 ## Evidence
 
-- `test/controllers/apex/app/auth/callbacks_controller_test.rb`
-- `test/controllers/apex/org/auth/callbacks_controller_test.rb`
-- `test/controllers/apex/com/auth/callbacks_controller_test.rb`
+- `test/controllers/acme/app/auth/callbacks_controller_test.rb`
+- `test/controllers/acme/org/auth/callbacks_controller_test.rb`
+- `test/controllers/acme/com/auth/callbacks_controller_test.rb`
 - `test/support/oidc_callback_test_helper.rb`
 
 ## Verified Behavior
@@ -31,10 +31,10 @@ real callback behavior for the Apex surfaces first.
 
 ## Validation
 
-- `bundle exec rails test test/controllers/apex/app/auth/callbacks_controller_test.rb test/controllers/apex/org/auth/callbacks_controller_test.rb test/controllers/apex/com/auth/callbacks_controller_test.rb`
+- `bundle exec rails test test/controllers/acme/app/auth/callbacks_controller_test.rb test/controllers/acme/org/auth/callbacks_controller_test.rb test/controllers/acme/com/auth/callbacks_controller_test.rb`
   passes
 
 ## Consequences
 
-- Apex callback integration coverage is complete enough to leave `plans/active/`.
+- Acme callback integration coverage is complete enough to leave `plans/active/`.
 - The same helper can be reused when Core and Docs callback coverage becomes the next target.

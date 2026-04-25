@@ -1,0 +1,30 @@
+# == Schema Information
+#
+# Table name: org_preference_cookies
+# Database name: operator
+#
+#  id              :bigint           not null, primary key
+#  consent_version :uuid
+#  consented       :boolean          default(FALSE), not null
+#  consented_at    :datetime
+#  functional      :boolean          default(FALSE), not null
+#  performant      :boolean          default(FALSE), not null
+#  targetable      :boolean          default(FALSE), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  preference_id   :bigint           not null
+#
+# Indexes
+#
+#  index_org_preference_cookies_on_preference_id  (preference_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (preference_id => org_preferences.id)
+#
+one:
+  preference: one
+  consented: true
+two:
+  preference: two
+  consented: false

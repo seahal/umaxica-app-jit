@@ -1,0 +1,141 @@
+# typed: false
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Concerns
+  class ApplicationControllerCallbacksTest < ActiveSupport::TestCase
+    test "dummy test to satisfy Minitest/NoTestCases" do
+      assert_kind_of Array, DOMAINS
+    end
+    def get_callbacks_for(controller_class)
+      controller_class._process_action_callbacks
+    end
+
+    def extract_before_actions(callbacks)
+      callbacks.select { |c| c.kind == :before }.map(&:filter)
+    end
+
+    def rate_limit_callback_index(before_actions)
+      before_actions.index do |filter|
+        filter.is_a?(Proc) &&
+          filter.source_location&.first&.include?("/action_controller/metal/rate_limiting.rb")
+      end
+    end
+
+    def extract_prepend_before_actions(callbacks)
+      callbacks.select { |c| c.kind == :before && c.options[:prepend] }.map(&:filter)
+    end
+
+    def extract_after_actions(callbacks)
+      callbacks.select { |c| c.kind == :after }.map(&:filter)
+    end
+
+    DOMAINS = %w(
+      Jit::Identity::Sign::App
+      Jit::Identity::Sign::Com
+      Jit::Identity::Sign::Org
+      Jit::Foundation::Base::App
+      Jit::Foundation::Base::Com
+      Jit::Foundation::Base::Org
+      Jit::Zenith::Acme::App
+      Jit::Zenith::Acme::Com
+      Jit::Zenith::Acme::Org
+      Jit::Distributor::Post::App
+      Jit::Distributor::Post::Com
+      Jit::Distributor::Post::Org
+    ).freeze
+
+    CONTROLLER_CLASSES = {
+      "Jit::Identity::Sign::App" => Jit::Identity::Sign::App::ApplicationController,
+      "Jit::Identity::Sign::Com" => Jit::Identity::Sign::Com::ApplicationController,
+      "Jit::Identity::Sign::Org" => Jit::Identity::Sign::Org::ApplicationController,
+      "Jit::Foundation::Base::App" => Jit::Foundation::Base::App::ApplicationController,
+      "Jit::Foundation::Base::Com" => Jit::Foundation::Base::Com::ApplicationController,
+      "Jit::Foundation::Base::Org" => Jit::Foundation::Base::Org::ApplicationController,
+      "Jit::Zenith::Acme::App" => Jit::Zenith::Acme::App::ApplicationController,
+      "Jit::Zenith::Acme::Com" => Jit::Zenith::Acme::Com::ApplicationController,
+      "Jit::Zenith::Acme::Org" => Jit::Zenith::Acme::Org::ApplicationController,
+      "Jit::Distributor::Post::App" => Jit::Distributor::Post::App::ApplicationController,
+      "Jit::Distributor::Post::Com" => Jit::Distributor::Post::Com::ApplicationController,
+      "Jit::Distributor::Post::Org" => Jit::Distributor::Post::Org::ApplicationController,
+    }.freeze
+
+    DOMAINS.each do |domain|
+      controller_class = CONTROLLER_CLASSES[domain]
+
+      next unless controller_class
+
+      test_method_name = "test_#{domain.underscore.tr("/", "_")}_has_required_callbacks"
+
+      define_method(test_method_name) do
+        callbacks = get_callbacks_for(controller_class)
+        before_actions = extract_before_actions(callbacks)
+        after_actions = extract_after_actions(callbacks)
+        rate_limit_index = rate_limit_callback_index(before_actions)
+
+        assert rate_limit_index,
+               "#{domain} should have a rate limit callback"
+
+        validate_flash_boundary_index = before_actions.index(:validate_flash_boundary)
+
+        assert validate_flash_boundary_index,
+               "#{domain} should have validate_flash_boundary callback"
+
+        assert_operator rate_limit_index, :<, validate_flash_boundary_index,
+                        "#{domain}: rate limit should come before validate_flash_boundary"
+
+        assert_includes before_actions, :enforce_access_policy!,
+                        "#{domain} should have enforce_access_policy! callback"
+
+        assert_includes before_actions, :enforce_verification_if_required,
+                        "#{domain} should have enforce_verification_if_required callback"
+
+        assert_includes before_actions, :set_current,
+                        "#{domain} should have set_current callback"
+
+        assert_includes after_actions, :purge_current,
+                        "#{domain} should have purge_current callback"
+      end
+
+      rate_limit_method = "test_#{domain.underscore.tr("/", "_")}_rate_limit_callback"
+      define_method(rate_limit_method) do
+        callbacks = get_callbacks_for(controller_class)
+        before_actions = extract_before_actions(callbacks)
+
+        rate_limit_index = rate_limit_callback_index(before_actions)
+
+        assert rate_limit_index,
+               "#{domain} should have a rate limit callback"
+
+        validate_flash_boundary_index = before_actions.index(:validate_flash_boundary)
+
+        assert validate_flash_boundary_index,
+               "#{domain} should have validate_flash_boundary callback"
+
+        access_policy_index = before_actions.index(:enforce_access_policy!)
+
+        return unless access_policy_index
+
+        assert_operator rate_limit_index, :<, validate_flash_boundary_index,
+                        "#{domain}: rate limit should come before validate_flash_boundary"
+        assert_operator validate_flash_boundary_index, :<, access_policy_index,
+                        "#{domain}: validate_flash_boundary should come before enforce_access_policy!"
+      end
+
+      auth_method = "test_#{domain.underscore.tr("/", "_")}_auth_callback_order"
+      define_method(auth_method) do
+        callbacks = get_callbacks_for(controller_class)
+        before_actions = extract_before_actions(callbacks)
+
+        verification_index = before_actions.index(:enforce_verification_if_required)
+        current_index = before_actions.index(:set_current)
+
+        skip "Callbacks not found" unless verification_index && current_index
+
+        assert_operator verification_index, :<, current_index,
+                        "#{domain}: enforce_verification_if_required should come before set_current"
+      end
+    end
+  end
+end

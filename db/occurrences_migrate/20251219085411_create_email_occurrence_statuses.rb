@@ -4,7 +4,9 @@ class CreateEmailOccurrenceStatuses < ActiveRecord::Migration[8.2]
   def up
     create_table(:email_occurrence_statuses, id: :string, limit: 255)
 
-    execute("ALTER TABLE email_occurrence_statuses ALTER COLUMN id SET DEFAULT 'NONE'")
+    safety_assured do
+      execute("ALTER TABLE email_occurrence_statuses ALTER COLUMN id SET DEFAULT 'NONE'")
+    end
   end
 
   def down

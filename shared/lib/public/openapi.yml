@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: Rails Application API
+  description: API documentation for v0 endpoints across all domains
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: https://sign.app.localhost
+    description: Sign Service (User)
+  - url: https://sign.org.localhost
+    description: Sign Staff
+  - url: https://base.com.localhost
+    description: Core Corporate
+  - url: https://base.app.localhost
+    description: Core Service
+  - url: https://base.org.localhost
+    description: Core Staff
+  - url: https://acme.com.localhost
+    description: Acme Corporate
+  - url: https://acme.app.localhost
+    description: Acme Service
+  - url: https://acme.org.localhost
+    description: Acme Staff
+
+paths:
+  /v0/health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    enum: [OK, BOOTING, ERROR]
+                    description: Health status of the API
+              examples:
+                success:
+                  value:
+                    status: OK
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: _session_id
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+tags:
+  - name: Health
+    description: Health check endpoints

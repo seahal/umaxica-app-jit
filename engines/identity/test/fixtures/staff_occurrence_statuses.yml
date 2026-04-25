@@ -1,0 +1,19 @@
+# Fixed IDs - do not modify these values
+# == Schema Information
+#
+# Table name: staff_occurrence_statuses
+# Database name: occurrence
+#
+#  id   :bigint           not null, primary key
+#  name :string           default(""), not null
+#
+zero:
+  id: 0
+nothing:
+  id: 1
+active:
+  id: 2
+inactive:
+  id: 3
+deleted:
+  id: 4

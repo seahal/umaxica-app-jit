@@ -1,0 +1,24 @@
+<% content_for :page_title, "#{ENV['BRAND_NAME']} (com)" %>
+
+<section>
+  <h1>
+    Welcome to <%= ENV["BRAND_NAME"] %> (com)
+  </h1>
+  <p>
+    <%= t("acme.com.preferences.footer.preference") %> へすぐ移動できます。
+  </p>
+
+  <ul>
+    <li>
+      <a
+        href="https://<%= ENV['EDGE_CORPORATE_URL'] %>"
+        data-turbo-frame="_top">
+        <%= t("acme.com.preferences.footer.home") %>
+      </a>
+    </li>
+    <li>
+      <%= link_to t("acme.com.preferences.footer.preference"), identity.sign_com_preference_url,
+                  data: { turbo_frame: "_top" } %>
+    </li>
+  </ul>
+</section>

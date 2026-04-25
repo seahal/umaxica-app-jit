@@ -1,0 +1,92 @@
+# typed: false
+# frozen_string_literal: true
+
+require_relative "boot"
+
+require "rails/all"
+
+Bundler.require(*Rails.groups)
+
+module Jit
+  class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults(8.2)
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # CommonHelper ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: %w(assets tasks))
+
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
+    # config.time_zone = "Central Time (US & Canada)"
+    # config.eager_load_paths << Rails.root.join("extras")
+
+    # Add app/errors to autoload paths
+    config.autoload_paths << Rails.root.join("app/errors")
+
+    ### Added by user
+    # Trust X-Forwarded-* headers from reverse proxy (Cloudflare Tunnel, Nginx, etc.)
+    # This allows Rails to correctly determine the protocol (HTTP/HTTPS) and host
+    config.action_dispatch.trusted_proxies =
+      (ENV["TRUSTED_PROXIES"]&.split(",") || []).filter_map do |proxy|
+        IPAddr.new(proxy.strip)
+      rescue IPAddr::InvalidAddressError
+        nil
+      end
+
+    # Active Record Encryption Configuration
+    if %w(test production development).include?(Rails.env)
+      config.active_record.encryption.primary_key =
+        Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY)
+      deterministic_key = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY)
+      config.active_record.encryption.deterministic_key = deterministic_key
+      key_derivation_salt = Rails.app.creds.require(:ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT)
+      config.active_record.encryption.key_derivation_salt = key_derivation_salt
+    end
+
+    # USE UTC
+    config.time_zone = "UTC"
+    config.active_record.default_timezone = :utc
+
+    # ActiveJob
+    # Use Solid Queue for job processing
+    config.active_job.queue_adapter = :solid_queue
+    config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
+
+    # SMS Provider Configuration
+    config.sms_provider = ENV.fetch("SMS_PROVIDER", "aws_sns")
+    config.aws_region = ENV.fetch("AWS_REGION", "ap-northeast-1")
+
+    # Load translations from nested locale directories.
+    config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
+    config.i18n.load_path.push(Rails.root.join("config/locales/en.yml").to_s)
+    config.i18n.load_path.push(Rails.root.join("config/locales/ja.yml").to_s)
+    config.i18n.default_locale = :ja
+
+    # Set bigserial as default primary key for new tables
+    config.generators do |g|
+      g.orm(:active_record, primary_key_type: :bigserial)
+    end
+
+    # Multi-database async query executor (one thread pool per database)
+    config.active_record.async_query_executor = :multi_thread_pool
+
+    # Log SQL warnings from PostgreSQL
+    config.active_record.db_warnings_action = :log
+
+    # Allow per-model/per-attribute i18n error message format customization
+    config.active_model.i18n_customize_full_message = true
+
+    # Enable structured logging in all environments.
+    config.active_support.structured_logging = true
+
+    # new serializer
+    config.active_support.message_serializer = :message_pack
+    config.action_dispatch.cookies_serializer = :message_pack
+    config.cache_store = :file_store, "tmp/cache", { serializer: :message_pack }
+  end
+end

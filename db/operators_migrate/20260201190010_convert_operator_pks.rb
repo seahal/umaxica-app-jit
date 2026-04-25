@@ -2,6 +2,7 @@
 
 class ConvertOperatorPks < ActiveRecord::Migration[8.0]
   def up
+    safety_assured do
     # -------------------------------------------------------------------------
     # DEPENDENTS (Drop)
     # -------------------------------------------------------------------------
@@ -329,6 +330,7 @@ class ConvertOperatorPks < ActiveRecord::Migration[8.0]
     )
   end
 
+    end
   def down
     raise ActiveRecord::IrreversibleMigration
   end

@@ -2,6 +2,7 @@
 
 class ConvertGuestPks < ActiveRecord::Migration[8.0]
   def up
+    safety_assured do
     prefixes = %w(app com org)
 
     prefixes.each do |prefix|
@@ -50,13 +51,6 @@ class ConvertGuestPks < ActiveRecord::Migration[8.0]
         t.index(:token_expires_at)
       end
 
-      # FKs for Contacts
-      # We assume categories/statuses exist (since we didn't drop them).
-      # If they reference String PKs, column type matches (string).
-      # add_foreign_key :"#{prefix}_contacts", :"#{prefix}_contact_categories", column: :category_id, validate: false
-      # add_foreign_key :"#{prefix}_contacts", :"#{prefix}_contact_statuses", column: :status_id, validate: false
-
-      # Emails (String PK in schema: id: :string) -> Wait, schema said "id: :string" for app_contact_emails?
       # Line 30: create_table "app_contact_emails", id: :string do |t|
       # The User asked to convert UUID PKs.
       # If `app_contact_emails` has String PK, I don't need to change its PK.
@@ -198,6 +192,7 @@ class ConvertGuestPks < ActiveRecord::Migration[8.0]
     end
   end
 
+    end
   def down
     raise ActiveRecord::IrreversibleMigration
   end

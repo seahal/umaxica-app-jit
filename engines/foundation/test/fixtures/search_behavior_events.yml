@@ -1,0 +1,15 @@
+# == Schema Information
+#
+# Table name: search_behavior_events
+# Database name: behavior
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+query_executed:
+  id: 1
+index_updated:
+  id: 2
+index_rebuilt:
+  id: 3

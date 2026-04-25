@@ -22,11 +22,13 @@ class CreateAppContacts < ActiveRecord::Migration[8.0]
       :app_contacts, :app_contact_categories,
       column: :contact_category_title,
       primary_key: :title,
+      validate: false,
     )
     add_foreign_key(
       :app_contacts, :app_contact_statuses,
       column: :contact_status_id,
       primary_key: :id,
+      validate: false,
     )
   end
 end

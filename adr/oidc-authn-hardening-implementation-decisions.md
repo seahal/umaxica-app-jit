@@ -16,7 +16,7 @@ acceptance tests.
 
 - Implementation: AI agent (this session)
 - Impacted models: `User`, `Staff`, `Customer`, `Unauthenticated`
-- Impacted surfaces: all relying parties under `sign.*`, `core`, `apex`, and `docs`
+- Impacted surfaces: all relying parties under `sign.*`, `core`, `acme`, and `docs`
 
 ## When
 

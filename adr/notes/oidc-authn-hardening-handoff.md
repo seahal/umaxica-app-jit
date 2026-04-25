@@ -23,11 +23,11 @@ The spec tracked three concrete areas:
   `nonce`, `acr`, `amr`, and `jti`.
 - `test/unit/current/current_attributes_test.rb`, `test/services/auth/token_claims_test.rb`,
   `test/services/auth/token_service_test.rb`, `test/services/oidc/token_exchange_service_test.rb`,
-  and `test/controllers/apex/app/auth/callbacks_controller_test.rb` cover the hardening path.
+  and `test/controllers/acme/app/auth/callbacks_controller_test.rb` cover the hardening path.
 
 ## Validation
 
-- `bundle exec rails test test/unit/current/current_attributes_test.rb test/services/auth/token_claims_test.rb test/services/auth/token_service_test.rb test/services/oidc/token_exchange_service_test.rb test/controllers/apex/app/auth/callbacks_controller_test.rb`
+- `bundle exec rails test test/unit/current/current_attributes_test.rb test/services/auth/token_claims_test.rb test/services/auth/token_service_test.rb test/services/oidc/token_exchange_service_test.rb test/controllers/acme/app/auth/callbacks_controller_test.rb`
   passes.
 
 ## Consequences

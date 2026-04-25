@@ -1,0 +1,9 @@
+# typed: false
+# frozen_string_literal: true
+
+module Email::App
+  class ApplicationMailer < ActionMailer::Base
+    default from: Rails.app.creds.require(:SMTP_FROM_ADDRESS)
+    layout "mailer/app/mailer"
+  end
+end

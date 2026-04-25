@@ -1,6 +1,8 @@
 # Activity, Journal, and Chronicle Naming
 
-Status: accepted
+Status: superseded by `chronicle-audit-db-consolidation.md`
+
+Superseded on: 2026-04-23
 
 ## Context
 
@@ -15,6 +17,8 @@ At the same time, the persistence layer needs different names for the new databa
 model classes that sit on top of them.
 
 ## Decision
+
+This ADR is kept for history only.
 
 Keep the Rails engine names as `Identity`, `Global`, and `Regional`.
 
@@ -33,6 +37,20 @@ Recommended mapping:
 - Model names should follow the database family names when new models are introduced.
 - Future persistence changes can evolve without forcing another engine rename.
 - Reviewers should treat engine naming and data naming as separate concerns.
+
+## Superseded Reason
+
+The repository no longer treats `Activity`, `Journal`, and `Chronicle` as the active naming split
+for audit-style persistence.
+
+After the engine migration was abandoned in favor of independent Rails applications, the accepted
+direction changed to:
+
+- use one audit-domain name: `Chronicle`
+- consolidate former `activity` and `behavior` families into one chronicle domain
+- keep `occurrence` separate because it is not an audit-history concern
+
+See `chronicle-audit-db-consolidation.md` for the accepted replacement decision.
 
 ## Notes
 

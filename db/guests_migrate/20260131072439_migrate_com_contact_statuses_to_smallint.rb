@@ -2,6 +2,8 @@
 
 class MigrateComContactStatusesToSmallint < ActiveRecord::Migration[8.2]
   def up
+    return unless column_exists?(:com_contacts, :status_id)
+
     safety_assured do
       # 1. Add id_small to reference table
       add_column(:com_contact_statuses, :id_small, :integer, limit: 2)

@@ -1,0 +1,273 @@
+# typed: false
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: user_bulletins
+# Database name: principal
+#
+#  id         :bigint           not null, primary key
+#  body       :text
+#  read_at    :datetime
+#  title      :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       not null
+#  user_id    :bigint           not null
+#
+# Indexes
+#
+#  index_user_bulletins_on_public_id  (public_id) UNIQUE
+#  index_user_bulletins_on_user_id    (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
+require "test_helper"
+
+class UserBulletinTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses
+
+  setup do
+    @user = users(:one)
+    @user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+  end
+
+  test "belongs_to user association" do
+    bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Test Bulletin",
+      body: "Test body content",
+    )
+
+    assert_equal @user, bulletin.user
+  end
+
+  test "title is required" do
+    bulletin = UserBulletin.new(
+      user: @user,
+      body: "Test body",
+    )
+
+    assert_not bulletin.valid?
+    assert bulletin.errors.of_kind?(:title, :blank)
+  end
+
+  test "public_id is auto-generated" do
+    bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Test Bulletin",
+      body: "Test body",
+    )
+
+    assert_predicate bulletin.public_id, :present?
+    assert_equal 21, bulletin.public_id.length
+  end
+
+  test "public_id is unique" do
+    bulletin1 = UserBulletin.create!(
+      user: @user,
+      title: "First Bulletin",
+      body: "First body",
+    )
+
+    # Try to create with same public_id
+    bulletin2 = UserBulletin.new(
+      user: @user,
+      title: "Second Bulletin",
+      body: "Second body",
+    )
+    bulletin2.public_id = bulletin1.public_id
+
+    assert_not bulletin2.valid?
+    assert bulletin2.errors.of_kind?(:public_id, :taken)
+  end
+
+  test "unread scope returns only unread bulletins" do
+    unread_bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Unread",
+      body: "Unread body",
+    )
+
+    read_bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Read",
+      body: "Read body",
+      read_at: Time.current,
+    )
+
+    unread_ids = UserBulletin.unread.pluck(:id)
+
+    assert_includes unread_ids, unread_bulletin.id
+    assert_not_includes unread_ids, read_bulletin.id
+  end
+
+  test "oldest_first scope orders by created_at ascending" do
+    old_bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Old",
+      body: "Old body",
+      created_at: 2.days.ago,
+    )
+
+    new_bulletin = UserBulletin.create!(
+      user: @user,
+      title: "New",
+      body: "New body",
+      created_at: 1.day.ago,
+    )
+
+    bulletins = UserBulletin.oldest_first.to_a
+
+    assert_equal old_bulletin, bulletins.first
+    assert_equal new_bulletin, bulletins.last
+  end
+
+  test "read? returns false for unread bulletins" do
+    bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Unread",
+      body: "Unread body",
+    )
+
+    assert_not bulletin.read?
+  end
+
+  test "read? returns true for read bulletins" do
+    bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Read",
+      body: "Read body",
+      read_at: Time.current,
+    )
+
+    assert_predicate bulletin, :read?
+  end
+
+  test "mark_as_read! sets read_at timestamp" do
+    bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Test",
+      body: "Test body",
+    )
+
+    assert_nil bulletin.read_at
+
+    bulletin.mark_as_read!
+
+    assert_predicate bulletin.read_at, :present?
+    assert_predicate bulletin, :read?
+  end
+
+  test "mark_as_read! does nothing if already read" do
+    original_time = 1.hour.ago
+    bulletin = UserBulletin.create!(
+      user: @user,
+      title: "Test",
+      body: "Test body",
+      read_at: original_time,
+    )
+
+    bulletin.mark_as_read!
+
+    assert_equal original_time.to_i, bulletin.reload.read_at.to_i
+  end
+
+  test "body is optional" do
+    bulletin = UserBulletin.new(
+      user: @user,
+      title: "No Body",
+    )
+
+    assert_predicate bulletin, :valid?
+  end
+
+  test "user_id is required" do
+    bulletin = UserBulletin.new(
+      title: "Test",
+      body: "Test body",
+    )
+
+    assert_not bulletin.valid?
+    assert bulletin.errors.of_kind?(:user, :blank) || bulletin.errors.of_kind?(:user, :required)
+  end
+
+  test "includes PublicId concern" do
+    assert_includes UserBulletin.ancestors, PublicId
+  end
+
+  test "user_bulletins association on user" do
+    bulletin1 = UserBulletin.create!(
+      user: @user,
+      title: "First",
+      body: "First body",
+    )
+
+    bulletin2 = UserBulletin.create!(
+      user: @user,
+      title: "Second",
+      body: "Second body",
+    )
+
+    assert_includes @user.reload.user_bulletins, bulletin1
+    assert_includes @user.user_bulletins, bulletin2
+  end
+
+  test "dependent behavior on user destroy" do
+    UserBulletin.create!(
+      user: @user,
+      title: "Test",
+      body: "Test body",
+    )
+
+    # Bulletins should not prevent user deletion
+    assert_nothing_raised do
+      @user.destroy
+    end
+  end
+
+  # --- Acceptance: public_id immutability (issue #685) ---
+
+  # create (with public_id) - OK
+  test "public_id can be set explicitly at creation time" do
+    bulletin = UserBulletin.new(user: @user, title: "Explicit ID")
+    bulletin.public_id = "abcdefghijklmnopqrstu"
+
+    assert_predicate bulletin, :valid?
+    bulletin.save!
+
+    assert_equal "abcdefghijklmnopqrstu", bulletin.reload.public_id
+  end
+
+  # update (no change to public_id) - OK
+  test "update without changing public_id is valid" do
+    bulletin = UserBulletin.create!(user: @user, title: "Original")
+    bulletin.title = "Updated"
+
+    assert_predicate bulletin, :valid?
+    assert_nothing_raised { bulletin.save! }
+  end
+
+  # update (change public_id) - rejected by attr_readonly (first defense layer)
+  test "direct assignment to public_id on a persisted record raises ReadonlyAttributeError" do
+    bulletin = UserBulletin.create!(user: @user, title: "Test")
+
+    assert_raises(ActiveRecord::ReadonlyAttributeError) do
+      bulletin.public_id = "zzzzzzzzzzzzzzzzzzzzz"
+    end
+  end
+
+  # update (other attributes) - OK
+  test "update of other attributes does not invalidate public_id" do
+    bulletin      = UserBulletin.create!(user: @user, title: "Original", body: "Body")
+    original_id   = bulletin.public_id
+    bulletin.body = "Updated body"
+
+    assert_predicate bulletin, :valid?
+    bulletin.save!
+
+    assert_equal original_id, bulletin.reload.public_id
+  end
+end

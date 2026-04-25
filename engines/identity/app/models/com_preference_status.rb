@@ -1,0 +1,42 @@
+# typed: false
+# == Schema Information
+#
+# Table name: com_preference_statuses
+# Database name: commerce
+#
+#  id :bigint           not null, primary key
+#
+
+# frozen_string_literal: true
+
+class ComPreferenceStatus < CommerceRecord
+  # Fixed IDs - do not modify these values
+  DELETED = 1
+  NOTHING = 2
+  has_many :com_preferences,
+           class_name: "ComPreference",
+           foreign_key: "status_id",
+           primary_key: "id",
+           inverse_of: :com_preference_status,
+           dependent: :restrict_with_error
+
+  DEFAULTS = [DELETED, NOTHING].freeze
+
+  def self.default_ids
+    DEFAULTS
+  end
+
+  def self.ensure_defaults!
+    return if default_ids.blank?
+
+    existing_ids = where(id: default_ids).pluck(:id)
+    missing_ids = default_ids - existing_ids
+    return if missing_ids.empty?
+
+    if defined?(Prosopite)
+      Prosopite.pause { missing_ids.each { |id| create!(id: id) } }
+    else
+      missing_ids.each { |id| create!(id: id) }
+    end
+  end
+end

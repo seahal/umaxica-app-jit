@@ -22,11 +22,13 @@ class CreateOrgContacts < ActiveRecord::Migration[8.1]
       :org_contacts, :org_contact_categories,
       column: :contact_category_title,
       primary_key: :title,
+      validate: false,
     )
     add_foreign_key(
       :org_contacts, :org_contact_statuses,
       column: :contact_status_id,
       primary_key: :id,
+      validate: false,
     )
   end
 end

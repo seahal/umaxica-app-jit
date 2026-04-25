@@ -2,8 +2,7 @@
 
 class AddMissingIndexesToUniversals < ActiveRecord::Migration[8.2]
   def change
-    # Add indexes for status_id on all occurrence tables
-    %w(
+    %i[
       area
       domain
       email
@@ -12,8 +11,8 @@ class AddMissingIndexesToUniversals < ActiveRecord::Migration[8.2]
       telephone
       user
       zip
-    ).each do |prefix|
-      add_index(:"#{prefix}_occurrences", :status_id)
+    ].each do |prefix|
+      safety_assured { add_index(:"#{prefix}_occurrences", :status_id) }
     end
   end
 end

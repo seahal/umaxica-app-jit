@@ -1,0 +1,13 @@
+# == Schema Information
+#
+# Table name: staff_token_statuses
+# Database name: token
+#
+#  id :bigint           not null, primary key
+#
+NOTHING:
+  id: 0
+ACTIVE:
+  id: 1
+EXPIRED:
+  id: 2

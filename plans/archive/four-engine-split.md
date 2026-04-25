@@ -44,7 +44,7 @@ The previous plan split the app into 2 deployment units (Global and Local). The 
 | Engine        | Host pattern                    | Current domain | Network           | Purpose                                   |
 | ------------- | ------------------------------- | -------------- | ----------------- | ----------------------------------------- |
 | **signature** | sign.{app,com,org}.\*           | sign           | Public, permanent | Auth, passkeys, OIDC, social login        |
-| **world**     | {app,com,org}.\*                | apex           | Public, flexible  | Global BFF, dashboard, settings           |
+| **world**     | {app,com,org}.\*                | acme           | Public, flexible  | Global BFF, dashboard, settings           |
 | **station**   | www.{app,com,org}.\*            | core           | Regional          | Contacts, management, staff admin         |
 | **press**     | docs/news/help.{app,com,org}.\* | docs           | Closed (CF VPN)   | Content delivery, strictly internal Rails |
 
@@ -60,7 +60,7 @@ references would create unnecessary complexity. Rails engines naturally referenc
 
 ### No `isolate_namespace` initially
 
-Controller namespaces stay unchanged (sign/, apex/, core/, docs/). This avoids mass-renaming
+Controller namespaces stay unchanged (sign/, acme/, core/, docs/). This avoids mass-renaming
 hundreds of controllers and their test files.
 
 ### Shared concerns
@@ -74,7 +74,7 @@ because they have zero external consumers.
 ### Internal names preserved
 
 Engine directory names are new (signature, world, station, press), but the controller namespace
-paths inside each engine remain unchanged (sign/, apex/, core/, docs/). URLs do not change.
+paths inside each engine remain unchanged (sign/, acme/, core/, docs/). URLs do not change.
 
 ### DEPLOY_MODE
 
@@ -99,9 +99,9 @@ to mount engines. Remove old `engines/local/` skeleton.
 Move docs routes, controllers (42), and views. Smallest domain, most isolated. Establishes the
 extraction pattern.
 
-### Phase 3: Extract world (apex)
+### Phase 3: Extract world (acme)
 
-Move apex routes, controllers (39), and views. Second smallest, straightforward BFF.
+Move acme routes, controllers (39), and views. Second smallest, straightforward BFF.
 
 ### Phase 4: Extract station (core)
 
@@ -130,7 +130,7 @@ Models stay in the main app. For reference, the database scope classification:
 ## Cross-Engine Route References
 
 Before each extraction, audit controllers for named route helpers pointing to other domains. Replace
-with URL configuration (e.g., `ENV["APEX_SERVICE_URL"] + "/path"`) to ensure single-engine deploy
+with URL configuration (e.g., `ENV["ZENITH_ACME_APP_URL"] + "/path"`) to ensure single-engine deploy
 mode works.
 
 ## Related Issues

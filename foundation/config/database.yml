@@ -1,0 +1,248 @@
+<% default_host = ENV.fetch("POSTGRESQL_HOST", "localhost") %>
+<% test_host = ENV.fetch("POSTGRESQL_TEST_HOST", ENV["POSTGRESQL_DEFAULT_PUB"] || default_host) %>
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= default_host %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 32 } %>
+  port: 5432
+  timeout: 30000
+  username: <%= ENV.fetch("POSTGRESQL_USER", "postgres") %>
+  password: <%= ENV["POSTGRESQL_PASSWORD"] %>
+  lock_timeout: 2s
+  statement_timeout: 2s
+  advisory_locks: false
+test_default: &test_default
+  <<: *default
+  host: <%= test_host %>
+  # Keep test pool intentionally small for multi-DB setups to avoid exhausting Postgres connections.
+  pool: <%= ENV.fetch("RAILS_TEST_DB_POOL", 2) %>
+  timeout: 60000
+  prepared_statements: false
+  advisory_locks: true
+  lock_timeout: 10s
+  statement_timeout: 30s
+development:
+  guest:
+    <<: *default
+    database: development_guest_db
+    host: <%= ENV["POSTGRESQL_GUEST_PUB"] || default_host %>
+    migrations_paths: ../db/guests_migrate
+  guest_replica:
+    <<: *default
+    replica: true
+    database: development_guest_db
+    host: <%= ENV["POSTGRESQL_GUEST_SUB"] || default_host %>
+    migrations_paths: ../db/guests_migrate
+  principal:
+    <<: *default
+    database: development_principal_db
+    host: <%= ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
+    migrations_paths: ../db/principals_migrate
+  principal_replica:
+    <<: *default
+    replica: true
+    database: development_principal_db
+    host: <%= ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
+    migrations_paths: ../db/principals_migrate
+  search:
+    <<: *default
+    database: development_search_db
+    host: <%= ENV["POSTGRESQL_SEARCH_PUB"] || default_host %>
+    migrations_paths: ../db/searches_migrate
+  search_replica:
+    <<: *default
+    replica: true
+    database: development_search_db
+    host: <%= ENV["POSTGRESQL_SEARCH_SUB"] || default_host %>
+    migrations_paths: ../db/searches_migrate
+  commerce:
+    <<: *default
+    database: development_commerce_db
+    host: <%= ENV["POSTGRESQL_COMMERCE_PUB"] || default_host %>
+    migrations_paths: ../db/commerces_migrate
+  commerce_replica:
+    <<: *default
+    replica: true
+    database: development_commerce_db
+    host: <%= ENV["POSTGRESQL_COMMERCE_SUB"] || default_host %>
+    migrations_paths: ../db/commerces_migrate
+  token:
+    <<: *default
+    database: development_token_db
+    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] || default_host %>
+    migrations_paths: ../db/tokens_migrate
+  token_replica:
+    <<: *default
+    replica: true
+    database: development_token_db
+    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] || default_host %>
+    migrations_paths: ../db/tokens_migrate
+  publication:
+    <<: *default
+    database: development_publication_db
+    host: <%= ENV["POSTGRESQL_PUBLICATION_PUB"] || default_host %>
+    migrations_paths: ../engines/distributor/db/publications_migrate
+  publication_replica:
+    <<: *default
+    replica: true
+    database: development_publication_db
+    host: <%= ENV["POSTGRESQL_PUBLICATION_SUB"] || default_host %>
+    migrations_paths: ../engines/distributor/db/publications_migrate
+  billing:
+    <<: *default
+    database: development_billing_db
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || default_host %>
+    migrations_paths: ../db/billing_migrate
+  billing_replica:
+    <<: *default
+    replica: true
+    database: development_billing_db
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || default_host %>
+    migrations_paths: ../db/billing_migrate
+  message:
+    <<: *default
+    database: development_message_db
+    host: <%= ENV["POSTGRESQL_MESSAGE_PUB"] || default_host %>
+    migrations_paths: ../db/messages_migrate
+  message_replica:
+    <<: *default
+    replica: true
+    database: development_message_db
+    host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] || default_host %>
+    migrations_paths: ../db/messages_migrate
+  notification:
+    <<: *default
+    database: development_notification_db
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] || default_host %>
+    migrations_paths: ../engines/zenith/db/notifications_migrate
+  notification_replica:
+    <<: *default
+    replica: true
+    database: development_notification_db
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] || default_host %>
+    migrations_paths: ../engines/zenith/db/notifications_migrate
+  cache:
+    <<: *default
+    database: development_foundation_cache_db
+    host: <%= ENV["POSTGRESQL_CACHE_PUB"] || default_host %>
+    migrations_paths: ../db/caches_migrate
+  cache_replica:
+    <<: *default
+    replica: true
+    database: development_foundation_cache_db
+    host: <%= ENV["POSTGRESQL_CACHE_SUB"] || default_host %>
+    migrations_paths: ../db/caches_migrate
+  queue:
+    <<: *default
+    database: development_foundation_queue_db
+    host: <%= ENV["POSTGRESQL_QUEUE_PUB"] || default_host %>
+    migrations_paths: ../db/queues_migrate
+  queue_replica:
+    <<: *default
+    replica: true
+    database: development_foundation_queue_db
+    host: <%= ENV["POSTGRESQL_QUEUE_SUB"] || default_host %>
+    migrations_paths: ../db/queues_migrate
+  storage:
+    <<: *default
+    database: development_foundation_storage_db
+    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] || default_host %>
+    migrations_paths: ../db/storages_migrate
+  storage_replica:
+    <<: *default
+    replica: true
+    database: development_foundation_storage_db
+    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] || default_host %>
+    migrations_paths: ../db/storages_migrate
+  occurrence:
+    <<: *default
+    database: development_occurrence_db
+    host: <%= ENV["POSTGRESQL_OCCURRENCE_PUB"] || default_host %>
+    migrations_paths: ../db/occurrences_migrate
+  occurrence_replica:
+    <<: *default
+    replica: true
+    database: development_occurrence_db
+    host: <%= ENV["POSTGRESQL_OCCURRENCE_SUB"] || default_host %>
+    migrations_paths: ../db/occurrences_migrate
+  activity:
+    <<: *default
+    database: development_activity_db
+    host: <%= ENV["POSTGRESQL_ACTIVITY_PUB"] || default_host %>
+    migrations_paths: ../db/activity_migrate
+  activity_replica:
+    <<: *default
+    replica: true
+    database: development_activity_db
+    host: <%= ENV["POSTGRESQL_ACTIVITY_SUB"] || default_host %>
+    migrations_paths: ../db/activity_migrate
+  behavior:
+    <<: *default
+    database: development_behavior_db
+    host: <%= ENV["POSTGRESQL_BEHAVIOR_PUB"] || default_host %>
+    migrations_paths: ../db/behavior_migrate
+  behavior_replica:
+    <<: *default
+    replica: true
+    database: development_behavior_db
+    host: <%= ENV["POSTGRESQL_BEHAVIOR_SUB"] || default_host %>
+    migrations_paths: ../db/behavior_migrate
+  operator:
+    <<: *default
+    database: development_operator_db
+    host: <%= ENV["POSTGRESQL_OPERATOR_PUB"] || default_host %>
+    migrations_paths: ../db/operators_migrate
+  operator_replica:
+    <<: *default
+    replica: true
+    database: development_operator_db
+    host: <%= ENV["POSTGRESQL_OPERATOR_SUB"] || default_host %>
+    migrations_paths: ../db/operators_migrate
+  setting:
+    <<: *default
+    database: development_setting_db
+    host: <%= ENV["POSTGRESQL_SETTING_PUB"] || default_host %>
+    migrations_paths: ../db/settings_migrate
+  setting_replica:
+    <<: *default
+    replica: true
+    database: development_setting_db
+    host: <%= ENV["POSTGRESQL_SETTING_SUB"] || default_host %>
+    migrations_paths: ../db/settings_migrate
+  avatar:
+    <<: *default
+    database: development_avatar_db
+    host: <%= ENV["POSTGRESQL_AVATAR_PUB"] || default_host %>
+    migrations_paths: ../engines/zenith/db/avatars_migrate
+  avatar_replica:
+    <<: *default
+    replica: true
+    database: development_avatar_db
+    host: <%= ENV["POSTGRESQL_AVATAR_SUB"] || default_host %>
+    migrations_paths: ../engines/zenith/db/avatars_migrate
+test:
+  primary:
+    <<: *test_default
+    database: test_foundation_db
+    migrations_paths:
+      - ../db/activity_migrate
+      - ../db/behavior_migrate
+      - ../db/billing_migrate
+      - ../db/caches_migrate
+      - ../db/commerces_migrate
+      - ../db/defaults_migrate
+      - ../db/documents_migrate
+      - ../db/finders_migrate
+      - ../db/guests_migrate
+      - ../db/messages_migrate
+      - ../db/occurrences_migrate
+      - ../db/operators_migrate
+      - ../db/principals_migrate
+      - ../db/queues_migrate
+      - ../db/searches_migrate
+      - ../db/settings_migrate
+      - ../db/tokens_migrate
+      - ../engines/distributor/db/publications_migrate
+      - ../engines/zenith/db/avatars_migrate
+      - ../engines/zenith/db/notifications_migrate

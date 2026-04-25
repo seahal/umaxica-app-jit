@@ -1,8 +1,13 @@
 # ADR: Adopt isolate_namespace for Rails Engines
 
-**Status:** Accepted (2026-04-14)
+**Status:** Accepted (2026-04-14), partially superseded (2026-04-22)
 
 **Supersedes:** The "No isolate_namespace" decision in `adr/four-engine-split.md` (2026-04-09)
+
+**Partially superseded by:** `adr/rails-way-engine-architecture-restoration.md` (2026-04-22) — the
+"Models stay in the host app" decision below is reversed in favor of Fat Engines.
+`isolate_namespace` itself is retained. `CrossEngineUrlHelpers` is discarded in favor of native
+Rails engine routing proxies.
 
 ## Context
 
@@ -18,31 +23,33 @@ After operating with this design, the following problems became clear:
 
 2. **Engine boundaries are not enforced at the code level.** Without `isolate_namespace`, any engine
    can accidentally reference host app or other engine internals without explicit qualification.
-   This undermines the Global/Regional database separation goal.
+   This undermines the Zenith/Foundation/Distributor boundary goal.
 
 3. **The Rails documentation strongly recommends `isolate_namespace` for mountable engines.**
    Skipping it means losing native routing proxies, namespace collision protection, and
    engine-scoped view resolution.
 
-4. **Models stay in the host app.** The original concern about `isolate_namespace` adding table name
-   prefixes does not apply because models are shared through the host app, not owned by engines.
-   This removes the largest practical objection to `isolate_namespace`.
+4. **Model ownership can stay engine-local.** The original concern about `isolate_namespace` adding
+   table name prefixes is not a blocker for the accepted four-app target. Model ownership and
+   wrapper-app runtime ownership are now governed by
+   `adr/four-app-wrapper-runtime-and-root-retirement.md`.
 
 ## Decision
 
 Adopt `isolate_namespace` for all four engines:
 
-| Engine     | Namespace         | Module | isolate_namespace target |
-| ---------- | ----------------- | ------ | ------------------------ |
-| Signature  | `Jit::Signature`  | `sign` | `Jit::Signature`         |
-| Zenith     | `Jit::Zenith`     | `apex` | `Jit::Zenith`            |
-| Foundation | `Jit::Foundation` | `base` | `Jit::Foundation`        |
-| Publisher  | `Jit::Publisher`  | `post` | `Jit::Publisher`         |
+| Engine      | Namespace          | Module | isolate_namespace target |
+| ----------- | ------------------ | ------ | ------------------------ |
+| Identity    | `Jit::Identity`    | `sign` | `Jit::Identity`          |
+| Zenith      | `Jit::Zenith`      | `acme` | `Jit::Zenith`            |
+| Foundation  | `Jit::Foundation`  | `base` | `Jit::Foundation`        |
+| Distributor | `Jit::Distributor` | `post` | `Jit::Distributor`       |
 
 ### Key design points
 
-- **Models remain in the host app.** `isolate_namespace` isolates controllers, routes, and views.
-  Models and database connections stay centralized in `app/models/`.
+- **Model ownership is outside this ADR.** `isolate_namespace` isolates controllers, routes, and
+  views. Final model and runtime ownership is defined by
+  `adr/four-app-wrapper-runtime-and-root-retirement.md`.
 - **Engine routing proxies replace `CrossEngineUrlHelpers`.** Cross-engine links use
   `signature.sign_app_sessions_path`, `foundation.base_app_contacts_path`, etc.
 - **`main_app` prefix required for host app routes from within engines.** This makes boundary
@@ -53,38 +60,30 @@ Adopt `isolate_namespace` for all four engines:
 ### Engine definition example
 
 ```ruby
-# engines/signature/lib/jit/signature/engine.rb
+# engines/identity/lib/jit/identity/engine.rb
 module Jit
-  module Signature
+  module Identity
     class Engine < ::Rails::Engine
-      isolate_namespace Jit::Signature
+      isolate_namespace Jit::Identity
 
-      engine_name "signature"
+      engine_name "identity"
     end
   end
 end
 ```
 
+Physical directory names match canonical engine names. The legacy physical names `signature`,
+`world`, `station`, and `press` are retired by a `git mv` rename in the same migration wave that
+adopts `isolate_namespace`. Equivalent rename applies to Zenith (`engines/zenith`), Foundation
+(`engines/foundation`), and Distributor (`engines/distributor`). Runtime boot then moves into
+wrapper apps per `adr/four-app-wrapper-runtime-and-root-retirement.md`.
+
 ### Mount example
 
 ```ruby
-# config/routes.rb
+# apps/identity/config/routes.rb
 Rails.application.routes.draw do
-  if Jit::Deployment.signature?
-    mount Jit::Signature::Engine => "/", as: :signature
-  end
-
-  if Jit::Deployment.zenith?
-    mount Jit::Zenith::Engine => "/", as: :zenith
-  end
-
-  if Jit::Deployment.foundation?
-    mount Jit::Foundation::Engine => "/", as: :foundation
-  end
-
-  if Jit::Deployment.publisher?
-    mount Jit::Publisher::Engine => "/", as: :publisher
-  end
+  mount Jit::Identity::Engine => "/", as: :identity
 end
 ```
 
@@ -92,17 +91,17 @@ end
 
 ### Positive
 
-- **Native routing proxies**: `signature.*_path`, `foundation.*_path` etc. replace custom dispatch
+- **Native routing proxies**: `identity.*_path`, `foundation.*_path` etc. replace custom dispatch
 - **Enforced boundaries**: Accidental cross-engine dependencies become visible as `main_app.` calls
 - **Standard Rails pattern**: New contributors understand the architecture without learning custom
   helpers
 - **`CrossEngineUrlHelpers` can be retired**: Removes a fragile custom abstraction
-- **Engine-scoped view resolution**: Each engine's views are isolated, overridable from the host
+- **Engine-scoped view resolution**: Each engine's views are isolated within the four-app target
 
 ### Negative
 
 - **FQCN changes**: Controller fully-qualified class names gain the engine prefix (e.g.,
-  `Jit::Signature::Sign::App::SessionsController`), though internal `module Sign` remains unchanged
+  `Jit::Identity::Sign::App::SessionsController`), though internal `module Sign` remains unchanged
 - **All cross-engine route references must be updated**: Every call to another engine's routes needs
   the engine proxy prefix
 - **Larger rename scope**: This should be combined with the engine rename (#725) to avoid doing the
@@ -118,6 +117,7 @@ end
 ## Related
 
 - `adr/four-engine-split.md` (original decision, partially superseded)
-- `plans/active/four-engine-rename.md` (execution plan)
+- `adr/four-app-wrapper-runtime-and-root-retirement.md`
+- `plans/active/four-engine-reframe.md` (execution direction)
 - `lib/cross_engine_url_helpers.rb` (to be retired)
 - GitHub #725 (parent rename issue)

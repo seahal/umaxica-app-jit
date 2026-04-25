@@ -1,0 +1,13 @@
+# == Schema Information
+#
+# Table name: com_preference_colortheme_options
+# Database name: commerce
+#
+#  id :bigint           not null, primary key
+#
+light:
+  id: 1
+dark:
+  id: 2
+system:
+  id: 3

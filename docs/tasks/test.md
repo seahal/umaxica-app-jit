@@ -5,8 +5,9 @@
 This document defines how the Rails platform is verified across the current boundary model:
 
 - `Identity` for identity and authentication
-- `Global` for the shared shell and coordination surface
-- `Regional` for `core`, `docs`, `help`, and `news`
+- `Zenith` for the shared shell and coordination surface
+- `Foundation` for `base.*`
+- `Distributor` for `post.*`
 
 ## References
 
@@ -25,18 +26,20 @@ This document defines how the Rails platform is verified across the current boun
 
 ## Boundary Matrix
 
-| Boundary   | Primary hosts                          | Coverage focus                                               |
-| ---------- | -------------------------------------- | ------------------------------------------------------------ |
-| `Identity` | `sign.*`                               | Auth, passkeys, token flows, audit writes                    |
-| `Global`   | `sign.*`                               | cross-surface coordination, shared preferences, host routing |
-| `Regional` | `base.*`, `docs.*`, `help.*`, `news.*` | content, support, business operations                        |
+| Boundary      | Primary hosts | Coverage focus                                               |
+| ------------- | ------------- | ------------------------------------------------------------ |
+| `Identity`    | `sign.*`      | Auth, passkeys, token flows, audit writes                    |
+| `Zenith`      | acme labels   | cross-surface coordination, shared preferences, host routing |
+| `Foundation`  | `base.*`      | business operations and admin flows                          |
+| `Distributor` | `post.*`      | content and API delivery                                     |
 
 ## Core Cases
 
 - host mismatch returns 404
 - redirect targets stay on the allow-list
 - sign-in and passkey flows write the expected cookies and tokens
-- regional contact and content flows validate input and persist encrypted data
+- foundation contact and admin flows validate input and persist encrypted data
+- distributor delivery flows respect the public/read-only contract
 - cross-boundary helpers use native engine routing proxies
 - database ownership matches the engine assigned to the record class
 
@@ -45,4 +48,4 @@ This document defines how the Rails platform is verified across the current boun
 - health endpoints stay fast
 - lint and test suites remain green
 - audit and security checks run before release
-- docs and plans stay synchronized with the current boundary model
+- docs and plans stay synchronized with the current four-engine boundary model

@@ -175,14 +175,14 @@ end
 Test environment automatically sets these (see `test/test_helper.rb`):
 
 ```ruby
-ENV["SIGN_SERVICE_URL"] = "sign.app.localhost"
-ENV["SIGN_STAFF_URL"] = "sign.org.localhost"
-ENV["CORE_SERVICE_URL"] = "ww.app.localhost"
-ENV["CORE_STAFF_URL"] = "ww.org.localhost"
-ENV["CORE_CORPORATE_URL"] = "ww.com.localhost"
-ENV["APEX_SERVICE_URL"] = "app.localhost"
-ENV["APEX_STAFF_URL"] = "org.localhost"
-ENV["APEX_CORPORATE_URL"] = "com.localhost"
+ENV["IDENTITY_SIGN_APP_URL"] = "sign.app.localhost"
+ENV["IDENTITY_SIGN_ORG_URL"] = "sign.org.localhost"
+ENV["FOUNDATION_BASE_APP_URL"] = "base.app.localhost"
+ENV["FOUNDATION_BASE_ORG_URL"] = "base.org.localhost"
+ENV["FOUNDATION_BASE_COM_URL"] = "base.com.localhost"
+ENV["ZENITH_APEX_APP_URL"] = "app.localhost"
+ENV["ZENITH_APEX_ORG_URL"] = "org.localhost"
+ENV["ZENITH_APEX_COM_URL"] = "com.localhost"
 ```
 
 ### Model Audit Events

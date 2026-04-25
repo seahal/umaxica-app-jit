@@ -1,0 +1,134 @@
+# typed: false
+# frozen_string_literal: true
+
+module DbscBindable
+  extend ActiveSupport::Concern
+
+  class_methods do
+    def dbsc_binding_method_attribute_name
+      return :binding_method_id if attribute_names.include?("binding_method_id")
+      return :user_token_binding_method_id if attribute_names.include?("user_token_binding_method_id")
+      return :staff_token_binding_method_id if attribute_names.include?("staff_token_binding_method_id")
+      return :customer_token_binding_method_id if attribute_names.include?("customer_token_binding_method_id")
+
+      nil
+    end
+
+    def dbsc_status_attribute_name
+      return :dbsc_status_id if attribute_names.include?("dbsc_status_id")
+      return :user_token_dbsc_status_id if attribute_names.include?("user_token_dbsc_status_id")
+      return :staff_token_dbsc_status_id if attribute_names.include?("staff_token_dbsc_status_id")
+      return :customer_token_dbsc_status_id if attribute_names.include?("customer_token_dbsc_status_id")
+
+      nil
+    end
+
+    def reference_status_attribute_name
+      return :status_id if attribute_names.include?("status_id")
+      return :user_token_status_id if attribute_names.include?("user_token_status_id")
+      return :staff_token_status_id if attribute_names.include?("staff_token_status_id")
+      return :customer_token_status_id if attribute_names.include?("customer_token_status_id")
+
+      nil
+    end
+
+    def dbsc_binding_method_class
+      dbsc_binding_method_classes[name]
+    end
+
+    def dbsc_status_class
+      dbsc_status_classes[name]
+    end
+
+    def dbsc_binding_method_classes
+      {
+        "AppPreference" => AppPreferenceBindingMethod,
+        "ComPreference" => ComPreferenceBindingMethod,
+        "OrgPreference" => OrgPreferenceBindingMethod,
+        "SettingPreference" => SettingPreferenceBindingMethod,
+        "UserToken" => UserTokenBindingMethod,
+        "StaffToken" => StaffTokenBindingMethod,
+        "CustomerToken" => CustomerTokenBindingMethod,
+      }
+    end
+
+    def dbsc_status_classes
+      {
+        "AppPreference" => AppPreferenceDbscStatus,
+        "ComPreference" => ComPreferenceDbscStatus,
+        "OrgPreference" => OrgPreferenceDbscStatus,
+        "SettingPreference" => SettingPreferenceDbscStatus,
+        "UserToken" => UserTokenDbscStatus,
+        "StaffToken" => StaffTokenDbscStatus,
+        "CustomerToken" => CustomerTokenDbscStatus,
+      }
+    end
+  end
+
+  included do
+    if reference_status_attribute_name
+      validates_reference_table reference_status_attribute_name, association: :"#{name.underscore}_status"
+    end
+    if dbsc_binding_method_attribute_name
+      validates_reference_table dbsc_binding_method_attribute_name,
+                                association: :"#{name.underscore}_binding_method"
+    end
+    if dbsc_status_attribute_name
+      validates_reference_table dbsc_status_attribute_name, association: :"#{name.underscore}_dbsc_status"
+    end
+  end
+
+  def binding_method_nothing?
+    binding_method_value == 0
+  end
+
+  def binding_method_dbsc?
+    binding_method_value == 1
+  end
+
+  def binding_method_legacy?
+    binding_method_value == 2
+  end
+
+  def dbsc_status_nothing?
+    dbsc_status_value == 0
+  end
+
+  def dbsc_status_pending?
+    dbsc_status_value == self.class.dbsc_status_class::PENDING
+  end
+
+  def dbsc_status_active?
+    dbsc_status_value == self.class.dbsc_status_class::ACTIVE
+  end
+
+  def dbsc_status_failed?
+    dbsc_status_value == self.class.dbsc_status_class::FAILED
+  end
+
+  def dbsc_status_revoke?
+    dbsc_status_value == self.class.dbsc_status_class::REVOKE
+  end
+
+  def dbsc_enabled?
+    binding_method_dbsc?
+  end
+
+  private
+
+  def binding_method_value
+    self[dbsc_binding_method_attribute]
+  end
+
+  def dbsc_status_value
+    self[dbsc_status_attribute]
+  end
+
+  def dbsc_binding_method_attribute
+    self.class.dbsc_binding_method_attribute_name
+  end
+
+  def dbsc_status_attribute
+    self.class.dbsc_status_attribute_name
+  end
+end

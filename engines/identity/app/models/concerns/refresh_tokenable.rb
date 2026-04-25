@@ -1,0 +1,241 @@
+# typed: false
+# frozen_string_literal: true
+
+# Shared refresh-token behavior for token models.
+# Keeps raw tokens out of the database by storing only digests.
+# Required gem: sha3
+
+module RefreshTokenable
+  extend ActiveSupport::Concern
+  include RefreshTokenShared
+
+  REFRESH_TTL = 30.days
+
+  included do
+    before_validation :ensure_refresh_expires_at, on: :create
+    before_validation :ensure_refresh_token_family_id, on: :create
+    before_validation :ensure_refresh_token_generation, on: :create
+    before_validation :ensure_device_id, on: :create
+    before_validation :ensure_device_id_digest, on: :create
+    validates :refresh_token_digest, uniqueness: true, allow_nil: true
+  end
+
+  class_methods do
+    def rotate_refresh!(presented_refresh_digest:, device_id:, now: Time.current)
+      return { status: :invalid, token: nil } if presented_refresh_digest.blank?
+
+      current_token = find_by(refresh_token_digest: presented_refresh_digest)
+      return { status: :invalid, token: nil } unless current_token
+
+      if device_id.present? && current_token.device_id.present? && current_token.device_id != device_id
+        return { status: :invalid, token: current_token }
+      end
+
+      transaction do
+        relation =
+          where(
+            :id => current_token.id,
+            :refresh_token_digest => presented_refresh_digest,
+            :rotated_at => nil,
+            expiry_column => nil,
+            :compromised_at => nil,
+          ).where(arel_table[:refresh_expires_at].gt(now))
+
+        if column_names.include?("revoked_at")
+          relation = relation.where(arel_table[:revoked_at].eq(nil).or(arel_table[:revoked_at].gt(now)))
+        end
+
+        updated = relation.first
+
+        if updated.blank?
+          current_token.reload
+          return { status: :replay, token: current_token } if current_token.rotated_at.present?
+
+          return { status: :invalid, token: current_token }
+        end
+
+        updated.update!(rotated_at: now, last_used_at: now, updated_at: now)
+
+        current_token.reload
+        replacement, raw_refresh_token = create_rotated_token_record!(current_token)
+
+        {
+          status: :rotated,
+          token: replacement,
+          previous_token: current_token,
+          refresh_token: raw_refresh_token,
+        }
+      end
+    end
+
+    private
+
+    def create_rotated_token_record!(previous_token)
+      actor_key = actor_foreign_key_from(previous_token)
+      token_status_key = token_status_key_from(previous_token)
+      token_kind_key = token_kind_key_from(previous_token)
+
+      attrs = {
+        refresh_token_family_id: previous_token.refresh_token_family_id.presence || SecureRandom.uuid,
+        refresh_token_generation: Integer(previous_token.refresh_token_generation.to_s, 10) + 1,
+        refresh_expires_at: previous_token.refresh_expires_at,
+        device_id: previous_token.device_id,
+        device_id_digest: column_names.include?("device_id_digest") ? digest_device_id(previous_token.device_id) : nil,
+        dbsc_session_id: previous_token.dbsc_session_id,
+        dbsc_public_key: previous_token.dbsc_public_key,
+        dbsc_challenge: previous_token.dbsc_challenge,
+        dbsc_challenge_issued_at: previous_token.dbsc_challenge_issued_at,
+      }
+      attrs[:revoked_at] = previous_token.revoked_at if previous_token.has_attribute?(:revoked_at)
+      attrs[:deletable_at] = previous_token.deletable_at if previous_token.has_attribute?(:deletable_at)
+
+      attrs[:status] = previous_token.status if previous_token.respond_to?(:status)
+      attrs[actor_key] = previous_token.public_send(actor_key) if actor_key
+      attrs[token_status_key] = previous_token.public_send(token_status_key) if token_status_key
+      attrs[token_kind_key] = previous_token.public_send(token_kind_key) if token_kind_key
+      attrs[:user_token_binding_method_id] =
+        previous_token.user_token_binding_method_id if previous_token.has_attribute?(:user_token_binding_method_id)
+      attrs[:staff_token_binding_method_id] =
+        previous_token.staff_token_binding_method_id if previous_token.has_attribute?(:staff_token_binding_method_id)
+      attrs[:customer_token_binding_method_id] =
+        previous_token.customer_token_binding_method_id if previous_token.has_attribute?(
+          :customer_token_binding_method_id,
+        )
+      attrs[:user_token_dbsc_status_id] =
+        previous_token.user_token_dbsc_status_id if previous_token.has_attribute?(:user_token_dbsc_status_id)
+      attrs[:staff_token_dbsc_status_id] =
+        previous_token.staff_token_dbsc_status_id if previous_token.has_attribute?(:staff_token_dbsc_status_id)
+      attrs[:customer_token_dbsc_status_id] =
+        previous_token.customer_token_dbsc_status_id if previous_token.has_attribute?(:customer_token_dbsc_status_id)
+
+      replacement = create!(attrs)
+      raw_refresh_token, verifier = generate_refresh_token(public_id: replacement.public_id)
+      replacement.update!(refresh_token_digest: digest_refresh_token(verifier))
+      [replacement, raw_refresh_token]
+    end
+
+    def actor_foreign_key_from(token)
+      return :user_id if token.has_attribute?(:user_id)
+      return :staff_id if token.has_attribute?(:staff_id)
+      return :customer_id if token.has_attribute?(:customer_id)
+
+      nil
+    end
+
+    def token_status_key_from(token)
+      return :user_token_status_id if token.has_attribute?(:user_token_status_id)
+      return :staff_token_status_id if token.has_attribute?(:staff_token_status_id)
+      return :customer_token_status_id if token.has_attribute?(:customer_token_status_id)
+
+      nil
+    end
+
+    def token_kind_key_from(token)
+      return :user_token_kind_id if token.has_attribute?(:user_token_kind_id)
+      return :staff_token_kind_id if token.has_attribute?(:staff_token_kind_id)
+      return :customer_token_kind_id if token.has_attribute?(:customer_token_kind_id)
+
+      nil
+    end
+  end
+
+  # Whether the token is revoked.
+  def revoked?
+    expired? || compromised_at.present?
+  end
+
+  # Whether the refresh token has expired.
+  def expired_refresh?
+    refresh_expires_at <= Time.current
+  end
+
+  # Whether the token is active.
+  def active?
+    !revoked? && !expired_refresh?
+  end
+
+  # Rotate (refresh) the token and return the raw token for the client.
+  def rotate_refresh_token!(expires_at: nil)
+    # Use a transaction to keep token state consistent.
+    transaction do
+      token, verifier = generate_refresh_token(public_id: public_id)
+
+      self.refresh_token_digest = digest_refresh_token(verifier)
+      self.refresh_expires_at = expires_at || default_refresh_expires_at
+      self.last_used_at = Time.current
+      self.refresh_token_generation = Integer(refresh_token_generation.to_s, 10) + 1
+      save!
+
+      # Return the combined token for the client.
+      token
+    end
+  end
+
+  # Revoke the token.
+  def revoke!
+    now = Time.current
+    attrs = {}
+    attrs[:expired_at] = now if has_attribute?(:expired_at)
+    attrs[:revoked_at] = now if has_attribute?(:revoked_at)
+    update!(attrs)
+  end
+
+  def expired?
+    if respond_to?(:expired_at) && has_attribute?(:expired_at)
+      expired_at.present?
+    elsif respond_to?(:revoked_at) && has_attribute?(:revoked_at)
+      revoked_at.present?
+    else
+      false
+    end
+  end
+
+  def refresh_token=(verifier)
+    self.refresh_token_digest = verifier.blank? ? nil : digest_refresh_token(verifier)
+  end
+
+  # Authenticate the refresh token.
+  def authenticate_refresh_token(verifier)
+    return false unless active?
+
+    refresh_token_digest_matches?(verifier)
+  end
+
+  def refresh_token_digest_matches?(verifier)
+    return false if verifier.blank? || refresh_token_digest.blank?
+
+    candidate = digest_refresh_token(verifier)
+
+    secure_compare?(refresh_token_digest, candidate)
+  end
+
+  private
+
+  def default_refresh_expires_at
+    Time.current + REFRESH_TTL
+  end
+
+  def ensure_refresh_expires_at
+    self.refresh_expires_at ||= default_refresh_expires_at
+  end
+
+  def ensure_refresh_token_family_id
+    self.refresh_token_family_id ||= SecureRandom.uuid
+  end
+
+  def ensure_refresh_token_generation
+    self.refresh_token_generation ||= 0
+  end
+
+  def ensure_device_id
+    return unless has_attribute?(:device_id)
+
+    self.device_id = SecureRandom.uuid if device_id.blank?
+  end
+
+  def ensure_device_id_digest
+    return unless has_attribute?(:device_id_digest)
+
+    self.device_id_digest = digest_device_id(device_id)
+  end
+end

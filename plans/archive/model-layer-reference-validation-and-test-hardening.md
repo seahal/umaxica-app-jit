@@ -160,7 +160,7 @@ must not merge them into this work item.
 Known examples include:
 
 - route-helper and route-alias failures in controller and integration tests
-- missing sign, docs, apex, and core route helpers in full `rails test`
+- missing sign, docs, acme, and core route helpers in full `rails test`
 - unrelated formatting drift in files outside the touched model/test scope
 - existing package audit findings outside the model-layer changes
 

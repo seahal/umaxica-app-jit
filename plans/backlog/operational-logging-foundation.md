@@ -146,3 +146,7 @@ They should not be collapsed into one undifferentiated stream.
 2. define the shared operational log fields
 3. map high-value operational events to alerting thresholds
 4. decide where each event should be emitted in the codebase
+
+## Related
+
+- `plans/backlog/gh659-pre-consent-event-allowlist.md`

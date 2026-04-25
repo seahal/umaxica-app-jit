@@ -112,12 +112,17 @@ The previous verification is no longer current for the required scope or TTL and
 
 The boundary that authenticates the subject, manages the core login state, and issues tokens.
 
-### Global Boundary
+### Zenith Boundary
 
-The public sign entry surface that delegates identity work to the Identity boundary and then
+The acme shared-entry surface that delegates identity work to the Identity boundary and then
 establishes the shared shell state.
 
-### Regional Boundary
+### Foundation Boundary
 
-The boundary for `core`, `docs`, `help`, and `news` flows that depend on shared identity but own
-their own business and content chronicle records.
+The boundary for `base.*` business and admin flows that depend on shared identity and own the main
+business-side write stores.
+
+### Distributor Boundary
+
+The boundary for `post.*` delivery and API flows that depend on shared identity where required but
+own the publication-side read and delivery contract.

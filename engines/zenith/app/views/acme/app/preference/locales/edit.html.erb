@@ -1,0 +1,61 @@
+<% scope = local_assigns.fetch(:scope, :app).to_s %>
+<% title t("acme.app.preference.locale.edit.title") %>
+
+<div>
+  <header>
+    <h1>
+      <%= t("acme.#{scope}.preference.locale.edit.title") %>
+    </h1>
+    <p>
+      <%= t("acme.#{scope}.preference.locale.edit.description") %>
+    </p>
+  </header>
+
+  <%= form_with url: public_send("zenith.acme_#{scope}_preference_locale_path"), method: :patch do |f| %>
+    <div>
+      <h2>
+        <%= t("acme.#{scope}.preference.locale.edit.language_section") %>
+      </h2>
+      <div>
+        <%= f.label :language, t("acme.#{scope}.preference.locale.edit.language_label") %>
+        <%= f.select :language,
+                     options_for_select(
+                       [
+                         [t("acme.#{scope}.preference.locale.edit.language_options.ja"), "ja"],
+                         [t("acme.#{scope}.preference.locale.edit.language_options.en"), "en"]
+                       ],
+                       (@current_language.presence || "JA").downcase
+                     ),
+                     { prompt: t("acme.#{scope}.preference.locale.edit.language_prompt") } %>
+      </div>
+    </div>
+
+    <div>
+      <h2>
+        <%= t("acme.#{scope}.preference.locale.edit.timezone_section") %>
+      </h2>
+      <div>
+        <%= f.label :timezone, t("acme.#{scope}.preference.locale.edit.timezone_label") %>
+        <%= f.select :timezone,
+                     options_for_select(
+                       [
+                         [t("acme.#{scope}.preference.locale.edit.timezone_options.UTC"), "Etc/UTC"],
+                         [t("acme.#{scope}.preference.locale.edit.timezone_options.JST"), "Asia/Tokyo"]
+                       ],
+                       @current_timezone_identifier.presence || "Asia/Tokyo"
+                     ),
+                     { prompt: t("acme.#{scope}.preference.locale.edit.timezone_prompt") } %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.submit t("acme.#{scope}.preference.locale.edit.submit"),
+                   data: { turbo_submits_with: t("acme.app.preferences.submitting") } %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= link_to t("acme.#{scope}.preferences.back_to_settings"),
+                public_send("zenith.acme_#{scope}_preference_path") %>
+  </div>
+</div>

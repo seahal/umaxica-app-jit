@@ -199,30 +199,30 @@ jobs:
       IDENTIFIER_REGION_CODE: "392"
       IDENTIFIER_INSTANCE_ID: "0123456789"
       # Domain URLs - APEX
-      APEX_CORPORATE_URL: com.localhost
-      APEX_SERVICE_URL: app.localhost
-      APEX_STAFF_URL: org.localhost
+      ZENITH_APEX_COM_URL: com.localhost
+      ZENITH_APEX_APP_URL: app.localhost
+      ZENITH_APEX_ORG_URL: org.localhost
       # Domain URLs - Auth
-      SIGN_CORPORATE_URL: sign.com.localhost
-      SIGN_SERVICE_URL: sign.app.localhost
-      SIGN_STAFF_URL: sign.org.localhost
+      IDENTITY_SIGN_COM_URL: sign.com.localhost
+      IDENTITY_SIGN_APP_URL: sign.app.localhost
+      IDENTITY_SIGN_ORG_URL: sign.org.localhost
       TRUSTED_ORIGINS: http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001
       # Domain URLs - Core
-      CORE_CORPORATE_URL: ww.com.localhost
-      CORE_SERVICE_URL: ww.app.localhost
-      CORE_STAFF_URL: ww.org.localhost
+      FOUNDATION_BASE_COM_URL: base.com.localhost
+      FOUNDATION_BASE_APP_URL: base.app.localhost
+      FOUNDATION_BASE_ORG_URL: base.org.localhost
       # Domain URLs - Docs
-      DOCS_CORPORATE_URL: docs.com.localhost
-      DOCS_SERVICE_URL: docs.app.localhost
-      DOCS_STAFF_URL: docs.org.localhost
+      DISTRIBUTOR_POST_COM_URL: docs.com.localhost
+      DISTRIBUTOR_POST_APP_URL: docs.app.localhost
+      DISTRIBUTOR_POST_ORG_URL: docs.org.localhost
       # Domain URLs - News
-      NEWS_CORPORATE_URL: news.com.localhost
-      NEWS_SERVICE_URL: news.app.localhost
-      NEWS_STAFF_URL: news.org.localhost
+      DISTRIBUTOR_POST_COM_URL: news.com.localhost
+      DISTRIBUTOR_POST_APP_URL: news.app.localhost
+      DISTRIBUTOR_POST_ORG_URL: news.org.localhost
       # Domain URLs - Help
-      HELP_CORPORATE_URL: help.com.localhost
-      HELP_SERVICE_URL: help.app.localhost
-      HELP_STAFF_URL: help.org.localhost
+      DISTRIBUTOR_POST_COM_URL: help.com.localhost
+      DISTRIBUTOR_POST_APP_URL: help.app.localhost
+      DISTRIBUTOR_POST_ORG_URL: help.org.localhost
       # Domain URLs - Edge
       EDGE_CORPORATE_URL: localhost:5170
       EDGE_SERVICE_URL: localhost:5171

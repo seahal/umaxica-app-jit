@@ -35,7 +35,7 @@ Non-goals:
 
 ### Relying-party surfaces
 
-Surfaces such as `apex`, `core`, `docs`, `help`, and `news` are intended to be relying parties.
+Surfaces such as `acme`, `core`, `docs`, `help`, and `news` are intended to be relying parties.
 
 Responsibilities:
 

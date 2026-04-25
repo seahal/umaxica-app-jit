@@ -1,0 +1,27 @@
+<% content_for :page_title, 'Roots' %>
+<section>
+  <h1>
+    Welcome to <%= ENV["BRAND_NAME"] %> (org)
+  </h1>
+  <p>
+    <%= t("acme.org.preferences.footer.preference") %> へすぐ移動できます。
+  </p>
+
+  <ul>
+    <li>
+      <a
+        href="https://<%= ENV['EDGE_STAFF_URL'] %>"
+        data-turbo-frame="_top">
+        <%= t("acme.org.preferences.footer.home") %>
+      </a>
+    </li>
+    <li>
+      <%= link_to t("acme.org.configurations.title"), identity.sign_org_configuration_url,
+                  data: { turbo_frame: "_top" } %>
+    </li>
+    <li>
+      <%= link_to t("acme.org.preferences.footer.preference"), identity.sign_org_preference_url,
+                  data: { turbo_frame: "_top" } %>
+    </li>
+  </ul>
+</section>

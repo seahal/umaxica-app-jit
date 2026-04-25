@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: org_preference_timezone_options
+# Database name: operator
+#
+#  id :bigint           not null, primary key
+#
+utc:
+  id: 1
+asia_tokyo:
+  id: 2

@@ -1,0 +1,37 @@
+# typed: false
+# frozen_string_literal: true
+
+module Jit
+  module Distributor
+    require "test_helper"
+
+    class Jit::Distributor::Post::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
+      test "GET /health returns OK response" do
+        get distributor.post_com_health_url
+
+        assert_response :success
+        assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
+        assert_includes response.body, "OK"
+        assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
+      end
+
+      test "GET /health returns OK html response" do
+        get distributor.post_com_health_url(format: :html)
+
+        assert_response :success
+        assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
+        assert_includes response.body, "OK"
+        assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
+      end
+
+      test "GET /health returns OK json response" do
+        get distributor.post_com_health_url(format: :json)
+
+        assert_response :success
+        assert_includes response.body, "OK"
+        assert_match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, response.body)
+        assert_match(/\)\s+\S+\z/, response.body)
+      end
+    end
+  end
+end

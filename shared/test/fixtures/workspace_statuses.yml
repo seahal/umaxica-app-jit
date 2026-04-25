@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: workspace_statuses
+# Database name: operator
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+legacy_nothing:
+  id: 1

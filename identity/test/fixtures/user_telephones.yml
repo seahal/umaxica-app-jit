@@ -1,0 +1,65 @@
+# == Schema Information
+#
+# Table name: user_telephones
+# Database name: principal
+#
+#  id                                :bigint           not null, primary key
+#  locked_at                         :datetime         default(-Infinity), not null
+#  number                            :string           default(""), not null
+#  number_bidx                       :string
+#  number_digest                     :string
+#  otp_attempts_count                :integer          default(0), not null
+#  otp_counter                       :text             default(""), not null
+#  otp_expires_at                    :datetime         default(-Infinity), not null
+#  otp_last_sent_at                  :datetime         default(-Infinity), not null
+#  otp_private_key                   :string           default(""), not null
+#  created_at                        :datetime         not null
+#  updated_at                        :datetime         not null
+#  public_id                         :string(21)       not null
+#  user_id                           :bigint           not null
+#  user_identity_telephone_status_id :bigint           default(2), not null
+#
+# Indexes
+#
+#  index_user_telephones_on_lower_number                       (lower((number)::text)) UNIQUE
+#  index_user_telephones_on_number_bidx                        (number_bidx) UNIQUE WHERE (number_bidx IS NOT NULL)
+#  index_user_telephones_on_number_digest                      (number_digest) UNIQUE WHERE (number_digest IS NOT NULL)
+#  index_user_telephones_on_public_id                          (public_id) UNIQUE
+#  index_user_telephones_on_user_id                            (user_id)
+#  index_user_telephones_on_user_identity_telephone_status_id  (user_identity_telephone_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_identity_telephone_status_id => user_telephone_statuses.id)
+#
+
+sample_telephone:
+  user: sample_user
+  number: "+1234567890"
+  number_bidx: "sample_bidx"
+  number_digest: "sample_digest"
+  otp_attempts_count: 0
+  otp_counter: "sample_counter"
+  otp_expires_at: <%= 1.hour.from_now %>
+  otp_last_sent_at: <%= 1.minute.ago %>
+  otp_private_key: "sample_private_key"
+  public_id: "sample_public_id"
+  user_identity_telephone_status_id: <%= UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+verified_telephone:
+  user: sample_user
+  number: "+1234567891"
+  number_bidx: "verified_bidx"
+  number_digest: "verified_digest"
+  otp_attempts_count: 0
+  otp_counter: "verified_counter"
+  otp_expires_at: <%= 1.hour.from_now %>
+  otp_last_sent_at: <%= 1.minute.ago %>
+  otp_private_key: "verified_private_key"
+  public_id: "verified_public_id"
+  user_identity_telephone_status_id: <%= UserTelephoneStatus::VERIFIED %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

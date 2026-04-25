@@ -3,11 +3,12 @@
 ## 1. Purpose
 
 This document describes the target architecture for the Rails platform. The system is organized
-around three engines:
+around four engines:
 
 - `Identity`
-- `Global`
-- `Regional`
+- `Zenith`
+- `Foundation`
+- `Distributor`
 
 Engine names are responsibility boundaries. Host labels are separate entry labels.
 
@@ -15,11 +16,12 @@ Engine names are responsibility boundaries. Host labels are separate entry label
 
 ### 2.1 Responsibilities
 
-| Engine     | Responsibility                                                              |
-| ---------- | --------------------------------------------------------------------------- |
-| `Identity` | Identity, authentication, passkeys, tokens, and audit-sensitive login state |
-| `Global`   | Public `sign` entry surface, shared coordination, and shared preferences    |
-| `Regional` | `core`, `docs`, `help`, and `news` business and content flows               |
+| Engine        | Responsibility                                                              |
+| ------------- | --------------------------------------------------------------------------- |
+| `Identity`    | Identity, authentication, passkeys, tokens, and audit-sensitive login state |
+| `Zenith`      | Acme shared shell, shared coordination, and shared preferences              |
+| `Foundation`  | `base.*` business and admin flows                                           |
+| `Distributor` | `post.*` content and API delivery flows                                     |
 
 ### 2.2 Routing
 
@@ -33,7 +35,8 @@ Engine names are responsibility boundaries. Host labels are separate entry label
 | --------------------------------------------------------------------------------- | --------------------- |
 | `principal`, `operator`, `token`, `preference`, `guest`, `activity`, `occurrence` | Activity              |
 | `journal`, `notification`, `avatar`                                               | Journal               |
-| `publication`, `chronicle`, `message`, `search`, `billing`, `commerce`            | Chronicle             |
+| `publication`                                                                     | Distributor           |
+| `chronicle`, `message`, `search`, `billing`, `commerce`                           | Foundation            |
 | `queue`, `cache`, `storage`, `cable`                                              | Shared infrastructure |
 
 ## 3. Components
@@ -45,12 +48,13 @@ Engine names are responsibility boundaries. Host labels are separate entry label
 
 ## 4. Deployment
 
-| Mode          | Mounted engines            |
-| ------------- | -------------------------- |
-| `identity`    | Identity                   |
-| `global`      | Global                     |
-| `regional`    | Regional                   |
-| `development` | Identity, Global, Regional |
+| Mode          | Mounted engines                           |
+| ------------- | ----------------------------------------- |
+| `identity`    | Identity                                  |
+| `zenith`      | Zenith                                    |
+| `foundation`  | Foundation                                |
+| `distributor` | Distributor                               |
+| `development` | Identity, Zenith, Foundation, Distributor |
 
 ## 5. Quality Goals
 

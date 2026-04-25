@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: org_preference_language_options
+# Database name: operator
+#
+#  id :bigint           not null, primary key
+#
+ja:
+  id: 1
+en:
+  id: 2

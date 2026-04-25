@@ -1,26 +1,19 @@
-# ENV-based trusted_origins for CSRF protection
+# Engine-prefixed trusted_origins naming
 
-GitHub: plan from `plans/active/env-trusted-origins.md`
+The canonical trusted-origins contract follows the same naming rule as the canonical URL contract:
 
-The apex, core, and docs surface application controllers now read `trusted_origins` from environment
-variables instead of hard-coded localhost arrays.
+- `ENGINE_HOSTLABEL_AUDIENCE_TRUSTED_ORIGINS`
 
-Implemented mapping:
+Examples:
 
-- `APEX_APP_TRUSTED_ORIGINS`
-- `APEX_COM_TRUSTED_ORIGINS`
-- `APEX_ORG_TRUSTED_ORIGINS`
-- `CORE_APP_TRUSTED_ORIGINS`
-- `CORE_COM_TRUSTED_ORIGINS`
-- `CORE_ORG_TRUSTED_ORIGINS`
-- `DOCS_APP_TRUSTED_ORIGINS`
-- `DOCS_COM_TRUSTED_ORIGINS`
-- `DOCS_ORG_TRUSTED_ORIGINS`
+- `IDENTITY_SIGN_APP_TRUSTED_ORIGINS`
+- `ZENITH_ACME_COM_TRUSTED_ORIGINS`
+- `FOUNDATION_BASE_ORG_TRUSTED_ORIGINS`
+- `DISTRIBUTOR_POST_NET_TRUSTED_ORIGINS`
 
-The fallback value for each key keeps the current localhost origins available in development and
-test. A small shared concern parses the comma-separated ENV value and strips whitespace.
+Legacy names such as `ACME_*_TRUSTED_ORIGINS`, `ACME_*_TRUSTED_ORIGINS`, `CORE_*_TRUSTED_ORIGINS`,
+and `DOCS_*_TRUSTED_ORIGINS` are migration-source names only. They are not part of the target
+design.
 
-Regression coverage now includes:
-
-- a unit test for the shared parser
-- a controller test that checks the nine touched controllers expose the expected default origins
+The fallback value for each key may keep localhost origins available in development and test during
+the migration window, but runtime code should converge on engine-prefixed names only.

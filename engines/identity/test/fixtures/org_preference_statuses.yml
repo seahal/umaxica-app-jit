@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: org_preference_statuses
+# Database name: operator
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 2
+deleted:
+  id: 1

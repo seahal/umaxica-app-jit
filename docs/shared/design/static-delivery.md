@@ -17,14 +17,14 @@ canonical ENV naming pattern (`ENGINE_HOSTLABEL_AUDIENCE_*`):
 
 ### Bucket Examples
 
-| Bucket name                | Contents                     |
-| -------------------------- | ---------------------------- |
-| `GLOBAL_APEX_COM_PUBLIC`   | `favicon.ico`, static assets |
-| `GLOBAL_APEX_COM_ERROR`    | `404.html`, `500.html`       |
-| `IDENTITY_SIGN_APP_PUBLIC` | `favicon.ico`, static assets |
-| `IDENTITY_SIGN_APP_ERROR`  | `404.html`, `500.html`       |
-| `REGIONAL_BASE_ORG_PUBLIC` | `favicon.ico`, static assets |
-| `REGIONAL_BASE_ORG_ERROR`  | `404.html`, `500.html`       |
+| Bucket name                  | Contents                     |
+| ---------------------------- | ---------------------------- |
+| `ZENITH_ACME_COM_PUBLIC`     | `favicon.ico`, static assets |
+| `ZENITH_ACME_COM_ERROR`      | `404.html`, `500.html`       |
+| `IDENTITY_SIGN_APP_PUBLIC`   | `favicon.ico`, static assets |
+| `IDENTITY_SIGN_APP_ERROR`    | `404.html`, `500.html`       |
+| `FOUNDATION_BASE_ORG_PUBLIC` | `favicon.ico`, static assets |
+| `FOUNDATION_BASE_ORG_ERROR`  | `404.html`, `500.html`       |
 
 ## Request Flow
 
@@ -32,7 +32,7 @@ canonical ENV naming pattern (`ENGINE_HOSTLABEL_AUDIENCE_*`):
 
 ```
 User -> CloudFront -> _PUBLIC bucket (S3)
-                      e.g. GLOBAL_APEX_COM_PUBLIC/favicon.ico
+                      e.g. ZENITH_ACME_COM_PUBLIC/favicon.ico
 ```
 
 ### When an Error Occurs
@@ -59,7 +59,7 @@ User -> CloudFront -> _PUBLIC bucket (S3)
 
    ```
    CloudFront -> fetches from _ERROR bucket
-                 e.g. GLOBAL_APEX_COM_ERROR/404.html
+                 e.g. ZENITH_ACME_COM_ERROR/404.html
    ```
 
 5. **Deliver to the user**

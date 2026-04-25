@@ -117,3 +117,18 @@ erd.pdf
 test_output*.txt
 .gemini/
 gha-creds-*.json
+
+# Rails engines & wrapper apps
+apps/*/tmp/
+apps/*/log/
+apps/*/storage/
+apps/*/coverage/
+apps/*/public/assets/
+apps/*/public/vite*
+apps/*/app/assets/builds/
+apps/*/config/**/*.key
+engines/*/tmp/
+engines/*/log/
+engines/*/coverage/
+engines/*/pkg/
+engines/*/*.gem

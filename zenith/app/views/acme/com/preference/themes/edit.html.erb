@@ -1,0 +1,33 @@
+<% content_for :page_title, t("acme.com.preferences.theme_settings") %>
+
+<section>
+  <h1>
+    <%= t("acme.com.preference.theme.edit.title") %>
+  </h1>
+  <p>
+    <%= t("acme.com.preference.theme.edit.description") %>
+  </p>
+
+  <%= form_with model: @preference_colortheme, scope: :preference_colortheme, url: zenith.acme_com_preference_theme_path, method: :patch do |f| %>
+    <div>
+      <%= f.label :option_id, t("acme.com.preferences.theme.select_theme") %>
+      <div>
+        <%= f.select :option_id,
+                     options_for_select(
+                       [
+                         [t("acme.com.preference.theme.edit.options.light"), "light"],
+                         [t("acme.com.preference.theme.edit.options.dark"), "dark"],
+                         [t("acme.com.preference.theme.edit.options.system"), "system"]
+                       ],
+                       @preference_colortheme.option&.name || "system"),
+                     {} %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.submit t("acme.com.preferences.update_settings"),
+                   data: { turbo_submits_with: t("acme.com.preferences.submitting") } %>
+      <%= link_to t("acme.com.preferences.back_to_settings"), zenith.acme_com_preference_url %>
+    </div>
+  <% end %>
+</section>

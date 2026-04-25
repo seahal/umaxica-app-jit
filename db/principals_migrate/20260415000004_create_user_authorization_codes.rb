@@ -3,6 +3,9 @@
 
 class CreateUserAuthorizationCodes < ActiveRecord::Migration[8.2]
   def change
+    return unless table_exists?(:users)
+    return if table_exists?(:user_authorization_codes)
+
     create_table(:user_authorization_codes) do |t|
       t.string(:code, limit: 64, null: false)
       t.references(:user, null: false, foreign_key: true, type: :bigint)

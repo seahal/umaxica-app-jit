@@ -1,0 +1,40 @@
+# typed: false
+# frozen_string_literal: true
+
+module Jit
+  module Identity
+    module Sign
+      module App
+        module Web
+          module V0
+            module In
+              module Telephone
+                class OtpsController < ApplicationController
+                  def create
+                    result = Jit::Identity::Sign::In::OtpResendService.new(kind: :telephone, state: otp_params[:state]).call
+                    render_result(result)
+                  end
+
+                  private
+
+                  def otp_params
+                    params.permit(:state, :host, otp: [:state])
+                  end
+
+                  def render_result(result)
+                    response.headers["Retry-After"] =
+                      result.retry_after.to_s if result.status == :too_many_requests
+                    render json: {
+                      resendable: result.resendable,
+                      retry_after: result.retry_after,
+                    }, status: result.status
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end

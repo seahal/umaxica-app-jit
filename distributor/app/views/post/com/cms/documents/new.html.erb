@@ -1,0 +1,13 @@
+<% content_for :page_title, 'New Document' %>
+<%= turbo_frame_tag "modal" do %>
+  <div id="modal-overlay">
+    <div>
+      <div>
+        <h3>New Document</h3>
+        <%= link_to "×", distributor.post_com_cms_documents_path %>
+      </div>
+
+      <%= render "form", document: @document %>
+    </div>
+  </div>
+<% end %>

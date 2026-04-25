@@ -15,14 +15,14 @@ gem "packwerk", require: false
 #   gem "rails", "~> 8.1.0"
 gem "rails", github: "rails/rails", branch: "main"
 # Rails Engines for four-deployment architecture
-# - signature: Auth/Passkey/OIDC (permanent URLs)
-# - world: Global BFF/Dashboard (flexible evolution)
-# - station: Regional operations (per-region deploy)
-# - press: Content delivery (closed network via CF VPN)
-gem "jit-world", path: "engines/world"
-gem "jit-signature", path: "engines/signature"
-gem "jit-station", path: "engines/station"
-gem "jit-press", path: "engines/press"
+# - identity: Auth/Passkey/OIDC (permanent URLs)
+# - zenith: Global BFF/Dashboard (flexible evolution)
+# - foundation: Regional operations (per-region deploy)
+# - distributor: Content delivery (closed network via CF VPN)
+gem "jit-zenith", path: "engines/zenith"
+gem "jit-identity", path: "engines/identity"
+gem "jit-foundation", path: "engines/foundation"
+gem "jit-distributor", path: "engines/distributor"
 # Web server
 gem "puma"
 gem "falcon"

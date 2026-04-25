@@ -2,7 +2,8 @@
 
 class ConvertOccurrencePks < ActiveRecord::Migration[8.0]
   def up
-    main_types = %w(email ip telephone zip area domain user staff)
+    safety_assured do
+    base_types = %w(email ip telephone zip area domain user staff)
 
     # -------------------------------------------------------------------------
     # DEPENDENTS (Drop)
@@ -22,7 +23,7 @@ class ConvertOccurrencePks < ActiveRecord::Migration[8.0]
       drop_table(:"#{pivot}_occurrences", if_exists: true, force: :cascade)
     end
 
-    main_types.each do |type|
+    base_types.each do |type|
       drop_table(:"#{type}_occurrences", if_exists: true, force: :cascade)
       drop_table(:"#{type}_occurrence_statuses", if_exists: true, force: :cascade)
     end
@@ -32,7 +33,7 @@ class ConvertOccurrencePks < ActiveRecord::Migration[8.0]
     # -------------------------------------------------------------------------
 
     # Statuses
-    main_types.each do |type|
+    base_types.each do |type|
       create_table(:"#{type}_occurrence_statuses", id: :string) do |t|
         t.datetime(:expires_at, null: false, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" })
         t.timestamps
@@ -46,7 +47,7 @@ class ConvertOccurrencePks < ActiveRecord::Migration[8.0]
     end
 
     # Main Tables
-    main_types.each do |type|
+    base_types.each do |type|
       create_table(:"#{type}_occurrences") do |t|
         t.string(:public_id, limit: 21, null: false, default: "")
         t.string(:body, null: false, default: "") # Length limits vary but text/string is fine for recreation
@@ -92,6 +93,7 @@ class ConvertOccurrencePks < ActiveRecord::Migration[8.0]
     end
   end
 
+    end
   def down
     raise ActiveRecord::IrreversibleMigration
   end

@@ -1,0 +1,21 @@
+# typed: false
+# frozen_string_literal: true
+
+module Jit
+  module Zenith
+    require "test_helper"
+
+    class Jit::Zenith::Acme::Org::HealthsControllerTest < ActionDispatch::IntegrationTest
+      test "GET /health returns OK response without redirect" do
+        host! ENV["ZENITH_ACME_ORG_URL"] || "org.localhost"
+
+        get zenith.acme_org_health_url(ri: "jp"), headers: browser_headers
+
+        assert_response :success
+        assert_not_predicate response, :redirect?
+        assert_equal "text/plain; charset=utf-8", response.headers["Content-Type"]
+        assert_includes response.body, "OK"
+      end
+    end
+  end
+end

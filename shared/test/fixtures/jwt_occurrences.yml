@@ -1,0 +1,193 @@
+# == Schema Information
+#
+# Table name: jwt_occurrences
+# Database name: occurrence
+#
+#  id           :bigint           not null, primary key
+#  body         :string           default(""), not null
+#  deletable_at :datetime         default(Infinity), not null
+#  memo         :string           default(""), not null
+#  revoked_at   :datetime         default(Infinity), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  public_id    :string(21)       default(""), not null
+#  status_id    :bigint           default(0), not null
+#
+# Indexes
+#
+#  index_jwt_occurrences_on_body                 (body) UNIQUE
+#  index_jwt_occurrences_on_body_and_created_at  (body,created_at)
+#  index_jwt_occurrences_on_deletable_at         (deletable_at)
+#  index_jwt_occurrences_on_public_id            (public_id) UNIQUE
+#  index_jwt_occurrences_on_revoked_at           (revoked_at)
+#  index_jwt_occurrences_on_status_id            (status_id)
+#
+# Foreign Keys
+#
+#  fk_jwt_occurrences_on_status_id  (status_id => jwt_occurrence_statuses.id)
+#
+<%
+contexts = {
+  "AUTH_USER" => {
+    label: "User auth JWT",
+    reasons: {
+      "MALFORMED_TOKEN" => "token is malformed",
+      "UNKNOWN_KID" => "kid is unknown",
+      "MISSING_KID" => "kid claim is missing",
+      "ALG_NONE" => "alg none was supplied",
+      "ALG_MISMATCH" => "algorithm does not match expected value",
+      "MISSING_TYP" => "typ claim is missing",
+      "TYP_MISMATCH" => "typ does not match expected value",
+      "MISSING_ISS" => "issuer claim is missing",
+      "ISS_MISMATCH" => "issuer does not match expected value",
+      "MISSING_AUD" => "audience claim is missing",
+      "AUD_MISMATCH" => "audience does not match expected value",
+      "MISSING_EXP" => "expiration claim is missing",
+      "EXPIRED" => "token is expired",
+      "MISSING_NBF" => "not before claim is missing",
+      "IMMATURE" => "token is not valid yet",
+      "IAT_INVALID" => "issued at claim is invalid",
+      "MISSING_JTI" => "jti claim is missing",
+      "SIGNATURE_INVALID" => "signature verification failed",
+      "DECODE_ERROR" => "decode failed before classification",
+      "OTHER" => "uncategorized jwt anomaly",
+      "MISSING_SUB" => "subject claim is missing",
+      "MISSING_SID" => "session id claim is missing",
+      "MISSING_ACT" => "actor claim is missing",
+      "ACT_MISMATCH" => "actor does not match expected value",
+    },
+  },
+  "AUTH_STAFF" => {
+    label: "Staff auth JWT",
+    reasons: {
+      "MALFORMED_TOKEN" => "token is malformed",
+      "UNKNOWN_KID" => "kid is unknown",
+      "MISSING_KID" => "kid claim is missing",
+      "ALG_NONE" => "alg none was supplied",
+      "ALG_MISMATCH" => "algorithm does not match expected value",
+      "MISSING_TYP" => "typ claim is missing",
+      "TYP_MISMATCH" => "typ does not match expected value",
+      "MISSING_ISS" => "issuer claim is missing",
+      "ISS_MISMATCH" => "issuer does not match expected value",
+      "MISSING_AUD" => "audience claim is missing",
+      "AUD_MISMATCH" => "audience does not match expected value",
+      "MISSING_EXP" => "expiration claim is missing",
+      "EXPIRED" => "token is expired",
+      "MISSING_NBF" => "not before claim is missing",
+      "IMMATURE" => "token is not valid yet",
+      "IAT_INVALID" => "issued at claim is invalid",
+      "MISSING_JTI" => "jti claim is missing",
+      "SIGNATURE_INVALID" => "signature verification failed",
+      "DECODE_ERROR" => "decode failed before classification",
+      "OTHER" => "uncategorized jwt anomaly",
+      "MISSING_SUB" => "subject claim is missing",
+      "MISSING_SID" => "session id claim is missing",
+      "MISSING_ACT" => "actor claim is missing",
+      "ACT_MISMATCH" => "actor does not match expected value",
+    },
+  },
+  "APP_PREFERENCE" => {
+    label: "App preference JWT",
+    reasons: {
+      "MALFORMED_TOKEN" => "token is malformed",
+      "UNKNOWN_KID" => "kid is unknown",
+      "MISSING_KID" => "kid claim is missing",
+      "ALG_NONE" => "alg none was supplied",
+      "ALG_MISMATCH" => "algorithm does not match expected value",
+      "MISSING_TYP" => "typ claim is missing",
+      "TYP_MISMATCH" => "typ does not match expected value",
+      "MISSING_ISS" => "issuer claim is missing",
+      "ISS_MISMATCH" => "issuer does not match expected value",
+      "MISSING_AUD" => "audience claim is missing",
+      "AUD_MISMATCH" => "audience does not match expected value",
+      "MISSING_EXP" => "expiration claim is missing",
+      "EXPIRED" => "token is expired",
+      "MISSING_NBF" => "not before claim is missing",
+      "IMMATURE" => "token is not valid yet",
+      "IAT_INVALID" => "issued at claim is invalid",
+      "MISSING_JTI" => "jti claim is missing",
+      "SIGNATURE_INVALID" => "signature verification failed",
+      "DECODE_ERROR" => "decode failed before classification",
+      "OTHER" => "uncategorized jwt anomaly",
+      "MISSING_PUBLIC_ID" => "preference public id claim is missing",
+      "MISSING_PREFERENCE_TYPE" => "preference type claim is missing",
+      "PREFERENCE_TYPE_MISMATCH" => "preference type does not match expected value",
+      "HOST_MISMATCH" => "request host does not match expected host",
+    },
+  },
+  "COM_PREFERENCE" => {
+    label: "Com preference JWT",
+    reasons: {
+      "MALFORMED_TOKEN" => "token is malformed",
+      "UNKNOWN_KID" => "kid is unknown",
+      "MISSING_KID" => "kid claim is missing",
+      "ALG_NONE" => "alg none was supplied",
+      "ALG_MISMATCH" => "algorithm does not match expected value",
+      "MISSING_TYP" => "typ claim is missing",
+      "TYP_MISMATCH" => "typ does not match expected value",
+      "MISSING_ISS" => "issuer claim is missing",
+      "ISS_MISMATCH" => "issuer does not match expected value",
+      "MISSING_AUD" => "audience claim is missing",
+      "AUD_MISMATCH" => "audience does not match expected value",
+      "MISSING_EXP" => "expiration claim is missing",
+      "EXPIRED" => "token is expired",
+      "MISSING_NBF" => "not before claim is missing",
+      "IMMATURE" => "token is not valid yet",
+      "IAT_INVALID" => "issued at claim is invalid",
+      "MISSING_JTI" => "jti claim is missing",
+      "SIGNATURE_INVALID" => "signature verification failed",
+      "DECODE_ERROR" => "decode failed before classification",
+      "OTHER" => "uncategorized jwt anomaly",
+      "MISSING_PUBLIC_ID" => "preference public id claim is missing",
+      "MISSING_PREFERENCE_TYPE" => "preference type claim is missing",
+      "PREFERENCE_TYPE_MISMATCH" => "preference type does not match expected value",
+      "HOST_MISMATCH" => "request host does not match expected host",
+    },
+  },
+  "ORG_PREFERENCE" => {
+    label: "Org preference JWT",
+    reasons: {
+      "MALFORMED_TOKEN" => "token is malformed",
+      "UNKNOWN_KID" => "kid is unknown",
+      "MISSING_KID" => "kid claim is missing",
+      "ALG_NONE" => "alg none was supplied",
+      "ALG_MISMATCH" => "algorithm does not match expected value",
+      "MISSING_TYP" => "typ claim is missing",
+      "TYP_MISMATCH" => "typ does not match expected value",
+      "MISSING_ISS" => "issuer claim is missing",
+      "ISS_MISMATCH" => "issuer does not match expected value",
+      "MISSING_AUD" => "audience claim is missing",
+      "AUD_MISMATCH" => "audience does not match expected value",
+      "MISSING_EXP" => "expiration claim is missing",
+      "EXPIRED" => "token is expired",
+      "MISSING_NBF" => "not before claim is missing",
+      "IMMATURE" => "token is not valid yet",
+      "IAT_INVALID" => "issued at claim is invalid",
+      "MISSING_JTI" => "jti claim is missing",
+      "SIGNATURE_INVALID" => "signature verification failed",
+      "DECODE_ERROR" => "decode failed before classification",
+      "OTHER" => "uncategorized jwt anomaly",
+      "MISSING_PUBLIC_ID" => "preference public id claim is missing",
+      "MISSING_PREFERENCE_TYPE" => "preference type claim is missing",
+      "PREFERENCE_TYPE_MISMATCH" => "preference type does not match expected value",
+      "HOST_MISMATCH" => "request host does not match expected host",
+    },
+  },
+}
+index = 0
+contexts.each do |context_code, context|
+  context[:reasons].each do |reason_code, reason_description|
+    index += 1
+    fixture_name = "#{context_code.downcase}_#{reason_code.downcase}"
+    body = "#{context_code}_#{reason_code}"
+    memo = "#{context[:label]} anomaly: #{reason_description}."
+    public_id = format("jwt_occurrence_%06d", index)
+%>
+<%= fixture_name %>:
+  body: "<%= body %>"
+  memo: "<%= memo %>"
+  public_id: "<%= public_id %>"
+  status_id: 2
+
+<% end
+end %>

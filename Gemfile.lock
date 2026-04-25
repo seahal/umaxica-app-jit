@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 5cc560f370dbc86c7a902b099f5de6a7e9d2be92
+  revision: ff34428f313091cd579d7790b13cd7206c2efab9
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -101,27 +101,27 @@ GIT
       zeitwerk (~> 2.6)
 
 PATH
-  remote: engines/press
+  remote: engines/distributor
   specs:
-    jit-press (0.1.0)
+    jit-distributor (0.1.0)
       rails (>= 8.1)
 
 PATH
-  remote: engines/signature
+  remote: engines/foundation
   specs:
-    jit-signature (0.1.0)
+    jit-foundation (0.1.0)
       rails (>= 8.1)
 
 PATH
-  remote: engines/station
+  remote: engines/identity
   specs:
-    jit-station (0.1.0)
+    jit-identity (0.1.0)
       rails (>= 8.1)
 
 PATH
-  remote: engines/world
+  remote: engines/zenith
   specs:
-    jit-world (0.1.0)
+    jit-zenith (0.1.0)
       rails (>= 8.1)
 
 GEM
@@ -179,8 +179,8 @@ GEM
     async-utilization (0.3.2)
       console (~> 1.0)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1238.0)
-    aws-sdk-core (3.244.0)
+    aws-partitions (1.1240.0)
+    aws-sdk-core (3.246.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -206,14 +206,14 @@ GEM
       erubi (~> 1.4)
       parser (>= 2.4)
       smart_properties
-    bigdecimal (4.1.1)
+    bigdecimal (4.1.2)
     bindata (2.5.1)
-    blazer (3.3.0)
-      activerecord (>= 7.1)
+    blazer (3.4.0)
+      activerecord (>= 7.2)
       chartkick (>= 5)
       csv
-      railties (>= 7.1)
-      safely_block (>= 0.4)
+      railties (>= 7.2)
+      safely_block (>= 1)
     bootsnap (1.23.0)
       msgpack (~> 1.2)
     brakeman (8.0.4)
@@ -249,10 +249,10 @@ GEM
       openssl-signature_algorithm (~> 1.0)
     crass (1.0.6)
     csv (3.3.5)
-    database_consistency (3.0.2)
+    database_consistency (3.0.3)
       activerecord (>= 3.2)
     date (3.5.1)
-    debride (1.15.1)
+    debride (1.15.2)
       path_expander (~> 2.0)
       prism (~> 1.7)
       sexp_processor (~> 4.17)
@@ -293,7 +293,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    erb (6.0.3)
+    erb (6.0.4)
     erb_lint (0.9.0)
       activesupport
       better_html (>= 2.0.1)
@@ -408,7 +408,7 @@ GEM
     io-endpoint (0.17.2)
     io-event (1.15.1)
     io-stream (0.11.1)
-    irb (1.17.0)
+    irb (1.18.0)
       pp (>= 0.6.0)
       prism (>= 1.3.0)
       rdoc (>= 4.0.0)
@@ -416,7 +416,7 @@ GEM
     jmespath (1.6.2)
     job-iteration (1.13.0)
       activejob (>= 7.0)
-    json (2.19.3)
+    json (2.19.4)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
       aes_key_wrap
@@ -471,7 +471,7 @@ GEM
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
-    minitest (6.0.4)
+    minitest (6.0.5)
       drb (~> 2.0)
       prism (~> 1.5)
     minitest-mock (5.27.0)
@@ -498,7 +498,7 @@ GEM
     nanoid (2.0.0)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-imap (0.6.3)
+    net-imap (0.6.4)
       date
       net-protocol
     net-pop (0.1.2)
@@ -746,7 +746,7 @@ GEM
       json
       uri
       yaml
-    parallel (2.0.1)
+    parallel (2.1.0)
     parser (3.3.11.1)
       ast (~> 2.4.1)
       racc
@@ -766,7 +766,7 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.9.0)
-    propshaft (1.3.1)
+    propshaft (1.3.2)
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
@@ -854,7 +854,7 @@ GEM
     regexp_parser (2.12.0)
     reline (0.6.3)
       io-console (~> 0.5)
-    require-hooks (0.2.3)
+    require-hooks (0.3.0)
     rexml (3.4.4)
     rotp (6.3.0)
     rqrcode (3.2.0)
@@ -960,16 +960,16 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13133)
-      sorbet-static (= 0.6.13133)
-    sorbet-runtime (0.6.13133)
-    sorbet-static (0.6.13133-aarch64-linux)
-    sorbet-static (0.6.13133-universal-darwin)
-    sorbet-static (0.6.13133-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13133)
-      sorbet (= 0.6.13133)
-      sorbet-runtime (= 0.6.13133)
-    spoom (1.7.12)
+    sorbet (0.6.13158)
+      sorbet-static (= 0.6.13158)
+    sorbet-runtime (0.6.13158)
+    sorbet-static (0.6.13158-aarch64-linux)
+    sorbet-static (0.6.13158-universal-darwin)
+    sorbet-static (0.6.13158-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13158)
+      sorbet (= 0.6.13158)
+      sorbet-runtime (= 0.6.13158)
+    spoom (1.7.13)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
       rbi (>= 0.3.3)
@@ -981,7 +981,7 @@ GEM
       railties (>= 6.0.0)
     string-format (0.2.0)
     stringio (3.2.0)
-    stripe (19.0.0)
+    stripe (19.1.0)
       bigdecimal
       logger
     strong_migrations (2.6.0)
@@ -1040,7 +1040,7 @@ GEM
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     yaml (0.4.0)
-    yard (0.9.41)
+    yard (0.9.43)
     yard-sorbet (0.9.0)
       sorbet-runtime
       yard
@@ -1080,10 +1080,10 @@ DEPENDENCIES
   hotwire-spark
   image_processing
   importmap-rails
-  jit-press!
-  jit-signature!
-  jit-station!
-  jit-world!
+  jit-distributor!
+  jit-foundation!
+  jit-identity!
+  jit-zenith!
   jwt
   kredis
   lefthook

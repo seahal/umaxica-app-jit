@@ -10,8 +10,8 @@ class ValidateContactCategoryFkBehaviors < ActiveRecord::Migration[8.2]
   private
 
   def validate_contact_fk(from_table, to_table)
-    return unless foreign_key_exists?(from_table, to_table, column: :category_id)
+    return unless foreign_key_exists?(from_table, to_table, column: :contact_category_title)
 
-    validate_foreign_key(from_table, to_table)
+    validate_foreign_key(from_table, to_table, column: :contact_category_title)
   end
 end

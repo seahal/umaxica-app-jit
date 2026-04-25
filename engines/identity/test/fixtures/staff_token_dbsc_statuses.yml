@@ -1,0 +1,17 @@
+# == Schema Information
+#
+# Table name: staff_token_dbsc_statuses
+# Database name: token
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+active:
+  id: 1
+pending:
+  id: 2
+failed:
+  id: 3
+revoke:
+  id: 4

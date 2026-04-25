@@ -5,36 +5,37 @@ Subdomain labels are entry points. They are not the same thing as engine boundar
 ## Host Labels
 
 - `sign` -> public sign entry surface owned by Identity
-- `base` -> regional operations and management surface (formerly `core` / `ww`)
-- `apex` -> global shared entry surface
-- `docs` -> regional documentation surface
-- `help` -> regional support and contact surface
-- `news` -> regional newsroom and timeline surface
+- `base` -> foundation operations and management surface (formerly `core` / `ww`)
+- `acme` -> zenith shared entry surface
+- `post` -> distributor API and delivery surface
 
 ## Audience Tiers
 
 Each host label is combined with an audience tier to form the full hostname.
 
-| Tier  | Purpose                             | Example (base)       |
-| ----- | ----------------------------------- | -------------------- |
-| `com` | Corporate and public-facing content | `base.com.localhost` |
-| `app` | End-user service                    | `base.app.localhost` |
-| `org` | Staff operations                    | `base.org.localhost` |
-| `dev` | Developer and operational tooling   | `base.dev.localhost` |
+| Tier  | Purpose                                   | Example (base)       |
+| ----- | ----------------------------------------- | -------------------- |
+| `app` | Public end-user surface                   | `base.app.localhost` |
+| `org` | Service operator and admin surface        | `base.org.localhost` |
+| `com` | Corporate and public-information surface  | `base.com.localhost` |
+| `dev` | Developer and operational tooling surface | `base.dev.localhost` |
+| `net` | Private internal-service API surface      | `base.net.localhost` |
+
+### Notes
+
+- `app`, `org`, and `com` are public-facing audience categories.
+- `dev` is for human operational use.
+- `net` is for non-public internal API communication between services.
+- `net` should not be treated as a general public browser surface.
 
 ## Full Hostname Matrix
 
-| Host label | `com`                | `app`                | `org`                | `dev`                |
-| ---------- | -------------------- | -------------------- | -------------------- | -------------------- |
-| (apex)     | `com.localhost`      | `app.localhost`      | `org.localhost`      | `dev.localhost`      |
-| `sign`     | `sign.com.localhost` | `sign.app.localhost` | `sign.org.localhost` | `sign.dev.localhost` |
-| `base`     | `base.com.localhost` | `base.app.localhost` | `base.org.localhost` | `base.dev.localhost` |
-| `docs`     | `docs.com.localhost` | `docs.app.localhost` | `docs.org.localhost` | —                    |
-| `help`     | `help.com.localhost` | `help.app.localhost` | `help.org.localhost` | —                    |
-| `news`     | `news.com.localhost` | `news.app.localhost` | `news.org.localhost` | —                    |
-
-The `dev` tier is initially available on Identity (`sign`), Global (apex), and Regional (`base`)
-engines only. Regional content host labels (`docs`, `help`, `news`) do not have a `dev` tier.
+| Host label | `app`                | `org`                | `com`                | `dev`                | `net`                |
+| ---------- | -------------------- | -------------------- | -------------------- | -------------------- | -------------------- |
+| (acme)     | `app.localhost`      | `org.localhost`      | `com.localhost`      | `dev.localhost`      | `net.localhost`      |
+| `sign`     | `sign.app.localhost` | `sign.org.localhost` | `sign.com.localhost` | `sign.dev.localhost` | `sign.net.localhost` |
+| `base`     | `base.app.localhost` | `base.org.localhost` | `base.com.localhost` | `base.dev.localhost` | `base.net.localhost` |
+| `post`     | `post.app.localhost` | `post.org.localhost` | `post.com.localhost` | `post.dev.localhost` | `post.net.localhost` |
 
 ## Canonical ENV Naming
 
@@ -45,8 +46,8 @@ Host and origin environment variables use this canonical format:
 Examples:
 
 - `IDENTITY_SIGN_APP_URL`
-- `GLOBAL_APEX_ORG_URL`
-- `REGIONAL_BASE_COM_URL`
-- `REGIONAL_DOCS_APP_URL`
-- `REGIONAL_HELP_ORG_URL`
-- `REGIONAL_NEWS_COM_URL`
+- `ZENITH_ACME_ORG_URL`
+- `FOUNDATION_BASE_COM_URL`
+- `DISTRIBUTOR_POST_APP_URL`
+- `DISTRIBUTOR_POST_DEV_URL`
+- `DISTRIBUTOR_POST_NET_URL`

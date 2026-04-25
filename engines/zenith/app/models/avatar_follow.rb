@@ -1,0 +1,33 @@
+# typed: false
+# == Schema Information
+#
+# Table name: avatar_follows
+# Database name: avatar
+#
+#  id                 :bigint           not null, primary key
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  followed_avatar_id :bigint           not null
+#  follower_avatar_id :bigint           not null
+#
+# Indexes
+#
+#  index_avatar_follows_on_followed_avatar_id  (followed_avatar_id)
+#  index_avatar_follows_on_follower_avatar_id  (follower_avatar_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (followed_avatar_id => avatars.id)
+#  fk_rails_...  (follower_avatar_id => avatars.id)
+#
+
+# frozen_string_literal: true
+
+class AvatarFollow < AvatarRecord
+  belongs_to :follower_avatar,
+             class_name: "Avatar",
+             inverse_of: :outgoing_follows
+  belongs_to :followed_avatar,
+             class_name: "Avatar",
+             inverse_of: :incoming_follows
+end

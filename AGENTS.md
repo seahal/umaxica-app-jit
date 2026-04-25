@@ -279,11 +279,11 @@ for the current state.
 | Engine     | Route file              | Domain purpose                                     | Hosts (dev)                                                      |
 | ---------- | ----------------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
 | Signature  | `config/routes/sign.rb` | Authentication (sign-in/up, MFA, passkeys, social) | `sign.app.localhost`, `sign.org.localhost`, `sign.com.localhost` |
-| Zenith     | `config/routes/apex.rb` | Dashboard shell and preferences                    | `www.app.localhost`, `www.org.localhost`, `www.com.localhost`    |
+| Zenith     | `config/routes/acme.rb` | Dashboard shell and preferences                    | `base.app.localhost`, `base.org.localhost`, `base.com.localhost` |
 | Foundation | `config/routes/base.rb` | Regional business logic (contacts, management)     | `base.app.localhost`, `base.org.localhost`, `base.com.localhost` |
 | Publisher  | `config/routes/post.rb` | Content delivery (docs, news, help)                | `post.{app,com,org}.localhost`                                   |
 
-Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/apex/app/`,
+Controllers mirror this: `app/controllers/sign/app/`, `app/controllers/acme/app/`,
 `app/controllers/base/app/`, `app/controllers/post/app/`, etc.
 
 #### Multi-Database Architecture
@@ -431,10 +431,15 @@ bin/rails notes                  # Show TODO/FIXME annotations
 - Views/partials: use descriptive, scoped names (example: `app/views/sign/app/...`).
 - JavaScript: use Biome formatting/linting defaults; keep modules under `app/javascript`.
 - Keep domain boundaries explicit in paths and constants (`App`, `Com`, `Org`, `Sign`, `Core`,
-  `Docs`, `News`, `Help`, `Apex`).
+  `Docs`, `News`, `Help`, `Acme`).
 
 ### Testing Guidelines
 
+- Use the TDD cycle for all new behavior: explore the problem space first, write a failing test
+  (Red), make it pass with the simplest correct implementation (Green), then improve the code
+  without breaking tests (Refactor).
+- When a KPI or coverage target is given, keep iterating until the target is met. Do not stop at
+  partial progress.
 - Framework: Minitest (`test/test_helper.rb`) with fixtures.
 - Respect t_wada-style testing practices when designing and writing tests.
 - Prefer tests that avoid mocks and stubs whenever reasonably possible.
@@ -505,6 +510,10 @@ bin/rails notes                  # Show TODO/FIXME annotations
 
 - Prefer SOLID design when shaping code and reviews.
 - Keep responsibilities small and focused.
+- Separate state from logic. Do not mix mutable state management with business rules in the same
+  unit.
+- Define contract layers (APIs and type boundaries) strictly. Keep implementation layers
+  independently replaceable and regenerable without changing the contract.
 - Prefer stable abstractions and explicit dependencies over tight coupling.
 - Favor composition and clear interfaces over clever or deeply nested implementations.
 

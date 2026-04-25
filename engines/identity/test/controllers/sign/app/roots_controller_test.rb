@@ -1,0 +1,83 @@
+# typed: false
+# frozen_string_literal: true
+
+module Jit
+  module Identity
+    require "test_helper"
+
+    class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
+      fixtures :users, :user_statuses
+
+      include RootThemeCookieHelper
+
+      setup do
+        RateLimit.store.clear
+      end
+
+      teardown do
+        RateLimit.store.clear
+      end
+
+      test "GET / redirects to new registration path" do
+        get sign_app_root_url(ri: "jp")
+
+        # Controller now renders the root index page with links to registration
+        assert_response :success
+        assert_select "h1", minimum: 1
+      end
+
+      test "GET / returns redirect status" do
+        get sign_app_root_url(ri: "jp")
+
+        assert_response :success
+      end
+
+      test "renders layout contract" do
+        get sign_app_root_url(ri: "jp")
+
+        assert_response :success
+        assert_layout_contract
+      end
+
+      test "footer contains navigation links" do
+        host!("sign.app.localhost")
+        get sign_app_root_url(ri: "jp")
+
+        assert_response :success
+        assert_select "footer" do
+          assert_select "a"
+          assert_select "a[href=?]", "http://sign.com.localhost/?ri=jp",
+                        text: "home"
+          assert_select "a[href=?]", "http://sign.com.localhost/preference?ri=jp",
+                        text: "Preferences"
+          assert_select "a[href=?]", "http://sign.com.localhost/configuration?ri=jp",
+                        text: "Settings"
+        end
+      end
+
+      test "generates sha3-384 token digest on root" do
+        get sign_app_root_url(ri: "jp")
+
+        assert_response :success
+        assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
+      end
+
+      test "sets theme cookie" do
+        assert_theme_cookie_for(
+          host: "sign.app.localhost",
+          path: :sign_app_root_path,
+          label: "sign app root",
+          ri: "jp",
+        )
+      end
+
+      test "GET / fails when logged in" do
+        user = users(:one)
+        get sign_app_root_url(ri: "jp"), headers: { "X-TEST-CURRENT-USER" => user.id }
+
+        assert_response :unauthorized
+        assert_equal "権限がありません", response.body
+      end
+    end
+  end
+end

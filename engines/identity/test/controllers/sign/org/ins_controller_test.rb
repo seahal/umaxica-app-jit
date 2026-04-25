@@ -1,0 +1,57 @@
+# typed: false
+# frozen_string_literal: true
+
+module Jit
+  module Identity
+    require "test_helper"
+
+    class Sign::Org::InsControllerTest < ActionDispatch::IntegrationTest
+      setup do
+        @host = ENV.fetch("IDENTITY_SIGN_ORG_URL", "sign.org.localhost")
+      end
+
+      test "should get new" do
+        get new_sign_org_in_url(ri: "jp"), headers: { "Host" => @host }
+
+        assert_response :success
+      end
+
+      test "renders authentication links" do
+        get new_sign_org_in_url(ri: "jp"), headers: { "Host" => @host }
+
+        assert_response :success
+
+        query = { ri: "jp" }
+
+        assert_select "a[href=?]", new_sign_org_in_passkey_path(query)
+        assert_select "a[href=?]", new_sign_org_in_secret_path(query)
+        assert_select "a[href=?]", new_sign_org_social_session_path(query.merge(provider: "google_org"))
+      end
+
+      test "does not render sign up link on sign in page" do
+        get new_sign_org_in_url(ri: "jp"), headers: { "Host" => @host }
+
+        assert_response :success
+        assert_select "a[href=?]", new_sign_org_up_path(ri: "jp"), count: 0
+      end
+
+      test "rejects logged in staff on sign in page" do
+        staff = staffs(:one)
+
+        get new_sign_org_in_url(ri: "jp"),
+            headers: { "Host" => @host, "X-TEST-CURRENT-STAFF" => staff.id }
+
+        assert_redirected_to sign_org_configuration_path(ri: "jp")
+        assert_equal I18n.t("errors.messages.already_authenticated"), flash[:alert]
+      end
+
+      test "renders back to root link" do
+        get new_sign_org_in_url(ri: "jp"), headers: { "Host" => @host }
+
+        assert_response :success
+
+        assert_select "a[href=?]", zenith.acme_identity.org_root_path(ri: "jp"), text: "UMAXICA"
+      end
+    end
+  end
+end

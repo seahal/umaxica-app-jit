@@ -2,6 +2,7 @@
 
 class ConvertPrincipalPks < ActiveRecord::Migration[8.0]
   def up
+    safety_assured do
     # -------------------------------------------------------------------------
     # DEPENDENTS (Drop)
     # -------------------------------------------------------------------------
@@ -417,6 +418,7 @@ class ConvertPrincipalPks < ActiveRecord::Migration[8.0]
     add_foreign_key("users", "user_statuses", column: "status_id", validate: false)
   end
 
+    end
   def down
     raise ActiveRecord::IrreversibleMigration
   end

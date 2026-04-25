@@ -1,0 +1,55 @@
+# typed: false
+# frozen_string_literal: true
+
+module Jit
+  module Identity
+    require "test_helper"
+    require "base64"
+
+    class Sign::Com::Verification::EmailsControllerTest < ActionDispatch::IntegrationTest
+      setup do
+        @host = ENV.fetch("IDENTITY_SIGN_COM_URL", "sign.com.localhost")
+        host! @host
+        @customer = create_verified_customer_with_email(email_address: "com-verified-#{SecureRandom.hex(4)}@example.com")
+        @customer.customer_telephones.create!(
+          number: "+8190#{SecureRandom.random_number(10**8).to_s.rjust(8, "0")}",
+          customer_telephone_status_id: CustomerTelephoneStatus::VERIFIED,
+        )
+        @headers = as_customer_headers(@customer, host: @host)
+        @token = CustomerToken.find_by!(public_id: @headers["X-TEST-SESSION-PUBLIC-ID"])
+      end
+
+      test "new sends otp and redirects to edit" do
+        return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
+
+        get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+            headers: @headers
+
+        get new_sign_com_verification_email_url(ri: "jp"), headers: @headers
+
+        assert_response :redirect
+        assert_match %r{/verification/emails/.+/edit}, response.location
+        assert_equal "configuration_email", session[:reauth]["scope"]
+        assert_predicate session[:reauth_email_otp], :present?
+      end
+
+      test "update verifies otp and redirects to return_to" do
+        return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
+
+        get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+            headers: @headers
+        get new_sign_com_verification_email_url(ri: "jp"), headers: @headers
+        nonce = response.location[%r{/verification/emails/([^/]+)/edit}, 1]
+        otp_session = session[:reauth_email_otp]
+        code = ROTP::HOTP.new(otp_session["secret"]).at(otp_session["counter"])
+
+        patch sign_com_verification_email_url(nonce, ri: "jp"),
+              params: { verification: { code: code } },
+              headers: @headers
+
+        assert_response :redirect
+        assert_redirected_to sign_com_configuration_emails_url(ri: "jp")
+      end
+    end
+  end
+end

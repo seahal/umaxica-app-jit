@@ -1,0 +1,226 @@
+# typed: false
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: staff_passkeys
+# Database name: operator
+#
+#  id           :bigint           not null, primary key
+#  last_used_at :datetime
+#  name         :string           not null
+#  public_key   :text             not null
+#  sign_count   :integer          not null
+#  transports   :string
+#  user_handle  :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  external_id  :string           not null
+#  staff_id     :bigint           not null
+#  status_id    :bigint           default(1), not null
+#  webauthn_id  :string           default(""), not null
+#
+# Indexes
+#
+#  index_staff_passkeys_on_external_id  (external_id)
+#  index_staff_passkeys_on_staff_id     (staff_id)
+#  index_staff_passkeys_on_status_id    (status_id)
+#  index_staff_passkeys_on_webauthn_id  (webauthn_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (staff_id => staffs.id)
+#  fk_rails_...  (status_id => staff_passkey_statuses.id)
+#
+
+require "test_helper"
+
+class StaffPasskeyTest < ActiveSupport::TestCase
+  test "should create passkey with valid attributes" do
+    passkey = StaffPasskey.new(
+      staff: Staff.find_by!(public_id: "BCDE2345FGHJ67KM"),
+      name: "Staff Passkey",
+      public_key: "test_staff_public_key",
+      sign_count: 1,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_equal "Staff Passkey", passkey.name
+    assert_equal "test_staff_public_key", passkey.public_key
+    assert_equal 1, passkey.sign_count
+  end
+
+  test "defaults status_id to active" do
+    passkey = StaffPasskey.new(
+      staff: Staff.find_by!(public_id: "BCDE2345FGHJ67KM"),
+      name: "Staff Passkey",
+      public_key: "test_staff_public_key",
+      sign_count: 1,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_equal StaffPasskeyStatus::ACTIVE, passkey.status_id
+  end
+
+  test "status association uses status_id" do
+    status = StaffPasskeyStatus.find(StaffPasskeyStatus::ACTIVE)
+    passkey = StaffPasskey.create!(
+      staff: Staff.find_by!(public_id: "BCDE2345FGHJ67KM"),
+      name: "Staff Passkey",
+      public_key: "test_staff_public_key",
+      sign_count: 1,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+      status: status,
+    )
+
+    assert_equal status, passkey.reload.status
+    assert_equal status.id, passkey.status_id
+  end
+
+  test "should belong to staff" do
+    assert_respond_to StaffPasskey.new, :staff
+  end
+
+  test "should have name field" do
+    passkey = StaffPasskey.new(name: "Example Name")
+
+    assert_equal "Example Name", passkey.name
+  end
+
+  test "should have public_key field" do
+    passkey = StaffPasskey.new(public_key: "staff_key")
+
+    assert_equal "staff_key", passkey.public_key
+  end
+
+  test "should inherit from OperatorRecord" do
+    assert_operator StaffPasskey, :<, OperatorRecord
+  end
+
+  test "should have required database columns" do
+    required_columns = %w(name public_key sign_count external_id staff_id webauthn_id)
+
+    required_columns.each do |column|
+      assert_includes StaffPasskey.column_names, column
+    end
+  end
+
+  test "4th passkey succeeds when 3 exist for staff with real db" do
+    staff = Staff.create!
+
+    Prosopite.pause do
+      3.times do |i|
+        StaffPasskey.create!(
+          staff: staff,
+          name: "Staff Key #{i}",
+          public_key: "key-below-#{i}",
+          sign_count: 0,
+          external_id: SecureRandom.uuid,
+          webauthn_id: SecureRandom.hex(32),
+        )
+      end
+    end
+
+    fourth = StaffPasskey.new(
+      staff: staff,
+      name: "Fourth Staff Key",
+      public_key: "key-at-4",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_predicate fourth, :valid?
+    assert fourth.save
+  end
+
+  test "4th passkey is last allowed when exactly 4 for staff" do
+    staff = Staff.create!
+
+    Prosopite.pause do
+      3.times do |i|
+        StaffPasskey.create!(
+          staff: staff,
+          name: "Staff Key #{i}",
+          public_key: "key-limit-#{i}",
+          sign_count: 0,
+          external_id: SecureRandom.uuid,
+          webauthn_id: SecureRandom.hex(32),
+        )
+      end
+    end
+
+    fourth = StaffPasskey.new(
+      staff: staff,
+      name: "Fourth Staff Key",
+      public_key: "key-4th",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_predicate fourth, :valid?
+    assert fourth.save
+    assert_equal 4, StaffPasskey.where(staff: staff).count
+  end
+
+  test "5th passkey fails when 4 exist for staff" do
+    staff = Staff.create!
+
+    Prosopite.pause do
+      StaffPasskey::MAX_PASSKEYS_PER_STAFF.times do |i|
+        StaffPasskey.create!(
+          staff: staff,
+          name: "Staff Key #{i}",
+          public_key: "key-max-#{i}",
+          sign_count: 0,
+          external_id: SecureRandom.uuid,
+          webauthn_id: SecureRandom.hex(32),
+        )
+      end
+    end
+
+    fifth = StaffPasskey.new(
+      staff: staff,
+      name: "Fifth Staff Key",
+      public_key: "key-above-limit",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_not fifth.valid?
+    assert_includes fifth.errors[:base], "exceeds maximum passkeys per staff (#{StaffPasskey::MAX_PASSKEYS_PER_STAFF})"
+  end
+
+  test "sign_count negative one is invalid below lower boundary" do
+    staff = Staff.find_by!(public_id: "BCDE2345FGHJ67KM")
+    passkey = StaffPasskey.new(
+      staff: staff,
+      name: "Negative Sign Count",
+      public_key: "test-key",
+      sign_count: -1,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_not passkey.valid?
+    assert_not_empty passkey.errors[:sign_count]
+  end
+
+  test "sign_count zero is valid at lower boundary" do
+    passkey = StaffPasskey.new(
+      staff: Staff.find_by!(public_id: "BCDE2345FGHJ67KM"),
+      name: "Zero Sign Count",
+      public_key: "test-key",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.hex(32),
+    )
+
+    assert_predicate passkey, :valid?
+  end
+end

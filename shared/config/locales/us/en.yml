@@ -1,0 +1,1379 @@
+---
+en:
+  reproduce_issue:
+    missing_position: Attempting to create AppPreferenceStatus without position...
+    duplicate_position: |2-
+
+      Attempting to create AppPreferenceStatus with duplicate position...
+    success_created: "Success: Created with id %{id}, position: %{position}"
+    expected_error: "Expected Error: %{message}"
+    expected_db_error: "Expected DB Error: %{message}"
+    check_positions: |2-
+
+      Checking existing positions:
+  turnstile_error: Security verification failed. Please try again.
+  sequential_flow:
+    invalid_step: Invalid access. Please start from the beginning.
+  hello: Hello world 2
+  messages:
+    region_settings_updated_successfully: Region settings updated successfully.
+    user_registration_error: An error occurred during user registration.
+    access_blocked_auth_error: "Access blocked: Authentication error"
+    email_successfully_created: Verification code has been sent to your email.
+    telephone_successfully_created: Verification code has been sent to your phone.
+    sample_successfully_updated: Registration completed successfully.
+  common:
+    ok: OK
+  model:
+    identity_audit_event_format_invalid:
+      Invalid event ID format. Only uppercase letters and underscores are allowed.
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: must be accepted
+      blank: can't be blank
+      confirmation: doesn't match %{attribute}
+      empty: can't be empty
+      equal_to: must be equal to %{count}
+      even: must be even
+      exclusion: is reserved
+      greater_than: must be greater than %{count}
+      greater_than_or_equal_to: must be greater than or equal to %{count}
+      in: must be in %{count}
+      inclusion: is not included in the list
+      invalid: is invalid
+      less_than: must be less than %{count}
+      less_than_or_equal_to: must be less than or equal to %{count}
+      model_invalid: "Validation failed: %{errors}"
+      not_a_number: is not a number
+      not_an_integer: must be an integer
+      odd: must be odd
+      other_than: must be other than %{count}
+      password_too_long: is too long
+      present: must be blank
+      required: must exist
+      taken: has already been taken
+      too_long:
+        one: is too long (maximum is %{count} character)
+        other: is too long (maximum is %{count} characters)
+      too_short:
+        one: is too short (minimum is %{count} character)
+        other: is too short (minimum is %{count} characters)
+      wrong_length:
+        one: is the wrong length (should be %{count} character)
+        other: is the wrong length (should be %{count} characters)
+    template:
+      body: "There were problems with the following fields:"
+      header:
+        one: "%{count} error prohibited this %{model} from being saved"
+        other: "%{count} errors prohibited this %{model} from being saved"
+  seed:
+    roles:
+      operator:
+        description:
+          Full system access. Can manage users, settings, and perform all operations including
+          deletions.
+      manager:
+        description:
+          Can manage content and edit other users' posts. Has delete permissions for managed
+          resources.
+      editor:
+        description: Can create and edit all content. Can only delete own posts.
+      contributor:
+        description: Can create content and edit own posts only.
+      viewer:
+        description: Read-only access to content. Cannot create or modify anything.
+  seeds:
+    preference_statuses:
+      start: Seeding Preference Statuses...
+      complete: Seeding complete.
+  test_data:
+    contact_topic_description: Details about the topic.
+    inquiry_detail: Detail of inquiry.
+  sign:
+    app:
+      reauth:
+        index:
+          title: Re-authentication Sessions
+          new: New
+          empty: No sessions found
+          table:
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
+      verification:
+        index:
+          title: Verification Sessions
+          new: New
+          empty: No sessions found
+          table:
+            scope: Scope
+            method: Method
+            status: Status
+            expires: Expires
+        new:
+          title: Verification
+          description: Verification is required to continue. Please select a method.
+          method_legend: Authentication Method
+          methods:
+            passkey: Passkey
+            totp: Authenticator App (TOTP)
+            email_otp: Email (One-time code)
+          submit: Continue
+          back: Back
+        edit:
+          title: Verification
+          description:
+            Please enter the code or use passkey authentication for identity verification.
+          authenticate_with_passkey: Authenticate with Passkey
+          code_label: Verification Code
+          code_placeholder: 6 digits
+          submit: Confirm
+          back: Back
+        success:
+          complete: Verification completed.
+    org:
+      preferences:
+        title: Preferences
+        locale_settings: Language Settings
+        back_to_settings: Back to Preferences
+        regions:
+          title: Region & Language Settings
+          region_section: Region Settings
+          select_region: Select Region
+          language_section: Language Settings
+          select_language: Select Language
+          timezone_section: Timezone Settings
+          select_timezone: Select Timezone
+          select_region_prompt: Choose your region...
+          select_language_prompt: Choose your language...
+          select_timezone_prompt: Choose your timezone...
+          select_region_selector:
+            USA: United States
+            JAPAN: Japan
+            US: United States
+            JP: Japan
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone_selector:
+            UTC: Coordinated Universal Time (UTC)
+            JST: Japan Standard Time (JST)
+          update_settings: Update Settings
+          cancel: Cancel
+      preference:
+        cookie:
+          edit:
+            h1: Cookie Preferences
+            accept_necessary_cookies: Allow strictly necessary cookies (required)
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Pick the display mode that keeps your org dashboards comfortable.
+            legend: Select a theme
+            options:
+              light: Light — bright backgrounds for well-lit spaces
+              dark: Dark — dimmed colors for low-light comfort
+              system: System default — follow your device settings
+            hints:
+              light: Best when teams operate in bright operations centers.
+              dark: Favored for late-night monitoring without eye strain.
+              system: Keeps theme aligned with managed device policies.
+            submit: Save theme preference
+        resets:
+          title: Reset Preferences
+          description: Remove saved preference cookies for this browser.
+          button: Clear preference data
+          confirm: This action deletes saved preference data for this browser. Continue?
+          destroyed: Preferences have been reset
+          back: Back to Preferences
+    com:
+      preferences:
+        title: Preferences
+        cookie_settings: Cookie Settings
+        region_settings: Region Settings
+        email_preferences: Email Preferences
+        theme_settings: Choose Dark or Light Theme
+        back_to_settings: Back to Preferences
+        regions:
+          title: Corporate Regional & Language Settings
+          region_section: Regional Settings
+          select_region: Select Region
+          language_section: Language Preferences
+          select_language: Select Language
+          timezone_section: Timezone Settings
+          select_timezone: Select Timezone
+          select_region_prompt: Choose your region...
+          select_country_prompt: Choose your country...
+          select_language_prompt: Choose your language...
+          select_timezone_prompt: Choose your timezone...
+          select_region_selector:
+            USA: United States
+            JAPAN: Japan
+            US: United States
+            JP: Japan
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone_selector:
+            UTC: Coordinated Universal Time (UTC)
+            JST: Japan Standard Time (JST)
+          update_settings: Update Settings
+          cancel: Cancel
+        emails:
+          updated: Email preferences updated successfully
+          none_selected: No preferences selected
+        languages:
+          updated: Language preference updated to %{language}
+          unsupported: Unsupported language selected
+        themes:
+          updated: Corporate theme updated to %{theme}
+          invalid: Invalid theme selected
+        timezones:
+          updated: Timezone updated to %{timezone}
+          invalid: Invalid timezone selected
+      preference:
+        cookie:
+          edit:
+            h1: Corporate Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_tracking_cookies: Allow tracking cookies
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Pick the display mode that helps you focus on corporate dashboards.
+            legend: Select a theme
+            options:
+              light: Light — bright backgrounds for well-lit spaces
+              dark: Dark — dimmed colors for low-light comfort
+              system: System default — follow your device settings
+            hints:
+              light: Great when you work during the day or in bright rooms.
+              dark: Ideal for night shifts or reducing eye strain.
+              system: Matches your operating system and switches automatically.
+            submit: Save theme preference
+  help:
+    org:
+      contacts:
+        new:
+          page_title: Contact Us
+          badge: Contact
+          description: Please fill out the form below to contact us.
+          email_address: Email Address
+          telephone_number: Telephone Number
+          category_id: Inquiry Category
+          confirm_policy: I agree to the privacy policy
+          confirm_policy_note: You must agree to the privacy policy before submitting.
+          error_heading:
+            one: 1 error prohibited this contact from being saved.
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: Continue
+          cancel: Cancel
+    com:
+      contacts:
+        new:
+          page_title: Contact Us
+          badge: Contact
+          description: Please fill out the form below to contact us.
+          email_address: Email Address
+          telephone_number: Telephone Number
+          category_id: Inquiry Category
+          confirm_policy: I agree to the privacy policy
+          confirm_policy_note: You must agree to the privacy policy before submitting.
+          error_heading:
+            one: 1 error prohibited this contact from being saved.
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: Continue
+          cancel: Cancel
+    app:
+      contacts:
+        new:
+          page_title: Contact Us
+          badge: Contact
+          description: Please fill out the form below to contact us.
+          email_address: Email Address
+          telephone_number: Telephone Number
+          category_id: Inquiry Category
+          confirm_policy: I agree to the privacy policy
+          confirm_policy_note: You must agree to the privacy policy before submitting.
+          error_heading:
+            one: 1 error prohibited this contact from being saved.
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: Continue
+          cancel: Cancel
+          recruit_prompt_html: Interested in joining the team? %{link}
+          recruit_link_text: Contact recruiting
+          back_to_root: up
+  test:
+    support:
+      fix_fk_dependency:
+        apply: Applying FK Dependency Patch...
+  scripts:
+    update_contact_fixtures:
+      done: Done updating contact statuses/categories.
+    token_refresh:
+      errors:
+        missing_refresh_token: Refresh token is required
+        invalid_refresh_token: Invalid or expired refresh token
+        user_not_found_or_withdrawn: User not found or withdrawn
+        staff_not_found_or_withdrawn: Staff not found or withdrawn
+  controller:
+    sign:
+      app:
+        authentication:
+        new:
+          page_title: Choose how to sign in
+          description: Select the method that fits your current session.
+          back: Prefer a different method?
+          links:
+            email: Email
+            telephone: Telephone
+            passkey: Passkey
+            recovery: Recovery code
+            google: Sign in with Google
+            apple: Sign in with Apple
+            registration: Need an account?
+        passkey:
+          new:
+            page_title: Register a passkey
+            description: Use one of your trusted devices to add a passkey for passwordless sign-in.
+        email:
+          locked: Your account is locked. Please try again later.
+          update:
+            success: You've logged in.
+        telephone:
+          new:
+            page_title: Sign in with your phone number
+            description:
+              Provide your registered phone number to receive a one-time verification code.
+      social:
+        sessions:
+          create:
+            success: Account created and signed in with %{provider}.
+      recovery:
+        new:
+          page_title: Use a recovery code
+          description: Enter one of your saved recovery codes to regain access to your account.
+      configuration:
+        withdrawal:
+          show:
+            title: Withdrawal Status
+            withdrawn: Your account has been withdrawn
+            withdrawn_date: "Withdrawn at: %{date}"
+            recovery: Account Recovery
+            recovery_notice: Your account can be recovered within the recovery period.
+            recover_button: Recover Account
+            recovery_expired: The recovery period has expired.
+            active: Your account is active
+            withdrawal_actions: Withdrawal Options
+            temporary_withdrawal: Temporary Withdrawal
+            temporary_notice:
+              Your account will be temporarily withdrawn and can be recovered within the grace
+              period.
+            withdraw_button: Withdraw Account
+            confirm_withdrawal: Are you sure?
+            permanent_deletion: Permanent Deletion
+            permanent_notice:
+              Your account and all associated data will be permanently deleted. This action cannot
+              be undone.
+            delete_button: Permanently Delete Account
+            confirm_deletion: This cannot be undone. Are you sure?
+          new:
+            title: Withdrawal
+            description:
+              You are about to withdraw your account. This action will temporarily disable your
+              account for a recovery period.
+            recovery_code_label: Confirm recovery code
+            submit: Withdraw Account
+          edit:
+            title: Recover Account
+            description:
+              Your account is currently in withdrawal status. Click the button below to recover your
+              account.
+            recovery_code_label: Confirm recovery code
+            submit: Recover Account
+          create:
+            success: Withdrawal processed (dummy)
+            already_withdrawn: Account is already withdrawn
+            failed: Failed to process withdrawal. Please try again later.
+          update:
+            recovered: Your account has been recovered. You can log in now.
+            cannot_recover: Recovery period has expired. Please contact support.
+            failed: Failed to recover account. Please try again later.
+          destroy:
+            permanent_unavailable: Permanent deletion is currently unavailable.
+            deleted: Account has been permanently deleted.
+            not_withdrawn: Account is not withdrawn; cannot delete.
+          errors:
+            invalid_state:
+              "Cannot perform this action. Your account is in an invalid state: %{current_status}"
+            recovery_not_available:
+              Your account cannot be recovered at this time. The recovery period has expired.
+            deletion_failed: Failed to delete your account. Please try again or contact support.
+      registration:
+        new:
+          page_title: Create your account
+          page_description: Choose the sign-up method that works best for your %{product} account.
+          methods:
+            title: Choose how to get started
+            email:
+              title: Email address
+              description:
+                Receive a verification link by email and finish registration in a few minutes.
+              cta: Sign up with email
+            telephone:
+              title: Mobile phone number
+              description: Verify your phone with a one-time SMS code before creating your account.
+              cta: Sign up with telephone
+          social:
+            title: Use an existing account
+            description: Link a new %{product} account with the provider you already trust.
+            buttons:
+              google: Continue with Google
+              apple: Continue with Apple
+            disclaimer: We will never post or share anything without your permission.
+        oauth:
+          apple:
+            callback:
+              success: Signed in with Apple successfully.
+            failure:
+              error: Apple authentication failed
+          google:
+            callback:
+              success: Signed in with Google successfully.
+            failure:
+              error: Google authentication failed
+        links:
+          sign_in_html: Already registered? %{link}
+          sign_in_text: Sign in
+        email:
+          update:
+            invalid_code: Invalid verification code
+            locked: Account is locked due to too many failed attempts
+        telephone:
+          new:
+            page_title: Sign up with phone number
+            link_to_other_methods: Try other methods?
+            link_to_sign_in: Already have an account?
+          create:
+            verification_code_sent: Verification code has been sent via SMS.
+          edit:
+            return_page: Back
+            session_expired: Your session has expired. Please start over.
+          update:
+            success: Phone number has been verified.
+      preferences:
+        title: Preferences
+        cookie_settings: Cookie Settings
+        region_settings: Region Settings
+        theme_settings: Theme Settings
+        submitting: Submitting...
+        back_to_settings: Back to Preferences
+        regions:
+          title: Regional & Language Settings
+          region_section: Regional Settings
+          language_section: Language Preferences
+          timezone_section: Timezone Settings
+          select_region: Select Region
+          select_country: Select Country
+          select_language: Select Language
+          select_timezone: Select Timezone
+          select_region_prompt: Choose your region...
+          select_country_prompt: Choose your country...
+          select_language_prompt: Choose your language...
+          select_timezone_prompt: Choose your timezone...
+          select_region_selector:
+            USA: United States
+            JAPAN: Japan
+            US: United States
+            JP: Japan
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone_selector:
+            UTC: Coordinated Universal Time (UTC)
+            JST: Japan Standard Time (JST)
+          update_settings: Update Settings
+          cancel: Cancel
+        languages:
+          unsupported: Unsupported language selected
+        timezones:
+          invalid: Invalid timezone selected
+        themes:
+          updated: Theme updated to %{theme}
+          invalid: Invalid theme selected
+      preference:
+        cookie:
+          edit:
+            h1: Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Pick the display mode that fits your workspace and comfort.
+            legend: Select a theme
+            options:
+              light: Light — bright backgrounds for well-lit spaces
+              dark: Dark — dimmed colors for low-light comfort
+              system: System default — follow your device settings
+            hints:
+              light: Great when you work during the day or in bright rooms.
+              dark: Ideal for night shifts or reducing eye strain.
+              system: Matches your operating system and switches automatically.
+            submit: Save theme preference
+    org:
+      layout:
+        nav:
+          sign_up: Sign Up
+          log_in: Log In
+          configuration: Settings
+          logout: Log Out
+      withdrawal:
+        create:
+          success: Withdrawal processed (dummy)
+          already_withdrawn: Account is already withdrawn
+      authentication:
+        new:
+          page_title: Choose how to sign in
+          description: Select the method you prefer to access the staff console.
+          links:
+            email: Email
+            telephone: Telephone
+            apple: Apple
+            google: Google
+            passkey: Passkey
+            recovery: Recovery code
+            registration: Need an account?
+        edit:
+          title: Do you want to sign out?
+          description: End your current session and return to the sign-in page.
+      registration:
+        new:
+          page_title: Staff Registration
+          page_description: Staff registration is currently under development.
+          links:
+            sign_in_text: Already have an account?
+            sign_in_link: Sign in here
+      preferences:
+        title: Preferences
+        cookie_settings: Cookie Settings
+        region_settings: Region Settings
+        theme_settings: Theme Settings
+        back_to_settings: Back to Preferences
+        up_link: Back to top
+        regions:
+          title: Regional & Language Settings
+          region_section: Regional Settings
+          language_section: Language Preferences
+          timezone_section: Timezone Settings
+          select_region: Select Region
+          select_country: Select Country
+          select_language: Select Language
+          select_timezone: Select Timezone
+          select_region_prompt: Choose your region...
+          select_country_prompt: Choose your country...
+          select_language_prompt: Choose your language...
+          select_timezone_prompt: Choose your timezone...
+          select_region_selector:
+            USA: United States
+            JAPAN: Japan
+            US: United States
+            JP: Japan
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone_selector:
+            UTC: Coordinated Universal Time (UTC)
+            JST: Japan Standard Time (JST)
+          update_settings: Update Settings
+          cancel: Cancel
+        languages:
+          unsupported: Unsupported language selected
+        timezones:
+          invalid: Invalid timezone selected
+        themes:
+          updated: Theme updated to %{theme}
+          invalid: Invalid theme selected
+      preference:
+        cookie:
+          edit:
+            h1: Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Pick the display mode that fits your workspace and comfort.
+            legend: Select a theme
+            options:
+              light: Light — bright backgrounds for well-lit spaces
+              dark: Dark — dimmed colors for low-light comfort
+              system: System default — follow your device settings
+            hints:
+              light: Great when you work during the day or in bright rooms.
+              dark: Ideal for night shifts or reducing eye strain.
+              system: Matches your operating system and switches automatically.
+            submit: Save theme preference
+  languages:
+    english: English
+    japanese: 日本語
+  themes:
+    light: Light Theme
+    dark: Dark Theme
+    corporate: Corporate Theme
+    system: System Theme
+  root:
+    app:
+      preferences:
+        title: Preferences
+        cookie_settings: Cookie Settings
+        region_settings: Region Settings
+        email_preferences: Email Preferences
+        theme_settings: Theme Settings
+        reset_settings: Clear Saved Preferences
+        back_to_settings: Back to Preferences
+        regions:
+          title: Regional & Language Settings
+          region_section: Regional Settings
+          language_section: Language Preferences
+          timezone_section: Timezone Settings
+          select_region: Select Region
+          select_country: Select Country
+          select_language: Select Language
+          select_timezone: Select Timezone
+          select_region_prompt: Choose your region...
+          select_country_prompt: Choose your country...
+          select_language_prompt: Choose your language...
+          select_timezone_prompt: Choose your timezone...
+          select_region_selector:
+            USA: United States
+            JAPAN: Japan
+            US: United States
+            JP: Japan
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone_selector:
+            UTC: Coordinated Universal Time (UTC)
+            JST: Japan Standard Time (JST)
+          update_settings: Update Settings
+          cancel: Cancel
+        emails:
+          updated: Email preferences updated successfully
+          invalid: Invalid email preferences
+        languages:
+          updated: Language updated to %{language}
+          unsupported: Unsupported language selected
+        themes:
+          updated: Theme updated to %{theme}
+          invalid: Invalid theme selected
+        timezones:
+          updated: Timezone updated to %{timezone}
+          invalid: Invalid timezone selected
+      preference:
+        cookie:
+          edit:
+            h1: Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_tracking_cookies: Allow tracking cookies
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Pick the display mode that fits your workspace and comfort.
+            legend: Select a theme
+            options:
+              light: Light — bright backgrounds for well-lit spaces
+              dark: Dark — dimmed colors for low-light comfort
+              system: System default — follow your device settings
+            hints:
+              light: Great when you work during the day or in bright rooms.
+              dark: Ideal for night shifts or reducing eye strain.
+              system: Matches your operating system and switches automatically.
+            submit: Save theme preference
+        reset:
+          edit:
+            title: Reset Preference Cookies
+            description: Confirm to clear saved preference cookies for this browser.
+            confirmation: This action cannot be undone.
+            confirmation_label: I understand all saved preference cookies will be removed.
+            submit: Clear preference cookies
+          destroy:
+            success: Preference cookies cleared.
+            confirmation_required: Select the checkbox to confirm clearing your preference cookies.
+    com:
+      preferences:
+        title: Preferences
+        cookie_settings: Cookie Settings
+        region_settings: Region Settings
+        email_preferences: Email Preferences
+        theme_settings: Choose Dark or Light Theme
+        back_to_settings: Back to Preferences
+        regions:
+          title: Corporate Regional & Language Settings
+          region_section: Regional Settings
+          language_section: Language Preferences
+          timezone_section: Timezone Settings
+          select_region: Select Region
+          select_country: Select Country
+          select_language: Select Language
+          select_timezone: Select Timezone
+          select_region_prompt: Choose your region...
+          select_country_prompt: Choose your country...
+          select_language_prompt: Choose your language...
+          select_timezone_prompt: Choose your timezone...
+          select_region_selector:
+            USA: United States
+            JAPAN: Japan
+            US: United States
+            JP: Japan
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone_selector:
+            UTC: Coordinated Universal Time (UTC)
+            JST: Japan Standard Time (JST)
+          update_settings: Update Settings
+          cancel: Cancel
+        emails:
+          updated: Email preferences updated successfully
+          none_selected: No preferences selected
+        languages:
+          updated: Language preference updated to %{language}
+          unsupported: Unsupported language selected
+        themes:
+          updated: Corporate theme updated to %{theme}
+          invalid: Invalid theme selected
+        timezones:
+          updated: Timezone updated to %{timezone}
+          invalid: Invalid timezone selected
+      preference:
+        cookie:
+          edit:
+            h1: Corporate Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_tracking_cookies: Allow tracking cookies
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+        locale:
+          edit:
+            title: Locale Settings
+            description: Manage corporate language and timezone preferences for this browser.
+            language_section: Language Settings
+            language_label: Language
+            language_prompt: Choose your language...
+            language_options:
+              ja: 日本語
+              en: English
+            timezone_section: Timezone Settings
+            timezone_label: Timezone
+            timezone_prompt: Choose your timezone...
+            timezone_options:
+              UTC: Coordinated Universal Time (UTC)
+              JST: Japan Standard Time (JST)
+            submit: Update Settings
+            cancel: Cancel
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Pick the display mode that helps you focus on corporate dashboards.
+            legend: Select a theme
+            options:
+              light: Light — bright backgrounds for well-lit offices
+              dark: Dark — subdued colors for command centers
+              system: System default — mirror corporate device settings
+            hints:
+              light: Best when you present in meeting rooms or open spaces.
+              dark: Perfect for late-night reviews or monitoring screens.
+              system: Keeps theme in sync with enterprise-managed preferences.
+            submit: Save theme preference
+    org:
+      customers:
+        created: Customer %{name} created successfully
+        updated: Customer updated successfully
+        deleted: Customer %{name} deleted successfully
+        name_email_required: Name and email are required
+        invalid_data: Invalid customer data
+      preferences:
+        title: Operator Preferences
+        cookie_settings: Cookie Settings
+        region_settings: Region Settings
+        email_preferences: Email Preferences
+        theme_settings: Choose Dark or Light Theme
+        back_to_settings: Back to Preferences
+        regions:
+          title: Operator Regional & Language Settings
+          region_section: Regional Settings
+          language_section: Operator Language Preferences
+          timezone_section: Operator Timezone Settings
+          select_region: Select Region
+          select_language: Select Operator Language
+          select_timezone: Select Operator Timezone
+          select_region_prompt: Choose your region...
+          select_country_prompt: Choose your country...
+          select_language_prompt: Choose operator language...
+          select_timezone_prompt: Choose operator timezone...
+          update_settings: Update Settings
+          cancel: Cancel
+        languages:
+          updated: Operator language updated to %{language}
+          unsupported: Unsupported operator language selected
+        themes:
+          updated: Operator theme updated to %{theme}
+          invalid: Invalid operator theme selected
+        timezones:
+          updated: Operator timezone updated to %{timezone}
+          invalid: Invalid timezone selected for operator interface
+        privacies:
+          updated: Privacy settings updated successfully
+          invalid: Invalid privacy settings
+      preference:
+        cookie:
+          edit:
+            h1: Operator Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_tracking_cookies: Allow tracking cookies
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Switch the console appearance for long on-call shifts.
+            legend: Select a theme
+            options:
+              light: Light — bright interface for office work
+              dark: Dark — low-glare view for night duty
+              system: System default — inherit operator workstation setting
+            hints:
+              light: Recommended when collaborating in shared spaces.
+              dark: Gentle on the eyes during overnight monitoring.
+              system: Automatically adapts when your device switches modes.
+            submit: Save theme preference
+  activerecord:
+    attributes:
+      user_identity_email:
+        address: Email address
+    errors:
+      messages:
+        record_invalid: "Validation failed: %{errors}"
+        restrict_dependent_destroy:
+          has_one: Cannot delete record because a dependent %{record} exists
+          has_many: Cannot delete record because dependent %{record} exist
+        identity_audit_event_format_invalid:
+          must be composed of uppercase letters and underscores only
+  date:
+    abbr_day_names:
+      - Sun
+      - Mon
+      - Tue
+      - Wed
+      - Thu
+      - Fri
+      - Sat
+    abbr_month_names:
+      -
+      - Jan
+      - Feb
+      - Mar
+      - Apr
+      - May
+      - Jun
+      - Jul
+      - Aug
+      - Sep
+      - Oct
+      - Nov
+      - Dec
+    day_names:
+      - Sunday
+      - Monday
+      - Tuesday
+      - Wednesday
+      - Thursday
+      - Friday
+      - Saturday
+    formats:
+      default: "%Y-%m-%d"
+      long: "%B %d, %Y"
+      short: "%b %d"
+    month_names:
+      -
+      - January
+      - February
+      - March
+      - April
+      - May
+      - June
+      - July
+      - August
+      - September
+      - October
+      - November
+      - December
+    order:
+      - year
+      - month
+      - day
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: about %{count} hour
+        other: about %{count} hours
+      about_x_months:
+        one: about %{count} month
+        other: about %{count} months
+      about_x_years:
+        one: about %{count} year
+        other: about %{count} years
+      almost_x_years:
+        one: almost %{count} year
+        other: almost %{count} years
+      half_a_minute: half a minute
+      less_than_x_seconds:
+        one: less than %{count} second
+        other: less than %{count} seconds
+      less_than_x_minutes:
+        one: less than a minute
+        other: less than %{count} minutes
+      over_x_years:
+        one: over %{count} year
+        other: over %{count} years
+      x_seconds:
+        one: "%{count} second"
+        other: "%{count} seconds"
+      x_minutes:
+        one: "%{count} minute"
+        other: "%{count} minutes"
+      x_days:
+        one: "%{count} day"
+        other: "%{count} days"
+      x_months:
+        one: "%{count} month"
+        other: "%{count} months"
+      x_years:
+        one: "%{count} year"
+        other: "%{count} years"
+    prompts:
+      second: Seconds
+      minute: Minute
+      hour: Hour
+      day: Day
+      month: Month
+      year: Year
+  helpers:
+    select:
+      prompt: Please select
+    submit:
+      create: Create %{model}
+      submit: Save %{model}
+      update: Update %{model}
+  number:
+    currency:
+      format:
+        delimiter: ","
+        format: "%u%n"
+        negative_format: "-%u%n"
+        precision: 2
+        separator: "."
+        significant: false
+        strip_insignificant_zeros: false
+        unit: "$"
+    format:
+      delimiter: ","
+      precision: 3
+      round_mode: default
+      separator: "."
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: "%n %u"
+        units:
+          billion: Billion
+          million: Million
+          quadrillion: Quadrillion
+          thousand: Thousand
+          trillion: Trillion
+          unit: ""
+      format:
+        delimiter: ""
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: "%n %u"
+        units:
+          byte:
+            one: Byte
+            other: Bytes
+          eb: EB
+          gb: GB
+          kb: KB
+          mb: MB
+          pb: PB
+          tb: TB
+          zb: ZB
+    percentage:
+      format:
+        delimiter: ""
+        format: "%n%"
+    precision:
+      format:
+        delimiter: ""
+  acme:
+    app:
+      configurations:
+        title: Configuration
+        description: Review and adjust your service settings.
+        i18n_settings: Locale settings
+        i18n_settings_description: Update the default language and region for this browser.
+        email_settings: Email settings
+        email_settings_description: Manage notification senders and descriptions.
+      preferences:
+        update_success: Preferences updated successfully
+        title: Preferences
+        cookie_settings: Cookie Settings
+        region_settings: Region Settings
+        languages:
+          unsupported: Unsupported language selected
+        language_settings: Language Settings
+        timezone_settings: Timezone Settings
+        theme_settings: Theme Settings
+        back_to_settings: Back to Preferences
+        timezones:
+          invalid: Invalid timezone selected
+        regions:
+          title: Region & Language Settings
+          region_section: Region Settings
+          select_region: Select Region
+          language_section: Language Settings
+          select_language: Select Language
+          timezone_section: Timezone Settings
+          select_timezone: Select Timezone
+          select_region_prompt: Choose your region...
+          select_language_prompt: Choose your language...
+          select_timezone_prompt: Choose your timezone...
+          select_region_selector:
+            USA: United States
+            JAPAN: Japan
+            US: United States
+            JP: Japan
+          select_language_selector:
+            JAPANESE: Japanese
+            ENGLISH: English
+          select_timezone_selector:
+            UTC: Coordinated Universal Time (UTC)
+            JST: Japan Standard Time (JST)
+          update_settings: Update Settings
+          cancel: Cancel
+        themes:
+          updated: Theme updated to %{theme}
+          invalid: Invalid theme selected
+        footer:
+          home: Home
+          cookie: Cookies
+          preference: Preferences
+          privacy: Privacy
+      preference:
+        cookie:
+          edit:
+            h1: Cookie Preferences
+            accept_necessary_cookies: Allow strictly necessary cookies (required)
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+            accept_consent_cookies: Allow consent cookies
+        theme:
+          edit:
+            title: Choose Dark or Light Theme
+            description: Pick the display mode that helps you focus on corporate dashboards.
+            legend: Select a theme
+            options:
+              light: Light — bright backgrounds for well-lit spaces
+              dark: Dark — dimmed colors for low-light comfort
+              system: System default — follow your device settings
+            hints:
+              light: Great when you work during the day or in bright rooms.
+              dark: Ideal for night shifts or reducing eye strain.
+              system: Matches your operating system and switches automatically.
+            submit: Save theme preference
+        resets:
+          title: Reset Preferences
+          description: Remove saved preference cookies for this browser.
+          button: Clear preference data
+          confirm: This action deletes saved preference data for this browser. Continue?
+          destroyed: Preferences have been reset
+          back: Back to Preferences
+        timezone:
+          edit:
+            heading: Timezone Settings
+            description: Update the timezone stored for this browser.
+            timezone_label: Timezone
+    com:
+      preferences:
+        update_success: Preferences updated successfully
+        language_settings: Language Settings
+        timezone_settings: Timezone Settings
+        submitting: Submitting...
+        update_settings: Update Settings
+        back_to_settings: Back to Preferences
+        cookie_settings: Cookie Settings
+        timezone:
+          edit:
+            heading: Timezone Settings
+            description: Update the timezone stored for this browser.
+            timezone_label: Timezone
+        themes:
+          updated: Corporate theme updated to %{theme}
+          invalid: Invalid theme selected
+        timezones:
+          invalid: Invalid timezone selected
+      preference:
+        cookie:
+          edit:
+            h1: Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+            accept_consent_cookies: Allow consent cookies
+    org:
+      preferences:
+        update_success: Preferences updated successfully
+        language_settings: Language Settings
+        timezone_settings: Timezone Settings
+        submitting: Submitting...
+        update_settings: Update Settings
+        back_to_settings: Back to Preferences
+        cookie_settings: Cookie Settings
+        timezone:
+          edit:
+            heading: Timezone Settings
+            description: Update the timezone stored for this browser.
+            timezone_label: Timezone
+        themes:
+          updated: Theme updated to %{theme}
+          invalid: Invalid theme selected
+        timezones:
+          invalid: Invalid timezone selected
+      preference:
+        cookie:
+          edit:
+            h1: Cookie Preferences
+            accept_necessary_cookies: Allow necessary cookies (required)
+            accept_functional_cookies: Allow functional cookies
+            accept_performance_cookies: Allow performance cookies
+            accept_targeting_cookies: Allow targeting cookies
+            accept_consent_cookies: Allow consent cookies
+  support:
+    array:
+      last_word_connector: ", and "
+      two_words_connector: " and "
+      words_connector: ", "
+  time:
+    am: am
+    formats:
+      default: "%a, %d %b %Y %H:%M:%S %z"
+      long: "%B %d, %Y %H:%M"
+      short: "%d %b %H:%M"
+    pm: pm
+  core:
+    shared:
+      preference_emails:
+        token_invalid: That link is no longer valid. Request a new one to continue.
+        turnstile_error: Turnstile verification failed. Please refresh and try again.
+        update_failure: We could not save your preferences. Please try again.
+    app:
+      preferences:
+        title: Email Preferences
+        description: Request a secure link to manage your email notifications without signing in.
+        email_settings: Request email preferences
+        email_settings_description: Enter your email address and we will send a protected link.
+        token_guidance: Use the link in the email to edit your preferences within two hours.
+        back_to_settings: Back to preferences
+      preference:
+        emails:
+          new:
+            page_title: Request a preference link
+            heading: Request a secure link
+            description: Provide your email address to receive a one-time token link.
+            email_label: Email address
+            submit: Email me the link
+            success: If the address is registered, we have emailed you a secure link.
+            failure: We could not send the link; please check the input below.
+          edit:
+            page_title: Edit email preferences
+            heading: Edit your email preferences
+            description: Use the one-time link we emailed you to adjust optional messages.
+            always_on: Important service notifications
+            always_on_description: Critical messages stay enabled so you never miss updates.
+            product_updates_label: Product updates
+            product_updates_description: Receive announcements about new releases and improvements.
+            promotional_messages_label: Promotional messages
+            promotional_messages_description: Get offers, events, and marketing news.
+            submit: Save preferences
+    com:
+      preferences:
+        title: Email Preferences
+        description: Request a secure link to manage your email notifications without signing in.
+        email_settings: Request email preferences
+        email_settings_description: Enter your email address and we will send a protected link.
+        token_guidance: Use the link in the email to edit your preferences within two hours.
+        back_to_settings: Back to preferences
+      preference:
+        emails:
+          new:
+            page_title: Request a preference link
+            heading: Request a secure link
+            description: Provide your email address to receive a one-time token link.
+            email_label: Email address
+            submit: Email me the link
+            success: If the address is registered, we have emailed you a secure link.
+            failure: We could not send the link; please check the input below.
+          edit:
+            page_title: Edit email preferences
+            heading: Edit your email preferences
+            description: Use the one-time link we emailed you to adjust optional messages.
+            always_on: Important service notifications
+            always_on_description: Critical messages stay enabled so you never miss updates.
+            product_updates_label: Product updates
+            product_updates_description: Receive announcements about new releases and improvements.
+            promotional_messages_label: Promotional messages
+            promotional_messages_description: Get offers, events, and marketing news.
+            submit: Save preferences
+    org:
+      preferences:
+        title: Email Preferences
+        description: Staff can request an email link to manage notification subscriptions.
+        email_settings: Request email preference link
+        email_settings_description: We will send a secure token link for editing staff alerts.
+        token_guidance: Use the emailed link to change settings before it expires.
+        back_to_settings: Back to preferences
+      preference:
+        emails:
+          new:
+            page_title: Request a staff preference link
+            heading: Request a secure staff link
+            description: Enter an email to receive a staff-specific one-time token link.
+            email_label: Work email
+            submit: Send staff link
+            success: If the address exists, an email with the link has been sent.
+            failure: Please fix any errors before requesting a new link.
+          edit:
+            page_title: Adjust staff email preferences
+            heading: Update staff notification choices
+            description: Adjust which optional staff communications you receive.
+            always_on: Important service notifications
+            always_on_description:
+              Essential alerts remain enabled so you never miss critical updates.
+            product_updates_label: Product updates
+            product_updates_description: Stay informed about new staff-facing products and features.
+            promotional_messages_label: Promotional messages
+            promotional_messages_description: Allow promotional announcements and event invitations.
+            submit: Save staff preferences
+  email:
+    app:
+      preference_mailer:
+        update_request:
+          subject: Update your email preferences
+          greeting: Hello,
+          intro: Click the link below to manage your email preferences.
+          cta: Update my preferences
+          expiration_notice: The link expires in two hours and can only be used once.
+    com:
+      preference_mailer:
+        update_request:
+          subject: Update your email preferences
+          greeting: Hello,
+          intro: Click the link below to manage your email preferences.
+          cta: Update my preferences
+          expiration_notice: The link expires in two hours and can only be used once.
+    org:
+      preference_mailer:
+        update_request:
+          subject: Update your staff email preferences
+          greeting: Hello,
+          intro: Use the link below to manage staff email preferences.
+          cta: Update staff preferences
+          expiration_notice: This link is single-use and expires in two hours.
+  shared:
+    links:
+      acme_preference: Acme preferences
+  docs:
+    posts:
+      index:
+        title: Documents
+        count: "%{count} documents"
+        search_placeholder: Search...
+        search_button: Search
+        search_found: "%{count} found"
+        search_all: All
+        empty: No documents found
+        select_title: Select a document
+        select_description: Click on a document from the list to view its details
+    versions:
+      index:
+        title: Versions
+        description: Document versions list
+      show:
+        title: Version
+        description: Document version details
+  news:
+    posts:
+      index:
+        title: News
+        count: "%{count} posts"
+        empty: No posts found
+        select_title: Select a post
+        select_description: Click on a post from the list to view its details
+      versions:
+        index:
+          title: Versions
+          description: News versions list
+      show:
+        title: Version
+        description: News version details
+core:
+  app:
+    layout:
+      nav:
+        contact: Contact
+  com:
+    layout:
+      nav:
+        contact: Contact
+
+  layouts:
+    shared:
+      footer_theme_controls:
+        title: Theme settings
+        description: Choose your display theme (or follow your system setting)
+        options:
+          system: Follow system setting
+          light: Light
+          dark: Dark
+
+      footer_cookie_controls:
+        close_button: Close
+        title: About our use of cookies
+        description_html: We use essential cookies and cookies for analytics and marketing purposes. Please review our %{privacy_policy} for details.
+        privacy_policy: Privacy Policy
+        reject_all: Reject all
+        open_settings: Manage settings
+        accept_all: Accept all

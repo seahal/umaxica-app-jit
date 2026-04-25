@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: staff_preference_language_options
+# Database name: principal
+#
+#  id :bigint           not null, primary key
+#
+ja:
+  id: 1
+en:
+  id: 2

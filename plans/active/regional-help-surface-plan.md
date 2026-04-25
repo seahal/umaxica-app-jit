@@ -1,33 +1,31 @@
-# Regional Help Surface Plan
+# Distributor Help Surface Plan
 
 ## Status
 
-Active draft (2026-04-16)
+Active draft (2026-04-17)
 
 ## Summary
 
-Keep `help` as a reserved `Regional` surface while `docs/news` are implemented first.
+Keep `help` as a reserved Distributor content family while `docs/news` are implemented first.
 
 Fixed constraints:
 
 - `help` is separate from `docs/news`
-- inquiry/contact is owned by `base`
+- inquiry/contact is owned by Foundation `base.*`
 - `help` has no v1 homepage requirement
 - `help` has no immediate content implementation requirement
-- future `help` editing belongs only to the `org` staff CMS surface
-- future `help` content should be document-like
-- `help` remains inside the same `Regional` content database group as `docs/news`
+- future `help` editing belongs only to the `base.org.*` staff CMS surface
+- future `help` content should remain compatible with the Distributor delivery model
 
 ## Current Position
 
-For the current phase, `help` should remain available as a boundary and route namespace, but should
-not drive feature work.
+For the current phase, `help` should remain reserved but should not drive feature work.
 
 What to preserve now:
 
-- keep the `help` route namespace and host boundary intact
+- keep `help` as a future Distributor content family
 - keep `help` out of inquiry/contact controller work
-- keep `help` independent from `docs/news` controller implementation
+- keep `help` independent from `docs/news` implementation
 
 What not to build now:
 
@@ -40,44 +38,20 @@ What not to build now:
 
 When `help` becomes an active implementation target:
 
-- editing must happen only from the `org` staff CMS surface
+- editing must happen only from the `base.org.*` staff CMS surface
+- delivery should happen on `post.*`
 - content should follow a document-like editorial flow
-- document-like means:
-  - entry
-  - draft/history record
-  - public snapshot record
-- the public contract may be smaller than `docs/news` at first, but it must remain extensible toward
-  the same editorial shape
-
-This keeps `help` compatible with future FAQ or support-article expansion without tying it to
-inquiry workflows.
-
-## Deferred Decisions
-
-These decisions are intentionally deferred to the later `help` implementation track:
-
-- whether `help` reuses the exact `Document` family or introduces a dedicated document-like family
-- whether public read starts with homepage, FAQ list/show, or broader article delivery
-- whether taxonomy is needed for `help`
-- whether FAQ is the only content type or whether guides/articles are included from day one
+- `help` stays separate from Foundation inquiry/contact behavior
 
 ## Test Plan
 
 Current phase:
 
-- `help` route and host ownership remain intact
+- `help` remains reserved as a Distributor family
 - `help` is not used by inquiry/contact work
 - `docs/news` work does not introduce accidental coupling to `help`
-
-Future `help` phase:
-
-- editing is restricted to `org`
-- document-like draft/publish behavior is enforced
-- `help` stays separate from `base` inquiry/contact behavior
 
 ## Assumptions
 
 - leaving `help` inactive for now is acceptable
 - the current need is to preserve a safe direction, not to ship a `help` feature immediately
-- future `help` work should keep the same expansion path as `docs/news`, even if the first public
-  feature set is smaller

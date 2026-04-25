@@ -98,8 +98,8 @@ naming IS technically correct Rails. Renaming to `HealthController` requires add
 All `healths_controller.rb` -> `health_controller.rb`, class `HealthsController` ->
 `HealthController`:
 
-- `app/controllers/apex/{app,com,org}/healths_controller.rb` (3)
-- `app/controllers/apex/{app,com,org}/edge/v0/healths_controller.rb` (3)
+- `app/controllers/acme/{app,com,org}/healths_controller.rb` (3)
+- `app/controllers/acme/{app,com,org}/edge/v0/healths_controller.rb` (3)
 - `app/controllers/core/{app,com,org}/healths_controller.rb` (3)
 - `app/controllers/core/{app,com,org}/edge/v0/healths_controller.rb` (3)
 - `app/controllers/docs/{app,com,org}/healths_controller.rb` (3)
@@ -111,7 +111,7 @@ All `healths_controller.rb` -> `health_controller.rb`, class `HealthsController`
 
 **Route files to update (4 files, 24 route lines)**
 
-In `config/routes/{apex,core,docs,sign}.rb`, every occurrence of:
+In `config/routes/{acme,core,docs,sign}.rb`, every occurrence of:
 
 ```ruby
 resource :health, only: :show
@@ -218,7 +218,7 @@ references inside each file.
 
 - `app/views/sign/{app,com,org}/preference/themes/edit.html.erb`: `@preference_colortheme` ->
   `@preference_theme`, param scope names
-- `app/views/apex/{app,com,org}/preference/themes/edit.html.erb`: same
+- `app/views/acme/{app,com,org}/preference/themes/edit.html.erb`: same
 
 #### Step 8: Update rake task
 

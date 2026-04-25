@@ -1,0 +1,30 @@
+# == Schema Information
+#
+# Table name: app_contacts
+# Database name: guest
+#
+#  id          :bigint           not null, primary key
+#  ip_address  :inet
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  category_id :bigint           default(0), not null
+#  public_id   :string(21)       not null
+#  status_id   :bigint           not null
+#
+# Indexes
+#
+#  index_app_contacts_on_category_id  (category_id)
+#  index_app_contacts_on_public_id    (public_id) UNIQUE
+#  index_app_contacts_on_status_id    (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (category_id => app_contact_categories.id)
+#  fk_rails_...  (status_id => app_contact_statuses.id) ON DELETE => restrict
+#
+one:
+  category_id: 2
+  status_id: 0  # NOTHING
+  public_id: one_app_contact_00001
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

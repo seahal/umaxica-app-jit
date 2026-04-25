@@ -11,9 +11,9 @@ up.
 
 ### Controllers
 
-- `app/controllers/apex/app/application_controller.rb:9,14` — `delete this!`
-- `app/controllers/apex/com/application_controller.rb:13,14,15` — `delete this!`
-- `app/controllers/apex/org/application_controller.rb:23-31` — `delete this line` (9 lines)
+- `app/controllers/acme/app/application_controller.rb:9,14` — `delete this!`
+- `app/controllers/acme/com/application_controller.rb:13,14,15` — `delete this!`
+- `app/controllers/acme/org/application_controller.rb:23-31` — `delete this line` (9 lines)
 - `app/controllers/sign/org/application_controller.rb:12-14` — `i want to remove this` (3 lines)
 
 ### Models

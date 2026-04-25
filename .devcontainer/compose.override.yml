@@ -1,6 +1,6 @@
 services:
   core:
-    container_name: jit-devcontainer-core
+    container_name: jit-devcontainer-base
     user: "jit"
     userns_mode: keep-id
     environment:

@@ -12,9 +12,9 @@ This is a **deploy blocker** that must be resolved before production release.
 
 ## Affected Files
 
-- `app/controllers/apex/app/application_controller.rb:37`
-- `app/controllers/apex/com/application_controller.rb:37`
-- `app/controllers/apex/org/application_controller.rb:35`
+- `app/controllers/acme/app/application_controller.rb:37`
+- `app/controllers/acme/com/application_controller.rb:37`
+- `app/controllers/acme/org/application_controller.rb:35`
 - `app/controllers/core/app/application_controller.rb:19`
 - `app/controllers/core/com/application_controller.rb:19`
 - `app/controllers/core/org/application_controller.rb:19`
@@ -37,7 +37,7 @@ annotations. Add tests to verify URL generation is correct across surfaces.
 
 **Status: PARTIALLY DONE**
 
-- 9 of 15 controllers still contain the FIXME (apex/_, core/_, docs/\*).
+- 9 of 15 controllers still contain the FIXME (acme/_, core/_, docs/\*).
 - 6 controllers (help/_, news/_) no longer exist — those surfaces were removed or restructured.
 - Remaining 9 controllers still need the URL configuration resolved.
 

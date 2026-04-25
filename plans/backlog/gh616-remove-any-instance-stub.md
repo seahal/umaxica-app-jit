@@ -44,12 +44,12 @@ tests, and replace with deterministic alternatives.
 **Status: NEARLY COMPLETE**
 
 Grep for `any_instance` in test/ returns 0 matches. `freeze_time`/`travel_to` included in
-test_helper.rb. Plan notes a few remaining cases in verification integration tests and apex cookie
+test_helper.rb. Plan notes a few remaining cases in verification integration tests and acme cookie
 controller test may still need addressing.
 
 ## Improvement Points (2026-04-07 Review)
 
 - This issue is still open in the codebase. Remaining `any_instance.stub` usage exists in multiple
-  verification integration tests and in the apex cookie controller test.
+  verification integration tests and in the acme cookie controller test.
 - Narrow the finish line to the still-open files only. The broad source plan is useful context, but
   this issue now needs a short "remaining cases" list.

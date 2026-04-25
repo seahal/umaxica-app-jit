@@ -1,0 +1,19 @@
+<% content_for :page_title, t("sign.app.authentication.new.page_title") %>
+<h1><%= t("sign.app.authentication.new.page_title") %></h1>
+<p><%= t("sign.app.authentication.new.description") %></p>
+
+<ul>
+  <li><%= link_to t("sign.app.authentication.new.links.email"), identity.new_sign_app_in_email_path %></li>
+  <li><%= link_to t("sign.app.authentication.new.links.passkey"), identity.new_sign_app_in_passkey_path %>
+  </li>
+  <li><%= link_to t("sign.app.authentication.new.links.secret"), identity.new_sign_app_in_secret_path %>
+  </li>
+</ul>
+
+<%= button_to "/auth/google_app", method: :post, data: { turbo: false } do %>
+  <%= t("sign.app.authentication.new.links.google") %>
+<% end %>
+
+<%= link_to identity.new_sign_app_up_path(ri: params[:ri], rt: params[:rt]) do %>
+  <%= t("sign.app.authentication.new.links.registration") %>
+<% end %>

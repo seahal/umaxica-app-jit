@@ -1,0 +1,38 @@
+# typed: false
+# == Schema Information
+#
+# Table name: org_document_tags
+# Database name: publication
+#
+#  id                         :bigint           not null, primary key
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  org_document_id            :bigint           not null
+#  org_document_tag_master_id :bigint           default(0), not null
+#
+# Indexes
+#
+#  idx_on_org_document_tag_master_id_org_document_id_048a2b05e4  (org_document_tag_master_id,org_document_id) UNIQUE
+#  index_org_document_tags_on_org_document_id                    (org_document_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (org_document_id => org_documents.id)
+#  fk_rails_...  (org_document_tag_master_id => org_document_tag_masters.id)
+#
+
+# frozen_string_literal: true
+
+class OrgDocumentTag < PublicationRecord
+  include ::CategoryTag
+
+  belongs_to :org_document, inverse_of: :org_document_tags
+  belongs_to :org_document_tag_master,
+             primary_key: :id,
+             inverse_of: :org_document_tags
+
+  validates :org_document_tag_master_id,
+            length: { maximum: 255 },
+            uniqueness: { scope: :org_document_id,
+                          message: :already_tagged, }
+end

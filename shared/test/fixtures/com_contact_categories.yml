@@ -1,0 +1,13 @@
+# == Schema Information
+#
+# Table name: com_contact_categories
+# Database name: guest
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 1
+security_issue:
+  id: 2
+one:
+  id: 3

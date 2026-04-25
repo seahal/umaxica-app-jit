@@ -1,0 +1,120 @@
+# App Configuration
+BRAND_NAME=UMAXICA
+# Ruby Configuration
+RUBY_YJIT_ENABLE=1
+RUBY_PATH=/usr/local/bin/ruby
+BUNDLE_JOBS=8
+BUNDLE_PATH=vendor/bundle
+BUNDLE_FORCE_RUBY_PLATFORM=false
+COLORTERM=truecolor
+# Rails Configuration
+RAILS_ENV=development
+RACK_ENV=development
+PORT=3000
+BINDING=0.0.0.0
+OPEN_TELEMETRY=false
+# Node Environment
+NODE_ENV=development
+# Vite+ Configuration
+VITE_GIT_HOOKS=0
+# Region
+REGION_CODE=all
+# Database Configuration
+## Redis (use local Redis service inside Compose)
+VALKEY_URL=redis://valkey:6379/0
+RATE_LIMIT_REDIS_URL=redis://valkey:6379/1
+REDIS_NORMAL_URL=redis://valkey:6379/7
+## PostgreSQL (use local PostgreSQL services inside Compose)
+# POSTGRESQL_PASSWORD defaults to Rails credentials (DATABASE.PASSWORD) and can be overridden in CI/test
+POSTGRESQL_USER=root
+POSTGRESQL_PORT=5432
+POSTGRESQL_DEFAULT_PUB=primary
+POSTGRESQL_OCCURRENCE_PUB=primary
+POSTGRESQL_OCCURRENCE_SUB=replica
+POSTGRESQL_ACTIVITY_PUB=primary
+POSTGRESQL_ACTIVITY_SUB=replica
+POSTGRESQL_BEHAVIOR_PUB=primary
+POSTGRESQL_BEHAVIOR_SUB=replica
+POSTGRESQL_GUEST_PUB=primary
+POSTGRESQL_GUEST_SUB=replica
+POSTGRESQL_IDENTITY_PUB=primary
+POSTGRESQL_IDENTITY_SUB=replica
+POSTGRESQL_PRINCIPAL_PUB=primary
+POSTGRESQL_PRINCIPAL_SUB=replica
+POSTGRESQL_PROFILE_PUB=primary
+POSTGRESQL_PROFILE_SUB=replica
+POSTGRESQL_COMMERCE_PUB=primary
+POSTGRESQL_COMMERCE_SUB=replica
+POSTGRESQL_TOKEN_PUB=primary
+POSTGRESQL_TOKEN_SUB=replica
+POSTGRESQL_PUBLICATION_PUB=primary
+POSTGRESQL_PUBLICATION_SUB=replica
+POSTGRESQL_MESSAGE_PUB=primary
+POSTGRESQL_MESSAGE_SUB=replica
+POSTGRESQL_NOTIFICATION_PUB=primary
+POSTGRESQL_NOTIFICATION_SUB=replica
+POSTGRESQL_CACHE_PUB=primary
+POSTGRESQL_CACHE_SUB=replica
+POSTGRESQL_STORAGE_PUB=primary
+POSTGRESQL_STORAGE_SUB=replica
+POSTGRESQL_QUEUE_PUB=primary
+POSTGRESQL_QUEUE_SUB=replica
+POSTGRESQL_OPERATOR_PUB=primary
+POSTGRESQL_OPERATOR_SUB=replica
+POSTGRESQL_SETTING_PUB=primary
+POSTGRESQL_SETTING_SUB=replica
+POSTGRESQL_AVATAR_PUB=primary
+POSTGRESQL_AVATAR_SUB=replica
+POSTGRESQL_FINDER_PUB=primary
+POSTGRESQL_FINDER_SUB=replica
+POSTGRESQL_SEARCH_PUB=primary
+POSTGRESQL_SEARCH_SUB=replica
+POSTGRESQL_BILLING_PUB=primary
+POSTGRESQL_BILLING_SUB=replica
+# Object Storage Configuration
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+# OpenTelemetry Configuration
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+# Error Monitoring Configuration
+# SENTRY_DSN_CONFIG=null
+# PaaS Configuration
+## Mail Configuration
+AWS_SES_REGION=ap-northeast-1
+# Domain URLs
+CORPORATE_URL=com.localhost
+SERVICE_URL=app.localhost
+STAFF_URL=org.localhost
+NETWORK_URL=network.localhost
+DEV_URL=dev.localhost
+ZENITH_ACME_COM_URL=com.localhost
+ZENITH_ACME_APP_URL=app.localhost
+ZENITH_ACME_ORG_URL=org.localhost
+IDENTITY_SIGN_COM_URL=sign.com.localhost
+IDENTITY_SIGN_APP_URL=sign.app.localhost
+IDENTITY_SIGN_ORG_URL=sign.org.localhost
+FOUNDATION_BASE_COM_URL=base.com.localhost
+FOUNDATION_BASE_APP_URL=base.app.localhost
+FOUNDATION_BASE_ORG_URL=base.org.localhost
+FOUNDATION_BASE_DEV_URL=base.dev.localhost
+DISTRIBUTOR_POST_COM_URL=docs.com.localhost
+DISTRIBUTOR_POST_APP_URL=docs.app.localhost
+DISTRIBUTOR_POST_ORG_URL=docs.org.localhost
+DISTRIBUTOR_POST_COM_URL=news.com.localhost
+DISTRIBUTOR_POST_APP_URL=news.app.localhost
+DISTRIBUTOR_POST_ORG_URL=news.org.localhost
+DISTRIBUTOR_POST_COM_URL=help.com.localhost
+DISTRIBUTOR_POST_APP_URL=help.app.localhost
+DISTRIBUTOR_POST_ORG_URL=help.org.localhost
+EDGE_CORPORATE_URL=jp.umaxica.com
+EDGE_SERVICE_URL=jp.umaxica.app
+EDGE_STAFF_URL=jp.umaxica.org
+STATUS_URL=status.umaxica.dev
+ASSET_URL=asset.localhost
+# JWT Configuration
+PREFERENCE_JWT_AUDIENCES=umaxica.app,umaxica.com,localhost
+# JWT keys (CORPORATE, SERVICE, ORGANIZATION) are resolved from encrypted credentials via Rails.app.creds.
+# Cloudflare Turnstile keys are resolved from encrypted credentials via Rails.app.creds.
+# WebAuthn
+TRUSTED_ORIGINS=http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001
+# HMAC Secret is resolved from encrypted credentials via Rails.app.creds.

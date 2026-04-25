@@ -1,0 +1,10 @@
+# <% I18n.locale = :ja %>
+# == Schema Information
+#
+# Table name: avatar_capabilities
+# Database name: avatar
+#
+#  id :bigint           not null, primary key
+#
+normal:
+  id: 1

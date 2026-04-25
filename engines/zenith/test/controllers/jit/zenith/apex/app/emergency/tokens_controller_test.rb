@@ -1,0 +1,40 @@
+# typed: false
+# frozen_string_literal: true
+
+module Jit
+  module Zenith
+    require "test_helper"
+
+    class Jit::Zenith::Acme::App::Emergency::TokensControllerTest < ActionDispatch::IntegrationTest
+      setup do
+        host! ENV.fetch("ZENITH_ACME_APP_URL", "app.localhost")
+      end
+
+      test "routes emergency app token to acme app controller" do
+        get "http://#{ENV.fetch("ZENITH_ACME_APP_URL", "app.localhost")}/emergency/app/token"
+
+        assert_equal "acme/app/emergency/app/tokens", request.path_parameters[:controller]
+        assert_equal "show", request.path_parameters[:action]
+      end
+
+      test "GET show returns success" do
+        get zenith.acme_app_emergency_app_token_url
+
+        assert_response :success
+        assert_select "h1", "Emergency App Token"
+      end
+
+      test "PATCH/PUT update redirects to show" do
+        patch zenith.acme_app_emergency_app_token_url
+
+        assert_response :redirect
+        assert_redirected_to zenith.acme_app_emergency_app_token_url
+
+        put zenith.acme_app_emergency_app_token_url
+
+        assert_response :redirect
+        assert_redirected_to zenith.acme_app_emergency_app_token_url
+      end
+    end
+  end
+end

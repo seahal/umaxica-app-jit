@@ -1,24 +1,23 @@
 # frozen_string_literal: true
 
 class AddExpiresAtToOccurrenceStatuses < ActiveRecord::Migration[8.2]
-  TABLES = %i(
+  TABLES = %i[
     area_occurrence_statuses
     domain_occurrence_statuses
     email_occurrence_statuses
     ip_occurrence_statuses
-    staff_occurrence_statuses
     telephone_occurrence_statuses
-    user_occurrence_statuses
-    zip_occurrence_statuses
-  ).freeze
+  ].freeze
 
   def change
     TABLES.each do |table|
-      add_column(
-        table, :expires_at, :datetime, null: false,
-                                       default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" },
-      )
-      add_index(table, :expires_at)
+      safety_assured do
+        add_column(
+          table, :expires_at, :datetime, null: false,
+                                         default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }
+        )
+      end
+      safety_assured { add_index(table, :expires_at) }
     end
   end
 end

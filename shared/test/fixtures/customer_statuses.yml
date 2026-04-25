@@ -1,0 +1,14 @@
+# Auto-generated minimal fixture
+# == Schema Information
+#
+# Table name: customer_statuses
+# Database name: guest
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 2
+active:
+  id: 1
+reserved:
+  id: 3

@@ -189,7 +189,7 @@ This issue is only complete when all of the following are true:
 - JWT snapshot generation reads the same values before and after migration.
 - Cookie consent state survives the move.
 - Preference activity stays in `activity` and does not regain direct dependency on legacy tables.
-- `sign`, `apex`, and other preference entry points pass integration tests with `setting` as the
+- `sign`, `acme`, and other preference entry points pass integration tests with `setting` as the
   primary store.
 
 ## Improvement Points (2026-04-07 Review)

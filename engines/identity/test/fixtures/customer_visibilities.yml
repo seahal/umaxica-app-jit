@@ -1,0 +1,16 @@
+# Minimal fixture for customer_visibilities
+# == Schema Information
+#
+# Table name: customer_visibilities
+# Database name: guest
+#
+#  id :bigint           not null, primary key
+#
+nobody:
+  id: 0
+customer:
+  id: 1
+staff:
+  id: 2
+both:
+  id: 3

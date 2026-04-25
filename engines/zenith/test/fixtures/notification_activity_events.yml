@@ -1,0 +1,27 @@
+# == Schema Information
+#
+# Table name: notification_activity_events
+# Database name: activity
+#
+#  id :bigint           not null, primary key
+#
+device_registered:
+  id: 1
+device_revoked:
+  id: 2
+device_rotated:
+  id: 3
+webpush_subscription_created:
+  id: 4
+webpush_subscription_revoked:
+  id: 5
+ios_device_registered:
+  id: 6
+ios_device_revoked:
+  id: 7
+delivery_target_disabled:
+  id: 8
+delivery_target_enabled:
+  id: 9
+token_invalidated:
+  id: 10

@@ -2,6 +2,7 @@
 
 class ConvertAllOperatorPksToBigint < ActiveRecord::Migration[8.2]
   def up
+    safety_assured do
     # Enable citext extension if not already enabled
     enable_extension("citext") unless extension_enabled?("citext")
 
@@ -64,6 +65,7 @@ class ConvertAllOperatorPksToBigint < ActiveRecord::Migration[8.2]
     end
   end
 
+    end
   def down
     raise ActiveRecord::IrreversibleMigration, "This migration drops data and cannot be reversed"
   end

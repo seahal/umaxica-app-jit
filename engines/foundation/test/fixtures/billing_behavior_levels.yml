@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: billing_behavior_levels
+# Database name: behavior
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+dummy:
+  id: 100

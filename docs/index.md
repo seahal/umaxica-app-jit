@@ -2,7 +2,8 @@
 
 Repository documents are separated by purpose.
 
-- `docs/` contains current, stable documentation for the Identity / Global / Regional design.
+- `docs/` contains current, stable documentation for the Identity / Zenith / Foundation /
+  Distributor design.
 - `plans/` contains future work, proposals, drafts, migration plans, and backlog notes.
 - `adr/` contains accepted architecture and design decisions, including rationale and tradeoffs.
 

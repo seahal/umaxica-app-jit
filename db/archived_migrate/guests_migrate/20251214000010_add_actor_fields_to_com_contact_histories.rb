@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+class AddActorFieldsToComContactHistories < ActiveRecord::Migration[8.2]
+  def change
+    safety_assured do
+      change_table(:com_contact_histories, bulk: true) do |t|
+        t.bigint(:actor_id) unless t.column_exists?(:actor_id)
+        t.string(:actor_type) unless t.column_exists?(:actor_type)
+      end
+    end
+  end
+end

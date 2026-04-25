@@ -1,0 +1,13 @@
+# == Schema Information
+#
+# Table name: customer_token_binding_methods
+# Database name: token
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+dbsc:
+  id: 1
+legacy:
+  id: 2

@@ -1,0 +1,62 @@
+# typed: false
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: domain_occurrence_statuses
+# Database name: occurrence
+#
+#  id :bigint           not null, primary key
+#
+
+require "test_helper"
+
+class DomainOccurrenceStatusTest < ActiveSupport::TestCase
+  test "can load nothing status from db" do
+    nothing = DomainOccurrenceStatus.find(DomainOccurrenceStatus::NOTHING)
+
+    assert_not_nil nothing
+    assert_equal 0, nothing.id
+  end
+
+  test "accepts integer ids" do
+    record = DomainOccurrenceStatus.new(id: 9)
+
+    assert_predicate record, :valid?
+  end
+
+  test "constants are defined" do
+    assert_equal 1, DomainOccurrenceStatus::ACTIVE
+    assert_equal 2, DomainOccurrenceStatus::DELETED
+    assert_equal 3, DomainOccurrenceStatus::INACTIVE
+    assert_equal 0, DomainOccurrenceStatus::NOTHING
+    assert_equal 5, DomainOccurrenceStatus::PENDING
+  end
+
+  test "has occurrences association" do
+    assert_status_association(DomainOccurrenceStatus, :domain_occurrences)
+  end
+
+  #   test "expires_at default" do
+  #     record = DomainOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
+  #
+  #     assert_expires_at_default(record)
+  #   end
+
+  test "ensure_defaults! creates missing default records" do
+    DomainOccurrenceStatus.ensure_defaults!
+
+    DomainOccurrenceStatus::DEFAULTS.each do |id|
+      assert DomainOccurrenceStatus.exists?(id: id)
+    end
+  end
+
+  test "ensure_defaults! does nothing when all defaults exist" do
+    DomainOccurrenceStatus.ensure_defaults!
+    initial_count = DomainOccurrenceStatus.count
+
+    DomainOccurrenceStatus.ensure_defaults!
+
+    assert_equal initial_count, DomainOccurrenceStatus.count
+  end
+end

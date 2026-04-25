@@ -1,0 +1,29 @@
+# == Schema Information
+#
+# Table name: org_preference_languages
+# Database name: operator
+#
+#  id            :bigint           not null, primary key
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  option_id     :bigint           not null
+#  preference_id :bigint           not null
+#
+# Indexes
+#
+#  index_org_preference_languages_on_option_id      (option_id)
+#  index_org_preference_languages_on_preference_id  (preference_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_org_preference_languages_on_option_id  (option_id => org_preference_language_options.id)
+#  fk_rails_...                              (preference_id => org_preferences.id)
+#
+
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# one:
+#   preference: one
+#
+# two:
+#   preference: two

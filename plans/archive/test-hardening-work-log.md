@@ -12,7 +12,7 @@ Issuesをクローズまたは更新してください。
 
 | Issue | タイトル                                                                                                 | ステータス   |
 | ----- | -------------------------------------------------------------------------------------------------------- | ------------ |
-| #607  | Strengthen RP callback integration coverage and OAuth 2.1-aligned SSO design for Apex/Core/Docs surfaces | レビュー待ち |
+| #607  | Strengthen RP callback integration coverage and OAuth 2.1-aligned SSO design for Acme/Core/Docs surfaces | レビュー待ち |
 | #612  | Harden refresh/revoke semantics with explicit AAL downgrade and replay-focused coverage                  | レビュー待ち |
 | #616  | Remove remaining controller any_instance.stub usage from auth and verification tests                     | レビュー待ち |
 
@@ -24,15 +24,15 @@ Issuesをクローズまたは更新してください。
 
 #### 追加・更新されたファイル
 
-- `test/controllers/apex/app/auth/callbacks_controller_test.rb`
-- `test/controllers/apex/org/auth/callbacks_controller_test.rb`
-- `test/controllers/apex/com/auth/callbacks_controller_test.rb`
+- `test/controllers/acme/app/auth/callbacks_controller_test.rb`
+- `test/controllers/acme/org/auth/callbacks_controller_test.rb`
+- `test/controllers/acme/com/auth/callbacks_controller_test.rb`
 
 #### テスト内容
 
 各ファイルで以下を検証:
 
-- `returns_client_id_as_apex_*` - 正しいclient_idが返されること
+- `returns_client_id_as_acme_*` - 正しいclient_idが返されること
 - `callback route exists` - callbackルートが存在すること
 
 **Note**: 完全な統合テスト（state検証、cookie書き込み、token
@@ -133,7 +133,7 @@ end
 10 runs, 0 failures, 0 errors, 0 skips
 ```
 
-### Apex Callback Controllers
+### Acme Callback Controllers
 
 ```
 6 runs, 12 assertions, 0 failures, 0 errors, 0 skips
@@ -149,16 +149,16 @@ end
    - [ ] `test/controllers/sign/app/edge/v0/token/refreshes_controller_test.rb`にAALダウングレードテストが存在する
    - [ ] `test/controllers/sign/app/edge/v0/token/refreshes_controller_test.rb`にリプレイ検出テストが存在する
    - [ ] `test/controllers/sign/org/edge/v0/token/refreshes_controller_test.rb`に同様のテストが存在する
-   - [ ] `test/controllers/apex/*/auth/callbacks_controller_test.rb`に基本テストが存在する
+   - [ ] `test/controllers/acme/*/auth/callbacks_controller_test.rb`に基本テストが存在する
 
 2. **テスト実行確認**
 
    ```bash
    bundle exec rails test test/controllers/sign/app/edge/v0/token/refreshes_controller_test.rb
    bundle exec rails test test/controllers/sign/org/edge/v0/token/refreshes_controller_test.rb
-   bundle exec rails test test/controllers/apex/app/auth/callbacks_controller_test.rb
-   bundle exec rails test test/controllers/apex/org/auth/callbacks_controller_test.rb
-   bundle exec rails test test/controllers/apex/com/auth/callbacks_controller_test.rb
+   bundle exec rails test test/controllers/acme/app/auth/callbacks_controller_test.rb
+   bundle exec rails test test/controllers/acme/org/auth/callbacks_controller_test.rb
+   bundle exec rails test test/controllers/acme/com/auth/callbacks_controller_test.rb
    ```
 
 3. **test_helper.rb の確認**

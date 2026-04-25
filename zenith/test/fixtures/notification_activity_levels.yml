@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: notification_activity_levels
+# Database name: activity
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+dummy:
+  id: 100

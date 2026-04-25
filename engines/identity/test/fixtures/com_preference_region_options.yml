@@ -1,0 +1,11 @@
+# == Schema Information
+#
+# Table name: com_preference_region_options
+# Database name: commerce
+#
+#  id :bigint           not null, primary key
+#
+us:
+  id: 1
+jp:
+  id: 2

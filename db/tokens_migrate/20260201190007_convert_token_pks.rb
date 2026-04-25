@@ -2,6 +2,7 @@
 
 class ConvertTokenPks < ActiveRecord::Migration[8.0]
   def up
+    safety_assured do
     # -------------------------------------------------------------------------
     # DEPENDENTS (Drop first)
     # -------------------------------------------------------------------------
@@ -125,6 +126,7 @@ class ConvertTokenPks < ActiveRecord::Migration[8.0]
     add_foreign_key("user_tokens", "user_token_statuses", validate: false)
   end
 
+    end
   def down
     raise ActiveRecord::IrreversibleMigration
   end

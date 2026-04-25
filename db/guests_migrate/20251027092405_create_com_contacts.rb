@@ -11,8 +11,8 @@ class CreateComContacts < ActiveRecord::Migration[8.1]
       t.inet(:ip_address)
       t.string(:contact_category_title, limit: 255)
       t.string(:contact_status_id, limit: 255)
-      t.references(:com_contact_email, null: false, foreign_key: true, type: :string)
-      t.references(:com_contact_telephone, null: false, foreign_key: true, type: :string)
+      t.references(:com_contact_email, null: false, foreign_key: { validate: false }, type: :string)
+      t.references(:com_contact_telephone, null: false, foreign_key: { validate: false }, type: :string)
       t.timestamps
     end
 
@@ -24,11 +24,13 @@ class CreateComContacts < ActiveRecord::Migration[8.1]
       :com_contacts, :com_contact_categories,
       column: :contact_category_title,
       primary_key: :title,
+      validate: false,
     )
     add_foreign_key(
       :com_contacts, :com_contact_statuses,
       column: :contact_status_id,
       primary_key: :id,
+      validate: false,
     )
   end
 end

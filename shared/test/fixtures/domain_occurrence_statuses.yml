@@ -1,0 +1,19 @@
+# == Schema Information
+#
+# Table name: domain_occurrence_statuses
+# Database name: occurrence
+#
+#  id :bigint           not null, primary key
+#
+nothing:
+  id: 0
+legacy_nothing:
+  id: 4
+active:
+  id: 1
+inactive:
+  id: 3
+pending:
+  id: 5
+deleted:
+  id: 2

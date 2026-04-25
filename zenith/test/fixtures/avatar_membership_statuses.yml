@@ -1,0 +1,8 @@
+# == Schema Information
+#
+# Table name: avatar_membership_statuses
+# Database name: avatar
+#
+#  id :bigint           not null, primary key
+#
+# Auto-generated minimal fixture

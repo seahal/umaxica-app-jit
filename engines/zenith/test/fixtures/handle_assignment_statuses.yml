@@ -1,0 +1,18 @@
+# == Schema Information
+#
+# Table name: handle_assignment_statuses
+# Database name: avatar
+#
+#  id :bigint           not null, primary key
+#
+# Auto-generated minimal fixture
+nothing:
+  id: 5
+active:
+  id: 3
+inactive:
+  id: 1
+pending:
+  id: 2
+deleted:
+  id: 4

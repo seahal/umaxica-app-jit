@@ -6,11 +6,12 @@ This document translates the high-level boundary model into implementation guida
 
 ## 2. System Context
 
-The Rails monolith is split into three engines:
+The Rails monolith is split into four engines:
 
 - `Identity`
-- `Global`
-- `Regional`
+- `Zenith`
+- `Foundation`
+- `Distributor`
 
 ## 3. Module Design
 
@@ -33,11 +34,12 @@ The Rails monolith is split into three engines:
 
 ### 3.3 Boundary Responsibilities
 
-| Engine     | Responsibilities                                                            |
-| ---------- | --------------------------------------------------------------------------- |
-| `Identity` | Identity, authentication, passkeys, tokens, and audit-sensitive login state |
-| `Global`   | Public `sign` entry surface, global preferences, and coordination flows     |
-| `Regional` | `core`, `docs`, `help`, and `news` business and content flows               |
+| Engine        | Responsibilities                                                            |
+| ------------- | --------------------------------------------------------------------------- |
+| `Identity`    | Identity, authentication, passkeys, tokens, and audit-sensitive login state |
+| `Zenith`      | Acme shared shell, shared preferences, and coordination flows               |
+| `Foundation`  | `base.*` business and admin flows                                           |
+| `Distributor` | `post.*` content and API delivery flows                                     |
 
 ## 4. Data Design
 
@@ -47,7 +49,8 @@ The Rails monolith is split into three engines:
 | --------------------------------------------------------------------------------- | --------------------- |
 | `principal`, `operator`, `token`, `preference`, `guest`, `activity`, `occurrence` | Activity              |
 | `journal`, `notification`, `avatar`                                               | Journal               |
-| `publication`, `chronicle`, `message`, `search`, `billing`, `commerce`            | Chronicle             |
+| `publication`                                                                     | Distributor           |
+| `chronicle`, `message`, `search`, `billing`, `commerce`                           | Foundation            |
 | `queue`, `cache`, `storage`, `cable`                                              | Shared infrastructure |
 
 ### 4.2 Model policy
@@ -59,8 +62,9 @@ The Rails monolith is split into three engines:
 ## 5. Key Flows
 
 - Sign-in and token flow happen in `Identity`.
-- Public sign entry and shared preference navigation happen in `Global`.
-- Content, support, and regional operations happen in `Regional`.
+- Shared entry and shared preference navigation happen in `Zenith`.
+- Business and admin flows happen in `Foundation`.
+- Delivery and read-oriented API flows happen in `Distributor`.
 
 ## 6. Verification
 

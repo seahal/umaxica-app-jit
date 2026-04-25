@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines the target request-context model for the three-engine architecture.
+This document defines the target request-context model for the four-engine architecture.
 
 The old application-level `Current` object is not the target shape for the engine-isolated design.
 Engine-local `Current` usage remains part of the design where request-scoped runtime state is
@@ -24,8 +24,9 @@ during implementation.
 Do not treat request-scoped state as one shared host-app global across all engines.
 
 - `Identity` owns its request current context
-- `Global` owns its request current context
-- `Regional` owns request current context only where it is needed
+- `Zenith` owns its request current context
+- `Foundation` owns request current context where it is needed
+- `Distributor` does not use shared `Current` by default
 
 Use `Current` where the engine needs request-local runtime state.
 
@@ -35,17 +36,14 @@ The main reasons are:
 - request context should not depend on ad-hoc shared mutable state
 - request-local state should reset with the request lifecycle
 
-### 2. `Regional` does not use one current model for all entry points
+### 2. Foundation and Distributor do not use one current model for all entry points
 
-`Regional` has different runtime needs by entry point.
+The business and delivery surfaces have different runtime needs by entry point.
 
 - `base.*` uses engine-local current context
-- `docs.*` does not use `Current`
-- `help.*` does not use `Current`
-- `news.*` does not use `Current`
+- `post.*` does not use `Current` by default
 
-When `docs.*`, `help.*`, or `news.*` need request metadata, prefer explicit helpers or narrow
-request-scoped objects.
+When `post.*` needs request metadata, prefer explicit helpers or narrow request-scoped objects.
 
 ### 3. Shared code may share value objects, not one mutable request container
 
@@ -83,21 +81,21 @@ Avoid using these as the primary shared contract:
 
 Use engine-local `Current` for request-scoped authentication and token context.
 
-### `Global`
+### `Zenith`
 
 Use engine-local `Current` for request-scoped relying-party context such as subject and preference
 snapshots.
 
-## Regional Boundary Guidance
+## Foundation and Distributor Boundary Guidance
 
 ### `base.*`
 
 `base.*` may use engine-local current context for business flows that need authenticated subject,
 preference, and request boundary data.
 
-### `docs.*`, `help.*`, `news.*`
+### `post.*`
 
-These entry points should remain simpler.
+This entry point should remain simpler.
 
 - no dependency on `Current`
 - no assumption of authenticated actor state

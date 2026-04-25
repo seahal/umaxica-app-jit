@@ -1,104 +1,71 @@
 # Add `dev` Audience Tier
 
+## Status
+
+Active draft (2026-04-18)
+
 ## Summary
 
-Add a fourth audience tier (`dev`) to the Identity, Global, and Regional engines. The `dev` tier
-provides a dedicated boundary for developer and operational tooling such as SolidQueue dashboards,
-cache inspection, and future admin interfaces.
+Add a fourth audience tier (`dev`) to the engines that need a human operational surface.
 
-This plan also includes renaming the Regional engine subdomain from `ww` / `core` to `base`.
+This plan follows the four-app target:
+
+- runtime boot happens in wrapper apps
+- Zenith uses `acme`
+- Foundation uses `base`
 
 ## Scope
 
 ### In scope
 
-- Add `dev` host constraint blocks to Identity (Signature), Global (World), and Regional (Station)
-  engine routes
-- Rename Regional subdomain from `ww` to `base` and ENV prefix from `CORE_` / `MAIN_` to `BASE_`
-- Move `MissionControl::Jobs` from the `org` tier to the `dev` tier in Station
-- Add `SignHostEnv.developer_url` and `validate!` update
-- Add ENV variables for CI
-- Create minimal `dev` controllers (application, root, health, robots) per engine
-- Update `docs/reference/subdomains.md` and `docs/architecture/engine.md`
+- add `dev` handling to the relevant engines and wrapper apps
+- move operational tools to the `dev` tier
+- add canonical `*_DEV_URL` and `*_DEV_TRUSTED_ORIGINS` variables where required
+- create minimal `dev` controllers and views where still needed
 
 ### Out of scope
 
-- Authentication and authorization for the `dev` tier (deferred)
-- Controller module directory restructuring (deferred until engine extraction completes)
-- Press engine `dev` tier
+- new authentication mechanisms for `dev`
+- browser-first `net` behavior
 
 ## Target Hostnames
 
-| Engine   | Host label | `dev` hostname       | ENV variable         |
-| -------- | ---------- | -------------------- | -------------------- |
-| Identity | `sign`     | `sign.dev.localhost` | `SIGN_DEVELOPER_URL` |
-| Global   | (apex)     | `dev.localhost`      | `APEX_DEVELOPER_URL` |
-| Regional | `base`     | `base.dev.localhost` | `BASE_DEVELOPER_URL` |
-
-### Regional subdomain rename (all tiers)
-
-| Tier  | Before             | After                | ENV before           | ENV after            |
-| ----- | ------------------ | -------------------- | -------------------- | -------------------- |
-| `com` | `ww.com.localhost` | `base.com.localhost` | `CORE_CORPORATE_URL` | `BASE_CORPORATE_URL` |
-| `app` | `ww.app.localhost` | `base.app.localhost` | `CORE_SERVICE_URL`   | `BASE_SERVICE_URL`   |
-| `org` | `ww.org.localhost` | `base.org.localhost` | `CORE_STAFF_URL`     | `BASE_STAFF_URL`     |
-| `dev` | (new)              | `base.dev.localhost` | (new)                | `BASE_DEVELOPER_URL` |
-
-The `MAIN_*` / `CORE_*` ENV fallbacks in Station routes should remain temporarily for backward
-compatibility during migration, then be removed.
+| Engine      | Surface | `dev` hostname       | ENV variable               |
+| ----------- | ------- | -------------------- | -------------------------- |
+| Identity    | `sign`  | `sign.dev.localhost` | `IDENTITY_SIGN_DEV_URL`    |
+| Zenith      | `acme`  | `dev.localhost`      | `ZENITH_ACME_DEV_URL`      |
+| Foundation  | `base`  | `base.dev.localhost` | `FOUNDATION_BASE_DEV_URL`  |
+| Distributor | `post`  | `post.dev.localhost` | `DISTRIBUTOR_POST_DEV_URL` |
 
 ## Implementation Phases
 
-### Phase 1: Regional subdomain rename
+### Phase 1: Runtime contract update
 
-1. Add `BASE_*` ENV variables alongside existing `CORE_*` / `MAIN_*` in CI and local config
-2. Update Station routes to check `BASE_*` first, with `CORE_*` / `MAIN_*` fallback
-3. Update documentation references
+1. add canonical `*_DEV_URL` env variables
+2. add browser-facing `*_DEV_TRUSTED_ORIGINS` where required
+3. update wrapper-app runtime config instead of root-app-only config
 
-### Phase 2: Add `dev` tier infrastructure
+### Phase 2: Route and surface wiring
 
-1. Add `SignHostEnv.developer_url` method and update `validate!`
-2. Add `*_DEVELOPER_URL` ENV variables to CI
-3. Add `sign.dev.localhost` to `TRUSTED_ORIGINS`
+1. add `dev` host handling to each required engine route file
+2. move operational tools such as `MissionControl::Jobs` to the Foundation `dev` surface
+3. keep authorization explicit for `dev`
 
-### Phase 3: Create `dev` controllers
+### Phase 3: Minimal `dev` endpoints
 
-Each engine gets four minimal controllers under a `dev/` module:
+Each engine that exposes `dev` gets minimal endpoints such as:
 
-- `application_controller.rb` — rate limiting only, no auth (auth is deferred)
-- `roots_controller.rb` — landing page
-- `healths_controller.rb` — health check endpoint
-- `robots_controller.rb` — robots.txt (disallow all)
+- root
+- health
+- robots
 
-Plus a root view template per engine.
+## Acceptance
 
-### Phase 4: Wire `dev` routes
-
-1. Add `dev` host constraint blocks to each engine route file
-2. Move `MissionControl::Jobs::Engine` mount from Station `org` block to Station `dev` block
-
-### Phase 5: Tests and verification
-
-1. Add health check tests for each `dev` host
-2. Verify `MissionControl::Jobs` is accessible on `base.dev.localhost/jobs`
-3. Verify `MissionControl::Jobs` is no longer routed on `base.org.localhost/jobs`
-4. Run full test suite and linters
-
-## Files to Modify
-
-| File                                 | Action                                                               |
-| ------------------------------------ | -------------------------------------------------------------------- |
-| `lib/sign_host_env.rb`               | Add `developer_url`, update `validate!`                              |
-| `.github/workflows/integration.yml`  | Add `BASE_*` and `*_DEVELOPER_URL` ENV vars                          |
-| `engines/signature/config/routes.rb` | Add `dev` constraint block                                           |
-| `engines/world/config/routes.rb`     | Add `dev` constraint block                                           |
-| `engines/station/config/routes.rb`   | Rename `CORE`/`MAIN` to `BASE`, add `dev` block, move MissionControl |
-| `docs/reference/subdomains.md`       | Update with `base` and `dev` tier                                    |
-| `docs/architecture/engine.md`        | Update host labels                                                   |
-| 15 new controller/view files         | See Phase 3                                                          |
+- `dev` runtime contracts use canonical engine/surface naming
+- Zenith uses `ZENITH_ACME_DEV_URL`, not `ZENITH_ACME_DEV_URL`
+- operational tools no longer sit on non-`dev` public surfaces by default
 
 ## Related
 
-- `adr/three-engine-consolidation.md`
-- `docs/reference/subdomains.md`
-- `docs/architecture/engine.md`
+- `plans/active/four-engine-migration-sequence.md`
+- `plans/active/wrapper-app-architecture-plan.md`
