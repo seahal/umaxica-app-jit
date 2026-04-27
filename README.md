@@ -117,6 +117,8 @@ bundle exec rails test
 COVERAGE=true bundle exec rails test
 ```
 
+Coverage reports are written to `coverage/rails/`.
+
 ### JavaScript Tests
 
 Run JavaScript tests with Vitest:
@@ -124,9 +126,11 @@ Run JavaScript tests with Vitest:
 ```bash
 vp test
 vp test --watch                            # Watch mode
+pnpm test:coverage
 ```
 
-JavaScript tests are located in `test/javascript/` and use Vitest with Vite Plus.
+JavaScript tests are located in `test/javascript/` and use Vitest with Vite Plus. Coverage reports
+are written to `coverage/vite/`.
 
 ## Security and Quality Checks
 

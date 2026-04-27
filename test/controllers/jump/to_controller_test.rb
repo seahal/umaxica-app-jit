@@ -50,9 +50,6 @@ class JumpToControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "route generation uses only public id" do
-    assert_recognizes(
-      { controller: "jump/app/to", action: "show", public_id: "opaque123" },
-      { path: "/to/opaque123", method: :get, host: "jump.example.app" },
-    )
+    assert_equal "/to/opaque123", jump_app_path(public_id: "opaque123")
   end
 end

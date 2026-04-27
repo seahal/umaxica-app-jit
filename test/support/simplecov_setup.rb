@@ -7,7 +7,7 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
 
   SimpleCov::Formatter::LcovFormatter.config do |c|
     c.report_with_single_file = true
-    c.single_report_path = "coverage/lcov.info"
+    c.single_report_path = "coverage/rails/lcov.info"
   end
 
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
@@ -18,6 +18,7 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
   )
 
   SimpleCov.start("rails") do
+    coverage_dir "coverage/rails"
     enable_coverage :branch
 
     # Coverage thresholds: fail build if line < 90%, branch < 90%

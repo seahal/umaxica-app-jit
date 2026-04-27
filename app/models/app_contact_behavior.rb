@@ -50,6 +50,7 @@ class AppContactBehavior < BehaviorRecord
   end
 
   def app_contact=(contact)
-    self.subject = contact
+    self.subject_id = contact&.id
+    self.subject_type = "AppContact"
   end
 end

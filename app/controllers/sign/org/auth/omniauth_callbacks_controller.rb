@@ -21,7 +21,7 @@ module Sign
 
         public_strict! only: %i(omniauth failure)
 
-        skip_around_action :apply_localization_preferences, only: %i(omniauth failure)
+        skip_before_action :apply_localization_preferences, only: %i(omniauth failure)
 
         # GET/POST /auth/:provider/callback
         def omniauth

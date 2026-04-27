@@ -7,6 +7,8 @@ scope module: :jump, as: :jump do
       root to: "roots#index"
       # Health
       resource :health, only: :show
+      # Jump links
+      get "to/:public_id", to: "to#show"
     end
   end
 
@@ -15,6 +17,8 @@ scope module: :jump, as: :jump do
       root to: "roots#index"
       # Health
       resource :health, only: :show
+      # Jump links
+      get "to/:public_id", to: "to#show"
     end
   end
 
@@ -23,6 +27,8 @@ scope module: :jump, as: :jump do
       root to: "roots#index"
       # Health
       resource :health, only: :show
+      # Jump links
+      get "to/:public_id", to: "to#show"
     end
   end
 end

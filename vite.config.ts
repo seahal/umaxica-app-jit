@@ -15,6 +15,24 @@ export default defineConfig({
       "**/build/**",
       "**/coverage/**",
     ],
+    coverage: {
+      provider: "v8",
+      reportsDirectory: "coverage/vite",
+      reporter: ["text", "html", "lcov", "json-summary"],
+      include: ["app/javascript/**/*.{js,ts,jsx,tsx}"],
+      exclude: [
+        "**/*.test.{js,ts,jsx,tsx}",
+        "**/*.spec.{js,ts,jsx,tsx}",
+        "**/node_modules/**",
+        "**/vendor/**",
+        "**/.ruby-lsp/**",
+        "**/.pnpm-store/**",
+        "**/tmp/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/coverage/**",
+      ],
+    },
   },
   fmt: {
     // ============================================================

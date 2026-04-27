@@ -428,7 +428,15 @@ jobs:
           cache: true
       - run: vp install
       - run: vp check
-      - run: vp test
+      - run: vp test --coverage
+      - name: Upload JavaScript coverage
+        if: always()
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: vite-coverage-${{ github.sha }}
+          path: coverage/vite/
+          retention-days: 30
+          compression-level: 6
   # ====================
   # SECURITY SCANS
   # ====================

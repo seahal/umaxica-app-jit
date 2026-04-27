@@ -6,9 +6,12 @@
   "scripts": {
     "prepare": "vp config",
     "check": "vp check",
-    "fix": "vp check --fix"
+    "fix": "vp check --fix",
+    "test": "vp test run",
+    "test:coverage": "vp test run --coverage"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.4",
     "vite-plus": "latest"
   },
   "packageManager": "pnpm@10.27.0",
