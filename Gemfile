@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 # source "https://gem.coop"
 
-ruby "4.0.2"
+ruby "4.0.3"
 
 # Rake
 gem "rake"
@@ -84,7 +84,7 @@ gem "meta-tags"
 # ID generation
 gem "nanoid"
 # Authentication
-gem "pundit"
+gem "action_policy"
 # billing
 gem "stripe"
 # SQL exploration

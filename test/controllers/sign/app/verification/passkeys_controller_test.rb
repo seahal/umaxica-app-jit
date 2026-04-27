@@ -8,7 +8,7 @@ class Sign::App::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   fixtures :users
 
   setup do
-    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @host = ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = users(:one)
     @headers = as_user_headers(@user, host: @host)
     @token = UserToken.find_by!(public_id: @headers["X-TEST-SESSION-PUBLIC-ID"])
@@ -17,9 +17,9 @@ class Sign::App::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   test "creates verification on success" do
     return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
-    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
-      Sign::App::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
-        Sign::App::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
+    StepUp::AvailableMethods.stub(:call, [:passkey]) do
+      WebAuthn::Credential.stub(:options_for_get, OpenStruct.new(id: "test")) do
+        WebAuthn::Credential.stub(:from_get, OpenStruct.new(id: "test", verify: true, sign_count: 1)) do
           get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
               headers: @headers
 
@@ -39,8 +39,8 @@ class Sign::App::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   test "new keeps scope and return_to in form hidden fields" do
     return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
-    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
-      Sign::App::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
+    StepUp::AvailableMethods.stub(:call, [:passkey]) do
+      WebAuthn::Credential.stub(:options_for_get, OpenStruct.new(id: "test")) do
         get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers
 

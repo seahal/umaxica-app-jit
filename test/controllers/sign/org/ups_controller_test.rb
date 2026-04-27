@@ -5,7 +5,7 @@ require "test_helper"
 
 class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    @host = ENV.fetch("ID_STAFF_URL", "id.org.localhost")
   end
 
   test "should get new" do
@@ -22,9 +22,9 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
   test "renders recruit contact and home links" do
     get new_sign_org_up_url(ri: "jp"), headers: { "Host" => @host }
 
-    core_host = ENV["MAIN_STAFF_URL"].presence || "main.org.localhost"
+    apex_host = ENV["APEX_STAFF_URL"].presence || "org.localhost"
     # Match the URL while allowing any order of query parameters
-    assert_select "div a[href^=?]", "http://#{core_host}/contacts/new",
+    assert_select "div a[href^=?]", "http://#{apex_host}/",
                   text: I18n.t("sign.org.ups.new.recruit_link_text")
 
     # Verify that the URL contains all required parameters
@@ -34,7 +34,6 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
                    "Could not find link with text: #{I18n.t("sign.org.ups.new.recruit_link_text").inspect}"
     href = link["href"]
 
-    assert_match(/category=recruit/, href)
     assert_match(/ri=jp/, href)
   end
 end

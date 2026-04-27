@@ -7,7 +7,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   fixtures :staff_statuses, :staff_secret_statuses, :staff_secret_kinds
 
   setup do
-    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! ENV.fetch("ID_STAFF_URL", "id.org.localhost")
     @staff = Staff.create!(
       status_id: StaffStatus::ACTIVE,
     )

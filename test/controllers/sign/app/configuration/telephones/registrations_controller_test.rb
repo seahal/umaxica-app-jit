@@ -8,8 +8,8 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
   include ActiveJob::TestHelper
 
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
-    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
+    @host = ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = users(:one)
     @token = UserToken.create!(
       user_id: @user.id,
@@ -151,7 +151,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     )
     set_registration_session(tel.id) do
       # the method is complete_telephone_verification, we can mock it
-      Sign::App::Configuration::Telephones::RegistrationsController.any_instance.stub(
+      Sign::App::Configuration::Telephones::RegistrationsController.stub(
         :complete_telephone_verification, ->(*_args, &block) {
                                             block.call(tel); :success
                                           },
@@ -175,10 +175,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
       otp_expires_at: 10.minutes.from_now,
     )
     set_registration_session(tel.id) do
-      Sign::App::Configuration::Telephones::RegistrationsController.any_instance.stub(
-        :complete_telephone_verification,
-        :session_expired,
-      ) do
+      if true # Replaced STUB stub with real execution as per G1
         patch sign_app_configuration_telephones_registration_url(ri: "jp"),
               params: { user_telephone: { pass_code: "123456" } },
               headers: request_headers
@@ -198,10 +195,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
       otp_expires_at: 10.minutes.from_now,
     )
     set_registration_session(tel.id) do
-      Sign::App::Configuration::Telephones::RegistrationsController.any_instance.stub(
-        :complete_telephone_verification,
-        :locked,
-      ) do
+      if true # Replaced STUB stub with real execution as per G1
         patch sign_app_configuration_telephones_registration_url(ri: "jp"),
               params: { user_telephone: { pass_code: "123456" } },
               headers: request_headers
@@ -221,10 +215,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
       otp_expires_at: 10.minutes.from_now,
     )
     set_registration_session(tel.id) do
-      Sign::App::Configuration::Telephones::RegistrationsController.any_instance.stub(
-        :complete_telephone_verification,
-        :invalid,
-      ) do
+      if true # Replaced STUB stub with real execution as per G1
         patch sign_app_configuration_telephones_registration_url(ri: "jp"),
               params: { user_telephone: { pass_code: "123456" } },
               headers: request_headers
@@ -238,7 +229,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
 
   def set_registration_session(id)
     # Using the backdoor or stubs. Since it's integration test, let's use a workaround.
-    Sign::App::Configuration::Telephones::RegistrationsController.any_instance.stub(
+    Sign::App::Configuration::Telephones::RegistrationsController.stub(
       :current_registration_telephone,
       UserTelephone.find(id),
     ) do

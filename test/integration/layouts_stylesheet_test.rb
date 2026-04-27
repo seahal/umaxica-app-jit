@@ -20,23 +20,6 @@ class StylesheetTagsTest < ActiveSupport::TestCase
     end
   end
 
-  test "core layouts include core main stylesheet" do
-    paths = [
-      "app/views/layouts/core/app/application.html.erb",
-      "app/views/layouts/core/com/application.html.erb",
-      "app/views/layouts/core/org/application.html.erb",
-    ]
-
-    paths.each do |path|
-      contents = Rails.root.join(path).read
-
-      assert_match(
-        /(stylesheet_link_tag\s+\"core\/main\")|(\"core\/main\")/, contents,
-        "missing core/main in #{path}",
-      )
-    end
-  end
-
   test "help layouts include help main stylesheet" do
     paths = [
       "app/views/layouts/help/app/application.html.erb",

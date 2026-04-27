@@ -9,7 +9,7 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
            :staff_token_statuses, :staff_token_kinds
 
   setup do
-    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    @host = ENV.fetch("ID_STAFF_URL", "id.org.localhost")
     @staff = staffs(:one)
     @token = StaffToken.create!(
       staff: @staff,
@@ -91,9 +91,9 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
   test "successful verification enables protected POST and records audit" do
     return_to = Base64.urlsafe_encode64(sign_org_configuration_passkeys_path(ri: "jp"))
 
-    Sign::Org::VerificationsController.any_instance.stub(:available_step_up_methods, [:passkey]) do
-      Sign::Org::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
-        Sign::Org::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
+    StepUp::AvailableMethods.stub(:call, [:passkey]) do
+      WebAuthn::Credential.stub(:options_for_get, OpenStruct.new(id: "test")) do
+        WebAuthn::Credential.stub(:from_get, OpenStruct.new(id: "test", verify: true, sign_count: 1)) do
           get sign_org_verification_url(scope: "configuration_passkey", return_to: return_to, ri: "jp"),
               headers: @headers
 

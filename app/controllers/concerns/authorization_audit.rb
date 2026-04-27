@@ -11,7 +11,7 @@ module AuthorizationAudit
 
     # Log authorization failures for audit purposes
     if respond_to?(:rescue_from)
-      rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error
+      rescue_from ActionPolicy::Unauthorized, with: :handle_authorization_error
     end
   end
 
@@ -56,9 +56,9 @@ module AuthorizationAudit
       action: action_name,
       controller: controller_name,
       policy: exception.policy.class.name,
-      query: exception.query,
-      record_type: exception.record&.class&.name,
-      record_id: exception.record&.id,
+      query: exception.rule,
+      record_type: exception.policy.record&.class&.name,
+      record_id: exception.policy.record&.id,
       ip_address: request.remote_ip,
       user_agent: request.user_agent,
       timestamp: Time.current,

@@ -29,18 +29,16 @@ class ComTimelinePolicy < ApplicationPolicy
     actor.is_a?(Staff) && operator_or_manager?
   end
 
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      if actor.is_a?(Staff)
-        # Staff see all entries
-        scope.all
-      elsif actor.is_a?(User)
-        # Users see available timeline entries only
-        scope.available
-      else
-        # Unauthenticated users see nothing
-        scope.none
-      end
+  relation_scope do |relation|
+    if actor.is_a?(Staff)
+      # Staff see all entries
+      relation.all
+    elsif actor.is_a?(User)
+      # Users see available timeline entries only
+      relation.available
+    else
+      # Unauthenticated users see nothing
+      relation.none
     end
   end
 end

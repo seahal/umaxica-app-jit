@@ -6,7 +6,7 @@ require "base64"
 
 class Sign::Com::Configuration::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
+    @host = ENV.fetch("ID_CORPORATE_URL", "id.com.localhost")
     host! @host
     @origin_headers = { "HTTP_ORIGIN" => "http://#{@host}", "Origin" => "http://#{@host}" }.freeze
     @customer = create_verified_customer_with_email(email_address: "com_passkey_config@example.com")
@@ -19,7 +19,7 @@ class Sign::Com::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     satisfy_customer_verification(@token)
 
     @original_trusted_origins = Webauthn.method(:trusted_origins)
-    Webauthn.define_singleton_method(:trusted_origins) { ["http://sign.app.localhost", "http://#{@host}"] }
+    Webauthn.define_singleton_method(:trusted_origins) { ["http://id.app.localhost", "http://#{@host}"] }
 
     @passkey = CustomerPasskey.create!(
       customer: @customer,
@@ -48,7 +48,7 @@ class Sign::Com::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "options returns challenge and options" do
-    Sign::Com::Configuration::PasskeysController.any_instance.stub(:validate_webauthn_origin!, true) do
+    if true # Replaced STUB stub with real execution as per G1
       post options_sign_com_configuration_passkeys_path(ri: "jp"), headers: @headers.merge(@origin_headers)
     end
 
@@ -57,7 +57,7 @@ class Sign::Com::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "verification creates passkey on success" do
-    Sign::Com::Configuration::PasskeysController.any_instance.stub(:validate_webauthn_origin!, true) do
+    if true # Replaced STUB stub with real execution as per G1
       post options_sign_com_configuration_passkeys_path(ri: "jp"), headers: @headers.merge(@origin_headers)
     end
     challenge_id = response.parsed_body["challenge_id"]

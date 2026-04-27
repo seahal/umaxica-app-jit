@@ -13,7 +13,7 @@ class VerificationFlowTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses, :user_tokens
 
   setup do
-    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @host = ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = users(:one)
     UserEmail.create!(user: @user, address: "vf_#{SecureRandom.hex(4)}@example.com", user_email_status_id: UserEmailStatus::VERIFIED)
     @token = UserToken.create!(
@@ -56,9 +56,9 @@ class VerificationFlowTest < ActionDispatch::IntegrationTest
   test "successful passkey verification redirects to return_to" do
     return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
-    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
-      Sign::App::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
-        Sign::App::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
+    StepUp::AvailableMethods.stub(:call, [:passkey]) do
+      WebAuthn::Credential.stub(:options_for_get, OpenStruct.new(id: "test")) do
+        WebAuthn::Credential.stub(:from_get, OpenStruct.new(id: "test", verify: true, sign_count: 1)) do
           get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
               headers: @headers
 

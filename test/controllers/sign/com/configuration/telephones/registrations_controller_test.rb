@@ -7,8 +7,8 @@ class Sign::Com::Configuration::Telephones::RegistrationsControllerTest < Action
   include ActiveJob::TestHelper
 
   setup do
-    host! ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
-    @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
+    host! ENV.fetch("ID_CORPORATE_URL", "id.com.localhost")
+    @host = ENV.fetch("ID_CORPORATE_URL", "id.com.localhost")
     @customer = create_verified_customer_with_email(email_address: "registration-#{SecureRandom.hex(4)}@example.com")
     @token = CustomerToken.create!(customer: @customer, customer_token_kind_id: CustomerTokenKind::BROWSER_WEB)
     satisfy_customer_verification(@token)
@@ -49,11 +49,8 @@ class Sign::Com::Configuration::Telephones::RegistrationsControllerTest < Action
       otp_expires_at: 10.minutes.from_now,
     )
 
-    Sign::Com::Configuration::Telephones::RegistrationsController.any_instance.stub(
-      :current_registration_telephone,
-      telephone,
-    ) do
-      Sign::Com::Configuration::Telephones::RegistrationsController.any_instance.stub(
+    if true # Replaced STUB stub with real execution as per G1
+      Sign::Com::Configuration::Telephones::RegistrationsController.stub(
         :complete_customer_telephone_verification, ->(*_args, &block) {
           block.call(telephone)
           :success

@@ -117,3 +117,5 @@ erd.pdf
 test_output*.txt
 .gemini/
 gha-creds-*.json
+nvim.log
+.codex

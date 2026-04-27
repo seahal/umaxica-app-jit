@@ -3,7 +3,7 @@
 
 module Sign
   module Org
-    class ApplicationController < ActionController::Base
+    class ApplicationController < ::ApplicationController
       include ::RateLimit
       include ::Session
       include ::Preference::Global
@@ -11,7 +11,7 @@ module Sign
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Verification::Staff
-      include Pundit::Authorization
+      include ActionPolicy::Controller
       include ::RestrictedSessionGuard
       include ::CurrentSupport
       include ::Finisher
@@ -27,8 +27,7 @@ module Sign
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region
-      prepend_before_action :set_locale
-      prepend_before_action :set_timezone
+
       prepend_before_action :set_color_theme
       before_action :enforce_restricted_session_guard!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
@@ -41,7 +40,7 @@ module Sign
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(
                              "SIGN_ORG_TRUSTED_ORIGINS",
-                             "http://sign.org.localhost,https://sign.org.localhost",
+                             "http://id.org.localhost,https://id.org.localhost",
                            )
                              .split(",").map(&:strip),
                            with: :exception

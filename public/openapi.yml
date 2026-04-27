@@ -6,9 +6,9 @@ info:
   contact:
     name: API Support
 servers:
-  - url: https://sign.app.localhost
+  - url: https://id.app.localhost
     description: Sign Service (User)
-  - url: https://sign.org.localhost
+  - url: https://id.org.localhost
     description: Sign Staff
   - url: https://core.com.localhost
     description: Core Corporate

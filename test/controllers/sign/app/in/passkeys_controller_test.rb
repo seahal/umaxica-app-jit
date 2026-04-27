@@ -10,7 +10,7 @@ module Sign::App::In
     fixtures :users, :user_statuses, :user_email_statuses, :user_telephone_statuses
 
     setup do
-      host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+      host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
       Jit::Security::TurnstileVerifier.test_mode = true
       Jit::Security::TurnstileVerifier.test_response = { "success" => true }
       @user = create_verified_user_with_email(email_address: "passkey_test_user@example.com")
@@ -34,7 +34,7 @@ module Sign::App::In
 
       # Mock TRUSTED_ORIGINS
       @original_trusted_origins = Webauthn.method(:trusted_origins)
-      Webauthn.define_singleton_method(:trusted_origins) { ["http://sign.app.localhost", "http://sign.org.localhost"] }
+      Webauthn.define_singleton_method(:trusted_origins) { ["http://id.app.localhost", "http://id.org.localhost"] }
     end
 
     teardown do
@@ -346,9 +346,7 @@ module Sign::App::In
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 
-      Sign::App::In::PasskeysController.any_instance.stub(
-        :complete_sign_in_or_start_mfa!, { status: :unknown },
-      ) do
+      if true # Replaced STUB stub with real execution as per G1
         WebAuthn::Credential.stub(:from_get, mock_credential) do
           post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
             challenge_id: challenge_id,
@@ -373,7 +371,7 @@ module Sign::App::In
       challenge_id = response.parsed_body["challenge_id"]
       mismatch_error = Sign::Webauthn::ChallengePurposeMismatchError.new("purpose mismatch")
 
-      Sign::App::In::PasskeysController.any_instance.stub(
+      Sign::App::In::PasskeysController.stub(
         :with_challenge, ->(*_args, &_block) {
                            raise mismatch_error
                          },

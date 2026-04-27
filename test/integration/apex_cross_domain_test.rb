@@ -22,8 +22,6 @@ class ApexCrossDomainLinksTest < ActionDispatch::IntegrationTest
     assert_respond_to self, :apex_com_root_url
     assert_respond_to self, :apex_org_root_url
 
-    # Main helpers should also be accessible (for cross-domain links)
-    assert_respond_to self, :main_app_root_url
     assert_respond_to self, :sign_app_root_url
   end
 end

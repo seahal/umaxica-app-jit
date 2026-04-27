@@ -72,7 +72,7 @@ module Authentication
     def sign_in_url_with_return(return_to)
       new_sign_app_in_url(
         rt: return_to,
-        host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"),
+        host: ENV.fetch("ID_SERVICE_URL", "id.app.localhost"),
         protocol: request.protocol,
       )
     end

@@ -13,7 +13,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
            :app_preference_activity_levels
 
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = users(:one)
     # Clear existing TOTPs to avoid limit error
     @user.user_one_time_passwords.destroy_all

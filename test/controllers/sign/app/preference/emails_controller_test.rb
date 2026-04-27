@@ -5,7 +5,7 @@ require "test_helper"
 
 class Sign::App::Preference::EmailControllerTest < ActionDispatch::IntegrationTest
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
   end

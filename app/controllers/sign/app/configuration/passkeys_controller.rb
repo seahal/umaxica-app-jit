@@ -33,12 +33,12 @@ module Sign
 
         # GET /configuration/passkeys
         def index
-          @passkeys = policy_scope(current_user.user_passkeys).order(created_at: :desc)
+          @passkeys = authorized_scope(current_user.user_passkeys).order(created_at: :desc)
         end
 
         # GET /configuration/passkeys/:id
         def show
-          authorize(@passkey)
+          authorize!(@passkey)
         end
 
         # GET /configuration/passkeys/new
@@ -48,13 +48,13 @@ module Sign
 
         # GET /configuration/passkeys/:id/edit
         def edit
-          authorize(@passkey)
+          authorize!(@passkey)
         end
 
         # POST /configuration/passkeys
         def create
           @passkey = current_user.user_passkeys.new(create_params)
-          authorize(@passkey, :create?)
+          authorize!(@passkey, :create?)
 
           if @passkey.save
             render plain: "ok", status: :created
@@ -144,7 +144,7 @@ module Sign
 
         # PATCH/PUT /configuration/passkeys/:id
         def update
-          authorize(@passkey)
+          authorize!(@passkey)
           if @passkey.update(update_params)
             respond_to do |format|
               format.html do
@@ -167,7 +167,7 @@ module Sign
 
         # DELETE /configuration/passkeys/:id
         def destroy
-          authorize(@passkey)
+          authorize!(@passkey)
 
           unless AuthMethodGuard.can_remove_passkey?(current_user, @passkey)
             respond_to do |format|
@@ -246,7 +246,7 @@ module Sign
         end
 
         def persist_passkey!(passkey)
-          authorize(passkey, :create?)
+          authorize!(passkey, :create?)
           passkey.save!
         end
 

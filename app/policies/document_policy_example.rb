@@ -4,30 +4,16 @@
 # Example policy demonstrating JWT + DB combined authorization
 # This serves as a reference implementation for using Current.token in policies
 class DocumentPolicyExample < ApplicationPolicy
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      # Combine JWT domain restriction with DB permissions
-      if domain_app? && has_scope?("read:all_documents")
-        scope.all
-      elsif domain_app? && has_scope?("read:self_documents")
-        scope.where(owner_id: actor&.id)
-      elsif domain_org? && staff_can_access_documents?
-        scope.where(organization_id: current_organization_id)
-      else
-        scope.none
-      end
-    end
-
-    private
-
-    def staff_can_access_documents?
-      # Check both JWT scope and DB role
-      has_scope?("read:org_documents") &&
-        actor&.has_role?("viewer", organization: current_organization_id)
-    end
-
-    def current_organization_id
-      Current.token&.dig("org_id")
+  relation_scope do |relation|
+    # Combine JWT domain restriction with DB permissions
+    if domain_app? && has_scope?("read:all_documents")
+      relation.all
+    elsif domain_app? && has_scope?("read:self_documents")
+      relation.where(owner_id: actor&.id)
+    elsif domain_org? && staff_can_access_documents?
+      relation.where(organization_id: current_organization_id)
+    else
+      relation.none
     end
   end
 

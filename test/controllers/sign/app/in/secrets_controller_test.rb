@@ -8,7 +8,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
            :user_telephone_statuses
 
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = users(:one)
     @raw_email = "secret_login_#{SecureRandom.hex(4)}@example.com".freeze
     @email = @user.user_emails.create!(address: @raw_email, user_email_status_id: UserEmailStatus::VERIFIED)
@@ -238,7 +238,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_equal UserSecretStatus::USED, one_time_secret.user_secret_status_id
 
     reset!
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
 
@@ -351,7 +351,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def default_headers
-    { "Host" => ENV["SIGN_SERVICE_URL"] || "sign.app.localhost" }
+    { "Host" => ENV["ID_SERVICE_URL"] || "id.app.localhost" }
   end
 
   def capture_sql_queries

@@ -7,7 +7,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   include ActiveSupport::Testing::TimeHelpers
 
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
   end
@@ -1212,6 +1212,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def host
-    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    ENV["ID_SERVICE_URL"] || "id.app.localhost"
   end
 end

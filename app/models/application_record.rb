@@ -4,8 +4,6 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 
-  connects_to database: { writing: :default, reading: :default }
-
   def self.insert_missing_fixed_ids!(ids)
     raise if ids.blank?
 

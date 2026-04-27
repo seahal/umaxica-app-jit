@@ -7,8 +7,8 @@ class Sign::Org::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
   fixtures :staffs, :staff_statuses, :staff_activity_events, :staff_activity_levels
 
   setup do
-    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
-    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! ENV.fetch("ID_STAFF_URL", "id.org.localhost")
+    @host = ENV.fetch("ID_STAFF_URL", "id.org.localhost")
     @staff = staffs(:one)
     @other_staff = staffs(:two)
     @headers = as_staff_headers(@staff, host: @host)

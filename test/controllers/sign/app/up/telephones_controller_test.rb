@@ -12,7 +12,7 @@ module Sign::App::Up
     include ActiveJob::TestHelper
 
     setup do
-      host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+      host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
       # Mock Cloudflare Turnstile validation
       CloudflareTurnstile.test_mode = true
       CloudflareTurnstile.test_validation_response = { "success" => true }

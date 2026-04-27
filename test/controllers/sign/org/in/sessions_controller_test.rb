@@ -7,7 +7,7 @@ class Sign::Org::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   fixtures :staffs, :staff_statuses, :staff_token_statuses, :staff_token_kinds
 
   setup do
-    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    @host = ENV.fetch("ID_STAFF_URL", "id.org.localhost")
     host! @host
     @staff = staffs(:one)
     # Clean up any existing tokens for this staff

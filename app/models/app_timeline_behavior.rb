@@ -33,9 +33,10 @@
 #
 
 class AppTimelineBehavior < BehaviorRecord
+  include Behavior
+
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :app_timeline, optional: true, foreign_key: :subject_id, inverse_of: :app_timeline_behaviors
-  belongs_to :actor, polymorphic: true, optional: true
   belongs_to :app_timeline_behavior_level, foreign_key: :level_id, inverse_of: :app_timeline_behaviors
   belongs_to :app_timeline_behavior_event,
              class_name: "AppTimelineBehaviorEvent",
@@ -43,8 +44,6 @@ class AppTimelineBehavior < BehaviorRecord
              primary_key: "id",
              inverse_of: :app_timeline_behaviors
 
-  validates :subject_id, presence: true
-  validates :subject_type, presence: true
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
 
@@ -52,11 +51,10 @@ class AppTimelineBehavior < BehaviorRecord
   attribute :level_id, default: AppTimelineBehaviorLevel::NOTHING
 
   def app_timeline
-    AppTimeline.find(subject_id) if subject_type == "AppTimeline"
+    subject if subject_type == "AppTimeline"
   end
 
   def app_timeline=(timeline)
-    self.subject_id = timeline.id.to_s
-    self.subject_type = "AppTimeline"
+    self.subject = timeline
   end
 end

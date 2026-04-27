@@ -4,7 +4,9 @@
   "type": "module",
   "module": "index.ts",
   "scripts": {
-    "prepare": "vp config"
+    "prepare": "vp config",
+    "check": "vp check",
+    "fix": "vp check --fix"
   },
   "devDependencies": {
     "vite-plus": "latest"

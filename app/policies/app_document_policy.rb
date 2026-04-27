@@ -29,18 +29,16 @@ class AppDocumentPolicy < ApplicationPolicy
     owner? || operator_or_manager?
   end
 
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      if operator_or_manager?
-        # Operators and Managers see all documents
-        scope.all
-      elsif actor
-        # Other authenticated users see only their own documents
-        scope.where(user_id: actor.id)
-      else
-        # Unauthenticated users see nothing
-        scope.none
-      end
+  relation_scope do |relation|
+    if operator_or_manager?
+      # Operators and Managers see all documents
+      relation.all
+    elsif actor
+      # Other authenticated users see only their own documents
+      relation.where(user_id: actor.id)
+    else
+      # Unauthenticated users see nothing
+      relation.none
     end
   end
 end

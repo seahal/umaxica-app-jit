@@ -10,14 +10,8 @@ class LayoutMetaTagsTest < ActionDispatch::IntegrationTest
       "Apex::Com" => ["APEX_CORPORATE_URL", "/"],
       "Apex::App" => ["APEX_SERVICE_URL", "/"],
       "Apex::Org" => ["APEX_STAFF_URL", "/"],
-      "Back::Com" => ["MAIN_CORPORATE_URL", "/"],
-      "Back::App" => ["MAIN_SERVICE_URL", "/"],
-      "Back::Org" => ["MAIN_STAFF_URL", "/"],
-      "Docs::Com" => ["DOCS_CORPORATE_URL", "/"],
-      "Docs::App" => ["DOCS_SERVICE_URL", "/"],
-      "Docs::Org" => ["DOCS_STAFF_URL", "/"],
-      "Sign::App" => ["SIGN_SERVICE_URL", "/"],
-      "Sign::Org" => ["SIGN_STAFF_URL", "/"],
+      "Sign::App" => ["ID_SERVICE_URL", "/"],
+      "Sign::Org" => ["ID_STAFF_URL", "/"],
     }
   end
 

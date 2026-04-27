@@ -15,7 +15,7 @@ module Apex
         assert_includes controller.class, ::Authentication::User
         assert_includes controller.class, ::Authorization::User
         assert_includes controller.class, ::Verification::User
-        assert_includes controller.class, Pundit::Authorization
+        assert_includes controller.class, ActionPolicy::Controller
         assert_includes controller.class, ::Oidc::SsoInitiator
         assert_includes controller.class, ::CurrentSupport
         assert_includes controller.class, ::Finisher

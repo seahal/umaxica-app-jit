@@ -7,7 +7,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds
 
   setup do
-    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @host = ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = users(:one)
     # Ensure master data needed for audit
     UserActivityEvent.ensure_defaults! if UserActivityEvent.respond_to?(:ensure_defaults!)

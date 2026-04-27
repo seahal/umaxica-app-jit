@@ -108,7 +108,7 @@ module Authentication
     def sign_in_url_with_return(return_to)
       new_sign_com_in_url(
         rt: return_to,
-        host: ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost"),
+        host: ENV.fetch("ID_CORPORATE_URL", "id.com.localhost"),
         protocol: request.protocol,
       )
     end

@@ -3,14 +3,14 @@
 
 module Apex
   module Com
-    class ApplicationController < ActionController::Base
+    class ApplicationController < ::ApplicationController
       include ::RateLimit
       include ::Session
       include ::Preference::Global
       include ::Authentication::Customer
       include ::Authorization::Customer
       include ::Verification::Customer
-      include Pundit::Authorization
+      include ActionPolicy::Controller
       include ::Oidc::SsoInitiator
       include ::CurrentSupport
       include ::Finisher
@@ -24,8 +24,7 @@ module Apex
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region
-      prepend_before_action :set_locale
-      prepend_before_action :set_timezone
+
       prepend_before_action :set_color_theme
       before_action :enforce_withdrawal_gate!
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
@@ -50,7 +49,7 @@ module Apex
       end
 
       def oidc_sign_host
-        ENV.fetch("SIGN_APP_URL", "sign.app.localhost")
+        ENV.fetch("SIGN_APP_URL", "id.app.localhost")
       end
 
       private

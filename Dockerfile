@@ -3,10 +3,10 @@
 # ============================================================================
 # Shared build arguments
 # ============================================================================
-ARG RUBY_VERSION=4.0.2
+ARG RUBY_VERSION=4.0.3
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
-ARG DOCKER_USER=jit
+ARG DOCKER_USER=global
 ARG DOCKER_GROUP=umaxica
 ARG GITHUB_ACTIONS=""
 
@@ -206,8 +206,9 @@ RUN apt-get update -qq \
     zip \
     socat \
     netcat-openbsd \
+    bubblewrap \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/* /home/jit/
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/* "/home/${DOCKER_USER}/"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \

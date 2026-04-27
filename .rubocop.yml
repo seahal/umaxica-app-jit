@@ -1210,6 +1210,8 @@ Rake/MethodDefinitionInTask:
 I18n/RailsI18n:
   Enabled: true
 
+# Ban inline default: literal in t() and I18n.t()
+# Ref: F3. i18n inline default: literal ban
 I18n/GetText:
   Enabled: false
 

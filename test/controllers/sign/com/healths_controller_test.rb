@@ -5,7 +5,7 @@ require "test_helper"
 
 class Sign::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
   test "GET /health returns OK response without redirect" do
-    host! ENV["SIGN_CORPORATE_URL"] || "sign.com.localhost"
+    host! ENV["ID_CORPORATE_URL"] || "id.com.localhost"
 
     get sign_com_health_url(ri: "jp"), headers: browser_headers
 

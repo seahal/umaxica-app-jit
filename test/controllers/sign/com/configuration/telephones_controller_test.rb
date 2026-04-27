@@ -7,8 +7,8 @@ class Sign::Com::Configuration::TelephonesControllerTest < ActionDispatch::Integ
   include ActiveJob::TestHelper
 
   setup do
-    host! ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
-    @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
+    host! ENV.fetch("ID_CORPORATE_URL", "id.com.localhost")
+    @host = ENV.fetch("ID_CORPORATE_URL", "id.com.localhost")
     @customer = create_verified_customer_with_email(email_address: "telephones-#{SecureRandom.hex(4)}@example.com")
     @customer.customer_telephones.create!(
       number: "+10000000027",

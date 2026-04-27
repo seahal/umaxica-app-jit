@@ -32,8 +32,9 @@
 #  fk_rails_...  (level_id => com_contact_behavior_levels.id)
 #
 class ComContactBehavior < BehaviorRecord
+  include Behavior
+
   belongs_to :com_contact, optional: true, foreign_key: :subject_id, inverse_of: :com_contact_behaviors
-  belongs_to :actor, polymorphic: true, optional: true
   belongs_to :com_contact_behavior_level, foreign_key: :level_id, inverse_of: :com_contact_behaviors
   belongs_to :com_contact_behavior_event,
              class_name: "ComContactBehaviorEvent",
@@ -41,17 +42,14 @@ class ComContactBehavior < BehaviorRecord
              primary_key: "id",
              inverse_of: :com_contact_behaviors
 
-  validates :subject_id, presence: true
-  validates :subject_type, presence: true
   validates :event_id, numericality: { only_integer: true }, allow_nil: true
   validates :level_id, numericality: { only_integer: true }, allow_nil: true
 
   def com_contact
-    ComContact.find(subject_id) if subject_type == "ComContact"
+    subject if subject_type == "ComContact"
   end
 
   def com_contact=(contact)
-    self.subject_id = contact.id.to_s
-    self.subject_type = "ComContact"
+    self.subject = contact
   end
 end

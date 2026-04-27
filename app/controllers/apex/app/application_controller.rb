@@ -3,7 +3,7 @@
 
 module Apex
   module App
-    class ApplicationController < ActionController::Base
+    class ApplicationController < ::ApplicationController
       include ::RateLimit
       include ::Session
       include ::Preference::Global
@@ -11,7 +11,7 @@ module Apex
       include ::Authentication::User
       include ::Authorization::User
       include ::Verification::User
-      include Pundit::Authorization # FIXME: I hate this line.
+      include ActionPolicy::Controller # FIXME: I hate this line.
       include ::Oidc::SsoInitiator # FIXME: I hate this line.
       include ::CurrentSupport
       include ::Finisher
@@ -25,8 +25,7 @@ module Apex
       prepend_before_action :set_preferences_cookie # FIXME: I hate this line.
       prepend_before_action :resolve_param_context # FIXME: I hate this line.
       prepend_before_action :set_region # FIXME: I hate this line.
-      prepend_before_action :set_locale # FIXME: I hate this line.
-      prepend_before_action :set_timezone # FIXME: I hate this line.
+
       prepend_before_action :set_color_theme # FIXME: I hate this line.
       before_action :enforce_withdrawal_gate! # FIXME: I hate this line.
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? } # FIXME: I hate this line.
@@ -50,7 +49,7 @@ module Apex
       end
 
       def oidc_sign_host
-        ENV.fetch("SIGN_APP_URL", "sign.app.localhost")
+        ENV.fetch("SIGN_APP_URL", "id.app.localhost")
       end
 
       private

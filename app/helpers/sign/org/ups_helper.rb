@@ -6,12 +6,7 @@ module Sign::Org::UpsHelper
     preference_params = default_url_options.slice(:ct, :lx, :ri, :tz)
     link_to(
       t("sign.org.ups.new.recruit_link_text"),
-      new_main_org_contact_url(
-        {
-          host: ENV.fetch("MAIN_STAFF_URL", "main.org.localhost"),
-          category: "recruit",
-        }.merge(preference_params),
-      ),
+      apex_org_root_url(preference_params),
       class: "font-semibold text-slate-900 underline",
     )
   end

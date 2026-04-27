@@ -12,6 +12,11 @@ ENV["SIDE_STAFF_URL"] ||= "news.org.localhost"
 ENV["MAIN_CORPORATE_URL"] ||= "main.com.localhost"
 ENV["MAIN_SERVICE_URL"] ||= "main.app.localhost"
 ENV["MAIN_STAFF_URL"] ||= "main.org.localhost"
+
+# Set jump URLs for tests
+ENV["JUMP_CORPORATE_URL"] ||= "jump.example.com"
+ENV["JUMP_SERVICE_URL"] ||= "jump.example.app"
+ENV["JUMP_STAFF_URL"] ||= "jump.example.org"
 require "active_model"
 coverage_enabled = ActiveModel::Type::Boolean.new.cast(ENV["COVERAGE"])
 require_relative "support/simplecov_setup" if coverage_enabled

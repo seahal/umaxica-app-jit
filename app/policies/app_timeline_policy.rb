@@ -29,18 +29,16 @@ class AppTimelinePolicy < ApplicationPolicy
     owner? || operator_or_manager?
   end
 
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      if operator_or_manager?
-        # Operators and Managers see all timeline entries
-        scope.all
-      elsif actor
-        # Other authenticated users see available timeline entries
-        scope.available
-      else
-        # Unauthenticated users see nothing
-        scope.none
-      end
+  relation_scope do |relation|
+    if operator_or_manager?
+      # Operators and Managers see all timeline entries
+      relation.all
+    elsif actor
+      # Other authenticated users see available timeline entries
+      relation.available
+    else
+      # Unauthenticated users see nothing
+      relation.none
     end
   end
 end

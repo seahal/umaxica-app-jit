@@ -3,7 +3,7 @@
 
 module Sign
   module Com
-    class ApplicationController < ActionController::Base
+    class ApplicationController < ::ApplicationController
       include ::RateLimit
       include ::Session
       include ::Preference::Global
@@ -11,7 +11,7 @@ module Sign
       include ::Authentication::Customer
       include ::Authorization::Customer
       include ::Verification::Customer
-      include Pundit::Authorization
+      include ActionPolicy::Controller
       include Sign::Com::RouteAliasHelper
       include ::CurrentSupport
       include ::Finisher
@@ -22,7 +22,7 @@ module Sign
       protect_from_forgery using: :header_or_legacy_token,
                            trusted_origins: ENV.fetch(
                              "SIGN_COM_TRUSTED_ORIGINS",
-                             "http://sign.com.localhost,https://sign.com.localhost",
+                             "http://id.com.localhost,https://id.com.localhost",
                            )
                              .split(",").map(&:strip),
                            with: :exception
@@ -34,8 +34,7 @@ module Sign
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region
-      prepend_before_action :set_locale
-      prepend_before_action :set_timezone
+
       prepend_before_action :set_color_theme
       before_action :enforce_required_telephone_registration!
       before_action :enforce_access_policy!
@@ -127,7 +126,7 @@ module Sign
 
         redirect_to(
           new_sign_com_configuration_telephones_registration_path(ri: params[:ri]),
-          notice: t("sign.app.registration.telephone.create.verification_code_sent", default: nil),
+          notice: t("sign.app.registration.telephone.create.verification_code_sent"),
         )
       end
 

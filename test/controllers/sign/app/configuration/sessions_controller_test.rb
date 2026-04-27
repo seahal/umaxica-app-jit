@@ -8,9 +8,9 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
            :app_preference_activity_levels, :app_preference_activity_events
 
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = users(:one)
-    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @host = ENV["ID_SERVICE_URL"] || "id.app.localhost"
     @headers = as_user_headers(@user, host: @host)
     @unauthenticated_headers = { "Host" => @host }.freeze
   end

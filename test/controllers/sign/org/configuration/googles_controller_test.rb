@@ -8,8 +8,8 @@ class Sign::Org::Configuration::GooglesControllerTest < ActionDispatch::Integrat
   fixtures :staffs, :staff_statuses
 
   setup do
-    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
-    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! ENV.fetch("ID_STAFF_URL", "id.org.localhost")
+    @host = ENV.fetch("ID_STAFF_URL", "id.org.localhost")
     @staff = staffs(:one)
     @headers = { "Host" => @host, "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
   end

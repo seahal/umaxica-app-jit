@@ -6,14 +6,10 @@ Rails.application.routes.draw do
   # CSP violation reporting endpoint (host-agnostic, all domains)
   post "/csp-violation-report", to: "csp_violations#create"
 
-  # Global
   # BFF
   draw :apex
   # sign in / up
   draw :sign
-  # regional
-  ## back end of edge endpoints
-  draw :core
-  # endpoints for docs + help + news
-  draw :docs
+  # Jump Page
+  draw :jump
 end

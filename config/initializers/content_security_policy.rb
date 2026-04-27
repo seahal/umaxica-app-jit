@@ -15,8 +15,17 @@ Rails.application.configure do
     policy.object_src(:none)
     policy.script_src(:self, :https, "https://challenges.cloudflare.com", "https://static.cloudflareinsights.com")
     policy.frame_src(:self, :https, "https://challenges.cloudflare.com")
-    policy.style_src(:self, :https)
-    policy.connect_src(:self, :https, "https://cloudflareinsights.com")
+    policy.style_src(:self, :https, :unsafe_inline) # unsafe_inline is needed for some legacy styles but nonced by generator below
+
+    # Support for id.* and www.* subdomains
+    policy.connect_src(
+      :self,
+      :https,
+      "https://cloudflareinsights.com",
+      "https://id.umaxica.app", "https://id.umaxica.com", "https://id.umaxica.org",
+      "https://www.umaxica.app", "https://www.umaxica.com", "https://www.umaxica.org",
+    )
+
     # Report CSP violations to our logging endpoint
     policy.report_uri("/csp-violation-report")
   end

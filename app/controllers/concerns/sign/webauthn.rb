@@ -23,14 +23,14 @@ module Sign
 
     # Returns the Relying Party ID for WebAuthn.
     # This is the host portion of the current request (no scheme, no port).
-    # Examples: "sign.app.localhost", "sign.org.localhost"
+    # Examples: "id.app.localhost", "id.org.localhost"
     def webauthn_rp_id
       request.host
     end
 
     # Returns the expected origin for WebAuthn verification.
     # This is request.base_url (scheme + host + port).
-    # Examples: "http://sign.app.localhost:3000", "https://sign.app.example.com"
+    # Examples: "http://id.app.localhost:3000", "https://sign.app.example.com"
     def webauthn_origin
       request.base_url
     end

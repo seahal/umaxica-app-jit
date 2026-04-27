@@ -11,7 +11,7 @@ module Sign::App::Up
              :user_activity_events, :user_activity_levels
 
     setup do
-      host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+      host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
 
       CloudflareTurnstile.test_mode = true
       CloudflareTurnstile.test_validation_response = { "success" => true }
@@ -25,11 +25,11 @@ module Sign::App::Up
 
       @original_trusted_origins = Webauthn.method(:trusted_origins)
       allowed_origins = [
-        "http://sign.app.localhost",
-        "http://sign.org.localhost",
+        "http://id.app.localhost",
+        "http://id.org.localhost",
         "http://www.example.com",
-        "http://#{ENV.fetch("SIGN_SERVICE_URL", "sign.umaxica.app")}",
-        "https://#{ENV.fetch("SIGN_SERVICE_URL", "sign.umaxica.app")}",
+        "http://#{ENV.fetch("ID_SERVICE_URL", "id.umaxica.app")}",
+        "https://#{ENV.fetch("ID_SERVICE_URL", "id.umaxica.app")}",
       ].uniq
       Webauthn.define_singleton_method(:trusted_origins) { allowed_origins }
     end

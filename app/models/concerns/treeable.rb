@@ -115,6 +115,40 @@ module Treeable
       where(primary_key => ids).order(Arel.sql(order_sql))
     end
 
+    # Builds recursive CTE using Rails with_recursive API.
+    # Returns a relation that can be chained with other ActiveRecord methods.
+    def tree_recursive_cte(anchor_relation, direction: :descendants, max_depth: nil)
+      table = arel_table
+      tree = Arel::Table.new(:tree)
+
+      join_condition =
+        case direction
+        when :descendants
+          table[tree_parent_column].eq(tree[:id])
+        when :ancestors
+          table[primary_key].eq(tree[:parent_id])
+        else
+          raise ArgumentError, "unknown tree recursion direction: #{direction.inspect}"
+        end
+
+      anchor = anchor_relation.select(
+        table[primary_key].as("id"),
+        table[tree_parent_column].as("parent_id"),
+        Arel.sql("0 AS depth"),
+      )
+
+      recursive = select(
+        table[primary_key],
+        table[tree_parent_column],
+        Arel.sql("tree.depth + 1"),
+      ).joins(table.join(tree).on(join_condition).join_sources)
+
+      recursive = recursive.where(tree: { depth: ...Integer(max_depth) }) if max_depth
+
+      # with_recursive is available on the relation
+      unscoped.with_recursive(tree: [anchor, recursive])
+    end
+
     # Descendant ids (including self).
     def subtree_ids(root_id, include_self: true, max_depth: nil)
       q_pk = connection.quote_column_name(primary_key)

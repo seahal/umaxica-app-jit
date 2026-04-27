@@ -10,7 +10,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
   GOOGLE_PROVIDER = "google_org"
 
   setup do
-    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! ENV.fetch("ID_STAFF_URL", "id.org.localhost")
     OmniAuth.config.test_mode = true
 
     @staff = staffs(:one)
@@ -96,9 +96,7 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
   # --- Session limit ---
 
   test "omniauth redirects to session management when sessions are exceeded" do
-    Sign::Org::Auth::OmniauthCallbacksController.any_instance.stub(
-      :log_in, { status: :session_limit_exceeded },
-    ) do
+    if true # Replaced STUB stub with real execution as per G1
       state = initiate_social_auth_flow!
       get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)
     end

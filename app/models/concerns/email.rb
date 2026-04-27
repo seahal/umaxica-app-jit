@@ -103,18 +103,21 @@ module Email
 
   def increment_attempts!
     # Use atomic increment to prevent race condition with concurrent requests
-    record = self.class.find(id)
-    record.update!(otp_attempts_count: otp_attempts_count + 1, updated_at: Time.current)
+    self.class.where(id: id).update_all(
+      "otp_attempts_count = otp_attempts_count + 1, updated_at = NOW()",
+    )
     reload
-    # Atomically set locked_at only when attempts reached threshold and not already locked
-    # Check for both NULL and -infinity as sentinel values for "not locked"
-    records = self.class.where(id: id)
-      .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp")
-      .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
-      .to_a
-    records.each { |r| r.update!(locked_at: Time.current) }
 
-    reload if records.any?
+    # Atomically set locked_at only when attempts reached threshold and not already locked
+    # Check for NULL, -infinity, and infinity as sentinel values for "not locked"
+    self.class.where(id: id)
+      .where(
+        "locked_at IS NULL OR locked_at = '-infinity'::timestamp OR locked_at = 'infinity'::timestamp",
+      )
+      .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
+      .update_all(locked_at: Time.current)
+
+    reload
   end
 
   def raw_address

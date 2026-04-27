@@ -6,7 +6,7 @@ require "base64"
 
 class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
+    @host = ENV.fetch("ID_CORPORATE_URL", "id.com.localhost")
     host! @host
     @customer = create_verified_customer_with_email(
       email_address: "com-passkey-stepup-#{SecureRandom.hex(4)}@example.com",
@@ -22,9 +22,9 @@ class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   test "creates verification on success" do
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
 
-    Sign::Com::Verification::PasskeysController.any_instance.stub(:available_step_up_methods, [:passkey]) do
-      Sign::Com::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
-        Sign::Com::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
+    StepUp::AvailableMethods.stub(:call, [:passkey]) do
+      WebAuthn::Credential.stub(:options_for_get, OpenStruct.new(id: "test")) do
+        WebAuthn::Credential.stub(:from_get, OpenStruct.new(id: "test", verify: true, sign_count: 1)) do
           get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
               headers: @headers
 
@@ -44,8 +44,8 @@ class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::Integrat
   test "new keeps scope and return_to in form hidden fields" do
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
 
-    Sign::Com::Verification::PasskeysController.any_instance.stub(:available_step_up_methods, [:passkey]) do
-      Sign::Com::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
+    StepUp::AvailableMethods.stub(:call, [:passkey]) do
+      WebAuthn::Credential.stub(:options_for_get, OpenStruct.new(id: "test")) do
         get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers
 

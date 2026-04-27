@@ -8,7 +8,7 @@ class HealthCheckTest < ActionDispatch::IntegrationTest
   # The concern logic is shared across all health controllers.
 
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
   end
 
   test "returns 200 OK when all dependencies are healthy" do

@@ -13,7 +13,7 @@ module Sign
 
       def initialize
         super
-        @request = Struct.new(:host, :base_url).new("sign.umaxica.app", "https://sign.umaxica.app")
+        @request = Struct.new(:host, :base_url).new("id.umaxica.app", "https://id.umaxica.app")
         @session = {}
       end
     end
@@ -168,8 +168,8 @@ module Sign
 
       @controller.send(:with_webauthn_config) do
         # Inside block, config should be set
-        assert_equal ["https://sign.umaxica.app"], WebAuthn.configuration.allowed_origins
-        assert_equal "sign.umaxica.app", WebAuthn.configuration.rp_id
+        assert_equal ["https://id.umaxica.app"], WebAuthn.configuration.allowed_origins
+        assert_equal "id.umaxica.app", WebAuthn.configuration.rp_id
       end
 
       # After block, config should be restored (may be nil in test env)

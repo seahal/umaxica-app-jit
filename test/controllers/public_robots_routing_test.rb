@@ -11,24 +11,10 @@ class PublicRobotsRoutingTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "core surfaces define public file helpers" do
-    assert_public_file_helpers(
-      robots: %i(main_com_robots_path main_app_robots_path main_org_robots_path),
-      sitemap: %i(main_com_sitemap_path main_app_sitemap_path main_org_sitemap_path),
-    )
-  end
-
   test "sign surfaces define public file helpers" do
     assert_public_file_helpers(
       robots: %i(sign_com_robots_path sign_app_robots_path sign_org_robots_path),
       sitemap: %i(sign_com_sitemap_path sign_app_sitemap_path sign_org_sitemap_path),
-    )
-  end
-
-  test "docs surfaces define public file helpers" do
-    assert_public_file_helpers(
-      robots: %i(docs_com_robots_path docs_app_robots_path docs_org_robots_path),
-      sitemap: %i(docs_com_sitemap_path docs_app_sitemap_path docs_org_sitemap_path),
     )
   end
 
@@ -37,15 +23,15 @@ class PublicRobotsRoutingTest < ActionDispatch::IntegrationTest
       [method(:apex_com_robots_url), ENV["APEX_CORPORATE_URL"] || "com.localhost", "robots"],
       [method(:apex_app_robots_url), ENV["APEX_SERVICE_URL"] || "app.localhost", "robots"],
       [method(:apex_org_robots_url), ENV["APEX_STAFF_URL"] || "org.localhost", "robots"],
-      [method(:sign_com_robots_url), ENV["SIGN_CORPORATE_URL"] || "sign.com.localhost", "robots"],
-      [method(:sign_app_robots_url), ENV["SIGN_SERVICE_URL"] || "sign.app.localhost", "robots"],
-      [method(:sign_org_robots_url), ENV["SIGN_STAFF_URL"] || "sign.org.localhost", "robots"],
+      [method(:sign_com_robots_url), ENV["ID_CORPORATE_URL"] || "id.com.localhost", "robots"],
+      [method(:sign_app_robots_url), ENV["ID_SERVICE_URL"] || "id.app.localhost", "robots"],
+      [method(:sign_org_robots_url), ENV["ID_STAFF_URL"] || "id.org.localhost", "robots"],
       [method(:apex_com_sitemap_url), ENV["APEX_CORPORATE_URL"] || "com.localhost", "sitemap"],
       [method(:apex_app_sitemap_url), ENV["APEX_SERVICE_URL"] || "app.localhost", "sitemap"],
       [method(:apex_org_sitemap_url), ENV["APEX_STAFF_URL"] || "org.localhost", "sitemap"],
-      [method(:sign_com_sitemap_url), ENV["SIGN_CORPORATE_URL"] || "sign.com.localhost", "sitemap"],
-      [method(:sign_app_sitemap_url), ENV["SIGN_SERVICE_URL"] || "sign.app.localhost", "sitemap"],
-      [method(:sign_org_sitemap_url), ENV["SIGN_STAFF_URL"] || "sign.org.localhost", "sitemap"],
+      [method(:sign_com_sitemap_url), ENV["ID_CORPORATE_URL"] || "id.com.localhost", "sitemap"],
+      [method(:sign_app_sitemap_url), ENV["ID_SERVICE_URL"] || "id.app.localhost", "sitemap"],
+      [method(:sign_org_sitemap_url), ENV["ID_STAFF_URL"] || "id.org.localhost", "sitemap"],
     ]
 
     endpoints.each do |helper, host, kind|

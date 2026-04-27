@@ -33,27 +33,25 @@
 #
 
 class OrgDocumentBehavior < BehaviorRecord
+  include Behavior
+
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :org_document, optional: true, foreign_key: :subject_id, inverse_of: :org_document_behaviors
-  belongs_to :actor, polymorphic: true, optional: true
   belongs_to :org_document_behavior_level, foreign_key: :level_id, inverse_of: :org_document_behaviors
   belongs_to :org_document_behavior_event,
              class_name: "OrgDocumentBehaviorEvent",
              foreign_key: "event_id",
              primary_key: "id",
              inverse_of: :org_document_behaviors
-  validates :subject_id, presence: true
-  validates :subject_type, presence: true
 
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
 
   def org_document
-    OrgDocument.find(subject_id) if subject_type == "OrgDocument"
+    subject if subject_type == "OrgDocument"
   end
 
   def org_document=(doc)
-    self.subject_id = doc.id.to_s
-    self.subject_type = "OrgDocument"
+    self.subject = doc
   end
 end

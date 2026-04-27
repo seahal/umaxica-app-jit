@@ -1,3 +1,4 @@
+name: umaxica-apps-global
 services:
   core:
     build:
@@ -8,13 +9,13 @@ services:
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
     env_file: docker/core/env
-    entrypoint: ["/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh"]
+    entrypoint: ["/bin/bash", "/home/global/workspace/docker/core/entrypoint.sh"]
     command: ["sleep", "infinity"]
     restart: always
     user: "${UID:-1000}:${GID:-1000}"
     tmpfs:
-      - /home/jit/workspace/tmp:uid=${UID:-1000},gid=${GID:-1000}
-      - /home/jit/workspace/log:uid=${UID:-1000},gid=${GID:-1000}
+      - /home/global/workspace/tmp:uid=${UID:-1000},gid=${GID:-1000}
+      - /home/global/workspace/log:uid=${UID:-1000},gid=${GID:-1000}
     ports:
       - "3001:3000" # development (all-in-one)
       - "3101:3100" # global
@@ -23,18 +24,18 @@ services:
     volumes:
       - type: bind
         source: .
-        target: /home/jit/workspace
+        target: /home/global/workspace
     networks:
       backend: {}
       frontend:
         aliases:
-          - sign.app.localhost
-          - sign.com.localhost
-          - sign.org.localhost
+          - id.app.localhost
+          - id.com.localhost
+          - id.org.localhost
       observability: {}
       outer:
         aliases:
-          - jit
+          - global
     depends_on:
       primary:
         condition: service_healthy
@@ -301,7 +302,8 @@ networks:
   frontend: {}
   observability: {}
   outer:
-    external: true
+    name: ${OUTER_DOCKER_NETWORK:-umaxica-apps-global_outer}
+    external: ${OUTER_DOCKER_NETWORK_EXTERNAL:-false}
 
 volumes:
   valkey-volume: {}

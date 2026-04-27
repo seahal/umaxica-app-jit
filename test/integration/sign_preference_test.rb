@@ -12,7 +12,7 @@ class SignPreferenceTest < ActionDispatch::IntegrationTest
   DOMAINS = [
     {
       name: "app",
-      host: "sign.app.localhost",
+      host: "id.app.localhost",
       scope: "apex.app.preferences",
       preference_model: AppPreference,
       audit_class: AppPreferenceActivity,
@@ -20,7 +20,7 @@ class SignPreferenceTest < ActionDispatch::IntegrationTest
     },
     {
       name: "org",
-      host: "sign.org.localhost",
+      host: "id.org.localhost",
       scope: "apex.org.preferences",
       preference_model: OrgPreference,
       audit_class: OrgPreferenceActivity,
@@ -28,7 +28,7 @@ class SignPreferenceTest < ActionDispatch::IntegrationTest
     },
     {
       name: "com",
-      host: "sign.com.localhost",
+      host: "id.com.localhost",
       scope: "apex.com.preferences",
       preference_model: ComPreference,
       audit_class: ComPreferenceActivity,

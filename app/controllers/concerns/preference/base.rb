@@ -44,7 +44,7 @@ module Preference
     end
 
     # Returns audiences scoped to the TLD of the given host.
-    # e.g., host "sign.umaxica.app" results in only audiences ending with ".app" or equal to an ".app" apex.
+    # e.g., host "id.umaxica.app" results in only audiences ending with ".app" or equal to an ".app" apex.
     # In development, "localhost" is always included as an additional audience.
     def self.audience_for(host)
       return audiences if host.blank?
@@ -52,7 +52,7 @@ module Preference
       all = audiences
       return all if all.empty?
 
-      # Extract the TLD from the host (e.g., "sign.umaxica.app" results in "app", "localhost" results in "localhost")
+      # Extract the TLD from the host (e.g., "id.umaxica.app" results in "app", "localhost" results in "localhost")
       host_parts = host.split(".")
       host_tld = host_parts.last
 

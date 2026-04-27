@@ -1797,6 +1797,8 @@ ja:
         locale_settings: 言語の設定
         theme_settings: テーマ設定
         reset_settings: 設定のリセット
+        email_settings: メール設定
+        email_settings_description: 通知メールの送信元や内容を管理します。
         up_link: うえへ
         footer: &3
           home: ホーム
@@ -1861,6 +1863,8 @@ ja:
         locale_settings: 言語の設定
         theme_settings: テーマ設定
         reset_settings: 設定のリセット
+        email_settings: メール設定
+        email_settings_description: 通知メールの送信元や内容を管理します。
         up_link: うえへ
         footer: *3
         languages: *4
@@ -1968,6 +1972,8 @@ ja:
         locale_settings: 言語の設定
         theme_settings: テーマ設定
         reset_settings: 設定のリセット
+        email_settings: メール設定
+        email_settings_description: 通知メールの送信元や内容を管理します。
         up_link: うえへ
         footer: *3
         languages: *4
@@ -2039,6 +2045,16 @@ ja:
           error_heading: "%{count}件のエラーがあるため送信できません。"
         create:
           success: お問い合わせを受け付けました
+        errors:
+          email_required: email を登録してください
+          telephone_required: telephone を追加してください
+    org:
+      contacts:
+        create:
+          success: お問い合わせを受け付けました
+        errors:
+          email_required: email を登録してください
+          telephone_required: telephone を追加してください
       preference:
         cookie:
           edit:

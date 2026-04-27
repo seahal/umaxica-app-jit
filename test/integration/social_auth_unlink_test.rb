@@ -15,7 +15,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
 
   setup do
     OmniAuth.config.test_mode = true
-    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @host = ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
 
     # Create test user with recent reauth (required for unlink when REQUIRE_REAUTH_FOR_UNLINK is true)
     @user = User.create!(

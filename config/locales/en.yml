@@ -1115,6 +1115,8 @@ en:
         region_settings: Region & Language Settings
         theme_settings: Theme Settings
         reset_settings: Reset Settings
+        email_settings: Email Settings
+        email_settings_description: Manage notification email sender and content.
         up_link: Back to top
         footer:
           home: Home
@@ -1156,6 +1158,8 @@ en:
         region_settings: Region & Language Settings
         theme_settings: Theme Settings
         reset_settings: Reset Settings
+        email_settings: Email Settings
+        email_settings_description: Manage notification email sender and content.
         up_link: Back to top
         footer:
           home: Home
@@ -1201,6 +1205,8 @@ en:
         region_settings: Region & Language Settings
         theme_settings: Theme Settings
         reset_settings: Reset Settings
+        email_settings: Email Settings
+        email_settings_description: Manage notification email sender and content.
         up_link: Back to top
         footer:
           home: Home

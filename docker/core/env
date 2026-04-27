@@ -27,11 +27,13 @@ REDIS_NORMAL_URL=redis://valkey:6379/7
 # POSTGRESQL_PASSWORD defaults to Rails credentials (DATABASE.PASSWORD) and can be overridden in CI/test
 POSTGRESQL_USER=root
 POSTGRESQL_PORT=5432
-POSTGRESQL_DEFAULT_PUB=primary
+POSTGRESQL_HOST=primary
 POSTGRESQL_OCCURRENCE_PUB=primary
 POSTGRESQL_OCCURRENCE_SUB=replica
 POSTGRESQL_ACTIVITY_PUB=primary
 POSTGRESQL_ACTIVITY_SUB=replica
+POSTGRESQL_CHRONICLE_PUB=primary
+POSTGRESQL_CHRONICLE_SUB=replica
 POSTGRESQL_BEHAVIOR_PUB=primary
 POSTGRESQL_BEHAVIOR_SUB=replica
 POSTGRESQL_GUEST_PUB=primary
@@ -64,6 +66,8 @@ POSTGRESQL_OPERATOR_PUB=primary
 POSTGRESQL_OPERATOR_SUB=replica
 POSTGRESQL_AVATAR_PUB=primary
 POSTGRESQL_AVATAR_SUB=replica
+POSTGRESQL_REDIRECTOR_PUB=primary
+POSTGRESQL_REDIRECTOR_SUB=replica
 POSTGRESQL_FINDER_PUB=primary
 POSTGRESQL_FINDER_SUB=replica
 POSTGRESQL_SEARCH_PUB=primary
@@ -89,9 +93,12 @@ DEV_URL=dev.localhost
 APEX_CORPORATE_URL=com.localhost
 APEX_SERVICE_URL=app.localhost
 APEX_STAFF_URL=org.localhost
-SIGN_CORPORATE_URL=sign.com.localhost
-SIGN_SERVICE_URL=sign.app.localhost
-SIGN_STAFF_URL=sign.org.localhost
+JUMP_CORPORATE_URL=jump.example.com
+JUMP_SERVICE_URL=jump.example.app
+JUMP_STAFF_URL=jump.example.org
+ID_CORPORATE_URL=id.com.localhost
+ID_SERVICE_URL=id.app.localhost
+ID_STAFF_URL=id.org.localhost
 CORE_CORPORATE_URL=www.com.localhost
 CORE_SERVICE_URL=www.app.localhost
 CORE_STAFF_URL=www.org.localhost
@@ -114,5 +121,5 @@ PREFERENCE_JWT_AUDIENCES=umaxica.app,umaxica.com,localhost
 # JWT keys (CORPORATE, SERVICE, ORGANIZATION) are resolved from encrypted credentials via Rails.app.creds.
 # Cloudflare Turnstile keys are resolved from encrypted credentials via Rails.app.creds.
 # WebAuthn
-TRUSTED_ORIGINS=http://sign.app.localhost:3001,http://sign.com.localhost:3001,http://sign.org.localhost:3001
+TRUSTED_ORIGINS=http://id.app.localhost:3001,http://id.com.localhost:3001,http://id.org.localhost:3001
 # HMAC Secret is resolved from encrypted credentials via Rails.app.creds.

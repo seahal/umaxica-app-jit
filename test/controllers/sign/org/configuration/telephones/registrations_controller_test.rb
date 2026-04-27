@@ -8,8 +8,8 @@ class Sign::Org::Configuration::Telephones::RegistrationsControllerTest < Action
   include ActiveJob::TestHelper
 
   setup do
-    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
-    @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    host! ENV.fetch("ID_STAFF_URL", "id.org.localhost")
+    @host = ENV.fetch("ID_STAFF_URL", "id.org.localhost")
     @staff = staffs(:one)
     @token = StaffToken.create!(staff: @staff, status: StaffToken::STATUS_ACTIVE)
     satisfy_staff_verification(@token)
@@ -60,11 +60,8 @@ class Sign::Org::Configuration::Telephones::RegistrationsControllerTest < Action
       otp_expires_at: 10.minutes.from_now,
     )
 
-    Sign::Org::Configuration::Telephones::RegistrationsController.any_instance.stub(
-      :current_registration_telephone,
-      tel,
-    ) do
-      Sign::Org::Configuration::Telephones::RegistrationsController.any_instance.stub(
+    if true # Replaced STUB stub with real execution as per G1
+      Sign::Org::Configuration::Telephones::RegistrationsController.stub(
         :complete_staff_telephone_verification, ->(*_args, &block) {
           block.call(tel)
           :success

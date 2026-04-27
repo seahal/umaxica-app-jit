@@ -83,19 +83,21 @@ module Oidc
         now = Time.current
         access_expires_at = now + Authentication::Base::ACCESS_TOKEN_TTL
 
-        sign_host =
+        id_host =
           if client.resource_type == "staff"
-            ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+            ENV.fetch("ID_STAFF_URL", "id.org.localhost")
           else
-            ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+            ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
           end
 
         access_token = Auth::TokenService.encode(
           resource,
-          host: sign_host,
+          host: id_host,
           session_public_id: token_record.public_id,
           resource_type: client.resource_type,
           expires_at: access_expires_at,
+          acr: authorization_code.acr,
+          amr: Array(authorization_code.auth_method),
         )
 
         Result.new(

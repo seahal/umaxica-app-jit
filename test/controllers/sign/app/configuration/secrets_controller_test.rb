@@ -7,7 +7,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   fixtures :user_statuses, :user_secret_statuses, :user_secret_kinds, :user_email_statuses
 
   setup do
-    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    host! ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
     @user = User.create!(
       status_id: UserStatus::NOTHING,
       public_id: "secret_user_#{SecureRandom.hex(4)}",
@@ -205,7 +205,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     patch sign_app_configuration_secret_url(secret, ri: "jp"),
           params: { user_secret: { enabled: false } },
           headers: {
-            "Host" => ENV["SIGN_SERVICE_URL"] || "sign.app.localhost",
+            "Host" => ENV["ID_SERVICE_URL"] || "id.app.localhost",
             "X-TEST-CURRENT-USER" => user.id.to_s,
             "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
           }
@@ -231,7 +231,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_no_difference("UserSecret.count") do
       delete sign_app_configuration_secret_url(secret, ri: "jp"),
              headers: {
-               "Host" => ENV["SIGN_SERVICE_URL"] || "sign.app.localhost",
+               "Host" => ENV["ID_SERVICE_URL"] || "id.app.localhost",
                "X-TEST-CURRENT-USER" => user.id.to_s,
                "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
              }

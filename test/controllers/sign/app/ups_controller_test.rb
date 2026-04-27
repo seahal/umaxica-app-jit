@@ -100,7 +100,7 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
   private
 
   def host
-    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    ENV["ID_SERVICE_URL"] || "id.app.localhost"
   end
 
   def brand_name

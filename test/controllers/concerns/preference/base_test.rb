@@ -3,7 +3,7 @@
 
 require "test_helper"
 
-class PreferenceSanitizeTestController < ::Core::App::ApplicationController
+class PreferenceSanitizeTestController < ::ApplicationController
   include ::Preference::Base
 
   attr_accessor :test_params, :test_controller_path
@@ -14,7 +14,7 @@ class PreferenceSanitizeTestController < ::Core::App::ApplicationController
   end
 
   def controller_path
-    @test_controller_path || "core/app/preferences"
+    @test_controller_path || "apex/app/preferences"
   end
 
   def params
@@ -189,7 +189,7 @@ module Preference
 
     test "audience_for filters to matching TLD only" do
       with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com,localhost") do
-        result = Preference::JwtConfiguration.audience_for("sign.umaxica.app")
+        result = Preference::JwtConfiguration.audience_for("id.umaxica.app")
 
         assert_includes result, "umaxica.app"
         assert_includes result, "localhost", "localhost is included in non-production"
@@ -199,7 +199,7 @@ module Preference
 
     test "audience_for returns only matching TLD for com host" do
       with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com,localhost") do
-        result = Preference::JwtConfiguration.audience_for("ww.umaxica.com")
+        result = Preference::JwtConfiguration.audience_for("wwww.umaxica.com")
 
         assert_includes result, "umaxica.com"
         assert_includes result, "localhost"
@@ -209,7 +209,7 @@ module Preference
 
     test "audience_for includes localhost for localhost host" do
       with_env("PREFERENCE_JWT_AUDIENCES" => "umaxica.app,umaxica.com,localhost") do
-        result = Preference::JwtConfiguration.audience_for("sign.app.localhost")
+        result = Preference::JwtConfiguration.audience_for("id.app.localhost")
 
         assert_includes result, "localhost"
         assert_not_includes result, "umaxica.app"

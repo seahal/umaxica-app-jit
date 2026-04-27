@@ -12,7 +12,7 @@ module Sign
         fixtures :com_preferences
 
         setup do
-          @host = ENV.fetch("SIGN_CORPORATE_URL", "sign.com.localhost")
+          @host = ENV.fetch("ID_CORPORATE_URL", "id.com.localhost")
           @customer = create_verified_customer_with_email(
             email_address: "preference-#{SecureRandom.hex(4)}@example.com",
           )

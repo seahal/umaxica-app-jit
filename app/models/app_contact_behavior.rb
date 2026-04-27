@@ -32,8 +32,9 @@
 #  fk_rails_...  (level_id => app_contact_behavior_levels.id)
 #
 class AppContactBehavior < BehaviorRecord
+  include Behavior
+
   belongs_to :app_contact, optional: true, foreign_key: :subject_id, inverse_of: :app_contact_behaviors
-  belongs_to :actor, polymorphic: true, optional: true
   belongs_to :app_contact_behavior_level, foreign_key: :level_id, inverse_of: :app_contact_behaviors
   belongs_to :app_contact_behavior_event,
              class_name: "AppContactBehaviorEvent",
@@ -41,17 +42,14 @@ class AppContactBehavior < BehaviorRecord
              primary_key: "id",
              inverse_of: :app_contact_behaviors
 
-  validates :subject_id, presence: true
-  validates :subject_type, presence: true
   validates :event_id, numericality: { only_integer: true }, allow_nil: true
   validates :level_id, numericality: { only_integer: true }, allow_nil: true
 
   def app_contact
-    AppContact.find(subject_id) if subject_type == "AppContact"
+    subject if subject_type == "AppContact"
   end
 
   def app_contact=(contact)
-    self.subject_id = contact.id.to_s
-    self.subject_type = "AppContact"
+    self.subject = contact
   end
 end

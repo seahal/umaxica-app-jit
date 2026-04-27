@@ -1,5 +1,5 @@
 <% default_host = ENV.fetch("POSTGRESQL_HOST", "localhost") %>
-<% test_host = ENV.fetch("POSTGRESQL_TEST_HOST", ENV["POSTGRESQL_DEFAULT_PUB"] || default_host) %>
+<% test_host = ENV.fetch("POSTGRESQL_TEST_HOST", default_host) %>
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -197,6 +197,17 @@ development:
     database: development_activity_db
     host: <%= ENV["POSTGRESQL_ACTIVITY_SUB"] || default_host %>
     migrations_paths: db/activity_migrate
+  chronicle:
+    !!merge <<: *default
+    database: development_chronicle_db
+    host: <%= ENV["POSTGRESQL_CHRONICLE_PUB"] || default_host %>
+    migrations_paths: db/chronicle_migrate
+  chronicle_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_chronicle_db
+    host: <%= ENV["POSTGRESQL_CHRONICLE_SUB"] || default_host %>
+    migrations_paths: db/chronicle_migrate
   behavior:
     !!merge <<: *default
     database: development_behavior_db
@@ -230,11 +241,17 @@ development:
     database: development_avatar_db
     host: <%= ENV["POSTGRESQL_AVATAR_SUB"] || default_host %>
     migrations_paths: db/avatars_migrate
-  default:
+  redirector:
     !!merge <<: *default
-    database: development_default_db
-    host: <%= ENV["POSTGRESQL_DEFAULT_PUB"] || default_host %>
-    migrations_paths: db/defaults_migrate
+    database: development_redirector_db
+    host: <%= ENV["POSTGRESQL_REDIRECTOR_PUB"] || default_host %>
+    migrations_paths: db/redirector_migrate
+  redirector_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_redirector_db
+    host: <%= ENV["POSTGRESQL_REDIRECTOR_SUB"] || default_host %>
+    migrations_paths: db/redirector_migrate
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -418,6 +435,17 @@ test:
     database: test_activity_db
     host: <%= test_host %>
     migrations_paths: db/activity_migrate
+  chronicle:
+    !!merge <<: *test_default
+    database: test_chronicle_db
+    host: <%= test_host %>
+    migrations_paths: db/chronicle_migrate
+  chronicle_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_chronicle_db
+    host: <%= test_host %>
+    migrations_paths: db/chronicle_migrate
   behavior:
     !!merge <<: *test_default
     database: test_behavior_db
@@ -451,11 +479,17 @@ test:
     database: test_avatar_db
     host: <%= test_host %>
     migrations_paths: db/avatars_migrate
-  default:
+  redirector:
     !!merge <<: *test_default
-    database: test_default_db
+    database: test_redirector_db
     host: <%= test_host %>
-    migrations_paths: db/defaults_migrate
+    migrations_paths: db/redirector_migrate
+  redirector_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_redirector_db
+    host: <%= test_host %>
+    migrations_paths: db/redirector_migrate
 production:
   guest:
     !!merge <<: *default
@@ -559,6 +593,23 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.ACTIVITY_REPLICA&.PASSWORD %>
     migrations_paths: db/activity_migrate
+  chronicle:
+    !!merge <<: *default
+    database: production_chronicle_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.CHRONICLE&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.CHRONICLE&.PASSWORD %>
+    migrations_paths: db/chronicle_migrate
+  chronicle_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_chronicle_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.CHRONICLE_REPLICA&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.CHRONICLE_REPLICA&.PASSWORD %>
+    migrations_paths: db/chronicle_migrate
   behavior:
     !!merge <<: *default
     database: production_behavior_db
@@ -737,3 +788,20 @@ production:
     username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
     password: <%= Rails.application.credentials&.DATABASE&.AVATAR_REPLICA&.PASSWORD %>
     migrations_paths: db/avatars_migrate
+  redirector:
+    !!merge <<: *default
+    database: production_redirector_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.REDIRECTOR&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.REDIRECTOR&.PASSWORD %>
+    migrations_paths: db/redirector_migrate
+  redirector_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_redirector_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.REDIRECTOR_REPLICA&.HOST %>
+    username: <%= Rails.application.credentials&.DATABASE&.USER || 'neondb_owner' %>
+    password: <%= Rails.application.credentials&.DATABASE&.REDIRECTOR_REPLICA&.PASSWORD %>
+    migrations_paths: db/redirector_migrate

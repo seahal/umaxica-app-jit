@@ -8,7 +8,7 @@ module Sign
   # Usage:
   #   class ApplicationController < ActionController::Base
   #     include Sign::ErrorResponses
-  #     rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized
+  #     rescue_from ActionPolicy::Unauthorized, with: :handle_not_authorized
   #   end
   module ErrorResponses
     extend ActiveSupport::Concern
@@ -18,7 +18,7 @@ module Sign
 
       # Automatically set up rescue_from if Pundit is included
       if respond_to?(:rescue_from)
-        rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized if defined?(Pundit)
+        rescue_from ActionPolicy::Unauthorized, with: :handle_not_authorized
         rescue_from ApplicationError, with: :handle_application_error
         rescue_from ActionController::InvalidCrossOriginRequest, with: :handle_csrf_failure
       end
@@ -38,7 +38,7 @@ module Sign
     # Handles Pundit authorization failures
     # Responds with JSON error for API requests, forbidden status for others
     #
-    # @param exception [Pundit::NotAuthorizedError] The authorization error
+    # @param exception [ActionPolicy::Unauthorized] The authorization error
     def handle_not_authorized(_exception = nil)
       respond_to do |format|
         format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }

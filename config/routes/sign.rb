@@ -1,11 +1,11 @@
 # typed: false
 # frozen_string_literal: true
 
-require Rails.root.join("lib/sign_host_env").to_s
+require Rails.root.join("lib/id_host_env").to_s
 
 scope module: :sign, as: :sign do
-  # User auth service (sign.app domain)
-  constraints host: SignHostEnv.service_url do
+  # User auth service (id.app domain)
+  constraints host: IdHostEnv.service_url do
     scope module: :app, as: :app do
       root to: "roots#index"
       # Health
@@ -167,8 +167,8 @@ scope module: :sign, as: :sign do
     end
   end
 
-  # Corporate sign service (sign.com domain)
-  constraints host: SignHostEnv.corporate_url do
+  # Corporate id service (id.com domain)
+  constraints host: IdHostEnv.corporate_url do
     scope module: :com, as: :com do
       root to: "roots#index"
 
@@ -287,7 +287,7 @@ scope module: :sign, as: :sign do
   end
 
   # Staff auth management
-  constraints host: SignHostEnv.staff_url do
+  constraints host: IdHostEnv.staff_url do
     scope module: :org, as: :org do
       root to: "roots#index"
 

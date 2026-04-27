@@ -12,8 +12,8 @@
 | 3   | `authentication/staff.rb:17-23`            | 同上 (staff版)                                                                                                                                                                                                                                                         | AuthorizationAudit                     |
 | 4   | `authentication/customer.rb:17-23`         | 同上 (customer版)                                                                                                                                                                                                                                                      | AuthorizationAudit                     |
 | 5   | `authentication/viewer.rb:10-13`           | `helper_method :current_viewer`                                                                                                                                                                                                                                        | -                                      |
-| 6   | `authorization_audit.rb:9-16`              | `include Common::Redirect`<br>`rescue_from Pundit::NotAuthorizedError`                                                                                                                                                                                                 | Common::Redirect                       |
-| 7   | `sign/error_responses.rb:16-25`            | `include Common::Redirect`<br>`rescue_from Pundit::NotAuthorizedError`<br>`rescue_from ApplicationError`<br>`rescue_from ActionController::InvalidCrossOriginRequest`                                                                                                  | Common::Redirect                       |
+| 6   | `authorization_audit.rb:9-16`              | `include Common::Redirect`<br>`rescue_from ActionPolicy::Unauthorized`                                                                                                                                                                                                 | Common::Redirect                       |
+| 7   | `sign/error_responses.rb:16-25`            | `include Common::Redirect`<br>`rescue_from ActionPolicy::Unauthorized`<br>`rescue_from ApplicationError`<br>`rescue_from ActionController::InvalidCrossOriginRequest`                                                                                                  | Common::Redirect                       |
 | 9   | `sign/org_verification_base.rb:18-22`      | `helper_method :verification_viewer`<br>`before_action :load_verification_viewer`<br>`before_action :verify_verification_viewer`                                                                                                                                       | -                                      |
 | 10  | `sign/app_verification_base.rb:23-28`      | 同上 (app版)                                                                                                                                                                                                                                                           | -                                      |
 | 11  | `sign/com_verification_base.rb:152-157`    | `helper_method :verification_com_user`<br>`before_action :load_verification_com_user`                                                                                                                                                                                  | -                                      |
@@ -56,7 +56,7 @@
 ### 3. rescue_from (例外処理の隠蔽)
 
 - `LoginCooldownError` (authentication/base)
-- `Pundit::NotAuthorizedError` (authorization_audit, sign/error_responses)
+- `ActionPolicy::Unauthorized` (authorization_audit, sign/error_responses)
 - `ApplicationError` (sign/error_responses)
 - `ActionController::InvalidCrossOriginRequest` (sign/error_responses)
 

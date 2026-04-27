@@ -7,7 +7,7 @@ module Sign
   module App
     class InsControllerTest < ActionDispatch::IntegrationTest
       setup do
-        @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+        @host = ENV.fetch("ID_SERVICE_URL", "id.app.localhost")
       end
 
       test "should get new with authentication links" do

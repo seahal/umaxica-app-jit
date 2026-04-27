@@ -55,7 +55,7 @@ Start the local stack, install dependencies, and boot the app:
 docker compose up
 bundle install
 pnpm install
-TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bin/setup
+TRUSTED_ORIGINS=http://id.app.localhost:3000,http://id.org.localhost:3000 bin/setup
 ```
 
 `TRUSTED_ORIGINS` is required for boot because WebAuthn origin validation fails fast when it is
@@ -65,7 +65,7 @@ missing.
 your shell or dev env file, for example:
 
 ```bash
-TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000
+TRUSTED_ORIGINS=http://id.app.localhost:3000,http://id.org.localhost:3000
 ```
 
 `bin/setup` installs Ruby gems, runs `bin/rails db:prepare`, clears logs and temp files, then starts
@@ -74,7 +74,7 @@ TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000
 If dependencies are already installed, you can start development directly:
 
 ```bash
-TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 bin/dev
+TRUSTED_ORIGINS=http://id.app.localhost:3000,http://id.org.localhost:3000 bin/dev
 ```
 
 `bin/dev` runs `bin/rails db:prepare` unless `SKIP_DB_PREPARE=1`, then starts:

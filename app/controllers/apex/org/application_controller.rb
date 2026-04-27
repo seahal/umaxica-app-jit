@@ -3,7 +3,7 @@
 
 module Apex
   module Org
-    class ApplicationController < ActionController::Base
+    class ApplicationController < ::ApplicationController
       include ::RateLimit
       include ::Session
       include ::Preference::Global
@@ -11,7 +11,7 @@ module Apex
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Verification::Staff
-      include Pundit::Authorization # FIXME: I hate this line.
+      include ActionPolicy::Controller # FIXME: I hate this line.
       include ::Oidc::SsoInitiator # FIXME: I hate this line.
       include ::CurrentSupport
       include ::Finisher
@@ -25,8 +25,7 @@ module Apex
       prepend_before_action :set_preferences_cookie
       prepend_before_action :resolve_param_context
       prepend_before_action :set_region
-      prepend_before_action :set_locale
-      prepend_before_action :set_timezone
+
       prepend_before_action :set_color_theme
       before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
       before_action :enforce_access_policy!
@@ -49,7 +48,7 @@ module Apex
       end
 
       def oidc_sign_host
-        ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+        ENV.fetch("ID_STAFF_URL", "id.org.localhost")
       end
 
       private

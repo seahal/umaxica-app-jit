@@ -20,7 +20,7 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
   test "force_secure is true in production" do
     env = ActiveSupport::EnvironmentInquirer.new("production")
 
-    assert SessionCookieConfig.force_secure?(sign_service_host: "", rails_env: env)
+    assert SessionCookieConfig.force_secure?(id_service_host: "", rails_env: env)
   end
 
   # --- force_secure? in test ---
@@ -28,7 +28,7 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
   test "force_secure is false in test even with production-like host" do
     env = ActiveSupport::EnvironmentInquirer.new("test")
 
-    assert_not SessionCookieConfig.force_secure?(sign_service_host: "sign.app.example.com", rails_env: env)
+    assert_not SessionCookieConfig.force_secure?(id_service_host: "sign.app.example.com", rails_env: env)
   end
 
   # --- force_secure? in development ---
@@ -36,19 +36,19 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
   test "force_secure is false in development with localhost" do
     env = ActiveSupport::EnvironmentInquirer.new("development")
 
-    assert_not SessionCookieConfig.force_secure?(sign_service_host: "sign.app.localhost", rails_env: env)
+    assert_not SessionCookieConfig.force_secure?(id_service_host: "id.app.localhost", rails_env: env)
   end
 
   test "force_secure is false in development even with non-local host" do
     env = ActiveSupport::EnvironmentInquirer.new("development")
 
-    assert_not SessionCookieConfig.force_secure?(sign_service_host: "sign.app.example.com", rails_env: env)
+    assert_not SessionCookieConfig.force_secure?(id_service_host: "sign.app.example.com", rails_env: env)
   end
 
   test "force_secure is false in development with empty host" do
     env = ActiveSupport::EnvironmentInquirer.new("development")
 
-    assert_not SessionCookieConfig.force_secure?(sign_service_host: "", rails_env: env)
+    assert_not SessionCookieConfig.force_secure?(id_service_host: "", rails_env: env)
   end
 
   # --- FORCE_SECURE_COOKIES env var ---
@@ -57,7 +57,7 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
     env = ActiveSupport::EnvironmentInquirer.new("development")
 
     with_env("FORCE_SECURE_COOKIES" => "1") do
-      assert SessionCookieConfig.force_secure?(sign_service_host: "", rails_env: env)
+      assert SessionCookieConfig.force_secure?(id_service_host: "", rails_env: env)
     end
   end
 
@@ -65,7 +65,7 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
     env = ActiveSupport::EnvironmentInquirer.new("test")
 
     with_env("FORCE_SECURE_COOKIES" => "1") do
-      assert_not SessionCookieConfig.force_secure?(sign_service_host: "", rails_env: env)
+      assert_not SessionCookieConfig.force_secure?(id_service_host: "", rails_env: env)
     end
   end
 
@@ -74,7 +74,7 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
   test "force_secure is false with 127.x host in production-like staging" do
     env = ActiveSupport::EnvironmentInquirer.new("production")
 
-    assert SessionCookieConfig.force_secure?(sign_service_host: "127.0.0.1", rails_env: env),
+    assert SessionCookieConfig.force_secure?(id_service_host: "127.0.0.1", rails_env: env),
            "production always forces secure regardless of host"
   end
 
@@ -82,7 +82,7 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
     env = ActiveSupport::EnvironmentInquirer.new("staging")
 
     with_env("FORCE_SECURE_COOKIES" => nil) do
-      assert_not SessionCookieConfig.force_secure?(sign_service_host: "0.0.0.0", rails_env: env)
+      assert_not SessionCookieConfig.force_secure?(id_service_host: "0.0.0.0", rails_env: env)
     end
   end
 
@@ -90,7 +90,7 @@ class SessionCookieConfigTest < ActiveSupport::TestCase
     env = ActiveSupport::EnvironmentInquirer.new("staging")
 
     with_env("FORCE_SECURE_COOKIES" => nil) do
-      assert SessionCookieConfig.force_secure?(sign_service_host: "sign.app.example.com", rails_env: env)
+      assert SessionCookieConfig.force_secure?(id_service_host: "sign.app.example.com", rails_env: env)
     end
   end
 

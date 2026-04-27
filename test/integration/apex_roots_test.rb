@@ -49,14 +49,14 @@ class SurfaceHealthControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "sign app health responds successfully" do
-    get "/health", headers: { "Host" => "sign.app.localhost" }
+    get "/health", headers: { "Host" => "id.app.localhost" }
     follow_redirect! if response.redirect?
 
     assert_response :success
   end
 
   test "sign org health responds successfully" do
-    get "/health", headers: { "Host" => "sign.org.localhost" }
+    get "/health", headers: { "Host" => "id.org.localhost" }
     follow_redirect! if response.redirect?
 
     assert_response :success
