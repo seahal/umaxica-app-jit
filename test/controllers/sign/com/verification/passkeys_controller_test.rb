@@ -32,7 +32,9 @@ class Sign::Com::Verification::PasskeysControllerTest < ActionDispatch::Integrat
 
           assert_response :success
 
-          post sign_com_verification_passkey_url(ri: "jp"), headers: @headers
+          post sign_com_verification_passkey_url(ri: "jp"),
+               params: { verification: { challenge_id: "test", credential_json: '{"id":"test"}' } },
+               headers: @headers
 
           assert_response :redirect
           assert_redirected_to sign_com_configuration_emails_url(ri: "jp")

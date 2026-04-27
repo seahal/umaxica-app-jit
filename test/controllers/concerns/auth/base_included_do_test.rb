@@ -156,7 +156,9 @@ module Auth
           extend Authentication::Base::ClassMethods
 
           before_action :some_callback
+
           define_method(:some_callback) do
+            # Required by before_action
           end
         end
 

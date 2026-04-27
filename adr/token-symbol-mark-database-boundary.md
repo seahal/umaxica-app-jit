@@ -9,8 +9,8 @@ and unclassified models. That makes persistence changes too broad: a migration, 
 test setup problem in one model family can affect unrelated model families.
 
 The requested direction is a breaking split from one database to three databases, with model
-ownership as the boundary. The repository currently uses `config/database.yml`; that file remains the
-configuration target unless the application is renamed to `config/database.yaml` later.
+ownership as the boundary. The repository currently uses `config/database.yml`; that file remains
+the configuration target unless the application is renamed to `config/database.yaml` later.
 
 ## Decision
 
@@ -32,11 +32,11 @@ from implicitly changing symbol or mark behavior, while keeping the calling code
 declares its database through inheritance instead of choosing a connection dynamically.
 
 Keeping unclassified models on `token` gives the system a deterministic default during the breaking
-transition. This is safer than leaving ownership ambiguous or distributing models mechanically across
-databases without a domain reason.
+transition. This is safer than leaving ownership ambiguous or distributing models mechanically
+across databases without a domain reason.
 
-The plan intentionally avoids compatibility fallbacks and production backfill. The change is meant to
-reset the database boundary, not preserve the old single-database runtime contract.
+The plan intentionally avoids compatibility fallbacks and production backfill. The change is meant
+to reset the database boundary, not preserve the old single-database runtime contract.
 
 ## Consequences
 

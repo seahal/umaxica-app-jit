@@ -424,5 +424,15 @@ scope module: :sign, as: :sign do
         resource :withdrawal, only: %i(show)
       end
     end
+
+    constraints host: ENV["SIGN_NETWORK_URL"] do
+      # Health
+      resource :health, only: :show
+    end
+
+    constraints host: ENV["SIGN_DEVELOPER_URL"] do
+      # Health
+      resource :health, only: :show
+    end
   end
 end

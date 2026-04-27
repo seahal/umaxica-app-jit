@@ -7,9 +7,11 @@ class DatabasePasswordConfigTest < ActiveSupport::TestCase
   test "database password prefers POSTGRESQL_PASSWORD over credentials" do
     database_yml = Rails.root.join("config/database.yml").read
 
-    assert_match(
-      /password: <%= ENV\["POSTGRESQL_PASSWORD"\]\.presence \|\| Rails\.application\.credentials\.dig\(:DATABASE, :PASSWORD\) %>/,
-      database_yml,
-    )
+    password_pattern = /
+      password: <%= ENV\["POSTGRESQL_PASSWORD"\]
+        \.presence \|\| Rails\.application\.credentials\.dig\(:DATABASE, :PASSWORD\) %>
+    /x
+
+    assert_match(password_pattern, database_yml)
   end
 end

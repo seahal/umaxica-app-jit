@@ -77,6 +77,7 @@ module Sign
       redirect_to(new_sign_app_up_email_path)
     end
 
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
     def initiate_email_verification!(email_address, confirm_policy: "1", allow_existing: false)
       return false unless ensure_turnstile!(email_address, confirm_policy)
 
@@ -139,6 +140,7 @@ module Sign
 
       true
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
 
     def complete_email_verification!(id, submitted_code, token = nil)
       @user_email = UserEmail.find_by(public_id: id)

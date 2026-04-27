@@ -17,8 +17,23 @@ module Behavior
     }
   end
 
+  SUBJECT_TYPES = {
+    "OrgDocument" => OrgDocument,
+    "OrgContact" => OrgContact,
+    "OrgTimeline" => OrgTimeline,
+    "ComDocument" => ComDocument,
+    "ComContact" => ComContact,
+    "ComTimeline" => ComTimeline,
+    "AppContact" => AppContact,
+    "AppDocument" => AppDocument,
+    "AppTimeline" => AppTimeline,
+  }.freeze
+
   def subject
-    subject_type.constantize.find(subject_id) if subject_type.present? && subject_id.present?
+    return unless subject_type.present? && subject_id.present?
+
+    klass = SUBJECT_TYPES[subject_type] || raise(ArgumentError, "Unknown subject_type: #{subject_type}")
+    klass.find(subject_id)
   end
 
   def subject=(record)

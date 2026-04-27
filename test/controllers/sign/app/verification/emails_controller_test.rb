@@ -25,7 +25,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
     return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
     StepUp::AvailableMethods.stub(:call, [:email_otp]) do
-      ContactMailer.stub(:with, OpenStruct.new(create: true, deliver_now: true)) do
+      Email::App::RegistrationMailer.stub(:with, OpenStruct.new(create: OpenStruct.new(deliver_later: true))) do
         get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers
 
@@ -57,7 +57,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
     return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
     StepUp::AvailableMethods.stub(:call, [:email_otp]) do
-      ContactMailer.stub(:with, OpenStruct.new(create: true, deliver_now: true)) do
+      Email::App::RegistrationMailer.stub(:with, OpenStruct.new(create: OpenStruct.new(deliver_later: true))) do
         get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers
 
@@ -96,7 +96,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
 
       assert_response :success
 
-      ContactMailer.stub(:with, OpenStruct.new(create: true, deliver_now: true)) do
+      Email::App::RegistrationMailer.stub(:with, OpenStruct.new(create: OpenStruct.new(deliver_later: true))) do
         post sign_app_verification_emails_url(ri: "jp"),
              params: { verification: { scope: scope, rd: return_to } },
              headers: stale_headers
@@ -120,7 +120,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
 
   test "create restores reauth session only when scope and return_to are present" do
     StepUp::AvailableMethods.stub(:call, [:email_otp]) do
-      ContactMailer.stub(:with, OpenStruct.new(create: true, deliver_now: true)) do
+      Email::App::RegistrationMailer.stub(:with, OpenStruct.new(create: OpenStruct.new(deliver_later: true))) do
         post sign_app_verification_emails_url(ri: "jp"),
              params: { verification: { scope: "", return_to: "" } },
              headers: @headers

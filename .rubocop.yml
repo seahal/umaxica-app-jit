@@ -1428,6 +1428,11 @@ Style/DisableCopsWithinSourceCodeDirective:
     - Metrics/AbcSize
     - Metrics/MethodLength
     - Metrics/CyclomaticComplexity
+    - Metrics/PerceivedComplexity
+    - I18n/RailsI18n/DecorateString
+    - Rails/SkipsModelValidations
+    - Minitest/NoAssertions
+    - Lint/EmptyBlock
 
 
 # メソッド呼び出しの括弧を強制（可読性向上）

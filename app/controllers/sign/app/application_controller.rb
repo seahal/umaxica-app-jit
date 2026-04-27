@@ -3,7 +3,7 @@
 
 module Sign
   module App
-    class ApplicationController < ::ApplicationController
+    class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::Session
       include ::Preference::Global

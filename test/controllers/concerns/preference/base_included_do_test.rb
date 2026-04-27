@@ -9,15 +9,15 @@ class PreferenceBaseIncludedDoTest < ActiveSupport::TestCase
   end
 
   test "show_cookie_banner? method exists" do
-    skip "Preference::Base requires abstract methods from including class"
+    assert_includes Preference::Base.instance_methods(false), :show_cookie_banner?
   end
 
   test "cookie_banner_endpoint_url method exists" do
-    skip "Preference::Base requires abstract methods from including class"
+    assert_includes Preference::Base.private_instance_methods(false), :cookie_banner_endpoint_url
   end
 
   test "set_preferences_cookie method exists (private)" do
-    skip "Preference::Base requires abstract methods from including class"
+    assert_includes Preference::Base.private_instance_methods(false), :set_preferences_cookie
   end
 
   test "ACCESS_TOKEN_TTL constant is defined" do

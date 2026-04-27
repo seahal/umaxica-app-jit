@@ -21,7 +21,7 @@ class Sign::Com::Verification::EmailsControllerTest < ActionDispatch::Integratio
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
 
     StepUp::AvailableMethods.stub(:call, [:email_otp]) do
-      ContactMailer.stub(:with, OpenStruct.new(create: true, deliver_now: true)) do
+      Email::App::RegistrationMailer.stub(:with, OpenStruct.new(create: OpenStruct.new(deliver_later: true))) do
         get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers
 
@@ -37,7 +37,7 @@ class Sign::Com::Verification::EmailsControllerTest < ActionDispatch::Integratio
     return_to = Base64.urlsafe_encode64(sign_com_configuration_emails_path(ri: "jp"))
 
     StepUp::AvailableMethods.stub(:call, [:email_otp]) do
-      ContactMailer.stub(:with, OpenStruct.new(create: true, deliver_now: true)) do
+      Email::App::RegistrationMailer.stub(:with, OpenStruct.new(create: OpenStruct.new(deliver_later: true))) do
         get sign_com_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
             headers: @headers
 

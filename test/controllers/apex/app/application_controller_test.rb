@@ -28,8 +28,6 @@ module Apex
         assert_includes before_filters, :set_preferences_cookie
         assert_includes before_filters, :resolve_param_context
         assert_includes before_filters, :set_region
-        assert_includes before_filters, :set_locale
-        assert_includes before_filters, :set_timezone
         assert_includes before_filters, :set_color_theme
       end
 

@@ -5,7 +5,14 @@ require "test_helper"
 
 class CurrentSupportIncludedDoTest < ActiveSupport::TestCase
   test "included do registers after_action callback" do
-    skip "after_action callback verification requires integration test"
+    harness =
+      Class.new(ApplicationController) do
+        include CurrentSupport
+      end
+
+    after_filters = harness._process_action_callbacks.select { |c| c.kind == :after }.map(&:filter)
+
+    assert_includes after_filters, :_reset_current_state
   end
 
   test "set_current method exists in module" do

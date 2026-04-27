@@ -127,5 +127,15 @@ scope module: :apex, as: :apex do
         resources :emails, only: %i(edit update new create)
       end
     end
+
+    constraints host: ENV["APEX_NETWORK_URL"] do
+      # Health
+      resource :health, only: :show
+    end
+
+    constraints host: ENV["APEX_DEVELOPER_URL"] do
+      # Health
+      resource :health, only: :show
+    end
   end
 end

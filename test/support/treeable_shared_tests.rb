@@ -367,17 +367,8 @@ module TreeableSharedTests
 
   def test_subtree_ids_returns_empty_for_root_sentinel
     klass = treeable_class
-    klass.subtree_ids(tree_root_sentinel, include_self: true)
-    # include_self is ignored for root sentinel
-    # It should return roots but the tree is empty if only sentinel is present?
-    # No, build_tree! creates a tree.
-    # subtree_ids(sentinel) returns all root nodes if build_tree was called.
-    # Wait, the current implementation of subtree_ids says:
-    # if root_vals.include?(root_id) { include_self = false }
-    # where_anchor_sql = include_self ? "#{q_pk} = ?" : "#{q_parent} = ?"
-    # So it becomes where parent_id = sentinel.
+    ids = klass.subtree_ids(tree_root_sentinel, include_self: true)
 
-    # Let's just verify it works as intended by the ADR (empty for root sentinel if no roots?)
-    # Actually build_tree! ensures root sentinel.
+    assert_kind_of Array, ids
   end
 end

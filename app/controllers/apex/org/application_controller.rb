@@ -3,7 +3,7 @@
 
 module Apex
   module Org
-    class ApplicationController < ::ApplicationController
+    class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::Session
       include ::Preference::Global

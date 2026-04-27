@@ -18,8 +18,9 @@ class Sign::Com::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     @token = CustomerToken.find_by!(public_id: @headers["X-TEST-SESSION-PUBLIC-ID"])
     satisfy_customer_verification(@token)
 
+    host_value = @host
     @original_trusted_origins = Webauthn.method(:trusted_origins)
-    Webauthn.define_singleton_method(:trusted_origins) { ["http://id.app.localhost", "http://#{@host}"] }
+    Webauthn.define_singleton_method(:trusted_origins) { ["http://id.app.localhost", "http://#{host_value}"] }
 
     @passkey = CustomerPasskey.create!(
       customer: @customer,

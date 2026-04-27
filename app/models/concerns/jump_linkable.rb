@@ -38,10 +38,9 @@ module JumpLinkable
 
   def consume_destination_for(user:)
     with_lock do
-      reload
       return nil unless available_for?(user: user)
 
-      increment!(:uses_count, 1, touch: false)
+      update!(uses_count: uses_count + 1)
       destination_url
     end
   end
@@ -61,7 +60,7 @@ module JumpLinkable
     self.deletable_at ||= FAR_FUTURE
   end
 
-  def allowed_by_policy?(user:)
+  def allowed_by_policy?(*)
     true
   end
 end

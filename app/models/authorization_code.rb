@@ -7,6 +7,8 @@
 # Database name: token
 #
 #  id                    :bigint           not null, primary key
+#  acr                   :string
+#  auth_method           :string
 #  code                  :string(64)       not null
 #  code_challenge        :string           not null
 #  code_challenge_method :string(8)        default("S256"), not null
@@ -61,7 +63,7 @@ class AuthorizationCode < TokenRecord
     end
 
     def issue!(client_id:, redirect_uri:, code_challenge:, code_challenge_method:, scope: nil, state: nil,
-               nonce: nil, user: nil, staff: nil)
+               nonce: nil, user: nil, staff: nil, auth_method: nil, acr: nil)
       create!(
         code: generate_code,
         user: user,
@@ -73,6 +75,8 @@ class AuthorizationCode < TokenRecord
         scope: scope,
         state: state,
         nonce: nonce,
+        auth_method: auth_method,
+        acr: acr,
         expires_at: CODE_TTL.from_now,
       )
     end

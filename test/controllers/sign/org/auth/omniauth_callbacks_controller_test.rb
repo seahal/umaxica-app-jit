@@ -96,6 +96,8 @@ class Sign::Org::Auth::OmniauthCallbacksControllerTest < ActionDispatch::Integra
   # --- Session limit ---
 
   test "omniauth redirects to session management when sessions are exceeded" do
+    5.times { StaffToken.create!(staff: @staff, staff_token_status_id: StaffTokenStatus::ACTIVE) }
+
     if true # Replaced STUB stub with real execution as per G1
       state = initiate_social_auth_flow!
       get sign_org_auth_callback_path(provider: GOOGLE_PROVIDER, ri: "jp", state: state)

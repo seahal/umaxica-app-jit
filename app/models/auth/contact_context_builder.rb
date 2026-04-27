@@ -13,8 +13,11 @@ module Auth
         end || user.user_emails.to_a.find { |e| e.address.present? }
 
         telephone = user.user_telephones.to_a.find do |t|
-          [UserTelephoneStatus::VERIFIED,
-           UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,].include?(t.user_identity_telephone_status_id) && t.number.present?
+          verified_statuses = [
+            UserTelephoneStatus::VERIFIED,
+            UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
+          ]
+          verified_statuses.include?(t.user_identity_telephone_status_id) && t.number.present?
         end || user.user_telephones.to_a.find { |t| t.number.present? }
 
         Contact::ActorContext.new(

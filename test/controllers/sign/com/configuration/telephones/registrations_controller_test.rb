@@ -50,18 +50,27 @@ class Sign::Com::Configuration::Telephones::RegistrationsControllerTest < Action
     )
 
     if true # Replaced STUB stub with real execution as per G1
-      Sign::Com::Configuration::Telephones::RegistrationsController.stub(
-        :complete_customer_telephone_verification, ->(*_args, &block) {
-          block.call(telephone)
-          :success
-        },
-      ) do
-        patch sign_com_configuration_telephones_registration_url(ri: "jp"),
-              params: { user_telephone: { pass_code: "123456" } },
-              headers: request_headers
+      original_method = Sign::Com::Configuration::Telephones::RegistrationsController.instance_method(:complete_customer_telephone_verification)
+      Sign::Com::Configuration::Telephones::RegistrationsController.define_method(
+        :complete_customer_telephone_verification,
+      ) do |*_args, &block|
+        block.call(telephone)
+        :success
+      end
+
+      begin
+        patch(
+          sign_com_configuration_telephones_registration_url(ri: "jp"),
+          params: { user_telephone: { pass_code: "123456" } },
+          headers: request_headers,
+        )
 
         assert_redirected_to sign_com_configuration_telephones_url(ri: "jp")
         assert_equal I18n.t("sign.app.registration.telephone.update.success"), flash[:notice]
+      ensure
+        Sign::Com::Configuration::Telephones::RegistrationsController.define_method(
+          :complete_customer_telephone_verification, original_method,
+        )
       end
     end
   end

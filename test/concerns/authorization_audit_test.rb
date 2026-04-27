@@ -7,7 +7,10 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
   fixtures :users, :staffs, :user_statuses, :staff_statuses
 
   class DummyPolicy
-    def initialize
+    attr_accessor :record
+
+    def initialize(record: nil)
+      @record = record
     end
   end
 
@@ -263,7 +266,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
   private
 
   def build_exception(record:)
-    OpenStruct.new(policy: DummyPolicy.new, query: :show?, record: record)
+    OpenStruct.new(policy: DummyPolicy.new(record: record), rule: :show?)
   end
 
   def capture_log_data(audit, exception)

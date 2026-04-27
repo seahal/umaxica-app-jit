@@ -229,11 +229,18 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
 
   def set_registration_session(id)
     # Using the backdoor or stubs. Since it's integration test, let's use a workaround.
-    Sign::App::Configuration::Telephones::RegistrationsController.stub(
-      :current_registration_telephone,
-      UserTelephone.find(id),
-    ) do
+    original_method = Sign::App::Configuration::Telephones::RegistrationsController.instance_method(:current_registration_telephone)
+    Sign::App::Configuration::Telephones::RegistrationsController.define_method(:current_registration_telephone) do
+      UserTelephone.find(id)
+    end
+
+    begin
       yield if block_given?
+    ensure
+      Sign::App::Configuration::Telephones::RegistrationsController.define_method(
+        :current_registration_telephone,
+        original_method,
+      )
     end
   end
 end

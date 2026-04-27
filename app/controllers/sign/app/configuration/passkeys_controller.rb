@@ -28,7 +28,7 @@ module Sign
         include Sign::Webauthn
 
         before_action :authenticate_user!
-        before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
+        before_action :ensure_verified_recovery_identity_for_registration!, only: [:new, :create]
         before_action :set_passkey, only: %i(show edit update destroy)
 
         # GET /configuration/passkeys
@@ -56,11 +56,9 @@ module Sign
           @passkey = current_user.user_passkeys.new(create_params)
           authorize!(@passkey, :create?)
 
-          if @passkey.save
-            render plain: "ok", status: :created
-          else
-            render plain: @passkey.errors.full_messages.join("\n"), status: :unprocessable_content
-          end
+          return unless @passkey.save
+
+          render plain: "ok", status: :created
         end
 
         # POST /configuration/passkeys/options

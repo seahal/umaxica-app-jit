@@ -44,6 +44,6 @@ class SignErrorResponsesIncludedDoTest < ActiveSupport::TestCase
   end
 
   test "safe_redirect_back_or_to method available via included Common::Redirect" do
-    skip "Common::Redirect defines safe_redirect_back_or_to as private method"
+    assert_respond_to Harness.new, :safe_redirect_back_or_to
   end
 end

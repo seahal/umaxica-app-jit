@@ -155,6 +155,7 @@ module Concerns
           content.include?("Authentication::Viewer")
         end
 
+      assert_not_empty viewer_controllers
       viewer_controllers.each do |file|
         content = File.read(file)
         controller_name = file.gsub(Rails.root.join("app/controllers/").to_s, "")

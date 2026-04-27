@@ -20,6 +20,14 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
     )
     @headers = as_staff_headers(@staff, host: @host)
     @headers["X-TEST-SESSION-PUBLIC-ID"] = @token.public_id
+
+    host_value = @host
+    @original_trusted_origins = Webauthn.method(:trusted_origins)
+    Webauthn.define_singleton_method(:trusted_origins) { ["http://id.org.localhost", "http://#{host_value}"] }
+  end
+
+  teardown do
+    Webauthn.define_singleton_method(:trusted_origins, @original_trusted_origins)
   end
 
   test "GET protected endpoint redirects to setup when configured methods are zero" do
@@ -99,7 +107,9 @@ class OrgStepUpVerificationEnforcerTest < ActionDispatch::IntegrationTest
 
           assert_response :success
 
-          post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
+          post sign_org_verification_passkey_url(ri: "jp"),
+               params: { verification: { challenge_id: "test", credential_json: '{"id":"test"}' } },
+               headers: @headers
         end
       end
     end

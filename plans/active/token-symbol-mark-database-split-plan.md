@@ -8,8 +8,8 @@ Active draft (2026-04-27)
 
 Split the current single application database configuration into three model-owned databases:
 `token`, `symbol`, and `mark`. This is an intentionally breaking change. The target is to stop token
-changes from sharing persistence scope with symbol and mark models, and to make each model family own
-its database connection explicitly.
+changes from sharing persistence scope with symbol and mark models, and to make each model family
+own its database connection explicitly.
 
 The repository currently contains `config/database.yml`; use that file unless the application later
 renames it to `config/database.yaml`.
@@ -46,8 +46,8 @@ renames it to `config/database.yaml`.
 - Move mark-related tables and migrations to `db/mark_migrate`.
 - Move unclassified tables and migrations to `db/token_migrate`.
 - Do not add compatibility fallbacks to the old single database.
-- Do not include production data backfill in this change. Rebuild or reload data separately after the
-  split.
+- Do not include production data backfill in this change. Rebuild or reload data separately after
+  the split.
 
 ## Acceptance Criteria
 

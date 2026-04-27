@@ -1280,6 +1280,7 @@ module Authentication
       nil
     end
 
+    # rubocop:disable Metrics/MethodLength
     def build_refreshed_session(resource, token_record, new_refresh_plain, previous_token_record: nil)
       access_expires_at = access_token_expires_at_for(token_record)
       refresh_cookie_expires_at = refresh_cookie_expires_at_for(token_record)
@@ -1340,6 +1341,7 @@ module Authentication
         dbsc: dbsc_payload_for(token_record),
       }
     end
+    # rubocop:enable Metrics/MethodLength
 
     def request_ip_address
       (respond_to?(:request, true) && request) ? request.remote_ip : nil

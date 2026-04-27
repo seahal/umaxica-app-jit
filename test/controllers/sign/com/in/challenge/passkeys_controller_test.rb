@@ -13,8 +13,9 @@ class Sign::Com::In::Challenge::PasskeysControllerTest < ActionDispatch::Integra
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
 
+    host_value = @host
     @original_trusted_origins = Webauthn.method(:trusted_origins)
-    Webauthn.define_singleton_method(:trusted_origins) { ["http://#{@host}", "http://id.app.localhost"] }
+    Webauthn.define_singleton_method(:trusted_origins) { ["http://#{host_value}", "http://id.app.localhost"] }
 
     @customer = create_verified_customer_with_email(email_address: "com_mfa_passkey_#{SecureRandom.hex(4)}@example.com")
     @customer.update!(multi_factor_enabled: true)
@@ -83,6 +84,8 @@ class Sign::Com::In::Challenge::PasskeysControllerTest < ActionDispatch::Integra
     end
 
     assert_response :redirect
+    puts flash.to_hash
+
     assert_redirected_to sign_com_configuration_path(ri: "jp")
     assert_nil session[:pending_mfa]
     assert_equal 6, @passkey.reload.sign_count

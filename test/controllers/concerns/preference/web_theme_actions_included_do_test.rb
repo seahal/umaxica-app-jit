@@ -5,6 +5,12 @@ require "test_helper"
 
 class PreferenceWebThemeActionsIncludedDoTest < ActiveSupport::TestCase
   test "included do includes Preference::WebThemeEndpoint module" do
-    skip "Preference::WebThemeActions requires Authentication::Base with public_strict!"
+    klass =
+      Class.new(ApplicationController) do
+        include Authentication::Base
+        include Preference::WebThemeActions
+      end
+
+    assert_includes klass.included_modules, Preference::WebThemeEndpoint
   end
 end

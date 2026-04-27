@@ -4,6 +4,7 @@
 module Preference::Global
   extend ActiveSupport::Concern
   include Preference::Base
+  include Preference::Localization
 
   PARAM_CONTEXT_KEYS = %i(ri lx ct tz).freeze
   OPTIONAL_PARAM_KEYS = %i(lx ct tz).freeze

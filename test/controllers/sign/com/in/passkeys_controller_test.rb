@@ -26,8 +26,9 @@ class Sign::Com::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
       status_id: CustomerPasskeyStatus::ACTIVE,
     )
 
+    host_value = @host
     @original_trusted_origins = Webauthn.method(:trusted_origins)
-    Webauthn.define_singleton_method(:trusted_origins) { ["http://id.app.localhost", "http://#{@host}"] }
+    Webauthn.define_singleton_method(:trusted_origins) { ["http://id.app.localhost", "http://#{host_value}"] }
   end
 
   teardown do

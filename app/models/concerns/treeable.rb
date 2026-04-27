@@ -165,6 +165,7 @@ module Treeable
       where_anchor_sql = include_self ? "#{q_pk} = ?" : "#{q_parent} = ?"
       depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
+      # rubocop:disable I18n/RailsI18n/DecorateString
       sql_template = <<~SQL.squish
         WITH RECURSIVE tree AS (
           SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
@@ -180,6 +181,7 @@ module Treeable
         )
         SELECT id FROM tree;
       SQL
+
       sql = sanitize_sql_array([sql_template, root_id, root_vals])
 
       connection.exec_query(sql, "subtree_ids").rows.flatten
@@ -201,6 +203,7 @@ module Treeable
 
       depth_guard = max_depth ? " AND tree.depth < #{Integer(max_depth)}" : ""
 
+      # rubocop:disable I18n/RailsI18n/DecorateString
       sql_template = <<~SQL.squish
         WITH RECURSIVE tree AS (
           SELECT #{q_pk} AS id, #{q_parent} AS parent_id, 0 AS depth
@@ -217,6 +220,7 @@ module Treeable
         SELECT id FROM tree
         ORDER BY depth DESC;
       SQL
+
       sql = sanitize_sql_array([sql_template, node_id, root_vals, root_vals])
 
       connection.exec_query(sql, "ancestor_ids").rows.flatten
@@ -257,29 +261,32 @@ module Treeable
           "tree.path || ARRAY[ROW(t.#{pk_sort_expr})]::record[]"
         end
 
-      sql_template = <<~SQL.squish
-        WITH RECURSIVE tree AS (
-          SELECT
-            #{q_table}.*,
-            0 AS depth,
-            #{anchor_path} AS path
-          FROM #{q_table}
-          WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
+      sql_template =
 
-          UNION ALL
+        # rubocop:disable I18n/RailsI18n/DecorateString
+        <<~SQL.squish
+            WITH RECURSIVE tree AS (
+              SELECT
+                #{q_table}.*,
+                0 AS depth,
+                #{anchor_path} AS path
+              FROM #{q_table}
+              WHERE (#{where_anchor_sql} AND #{q_pk} NOT IN (?))
 
-          SELECT
-            t.*,
-            tree.depth + 1 AS depth,
-            #{step_path} AS path
-          FROM #{q_table} t
-          JOIN tree ON t.#{q_parent} = tree.#{q_pk}
-          #{depth_guard}
-        )
-        SELECT #{q_pk}
-        FROM tree
-        ORDER BY path;
-      SQL
+            UNION ALL
+
+            SELECT
+              t.*,
+              tree.depth + 1 AS depth,
+              #{step_path} AS path
+            FROM #{q_table} t
+            JOIN tree ON t.#{q_parent} = tree.#{q_pk}
+            #{depth_guard}
+          )
+          SELECT #{q_pk}
+          FROM tree
+          ORDER BY path;
+        SQL
       sql = sanitize_sql_array([sql_template, root_id, root_vals])
 
       ids = connection.exec_query(sql, "subtree_in_tree_order_ids").rows.flatten

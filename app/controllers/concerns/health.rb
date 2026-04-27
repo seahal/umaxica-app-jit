@@ -6,7 +6,6 @@ module Health
 
   DATABASE_RECORD_CLASSES = [
     ActivityRecord,
-    ApplicationRecord,
     AvatarRecord,
     BehaviorRecord,
     DocumentRecord,

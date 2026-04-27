@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_31_222106) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_26_170232) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "authorization_codes", force: :cascade do |t|
+    t.string "acr"
+    t.string "auth_method"
     t.string "client_id", limit: 64, null: false
     t.string "code", limit: 64, null: false
     t.string "code_challenge", null: false
