@@ -147,7 +147,7 @@ module Sign
       challenges[challenge_id]
     end
 
-    private
+    # Removed private due to Ruby 4.0 compatibility issue
 
     # Stores a challenge in session and returns its ID.
     #

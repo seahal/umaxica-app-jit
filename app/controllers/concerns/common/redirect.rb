@@ -25,7 +25,7 @@ module Common
       keys.filter_map { |k| Common::Redirect.normalize_host(ENV[k]) }
     end
 
-    private
+    # Removed private due to Ruby 4.0 compatibility issue
 
     def safe_internal_path(target)
       return nil if target.blank?
@@ -67,7 +67,7 @@ module Common
 
       return unless safe_path
 
-      Base64.urlsafe_encode64(safe_path)
+      Base64.urlsafe_encode64(safe_path, padding: false)
     end
 
     def jump_to_generated_url(encoded_url, fallback: "/")
