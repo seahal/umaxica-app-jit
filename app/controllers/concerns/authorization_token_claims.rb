@@ -24,7 +24,7 @@ module AuthorizationTokenClaims
       "exp" => expires_at_seconds,
       "jti" => oidc_jti.presence || JitSecurityJwtJtiGenerator.generate,
       "sub" => (subject.presence || resource.id).to_s,
-      "iss" => issuer.presence || AuthenticationJwtConfiguration.issuer(resource_type),
+      "iss" => issuer.presence || AuthenticationJwtConfiguration.issuer,
       "aud" => audiences.presence || AuthenticationJwtConfiguration.audiences(resource_type),
       "client_id" => client_id.presence || AuthenticationJwtConfiguration.client_id(resource_type),
       "scope" => Array(scopes_value).map(&:to_s).join(" "),
@@ -52,8 +52,8 @@ module AuthorizationTokenClaims
     payload&.dig("sub")
   end
 
-  def actor(payload)
-    SecurityJwtRfc9068AccessTokenProfile.actor_type_from_scope(payload)
+  def resource_type(payload)
+    SecurityJwtRfc9068AccessTokenProfile.resource_type_from_scope(payload)
   end
 
   def session_id(payload)

@@ -140,7 +140,7 @@ module AuthenticationBase
   # this 3,000-line module into dedicated files. The constant aliases
   # below preserve every existing reference such as
   # `AuthenticationToken.decode(...)` and
-  # `AuthenticationJwtConfiguration.issuer(...)`. New code
+  # `AuthenticationJwtConfiguration.issuer`. New code
   # should reference `AuthenticationToken` and
   # `AuthenticationJwtConfiguration` directly. See CQ-1.
   AuthenticationJwtConfiguration = AuthenticationJwtConfiguration
@@ -1736,14 +1736,14 @@ module AuthenticationBase
   end
 
   def emit_actor_mismatch_event(payload)
-    act = AuthenticationToken.extract_act(payload)
+    actual_resource_type = AuthenticationToken.extract_resource_type(payload)
     sub = AuthenticationToken.extract_subject(payload)
 
     Rails.logger.info(
       JitLogEvent.format(
         "authentication.actor_mismatch",
         expected: resource_type,
-        actual: act,
+        actual: actual_resource_type,
         subject: sub,
         ip_address: request_ip_address,
       ),

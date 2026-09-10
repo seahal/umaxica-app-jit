@@ -344,9 +344,10 @@ module Preference
       end
     end
 
-    test "leeway_seconds returns value from ENV" do
-      with_env("PREFERENCE_JWT_LEEWAY_SECONDS" => "45") do
-        assert_equal 45, PreferenceJwtConfiguration.leeway_seconds
+    test "leeway_seconds ignores the environment and returns the fixed profile leeway" do
+      with_env("PREFERENCE_JWT_LEEWAY_SECONDS" => "3600") do
+        assert_equal SecurityJwtRfc9068AccessTokenProfile::CLOCK_SKEW_LEEWAY_SECONDS,
+                     PreferenceJwtConfiguration.leeway_seconds
       end
     end
 

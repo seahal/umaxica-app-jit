@@ -92,11 +92,11 @@ class SecurityJwtAuthAccessTokenCodecCoverageTest < ActiveSupport::TestCase
     end
   end
 
-  test "validate_actor_claim! accepts valid actors and rejects invalid ones" do
-    assert_not SecurityJwtAuthAccessTokenCodec.validate_actor_claim!(nil, "client")
-    assert_not SecurityJwtAuthAccessTokenCodec.validate_actor_claim!({}, "client")
-    assert_not SecurityJwtAuthAccessTokenCodec.validate_actor_claim!({ "scope" => "domain:invalid" }, "client")
-    assert SecurityJwtAuthAccessTokenCodec.validate_actor_claim!({ "scope" => "domain:client" }, "client")
+  test "resource_type_scope_matches? accepts valid actors and rejects invalid ones" do
+    assert_not SecurityJwtAuthAccessTokenCodec.resource_type_scope_matches?(nil, "client")
+    assert_not SecurityJwtAuthAccessTokenCodec.resource_type_scope_matches?({}, "client")
+    assert_not SecurityJwtAuthAccessTokenCodec.resource_type_scope_matches?({ "scope" => "domain:invalid" }, "client")
+    assert SecurityJwtAuthAccessTokenCodec.resource_type_scope_matches?({ "scope" => "domain:client" }, "client")
   end
 
   test "claim extraction helpers delegate to authorization claims" do
@@ -108,7 +108,7 @@ class SecurityJwtAuthAccessTokenCodecCoverageTest < ActiveSupport::TestCase
     }
 
     assert_equal "subject-1", SecurityJwtAuthAccessTokenCodec.extract_subject(payload)
-    assert_equal "client", SecurityJwtAuthAccessTokenCodec.extract_type(payload)
+    assert_equal "client", SecurityJwtAuthAccessTokenCodec.extract_resource_type(payload)
     assert_equal "session-1", SecurityJwtAuthAccessTokenCodec.extract_session_id(payload)
     assert_equal "token-1", SecurityJwtAuthAccessTokenCodec.extract_jti(payload)
     assert_equal %w(domain:client openid profile), SecurityJwtAuthAccessTokenCodec.extract_scopes(payload)
@@ -116,17 +116,13 @@ class SecurityJwtAuthAccessTokenCodecCoverageTest < ActiveSupport::TestCase
     assert_not SecurityJwtAuthAccessTokenCodec.has_scope?(payload, :email)
   end
 
-  test "issuer inference distinguishes service and surface hosts" do
-    infer =
-      ->(host, type = "client") {
-        SecurityJwtAuthAccessTokenCodec.send(
-          :inferred_surface_jwt_issuer_id, host: host, resource_type: type,
-        )
-      }
+  test "keyring is never inferred from the request host" do
+    resolve = ->(id) { SecurityJwtAuthAccessTokenCodec.send(:resolve_jwt_issuer_id, id) }
 
-    assert_equal "surface:ACME_ORG", infer.call("acme.umaxica.org")
-    assert_equal "surface:CORE_COM", infer.call("core.umaxica.com")
-    assert_equal "surface:ACME_APP", infer.call("acme.app.localhost")
+    assert_equal "auth", resolve.call(nil)
+    assert_equal "auth", resolve.call("")
+    assert_equal "surface:ACME_ORG", resolve.call("surface:ACME_ORG")
+    assert_not SecurityJwtAuthAccessTokenCodec.respond_to?(:inferred_surface_jwt_issuer_id, true)
   end
 
   test "decode options require and verify nbf" do

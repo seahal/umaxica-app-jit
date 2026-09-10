@@ -36,16 +36,12 @@ class AuthenticationToken
       AuthenticationTokenService.extract_subject(payload)
     end
 
-    def extract_act(payload)
-      AuthenticationTokenService.extract_act(payload)
+    def extract_resource_type(payload)
+      AuthenticationTokenService.extract_resource_type(payload)
     end
 
-    def extract_type(payload)
-      AuthenticationTokenService.extract_type(payload)
-    end
-
-    def validate_actor_claim!(payload, expected_act)
-      AuthenticationTokenService.validate_actor_claim!(payload, expected_act)
+    def resource_type_scope_matches?(payload, expected_resource_type)
+      AuthenticationTokenService.resource_type_scope_matches?(payload, expected_resource_type)
     end
 
     def extract_session_id(payload)

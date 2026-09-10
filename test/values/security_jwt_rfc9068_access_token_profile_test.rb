@@ -19,7 +19,7 @@ class SecurityJwtRfc9068AccessTokenProfileTest < ActiveSupport::TestCase
     assert_kind_of String, payload["sub"]
     assert_equal clients(:one).id.to_s, payload["sub"]
     assert_equal AuthenticationJwtConfiguration.client_id("client"), payload["client_id"]
-    assert_equal AuthenticationJwtConfiguration.issuer("client"), payload["iss"]
+    assert_equal AuthenticationJwtConfiguration.issuer, payload["iss"]
     assert_equal AuthenticationJwtConfiguration.audiences("client"), payload["aud"]
     assert_equal "authenticated domain:client read:self write:self", payload["scope"]
     assert_nil payload["scp"]
@@ -107,26 +107,26 @@ class SecurityJwtRfc9068AccessTokenProfileTest < ActiveSupport::TestCase
   test "production auth audience configuration rejects localhost" do
     error =
       assert_raises(ArgumentError) do
-        Rails.stub(:env, ActiveSupport::StringInquirer.new("production")) do
-          AuthenticationJwtConfiguration.send(
-            :assert_environment_audiences!,
-            %w(umaxica-api-client app.localhost),
-            "AUTH_JWT_CLIENT_AUDIENCES",
-          )
+        with_env("AUTH_JWT_CLIENT_AUDIENCES" => "umaxica-api-client,app.localhost") do
+          Rails.stub(:env, ActiveSupport::StringInquirer.new("production")) do
+            AuthenticationJwtConfiguration.audiences("client")
+          end
         end
       end
 
-    assert_match(/non-production audiences/, error.message)
+    assert_match(/non-production identifiers: app\.localhost/, error.message)
   end
 
   test "production preference audience configuration rejects localhost" do
     error =
       assert_raises(ArgumentError) do
         Rails.stub(:env, ActiveSupport::StringInquirer.new("production")) do
-          PreferenceJwtConfiguration.send(:assert_production_audiences!, %w(www.umaxica.app localhost))
+          PreferenceJwtConfiguration.stub(:audiences_from_boot_config, %w(www.umaxica.app localhost)) do
+            PreferenceJwtConfiguration.audiences
+          end
         end
       end
 
-    assert_match(/localhost in production/, error.message)
+    assert_match(/non-production identifiers: localhost/, error.message)
   end
 end

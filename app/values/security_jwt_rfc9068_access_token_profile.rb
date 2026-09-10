@@ -12,7 +12,18 @@ module SecurityJwtRfc9068AccessTokenProfile
   ALGORITHM = "ES384"
   TOKEN_TYPE = "at+jwt"
   REQUIRED_CLAIMS = %w(iss exp aud sub client_id iat jti).freeze
-  ACTOR_SCOPE_PREFIX = "domain:"
+  RESOURCE_TYPE_SCOPE_PREFIX = "domain:"
+  # Claims that earlier private token formats carried and that this profile
+  # must never accept again: `scp` (replaced by `scope`), payload `typ`
+  # (replaced by the JOSE header), and `act` (RFC 8693 actor semantics).
+  FORBIDDEN_CLAIMS = %w(scp typ act).freeze
+  # Fixed clock-skew allowance for exp/nbf/iat. A constant rather than an
+  # environment knob so no deployment can widen token validity by omission.
+  CLOCK_SKEW_LEEWAY_SECONDS = 30
+  # Identifiers that only make sense outside production: loopback hosts, the
+  # reserved `.test` TLD, and development/test issuer or audience names.
+  NON_PRODUCTION_IDENTIFIER_PATTERN =
+    /localhost|127\.0\.0\.1|::1|\.test\z|\b(?:development|test)\b/i
 
   module_function
 
@@ -48,11 +59,21 @@ module SecurityJwtRfc9068AccessTokenProfile
     return false unless audience_valid?(payload["aud"])
     return false unless scope_valid?(payload["scope"])
     return false if payload.key?("nbf") && !integer_time?(payload["nbf"])
-    return false if payload.key?("scp")
-    return false if payload.key?("typ")
-    return false if payload.key?("act")
+    return false if FORBIDDEN_CLAIMS.any? { |claim| payload.key?(claim) }
 
     true
+  end
+
+  # Raises when a production process is configured with an identifier that
+  # belongs to development or test, so another environment's tokens can never
+  # verify there.
+  def assert_production_identifiers!(values, label:, production: Rails.env.production?)
+    return unless production
+
+    forbidden = Array(values).select { |value| NON_PRODUCTION_IDENTIFIER_PATTERN.match?(value.to_s) }
+    return if forbidden.empty?
+
+    raise ArgumentError, "#{label} must not include non-production identifiers: #{forbidden.join(", ")}"
   end
 
   def parse_scopes(payload)
@@ -66,11 +87,11 @@ module SecurityJwtRfc9068AccessTokenProfile
     end
   end
 
-  def actor_type_from_scope(payload)
+  def resource_type_from_scope(payload)
     parse_scopes(payload).filter_map do |scope|
-      next unless scope.start_with?(ACTOR_SCOPE_PREFIX)
+      next unless scope.start_with?(RESOURCE_TYPE_SCOPE_PREFIX)
 
-      scope.delete_prefix(ACTOR_SCOPE_PREFIX).presence
+      scope.delete_prefix(RESOURCE_TYPE_SCOPE_PREFIX).presence
     end.uniq.then { |types| types.one? ? types.first : nil }
   end
 
@@ -88,11 +109,10 @@ module SecurityJwtRfc9068AccessTokenProfile
   end
   private_class_method :audience_valid?
 
+  # Both token families authorize through `scope`, so it is required and must
+  # be the RFC 8693 space-delimited string, never an array.
   def scope_valid?(scope)
-    return true if scope.nil?
-    return false unless scope.is_a?(String)
-
-    true
+    scope.is_a?(String) && scope.strip.present?
   end
   private_class_method :scope_valid?
 end

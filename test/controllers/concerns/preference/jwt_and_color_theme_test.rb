@@ -41,15 +41,15 @@ class PreferenceOptionMappingTest < ActiveSupport::TestCase
 end
 
 class PreferenceJwtConfigurationTest < ActiveSupport::TestCase
-  test "jwt configuration reads environment values for leeway and issuer" do
+  test "jwt configuration reads the issuer from the environment and uses the fixed leeway" do
     with_env(
       "PREFERENCE_JWT_ACTIVE_KID" => "kid-1",
-      "PREFERENCE_JWT_LEEWAY_SECONDS" => "45",
       "PREFERENCE_JWT_ISSUER" => "jit-test",
     ) do
       assert_equal JitSecurityJwtRegistry.issuer("preference").current_kid,
                    PreferenceJwtConfiguration.active_kid
-      assert_equal 45, PreferenceJwtConfiguration.leeway_seconds
+      assert_equal SecurityJwtRfc9068AccessTokenProfile::CLOCK_SKEW_LEEWAY_SECONDS,
+                   PreferenceJwtConfiguration.leeway_seconds
       assert_equal "jit-test", PreferenceJwtConfiguration.issuer
       expected = Rails.configuration.x.boot_config.fetch(:hosts).base_origins.map(&:host)
       expected.concat(%w(app.localhost org.localhost com.localhost localhost))

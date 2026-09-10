@@ -30,15 +30,16 @@ module JitSecurityJwtKeyring
     JitSecurityJwtRegistry.public_key_for(issuer_id, kid)
   end
 
-  def encode(payload, issuer_id: "auth", typ: nil)
+  # The JOSE `typ` is always supplied by the caller; it is never derived from
+  # payload claims, so no token family can type itself through its body.
+  def encode(payload, typ:, issuer_id: "auth")
+    raise ArgumentError, "JOSE typ is required" if typ.blank?
+
     kid = active_kid(issuer_id)
     pk = private_key_for(kid, issuer_id: issuer_id)
     raise JitSecurityJwtRegistry::ConfigurationError, "Missing private key for kid: #{kid}" if pk.nil?
 
-    header_typ = typ.presence || (payload.is_a?(Hash) ? payload["typ"] : nil)
-    header = { kid: kid, alg: "ES384" }
-    header[:typ] = header_typ if header_typ.present?
-    JWT.encode(payload, pk, "ES384", header)
+    JWT.encode(payload, pk, "ES384", { kid: kid, alg: "ES384", typ: typ })
   end
 
   def parse_header(token)

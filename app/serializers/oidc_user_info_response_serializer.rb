@@ -6,7 +6,7 @@ module OidcUserInfoResponseSerializer
 
   def build(resource:, payload:)
     resource_type =
-      AuthorizationTokenClaims.actor(payload).presence ||
+      AuthorizationTokenClaims.resource_type(payload).presence ||
       SecurityJwtOidcIdTokenCodec.resource_type_for_resource(resource)
     scopes = AuthorizationTokenClaims.scopes(payload)
     claims = {

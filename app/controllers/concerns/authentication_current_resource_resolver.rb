@@ -53,7 +53,7 @@ class AuthenticationCurrentResourceResolver
     end
     return failure(:dpop_verification_failed, payload: payload) unless dpop_valid?(payload)
 
-    unless AuthenticationToken.validate_actor_claim!(payload, @resource_type)
+    unless AuthenticationToken.resource_type_scope_matches?(payload, @resource_type)
       return failure(:actor_mismatch, payload: payload)
     end
 

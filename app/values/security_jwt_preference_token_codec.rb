@@ -42,7 +42,7 @@ class SecurityJwtPreferenceTokenCodec
     end
 
     def extract_public_id(payload)
-      payload&.dig("public_id").presence || payload&.dig("sub")
+      payload&.dig("public_id")
     end
 
     def extract_preference_type(payload)
@@ -160,7 +160,7 @@ class SecurityJwtPreferenceTokenCodec
       return nil unless SecurityJwtRfc9068AccessTokenProfile.claims_structurally_valid?(payload)
       return nil unless payload["scope"] == PREFERENCE_SCOPE
       return nil unless host_matches?(payload["host"], host)
-      return nil unless audience_matches?(payload["aud"], host)
+      return nil unless audience_matches?(payload["aud"], payload["host"])
       return nil unless payload["public_id"].is_a?(String) && payload["public_id"].present?
       return nil unless payload["preference_type"].is_a?(String) && payload["preference_type"].present?
       return nil unless payload["sub"] == payload["public_id"]
@@ -186,7 +186,7 @@ class SecurityJwtPreferenceTokenCodec
           "CLAIM_INVALID"
         elsif payload["host"].blank? || !host_matches?(payload["host"], host)
           "HOST_MISMATCH"
-        elsif !audience_matches?(payload["aud"], host)
+        elsif !audience_matches?(payload["aud"], payload["host"])
           "AUD_MISMATCH"
         else
           "OTHER"
@@ -231,7 +231,7 @@ class SecurityJwtPreferenceTokenCodec
       payload, = JWT.decode(token, nil, false)
       return {} unless payload.is_a?(Hash)
 
-      payload.slice("iss", "aud", "typ", "jti")
+      payload.slice("iss", "aud", "jti")
     rescue JWT::DecodeError
       {}
     end
@@ -256,23 +256,23 @@ class SecurityJwtPreferenceTokenCodec
       )
     end
 
+    # The host claim must be exactly the scope this request host would be
+    # issued, and must share the request host's registrable domain. Either
+    # check alone is too loose: the scope mapping is per-TLD, and the domain
+    # check alone would accept any sibling host's token.
     def host_matches?(host_claim, host)
-      return false if host_claim.blank?
+      return false unless host_claim.is_a?(String) && host_claim.present?
 
-      host == host_claim ||
-        host.end_with?(".#{host_claim}") ||
-        host_family(host_claim) == host_family(host)
+      host_claim == jwt_configuration.host_scope_for(host) &&
+        registrable_domain(host_claim) == registrable_domain(host)
     end
 
-    def audience_matches?(aud_claim, host)
-      normalize_audiences(aud_claim).any? do |aud|
-        host == aud ||
-          host.end_with?(".#{aud}") ||
-          host_family(aud) == host_family(host)
-      end
+    # `aud` must name the host scope itself, not merely a host in the same family.
+    def audience_matches?(aud_claim, host_claim)
+      normalize_audiences(aud_claim).include?(host_claim)
     end
 
-    def host_family(host)
+    def registrable_domain(host)
       parts = host.to_s.split(".")
       return host.to_s if parts.length < 3
 

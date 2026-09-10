@@ -171,11 +171,8 @@ class BranchCoverageBatch27ValuesLibEasyArmsTest < ActiveSupport::TestCase
     assert_not codec.send(:valid_header?, { "typ" => typ, "alg" => alg, "kid" => "k", "crit" => [] })
   end
 
-  test "SecurityJwtAuthAccessTokenCodec act and surface blank arms" do
-    codec = SecurityJwtAuthAccessTokenCodec
-
-    assert_nil codec.send(:extract_act, {})
-    assert_nil codec.send(:inferred_surface_jwt_issuer_id, host: "", resource_type: "app")
+  test "SecurityJwtAuthAccessTokenCodec resource type blank arm" do
+    assert_nil SecurityJwtAuthAccessTokenCodec.extract_resource_type({})
   end
 
   test "SecurityJwtPreferenceTokenCodec validate and diagnostic arms" do

@@ -12,10 +12,12 @@ module AuthenticationJwtConfiguration
   VALID_RESOURCE_TYPES = %w(client operator visitor).freeze
 
   def self.leeway_seconds
-    Integer(ENV["AUTH_JWT_LEEWAY_SECONDS"].presence || "30", 10)
+    SecurityJwtRfc9068AccessTokenProfile::CLOCK_SKEW_LEEWAY_SECONDS
   end
 
-  def self.issuer(_resource_type = nil)
+  # `iss` names the authorization server, not the token subtype, so every
+  # resource type shares one issuer per environment.
+  def self.issuer
     ENV.fetch("AUTH_JWT_ISSUER")
   end
 
@@ -39,10 +41,32 @@ module AuthenticationJwtConfiguration
 
     env_key = "AUTH_JWT_#{normalized_resource_type.upcase}_AUDIENCES"
     audiences = parse_audiences(ENV.fetch(env_key), env_key:)
-    assert_environment_audiences!(audiences, env_key)
+    SecurityJwtRfc9068AccessTokenProfile.assert_production_identifiers!(audiences, label: env_key)
     assert_distinct_audiences!(normalized_resource_type, audiences)
     audiences
   end
+
+  # Boot-time check so a production process with an incomplete or
+  # non-production auth token configuration refuses to start instead of
+  # failing on the first request that mints or verifies a token.
+  def self.validate!
+    SecurityJwtRfc9068AccessTokenProfile.assert_production_identifiers!([issuer], label: "AUTH_JWT_ISSUER")
+    VALID_RESOURCE_TYPES.each do |resource_type|
+      audiences(resource_type)
+      client_id(resource_type)
+    end
+    true
+  end
+
+  def self.private_key
+    JitSecurityJwtKeyring.private_key_for_active
+  end
+
+  def self.public_key
+    JitSecurityJwtKeyring.public_key_for_active
+  end
+
+  public_class_method :leeway_seconds, :issuer, :client_id, :audiences, :validate!, :private_key, :public_key
 
   def self.parse_audiences(raw, env_key:)
     values = raw.split(",").map(&:strip)
@@ -53,16 +77,6 @@ module AuthenticationJwtConfiguration
     values
   end
   private_class_method :parse_audiences
-
-  def self.assert_environment_audiences!(audiences, env_key)
-    return unless Rails.env.production?
-
-    forbidden = audiences.grep(/localhost|127\.0\.0\.1|::1|\.test\z/i)
-    return if forbidden.empty?
-
-    raise ArgumentError, "#{env_key} must not include non-production audiences: #{forbidden.join(", ")}"
-  end
-  private_class_method :assert_environment_audiences!
 
   def self.assert_distinct_audiences!(resource_type, audiences)
     VALID_RESOURCE_TYPES.excluding(resource_type).each do |other_type|
@@ -75,18 +89,6 @@ module AuthenticationJwtConfiguration
     end
   end
   private_class_method :assert_distinct_audiences!
-
-  def self.token_type(_resource_type = nil)
-    SecurityJwtRfc9068AccessTokenProfile::TOKEN_TYPE
-  end
-
-  def self.private_key
-    JitSecurityJwtKeyring.private_key_for_active
-  end
-
-  def self.public_key
-    JitSecurityJwtKeyring.public_key_for_active
-  end
 
   def self.normalize_resource_type(resource_type)
     return nil if resource_type.blank?

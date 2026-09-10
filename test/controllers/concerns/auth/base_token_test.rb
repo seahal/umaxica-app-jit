@@ -37,72 +37,72 @@ module Auth
       assert_equal 123, AuthenticationToken.extract_subject(payload)
     end
 
-    test "Token.extract_type returns actor type from domain scope" do
+    test "Token.extract_resource_type returns actor type from domain scope" do
       payload = { "scope" => "authenticated domain:client read:self" }
 
-      assert_equal "client", AuthenticationToken.extract_type(payload)
+      assert_equal "client", AuthenticationToken.extract_resource_type(payload)
     end
 
-    test "Token.extract_act returns actor type from domain scope" do
+    test "Token.extract_resource_type returns actor type from domain scope" do
       payload = { "scope" => "authenticated domain:operator read:org" }
 
-      assert_equal "operator", AuthenticationToken.extract_act(payload)
+      assert_equal "operator", AuthenticationToken.extract_resource_type(payload)
     end
 
-    test "Token.extract_act returns nil for nil payload" do
-      assert_nil AuthenticationToken.extract_act(nil)
+    test "Token.extract_resource_type returns nil for nil payload" do
+      assert_nil AuthenticationToken.extract_resource_type(nil)
     end
 
-    test "Token.extract_act returns nil for missing claim" do
+    test "Token.extract_resource_type returns nil for missing claim" do
       payload = { "sub" => "123" }
 
-      assert_nil AuthenticationToken.extract_act(payload)
+      assert_nil AuthenticationToken.extract_resource_type(payload)
     end
 
-    test "Token.validate_actor_claim! returns true for matching user" do
+    test "Token.resource_type_scope_matches? returns true for matching user" do
       payload = { "scope" => "authenticated domain:client read:self" }
 
-      assert AuthenticationToken.validate_actor_claim!(payload, "client")
+      assert AuthenticationToken.resource_type_scope_matches?(payload, "client")
     end
 
-    test "Token.validate_actor_claim! returns true for matching operator" do
+    test "Token.resource_type_scope_matches? returns true for matching operator" do
       payload = { "scope" => "authenticated domain:operator read:org" }
 
-      assert AuthenticationToken.validate_actor_claim!(payload, "operator")
+      assert AuthenticationToken.resource_type_scope_matches?(payload, "operator")
     end
 
-    test "Token.validate_actor_claim! returns false for mismatched actor" do
+    test "Token.resource_type_scope_matches? returns false for mismatched actor" do
       payload = { "scope" => "authenticated domain:client read:self" }
 
-      assert_not AuthenticationToken.validate_actor_claim!(payload, "operator")
+      assert_not AuthenticationToken.resource_type_scope_matches?(payload, "operator")
     end
 
-    test "Token.validate_actor_claim! returns false for nil payload" do
-      assert_not AuthenticationToken.validate_actor_claim!(nil, "client")
+    test "Token.resource_type_scope_matches? returns false for nil payload" do
+      assert_not AuthenticationToken.resource_type_scope_matches?(nil, "client")
     end
 
-    test "Token.validate_actor_claim! returns false for missing claim" do
+    test "Token.resource_type_scope_matches? returns false for missing claim" do
       payload = { "sub" => "123" }
 
-      assert_not AuthenticationToken.validate_actor_claim!(payload, "client")
+      assert_not AuthenticationToken.resource_type_scope_matches?(payload, "client")
     end
 
-    test "Token.validate_actor_claim! returns false for blank claim" do
+    test "Token.resource_type_scope_matches? returns false for blank claim" do
       payload = { "scope" => "" }
 
-      assert_not AuthenticationToken.validate_actor_claim!(payload, "client")
+      assert_not AuthenticationToken.resource_type_scope_matches?(payload, "client")
     end
 
-    test "Token.validate_actor_claim! returns false for unrecognized value" do
+    test "Token.resource_type_scope_matches? returns false for unrecognized value" do
       payload = { "scope" => "authenticated domain:staff" }
 
-      assert_not AuthenticationToken.validate_actor_claim!(payload, "operator")
+      assert_not AuthenticationToken.resource_type_scope_matches?(payload, "operator")
     end
 
-    test "Token.validate_actor_claim! returns false for nil value" do
+    test "Token.resource_type_scope_matches? returns false for nil value" do
       payload = { "scope" => nil }
 
-      assert_not AuthenticationToken.validate_actor_claim!(payload, "client")
+      assert_not AuthenticationToken.resource_type_scope_matches?(payload, "client")
     end
 
     test "Token.extract_session_id returns sid from payload" do
@@ -137,7 +137,9 @@ module Auth
         jwt_issuer_id: "surface:SIGN_APP",
       )
 
-      assert AuthenticationToken.decode(token, host: "log.umaxica.app", resource_type: "client")
+      # The keyring is never inferred from the host: without the explicit
+      # surface keyring the verifier uses the default auth keyring and fails closed.
+      assert_nil AuthenticationToken.decode(token, host: "log.umaxica.app", resource_type: "client")
 
       payload = AuthenticationToken.decode(
         token,
