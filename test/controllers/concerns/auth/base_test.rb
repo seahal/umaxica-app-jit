@@ -243,8 +243,8 @@ module Auth
       assert_nil AuthenticationToken.extract_subject(nil)
     end
 
-    test "VALID_RESOURCE_TYPES constant is defined" do
-      assert_equal %w(client operator visitor), AuthenticationBase::VALID_RESOURCE_TYPES
+    test "VALID_ACTOR_TYPES constant is defined" do
+      assert_equal %w(client operator visitor), AuthenticationBase::VALID_ACTOR_TYPES
     end
 
     test "Token.extract_resource_type returns nil for nil payload" do
@@ -493,10 +493,6 @@ module Auth
       assert_equal({ plain: I18n.t("errors.messages.not_authorized"), status: :bad_request }, harness.rendered)
     end
 
-    test "Token.extract_resource_type returns nil for nil payload" do
-      assert_nil AuthenticationToken.extract_resource_type(nil)
-    end
-
     test "Token.extract_session_id returns nil for nil payload" do
       assert_nil AuthenticationToken.extract_session_id(nil)
     end
@@ -640,12 +636,6 @@ module Auth
       ) do
         assert_raises(ArgumentError) { AuthenticationJwtConfiguration.audiences("client") }
       end
-    end
-
-    test "JwtConfiguration.token_type returns correct format" do
-      assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("client")
-      assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("operator")
-      assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("invalid")
     end
 
     private

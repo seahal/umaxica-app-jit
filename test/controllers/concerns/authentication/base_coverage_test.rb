@@ -1274,6 +1274,7 @@ class AuthenticationBaseCoverageTest < ActionDispatch::IntegrationTest
       result[:access_token],
       host: "id.app.localhost",
       resource_type: "client",
+      jwt_issuer_id: @controller.send(:auth_jwt_issuer_id),
     )
     expected_jkt = JitSecurityJwtThumbprintCalculator.calculate(jwk)
     token = ClientToken.order(created_at: :desc).first

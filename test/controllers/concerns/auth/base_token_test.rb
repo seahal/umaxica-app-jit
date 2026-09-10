@@ -37,13 +37,7 @@ module Auth
       assert_equal 123, AuthenticationToken.extract_subject(payload)
     end
 
-    test "Token.extract_resource_type returns actor type from domain scope" do
-      payload = { "scope" => "authenticated domain:client read:self" }
-
-      assert_equal "client", AuthenticationToken.extract_resource_type(payload)
-    end
-
-    test "Token.extract_resource_type returns actor type from domain scope" do
+    test "Token.extract_resource_type returns the resource type from the domain scope" do
       payload = { "scope" => "authenticated domain:operator read:org" }
 
       assert_equal "operator", AuthenticationToken.extract_resource_type(payload)

@@ -146,8 +146,9 @@ class PreferenceTokenTest < ActiveSupport::TestCase
     assert_nil PreferenceToken.decode(token, host: "log.umaxica.com")
   end
 
-  test "audience_matches handles allowed and rejected audiences" do
-    assert PreferenceToken.send(:audience_matches?, ["app.localhost"], "id.app.localhost")
+  test "audience_matches requires the host scope itself in aud" do
+    assert PreferenceToken.send(:audience_matches?, ["app.localhost"], "app.localhost")
+    assert_not PreferenceToken.send(:audience_matches?, ["app.localhost"], "id.app.localhost")
     assert_not PreferenceToken.send(:audience_matches?, ["app.localhost"], "evil.localhost")
   end
 

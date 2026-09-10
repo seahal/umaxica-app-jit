@@ -129,4 +129,14 @@ class SecurityJwtRfc9068AccessTokenProfileTest < ActiveSupport::TestCase
 
     assert_match(/non-production identifiers: localhost/, error.message)
   end
+
+  private
+
+  def with_env(vars)
+    originals = vars.keys.index_with { |key| ENV.fetch(key, nil) }
+    vars.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }
+    yield
+  ensure
+    originals.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }
+  end
 end

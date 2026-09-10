@@ -181,7 +181,6 @@ class SecurityJwtAuthAccessTokenCodecCoverageTest < ActiveSupport::TestCase
     assert_not SecurityJwtAuthAccessTokenCodec.send(
       :valid_header?,
       { "alg" => "eS384", "typ" => "at+jwt", "kid" => "kid" },
-      "client",
     )
   end
 
@@ -189,7 +188,6 @@ class SecurityJwtAuthAccessTokenCodecCoverageTest < ActiveSupport::TestCase
     assert_not SecurityJwtAuthAccessTokenCodec.send(
       :valid_header?,
       { "alg" => "none", "typ" => "at+jwt", "kid" => "kid" },
-      "client",
     )
   end
 end

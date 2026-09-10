@@ -41,7 +41,7 @@ class SecurityJwtAccessTokenNegativeCasesTest < ActiveSupport::TestCase
       "jti missing" => ->(p) { p.except("jti") },
       "iss missing" => ->(p) { p.except("iss") },
       "aud empty" => ->(p) { p.merge("aud" => []) },
-      "iat as string" => ->(p) { p.merge("iat" => p["iat"].to_s) },
+      "iat as float" => ->(p) { p.merge("iat" => p["iat"] + 0.5) },
       "sub numeric" => ->(p) { p.merge("sub" => clients(:one).id) },
       "scope as array" => ->(p) { p.merge("scope" => p["scope"].split) },
       "scope missing" => ->(p) { p.except("scope") },
@@ -222,5 +222,13 @@ class SecurityJwtAccessTokenNegativeCasesTest < ActiveSupport::TestCase
 
   def with_production(&)
     Rails.stub(:env, ActiveSupport::StringInquirer.new("production"), &)
+  end
+
+  def with_env(vars)
+    originals = vars.keys.index_with { |key| ENV.fetch(key, nil) }
+    vars.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }
+    yield
+  ensure
+    originals.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }
   end
 end

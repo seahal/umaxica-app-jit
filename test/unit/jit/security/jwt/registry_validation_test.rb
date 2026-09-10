@@ -123,8 +123,7 @@ module Jit
         # A keyring without audiences must fail validation rather than sign tokens
         # for a guessed localhost audience.
         test "a configured keyring with no audiences is rejected" do
-          record = build_record(current_kid: "auth-2026", keys: { "auth-2026" => build_key(kid: "auth-2026") })
-          record.define_singleton_method(:audiences) { [] }
+          record = build_record(current_kid: "auth-2026").with(audiences: [])
 
           error =
             assert_raises(JitSecurityJwtRegistry::ConfigurationError) do

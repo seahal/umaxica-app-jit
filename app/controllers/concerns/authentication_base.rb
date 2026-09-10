@@ -1755,7 +1755,7 @@ module AuthenticationBase
       ip: request&.remote_ip,
       user_agent: request&.user_agent,
       request_id: request&.request_id,
-      meta: { expected: resource_type, actual: act },
+      meta: { expected: resource_type, actual: actual_resource_type },
     )
   end
 

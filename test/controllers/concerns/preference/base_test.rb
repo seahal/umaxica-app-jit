@@ -711,18 +711,20 @@ module Preference
       end
     end
 
-    test "host_matches? handles direct and subdomain matches" do
-      # Since host_matches? is in PreferenceToken (which is a class)
-      # Wait, I see host_matches? in PreferenceToken class << self
-      assert PreferenceToken.send(:host_matches?, "example.com", "example.com")
-      assert PreferenceToken.send(:host_matches?, "example.com", "sub.example.com")
-      assert_not PreferenceToken.send(:host_matches?, "example.com", "other.com")
-      assert_not PreferenceToken.send(:host_matches?, nil, "example.com")
+    test "host_matches? requires the exact host scope and the same registrable domain" do
+      PreferenceJwtConfiguration.stub(:host_scope_for, "example.com") do
+        assert PreferenceToken.send(:host_matches?, "example.com", "example.com")
+        assert PreferenceToken.send(:host_matches?, "example.com", "sub.example.com")
+        assert_not PreferenceToken.send(:host_matches?, "example.com", "other.com")
+        assert_not PreferenceToken.send(:host_matches?, "sub.example.com", "sub.example.com")
+        assert_not PreferenceToken.send(:host_matches?, nil, "example.com")
+        assert_not PreferenceToken.send(:host_matches?, 42, "example.com")
+      end
     end
 
-    test "audience_matches? handles multiple audiences" do
+    test "audience_matches? requires exact membership of the host scope" do
       assert PreferenceToken.send(:audience_matches?, ["a.com", "b.com"], "a.com")
-      assert PreferenceToken.send(:audience_matches?, ["a.com", "b.com"], "sub.b.com")
+      assert_not PreferenceToken.send(:audience_matches?, ["a.com", "b.com"], "sub.b.com")
       assert_not PreferenceToken.send(:audience_matches?, ["a.com", "b.com"], "c.com")
     end
 

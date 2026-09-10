@@ -59,12 +59,41 @@ Required claims: `iss`, `exp`, `aud`, `sub`, `client_id`, `iat`, `jti`.
 Token families are distinguished by issuer, audience, client identity, and scope. Payload `typ` is
 not reintroduced.
 
+### Keyring selection
+
+The verification keyring is chosen by the caller (`jwt_issuer_id:`), never inferred from the
+request host. When no keyring is named, the `auth` keyring is used; a token signed by any other
+keyring then fails as an unknown kid.
+
+### Validation
+
+Verifiers require `typ=at+jwt`, `alg=ES384`, a `kid` that resolves in the expected keyring, a valid
+signature, the exact issuer, an expected audience, `exp`, `iat`, and `nbf` when present. `sub`,
+`client_id`, `iss`, and `jti` must be non-empty strings; `iat`, `exp`, and `nbf` must be integers;
+`scope` is required and must be a non-empty string. `scp`, `act`, and payload `typ` are rejected.
+Malformed claims are rejected, never coerced. The clock-skew allowance is a fixed 30 seconds
+(`SecurityJwtRfc9068AccessTokenProfile::CLOCK_SKEW_LEEWAY_SECONDS`), not an environment setting.
+
+Preference tokens additionally require `scope=preference`, `sub == public_id`, a `host` claim equal
+to the host scope computed for the request host and sharing its registrable domain, and an `aud`
+that contains that host scope.
+
 ### Environment isolation
 
-Development, test, and production use non-overlapping issuer, key, and audience configuration.
-Production configuration fails closed: localhost/test audiences are rejected, development/test
-kids are not publishable outside local Rails environments, and a production verifier does not
-accept another environment's issuer.
+Development, test, and production use non-overlapping issuer and key namespaces:
+
+- Local issuers default to `urn:umaxica:<rails-env>:auth` and `urn:umaxica:<rails-env>:preference`,
+  and local kids are prefixed with the Rails environment, so a development token never verifies
+  under test and vice versa. Local audience names (`umaxica-api-*`) name resource servers and may
+  be shared between development and test; isolation there rests on issuer and key.
+- Production must set every issuer, audience, and client identifier explicitly (one-argument
+  `ENV.fetch`). `AuthenticationJwtConfiguration.validate!` and `PreferenceJwtConfiguration.validate!`
+  run at boot and refuse to start when an issuer or audience contains a development/test marker,
+  a loopback host, or the reserved `.test` TLD.
+- Development/test kids are not publishable outside local Rails environments.
+- No audience list falls back to defaults: auth keyring audiences are the union of the per-resource
+  `AUTH_JWT_*_AUDIENCES`, preference audiences come only from the boot base hosts, and the jump
+  gateway audience is required outside local environments.
 
 ## Consequences
 
