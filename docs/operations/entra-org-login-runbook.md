@@ -16,8 +16,11 @@ It does not contain credentials or tenant identifiers.
    registered redirect target.
 3. Create a client secret and store it in Rails credentials as `OMNI_AUTH_ENTRA_ORG_CLIENT_SECRET`.
    Store the directory (tenant) id as `OMNI_AUTH_ENTRA_ORG_TENANT_ID` and the application (client)
-   id as `OMNI_AUTH_ENTRA_ORG_CLIENT_ID`. All three are read at boot; a missing one fails the boot
-   naming the key. No Entra secret is stored in the database.
+   id as `OMNI_AUTH_ENTRA_ORG_CLIENT_ID`. All three are required at boot outside development and
+   test; a missing one fails the boot naming the key, and the tenant and client ids must be UUIDs
+   (so `common`, `organizations` and `consumers` are rejected). Boot checks presence and shape only
+   and makes no call to Microsoft; the preflight below does the semantic checks. No credential value
+   is printed, and no Entra secret is stored in the database.
 4. Add the optional `acct` claim to ID tokens. The Rails verifier requires `acct = 0` and rejects
    guests or tokens without this claim.
 5. Review API permissions. The login flow requests `openid profile` only and does not require

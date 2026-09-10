@@ -56,6 +56,28 @@ module Auth
           },
         )
 
+        # The failure endpoint is unauthenticated and reachable without a
+        # ceremony, and every request emits a
+        # sign.org.authentication.entra.callback_failure event. Its own counter
+        # (separate name and scope from the callback limit above) keeps flooding
+        # the audit trail from being free, without letting failure traffic
+        # consume the callback budget or the reverse -- an attacker must not be
+        # able to lock a staff member out of a legitimate callback by hammering
+        # /social/entra/failure. 20/minute leaves normal ceremony failures,
+        # including retries, well inside the budget.
+        rate_limit(
+          to: 20,
+          within: 1.minute,
+          by: -> { request.remote_ip },
+          scope: "auth_org_sign_in_entra_failure",
+          name: "omniauth_failure_ip_burst",
+          store: rate_limit_store,
+          only: :failure,
+          with: -> {
+            render_rate_limited(retry_after: 60)
+          },
+        )
+
         def omniauth
           auth = request.env["omniauth.auth"]
           return render_entra_error(:invalid_callback) unless auth.is_a?(OmniAuth::AuthHash) && auth.provider == "entra"
@@ -99,11 +121,11 @@ module Auth
         end
 
         # GET /social/entra/failure
-        # `message` is an unauthenticated, unthrottled request parameter (the
-        # rate_limit above is scoped to :omniauth), so it is classified through
-        # the same allowlist used for rendering before it reaches the log. Only
-        # the classification is retained; the raw parameter is never logged
-        # (adr/application-logging-boundary.md).
+        # `message` is an unauthenticated request parameter, so it is classified
+        # through the same allowlist used for rendering before it reaches the
+        # log. Only the classification is retained; the raw parameter is never
+        # logged (adr/application-logging-boundary.md). The action carries its
+        # own IP rate limit (above), independent of the callback limit.
         def failure
           reason = entra_failure_reason(params[:message].presence || "unknown_error")
           log_entra_failure("omniauth_failure", message: reason)
