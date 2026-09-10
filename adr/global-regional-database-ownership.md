@@ -126,7 +126,7 @@ cross-repository foreign key, consistent with `adr/cross-db-reference-policy.md`
 `publishing` is **Global-only** and the sole content authority for the twelve info / docs / news /
 help × app / com / org families (`adr/publishing-db-content-authority.md`,
 `adr/publishing-persistence-polymorphism-prohibition.md`). Regional consumes content through the
-Global read API (`GET /api/v0/entries`, `GET /api/v0/entries/:slug`) and never reads the
+Global read API (`GET /api/v0/entries`, `GET /api/v0/entries/:public_id`) and never reads the
 `publishing` database directly.
 
 ### 7. `chronicle`, `occurrence`, `primary`, `queue` exist independently in both repositories

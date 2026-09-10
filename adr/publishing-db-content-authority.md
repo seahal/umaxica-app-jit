@@ -51,8 +51,11 @@ Keep these public URLs:
 
 ```text
 GET /api/v0/entries
-GET /api/v0/entries/:slug
+GET /api/v0/entries/:public_id
 ```
+
+Resource identity is the opaque `public_id`. `slug` is a presentation field on the serialized
+entry, not the path parameter. Do not add slug lookup, `by-slug` routes, or a slug query filter.
 
 Do not rename them to posts, documents, or publications. Do not expose audience, surface, placement,
 or region as query parameters. `Publishing::EditionResolver` derives them from host and route

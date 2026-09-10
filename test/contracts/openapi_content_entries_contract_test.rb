@@ -153,6 +153,29 @@ class OpenapiContentEntriesContractTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "a publication outside its window is not readable or listed" do
+    prepare(service: "docs", surface: "app")
+
+    scheduled = publishing_draft(audience: "app", surface: "docs", slug: "scheduled-entry", title: "Scheduled Entry")
+    publishing_publish(entry: scheduled, published_at: 1.hour.from_now)
+    get "/api/v0/entries/#{scheduled.public_id}?locale=ja", headers: json_headers(service: "docs", surface: "app")
+
+    assert_response :not_found
+
+    expired = publishing_draft(audience: "app", surface: "docs", slug: "expired-entry", title: "Expired Entry")
+    publishing_publish(entry: expired, published_at: 2.hours.ago, effective_until: 1.hour.ago)
+    get "/api/v0/entries/#{expired.public_id}?locale=ja", headers: json_headers(service: "docs", surface: "app")
+
+    assert_response :not_found
+
+    get "/api/v0/entries?locale=ja", headers: json_headers(service: "docs", surface: "app")
+
+    assert_response :success
+    slugs = response.parsed_body.fetch("data").map { |entry| entry.fetch("slug") }
+
+    assert_empty slugs & %w(scheduled-entry expired-entry)
+  end
+
   test "a draft or archived entry is not readable by a known public_id" do
     prepare(service: "docs", surface: "app")
 

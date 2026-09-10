@@ -51,6 +51,17 @@ class PublishingPublishedEntriesQueryTest < ActiveSupport::TestCase
     assert_not_includes publishing_query(audience: "app", surface: "info").call, entry
   end
 
+  test "excludes a publication whose window has not opened yet" do
+    entry = publishing_draft(audience: "app", surface: "info", slug: "scheduled-one", title: "Scheduled")
+    version = Publishing::PromoteRevisionOperation.call(revision: entry.current_revision)
+    entry.publications.create!(entry_version: version, effective_from: 1.hour.from_now)
+
+    query = publishing_query(audience: "app", surface: "info")
+
+    assert_not_includes query.call, entry
+    assert_nil query.find_published(public_id: entry.public_id)
+  end
+
   test "a terminated publication stops being served once its window closes" do
     entry = publishing_draft(audience: "app", surface: "info", slug: "terminated-one", title: "Terminated")
     version = Publishing::PromoteRevisionOperation.call(revision: entry.current_revision)

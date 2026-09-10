@@ -71,7 +71,7 @@ GET /health/startup
 GET /api/v0/health.json   # application/json machine health
 GET /api/v0/revision.json
 GET /api/v0/entries
-GET /api/v0/entries/:slug
+GET /api/v0/entries/:public_id
 ```
 
 The same route shape applies independently under each docs, help, and news app/com/org host.

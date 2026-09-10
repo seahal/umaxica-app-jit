@@ -25,7 +25,7 @@ this phase.
 | Concern              | Current truth                                                                                                                                                                            |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Persistence          | Central `publishing` database via `PublishingRecord`. Twelve interfaces, one database. Persistence polymorphism is prohibited; see `docs/architecture/publishing-persistence.md`.        |
-| Public read API      | `GET /api/v0/entries` and `GET /api/v0/entries/:slug` on each of the twelve hosts                                                                                                        |
+| Public read API      | `GET /api/v0/entries` and `GET /api/v0/entries/:public_id` on each of the twelve hosts. `public_id` is the resource identity; `slug` is a payload field, not a lookup key.               |
 | Rails HTML           | Thin root and health only; no article index/detail, sitemap, or RSS                                                                                                                      |
 | Edge CMS consumption | **Not implemented.** Rails CMS API exists; Edge does not yet fetch `/api/v0/entries` for list/detail pages                                                                               |
 | Region               | Unresolved product semantics. Not a persistence identity. Each family class declares `REGION_CODE` (`nil` for info, `"jp"` for docs/news/help). Locale stays a column inside the family. |
