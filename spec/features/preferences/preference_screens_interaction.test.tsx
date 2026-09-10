@@ -191,12 +191,27 @@ describe("PreferenceSelect interaction", () => {
     await act(async () => {
       present(options, "the recorded visit options").onSuccess?.({
         component: "base/app/preference/option",
-        props: { errors: {} },
+        props: {
+          errors: {},
+          chrome: {
+            family_label: null,
+            surface: "app",
+            brand: { name: "Umaxica", href: "/" },
+            banner: null,
+            restricted_mode: null,
+            footer_navigation: null,
+            cookie_controls: null,
+            theme_controls: null,
+            copyright: "",
+          },
+        },
         url: "/preference/theme/edit?ri=jp",
         version: "",
         clearHistory: false,
         encryptHistory: false,
-        rememberedState: null,
+        rescuedProps: [],
+        flash: {},
+        rememberedState: {},
       });
     });
 

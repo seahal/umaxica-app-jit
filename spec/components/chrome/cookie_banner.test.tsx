@@ -360,7 +360,7 @@ describe("CookieBanner actions", () => {
   test("the settings control is a document visit to the cookie preference screen", async () => {
     await mount();
 
-    const link = [...(container?.querySelectorAll("a") ?? [])].find(
+    const link = [...container!.querySelectorAll("a")].find(
       (element) => element.textContent === controls.open_settings,
     );
 

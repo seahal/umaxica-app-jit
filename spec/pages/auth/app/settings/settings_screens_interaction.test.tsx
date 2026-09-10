@@ -10,7 +10,7 @@ import { present } from "../../../../support/present";
 const patch = vi.fn();
 const post = vi.fn();
 const deleteRequest = vi.fn();
-const transform = vi.fn();
+const transform = vi.fn<(callback: (data: Record<string, string>) => unknown) => void>();
 const setData = vi.fn();
 
 vi.mock("@inertiajs/react", () => ({
@@ -228,9 +228,7 @@ describe("passkey settings interaction", () => {
     submitForm();
 
     expect(transform).toHaveBeenCalled();
-    const passkeyTransformer = transform.mock.calls[0]?.[0] as (data: {
-      description: string;
-    }) => unknown;
+    const passkeyTransformer = present(transform.mock.calls[0]?.[0], "a transform callback");
     expect(passkeyTransformer({ description: "Renamed" })).toEqual({
       client_passkey: { description: "Renamed" },
       "cf-turnstile-response": "",
@@ -298,10 +296,7 @@ describe("totp settings interaction", () => {
     submitForm();
 
     expect(transform).toHaveBeenCalled();
-    const totpNewTransformer = transform.mock.calls[0]?.[0] as (data: {
-      title: string;
-      first_token: string;
-    }) => unknown;
+    const totpNewTransformer = present(transform.mock.calls[0]?.[0], "a transform callback");
     expect(totpNewTransformer({ title: "iPhone", first_token: "123456" })).toEqual({
       user_totp_credential: { title: "iPhone", first_token: "123456" },
       "cf-turnstile-response": "",
@@ -344,7 +339,7 @@ describe("totp settings interaction", () => {
     submitForm();
 
     expect(transform).toHaveBeenCalled();
-    const totpEditTransformer = transform.mock.calls[0]?.[0] as (data: { title: string }) => unknown;
+    const totpEditTransformer = present(transform.mock.calls[0]?.[0], "a transform callback");
     expect(totpEditTransformer({ title: "iPad" })).toEqual({
       user_totp_credential: { title: "iPad" },
     });

@@ -10,7 +10,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import ThemeController from "@/controllers/theme_controller";
 
-import { type FetchMock, jsonResponse as httpJson, requestWithMethod } from "../support/http";
+import {
+  type FetchMock,
+  jsonResponse as httpJson,
+  requestWithMethod,
+  stubFetchAnswering,
+} from "../support/http";
 import { mountController } from "../support/stimulus";
 
 const jsonResponse = (body: unknown, ok = true) => httpJson(body, ok ? 200 : 500);
@@ -163,14 +168,10 @@ describe("ThemeController", () => {
     });
 
     it("leaves the rendered theme in place when the server answers no theme", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn<typeof fetch>((_input, init) =>
-          Promise.resolve(
-            init?.method === "PATCH" ? jsonResponse({}) : jsonResponse({ theme: "li" }),
-          ),
-        ),
-      );
+      stubFetchAnswering({
+        GET: () => jsonResponse({ theme: "li" }),
+        PATCH: () => jsonResponse({}),
+      });
       const { controller, element } = await mountRadioGroup();
       await controller.syncFromServer();
 
@@ -181,14 +182,10 @@ describe("ThemeController", () => {
     });
 
     it("leaves the rendered theme in place when the request fails", async () => {
-      vi.stubGlobal(
-        "fetch",
-        vi.fn<typeof fetch>((_input, init) =>
-          init?.method === "PATCH"
-            ? Promise.reject(new Error("offline"))
-            : Promise.resolve(jsonResponse({ theme: "dr" })),
-        ),
-      );
+      stubFetchAnswering({
+        GET: () => jsonResponse({ theme: "dr" }),
+        PATCH: () => Promise.reject(new Error("offline")),
+      });
       const { controller, element } = await mountRadioGroup();
       await controller.syncFromServer();
 

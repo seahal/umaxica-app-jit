@@ -6,7 +6,9 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import ThemeControls from "@/components/chrome/ThemeControls";
 import type { ChromeThemeControls } from "@/types/inertia";
 
-import { jsonResponse, stubFetchByMethod } from "../../support/http";
+import { readString } from "@/lib/payload";
+
+import { jsonBody, jsonResponse, stubFetchAnswering, stubFetchByMethod } from "../../support/http";
 
 // The React port of the `theme` Stimulus controller is verified against the same behaviour: the
 // stored preference read on mount, a choice persisted then applied from the server's answer, and
@@ -304,15 +306,11 @@ describe("ThemeControls selection", () => {
   });
 
   test("follows the system setting while system is the selected theme", async () => {
-    const fetchMock = vi.fn().mockImplementation((_url: string, init?: RequestInit) => {
-      if (init?.method !== "PATCH") {
-        return Promise.resolve({ ok: false, status: 404 });
-      }
-      const body = JSON.parse(String(init.body)) as { theme: string };
-      const stored = body.theme === "dark" ? "dr" : "sy";
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ theme: stored }) });
+    const storedCode: Record<string, string> = { dark: "dr", system: "sy" };
+    stubFetchAnswering({
+      GET: () => jsonResponse({}, 404),
+      PATCH: (init) => jsonResponse({ theme: storedCode[String(readString(jsonBody(init), "theme"))] }),
     });
-    vi.stubGlobal("fetch", fetchMock);
 
     await mount();
     await choose("dark");
