@@ -12,7 +12,8 @@ here. They are repository decisions, not standards, and are recorded as ADRs:
 
 - `adr/api-error-format-problem-details.md` — adoption of RFC 9457 and ownership of the problem-type
   namespace.
-- `adr/api-collection-contract.md` — success envelope and cursor pagination.
+- `adr/api-collection-contract.md` — success envelope (`data` + `page`; unwrapped single resource).
+- `adr/api-collection-offset-pagination.md` — Pagy offset pagination (`page` query parameter).
 - `adr/api-versioning-and-client-conventions.md` — versioning strategy, `Idempotency-Key`,
   `RateLimit` header fields, and the OpenAPI target version.
 
@@ -186,7 +187,8 @@ RFC 9110 §9.
   permits forms RFC 3339 forbids.
 - Enumerated values are lowercase `snake_case` strings; never expose Rails integer enum backing
   values.
-- The shape of collection responses is a repository decision; see `adr/api-collection-contract.md`.
+- The shape of collection responses is a repository decision; see `adr/api-collection-contract.md`
+  (envelope) and `adr/api-collection-offset-pagination.md` (Pagy offset pages).
 - Follow `.agents/harnesses/rules/generic/data-shape-design.mdc` for the underlying shape rules.
 
 ## Content negotiation

@@ -135,19 +135,6 @@ class BranchCoverageBatch37ThresholdCloseTest < ActiveSupport::TestCase
     assert_raises(IdentityTotpCeremonyContract::Error) { store.send(:candidate_from, record) }
   end
 
-  test "PublishingEntriesCursor encode nil without publication and decode empty id" do
-    entry = Object.new
-    entry.define_singleton_method(:active_publication) { nil }
-    entry.define_singleton_method(:public_id) { "e1" }
-
-    assert_nil PublishingEntriesCursor.encode(entry)
-
-    bad = Rails.application.message_verifier(PublishingEntriesCursor::PURPOSE).generate(
-      { "f" => Time.current.utc.iso8601(6), "p" => "" },
-    )
-    assert_raises(PublishingEntriesCursor::InvalidCursor) { PublishingEntriesCursor.decode(bad) }
-  end
-
   test "Webauthn AuthenticatorMetadata nil resolution safe navigation then arms" do
     context = Object.new
     %i(

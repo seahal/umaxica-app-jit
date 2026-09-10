@@ -82,9 +82,12 @@ Current API design decisions:
   (`application/problem+json`) for all non-protocol JSON API errors, the `urn:umaxica:problem:`
   identifier namespace, the two permitted extension members, and the protocol exemption list (OAuth
   / OIDC / WebAuthn / DBSC / MCP JSON-RPC / health / `.well-known`).
-- `adr/api-collection-contract.md` — accepted `{data, page}` envelope and cursor pagination for
-  collection endpoints. Target contract only; the entries API migration is externally breaking and
-  deferred to separately reviewed work.
+- `adr/api-collection-offset-pagination.md` — current pagination for public publishing collections:
+  Pagy offset pages (`?page=`), server-controlled page size, `{ data, page: { current, previous,
+  next, last } }`. Supersedes the signed-cursor mechanism in `adr/api-collection-contract.md`.
+- `adr/api-collection-contract.md` — historical `{data, page}` envelope and the 2026-08-22 signed
+  cursor implementation. Envelope and unwrapped single-resource object remain; cursor pagination
+  does not.
 - `adr/api-versioning-and-client-conventions.md` — accepted path-based major versioning,
   `Idempotency-Key` (an expired IETF draft adopted as Stripe de facto), `RateLimit` /
   `RateLimit-Policy` field names (an unpublished draft, adopted with no client dependency

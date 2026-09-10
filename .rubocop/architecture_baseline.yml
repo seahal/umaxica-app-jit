@@ -553,7 +553,6 @@ Umaxica/ExplicitMethodVisibility:
   app/controllers/concerns/authentication_cookie_store.rb: 1
   app/controllers/concerns/authentication_current_resource_resolver.rb: 2
   app/controllers/concerns/authentication_jwks_rendering.rb: 1
-  app/controllers/concerns/authentication_jwt_configuration.rb: 6
   app/controllers/concerns/authentication_jwt_tokens.rb: 1
   app/controllers/concerns/authentication_logout_all_sessions.rb: 2
   app/controllers/concerns/authentication_logout_current_session.rb: 2
@@ -561,8 +560,8 @@ Umaxica/ExplicitMethodVisibility:
   app/controllers/concerns/authentication_redirects.rb: 34
   app/controllers/concerns/authentication_sequence_gate.rb: 34
   app/controllers/concerns/authentication_session_revoker.rb: 3
-  app/controllers/concerns/authentication_token.rb: 9
-  app/controllers/concerns/authentication_token_service.rb: 12
+  app/controllers/concerns/authentication_token.rb: 8
+  app/controllers/concerns/authentication_token_service.rb: 11
   app/controllers/concerns/authentication_visitor.rb: 8
   app/controllers/concerns/base_oauth_token_endpoint.rb: 1
   app/controllers/concerns/base_org_support_account_session_revocation.rb: 3
@@ -579,7 +578,6 @@ Umaxica/ExplicitMethodVisibility:
   app/controllers/concerns/preference_core.rb: 14
   app/controllers/concerns/preference_dbsc_registration_endpoint.rb: 1
   app/controllers/concerns/preference_global.rb: 11
-  app/controllers/concerns/preference_jwt_configuration.rb: 12
   app/controllers/concerns/preference_token.rb: 6
   app/controllers/concerns/preference_web_cookie_actions.rb: 2
   app/controllers/concerns/preference_web_theme_actions.rb: 2
@@ -1381,7 +1379,7 @@ Umaxica/ExplicitMethodVisibility:
   app/presenters/base/org/identity/activity_log_presenter.rb: 7
   app/queries/authentication_credential_inventory.rb: 2
   app/queries/publishing_management_entries_query.rb: 5
-  app/queries/publishing_published_entries_query.rb: 5
+  app/queries/publishing_published_entries_query.rb: 3
   app/resolvers/account_standing_resolver.rb: 1
   app/resolvers/external_sign_in/org_entra_resolver.rb: 1
   app/resolvers/host_context_resolver.rb: 1
@@ -1493,7 +1491,6 @@ Umaxica/ExplicitMethodVisibility:
   app/services/outbound_sms_providers_test.rb: 1
   app/services/palm_access_token_authenticator.rb: 1
   app/services/palm_logout_coordinator.rb: 2
-  app/services/publishing_entries_cursor.rb: 2
   app/services/recovery_passcode_top_up.rb: 2
   app/services/redirects_jump_gateway_url.rb: 2
   app/services/retention_cross_database_child_purge.rb: 2
@@ -1588,7 +1585,7 @@ Umaxica/ExplicitMethodVisibility:
   app/values/publishing_create_entry_result.rb: 3
   app/values/publishing_publication_result.rb: 3
   app/values/publishing_revise_entry_result.rb: 3
-  app/values/security_jwt_auth_access_token_codec.rb: 13
+  app/values/security_jwt_auth_access_token_codec.rb: 12
   app/values/security_jwt_jump_rt_token_codec.rb: 5
   app/values/security_jwt_oidc_id_token_codec.rb: 7
   app/values/security_jwt_preference_token_codec.rb: 6
