@@ -1274,6 +1274,7 @@ class AuthenticationBaseCoverageTest < ActionDispatch::IntegrationTest
       result[:access_token],
       host: "id.app.localhost",
       resource_type: "client",
+      jwt_issuer_id: @controller.send(:auth_jwt_issuer_id),
     )
     expected_jkt = JitSecurityJwtThumbprintCalculator.calculate(jwk)
     token = ClientToken.order(created_at: :desc).first
@@ -1380,6 +1381,33 @@ class AuthenticationBaseCoverageTest < ActionDispatch::IntegrationTest
                  "reset_session must run exactly once at the privilege transition"
     assert_equal 1, clear_count,
                  "clear_previous_login_cookies! must run exactly once at the privilege transition"
+  end
+
+  test "session establishment rejects an authenticated principal before flow mutation or session reset" do
+    reset_count = 0
+    existing_user = clients(:one)
+    attempted_user = clients(:two)
+    @controller.instance_variable_set(:@current_resource, existing_user)
+    @controller.define_singleton_method(:reset_session) { reset_count += 1 }
+
+    assert_no_difference("ClientSignInFlow.count") do
+      error =
+        assert_raises(AlreadyAuthenticatedError) do
+          @controller.send(
+            :establish_signed_in_session!,
+            attempted_user,
+            pt: nil,
+            ri: "jp",
+            auth_method: "passkey",
+          )
+        end
+
+      assert_equal :conflict, error.status_code
+      assert_equal "Sign-in is unavailable while authenticated.", error.message
+    end
+
+    assert_equal 0, reset_count
+    assert_equal existing_user, @controller.current_resource
   end
 
   test "log_in preserves pending oidc rp callback state across session rotation" do
@@ -2090,7 +2118,7 @@ class AuthenticationBaseCoverageTest < ActionDispatch::IntegrationTest
   test "emit_actor_mismatch_event logs and emits a risk signal for the mismatch" do
     @controller.define_singleton_method(:resource_type) { "client" }
     @controller.define_singleton_method(:request_ip_address) { "127.0.0.1" }
-    payload = { "act" => "operator", "sub" => "actor-42" }
+    payload = { "scope" => "authenticated domain:operator read:org", "sub" => "actor-42" }
 
     emitted = []
     SignRiskEmitter.stub(:emit, ->(name, **kwargs) { emitted << [name, kwargs] }) do

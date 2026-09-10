@@ -18,12 +18,12 @@ module Base
 
       def show_page_props
         {
-          title: "Dashboard",
-          description: "Signed in",
+          title: t("base.shared.dashboard.title"),
+          description: t("base.shared.dashboard.description"),
           sections: [
-            { heading: "Primary links", items: primary_links },
+            { heading: t("base.shared.dashboard.sections.primary_links"), items: primary_links },
             publishing_section,
-            { heading: "Protocol links", items: protocol_links },
+            { heading: t("base.shared.dashboard.sections.protocol_links"), items: protocol_links },
           ],
         }
       end
@@ -31,20 +31,20 @@ module Base
       # The org surface has no switcher, so that entry is absent rather than rendered and hidden.
       def primary_links
         [
-          { label: "Root", href: base_org_root_path(ri: params[:ri]) },
-          { label: "Dashboard", href: base_org_dashboard_path(ri: params[:ri]) },
-          { label: "Account", href: base_org_accounts_path(ri: params[:ri]) },
-          { label: "Organization", href: base_org_organizations_path(ri: params[:ri]) },
-          { label: "Avatar", href: base_org_avatar_path(ri: params[:ri]) },
-          { label: "Identity", href: base_org_identity_path(ri: params[:ri]) },
-          { label: "Selector", href: base_org_selector_path(ri: params[:ri]) },
-          { label: "Logout", href: new_base_org_sign_out_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.root"), href: base_org_root_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.dashboard"), href: base_org_dashboard_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.account"), href: base_org_accounts_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.organization"), href: base_org_organizations_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.avatar"), href: base_org_avatar_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.identity"), href: base_org_identity_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.selector"), href: base_org_selector_path(ri: params[:ri]) },
+          { label: t("base.shared.dashboard.links.logout"), href: new_base_org_sign_out_path(ri: params[:ri]) },
         ]
       end
 
       def publishing_section
         {
-          heading: "Publishing",
+          heading: t("base.shared.dashboard.sections.publishing"),
           groups: [
             {
               heading: "info",
@@ -85,16 +85,17 @@ module Base
       def protocol_links
         [
           {
-            label: "Authorize (sign in)",
+            label: t("base.shared.dashboard.links.authorize_sign_in"),
             href: base_org_oidc_authorization_path(ri: params[:ri], screen_hint: "signin"),
           },
           {
-            label: "Authorize (sign up)",
+            label: t("base.shared.dashboard.links.authorize_sign_up"),
             href: base_org_oidc_authorization_path(ri: params[:ri], screen_hint: "signup"),
           },
-          { label: "OIDC discovery", href: base_org_well_known_openid_configuration_path },
-          { label: "JWKS", href: base_org_well_known_jwks_path },
-          { label: "UserInfo", href: base_org_oauth_userinfo_path },
+          { label: t("base.shared.dashboard.links.oidc_discovery"),
+            href: base_org_well_known_openid_configuration_path, },
+          { label: t("base.shared.dashboard.links.jwks"), href: base_org_well_known_jwks_path },
+          { label: t("base.shared.dashboard.links.userinfo"), href: base_org_oauth_userinfo_path },
         ]
       end
     end

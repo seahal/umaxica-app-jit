@@ -55,7 +55,7 @@ module CoreBrowserCredentialContract
       oidc_jti: token_record.try(:oidc_jti),
       expires_at: expires_at,
       scopes: %w(openid profile:read self:read),
-      issuer: AuthenticationJwtConfiguration.issuer(resource_type),
+      issuer: AuthenticationJwtConfiguration.issuer,
       audiences: [ACCESS_AUDIENCE],
       jwt_issuer_id: core_jwt_issuer_id(resource_type),
     )
@@ -66,7 +66,7 @@ module CoreBrowserCredentialContract
       token,
       host: host,
       resource_type: resource_type,
-      issuer: AuthenticationJwtConfiguration.issuer(resource_type),
+      issuer: AuthenticationJwtConfiguration.issuer,
       audiences: [ACCESS_AUDIENCE],
       jwt_issuer_id: core_jwt_issuer_id(resource_type),
     )

@@ -719,6 +719,50 @@ describe("EnforcementRecoveryShow", () => {
     });
   });
 
+  it("updates the appeal reason when the visitor chooses another code", () => {
+    mount(
+      <EnforcementRecoveryShow
+        title="Account recovery"
+        description="Complete verification."
+        appeal_error={null}
+        enforcement_cases={[
+          {
+            public_id: "c1",
+            kind_label: "Security lock",
+            restore: { url: "/identity/recovery/completion", submit_label: "Restore access" },
+            appeal: {
+              url: "/identity/recovery/appeals",
+              scope: "appeal",
+              reason_label: "Appeal reason",
+              reason_codes: [
+                { label: "mistake", value: "mistake" },
+                { label: "other", value: "other" },
+              ],
+              statement_label: "Appeal statement",
+              statement_max_length: 500,
+              submit_label: "Submit appeal",
+            },
+          },
+        ]}
+      />,
+    );
+
+    const select = container.querySelector<HTMLSelectElement>("select")!;
+    act(() => {
+      select.value = "other";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    submitForm(1);
+
+    expect(post).toHaveBeenCalledWith(
+      "/identity/recovery/appeals",
+      {
+        appeal: { enforcement_case_id: "c1", reason_code: "other", statement: "" },
+      },
+      expect.objectContaining({}),
+    );
+  });
+
   it("falls back to an empty reason when the server offered no choices", () => {
     mount(
       <EnforcementRecoveryShow
