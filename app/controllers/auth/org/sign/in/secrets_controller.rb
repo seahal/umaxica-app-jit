@@ -140,7 +140,7 @@ module Auth
             return if org_normal_sign_in_operator.present?
 
             clear_org_normal_sign_in_transaction!
-            if request.get?
+            if request.get? || request.head?
               redirect_to(auth_org_sign_in_path(ri: current_region_identifier), status: :see_other)
             else
               render plain: I18n.t("errors.messages.invalid_request"), status: :unprocessable_content

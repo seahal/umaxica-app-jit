@@ -20,9 +20,9 @@
 module EntraOmniauthBootCredentials
   Credentials = Data.define(:tenant_id, :client_id, :client_secret)
 
-  TENANT_ID_KEY = "OMNI_AUTH_ENTRA_ORG_TENANT_ID"
-  CLIENT_ID_KEY = "OMNI_AUTH_ENTRA_ORG_CLIENT_ID"
-  CLIENT_SECRET_KEY = "OMNI_AUTH_ENTRA_ORG_CLIENT_SECRET"
+  TENANT_ID_NAME = "OMNI_AUTH_ENTRA_ORG_TENANT_ID"
+  CLIENT_ID_NAME = "OMNI_AUTH_ENTRA_ORG_CLIENT_ID"
+  CLIENT_CREDENTIAL_NAME = "OMNI_AUTH_ENTRA_ORG_CLIENT_SECRET"
 
   UUID_PATTERN = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/
 
@@ -32,21 +32,21 @@ module EntraOmniauthBootCredentials
   # three are configured. Raises KeyError otherwise.
   def resolve_for_boot(tenant_id:, client_id:, client_secret:, env: Rails.env)
     values = {
-      TENANT_ID_KEY => tenant_id.to_s,
-      CLIENT_ID_KEY => client_id.to_s,
-      CLIENT_SECRET_KEY => client_secret.to_s,
+      TENANT_ID_NAME => tenant_id.to_s,
+      CLIENT_ID_NAME => client_id.to_s,
+      CLIENT_CREDENTIAL_NAME => client_secret.to_s,
     }
 
     return nil if local_boot_without_entra?(values, env: env)
 
     values.each_key { |key| require_present!(values, key) }
-    require_uuid!(values, TENANT_ID_KEY)
-    require_uuid!(values, CLIENT_ID_KEY)
+    require_uuid!(values, TENANT_ID_NAME)
+    require_uuid!(values, CLIENT_ID_NAME)
 
     Credentials.new(
-      tenant_id: values.fetch(TENANT_ID_KEY),
-      client_id: values.fetch(CLIENT_ID_KEY),
-      client_secret: values.fetch(CLIENT_SECRET_KEY),
+      tenant_id: values.fetch(TENANT_ID_NAME),
+      client_id: values.fetch(CLIENT_ID_NAME),
+      client_secret: values.fetch(CLIENT_CREDENTIAL_NAME),
     )
   end
 
