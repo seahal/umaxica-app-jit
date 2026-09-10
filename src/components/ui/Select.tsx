@@ -38,7 +38,9 @@ export default function Select({
   errorMessage,
   ...props
 }: SelectProps) {
-  const disabledKeys = options.filter((option) => option.isDisabled === true).map((option) => option.value);
+  const disabledKeys = options
+    .filter((option) => option.isDisabled === true)
+    .map((option) => option.value);
 
   return (
     <AriaSelect

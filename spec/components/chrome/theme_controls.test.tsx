@@ -4,9 +4,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import ThemeControls from "@/components/chrome/ThemeControls";
-import type { ChromeThemeControls } from "@/types/inertia";
-
 import { readString } from "@/lib/payload";
+import type { ChromeThemeControls } from "@/types/inertia";
 
 import { jsonBody, jsonResponse, stubFetchAnswering, stubFetchByMethod } from "../../support/http";
 
@@ -309,7 +308,8 @@ describe("ThemeControls selection", () => {
     const storedCode: Record<string, string> = { dark: "dr", system: "sy" };
     stubFetchAnswering({
       GET: () => jsonResponse({}, 404),
-      PATCH: (init) => jsonResponse({ theme: storedCode[String(readString(jsonBody(init), "theme"))] }),
+      PATCH: (init) =>
+        jsonResponse({ theme: storedCode[String(readString(jsonBody(init), "theme"))] }),
     });
 
     await mount();
