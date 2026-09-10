@@ -393,6 +393,49 @@ describe("recovery interaction", () => {
     });
   });
 
+  it("updates the appeal reason when the visitor chooses another code", () => {
+    mount(
+      <RecoveryShow
+        title="Account recovery"
+        description="Complete verification."
+        appeal_error={null}
+        enforcement_cases={[
+          {
+            public_id: "case_1",
+            kind_label: "Security lock",
+            restore: { url: "/identity/recovery/completion", submit_label: "Restore access" },
+            appeal: {
+              url: "/identity/recovery/appeals",
+              reason_label: "Appeal reason",
+              reason_codes: [
+                { label: "other", value: "other" },
+                { label: "mistake", value: "mistake" },
+              ],
+              statement_label: "Appeal statement",
+              statement_max_length: 4000,
+              submit_label: "Submit appeal",
+            },
+          },
+        ]}
+      />,
+    );
+
+    const select = container.querySelector<HTMLSelectElement>("select")!;
+    act(() => {
+      select.value = "mistake";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    submitForm(1);
+
+    expect(post).toHaveBeenCalledWith(
+      "/identity/recovery/appeals",
+      {
+        appeal: { enforcement_case_id: "case_1", reason_code: "mistake", statement: "" },
+      },
+      expect.anything(),
+    );
+  });
+
   it("appeals with an empty reason when the server sent no codes", () => {
     mount(
       <RecoveryShow
@@ -856,6 +899,30 @@ describe("withdrawal interaction", () => {
 
     clickButton("Sign out");
     expect(destroy).toHaveBeenCalledWith("/identity/withdrawal/session");
+  });
+
+  it("renders without a termination section when the server sent none", () => {
+    mount(
+      <WithdrawalEdit
+        title="Withdrawal status"
+        terminated={false}
+        unavailable_message="Recovery is unavailable."
+        deadline_message="Recoverable until 1 February 2026."
+        recovery={{
+          available_message: "Recovery is available.",
+          submit_label: "Recover",
+          confirm: "Sure?",
+          action: "/identity/withdrawal",
+          unavailable_message: null,
+        }}
+        termination={null}
+        erasure_link={{ label: "Request early erasure", href: "/identity/privacy/erasure/new" }}
+        sign_out={{ label: "Sign out", url: "/identity/withdrawal/session" }}
+      />,
+    );
+
+    expect(container.textContent).toContain("Recover");
+    expect(container.textContent).not.toContain("Terminate now");
   });
 
   it("signs out from the terminated status", () => {
