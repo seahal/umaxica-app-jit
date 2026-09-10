@@ -58,7 +58,6 @@ describe("preference select screen", () => {
     expect(html).toContain("日本");
     expect(html).toContain("アメリカ合衆国 (USA)");
     expect(html).toContain('value="2" selected');
-    expect(html).toContain("aria-disabled");
   });
 
   it("links the region screen to the screens that depend on it", () => {

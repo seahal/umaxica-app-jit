@@ -21,6 +21,14 @@ function cookieEndpointUrl(): string {
 }
 
 export default function CookieBanner({ controls }: { controls: ChromeCookieControls }) {
+  if (controls.hidden) {
+    return null;
+  }
+
+  return <CookieBannerPrompt controls={controls} />;
+}
+
+function CookieBannerPrompt({ controls }: { controls: ChromeCookieControls }) {
   // Nothing is painted until something says the visitor has not answered. The consent buffer
   // cookie is a projection of the same decision the endpoint below reports, and reading it through
   // the Cookie Store API is asynchronous, so it can no longer seed the first render - starting

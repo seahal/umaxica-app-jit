@@ -29,6 +29,7 @@ vi.mock("@/components/chrome/ThemeControls", () => ({
 const { default: SurfaceLayout } = await import("@/layouts/SurfaceLayout");
 
 const cookieControls = {
+  hidden: false,
   scope: "cookie",
   settings_url: "/preference/cookie/edit",
   title: "cookie-controls-title",

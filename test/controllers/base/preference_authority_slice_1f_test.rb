@@ -74,6 +74,22 @@ class BasePreferenceAuthoritySlice1fTest < ActionDispatch::IntegrationTest
       assert_equal "/preference/cookie/edit", uri.path
       assert_equal "jp", Rack::Utils.parse_query(uri.query).fetch("ri")
       assert_equal query_keys.uniq, query_keys
+      assert_not inertia_props.dig("chrome", "cookie_controls", "hidden")
+    end
+  end
+
+  test "base cookie preference edit hides the cookie banner for every surface" do
+    SURFACES.each do |surface, config|
+      host = ENV.fetch(config.fetch(:host_env), config.fetch(:host_default))
+      host! host
+
+      get public_send("edit_base_#{surface}_preference_cookie_url", ri: "jp", host: host)
+
+      assert_response :success
+      # The cookie screen owns consent while it is being edited, so the banner copy is
+      # suppressed through the chrome prop the same way the theme footer is on the theme screen.
+      assert inertia_props.dig("chrome", "cookie_controls", "hidden")
+      assert_equal "base/#{surface}/preference/cookie", inertia_component
     end
   end
 

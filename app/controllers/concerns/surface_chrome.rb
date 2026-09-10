@@ -182,8 +182,13 @@ module SurfaceChrome
   def chrome_cookie_controls
     surface = chrome_configuration.fetch(:surface)
     scope = "layouts.shared.footer_cookie_controls"
+    # The cookie screen owns consent while it is being edited; showing the banner there would
+    # put two controls for the same decision on one page.
+    hidden = params[:action].to_s == "edit" &&
+      (params[:preference_screen].to_s == "cookie" || controller_path.end_with?("/preference/cookies"))
 
     {
+      hidden: hidden,
       scope: surface,
       settings_url: chrome_cookie_settings_url(surface),
       title: chrome_t("#{scope}.title"),

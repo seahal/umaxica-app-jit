@@ -129,7 +129,11 @@ module BasePreferenceScreenPage
       name = option.name.to_s
       next if name.blank?
 
-      { label: t(preference_option_translation_key(option_type, name)), value: option.id }
+      {
+        label: t(preference_option_translation_key(option_type, name)),
+        value: option.id,
+        disabled: option.id == model.option_id,
+      }
     end
   end
 
@@ -180,7 +184,9 @@ module BasePreferenceScreenPage
         field: "option_id",
         label: t(preference_base_i18n_key(:preference, type, :edit, :option_label)),
         value: @preference_option.option_id,
-        choices: @preference_option_choices.map { |label, value| { label: label, value: value } },
+        choices: @preference_option_choices.map { |label, value|
+          { label: label, value: value, disabled: value == @preference_option.option_id }
+        },
         submit_label: t(preference_base_i18n_key(:preferences, :update_settings)),
         submitting_label: t(preference_base_i18n_key(:preferences, :submitting)),
       },

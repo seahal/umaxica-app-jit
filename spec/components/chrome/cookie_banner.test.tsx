@@ -11,6 +11,7 @@ import { jsonResponse, noContentResponse, stubFetchByMethod } from "../../suppor
 // behaviour the controller spec asserts: the consent read on mount, the PATCH payload of each
 // answer, the close button and the settings navigation.
 const controls: ChromeCookieControls = {
+  hidden: false,
   scope: "cookie",
   settings_url: "/preference/cookie/edit?ri=jp",
   title: "Cookie の利用について",
@@ -35,13 +36,13 @@ const stubFetch = (mock: ReturnType<typeof vi.fn>) => {
 
 const noop = () => {};
 
-const mount = async () => {
+const mount = async (overrides: Partial<ChromeCookieControls> = {}) => {
   container = document.createElement("div");
   document.body.append(container);
   const mounted = createRoot(container);
   root = mounted;
   await act(async () => {
-    mounted.render(<CookieBanner controls={controls} />);
+    mounted.render(<CookieBanner controls={{ ...controls, ...overrides }} />);
   });
 };
 
@@ -103,6 +104,15 @@ afterEach(() => {
 });
 
 describe("CookieBanner mount", () => {
+  test("renders nothing when the cookie screen already owns consent", async () => {
+    stubFetch(vi.fn());
+
+    await mount({ hidden: true });
+
+    expect(banner()).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   // `show_banner` is the field `PreferenceWebCookieActions#show` answers with. The banner used to
   // read `consented`, which that response has never carried, so a recorded decision never
   // suppressed it and the prompt returned on every load.

@@ -26,6 +26,7 @@ export type ChromeRestrictedMode = {
 };
 
 export type ChromeCookieControls = {
+  hidden: boolean;
   scope: string;
   settings_url: string;
   title: string;

@@ -1,3 +1,9 @@
+<% hide_cookie_banner =
+     params[:action].to_s == "edit" &&
+     (params[:preference_screen].to_s == "cookie" ||
+      controller_path.end_with?("/preference/cookies")) %>
+
+<% unless hide_cookie_banner %>
 <%# Cookie preference editing lives on base/www (adr/identity-authority-boundary.md).
     Use the base _url helper so the link resolves to the base host even when this
     banner renders on a sign page. %>
@@ -83,3 +89,4 @@
     </div>
   </div>
 </div>
+<% end %>
