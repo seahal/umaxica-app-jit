@@ -1193,6 +1193,28 @@ en:
       roots:
         message: Thin landing endpoint.
     shared:
+      dashboard:
+        title: Dashboard
+        description: Signed in
+        sections:
+          primary_links: Primary links
+          protocol_links: Protocol links
+          publishing: Publishing
+        links:
+          account: Account
+          authorize_sign_in: Authorize (sign in)
+          authorize_sign_up: Authorize (sign up)
+          avatar: Avatar
+          dashboard: Dashboard
+          identity: Identity
+          jwks: JWKS
+          logout: Logout
+          oidc_discovery: OIDC discovery
+          organization: Organization
+          root: Root
+          selector: Selector
+          switcher: Switcher
+          userinfo: UserInfo
       preference_emails:
         token_invalid: That link is no longer valid. Request a new one to continue.
         turnstile_error: Turnstile verification failed. Please refresh and try again.

@@ -1532,6 +1532,29 @@ ja:
         update_success: 設定を更新しました
       roots:
         message: Thin landing endpoint.
+    shared:
+      dashboard:
+        title: ダッシュボード
+        description: サインイン済み
+        sections:
+          primary_links: 主なリンク
+          protocol_links: プロトコルのリンク
+          publishing: 公開管理
+        links:
+          account: アカウント
+          authorize_sign_in: 認可（サインイン）
+          authorize_sign_up: 認可（サインアップ）
+          avatar: アバター
+          dashboard: ダッシュボード
+          identity: 本人情報
+          jwks: JWKS
+          logout: ログアウト
+          oidc_discovery: OIDC ディスカバリー
+          organization: 組織
+          root: トップ
+          selector: セレクター
+          switcher: スイッチャー
+          userinfo: UserInfo
   com_document_categories:
     "%{id}": com_document_category_%{id}
     announcement: お知らせ

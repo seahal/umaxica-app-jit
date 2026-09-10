@@ -1410,6 +1410,29 @@ en:
         update_success: Preferences updated successfully
       roots:
         message: Thin landing endpoint.
+    shared:
+      dashboard:
+        title: Dashboard
+        description: Signed in
+        sections:
+          primary_links: Primary links
+          protocol_links: Protocol links
+          publishing: Publishing
+        links:
+          account: Account
+          authorize_sign_in: Authorize (sign in)
+          authorize_sign_up: Authorize (sign up)
+          avatar: Avatar
+          dashboard: Dashboard
+          identity: Identity
+          jwks: JWKS
+          logout: Logout
+          oidc_discovery: OIDC discovery
+          organization: Organization
+          root: Root
+          selector: Selector
+          switcher: Switcher
+          userinfo: UserInfo
   com_document_categories:
     "%{id}": com_document_category_%{id}
     announcement: Announcement
