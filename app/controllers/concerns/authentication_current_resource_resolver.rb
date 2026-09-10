@@ -230,7 +230,7 @@ class AuthenticationCurrentResourceResolver
       ActiveRecord::Base.connected_to(role: :writing) do
         subject = AuthenticationToken.extract_subject(payload)
         next unless subject.is_a?(String)
-        next unless subject.match?(/\A[1-9][0-9]*\z/)
+        next unless subject.match?(/\A\d+\z/)
 
         @resource_class.find_by(id: Integer(subject, 10))
       end

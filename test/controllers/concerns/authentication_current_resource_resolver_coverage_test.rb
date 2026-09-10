@@ -143,7 +143,7 @@ class AuthenticationCurrentResourceResolverCoverageTest < ActiveSupport::TestCas
     AuthenticationToken.stub(:decode, { "sub" => "123", "sid" => "sess-1", "act" => "client" }) do
       AuthenticationToken.stub(:validate_actor_claim!, true) do
         AuthenticationToken.stub(:extract_session_id, "sess-1") do
-          AuthenticationToken.stub(:extract_subject, 123) do
+          AuthenticationToken.stub(:extract_subject, "123") do:
             result = AuthenticationCurrentResourceResolver.new(
               access_token: "token",
               request_host: "app.example.test",
@@ -173,7 +173,7 @@ class AuthenticationCurrentResourceResolverCoverageTest < ActiveSupport::TestCas
     AuthenticationToken.stub(:decode, { "sub" => "123", "sid" => "sess-1", "act" => "client" }) do
       AuthenticationToken.stub(:validate_actor_claim!, true) do
         AuthenticationToken.stub(:extract_session_id, "sess-1") do
-          AuthenticationToken.stub(:extract_subject, 123) do
+          AuthenticationToken.stub(:extract_subject, "123") do:
             result = AuthenticationCurrentResourceResolver.new(
               access_token: "token",
               request_host: "app.example.test",

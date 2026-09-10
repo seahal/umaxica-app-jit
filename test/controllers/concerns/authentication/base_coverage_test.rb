@@ -2117,7 +2117,7 @@ class AuthenticationBaseCoverageTest < ActionDispatch::IntegrationTest
   test "emit_actor_mismatch_event logs and emits a risk signal for the mismatch" do
     @controller.define_singleton_method(:resource_type) { "client" }
     @controller.define_singleton_method(:request_ip_address) { "127.0.0.1" }
-    payload = { "act" => "operator", "sub" => "actor-42" }
+    payload = { "scope" => "authenticated domain:operator read:org", "sub" => "actor-42" }
 
     emitted = []
     SignRiskEmitter.stub(:emit, ->(name, **kwargs) { emitted << [name, kwargs] }) do

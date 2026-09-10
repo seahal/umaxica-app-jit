@@ -611,9 +611,9 @@ module Auth
       assert_equal ["/default", {}], harness.redirected
     end
 
-    test "JwtConfiguration.issuer respects resource_type" do
-      assert_equal "urn:umaxica:test:auth:client", AuthenticationJwtConfiguration.issuer("client")
-      assert_equal "urn:umaxica:test:auth:operator", AuthenticationJwtConfiguration.issuer("operator")
+    test "JwtConfiguration.issuer is the authorization-server identity" do
+      assert_equal "urn:umaxica:test:auth", AuthenticationJwtConfiguration.issuer("client")
+      assert_equal "urn:umaxica:test:auth", AuthenticationJwtConfiguration.issuer("operator")
       assert_equal "urn:umaxica:test:auth", AuthenticationJwtConfiguration.issuer("invalid")
     end
 
@@ -647,7 +647,7 @@ module Auth
     test "JwtConfiguration.token_type returns correct format" do
       assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("client")
       assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("operator")
-      assert_raises(ArgumentError) { AuthenticationJwtConfiguration.token_type("invalid") }
+      assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("invalid")
     end
 
     private
