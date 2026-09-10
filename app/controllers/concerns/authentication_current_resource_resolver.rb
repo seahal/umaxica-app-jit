@@ -228,7 +228,11 @@ class AuthenticationCurrentResourceResolver
 
     resource =
       ActiveRecord::Base.connected_to(role: :writing) do
-        @resource_class.find_by(id: AuthenticationToken.extract_subject(payload))
+        subject = AuthenticationToken.extract_subject(payload)
+        next unless subject.is_a?(String)
+        next unless subject.match?(/\A[1-9][0-9]*\z/)
+
+        @resource_class.find_by(id: Integer(subject, 10))
       end
     return failure(
       :resource_not_found, payload: payload,

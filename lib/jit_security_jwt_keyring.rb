@@ -30,12 +30,15 @@ module JitSecurityJwtKeyring
     JitSecurityJwtRegistry.public_key_for(issuer_id, kid)
   end
 
-  def encode(payload, issuer_id: "auth")
+  def encode(payload, issuer_id: "auth", typ: nil)
     kid = active_kid(issuer_id)
     pk = private_key_for(kid, issuer_id: issuer_id)
     raise JitSecurityJwtRegistry::ConfigurationError, "Missing private key for kid: #{kid}" if pk.nil?
 
-    JWT.encode(payload, pk, "ES384", { kid: kid, typ: payload["typ"] })
+    header_typ = typ.presence || (payload.is_a?(Hash) ? payload["typ"] : nil)
+    header = { kid: kid, alg: "ES384" }
+    header[:typ] = header_typ if header_typ.present?
+    JWT.encode(payload, pk, "ES384", header)
   end
 
   def parse_header(token)

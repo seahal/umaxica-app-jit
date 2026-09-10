@@ -1265,7 +1265,7 @@ class OidcTokenExchangeCoordinatorTest < ActiveSupport::TestCase
     assert_equal OidcSubject.for(@user, resource_type: "client"), access_token.fetch("sub")
     assert_equal [@client.aud], Array(access_token.fetch("aud"))
     assert_equal "core-next-rp", access_token.fetch("client_id")
-    assert_equal %w(openid profile), access_token.fetch("scp")
+    assert_equal "openid profile", access_token.fetch("scope")
     assert_predicate access_token.fetch("auth_time"), :present?
 
     base_kids = JitSecurityJwtRegistry.jwks_for("surface:BASE_APP").fetch(:keys).map { |key| key.fetch("kid") }

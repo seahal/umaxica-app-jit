@@ -80,7 +80,7 @@ class AuthenticationCurrentResourceResolverCoverageTest < ActiveSupport::TestCas
   test "dpop and actor mismatches are rejected before session lookup" do
     AuthenticationToken.stub(
       :decode,
-      { "sub" => 123, "sid" => "sess-1", "act" => "operator", "cnf" => { "jkt" => "a" } },
+      { "sub" => "123", "sid" => "sess-1", "act" => "operator", "cnf" => { "jkt" => "a" } },
     ) do
       AuthenticationToken.stub(:validate_actor_claim!, false) do
         resolver = AuthenticationCurrentResourceResolver.new(
@@ -105,7 +105,7 @@ class AuthenticationCurrentResourceResolverCoverageTest < ActiveSupport::TestCas
   end
 
   test "missing session id and missing resource are rejected" do
-    AuthenticationToken.stub(:decode, { "sub" => 123, "act" => "client" }) do
+    AuthenticationToken.stub(:decode, { "sub" => "123", "act" => "client" }) do
       AuthenticationToken.stub(:validate_actor_claim!, true) do
         result = AuthenticationCurrentResourceResolver.new(
           access_token: "token",
@@ -140,7 +140,7 @@ class AuthenticationCurrentResourceResolverCoverageTest < ActiveSupport::TestCas
 
     FakeTokenClass.token = token
 
-    AuthenticationToken.stub(:decode, { "sub" => 123, "sid" => "sess-1", "act" => "client" }) do
+    AuthenticationToken.stub(:decode, { "sub" => "123", "sid" => "sess-1", "act" => "client" }) do
       AuthenticationToken.stub(:validate_actor_claim!, true) do
         AuthenticationToken.stub(:extract_session_id, "sess-1") do
           AuthenticationToken.stub(:extract_subject, 123) do
@@ -170,7 +170,7 @@ class AuthenticationCurrentResourceResolverCoverageTest < ActiveSupport::TestCas
 
     FakeTokenClass.token = token
 
-    AuthenticationToken.stub(:decode, { "sub" => 123, "sid" => "sess-1", "act" => "client" }) do
+    AuthenticationToken.stub(:decode, { "sub" => "123", "sid" => "sess-1", "act" => "client" }) do
       AuthenticationToken.stub(:validate_actor_claim!, true) do
         AuthenticationToken.stub(:extract_session_id, "sess-1") do
           AuthenticationToken.stub(:extract_subject, 123) do
@@ -226,7 +226,7 @@ class AuthenticationCurrentResourceResolverCoverageTest
       assert_not dpop_resolver.send(:dpop_valid?, { "cnf" => { "jkt" => "jkt" } })
     end
 
-    AuthenticationToken.stub(:decode, { "sub" => 123, "sid" => "sid", "act" => "client" }) do
+    AuthenticationToken.stub(:decode, { "sub" => "123", "sid" => "sid", "act" => "client" }) do
       AuthenticationToken.stub(:validate_actor_claim!, true) do
         AuthenticationToken.stub(:extract_session_id, "sid") do
           FakeTokenClass.token = nil

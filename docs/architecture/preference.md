@@ -249,7 +249,12 @@ normal required-`ri` lifecycle to add the default region context.
 Preference data flows in one direction for Rails runtime reads:
 
 ```text
-Preference JWT payload (*_preference_access) -> Actor.preferences
+Preference JWT payload (`preference_access` / `__Host-preference_access`) -> Actor.preferences
+
+The Preference JWT is an RFC 9068 `at+jwt` access token. Protocol claims (`iss`, `exp`, `aud`,
+`sub`, `client_id`, `iat`, `jti`, `scope`) sit in the JWT Claims Set. Application preference data
+remains in the private `preferences` object. `sub` is the preference record `public_id`. See
+`adr/rfc9068-access-token-profile.md`.
 ```
 
 The database is the durable storage boundary (SSoT) used by explicit preference write and
@@ -268,7 +273,8 @@ In a normal request, `Actor.preferences` is built in two stages:
 
 1. Build the base preference from the Preference JWT payload (`preference_payload_preferences`), via
    `Actor::Preference.from_jwt`. When no Preference JWT cookie exists (Bearer/OIDC APIs and
-   endpoints that skip `set_preferences_cookie`), fall back to `Actor::Preference::NULL`.
+   endpoints that skip `set_preferences_cookie`), fall back to the default preference values
+   (theme `sy`). `Actor::Preference::NULL` is the unbound-context snapshot, not the guest default.
 2. Overlay valid request-local `lx`, `ct`, and `tz` values when they were explicitly present in the
    request.
 

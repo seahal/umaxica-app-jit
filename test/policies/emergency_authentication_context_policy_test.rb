@@ -42,11 +42,11 @@ class EmergencyAuthenticationContextPolicyTest < ActiveSupport::TestCase
     PermissivePolicy.new(Record.new(1), user: Record.new(1))
   end
 
-  def normal_claims = { "scp" => %w(authenticated domain:operator read:org write:org) }
+  def normal_claims = { "scope" => "authenticated domain:operator read:org write:org" }
 
   def emergency_claims
     normal_claims.merge(
-      "scp" => %w(authenticated domain:operator read:org),
+      "scope" => "authenticated domain:operator read:org",
       AuthenticationContextValue::CLAIM => "emergency",
     )
   end

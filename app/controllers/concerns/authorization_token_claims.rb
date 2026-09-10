@@ -11,7 +11,6 @@ module AuthorizationTokenClaims
     sid = oidc_sid.presence || session_public_id || session_id
     issued_at_seconds = timestamp_value(issued_at)
     expires_at_seconds = timestamp_value(expires_at || (issued_at + access_token_ttl))
-    token_type = AuthenticationJwtConfiguration.token_type(resource_type)
     context = AuthenticationContextValue.for(authentication_context.presence || AuthenticationContextValue::NORMAL_KEY)
     # Session capabilities narrow the token's authorization scopes; they never
     # add one. An Emergency session therefore carries a subset of what the same
@@ -24,12 +23,11 @@ module AuthorizationTokenClaims
       "nbf" => issued_at_seconds,
       "exp" => expires_at_seconds,
       "jti" => oidc_jti.presence || JitSecurityJwtJtiGenerator.generate,
-      "sub" => subject.presence || resource.id,
-      "act" => resource_type,
-      "typ" => token_type,
+      "sub" => (subject.presence || resource.id).to_s,
       "iss" => issuer.presence || AuthenticationJwtConfiguration.issuer(resource_type),
       "aud" => audiences.presence || AuthenticationJwtConfiguration.audiences(resource_type),
-      "scp" => scopes_value,
+      "client_id" => client_id.presence || AuthenticationJwtConfiguration.client_id(resource_type),
+      "scope" => Array(scopes_value).map(&:to_s).join(" "),
       "acr" => normalize_acr(acr),
       # Always present, so a downstream consumer distinguishes "this build does
       # not mint the claim" from "this session is Normal" by the token's age
@@ -40,7 +38,6 @@ module AuthorizationTokenClaims
     payload["sid"] = sid if sid.present?
     payload["auth_time"] = timestamp_value(auth_time) if auth_time.present?
     payload["step_up_until"] = timestamp_value(step_up_until) if step_up_until.present?
-    payload["client_id"] = client_id if client_id.present?
     payload["cnf"] = { "jkt" => dpop_jkt } if dpop_jkt.present?
     payload
   end
@@ -56,7 +53,7 @@ module AuthorizationTokenClaims
   end
 
   def actor(payload)
-    payload&.dig("act")
+    SecurityJwtRfc9068AccessTokenProfile.actor_type_from_scope(payload)
   end
 
   def session_id(payload)
@@ -68,7 +65,7 @@ module AuthorizationTokenClaims
   end
 
   def scopes(payload)
-    payload&.dig("scp") || []
+    SecurityJwtRfc9068AccessTokenProfile.parse_scopes(payload)
   end
 
   # The trusted authentication context of a decoded access token. A payload

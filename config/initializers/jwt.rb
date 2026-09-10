@@ -16,6 +16,10 @@ if Rails.env.local?
   ENV["AUTH_JWT_CLIENT_AUDIENCES"] ||= "umaxica-api-client"
   ENV["AUTH_JWT_VISITOR_AUDIENCES"] ||= "umaxica-api-visitor"
   ENV["AUTH_JWT_OPERATOR_AUDIENCES"] ||= "umaxica-api-operator"
+  ENV["AUTH_JWT_CLIENT_CLIENT_ID"] ||= "umaxica-web-client"
+  ENV["AUTH_JWT_VISITOR_CLIENT_ID"] ||= "umaxica-web-visitor"
+  ENV["AUTH_JWT_OPERATOR_CLIENT_ID"] ||= "umaxica-web-operator"
+  ENV["PREFERENCE_JWT_CLIENT_ID"] ||= "umaxica-preference-web"
 end
 
 JitSecurityJwtRegistry.configure!

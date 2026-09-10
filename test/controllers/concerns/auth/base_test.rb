@@ -645,8 +645,8 @@ module Auth
     end
 
     test "JwtConfiguration.token_type returns correct format" do
-      assert_equal "auth-access-token;client", AuthenticationJwtConfiguration.token_type("client")
-      assert_equal "auth-access-token;operator", AuthenticationJwtConfiguration.token_type("operator")
+      assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("client")
+      assert_equal "at+jwt", AuthenticationJwtConfiguration.token_type("operator")
       assert_raises(ArgumentError) { AuthenticationJwtConfiguration.token_type("invalid") }
     end
 

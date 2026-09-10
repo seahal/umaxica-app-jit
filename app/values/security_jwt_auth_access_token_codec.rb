@@ -6,7 +6,8 @@
 require "jwt"
 
 class SecurityJwtAuthAccessTokenCodec
-  JWT_ALGORITHM = "ES384"
+  JWT_ALGORITHM = SecurityJwtRfc9068AccessTokenProfile::ALGORITHM
+  TOKEN_TYPE = SecurityJwtRfc9068AccessTokenProfile::TOKEN_TYPE
   VALID_ACTOR_TYPES = %w(client operator visitor).freeze
 
   class << self
@@ -55,10 +56,9 @@ class SecurityJwtAuthAccessTokenCodec
         host: host, resource_type: resource_type,
         jwt_issuer_id: jwt_issuer_id,
       )
-      token_issuer_id ? JitSecurityJwtKeyring.encode(
-        payload,
-        issuer_id: token_issuer_id,
-      ) : JitSecurityJwtKeyring.encode(payload)
+      encode_kwargs = { typ: TOKEN_TYPE }
+      encode_kwargs[:issuer_id] = token_issuer_id if token_issuer_id
+      JitSecurityJwtKeyring.encode(payload, **encode_kwargs)
     rescue JWT::EncodeError, OpenSSL::PKey::PKeyError, ArgumentError, TypeError => e
       Rails.logger.error(
         JitLogEvent.format(
@@ -129,13 +129,13 @@ class SecurityJwtAuthAccessTokenCodec
         token, public_key, true,
         decode_options(resource_type, issuer, audiences, verify_exp: verify_exp),
       )
-      unless valid_payload_type?(payload, resource_type)
+      unless SecurityJwtRfc9068AccessTokenProfile.claims_structurally_valid?(payload)
         JitSecurityJwtAnomalyReporter.report_auth(
           resource_type: resource_type,
           host: host,
           header: header,
           payload: payload,
-          reason: "TYP_MISMATCH",
+          reason: "CLAIM_INVALID",
         )
         return nil
       end
@@ -301,7 +301,7 @@ class SecurityJwtAuthAccessTokenCodec
     def decode_options(resource_type, issuer, audiences, verify_exp:)
       {
         algorithms: [JWT_ALGORITHM],
-        required_claims: %w(iss aud typ exp nbf iat sub sid act jti acr),
+        required_claims: %w(iss aud exp nbf iat sub sid client_id jti acr scope),
         leeway: AuthenticationJwtConfiguration.leeway_seconds,
         verify_iat: true,
         verify_exp: verify_exp,
@@ -313,20 +313,12 @@ class SecurityJwtAuthAccessTokenCodec
       }
     end
 
-    def valid_header?(header, resource_type)
-      return false if header.blank?
-      return false unless header["alg"] == JWT_ALGORITHM
-      return false unless header["typ"] == expected_token_type(resource_type)
-
-      header["kid"].present?
+    def valid_header?(header, _resource_type = nil)
+      SecurityJwtRfc9068AccessTokenProfile.header_valid?(header)
     end
 
-    def valid_payload_type?(payload, resource_type)
-      payload.is_a?(Hash) && payload["typ"] == expected_token_type(resource_type)
-    end
-
-    def expected_token_type(resource_type)
-      AuthenticationJwtConfiguration.token_type(resource_type)
+    def expected_token_type(_resource_type = nil)
+      TOKEN_TYPE
     end
 
     def report_invalid_header(resource_type:, host:, header:)
@@ -334,7 +326,7 @@ class SecurityJwtAuthAccessTokenCodec
         resource_type: resource_type,
         host: host,
         header: header,
-        reason: "INVALID_HEADER",
+        reason: SecurityJwtRfc9068AccessTokenProfile.header_rejection_reason(header),
       )
     end
 

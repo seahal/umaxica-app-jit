@@ -117,7 +117,7 @@ module Authentication
     end
 
     test "returns resource and session id when token is valid" do
-      payload = { "sub" => 123, "sid" => "sess_1", "act" => "client", "jti" => "current-jti" }
+      payload = { "sub" => "123", "sid" => "sess_1", "act" => "client", "jti" => "current-jti" }
       FakeTokenScope.token_oidc_jti = "current-jti"
 
       AuthenticationToken.stub(:decode, payload) do
@@ -145,7 +145,7 @@ module Authentication
     end
 
     test "returns token_jti_mismatch when access token jti is stale" do
-      payload = { "sub" => 123, "sid" => "sess_1", "act" => "client", "jti" => "stale-jti" }
+      payload = { "sub" => "123", "sid" => "sess_1", "act" => "client", "jti" => "stale-jti" }
       FakeTokenScope.token_oidc_jti = "current-jti"
 
       AuthenticationToken.stub(:decode, payload) do
@@ -170,7 +170,7 @@ module Authentication
 
     test "returns administrative_access_locked when resource is admin locked" do
       payload = {
-        "sub" => 123,
+        "sub" => "123",
         "sid" => "sess_1",
         "act" => "client",
         "jti" => "current-jti",
@@ -196,7 +196,7 @@ module Authentication
 
     test "returns administrative_access_token_stale when token predates access state change" do
       payload = {
-        "sub" => 123,
+        "sub" => "123",
         "sid" => "sess_1",
         "act" => "client",
         "jti" => "current-jti",
@@ -225,7 +225,7 @@ module Authentication
     end
 
     test "returns actor_mismatch failure when actor claim differs" do
-      payload = { "sub" => 123, "sid" => "sess_1", "act" => "operator" }
+      payload = { "sub" => "123", "sid" => "sess_1", "act" => "operator" }
 
       AuthenticationToken.stub(:decode, payload) do
         AuthenticationToken.stub(:validate_actor_claim!, false) do
@@ -244,7 +244,7 @@ module Authentication
     end
 
     test "returns idle_timeout when the session has been inactive beyond the window" do
-      payload = { "sub" => 123, "sid" => "sess_1", "act" => "client", "jti" => "current-jti" }
+      payload = { "sub" => "123", "sid" => "sess_1", "act" => "client", "jti" => "current-jti" }
       FakeTokenScope.token_oidc_jti = "current-jti"
       FakeTokenScope.token_last_used_at = 9.hours.ago # client idle window is 8h
 
@@ -264,7 +264,7 @@ module Authentication
     end
 
     test "writes last_used_at only when activity is past the throttle window" do
-      payload = { "sub" => 123, "sid" => "sess_1", "act" => "client", "jti" => "current-jti" }
+      payload = { "sub" => "123", "sid" => "sess_1", "act" => "client", "jti" => "current-jti" }
       FakeTokenScope.token_oidc_jti = "current-jti"
 
       AuthenticationToken.stub(:decode, payload) do

@@ -15,12 +15,15 @@ module AuthenticationJwtConfiguration
     Integer(ENV["AUTH_JWT_LEEWAY_SECONDS"].presence || "30", 10)
   end
 
-  def self.issuer(resource_type = nil)
-    base = ENV.fetch("AUTH_JWT_ISSUER")
-    normalized_resource_type = normalize_resource_type(resource_type)
-    return base if normalized_resource_type.nil?
+  def self.issuer(_resource_type = nil)
+    ENV.fetch("AUTH_JWT_ISSUER")
+  end
 
-    "#{base}:#{normalized_resource_type}"
+  def self.client_id(resource_type)
+    normalized_resource_type = normalize_resource_type(resource_type)
+    raise ArgumentError, "unsupported auth resource type: #{resource_type.inspect}" if normalized_resource_type.nil?
+
+    ENV.fetch("AUTH_JWT_#{normalized_resource_type.upcase}_CLIENT_ID")
   end
 
   # Audience is a resource-type boundary: a visitor token must not validate where
@@ -36,6 +39,7 @@ module AuthenticationJwtConfiguration
 
     env_key = "AUTH_JWT_#{normalized_resource_type.upcase}_AUDIENCES"
     audiences = parse_audiences(ENV.fetch(env_key), env_key:)
+    assert_environment_audiences!(audiences, env_key)
     assert_distinct_audiences!(normalized_resource_type, audiences)
     audiences
   end
@@ -50,6 +54,16 @@ module AuthenticationJwtConfiguration
   end
   private_class_method :parse_audiences
 
+  def self.assert_environment_audiences!(audiences, env_key)
+    return unless Rails.env.production?
+
+    forbidden = audiences.grep(/localhost|127\.0\.0\.1|::1|\.test\z/i)
+    return if forbidden.empty?
+
+    raise ArgumentError, "#{env_key} must not include non-production audiences: #{forbidden.join(", ")}"
+  end
+  private_class_method :assert_environment_audiences!
+
   def self.assert_distinct_audiences!(resource_type, audiences)
     VALID_RESOURCE_TYPES.excluding(resource_type).each do |other_type|
       other_key = "AUTH_JWT_#{other_type.upcase}_AUDIENCES"
@@ -62,11 +76,8 @@ module AuthenticationJwtConfiguration
   end
   private_class_method :assert_distinct_audiences!
 
-  def self.token_type(resource_type)
-    normalized_resource_type = normalize_resource_type(resource_type)
-    raise ArgumentError, "unsupported auth resource type: #{resource_type.inspect}" if normalized_resource_type.nil?
-
-    "auth-access-token;#{normalized_resource_type}"
+  def self.token_type(_resource_type = nil)
+    SecurityJwtRfc9068AccessTokenProfile::TOKEN_TYPE
   end
 
   def self.private_key

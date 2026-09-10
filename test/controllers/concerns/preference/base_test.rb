@@ -1123,6 +1123,15 @@ module Preference
       assert_equal "dr", @controller.instance_variable_get(:@color_theme)
     end
 
+    test "set color theme writes default sy from the preference value not a missing-preference branch" do
+      Actor.install_context!(preferences: Actor::Preference.new)
+
+      @controller.send(:set_color_theme)
+
+      assert_equal "sy", @controller.instance_variable_get(:@color_theme)
+      assert_equal "sy", @controller.send(:cookies)[PreferenceBase::THEME_COOKIE_KEY]
+    end
+
     test "set color theme writes public option cookies from actor preferences" do
       Actor.install_context!(
         preferences: Actor::Preference.new(

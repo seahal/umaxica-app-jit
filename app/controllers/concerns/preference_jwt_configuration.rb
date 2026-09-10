@@ -26,9 +26,14 @@ module PreferenceJwtConfiguration
     ENV.fetch("PREFERENCE_JWT_ISSUER")
   end
 
+  def self.client_id
+    ENV.fetch("PREFERENCE_JWT_CLIENT_ID")
+  end
+
   def self.audiences
     configured = audiences_from_boot_config
     configured = fallback_localhost_audiences(configured) if Rails.env.local?
+    assert_production_audiences!(configured)
     return configured if configured.present?
 
     fallback_localhost_audiences(
@@ -139,6 +144,16 @@ module PreferenceJwtConfiguration
     ENV.fetch(public_key).to_s
   end
   private_class_method :env_host
+
+  def self.assert_production_audiences!(values)
+    return unless Rails.env.production?
+
+    forbidden = Array(values).select { |aud| aud.to_s.match?(/localhost|127\.0\.0\.1|::1/i) }
+    return if forbidden.empty?
+
+    raise ArgumentError, "preference JWT audiences must not include localhost in production: #{forbidden.join(", ")}"
+  end
+  private_class_method :assert_production_audiences!
 
   def self.fallback_localhost_audiences(values)
     audiences = values.dup
