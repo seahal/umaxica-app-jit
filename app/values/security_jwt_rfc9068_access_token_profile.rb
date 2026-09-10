@@ -50,10 +50,7 @@ module SecurityJwtRfc9068AccessTokenProfile
   def claims_structurally_valid?(payload)
     return false unless payload.is_a?(Hash)
     return false unless REQUIRED_CLAIMS.all? { |claim| payload.key?(claim) }
-    return false unless payload["sub"].is_a?(String) && payload["sub"].present?
-    return false unless payload["client_id"].is_a?(String) && payload["client_id"].present?
-    return false unless payload["iss"].is_a?(String) && payload["iss"].present?
-    return false unless payload["jti"].is_a?(String) && payload["jti"].present?
+    return false unless required_string_claims_present?(payload)
     return false unless integer_time?(payload["iat"])
     return false unless integer_time?(payload["exp"])
     return false unless audience_valid?(payload["aud"])
@@ -88,12 +85,20 @@ module SecurityJwtRfc9068AccessTokenProfile
   end
 
   def resource_type_from_scope(payload)
-    parse_scopes(payload).filter_map do |scope|
-      next unless scope.start_with?(RESOURCE_TYPE_SCOPE_PREFIX)
+    types =
+      parse_scopes(payload).filter_map do |scope|
+        next unless scope.start_with?(RESOURCE_TYPE_SCOPE_PREFIX)
 
-      scope.delete_prefix(RESOURCE_TYPE_SCOPE_PREFIX).presence
-    end.uniq.then { |types| types.one? ? types.first : nil }
+        scope.delete_prefix(RESOURCE_TYPE_SCOPE_PREFIX).presence
+      end
+    types.uniq!
+    types.one? ? types.first : nil
   end
+
+  def required_string_claims_present?(payload)
+    %w(sub client_id iss jti).all? { |claim| payload[claim].is_a?(String) && payload[claim].present? }
+  end
+  private_class_method :required_string_claims_present?
 
   def integer_time?(value)
     value.is_a?(Integer)

@@ -130,6 +130,8 @@ module JitSecurityJwtRegistry
   def build_issuers
     source = JitSecurityJwtKeySource.new
     records = {}
+    auth_audiences = AUTH_AUDIENCE_ENV_NAMES.flat_map { |name| source.csv(name) }
+    auth_audiences.uniq!
     records["auth"] = build_keyset_issuer(
       source: source,
       id: "auth",
@@ -137,7 +139,7 @@ module JitSecurityJwtRegistry
       public_keyset_name: :AUTH_JWT_PUBLIC_KEYSET,
       active_kid: source.fetch("AUTH_JWT_ACTIVE_KID", nil),
       issuer: source.fetch("AUTH_JWT_ISSUER", nil),
-      audiences: AUTH_AUDIENCE_ENV_NAMES.flat_map { |name| source.csv(name) }.uniq.freeze,
+      audiences: auth_audiences.freeze,
       revoked_kids: source.csv("AUTH_JWT_REVOKED_KIDS"),
     )
     records["preference"] = build_keyset_issuer(

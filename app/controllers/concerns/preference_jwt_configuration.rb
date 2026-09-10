@@ -37,7 +37,8 @@ module PreferenceJwtConfiguration
     configured = audiences_from_boot_config
     if configured.empty?
       raise MissingAudienceError,
-            "preference JWT audiences are not configured: boot hosts base_service, base_corporate and base_staff are blank"
+            "preference JWT audiences are not configured: boot hosts " \
+            "base_service, base_corporate and base_staff are blank"
     end
 
     configured = with_local_development_audiences(configured) if Rails.env.local?
