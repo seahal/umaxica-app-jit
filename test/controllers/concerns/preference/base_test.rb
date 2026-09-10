@@ -1450,10 +1450,14 @@ module Preference
     test "create_audit_log skips creating an audit event row when no event id is given" do
       preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING, discarded_at: 1.day.from_now)
       @controller.instance_variable_set(:@preferences, preference)
+      @controller.request = ActionDispatch::TestRequest.create
       event_lookup_calls = 0
       audit_event_class =
         Class.new do
           define_singleton_method(:find_or_create_by!) do |*_args|
+            event_lookup_calls += 1
+          end
+          define_singleton_method(:ensure_defaults!) do
             event_lookup_calls += 1
           end
         end
@@ -1469,6 +1473,31 @@ module Preference
 
       assert_equal 0, event_lookup_calls
       assert_nil created_attributes[:event_id]
+    end
+
+    test "create_audit_log does not N+1 when several regional bundle events are recorded" do
+      preference = AppPreference.create!(status_id: AppPreferenceStatus::NOTHING, discarded_at: 1.day.from_now)
+      @controller.instance_variable_set(:@preferences, preference)
+      @controller.request = ActionDispatch::TestRequest.create
+      AppPreferenceChronicleEvent.ensure_defaults!
+      AppPreferenceChronicleLevel.ensure_defaults!
+
+      events = %w(
+        UPDATE_PREFERENCE_REGION
+        UPDATE_PREFERENCE_LANGUAGE
+        UPDATE_PREFERENCE_DATE_FORMAT
+        UPDATE_PREFERENCE_TIME_FORMAT
+      )
+
+      assert_nothing_raised do
+        Prosopite.scan do
+          events.each do |event_id|
+            @controller.send(:create_audit_log, event_id: event_id, context: { field: event_id })
+          end
+        end
+      end
+
+      assert_equal events.size, AppPreferenceChronicle.where(subject_id: preference.id.to_s).count
     end
 
     test "find_preference_by_presented_token returns nil without a presented digest" do

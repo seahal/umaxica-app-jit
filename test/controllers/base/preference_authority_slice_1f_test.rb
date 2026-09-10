@@ -60,6 +60,23 @@ class BasePreferenceAuthoritySlice1fTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "cookie banner settings url is the cookie preference edit for every surface" do
+    SURFACES.each do |surface, config|
+      host = ENV.fetch(config.fetch(:host_env), config.fetch(:host_default))
+      host! host
+
+      get public_send("base_#{surface}_preference_url", ri: "jp", host: host)
+
+      assert_response :success
+      uri = URI.parse(inertia_props.dig("chrome", "cookie_controls", "settings_url"))
+      query_keys = uri.query.to_s.split("&").map { |pair| pair.split("=", 2).first }
+
+      assert_equal "/preference/cookie/edit", uri.path
+      assert_equal "jp", Rack::Utils.parse_query(uri.query).fetch("ri")
+      assert_equal query_keys.uniq, query_keys
+    end
+  end
+
   test "base cookie preference edit renders translations for every surface" do
     SURFACES.each do |surface, config|
       host = ENV.fetch(config.fetch(:host_env), config.fetch(:host_default))
@@ -139,6 +156,28 @@ class BasePreferenceAuthoritySlice1fTest < ActionDispatch::IntegrationTest
       # page -- so its heading names only the region.
       assert_equal "Region Settings", inertia_props.fetch("title")
       assert_equal ["Japan - 日本", "United States - USA"], inertia_choice_labels.sort
+    end
+  end
+
+  test "base preference region edit disables the region already stored for every surface" do
+    SURFACES.each do |surface, config|
+      host = ENV.fetch(config.fetch(:host_env), config.fetch(:host_default))
+      host! host
+
+      get public_send("edit_base_#{surface}_preference_region_url", ri: "us", host: host)
+
+      assert_response :success
+
+      prefix = surface.to_s.camelize
+      us_id = PreferenceClassRegistry.option_class(prefix, :region)::US
+      jp_id = PreferenceClassRegistry.option_class(prefix, :region)::JP
+      choices = inertia_props.fetch("form").fetch("choices")
+      stored = choices.find { |choice| choice.fetch("value") == us_id }
+      other = choices.find { |choice| choice.fetch("value") == jp_id }
+
+      assert stored.fetch("disabled")
+      assert_not other.fetch("disabled")
+      assert_equal us_id, inertia_props.fetch("form").fetch("value")
     end
   end
 

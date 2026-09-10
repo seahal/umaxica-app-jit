@@ -368,10 +368,9 @@ module PreferenceBase
 
     ChronicleRecord.connected_to(role: :writing) do
       ensure_model_defaults!(preference_audit_level_class)
-
-      if normalized_event_id.present?
-        preference_audit_event_class.find_or_create_by!(id: normalized_event_id)
-      end
+      # Seed the full event catalog once. Per-id find_or_create_by! N+1s when a
+      # region change writes language, date format, and clock as one bundle.
+      ensure_model_defaults!(preference_audit_event_class) if normalized_event_id.present?
 
       preference_audit_class.create!(
         subject_id: @preferences.id.to_s,

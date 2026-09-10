@@ -1015,6 +1015,29 @@ describe("identity withdrawal screens", () => {
     expect(html).not.toContain("Terminate now");
   });
 
+  it("renders termination without a recovery section", () => {
+    const html = renderToStaticMarkup(
+      <WithdrawalEdit
+        title="Withdrawal status"
+        terminated={false}
+        unavailable_message="Recovery is unavailable."
+        deadline_message={null}
+        recovery={null}
+        termination={{
+          submit_label: "Terminate now",
+          confirm: "Sure?",
+          action: "/identity/withdrawal",
+          available_at_message: null,
+        }}
+        erasure_link={erasureLink}
+        sign_out={signOut}
+      />,
+    );
+
+    expect(html).toContain("Terminate now");
+    expect(html).not.toContain("Recover");
+  });
+
   it("renders the terminated status", () => {
     const html = renderToStaticMarkup(
       <WithdrawalEdit

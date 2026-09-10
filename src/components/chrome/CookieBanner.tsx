@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import Button from "@/components/ui/Button";
+import ButtonLink from "@/components/ui/ButtonLink";
 import { hasRecordedCookieConsent } from "@/lib/cookies";
 import { readBoolean } from "@/lib/payload";
 import { csrfToken, preferenceQueryParameters } from "@/lib/request";
@@ -183,13 +184,13 @@ export default function CookieBanner({ controls }: { controls: ChromeCookieContr
             {controls.reject_all}
           </Button>
 
-          <Button
+          <ButtonLink
             variant="secondary"
             size="sm"
-            onPress={() => window.location.assign(controls.settings_url)}
+            href={controls.settings_url}
           >
             {controls.open_settings}
-          </Button>
+          </ButtonLink>
 
           <Button
             size="sm"

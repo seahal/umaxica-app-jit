@@ -228,6 +228,13 @@ describe("passkey settings interaction", () => {
     submitForm();
 
     expect(transform).toHaveBeenCalled();
+    const passkeyTransformer = transform.mock.calls[0]?.[0] as (data: {
+      description: string;
+    }) => unknown;
+    expect(passkeyTransformer({ description: "Renamed" })).toEqual({
+      client_passkey: { description: "Renamed" },
+      "cf-turnstile-response": "",
+    });
     expect(patch).toHaveBeenCalledWith("/settings/passkeys/pk_1?ri=jp");
   });
 
@@ -291,6 +298,14 @@ describe("totp settings interaction", () => {
     submitForm();
 
     expect(transform).toHaveBeenCalled();
+    const totpNewTransformer = transform.mock.calls[0]?.[0] as (data: {
+      title: string;
+      first_token: string;
+    }) => unknown;
+    expect(totpNewTransformer({ title: "iPhone", first_token: "123456" })).toEqual({
+      user_totp_credential: { title: "iPhone", first_token: "123456" },
+      "cf-turnstile-response": "",
+    });
     expect(post).toHaveBeenCalledWith("/settings/totps?ri=jp");
   });
 
@@ -329,6 +344,10 @@ describe("totp settings interaction", () => {
     submitForm();
 
     expect(transform).toHaveBeenCalled();
+    const totpEditTransformer = transform.mock.calls[0]?.[0] as (data: { title: string }) => unknown;
+    expect(totpEditTransformer({ title: "iPad" })).toEqual({
+      user_totp_credential: { title: "iPad" },
+    });
     expect(patch).toHaveBeenCalledWith("/settings/totps/totp_1?ri=jp");
   });
 

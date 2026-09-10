@@ -196,7 +196,10 @@ module SurfaceChrome
   end
 
   def chrome_cookie_settings_url(surface)
-    options = request.query_parameters.slice(*PREFERENCE_QUERY_KEYS)
+    # Query parameters arrive with string keys; url helpers merge default_url_options under
+    # symbols. Passing the strings through as extra options duplicated `ri` on the href, which
+    # is how the settings control pointed at a query the destination does not read as one value.
+    options = request.query_parameters.slice(*PREFERENCE_QUERY_KEYS).symbolize_keys
     # An auth surface renders on the sign host while cookie preferences are edited on the base
     # authority host, so the link has to be absolute across that boundary.
     options = options.merge(host: base_authority_host) if chrome_configuration.fetch(:footer_navigation)

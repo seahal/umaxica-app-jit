@@ -189,6 +189,21 @@ describe("document theme across visits", () => {
 
     errorSpy.mockRestore();
   });
+
+  test("omits the nonce when the layout published an empty one", async () => {
+    document.body.innerHTML = "";
+    const nonceMeta = document.createElement("meta");
+    nonceMeta.setAttribute("property", "csp-nonce");
+    nonceMeta.nonce = "";
+    document.head.append(nonceMeta);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await bootSurfaceInertiaApp({}, "base/app");
+
+    expect(createInertiaApp).toHaveBeenCalled();
+    errorSpy.mockRestore();
+    nonceMeta.remove();
+  });
 });
 
 // Importing an entrypoint is genuinely expensive: each one eagerly globs every page module of its

@@ -347,12 +347,19 @@ describe("CookieBanner actions", () => {
     expect(banner()).toBeNull();
   });
 
-  test("the settings button leaves for the cookie preference screen", async () => {
+  test("the settings control is a document visit to the cookie preference screen", async () => {
     await mount();
 
-    await click(button(controls.open_settings));
+    const link = [...(container?.querySelectorAll("a") ?? [])].find(
+      (element) => element.textContent === controls.open_settings,
+    );
 
-    expect(assign).toHaveBeenCalledWith(controls.settings_url);
-    expect(banner()).not.toBeNull();
+    // A button that called location.assign never reached the preference screen: the press
+    // handler did not navigate, and there was no href to follow without script. The destination
+    // has to be in the markup as a document visit — cookie preferences live on the base host,
+    // which an Inertia XHR would not be allowed to load.
+    expect(link?.getAttribute("href")).toBe(controls.settings_url);
+    expect(link?.dataset["inertia"]).toBeUndefined();
+    expect(assign).not.toHaveBeenCalled();
   });
 });
